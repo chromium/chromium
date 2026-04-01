@@ -34,6 +34,9 @@ enum class SearchEngineLogoState;
 // The entrypoint for the Home customization menu.
 @property(nonatomic, strong) UIButton* customizationMenuButton;
 
+// The entrypoint for the Tools menu.
+@property(nonatomic, strong) UIButton* toolsMenuButton;
+
 // Voice search button. May be nil for some variations where MIA button takes
 // the entire available space.
 @property(nonatomic, strong, readonly) UIButton* voiceSearchButton;

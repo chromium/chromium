@@ -771,11 +771,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
         [UIButtonConfiguration plainButtonConfiguration];
 
     UIImage* icon = DefaultSymbolTemplateWithPointSize(
-        kPencilSymbol,
-        ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar);
+        kPencilSymbol, ntp_home::kNTPMenuButtonIconSize);
     configuration.image = icon;
     configuration.background.cornerRadius =
-        ntp_home::kCustomizationMenuButtonCornerRadius;
+        ntp_home::kNTPMenuButtonCornerRadius;
     customizationMenuButton.configuration = configuration;
 
     UIColor* unthemedTintColor = [UIColor colorNamed:kBlue600Color];
@@ -792,7 +791,9 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
                            ? [UIColor
                                  colorNamed:kTabGroupFaviconBackgroundColor]
                            : [[UIColor colorNamed:kSolidWhiteColor]
-                                 colorWithAlphaComponent:0.75];
+                                 colorWithAlphaComponent:
+                                     ntp_home::
+                                         kNTPMenuButtonLightUnthemedAlpha];
               }];
             });
   }
@@ -814,7 +815,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     [customizationMenuButton.centerYAnchor
         constraintEqualToAnchor:self.toolBarView.centerYAnchor],
     [customizationMenuButton.heightAnchor
-        constraintEqualToConstant:ntp_home::kCustomizationMenuButtonDimension],
+        constraintEqualToConstant:ntp_home::kNTPMenuButtonDimension],
     [customizationMenuButton.widthAnchor
         constraintEqualToAnchor:customizationMenuButton.heightAnchor],
     [customizationMenuButton.leadingAnchor
@@ -831,6 +832,68 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   _customizationMenuButton = customizationMenuButton;
   _customizationNewFeatureBadge = newBadgeView;
+
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    [self applyBackgroundTheme];
+  }
+}
+
+- (void)setToolsMenuButton:(UIButton*)toolsMenuButton {
+  CHECK(IsChromeNextIaEnabled());
+  if (_toolsMenuButton) {
+    [_toolsMenuButton removeFromSuperview];
+  }
+
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    UIButtonConfiguration* configuration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    UIImage* icon = DefaultSymbolTemplateWithPointSize(
+        kMenuSymbol, ntp_home::kNTPMenuButtonIconSize);
+    configuration.image = icon;
+    configuration.background.cornerRadius =
+        ntp_home::kNTPMenuButtonCornerRadius;
+    toolsMenuButton.configuration = configuration;
+
+    UIColor* unthemedTintColor = [UIColor colorNamed:kBlue600Color];
+    toolsMenuButton.configurationUpdateHandler =
+        CreateThemedButtonConfigurationUpdateHandler(
+            unthemedTintColor, ^UIColor*(NewTabPageColorPalette* palette) {
+              if (palette) {
+                return palette.headerButtonColor;
+              }
+
+              return [UIColor colorWithDynamicProvider:^UIColor*(
+                                  UITraitCollection* traits) {
+                return traits.userInterfaceStyle == UIUserInterfaceStyleDark
+                           ? [UIColor
+                                 colorNamed:kTabGroupFaviconBackgroundColor]
+                           : [[UIColor colorNamed:kSolidWhiteColor]
+                                 colorWithAlphaComponent:
+                                     ntp_home::
+                                         kNTPMenuButtonLightUnthemedAlpha];
+              }];
+            });
+  }
+
+  toolsMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
+  toolsMenuButton.pointerInteractionEnabled = YES;
+  toolsMenuButton.clipsToBounds = YES;
+
+  [self.toolBarView addSubview:toolsMenuButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [toolsMenuButton.centerYAnchor
+        constraintEqualToAnchor:self.toolBarView.centerYAnchor],
+    [toolsMenuButton.heightAnchor
+        constraintEqualToConstant:ntp_home::kNTPMenuButtonDimension],
+    [toolsMenuButton.widthAnchor
+        constraintEqualToAnchor:toolsMenuButton.heightAnchor],
+    [toolsMenuButton.leadingAnchor
+        constraintEqualToAnchor:self.customizationMenuButton.trailingAnchor
+                       constant:ntp_home::kHeaderIconMargin]
+  ]];
+
+  _toolsMenuButton = toolsMenuButton;
 
   if (IsNTPBackgroundCustomizationEnabled()) {
     [self applyBackgroundTheme];

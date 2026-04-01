@@ -22,6 +22,9 @@
 // Informs the receiver that the customization menu entrypoint was tapped.
 - (void)customizationMenuWasTapped:(UIView*)customizationMenu;
 
+// Informs the receiver that the tools menu entrypoint was tapped.
+- (void)toolsMenuWasTapped:(UIView*)toolsMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_COMMANDS_H_

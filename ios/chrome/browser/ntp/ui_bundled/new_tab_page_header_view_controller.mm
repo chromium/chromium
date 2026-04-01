@@ -59,6 +59,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using base::UserMetricsAction;
@@ -346,6 +347,13 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
     [self addCustomizationMenu];
 
+    if (IsChromeNextIaEnabled() &&
+        ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+      // Add the tools menu to the NTP header if it is not visible in the
+      // toolbar.
+      [self addToolsMenu];
+    }
+
     UIEdgeInsets safeAreaInsets = self.baseViewController.view.safeAreaInsets;
     width = std::max<CGFloat>(
         0, width - safeAreaInsets.left - safeAreaInsets.right);
@@ -566,8 +574,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   if (!IsNTPBackgroundCustomizationEnabled()) {
     UIImage* icon = DefaultSymbolTemplateWithPointSize(
-        kPencilSymbol,
-        ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar);
+        kPencilSymbol, ntp_home::kNTPMenuButtonIconSize);
     [customizationMenuButton setImage:icon forState:UIControlStateNormal];
     customizationMenuButton.backgroundColor =
         [self defaultButtonBackgroundColor];
@@ -576,7 +583,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     customizationMenuButton.tintColor = tintColor;
 
     customizationMenuButton.layer.cornerRadius =
-        ntp_home::kCustomizationMenuButtonCornerRadius;
+        ntp_home::kNTPMenuButtonCornerRadius;
     customizationMenuButton.clipsToBounds = YES;
   }
 
@@ -591,6 +598,35 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   [self.headerView setCustomizationMenuButton:customizationMenuButton
                                  withNewBadge:_useNewBadgeForCustomizationMenu];
+}
+
+// Creates the Tools menu and adds it to the header view.
+- (void)addToolsMenu {
+  CHECK(IsChromeNextIaEnabled());
+  UIButton* toolsMenuButton =
+      [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
+
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    UIImage* icon = DefaultSymbolTemplateWithPointSize(
+        kEllipsisSymbol, ntp_home::kNTPMenuButtonIconSize);
+    [toolsMenuButton setImage:icon forState:UIControlStateNormal];
+    toolsMenuButton.backgroundColor = [self defaultButtonBackgroundColor];
+
+    UIColor* tintColor = [UIColor colorNamed:kBlue600Color];
+    toolsMenuButton.tintColor = tintColor;
+    toolsMenuButton.layer.cornerRadius = ntp_home::kNTPMenuButtonCornerRadius;
+    toolsMenuButton.clipsToBounds = YES;
+  }
+
+  toolsMenuButton.accessibilityIdentifier = kNTPToolsMenuButtonIdentifier;
+  toolsMenuButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU);
+
+  [toolsMenuButton addTarget:self.commandHandler
+                      action:@selector(toolsMenuWasTapped:)
+            forControlEvents:UIControlEventTouchUpInside];
+
+  self.headerView.toolsMenuButton = toolsMenuButton;
 }
 
 // Configures `identityDiscButton` with the current state of

@@ -31,6 +31,9 @@ extern NSString* const kNTPFeedHeaderIdentityDisc;
 // Represents the customization menu button of the feed header.
 extern NSString* const kNTPCustomizationMenuButtonIdentifier;
 
+// Represents the tools menu button of the feed header.
+extern NSString* const kNTPToolsMenuButtonIdentifier;
+
 // Represents the identity disc badge.
 extern NSString* const kNTPFeedHeaderIdentityDiscBadge;
 
