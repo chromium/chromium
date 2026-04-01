@@ -881,7 +881,13 @@ void PageHandler::Navigate(const std::string& url,
     inner_url = GURL(gurl.GetContent());
   }
 
-  if (inner_url.SchemeIsFile() && !may_read_local_files_) {
+  bool is_file = inner_url.SchemeIsFile();
+#if BUILDFLAG(IS_CHROMEOS)
+  // The "externalfile" scheme is ChromeOS-specific.
+  is_file |= inner_url.SchemeIs(content::kExternalFileScheme);
+#endif
+
+  if (is_file && !may_read_local_files_) {
     callback->sendFailure(
         Response::ServerError("Navigating to local URL is not allowed"));
     return;

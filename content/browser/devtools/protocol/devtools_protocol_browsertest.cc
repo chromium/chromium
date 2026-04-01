@@ -1661,6 +1661,63 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NavigationToExternalFileUrlRequiresFileAccess) {
+  Attach();
+
+  base::DictValue params;
+  params.Set("url", "externalfile://path/to/file");
+
+  Detach();
+  SetMayReadLocalFiles(false);
+
+  Attach();
+
+  ASSERT_FALSE(SendCommandSync("Page.navigate", params.Clone()));
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       DispatchDragEventWithFileUrlRequiresFileAccess) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+
+  base::DictValue item;
+  item.Set("mimeType", "text/uri-list");
+  item.Set("data", "file:///etc/passwd");
+  base::ListValue items;
+  items.Append(std::move(item));
+  base::DictValue data;
+  data.Set("items", std::move(items));
+  data.Set("dragOperationsMask", 1);
+
+  base::DictValue params;
+  params.Set("type", "dragEnter");
+  params.Set("x", 20);
+  params.Set("y", 20);
+  params.Set("data", std::move(data));
+
+  // It should succeed by default as MayReadLocalFiles() is true.
+  ASSERT_TRUE(SendCommandSync("Input.dispatchDragEvent", params.Clone()));
+
+  Detach();
+  SetMayReadLocalFiles(false);
+
+  Attach();
+
+  // It should fail now.
+  ASSERT_FALSE(SendCommandSync("Input.dispatchDragEvent", std::move(params)));
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::INVALID_PARAMS)));
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteNoDetach) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());

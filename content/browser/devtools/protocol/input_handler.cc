@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -41,8 +42,10 @@
 #include "content/common/input/synthetic_tap_gesture.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/web_input_event_traits.h"
@@ -347,6 +350,41 @@ void DispatchPointerActionsResponse(
     callback->sendFailure(Response::ServerError(
         base::StringPrintf("Action sequence failed, result was %d", result)));
   }
+}
+
+bool HasFileRelatedItem(Input::DragData* data) {
+  if (data->HasFiles()) {
+    return true;
+  }
+  if (!data->GetItems()) {
+    return false;
+  }
+  for (const auto& item : *data->GetItems()) {
+    if (item->GetMimeType() == ui::kMimeTypeUriList) {
+      std::vector<std::string> lines =
+          base::SplitString(item->GetData(), "\r\n", base::KEEP_WHITESPACE,
+                            base::SPLIT_WANT_NONEMPTY);
+      for (const std::string& line : lines) {
+        if (line.starts_with('#')) {
+          continue;
+        }
+        GURL url(line);
+        GURL inner_url = url;
+        while (inner_url.SchemeIs(content::kViewSourceScheme)) {
+          inner_url = GURL(inner_url.GetContent());
+        }
+        bool is_file = inner_url.SchemeIsFile();
+#if BUILDFLAG(IS_CHROMEOS)
+        // The "externalfile" scheme is ChromeOS-specific.
+        is_file |= inner_url.SchemeIs(content::kExternalFileScheme);
+#endif
+        if (is_file) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 DropData ProtocolDragDataToDropData(std::unique_ptr<Input::DragData> data) {
@@ -1398,7 +1436,7 @@ void InputHandler::DispatchDragEvent(
     std::unique_ptr<Input::DragData> data,
     std::optional<int> modifiers,
     std::unique_ptr<DispatchDragEventCallback> callback) {
-  if (!allow_file_access_ && data->HasFiles()) {
+  if (HasFileRelatedItem(data.get()) && !allow_file_access_) {
     callback->sendFailure(Response::InvalidParams("Not allowed"));
     return;
   }
