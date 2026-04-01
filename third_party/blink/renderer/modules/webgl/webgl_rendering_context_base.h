@@ -779,7 +779,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
       std::unique_ptr<WebGraphicsContext3DProvider>,
       const Platform::WebGLContextInfo&);
   void SetupFlags();
-  bool CopyRenderingResultsFromDrawingBuffer(
+  bool CopyRenderingResultsFromDrawingBufferAccelerated(
+      CanvasNon2DResourceProviderSharedImage*,
+      SourceDrawingBuffer);
+  bool CopyRenderingResultsFromDrawingBufferUnaccelerated(
       CanvasNon2DResourceProviderSharedImage*,
       SourceDrawingBuffer);
 

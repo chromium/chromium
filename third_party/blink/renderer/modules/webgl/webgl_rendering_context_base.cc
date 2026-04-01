@@ -858,14 +858,20 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
       return nullptr;
     }
 
-    if (!CopyRenderingResultsFromDrawingBuffer(resource_provider.get(),
-                                               kBackBuffer)) {
+    bool copy_succeeded =
+        resource_provider->IsAccelerated()
+            ? CopyRenderingResultsFromDrawingBufferAccelerated(
+                  resource_provider.get(), kBackBuffer)
+            : CopyRenderingResultsFromDrawingBufferUnaccelerated(
+                  resource_provider.get(), kBackBuffer);
+    if (!copy_succeeded) {
       return nullptr;
     }
     return resource_provider->Snapshot();
   } else {
     // Match the SBI configuration to that produced when using GPU compositing:
-    // N32 and premul (as set by `CopyRenderingResultsFromDrawingBuffer`) and
+    // N32 and premul (as set by
+    // `CopyRenderingResultsFromDrawingBuffer{Accelerated, Unaccelerated}`) and
     // top-left origin (the orientation that is used by
     // `CanvasResourceProvider::Snapshot()` when it is not passed an orientation
     // explicitly).
@@ -1874,7 +1880,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   if (!resource_provider) {
     // As a last resort, try to create and return an unaccelerated snapshot.
     // Match the SBI configuration to that produced when using GPU compositing:
-    // N32 and premul (as set by `CopyRenderingResultsFromDrawingBuffer`) and
+    // N32 and premul (as set by
+    // `CopyRenderingResultsFromDrawingBuffer{Accelerated, Unaccelerated}`) and
     // top-left origin (the orientation that is used by
     // `CanvasResourceProvider::Snapshot()` when it is not passed an
     // orientation explicitly).
@@ -1907,7 +1914,11 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   }
 
   bool copy_succeeded =
-      CopyRenderingResultsFromDrawingBuffer(resource_provider, source_buffer);
+      resource_provider->IsAccelerated()
+          ? CopyRenderingResultsFromDrawingBufferAccelerated(resource_provider,
+                                                             source_buffer)
+          : CopyRenderingResultsFromDrawingBufferUnaccelerated(
+                resource_provider, source_buffer);
   if (!copy_succeeded) {
     return nullptr;
   }
@@ -2045,8 +2056,12 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
     return nullptr;
 
-  bool copy_succeeded = CopyRenderingResultsFromDrawingBuffer(
-      resource_provider_.get(), source_buffer);
+  bool copy_succeeded =
+      resource_provider->IsAccelerated()
+          ? CopyRenderingResultsFromDrawingBufferAccelerated(
+                resource_provider_.get(), source_buffer)
+          : CopyRenderingResultsFromDrawingBufferUnaccelerated(
+                resource_provider_.get(), source_buffer);
   if (!copy_succeeded) {
     return nullptr;
   }
@@ -2057,15 +2072,18 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   return resource_provider;
 }
 
-bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
-    CanvasNon2DResourceProviderSharedImage* resource_provider,
-    SourceDrawingBuffer source_buffer) {
+bool WebGLRenderingContextBase::
+    CopyRenderingResultsFromDrawingBufferAccelerated(
+        CanvasNon2DResourceProviderSharedImage* resource_provider,
+        SourceDrawingBuffer source_buffer) {
   DCHECK(resource_provider);
   DCHECK(!resource_provider->IsSingleBuffered());
+  CHECK(resource_provider->IsAccelerated());
 
   // Early-out if the context has been lost.
-  if (!GetDrawingBuffer())
+  if (!GetDrawingBuffer()) {
     return false;
+  }
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ScopedFramebufferRestorer fbo_restorer(this);
@@ -2073,36 +2091,58 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   // during the resolve process, specifically during automatic
   // graphics switching. Guard against this.
   // This is a no-op if already called higher up the stack from here.
-  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
+  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw()) {
     return false;
+  }
 
-  if (resource_provider->IsAccelerated()) {
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
-        SharedGpuContext::ContextProviderWrapper();
-    if (!shared_context_wrapper) {
-      return false;
-    }
-    gpu::raster::RasterInterface* raster_interface =
-        shared_context_wrapper->ContextProvider().RasterInterface();
-    gpu::SyncToken sync_token;
-    auto client_si = resource_provider->BeginExternalWrite(
-        sync_token, /*is_overwrite=*/false);
-    if (!client_si) {
-      return false;
-    }
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
+      SharedGpuContext::ContextProviderWrapper();
+  if (!shared_context_wrapper) {
+    return false;
+  }
+  gpu::raster::RasterInterface* raster_interface =
+      shared_context_wrapper->ContextProvider().RasterInterface();
+  gpu::SyncToken sync_token;
+  auto client_si =
+      resource_provider->BeginExternalWrite(sync_token, /*is_overwrite=*/false);
+  if (!client_si) {
+    return false;
+  }
 
-    // TODO(xlai): Flush should not be necessary if the synchronization in
-    // CopyToPlatformTexture is done correctly. See crbug.com/794706.
-    raster_interface->Flush();
+  // TODO(xlai): Flush should not be necessary if the synchronization in
+  // CopyToPlatformTexture is done correctly. See crbug.com/794706.
+  raster_interface->Flush();
 
-    std::optional<gpu::SyncToken> external_sync_token =
-        GetDrawingBuffer()->CopyToPlatformSharedImage(
-            raster_interface, client_si, sync_token, source_buffer);
+  std::optional<gpu::SyncToken> external_sync_token =
+      GetDrawingBuffer()->CopyToPlatformSharedImage(raster_interface, client_si,
+                                                    sync_token, source_buffer);
+  if (external_sync_token) {
+    resource_provider->EndExternalWrite(external_sync_token.value());
+  }
+  return external_sync_token.has_value();
+}
 
-    if (external_sync_token) {
-      resource_provider->EndExternalWrite(external_sync_token.value());
-    }
-    return external_sync_token.has_value();
+bool WebGLRenderingContextBase::
+    CopyRenderingResultsFromDrawingBufferUnaccelerated(
+        CanvasNon2DResourceProviderSharedImage* resource_provider,
+        SourceDrawingBuffer source_buffer) {
+  DCHECK(resource_provider);
+  DCHECK(!resource_provider->IsSingleBuffered());
+  CHECK(!resource_provider->IsAccelerated());
+
+  // Early-out if the context has been lost.
+  if (!GetDrawingBuffer()) {
+    return false;
+  }
+
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
+  ScopedFramebufferRestorer fbo_restorer(this);
+  // In rare situations on macOS the drawing buffer can be destroyed
+  // during the resolve process, specifically during automatic
+  // graphics switching. Guard against this.
+  // This is a no-op if already called higher up the stack from here.
+  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw()) {
+    return false;
   }
 
   // As the resource provider is not accelerated, we don't need an accelerated
@@ -2112,8 +2152,9 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
           kBackBuffer, viz::SharedImageFormat::N32Format(), kPremul_SkAlphaType,
           kBottomLeft_GrSurfaceOrigin);
 
-  if (!image || !image->PaintImageForCurrentFrame())
+  if (!image || !image->PaintImageForCurrentFrame()) {
     return false;
+  }
 
   gfx::Rect src_rect(image->Size());
   gfx::Rect dest_rect(resource_provider->Size());
