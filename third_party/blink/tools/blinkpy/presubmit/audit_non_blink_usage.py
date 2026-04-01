@@ -158,6 +158,7 @@ _CONFIG = [
             'base::ScopedFD',
             'base::Seconds',
             'base::sequence_manager::TaskTimeObserver',
+            'base::sequence_manager::SequenceManager',
             'base::SequencedTaskRunner',
             'base::SingleThreadTaskRunner',
             'base::span',

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/message_loop/message_pump.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -46,6 +47,12 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler
   // base::MessageLoop.
   static std::unique_ptr<WebThreadScheduler> CreateMainThreadScheduler(
       std::unique_ptr<base::MessagePump> message_pump = nullptr);
+  static std::unique_ptr<WebThreadScheduler>
+  CreateMainThreadSchedulerForTesting(
+      base::sequence_manager::SequenceManager* sequence_manager);
+
+  static base::sequence_manager::SequenceManager::PrioritySettings
+  CreatePrioritySettingsForTesting();
 
   // Returns main thread scheduler for the main thread of the current process.
   static WebThreadScheduler& MainThreadScheduler();

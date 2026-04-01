@@ -45,6 +45,19 @@ WebThreadScheduler::CreateMainThreadScheduler(
   return std::make_unique<MainThreadSchedulerImpl>(std::move(sequence_manager));
 }
 
+// static
+std::unique_ptr<WebThreadScheduler>
+WebThreadScheduler::CreateMainThreadSchedulerForTesting(
+    base::sequence_manager::SequenceManager* sequence_manager) {
+  return std::make_unique<MainThreadSchedulerImpl>(sequence_manager);
+}
+
+// static
+base::sequence_manager::SequenceManager::PrioritySettings
+WebThreadScheduler::CreatePrioritySettingsForTesting() {
+  return CreatePrioritySettings();
+}
+
 // Stubs for main thread only virtual functions.
 scoped_refptr<base::SingleThreadTaskRunner>
 WebThreadScheduler::DeprecatedDefaultTaskRunner() {

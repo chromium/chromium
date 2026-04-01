@@ -79,6 +79,8 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
     receivers_.Add(this, std::move(receiver));
   }
 
+  void SetUp() { forms_seen_run_loop_ = std::make_unique<base::RunLoop>(); }
+
   void WaitForFormsSeen() {
     forms_seen_run_loop_->Run();
     forms_seen_run_loop_ = std::make_unique<base::RunLoop>();
@@ -138,8 +140,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   void SelectFieldOptionsDidChange(const autofill::FormData& form,
                                    FieldRendererId field_id) override {}
 
-  std::unique_ptr<base::RunLoop> forms_seen_run_loop_ =
-      std::make_unique<base::RunLoop>();
+  std::unique_ptr<base::RunLoop> forms_seen_run_loop_;
 
   mojo::AssociatedReceiverSet<mojom::AutofillDriver> receivers_;
 };
@@ -329,6 +330,7 @@ void PasswordGenerationAgentTest::RegisterMainFrameRemoteInterfaces() {
 
 void PasswordGenerationAgentTest::SetUp() {
   ChromeRenderViewTest::SetUp();
+  fake_autofill_driver_.SetUp();
 
   // TODO(crbug.com/41401202): Remove workaround preventing non-test classes to
   // bind fake_driver_ or fake_pw_client_.

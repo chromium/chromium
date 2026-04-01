@@ -69,27 +69,6 @@ class RenderView;
 
 class RenderViewTest : public testing::Test {
  public:
-  // A special BlinkPlatformImpl class with overrides that are useful for
-  // RenderViewTest.
-  class RendererBlinkPlatformImplTestOverride {
-   public:
-    RendererBlinkPlatformImplTestOverride();
-    ~RendererBlinkPlatformImplTestOverride();
-    RendererBlinkPlatformImpl* Get() const;
-    void Initialize();
-    void Shutdown();
-
-    blink::scheduler::WebThreadScheduler* GetMainThreadScheduler() {
-      return main_thread_scheduler_.get();
-    }
-
-   private:
-    std::unique_ptr<blink::scheduler::WebThreadScheduler>
-        main_thread_scheduler_;
-    std::unique_ptr<RendererBlinkPlatformImplTestOverrideImpl>
-        blink_platform_impl_;
-  };
-
   // If |hook_render_frame_creation| is true then the RenderViewTest will hook
   // the RenderFrame creation so a TestRenderFrame is always created. If it is
   // false the subclass is responsible for hooking the create function.
@@ -225,14 +204,37 @@ class RenderViewTest : public testing::Test {
   // Install a fake URL loader factory for the RenderFrameImpl.
   void CreateFakeURLLoaderFactory();
 
-  base::test::TaskEnvironment task_environment_;
+  // A derived TaskEnvironment is needed to create WebThreadScheduler and give
+  // it access to the sequence_manager that's owned by the TaskEnvironment base
+  // class.
+  class CustomTaskEnvironment : public base::test::TaskEnvironment {
+   public:
+    CustomTaskEnvironment();
+    ~CustomTaskEnvironment() override;
+
+    blink::scheduler::WebThreadScheduler* main_thread_scheduler() {
+      return main_thread_scheduler_.get();
+    }
+
+    RendererBlinkPlatformImpl* blink_platform();
+
+    void SetUp();
+    void TearDown();
+
+   private:
+    std::unique_ptr<blink::scheduler::WebThreadScheduler>
+        main_thread_scheduler_;
+    std::unique_ptr<RendererBlinkPlatformImplTestOverrideImpl>
+        blink_platform_impl_;
+  };
+
+  CustomTaskEnvironment task_environment_;
 
   std::unique_ptr<RenderProcess> process_;
   // `web_view` is owned by the associated `RenderView` (which we do not store).
   // All allocated `RenderView`s will be destroyed in the `TearDown` method.
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast_;
   raw_ptr<blink::WebView> web_view_ = nullptr;
-  RendererBlinkPlatformImplTestOverride blink_platform_impl_;
 
   // These must outlive `content_client_`.
   std::unique_ptr<ContentBrowserClient> content_browser_client_;
