@@ -1379,6 +1379,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 GpuFeatures.AAPM_BLOCKS_WEB_GPU,
                 "Android Advanced Protection Mode (AAPM) blocks WebGPU for At-Risk Users."),
+        Flag.baseFeature(
+                "IdbInhibitCompactRange",
+                "Inhibits CompactRange() calls within IndexedDB cleanup tasks."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
