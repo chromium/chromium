@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/windows/d3d11_h265_accelerator.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -103,8 +100,8 @@ H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
 
   poc_index_into_ref_pic_list_.clear();
   for (size_t i = 0; i < media::kMaxRefPicListSize; i++) {
-    ref_frame_list_[i].bPicEntry = 0xFF;
-    ref_frame_pocs_[i] = 0;
+    UNSAFE_TODO(ref_frame_list_[i].bPicEntry) = 0xFF;
+    UNSAFE_TODO(ref_frame_pocs_[i]) = 0;
   }
 
   // |ref_pic_list| contains the set of pictures as described
@@ -125,9 +122,10 @@ H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
     D3D11H265Picture* our_ref_pic = it->AsD3D11H265Picture();
     if (!our_ref_pic)
       continue;
-    ref_frame_list_[i].Index7Bits = our_ref_pic->picture_index_;
-    ref_frame_list_[i].AssociatedFlag = our_ref_pic->IsLongTermRef();
-    ref_frame_pocs_[i] = our_ref_pic->pic_order_cnt_val_;
+    UNSAFE_TODO(ref_frame_list_[i].Index7Bits) = our_ref_pic->picture_index_;
+    UNSAFE_TODO(ref_frame_list_[i].AssociatedFlag) =
+        our_ref_pic->IsLongTermRef();
+    UNSAFE_TODO(ref_frame_pocs_[i]) = our_ref_pic->pic_order_cnt_val_;
     poc_index_into_ref_pic_list_[our_ref_pic->pic_order_cnt_val_] = i;
     i++;
   }
@@ -408,7 +406,8 @@ bool D3D11H265Accelerator::PicParamsFromRefLists(
                     kDxvaInvalidRefPicIndex);
         std::fill_n(pic_param.params.RefPicSetLtCurr, kStLtRpsSize,
                     kDxvaInvalidRefPicIndex);
-        std::copy(ref_frame_pocs_, ref_frame_pocs_ + kMaxRefPicListSize - 1,
+        std::copy(ref_frame_pocs_,
+                  UNSAFE_TODO(ref_frame_pocs_ + kMaxRefPicListSize - 1),
                   pic_param.params.PicOrderCntValList);
 
         size_t idx = 0;
@@ -576,8 +575,9 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     static_assert(std::extent<decltype(iq_matrix.ucScalingLists0[0])>() <=
                   std::tuple_size<std::remove_reference_t<
                       decltype(scaling_lists->scaling_list_4x4[0])>>::value);
-    memcpy(iq_matrix.ucScalingLists0, scaling_lists->scaling_list_4x4.data(),
-           sizeof iq_matrix.ucScalingLists0);
+    UNSAFE_TODO(memcpy(iq_matrix.ucScalingLists0,
+                       scaling_lists->scaling_list_4x4.data(),
+                       sizeof iq_matrix.ucScalingLists0));
 
     static_assert(
         std::is_same<
@@ -590,8 +590,9 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     static_assert(std::extent<decltype(iq_matrix.ucScalingLists1[0])>() <=
                   std::tuple_size<std::remove_reference_t<
                       decltype(scaling_lists->scaling_list_8x8[0])>>::value);
-    memcpy(iq_matrix.ucScalingLists1, scaling_lists->scaling_list_8x8.data(),
-           sizeof iq_matrix.ucScalingLists1);
+    UNSAFE_TODO(memcpy(iq_matrix.ucScalingLists1,
+                       scaling_lists->scaling_list_8x8.data(),
+                       sizeof iq_matrix.ucScalingLists1));
 
     static_assert(
         std::is_same<
@@ -604,8 +605,9 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     static_assert(std::extent<decltype(iq_matrix.ucScalingLists2[0])>() <=
                   std::tuple_size<std::remove_reference_t<
                       decltype(scaling_lists->scaling_list_16x16[0])>>::value);
-    memcpy(iq_matrix.ucScalingLists2, scaling_lists->scaling_list_16x16.data(),
-           sizeof iq_matrix.ucScalingLists2);
+    UNSAFE_TODO(memcpy(iq_matrix.ucScalingLists2,
+                       scaling_lists->scaling_list_16x16.data(),
+                       sizeof iq_matrix.ucScalingLists2));
 
     static_assert(
         std::is_same<
@@ -618,12 +620,12 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     static_assert(std::extent<decltype(iq_matrix.ucScalingLists3[0])>() <=
                   std::tuple_size<std::remove_reference_t<
                       decltype(scaling_lists->scaling_list_32x32[0])>>::value);
-    memcpy(iq_matrix.ucScalingLists3[0],
-           scaling_lists->scaling_list_32x32[0].data(),
-           sizeof(iq_matrix.ucScalingLists3[0]));
-    memcpy(iq_matrix.ucScalingLists3[1],
-           scaling_lists->scaling_list_32x32[3].data(),
-           sizeof(iq_matrix.ucScalingLists3[1]));
+    UNSAFE_TODO(memcpy(iq_matrix.ucScalingLists3[0],
+                       scaling_lists->scaling_list_32x32[0].data(),
+                       sizeof(iq_matrix.ucScalingLists3[0])));
+    UNSAFE_TODO(memcpy(iq_matrix.ucScalingLists3[1],
+                       scaling_lists->scaling_list_32x32[3].data(),
+                       sizeof(iq_matrix.ucScalingLists3[1])));
 
     static_assert(
         std::is_same<
@@ -636,9 +638,9 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
         std::extent<decltype(iq_matrix.ucScalingListDCCoefSizeID2)>() <=
         std::tuple_size<std::remove_reference_t<
             decltype(scaling_lists->scaling_list_dc_coef_16x16)>>::value);
-    memcpy(iq_matrix.ucScalingListDCCoefSizeID2,
-           scaling_lists->scaling_list_dc_coef_16x16.data(),
-           sizeof(iq_matrix.ucScalingListDCCoefSizeID2));
+    UNSAFE_TODO(memcpy(iq_matrix.ucScalingListDCCoefSizeID2,
+                       scaling_lists->scaling_list_dc_coef_16x16.data(),
+                       sizeof(iq_matrix.ucScalingListDCCoefSizeID2)));
     iq_matrix.ucScalingListDCCoefSizeID3[0] =
         scaling_lists->scaling_list_dc_coef_32x32[0];
     iq_matrix.ucScalingListDCCoefSizeID3[1] =
@@ -667,7 +669,7 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
   bool ok =
       client_->GetWrapper()
           ->AppendBitstreamAndSliceDataWithStartCode<DXVA_Slice_HEVC_Short>(
-              {data, size}, kStartCode);
+              UNSAFE_TODO(base::span<const uint8_t>(data, size)), kStartCode);
 
   return ok ? H265DecoderStatus::kOk : H265DecoderStatus::kFail;
 }

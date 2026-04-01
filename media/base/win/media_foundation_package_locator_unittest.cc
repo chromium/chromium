@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <mfapi.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -59,7 +56,7 @@ bool CanMfDecodeCodec(TCodec codec,
   }
 
   for (uint32_t i = 0; i < count; ++i) {
-    imf_activates[i]->Release();
+    UNSAFE_TODO(imf_activates[i])->Release();
   }
   if (count == 0) {
     DLOG(INFO) << "No MFT for " << GetCodecName(codec);

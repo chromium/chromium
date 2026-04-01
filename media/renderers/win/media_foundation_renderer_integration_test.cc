@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <mfapi.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/win/scoped_co_mem.h"
@@ -51,7 +48,7 @@ bool CanDecodeVideoCodec(VideoCodec codec) {
   }
 
   for (UINT32 i = 0; i < count; ++i) {
-    activates[i]->Release();
+    UNSAFE_TODO(activates[i])->Release();
   }
 
   if (count == 0) {

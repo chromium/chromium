@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/capture/video/win/video_capture_device_win.h"
 
@@ -18,6 +14,7 @@
 #include <list>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -187,7 +184,8 @@ void VideoCaptureDeviceWin::GetPinCapabilityList(
         // http://crbug.com/306237.
         if (hr == S_OK && list_size > 0 && time_per_frame_list) {
           for (int k = 0; k < list_size; k++) {
-            LONGLONG time_per_frame = *(time_per_frame_list.get() + k);
+            LONGLONG time_per_frame =
+                *UNSAFE_TODO(time_per_frame_list.get() + k);
             if (time_per_frame <= 0)
               continue;
             frame_rates.push_back(kSecondsToReferenceTime /

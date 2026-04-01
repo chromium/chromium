@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/capture/video/win/filter_base_win.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -51,7 +48,7 @@ class PinEnumerator final : public IEnumPins,
     while (pins_fetched < count && filter_->NoOfPins() > index_) {
       IPin* pin = filter_->GetPin(index_++);
       pin->AddRef();
-      pins[pins_fetched++] = pin;
+      UNSAFE_TODO(pins[pins_fetched++]) = pin;
     }
 
     if (fetched)

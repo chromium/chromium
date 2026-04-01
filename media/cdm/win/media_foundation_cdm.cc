@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/cdm/win/media_foundation_cdm.h"
 
@@ -14,6 +10,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -775,8 +772,8 @@ void MediaFoundationCdm::StoreClientTokenIfNeeded() {
   DVLOG(2) << "Got client token of size " << client_token_size;
 
   std::vector<uint8_t> client_token_vector;
-  client_token_vector.assign(client_token.get(),
-                             client_token.get() + client_token_size);
+  client_token_vector.assign(
+      client_token.get(), UNSAFE_TODO(client_token.get() + client_token_size));
 
   // The store operation is cross-process so only run it if we have a new
   // client token.

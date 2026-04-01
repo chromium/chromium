@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/capture/video/win/pin_base_win.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -58,7 +55,7 @@ class TypeEnumerator final : public IEnumMediaTypes,
         FreeAllocatedMediaTypes(types_fetched, types);
         return E_OUTOFMEMORY;
       }
-      ZeroMemory(type, sizeof(AM_MEDIA_TYPE));
+      UNSAFE_TODO(ZeroMemory(type, sizeof(AM_MEDIA_TYPE)));
 
       // Allocate a VIDEOINFOHEADER and connect it to the AM_MEDIA_TYPE.
       type->cbFormat = sizeof(VIDEOINFOHEADER);
@@ -72,7 +69,7 @@ class TypeEnumerator final : public IEnumMediaTypes,
       type->pbFormat = format;
       // Get the media type from the pin.
       if (pin_->GetValidMediaType(index_++, type)) {
-        types[types_fetched++] = type;
+        UNSAFE_TODO(types[types_fetched++]) = type;
       } else {
         CoTaskMemFree(format);
         CoTaskMemFree(type);
@@ -110,8 +107,8 @@ class TypeEnumerator final : public IEnumMediaTypes,
 
   void FreeAllocatedMediaTypes(ULONG allocated, AM_MEDIA_TYPE** types) {
     for (ULONG i = 0; i < allocated; ++i) {
-      CoTaskMemFree(types[i]->pbFormat);
-      CoTaskMemFree(types[i]);
+      CoTaskMemFree(UNSAFE_TODO(types[i]->pbFormat));
+      CoTaskMemFree(UNSAFE_TODO(types[i]));
     }
   }
 
@@ -120,7 +117,7 @@ class TypeEnumerator final : public IEnumMediaTypes,
 };
 
 PinBase::PinBase(IBaseFilter* owner) : owner_(owner) {
-  memset(&current_media_type_, 0, sizeof(current_media_type_));
+  UNSAFE_TODO(memset(&current_media_type_, 0, sizeof(current_media_type_)));
 }
 
 void PinBase::SetOwner(IBaseFilter* owner) {
@@ -251,7 +248,7 @@ HRESULT PinBase::ReceiveMultiple(IMediaSample** samples,
   HRESULT hr = S_OK;
   *processed = 0;
   while (sample_count--) {
-    hr = Receive(samples[*processed]);
+    hr = Receive(UNSAFE_TODO(samples[*processed]));
     // S_FALSE means don't send any more.
     if (hr != S_OK)
       break;

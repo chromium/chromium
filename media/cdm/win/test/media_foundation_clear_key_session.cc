@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/cdm/win/test/media_foundation_clear_key_session.h"
 
@@ -16,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -208,7 +205,8 @@ STDMETHODIMP MediaFoundationClearKeySession::Update(
 
   PromiseState promise_state = PromiseState::kPending;
   aes_decryptor_->UpdateSession(
-      session_id_, std::vector<uint8_t>(response, response + response_size),
+      session_id_,
+      std::vector<uint8_t>(response, UNSAFE_TODO(response + response_size)),
       std::make_unique<MediaFoundationSimpleCdmPromise>(&promise_state));
 
   CHECK(promise_state != PromiseState::kPending);
@@ -271,7 +269,8 @@ STDMETHODIMP MediaFoundationClearKeySession::GetKeyStatuses(
   if (key_status_array == nullptr) {
     return E_OUTOFMEMORY;
   }
-  ZeroMemory(key_status_array, key_status_count * sizeof(MFMediaKeyStatus));
+  UNSAFE_TODO(ZeroMemory(key_status_array,
+                         key_status_count * sizeof(MFMediaKeyStatus)));
 
   // Special key ID to crash the CDM. The key ID must match the key ID used
   // for crash testing in media/test/data/media_foundation_fallback.html
@@ -279,10 +278,10 @@ STDMETHODIMP MediaFoundationClearKeySession::GetKeyStatuses(
       ByteArrayFromGUID(GetGUIDFromString("crash-crashcrash"));
 
   for (UINT i = 0; i < key_status_count; ++i) {
-    key_status_array[i].cbKeyId = keys_info_[i]->key_id.size();
-    key_status_array[i].pbKeyId = static_cast<BYTE*>(
+    UNSAFE_TODO(key_status_array[i].cbKeyId) = keys_info_[i]->key_id.size();
+    UNSAFE_TODO(key_status_array[i].pbKeyId) = static_cast<BYTE*>(
         CoTaskMemAlloc(keys_info_[i]->key_id.size() * sizeof(uint8_t)));
-    if (key_status_array[i].pbKeyId == nullptr) {
+    if (UNSAFE_TODO(key_status_array[i].pbKeyId) == nullptr) {
       return E_OUTOFMEMORY;
     }
 
@@ -291,9 +290,11 @@ STDMETHODIMP MediaFoundationClearKeySession::GetKeyStatuses(
       base::ImmediateCrash();
     }
 
-    key_status_array[i].eMediaKeyStatus = ToMFKeyStatus(keys_info_[i]->status);
-    memcpy(key_status_array[i].pbKeyId, keys_info_[i]->key_id.data(),
-           keys_info_[i]->key_id.size());
+    UNSAFE_TODO(key_status_array[i].eMediaKeyStatus) =
+        ToMFKeyStatus(keys_info_[i]->status);
+    UNSAFE_TODO(memcpy(key_status_array[i].pbKeyId,
+                       keys_info_[i]->key_id.data(),
+                       keys_info_[i]->key_id.size()));
   }
 
   *key_statuses = key_status_array;
@@ -329,13 +330,13 @@ STDMETHODIMP MediaFoundationClearKeySession::GenerateRequest(
 
   EmeInitDataType eme_init_data_type = EmeInitDataType::UNKNOWN;
 
-  if (wcscmp(init_data_type, L"cenc") == 0) {
+  if (UNSAFE_TODO(wcscmp(init_data_type, L"cenc")) == 0) {
     eme_init_data_type = EmeInitDataType::CENC;
     DVLOG_FUNC(3) << "eme_init_data_type=CENC";
-  } else if (wcscmp(init_data_type, L"webm") == 0) {
+  } else if (UNSAFE_TODO(wcscmp(init_data_type, L"webm")) == 0) {
     eme_init_data_type = EmeInitDataType::WEBM;
     DVLOG_FUNC(3) << "eme_init_data_type=WEBM";
-  } else if (wcscmp(init_data_type, L"keyids") == 0) {
+  } else if (UNSAFE_TODO(wcscmp(init_data_type, L"keyids")) == 0) {
     eme_init_data_type = EmeInitDataType::KEYIDS;
     DVLOG_FUNC(3) << "eme_init_data_type=KEYIDS";
   } else {
@@ -348,7 +349,7 @@ STDMETHODIMP MediaFoundationClearKeySession::GenerateRequest(
   media::CdmSessionType cdm_session_type = ToCdmSessionType(session_type_);
   aes_decryptor_->CreateSessionAndGenerateRequest(
       cdm_session_type, eme_init_data_type,
-      std::vector<uint8_t>(init_data, init_data + init_data_size),
+      UNSAFE_TODO(std::vector<uint8_t>(init_data, init_data + init_data_size)),
       std::make_unique<MediaFoundationCdmSessionPromise>(
           &promise_state,
           base::BindOnce(&MediaFoundationClearKeySession::OnSessionCreated,
