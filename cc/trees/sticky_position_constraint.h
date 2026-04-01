@@ -66,7 +66,6 @@ struct CC_EXPORT StickyPositionConstraint {
   ElementId nearest_element_shifting_containing_block;
 
   bool operator==(const StickyPositionConstraint&) const;
-  bool operator!=(const StickyPositionConstraint&) const;
 };
 
 }  // namespace cc
