@@ -108,7 +108,6 @@ suite('TabSearchMediaTabsTest', () => {
         active: false,
         visible: false,
         alertStates: [TabAlertState.kMediaRecording],
-        index: 0,
         tabId: 1,
         title: 'Meet',
         url: 'https://meet.google.com/',
@@ -118,7 +117,6 @@ suite('TabSearchMediaTabsTest', () => {
         active: false,
         visible: false,
         alertStates: [TabAlertState.kAudioPlaying],
-        index: 1,
         tabId: 2,
         title: 'Youtube',
         url: 'https://youtube.com/',
@@ -127,7 +125,6 @@ suite('TabSearchMediaTabsTest', () => {
       createTab({
         active: true,
         visible: true,
-        index: 2,
         tabId: 3,
         title: 'Google',
         url: 'https://www.google.com',
@@ -136,7 +133,6 @@ suite('TabSearchMediaTabsTest', () => {
       createTab({
         active: false,
         visible: false,
-        index: 3,
         tabId: 4,
         title: 'Example',
         url: 'https://www.example.com',

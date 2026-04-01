@@ -71,24 +71,19 @@ IN_PROC_BROWSER_TEST_F(SplitNewTabPageUiTest, MAYBE_Focus) {
                     ::testing::Eq("closeButton")),
 
       // Advance focus into the list of open tabs. kSecondTab was the most
-      // recently focused tab, at index 1
+      // recently focused tab.
       SendKeyPress(kMultiContentsViewElementId, ui::VKEY_TAB),
       CheckJsResult(kFourthTab, getDeepActiveElement("tagName"),
                     ::testing::Eq("TAB-SEARCH-ITEM")),
       CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.url"),
                     ::testing::Eq(GetTestUrl().spec())),
-      CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.index"),
-                    ::testing::Eq(1)),
 
-      // Advance focus again. kNewTab was the next most recently focused tab, at
-      // index 0
+      // Advance focus again. kNewTab was the next most recently focused tab.
       SendKeyPress(kMultiContentsViewElementId, ui::VKEY_TAB),
       CheckJsResult(kFourthTab, getDeepActiveElement("tagName"),
                     ::testing::Eq("TAB-SEARCH-ITEM")),
       CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.url"),
                     ::testing::Eq(url::kAboutBlankURL)),
-      CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.index"),
-                    ::testing::Eq(0)),
 
       // Advance focus again. Focus should leave the web contents, to the mini
       // toolbar.

@@ -28,7 +28,6 @@ function createWindowData() {
         }),
         createTab({
           active: true,
-          index: 1,
           tabId: ACTIVE_TAB_ID,
           title: 'Split View New Tab Page',
           url: 'chrome://tab-search.top-chrome/split_new_tab_page.html',
@@ -36,21 +35,18 @@ function createWindowData() {
         }),
         createTab({
           alertStates: [TabAlertState.kMediaRecording],
-          index: 2,
           lastActiveTimeTicks: {internalValue: BigInt(2)},
           tabId: 6,
           title: 'Facebook',
           url: 'https://www.facebook.com',
         }),
         createTab({
-          index: 4,
           lastActiveTimeTicks: {internalValue: BigInt(7)},
           tabId: 7,
           title: 'Expedia',
           url: 'https://www.expedia.com',
         }),
         createTab({
-          index: 5,
           lastActiveTimeTicks: {internalValue: BigInt(8)},
           tabId: 8,
           title: 'Wikipedia',
@@ -120,21 +116,18 @@ suite('SplitNewTabPageTest', () => {
     const windowData = createWindowData();
     windowData[0]!.tabs.push(
         createTab({
-          index: 6,
           lastActiveTimeTicks: {internalValue: BigInt(10)},
           tabId: 8,
           title: '',
           url: 'about:blank',
         }),
         createTab({
-          index: 7,
           lastActiveTimeTicks: {internalValue: BigInt(11)},
           tabId: 9,
           title: 'file.jpg',
           url: 'file://file.jpg',
         }),
         createTab({
-          index: 8,
           lastActiveTimeTicks: {internalValue: BigInt(12)},
           tabId: 10,
           title: 'Data',
@@ -235,7 +228,6 @@ suite('SplitNewTabPageTest', () => {
 
     const windowData = createWindowData();
     windowData[0]!.tabs.push(createTab({
-      index: 6,
       tabId: 12,
       title: 'YouTube',
       url: 'https://www.youtube.com',
