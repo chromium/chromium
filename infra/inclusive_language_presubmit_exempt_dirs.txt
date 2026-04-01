@@ -622,6 +622,8 @@ third_party/pyjson5/src
 third_party/pylint/pylint
 third_party/rapidhash
 third_party/rust/chromium_crates_io/supply-chain
+third_party/rust/chromium_crates_io/vendor/ahash-v0_8
+third_party/rust/chromium_crates_io/vendor/ahash-v0_8/.github/workflows
 third_party/rust/chromium_crates_io/vendor/android_system_properties-v0_1
 third_party/rust/chromium_crates_io/vendor/anstyle-v1
 third_party/rust/chromium_crates_io/vendor/antlr4rust-v0_5
@@ -658,6 +660,7 @@ third_party/rust/chromium_crates_io/vendor/encoding_rs-v0_8
 third_party/rust/chromium_crates_io/vendor/encoding_rs-v0_8/src
 third_party/rust/chromium_crates_io/vendor/equivalent-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/flate2-v1
+third_party/rust/chromium_crates_io/vendor/getrandom-v0_3
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_16
@@ -767,6 +770,8 @@ third_party/rust/chromium_crates_io/vendor/windows-link-v0_2
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/System/SystemServices
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering
+third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8
+third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8/src
 third_party/rust/chromium_crates_io/vendor/zip-v8
 third_party/rust/chromium_crates_io/vendor/zip-v8/src
 third_party/rust/chromium_crates_io/vendor/zmij-v1

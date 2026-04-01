@@ -16,6 +16,7 @@ version = "0.1.0"
 [workspace]
 
 [dependencies]
+ahash = "0.8.12" # TODO(crbug.com/496920769): Remove once libafl is added as a depedency.
 antlr4rust = "0.5.2"
 anyhow = "1.0.98"
 base64 = "0.22"

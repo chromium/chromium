@@ -1,0 +1,99 @@
+Iterations:        100
+Instructions:      3000
+Total Cycles:      973
+Total uOps:        3100
+
+Dispatch Width:    4
+uOps Per Cycle:    3.19
+IPC:               3.08
+Block RThroughput: 8.0
+
+
+Instruction Info:
+[1]: #uOps
+[2]: Latency
+[3]: RThroughput
+[4]: MayLoad
+[5]: MayStore
+[6]: HasSideEffects (U)
+
+[1]    [2]    [3]    [4]    [5]    [6]    Instructions:
+ 1      1     0.33                        mov	rcx, rdx
+ 1      1     0.33                        mov	edx, 3
+ 1      1     0.33                        mov	rax, rcx
+ 2      4     1.00                        mul	rdx
+ 1      1     1.00                        jo	.LBB5_1
+ 1      1     0.33                        cmp	rax, -10
+ 1      1     1.00                        ja	.LBB5_1
+ 1      1     0.50                        lea	rdx, [rax + 9]
+ 1      1     0.33                        not	eax
+ 1      1     0.33                        and	eax, 3
+ 1      1     0.33                        add	rax, rdx
+ 1      1     1.00                        jae	.LBB5_4
+ 1      0     0.25                        xor	r8d, r8d
+ 1      1     0.33                        mov	edx, 1
+ 1      1     0.33                        mov	rax, r8
+ 1      1     1.00                  U     ret
+ 1      1     0.50                        lea	r9d, [rsi + rdi]
+ 1      0     0.25                        xor	edx, edx
+ 1      1     0.33                        mov	r8d, 0
+ 1      1     0.33                        test	r9b, 3
+ 1      1     1.00                        je	.LBB5_5
+ 1      1     0.33                        mov	rax, r8
+ 1      1     1.00                  U     ret
+ 1      1     0.33                        sub	rsi, rax
+ 1      1     1.00                        jb	.LBB5_1
+ 1      1     0.33                        add	rdi, rsi
+ 1      1     0.33                        mov	rdx, rcx
+ 1      1     0.33                        mov	r8, rdi
+ 1      1     0.33                        mov	rax, r8
+ 1      1     1.00                  U     ret
+
+
+Resources:
+[0]   - SBDivider
+[1]   - SBFPDivider
+[2]   - SBPort0
+[3]   - SBPort1
+[4]   - SBPort4
+[5]   - SBPort5
+[6.0] - SBPort23
+[6.1] - SBPort23
+
+
+Resource pressure per iteration:
+[0]    [1]    [2]    [3]    [4]    [5]    [6.0]  [6.1]  
+ -      -     9.66   9.66    -     9.68    -      -     
+
+Resource pressure by instruction:
+[0]    [1]    [2]    [3]    [4]    [5]    [6.0]  [6.1]  Instructions:
+ -      -      -     0.99    -     0.01    -      -     mov	rcx, rdx
+ -      -     0.66   0.34    -      -      -      -     mov	edx, 3
+ -      -     0.34   0.66    -      -      -      -     mov	rax, rcx
+ -      -     1.00   1.00    -      -      -      -     mul	rdx
+ -      -      -      -      -     1.00    -      -     jo	.LBB5_1
+ -      -     1.00    -      -      -      -      -     cmp	rax, -10
+ -      -      -      -      -     1.00    -      -     ja	.LBB5_1
+ -      -      -     1.00    -      -      -      -     lea	rdx, [rax + 9]
+ -      -     1.00    -      -      -      -      -     not	eax
+ -      -     1.00    -      -      -      -      -     and	eax, 3
+ -      -     1.00    -      -      -      -      -     add	rax, rdx
+ -      -      -      -      -     1.00    -      -     jae	.LBB5_4
+ -      -      -      -      -      -      -      -     xor	r8d, r8d
+ -      -     0.33   0.33    -     0.34    -      -     mov	edx, 1
+ -      -     0.33    -      -     0.67    -      -     mov	rax, r8
+ -      -      -      -      -     1.00    -      -     ret
+ -      -     0.33   0.67    -      -      -      -     lea	r9d, [rsi + rdi]
+ -      -      -      -      -      -      -      -     xor	edx, edx
+ -      -     0.67   0.33    -      -      -      -     mov	r8d, 0
+ -      -     0.33   0.34    -     0.33    -      -     test	r9b, 3
+ -      -      -      -      -     1.00    -      -     je	.LBB5_5
+ -      -     0.66   0.01    -     0.33    -      -     mov	rax, r8
+ -      -      -      -      -     1.00    -      -     ret
+ -      -     0.33   0.67    -      -      -      -     sub	rsi, rax
+ -      -      -      -      -     1.00    -      -     jb	.LBB5_1
+ -      -      -     1.00    -      -      -      -     add	rdi, rsi
+ -      -     0.01   0.99    -      -      -      -     mov	rdx, rcx
+ -      -      -     1.00    -      -      -      -     mov	r8, rdi
+ -      -     0.67   0.33    -      -      -      -     mov	rax, r8
+ -      -      -      -      -     1.00    -      -     ret

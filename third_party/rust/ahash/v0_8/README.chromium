@@ -1,0 +1,11 @@
+Name: ahash
+URL: https://crates.io/crates/ahash
+Version: 0.8.12
+Revision: 9aa1ba20f05ed582eda04ea625d5658c92195a57
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/ahash-v0_8/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: A non-cryptographic hash function using AES-NI for high performance

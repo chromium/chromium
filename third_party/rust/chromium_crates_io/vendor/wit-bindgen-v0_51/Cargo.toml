@@ -1,0 +1,30 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `wit-bindgen-0.51.0` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "wit-bindgen"
+version = "0.51.0"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+"async" = []
+"async-spawn" = []
+"bitflags" = []
+"default" = []
+"inter-task-wakeup" = []
+"macros" = []
+"realloc" = []
+"rustc-dep-of-std" = []
+"std" = []
+
