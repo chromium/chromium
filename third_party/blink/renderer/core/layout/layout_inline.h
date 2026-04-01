@@ -308,8 +308,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   PaintLayerType LayerTypeRequired() const override;
 
-  LayoutUnit OffsetLeft(const Element*) const final;
-  LayoutUnit OffsetTop(const Element*) const final;
+  PhysicalOffset OffsetPoint(const Element*) const final;
 
   PhysicalRect BoundingBoxRelativeToFirstFragment() const final;
 

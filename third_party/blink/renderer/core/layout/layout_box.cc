@@ -3786,16 +3786,6 @@ PhysicalOffset LayoutBox::OffsetPoint(const Element* parent) const {
   return AdjustedPositionRelativeTo(PhysicalLocation(), parent);
 }
 
-LayoutUnit LayoutBox::OffsetLeft(const Element* parent) const {
-  NOT_DESTROYED();
-  return OffsetPoint(parent).left;
-}
-
-LayoutUnit LayoutBox::OffsetTop(const Element* parent) const {
-  NOT_DESTROYED();
-  return OffsetPoint(parent).top;
-}
-
 PhysicalSize LayoutBox::StitchedSize() const {
   NOT_DESTROYED();
   if (!HasValidCachedGeometry()) {

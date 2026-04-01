@@ -144,8 +144,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   static PhysicalAxes StickyConstrainedAxes(const ComputedStyle& style);
 
   // IE extensions. Used to calculate offsetWidth/Height.
-  virtual LayoutUnit OffsetLeft(const Element*) const = 0;
-  virtual LayoutUnit OffsetTop(const Element*) const = 0;
+  virtual PhysicalOffset OffsetPoint(const Element*) const = 0;
   LayoutUnit OffsetWidth() const {
     NOT_DESTROYED();
     return BoundingBoxRelativeToFirstFragment().size.width;

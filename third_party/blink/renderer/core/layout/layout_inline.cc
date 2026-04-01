@@ -526,14 +526,9 @@ PhysicalRect LayoutInline::AbsoluteBoundingBoxRectHandlingEmptyInline(
   return LocalToAbsoluteRect(rect);
 }
 
-LayoutUnit LayoutInline::OffsetLeft(const Element* parent) const {
+PhysicalOffset LayoutInline::OffsetPoint(const Element* parent) const {
   NOT_DESTROYED();
-  return AdjustedPositionRelativeTo(FirstLineBoxTopLeft(), parent).left;
-}
-
-LayoutUnit LayoutInline::OffsetTop(const Element* parent) const {
-  NOT_DESTROYED();
-  return AdjustedPositionRelativeTo(FirstLineBoxTopLeft(), parent).top;
+  return AdjustedPositionRelativeTo(FirstLineBoxTopLeft(), parent);
 }
 
 PhysicalRect LayoutInline::BoundingBoxRelativeToFirstFragment() const {
