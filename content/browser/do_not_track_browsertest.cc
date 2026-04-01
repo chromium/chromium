@@ -180,14 +180,7 @@ IN_PROC_BROWSER_TEST_F(DoNotTrackTest, Worker) {
 }
 
 // Checks that the DNT header is sent in a request for shared worker script.
-// Disabled on Android since a shared worker is not available on Android:
-// crbug.com/869745.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SharedWorker DISABLED_SharedWorker
-#else
-#define MAYBE_SharedWorker SharedWorker
-#endif
-IN_PROC_BROWSER_TEST_F(DoNotTrackTest, MAYBE_SharedWorker) {
+IN_PROC_BROWSER_TEST_F(DoNotTrackTest, SharedWorker) {
   const std::string kWorkerScript =
       R"(self.onconnect = e => { e.ports[0].postMessage('DONE'); };)";
   net::test_server::HttpRequest::HeaderMap header_map;
@@ -402,15 +395,7 @@ IN_PROC_BROWSER_TEST_F(DoNotTrackTest, FetchFromWorker) {
 }
 
 // Checks that the DNT header is preserved when fetching from a shared worker.
-//
-// Disabled on Android since a shared worker is not available on Android:
-// crbug.com/869745.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_FetchFromSharedWorker DISABLED_FetchFromSharedWorker
-#else
-#define MAYBE_FetchFromSharedWorker FetchFromSharedWorker
-#endif
-IN_PROC_BROWSER_TEST_F(DoNotTrackTest, MAYBE_FetchFromSharedWorker) {
+IN_PROC_BROWSER_TEST_F(DoNotTrackTest, FetchFromSharedWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   if (!EnableDoNotTrack())
     return;

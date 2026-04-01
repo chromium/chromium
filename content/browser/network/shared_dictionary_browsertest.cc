@@ -1118,15 +1118,12 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                          GetURL("/shared_dictionary/test.dict"));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// Shared workers are not supported on Android.
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        FetchDictionaryFromSharedWorker) {
   RunWriteDictionaryTest(FetchType::kFetchApiFromSharedWorker,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        FetchDictionaryFromServiceWorker) {

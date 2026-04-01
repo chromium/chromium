@@ -80,12 +80,6 @@ chrome.test.runTests([
   },
 
   async function discoverWorker() {
-    // SharedWorker is not supported on Chrome for Android.
-    // https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker
-    if (await isAndroid()) {
-      chrome.test.succeed('skipped');
-      return;
-    }
     let workerPort = new SharedWorker('worker.js').port;
     workerPort.onmessage = function() {
       chrome.debugger.getTargets(function(targets) {

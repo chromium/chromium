@@ -2536,18 +2536,8 @@ IN_PROC_BROWSER_TEST_F(
             EvalJs(shell()->web_contents(), "document.body.textContent"));
 }
 
-// SharedWorkers are not enabled on Android. https://crbug.com/154571
-#if BUILDFLAG(IS_ANDROID)
-constexpr bool kIsSharedWorkerEnabled = false;
-#else
-constexpr bool kIsSharedWorkerEnabled = true;
-#endif
-
 IN_PROC_BROWSER_TEST_F(CertificateErrorIgnoredBrowserTargetTest,
                        CertificateErrorBrowserTargetSharedWorker) {
-  if (!kIsSharedWorkerEnabled) {
-    return;
-  }
   // Install a shared worker over bad HTTPS cert.
   base::DictValue params;
   ASSERT_TRUE(content::ExecJs(

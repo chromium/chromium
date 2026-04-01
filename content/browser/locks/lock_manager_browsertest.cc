@@ -341,8 +341,6 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverDedicatedWorker) {
   RunLoopWithTimeout();
 }
 
-// SharedWorkers are not enabled on Android. https://crbug.com/154571
-#if !BUILDFLAG(IS_ANDROID)
 // Verify that content::FeatureObserver is *not* notified when a lock is
 // acquired by a shared worker.
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSharedWorker) {
@@ -364,7 +362,6 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSharedWorker) {
   // Wait a short timeout to make sure that the observer is not notified.
   RunLoopWithTimeout();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that content::FeatureObserver is *not* notified when a lock is
 // acquired by a service worker.

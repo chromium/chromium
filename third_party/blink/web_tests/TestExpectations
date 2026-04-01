@@ -2436,6 +2436,8 @@ crbug.com/40268415 [ Debug Win11-arm64 ] external/wpt/webaudio/the-audio-api/the
 # Test Expectations for Chrome Android/WebView
 # Incompatible with both Chrome Android and Webview
 # SharedWorker interface
+# Although SharedWorker is enabled on all platforms, these tests still fail
+# on Android/Webview due to other platform limitations (e.g., Notification).
 crbug.com/40290702 [ Android ] external/wpt/background-fetch/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/40290702 [ Android ] external/wpt/content-index/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/40290702 [ Android ] external/wpt/cookiestore/idlharness.https.any.sharedworker.html [ Failure ]

@@ -2944,17 +2944,6 @@ std::string FetchSharedWorkerScript(std::string_view path) {
   return JsReplace(kTemplate, path);
 }
 
-// TODO(crbug.com/40290702): Remove this and replace calls below with
-// calls to `EXPECT_EQ` directly once Shared Workers are supported on Android.
-void ExpectFetchSharedWorkerScriptResult(bool expected,
-                                         const EvalJsResult& result) {
-#if !BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(expected, result);
-#else
-  EXPECT_FALSE(result.is_ok());
-#endif
-}
-
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
@@ -2983,9 +2972,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
 
-  ExpectFetchSharedWorkerScriptResult(
-      false, EvalJs(root_frame_host(),
-                    FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+  EXPECT_EQ(false, EvalJs(root_frame_host(),
+                          FetchSharedWorkerScript(kSharedWorkerScriptPath)));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
@@ -2996,9 +2984,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   // The request is exempt from Local Network Access checks because it is
   // same-origin and the origin is potentially trustworthy. Shared worker
   // scripts are required to be same-origin.
-  ExpectFetchSharedWorkerScriptResult(
-      true, EvalJs(root_frame_host(),
-                   FetchSharedWorkerScript(kSharedWorkerScriptPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSharedWorkerScript(kSharedWorkerScriptPath)));
 }
 
 // ======================

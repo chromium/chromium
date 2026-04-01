@@ -2120,16 +2120,10 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
                                      " 127.0.0.1/service_worker/)"}));
 }
 
-// TODO(crbug.com/40290702): Shared workers are not available on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SharedWorkerAccess_Storages DISABLED_SharedWorkerAccess_Storages
-#else
-#define MAYBE_SharedWorkerAccess_Storages SharedWorkerAccess_Storages
-#endif
 // Verifies that adding a shared worker to a frame is tracked as a storage
 // access.
 IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
-                       MAYBE_SharedWorkerAccess_Storages) {
+                       SharedWorkerAccess_Storages) {
   // Start logging `WebContentsObserver` callbacks.
   WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
   auto* logger = WCOCallbackLogger::FromWebContents(GetActiveWebContents());

@@ -1441,16 +1441,12 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, ServiceWorkerScript) {
   EXPECT_FALSE(HasReceivedHeader(absolute_import, "X-Client-Data"));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// Shared workers are not available on Android.
-
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to requests for shared worker scripts.
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, SharedWorkerScript) {
   WorkerScriptTest("/workers/create_shared_worker.html",
                    "/workers/import_scripts_shared_worker.js");
 }
-#endif
 
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to requests for dedicated worker scripts.

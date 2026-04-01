@@ -1014,9 +1014,6 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingTestBase,
   EXPECT_THAT(headers, Not(HasSubstr("MySecretCookieValue2")));
 }
 
-// TODO(lukasza): https://crbug.com/154571: Enable this test on Android once
-// SharedWorkers are also enabled on Android.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingTestBase, SharedWorker) {
   embedded_test_server()->StartAcceptingConnections();
 
@@ -1091,7 +1088,6 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingTestBase, SharedWorker) {
   )";
   EXPECT_EQ("FETCH SUCCEEDED", EvalJs(shell(), kFetchWait));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // https://crbug.com/1218723 this is broken by SplitCacheByNetworkIsolationKey.
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingTestBase,
