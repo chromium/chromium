@@ -237,13 +237,11 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
 }
 
 const std::vector<ui::ElementIdentifier>
-WebUIToolbarUI::GetKnownElementIdentifiers() {
+WebUIToolbarUI::GetKnownElementIdentifiers() const {
   return {kLocationBarElementId,
           kReloadButtonElementId,
           kToolbarSplitTabsToolbarButtonElementId,
           kToolbarHomeButtonElementId,
           kToolbarBackButtonElementId,
-          kToolbarForwardButtonElementId,
-          kSharedTabGroupFeedbackElementId,
-          kSharedTabGroupCommentsActionElementId};
+          kToolbarForwardButtonElementId};
 }

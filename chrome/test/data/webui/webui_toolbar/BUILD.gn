@@ -13,7 +13,6 @@ build_webui_tests("build") {
   files = [
     "readonly_omnibox_test.ts",
     "readonly_omnibox_focus_test.ts",
-    "pinned_toolbar_action_test.ts",
   ]
 
   ts_deps = [

@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_
 
-#include <map>
-#include <vector>
-
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
@@ -69,8 +66,6 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   std::vector<actions::ActionId> popped_out_actions_;
   // Allow this class to observe actions for currently displaying buttons.
   std::vector<base::CallbackListSubscription> action_subscriptions_;
-  // Mapping from ActionId to its current ElementIdentifier, if any.
-  std::map<actions::ActionId, ui::ElementIdentifier> element_ids_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_

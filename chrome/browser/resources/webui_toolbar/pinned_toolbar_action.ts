@@ -5,9 +5,7 @@
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {assertNotReached} from '//resources/js/assert.js';
-import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
@@ -39,36 +37,9 @@ export class PinnedToolbarActionElement extends CrLitElement {
     action: PinnedToolbarAction.kUnspecified,
     highlighted: false,
     enabled: true,
-    elementId: null,
   };
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-  private trackedElementManager_: TrackedElementManager =
-      TrackedElementManager.getInstance();
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.trackedElementManager_.stopTracking(this);
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    if (changedProperties.has('state')) {
-      const oldState = changedProperties.get('state');
-      const oldId = oldState?.elementId;
-      const newId = this.state.elementId;
-
-      if (oldId !== newId) {
-        if (oldId) {
-          this.trackedElementManager_.stopTracking(this);
-        }
-        if (newId) {
-          this.trackedElementManager_.startTracking(this, newId);
-        }
-      }
-    }
-  }
 
   protected getIcon_(): string {
     const type = this.state.action;
