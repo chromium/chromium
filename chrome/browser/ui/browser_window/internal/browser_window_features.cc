@@ -779,7 +779,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
   if (CommentsSidePanelCoordinator::IsSupported()) {
     comments_side_panel_coordinator_ =
-        std::make_unique<CommentsSidePanelCoordinator>(browser_view->browser());
+        GetUserDataFactory().CreateInstance<CommentsSidePanelCoordinator>(
+            *browser_view->browser(), browser_view->browser());
   }
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {

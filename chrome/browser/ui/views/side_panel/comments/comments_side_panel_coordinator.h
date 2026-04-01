@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class SidePanelEntryScope;
@@ -38,6 +39,9 @@ class CommentsSidePanelCoordinator
   // a PinnedToolbarActions.
   explicit CommentsSidePanelCoordinator(BrowserWindowInterface* browser);
   ~CommentsSidePanelCoordinator() override;
+
+  DECLARE_USER_DATA(CommentsSidePanelCoordinator);
+  static CommentsSidePanelCoordinator* From(BrowserWindowInterface* interface);
 
   // TabStripModelObserver
   void OnTabStripModelChanged(
@@ -98,6 +102,8 @@ class CommentsSidePanelCoordinator
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_ = nullptr;
+  ui::ScopedUnownedUserData<CommentsSidePanelCoordinator>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_COMMENTS_COMMENTS_SIDE_PANEL_COORDINATOR_H_

@@ -115,7 +115,7 @@ class CommentsSidePanelCoordinatorInteractiveUiTest
   }
 
   CommentsSidePanelCoordinator* side_panel_coordinator() {
-    return browser()->GetFeatures().comments_side_panel_coordinator();
+    return CommentsSidePanelCoordinator::From(browser());
   }
 
   actions::ActionItem* GetActionItemForCommentsSidePanel() {

@@ -31,6 +31,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
+DEFINE_USER_DATA(CommentsSidePanelCoordinator);
+
 using SidePanelWebUIViewT_CommentsSidePanelUI =
     SidePanelWebUIViewT<CommentsSidePanelUI>;
 BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_CommentsSidePanelUI,
@@ -42,7 +44,8 @@ CommentsSidePanelCoordinator::CommentsSidePanelCoordinator(
     : browser_(browser),
       tab_group_sync_service_(
           tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              browser_->GetProfile())) {
+              browser_->GetProfile())),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   browser_->GetTabStripModel()->AddObserver(this);
   tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser_->GetProfile())
       ->AddObserver(this);
@@ -222,6 +225,11 @@ void CommentsSidePanelCoordinator::UpdateSidePanelTitle(
 bool CommentsSidePanelCoordinator::IsSupported() {
   return base::FeatureList::IsEnabled(
       collaboration::features::kCollaborationComments);
+}
+
+CommentsSidePanelCoordinator* CommentsSidePanelCoordinator::From(
+    BrowserWindowInterface* interface) {
+  return Get(interface->GetUnownedUserDataHost());
 }
 
 void CommentsSidePanelCoordinator::CreateAndRegisterEntry(

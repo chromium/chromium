@@ -57,9 +57,8 @@ void SidePanelHelper::PopulateGlobalEntries(
 
   // Add comments.
   if (CommentsSidePanelCoordinator::IsSupported()) {
-    browser->browser_window_features()
-        ->comments_side_panel_coordinator()
-        ->CreateAndRegisterEntry(window_registry);
+    CommentsSidePanelCoordinator::From(browser)->CreateAndRegisterEntry(
+        window_registry);
   }
 }
 
