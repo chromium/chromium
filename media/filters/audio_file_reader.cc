@@ -87,6 +87,17 @@ bool AudioFileReader::OpenDecoder() {
         nullptr, &media_log_, FFmpegAudioDecoder::ExecutionMode::kSynchronous);
   }
 
+  // When demuxing opus from an Ogg container, ffmpeg somehow ends up generating
+  // the skip information twice. Once as discard adding and once as internally
+  // handled pre-skip. Setting the flag below forces FFmpegAudioDecoder to tell
+  // ffmpeg to disable any manual trimming of the stream. Trimming is instead
+  // handled by the AudioDiscardHelper within FFmpegAudioDecoder.
+  if (config.codec() == AudioCodec::kOpus &&
+      glue_->container() ==
+          container_names::MediaContainerName::kContainerOgg) {
+    config.disable_discard_decoder_delay();
+  }
+
   std::optional<bool> initialize_status;
   decoder_->Initialize(
       config, nullptr,
