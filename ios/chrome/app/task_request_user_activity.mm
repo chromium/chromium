@@ -247,6 +247,15 @@ UserActivityType UserActivityTypeOf(NSUserActivity* user_activity) {
   return UserActivityType::kInvalid;
 }
 
+// Returns a completion block that opens the reading list.
+void OpenReadingListWithBrowser(base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+        browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    [handler showReadingList];
+  }
+}
+
 // Navigates to the bookmark manager UI.
 void OpenBookmarksWithBrowser(base::WeakPtr<Browser> weak_browser) {
   if (Browser* browser = weak_browser.get()) {
@@ -382,7 +391,9 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kOpenReadingList:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(base::BindRepeating(
+          &OpenReadingListWithBrowser, browser->AsWeakPtr()));
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kOpenBookmarks:
       completion = base::CallbackToBlock(
