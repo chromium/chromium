@@ -495,7 +495,14 @@ bool BrowserAccessibilityAndroid::IsTableHeader() const {
 }
 
 bool BrowserAccessibilityAndroid::IsTextSelectable() const {
-  return IsText() || IsAndroidTextView();
+  // This property tells Android if the node has selectable text, and is used as
+  // a heuristic to decide if extended selection should be communicated by text
+  // offset or child offset.
+  // https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo#isTextSelectable%28%29
+  // TODO(crbug.com/498376490): Update the above comment after Selection API
+  // with offset type is released.
+  return IsText() || IsAndroidTextView() || IsTextField() ||
+         !GetTextContentUTF16().empty();
 }
 
 bool BrowserAccessibilityAndroid::IsVisibleToUser() const {
@@ -738,12 +745,6 @@ const char* BrowserAccessibilityAndroid::GetClassName() const {
   }
 
   return ui::AXRoleToAndroidClassName(role, PlatformGetParent() != nullptr);
-}
-
-bool BrowserAccessibilityAndroid::CanSetExtendedSelection() const {
-  // Extended selection is currently only supported for text and editable nodes.
-  // TODO(crbug.com/488168548): Cover all node types.
-  return IsTextSelectable() || IsTextField();
 }
 
 bool BrowserAccessibilityAndroid::IsAndroidTextView() const {

@@ -924,103 +924,176 @@ BrowserAccessibilityManagerAndroid::GetMetadataForTree() const {
 std::optional<BrowserAccessibilityManagerAndroid::SelectionRange>
 BrowserAccessibilityManagerAndroid::GetSelectionRange() const {
   ui::AXSelection selection = ax_tree()->GetSelection();
-  ui::AXNode* anchor_node = ax_tree()->GetFromId(selection.anchor_object_id);
-  ui::AXNode* focus_node = ax_tree()->GetFromId(selection.focus_object_id);
 
-  if (!anchor_node || !focus_node) {
+  std::optional<std::pair<BrowserAccessibilityAndroid*, int>> anchor =
+      ConvertChromeSelectionPositionToAndroid(
+          selection.anchor_object_id, selection.anchor_offset,
+          selection.anchor_affinity, selection.is_backward);
+  if (!anchor.has_value()) {
     return std::nullopt;
   }
 
-  ui::AXNodePosition::AXPositionInstance anchor_position =
-      ui::AXNodePosition::CreatePosition(*anchor_node, selection.anchor_offset,
-                                         selection.anchor_affinity);
-  anchor_position = anchor_position->AsUnignoredSelectionPosition(
-      selection.is_backward ? ui::AXPositionAdjustmentBehavior::kMoveForward
-                            : ui::AXPositionAdjustmentBehavior::kMoveBackward);
-
-  ui::AXNodePosition::AXPositionInstance focus_position =
-      ui::AXNodePosition::CreatePosition(*focus_node, selection.focus_offset,
-                                         selection.focus_affinity);
-  focus_position = focus_position->AsUnignoredSelectionPosition(
-      selection.is_backward ? ui::AXPositionAdjustmentBehavior::kMoveBackward
-                            : ui::AXPositionAdjustmentBehavior::kMoveForward);
-
-  if (anchor_position->IsNullPosition() || focus_position->IsNullPosition()) {
+  std::optional<std::pair<BrowserAccessibilityAndroid*, int>> focus =
+      ConvertChromeSelectionPositionToAndroid(
+          selection.focus_object_id, selection.focus_offset,
+          selection.focus_affinity, selection.is_backward);
+  if (!focus.has_value()) {
     return std::nullopt;
-  }
-
-  ui::BrowserAccessibility::AXRange range = ui::BrowserAccessibility::AXRange(
-      std::move(anchor_position), std::move(focus_position));
-  anchor_position = nullptr;
-  focus_position = nullptr;
-
-  for (const auto& pos : range) {
-    ui::BrowserAccessibility* android_node =
-        GetFromAXNode(pos.anchor()->GetAnchor())
-            ->PlatformGetLowestPlatformAncestor();
-    if (static_cast<BrowserAccessibilityAndroid*>(android_node)
-            ->CanSetExtendedSelection()) {
-      anchor_position = pos.anchor()->Clone();
-      break;
-    }
-  }
-  if (!anchor_position) {
-    return std::nullopt;
-  }
-  for (auto pos = range.rbegin(); pos != range.rend(); --pos) {
-    ui::BrowserAccessibility* android_node =
-        GetFromAXNode((*pos).focus()->GetAnchor())
-            ->PlatformGetLowestPlatformAncestor();
-    if (static_cast<BrowserAccessibilityAndroid*>(android_node)
-            ->CanSetExtendedSelection()) {
-      focus_position = (*pos).focus()->Clone();
-      break;
-    }
-  }
-  if (!focus_position) {
-    return std::nullopt;
-  }
-
-  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, anchor_position->kind());
-  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, focus_position->kind());
-
-  // Swap anchor and focus if original selection was backward.
-  if (selection.is_backward) {
-    std::swap(anchor_position, focus_position);
   }
 
   SelectionRange selection_range;
-  // TODO(crbug.com/490266495): Remove the following when range iterator returns
-  // platform leaf positions.
-  MaybeUpdateTextPositionForSelection(anchor_position);
-  selection_range.anchor_object = static_cast<BrowserAccessibilityAndroid*>(
-      GetFromAXNode(anchor_position->GetAnchor()));
-  selection_range.anchor_offset = anchor_position->text_offset();
+  selection_range.anchor_object = anchor->first;
+  selection_range.anchor_offset = anchor->second;
+  selection_range.focus_object = focus->first;
+  selection_range.focus_offset = focus->second;
 
-  MaybeUpdateTextPositionForSelection(focus_position);
-  selection_range.focus_object = static_cast<BrowserAccessibilityAndroid*>(
-      GetFromAXNode(focus_position->GetAnchor()));
-  selection_range.focus_offset = focus_position->text_offset();
-
-  return (selection_range.focus_object && selection_range.anchor_object)
-             ? std::make_optional(selection_range)
-             : std::nullopt;
+  return selection_range;
 }
 
-void BrowserAccessibilityManagerAndroid::MaybeUpdateTextPositionForSelection(
-    ui::BrowserAccessibility::AXPosition& position) const {
-  BrowserAccessibilityAndroid* node = static_cast<BrowserAccessibilityAndroid*>(
-      GetFromAXNode(position->GetAnchor()));
-  ui::BrowserAccessibility* platform_ancestor =
-      node->PlatformGetLowestPlatformAncestor();
-  if (platform_ancestor == node) {
-    return;
-  }
-  while (position->GetAnchor()->id() != platform_ancestor->GetId()) {
-    position = position->CreateParentPosition();
+std::optional<std::pair<BrowserAccessibilityAndroid*, int>>
+BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
+    ui::AXNodeID node_id,
+    int offset,
+    ax::mojom::TextAffinity affinity,
+    bool is_backward) const {
+  ui::AXNode* node = ax_tree()->GetFromId(node_id);
+  if (!node) {
+    return std::nullopt;
   }
 
-  CHECK_EQ(ui::AXPositionKind::TEXT_POSITION, position->kind());
+  ui::AXNodePosition::AXPositionInstance position =
+      ui::AXNodePosition::CreatePosition(*node, offset, affinity);
+  position = position->AsUnignoredSelectionPosition(
+      is_backward ? ui::AXPositionAdjustmentBehavior::kMoveForward
+                  : ui::AXPositionAdjustmentBehavior::kMoveBackward);
+  if (position->IsNullPosition()) {
+    return std::nullopt;
+  }
+
+  BrowserAccessibilityAndroid* android_node =
+      static_cast<BrowserAccessibilityAndroid*>(
+          GetFromAXNode(position->GetAnchor()));
+  if (!android_node) {
+    return std::nullopt;
+  }
+
+  // If android node is a text selectable one, ensure position is a text
+  // position and anchor exists in Android accessibility tree. This is done even
+  // if the node is not a leaf since currently Selection API cannot send the
+  // offset type to Android.
+  // TODO(crbug.com/498376490): After Selection API with offset type is
+  // released, do not force change the selection type and simplify the rest of
+  // this function.
+  if (android_node->IsTextSelectable()) {
+    position = position->AsTextPosition();
+    ui::BrowserAccessibility* platform_ancestor =
+        android_node->PlatformGetLowestPlatformAncestor();
+    CHECK(platform_ancestor);
+    // Move Chrome position up to the lowest leaf in Android and perform the
+    // right adjustments for offset and affinity.
+    while (position->GetAnchor()->id() != platform_ancestor->GetId()) {
+      position = position->CreateParentPosition();
+    }
+    CHECK(position->IsTextPosition());
+    return std::make_pair(
+        static_cast<BrowserAccessibilityAndroid*>(platform_ancestor),
+        position->text_offset());
+  }
+
+  position = position->AsTreePosition();
+
+  // Since the parent of the target node may be ignored, find the target node in
+  // in Android accessibility tree, then find its parent in Android and compute
+  // the offset based on that.
+  // TODO(crbug.com/498376490): The conversion below is lossy and should be
+  // improved by including affinity when Selection API supports it.
+  ui::AXNode* target_node = nullptr;
+  bool at_end_of_anchor = false;
+  int anchor_child_count = position->GetAnchor()->GetChildCount();
+  if (position->child_index() == ui::AXNodePosition::BEFORE_TEXT ||
+      anchor_child_count == 0) {
+    // A tree position with BEFORE_TEXT child index points to before the anchor
+    // node, hence the node itself is considered as target.
+    // A non BEFORE_TEXT child offset for a leaf node points to after the anchor
+    // point. Hence again the target is set to the anchor node, but keeping a
+    // note to select after it.
+    // TODO(crbug.com/443078007): Add test for both cases. The position is
+    // inside the container and not before or after the container, hence moving
+    // it before or after the `target_node` is not right.
+    target_node = position->GetAnchor();
+    at_end_of_anchor =
+        (position->child_index() != ui::AXNodePosition::BEFORE_TEXT);
+  } else if (position->child_index() < anchor_child_count) {
+    target_node =
+        position->GetAnchor()->GetChildAtIndex(position->child_index());
+  } else {
+    target_node =
+        position->GetAnchor()->GetChildAtIndex(position->child_index() - 1);
+    at_end_of_anchor = true;
+  }
+  CHECK(target_node);
+
+  offset = target_node->GetUnignoredIndexInParent();
+  if (at_end_of_anchor) {
+    offset++;
+  }
+  return std::make_pair(static_cast<BrowserAccessibilityAndroid*>(
+                            GetFromAXNode(target_node->GetUnignoredParent())),
+                        offset);
+}
+
+ui::BrowserAccessibility::AXPosition
+BrowserAccessibilityManagerAndroid::ConvertAndroidSelectionPositionToChrome(
+    BrowserAccessibilityAndroid* node,
+    int32_t offset) {
+  // TODO(crbug.com/498376490): Once Selection API supports sending offset type
+  // to Android, create the position based on the received offset type as we
+  // don't need to assume the offset type based on the node type.
+  if (node->IsTextSelectable()) {
+    return node->CreatePositionForSelectionAt(offset);
+  }
+
+  // When node 'c' is a child of node 'p' in the Android accessibility tree,
+  // their equivalent nodes in Chrome accessibility tree may not have the same
+  // relation and 'p' may not be an immediate parent ancestor. Therefore we need
+  // to find the child that Android is pointing to, and then create a position
+  // based on its direct parent in the Chrome tree.
+  const size_t child_count = node->PlatformChildCount();
+
+  // Since `node` is not text selectable, it is expected that `offset` would be
+  // a child index to point to "before a certain child", or equal to the number
+  // of children to point to "after the last child". Hence if there is no
+  // children, or `offset` is out of this range, it is invalid and ignored.
+  // TODO(crbug.com/498376490): Update the below conversion when the new API is
+  // available and offset type is sent.
+  if (child_count == 0 || offset < 0 ||
+      static_cast<size_t>(offset) > child_count) {
+    return ui::AXNodePosition::CreateNullPosition();
+  }
+
+  bool at_end_of_anchor =
+      (static_cast<size_t>(offset) == node->PlatformChildCount());
+  if (at_end_of_anchor) {
+    offset--;
+  }
+
+  // Find the target node.
+  // Note: When the mapping from Android results in an ignored node, we default
+  // to a downstream adjustment (moving to the next unignored sibling). While an
+  // upstream adjustment would also be valid, we lack the affinity information
+  // from Android to make a more precise choice.
+  // TODO(crbug.com/498376490): Use affinity in all next cases to avoid data
+  // loss.
+  ui::BrowserAccessibility* target = node->PlatformGetChild(offset);
+  CHECK(target);
+
+  if (at_end_of_anchor) {
+    return ui::AXNodePosition::CreateTreePositionAtEndOfAnchor(*target->node())
+        ->CreateParentPosition();
+  }
+
+  return ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*target->node())
+      ->CreateParentPosition();
 }
 
 // TODO(crbug.com/485227837): Remove experiment's methods

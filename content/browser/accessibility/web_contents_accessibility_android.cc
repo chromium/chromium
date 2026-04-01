@@ -2119,15 +2119,24 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
     return false;
   }
 
-  if (!start_node->CanSetExtendedSelection() ||
-      !end_node->CanSetExtendedSelection()) {
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager) {
+    return false;
+  }
+  ui::BrowserAccessibility::AXPosition start_position =
+      root_manager->ConvertAndroidSelectionPositionToChrome(start_node,
+                                                            start_node_offset);
+  if (start_position->IsNullPosition()) {
     return false;
   }
 
-  ui::BrowserAccessibility::AXPosition start_position =
-      start_node->CreatePositionForSelectionAt(start_node_offset);
   ui::BrowserAccessibility::AXPosition end_position =
-      end_node->CreatePositionForSelectionAt(end_node_offset);
+      root_manager->ConvertAndroidSelectionPositionToChrome(end_node,
+                                                            end_node_offset);
+  if (end_position->IsNullPosition()) {
+    return false;
+  }
 
   node->manager()->SetSelection(ui::BrowserAccessibility::AXRange(
       std::move(start_position), std::move(end_position)));

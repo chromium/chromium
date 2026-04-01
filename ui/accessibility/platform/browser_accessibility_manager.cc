@@ -1247,11 +1247,17 @@ void BrowserAccessibilityManager::SetSelection(
   if (!delegate_ || range.IsNull())
     return;
 
+  // TODO(crbug.com/443078007): Add position types and affinity to AXActionData
+  // and pass them to blink to avoid ambiguity.
   AXActionData action_data;
   action_data.anchor_node_id = range.anchor()->anchor_id();
-  action_data.anchor_offset = range.anchor()->text_offset();
+  action_data.anchor_offset = range.anchor()->IsTextPosition()
+                                  ? range.anchor()->text_offset()
+                                  : range.anchor()->child_index();
   action_data.focus_node_id = range.focus()->anchor_id();
-  action_data.focus_offset = range.focus()->text_offset();
+  action_data.focus_offset = range.focus()->IsTextPosition()
+                                 ? range.focus()->text_offset()
+                                 : range.focus()->child_index();
   action_data.action = ax::mojom::Action::kSetSelection;
   delegate_->AccessibilityPerformAction(action_data);
   AXPlatform::GetInstance().OnActionFromAssistiveTech();

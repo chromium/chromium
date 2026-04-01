@@ -2880,8 +2880,7 @@ public class WebContentsAccessibilityTest {
                 """
                 <p id="paragraph1">Paragraph1</p>
                 <p id="paragraph2">Paragraph2</p>
-                <img id="image1" src="pipe.jpg" alt="pipe" />
-                <img id="image2" src="pipe.jpg" alt="pipe" />
+                <img id="image" src="pipe.jpg" alt="pipe" />
                 <button id="button">Button</button>
                 <p id="paragraph3">Paragraph3</p>
                 """);
@@ -2890,9 +2889,11 @@ public class WebContentsAccessibilityTest {
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
         int paragraph1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph1");
         int paragraph2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph2");
-        int imageVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "image1");
+        int imageVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "image");
         int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
         int paragraph3Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph3");
+
+        int imageIndex = 2;
 
         // Select all.
         Assert.assertEquals(
@@ -2958,16 +2959,50 @@ public class WebContentsAccessibilityTest {
                 PERFORM_ACTION_ERROR, String.valueOf(paragraph1Vvid), endNode.getUniqueId());
         Assert.assertEquals(PERFORM_ACTION_ERROR, 10, endOffset);
 
-        // Image (no text), not supported.
+        // Image, using child offset.
         Assert.assertEquals(
-                false,
-                selectTextOnUiThreadAndWaitForSelectionEvent(rootVvid, imageVvid, 0, imageVvid, 1));
-
-        // Button (has text), not supported.
-        Assert.assertEquals(
-                false,
+                true,
                 selectTextOnUiThreadAndWaitForSelectionEvent(
-                        rootVvid, buttonVvid, 0, buttonVvid, 1));
+                        rootVvid, rootVvid, imageIndex, rootVvid, imageIndex + 1));
+        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
+        selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        startNode = (AccessibilityNodeInfoCompat) selection[0];
+        startOffset = (int) selection[1];
+        endNode = (AccessibilityNodeInfoCompat) selection[2];
+        endOffset = (int) selection[3];
+
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(rootVvid), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, imageIndex, startOffset);
+        // Note that since selection API does not have affinity and offset type yet, we cannot
+        // distinguish between after the image and the beginning of button.
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(buttonVvid), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, endOffset);
+
+        // Button, although it is a non-text node, selecting by text offset as it
+        // is a leaf.
+        Assert.assertEquals(
+                true,
+                selectTextOnUiThreadAndWaitForSelectionEvent(
+                        rootVvid, buttonVvid, 1, buttonVvid, 3));
+        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
+        selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        startNode = (AccessibilityNodeInfoCompat) selection[0];
+        startOffset = (int) selection[1];
+        endNode = (AccessibilityNodeInfoCompat) selection[2];
+        endOffset = (int) selection[3];
+
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(buttonVvid), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 1, startOffset);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(buttonVvid), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 3, endOffset);
 
         // Invalid id, root.
         Assert.assertEquals(
@@ -3022,7 +3057,7 @@ public class WebContentsAccessibilityTest {
         setupTestWithHTML(
                 """
                 <div id="contenteditable" contenteditable>
-                  <p>Some Text></p>
+                  <p>Some Text</p>
                   <img src="pipe.jpg" alt="pipe" />
                 </div>
                 """);
@@ -3053,6 +3088,70 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(
                 PERFORM_ACTION_ERROR, String.valueOf(contenteditableVvid), endNode.getUniqueId());
         Assert.assertEquals(PERFORM_ACTION_ERROR, 5, endOffset);
+    }
+
+    /** Test extended selection on a multiline paragraph. */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_multilineParagraph() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="paragraph">
+                  Text1
+                  <br>
+                  Text2
+                  <br>
+                  Text3
+                </p>
+                """);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int paragraphVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph");
+
+        Assert.assertEquals(
+                true,
+                selectTextOnUiThreadAndWaitForSelectionEvent(
+                        rootVvid, paragraphVvid, 0, paragraphVvid, 4));
+
+        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
+        int startOffset = (int) selection[1];
+        AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
+        int endOffset = (int) selection[3];
+
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, startNode);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraphVvid), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, startOffset);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, endNode);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraphVvid), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 4, endOffset);
+
+        Assert.assertEquals(
+                true,
+                selectTextOnUiThreadAndWaitForSelectionEvent(
+                        rootVvid, paragraphVvid, 4, paragraphVvid, 14));
+
+        selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        startNode = (AccessibilityNodeInfoCompat) selection[0];
+        startOffset = (int) selection[1];
+        endNode = (AccessibilityNodeInfoCompat) selection[2];
+        endOffset = (int) selection[3];
+
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, startNode);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraphVvid), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 4, startOffset);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, endNode);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraphVvid), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 14, endOffset);
     }
 
     /** Test that the performAction for ACTION_CUT works properly with accessibility. */

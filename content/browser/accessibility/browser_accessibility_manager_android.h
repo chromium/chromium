@@ -179,6 +179,12 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // `SelectionRange` are populated.
   std::optional<SelectionRange> GetSelectionRange() const;
 
+  // Creates an AXPosition for the given `node` and `offset` that are received
+  // from Android. Returns Null Position if the offset is not valid.
+  ui::BrowserAccessibility::AXPosition ConvertAndroidSelectionPositionToChrome(
+      BrowserAccessibilityAndroid* node,
+      int32_t offset);
+
  protected:
   std::unique_ptr<ui::BrowserAccessibility> CreateBrowserAccessibility(
       ui::AXNode* node) override;
@@ -207,10 +213,17 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   void FireDocumentSelectionChangedEvent(WebContentsAccessibilityAndroid* wcax);
 
-  // If the anchor node of `position` does not exist on Android, update
-  // `position` to the highest leaf node (ancestor of node).
-  void MaybeUpdateTextPositionForSelection(
-      ui::BrowserAccessibility::AXPosition& position) const;
+  // Given `node_id`, `offset`, and `affinity` which represent a selection
+  // position in Chrome accessibility tree, creates an appropriate selection
+  // position in Android accessibility tree. This is done by ensuring selection
+  // offset type is expected by Android and anchor node exists on Android (if
+  // not, moves to the highest leaf node which is ancestor of the node). Returns
+  // empty if conversion is not possible.
+  std::optional<std::pair<BrowserAccessibilityAndroid*, int>>
+  ConvertChromeSelectionPositionToAndroid(ui::AXNodeID node_id,
+                                          int offset,
+                                          ax::mojom::TextAffinity affinity,
+                                          bool is_backward) const;
 
   // A weak reference to WebContentsAccessibility for reaching Java layer.
   // Only the root manager has the reference. Should be accessed through
