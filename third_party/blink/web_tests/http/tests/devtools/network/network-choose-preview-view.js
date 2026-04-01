@@ -34,7 +34,7 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
       return 'SearchableContainer > ' + getViewName(previewer.children()[0]);
     if (previewer instanceof UIModule.SearchableView.SearchableView)
       return 'SearchableView > ' + getViewName(previewer.searchProvider);
-    return previewer.contentElement.className;
+    return [...previewer.contentElement.classList].sort().join(' ');
   }
 
   async function testPreviewer(mimeType, content, statusCode) {
@@ -48,8 +48,11 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
       var request = createNetworkRequest(mimeType, content, statusCode, resourceType);
       var previewView = new Network.RequestPreviewView.RequestPreviewView(request);
       previewView.wasShown();
+      const contentView = await previewView.contentViewPromise;
+      await UIModule.Widget.Widget.allUpdatesComplete;
       TestRunner.addResult(
-          'ResourceType(' + resourceType.name() + '): ' + getViewName(await previewView.contentViewPromise));
+          'ResourceType(' + resourceType.name() +
+          '): ' + getViewName(contentView));
     }
     TestRunner.addResult('');
   }
