@@ -33,6 +33,11 @@
     (webauthn::IOSPasskeyClient::InterstitialCallback)callback;
 - (void)dismissPasskeyIncognitoInterstitial;
 
+// Cancels the passkey request matching the given `requestInfo`, dismissing any
+// active passkey UI.
+- (void)cancelPasskeyRequest:
+    (webauthn::IOSPasskeyClient::RequestInfo)requestInfo;
+
 @end
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_IOS_PASSKEY_CLIENT_COMMANDS_H_

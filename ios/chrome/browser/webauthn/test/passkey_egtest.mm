@@ -6,6 +6,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -25,6 +26,9 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
@@ -90,6 +94,13 @@ id<GREYMatcher> IncognitoInterstitialView() {
   [ChromeEarlGrey waitForWebStateContainingText:"Credential Create Test Page"];
 }
 
+- (void)loadPasskeyCancelPage {
+  GURL pageURL = self.testServer->GetURL("localhost",
+                                         "/navigator_credentials_cancel.html");
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Credential Cancel Test Page"];
+}
+
 #pragma mark - Tests
 
 - (void)testModalPasskeyCreationInfobar {
@@ -149,6 +160,51 @@ id<GREYMatcher> IncognitoInterstitialView() {
       waitForUIElementToDisappearWithMatcher:IncognitoInterstitialView()];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CreatePasskeyButton()];
+}
+
+// Tests that the passkey creation bottom sheet is automatically dismissed when
+// the webpage fires an AbortSignal.
+- (void)testAbortSignalDismissesCreationSheet {
+  [self loadPasskeyCancelPage];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CreatePasskeyButton()];
+
+  ConditionBlock waitForSheetToDisappear = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:CreatePasskeyButton()]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(
+      WaitUntilConditionOrTimeout(kWaitForActionTimeout,
+                                  waitForSheetToDisappear),
+      @"The passkey bottom sheet did not dismiss after the AbortSignal.");
+}
+
+// Tests that the incognito interstitial is automatically dismissed when the
+// webpage fires an AbortSignal.
+- (void)testAbortSignalDismissesIncognitoInterstitial {
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  [self loadPasskeyCancelPage];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:IncognitoInterstitialView()];
+
+  ConditionBlock waitForInterstitialToDisappear = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:IncognitoInterstitialView()]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(
+      WaitUntilConditionOrTimeout(kWaitForActionTimeout,
+                                  waitForInterstitialToDisappear),
+      @"The incognito interstitial did not dismiss after the AbortSignal.");
 }
 
 @end

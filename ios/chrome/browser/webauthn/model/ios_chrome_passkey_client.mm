@@ -177,5 +177,5 @@ void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {
 }
 
 void IOSChromePasskeyClient::CancelPasskeyRequest(RequestInfo request_info) {
-  // TODO(crbug.com/491303127): Dismiss the bottom sheet.
+  [command_handler_ cancelPasskeyRequest:std::move(request_info)];
 }
