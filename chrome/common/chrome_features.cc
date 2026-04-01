@@ -1245,6 +1245,8 @@ BASE_FEATURE(kNativeNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables installation of the content script for chrome/browser/indigo/ via
 // component update.
 BASE_FEATURE(kIndigoComponent, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kIndigoComponentAttribute{
+    &kIndigoComponent, "indigo_component_attribute", ""};
 
 BASE_FEATURE(kSystemNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 

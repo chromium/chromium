@@ -11,8 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/common/chrome_features.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -67,7 +70,31 @@ TEST_F(IndigoComponentInstallerPolicyTest, ComponentReady_UpdatesPaths) {
                 install_dir.Append(FILE_PATH_LITERAL("content_script.js"))));
 }
 
+TEST_F(IndigoComponentInstallerPolicyTest, GetInstallerAttributes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoComponent, {{"indigo_component_attribute", "test"}});
+
+  IndigoComponentInstallerPolicy policy;
+  update_client::InstallerAttributes attributes =
+      policy.GetInstallerAttributes();
+  EXPECT_EQ(attributes["indigo"], "test");
+}
+
+TEST_F(IndigoComponentInstallerPolicyTest, GetInstallerAttributes_EmptyParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kIndigoComponent);
+
+  IndigoComponentInstallerPolicy policy;
+  update_client::InstallerAttributes attributes =
+      policy.GetInstallerAttributes();
+  EXPECT_TRUE(attributes.empty());
+}
+
 TEST_F(IndigoComponentInstallerPolicyTest, ComponentRegistered) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kIndigoComponent);
+
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 
@@ -81,6 +108,29 @@ TEST_F(IndigoComponentInstallerPolicyTest, ComponentRegistered) {
           testing::Return(true)));
   RegisterIndigoComponent(service.get());
   run_loop.Run();
+}
+
+TEST_F(IndigoComponentInstallerPolicyTest,
+       ComponentNotRegistered_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kIndigoComponent);
+
+  auto service =
+      std::make_unique<component_updater::MockComponentUpdateService>();
+
+  ON_CALL(*service, GetSequencedTaskRunner())
+      .WillByDefault(testing::Return(env_.GetMainThreadTaskRunner()));
+
+  EXPECT_CALL(*service, RegisterComponent(testing::_)).Times(0);
+  RegisterIndigoComponent(service.get());
+
+  // Use a TestFuture as a sentinel to ensure any tasks posted to the UI thread
+  // (which would be a bug in the disabled case) have a chance to run and
+  // be caught by the EXPECT_CALL above before the test finishes.
+  base::test::TestFuture<void> sentinel;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, sentinel.GetCallback());
+  EXPECT_TRUE(sentinel.Wait());
 }
 
 }  // namespace component_updater

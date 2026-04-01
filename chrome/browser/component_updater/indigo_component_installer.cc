@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -18,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/version.h"
+#include "chrome/common/chrome_features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -97,11 +99,19 @@ std::string IndigoComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 IndigoComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
+  update_client::InstallerAttributes attributes;
+  std::string attribute = features::kIndigoComponentAttribute.Get();
+  if (!attribute.empty()) {
+    attributes["indigo"] = attribute;
+  }
+  return attributes;
 }
 
 void RegisterIndigoComponent(ComponentUpdateService* cus) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!base::FeatureList::IsEnabled(features::kIndigoComponent)) {
+    return;
+  }
   VLOG(1) << "Registering Indigo component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<IndigoComponentInstallerPolicy>());

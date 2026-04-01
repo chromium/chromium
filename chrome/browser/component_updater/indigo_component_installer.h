@@ -37,6 +37,7 @@ class IndigoComponentInstallerPolicy : public ComponentInstallerPolicy {
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
                       base::DictValue manifest) override;
+  update_client::InstallerAttributes GetInstallerAttributes() const override;
 
  private:
   // ComponentInstallerPolicy implementation.
@@ -49,7 +50,6 @@ class IndigoComponentInstallerPolicy : public ComponentInstallerPolicy {
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
-  update_client::InstallerAttributes GetInstallerAttributes() const override;
 };
 
 // Call once during startup to make the component update service aware of

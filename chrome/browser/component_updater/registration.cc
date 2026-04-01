@@ -160,9 +160,7 @@ void RegisterComponentsForUpdate() {
   }
   RegisterSSLErrorAssistantComponent(cus);
 
-  if (base::FeatureList::IsEnabled(features::kIndigoComponent)) {
-    RegisterIndigoComponent(cus);
-  }
+  RegisterIndigoComponent(cus);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   RegisterFileTypePoliciesComponent(cus);
