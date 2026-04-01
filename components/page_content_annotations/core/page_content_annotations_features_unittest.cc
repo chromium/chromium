@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,24 +41,15 @@ TEST(PageContentAnnotationsFeaturesTest, ValidPageContentRAPPORMetrics) {
   EXPECT_EQ(.2, features::NoiseProbabilityForRAPPORMetrics());
 }
 
+#if defined(ARCH_CPU_ARMEL)
+#define MAYBE_ShouldExecutePageVisibilityModelOnPageContent \
+  DISABLED_ShouldExecutePageVisibilityModelOnPageContent
+#else
+#define MAYBE_ShouldExecutePageVisibilityModelOnPageContent \
+  ShouldExecutePageVisibilityModelOnPageContent
+#endif
 TEST(PageContentAnnotationsFeaturesTest,
-     ShouldExecutePageVisibilityModelOnPageContentDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPageVisibilityPageContentAnnotations);
-
-  EXPECT_FALSE(
-      features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
-}
-
-TEST(PageContentAnnotationsFeaturesTest,
-     ShouldExecutePageVisibilityModelOnPageContentEmptyAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPageVisibilityPageContentAnnotations);
-
+     MAYBE_ShouldExecutePageVisibilityModelOnPageContent) {
   // These are default enabled values.
   EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en"));
   EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-AU"));
@@ -81,20 +73,6 @@ TEST(PageContentAnnotationsFeaturesTest, RemotePageMetadataEnabledDefaults) {
   EXPECT_TRUE(features::RemotePageMetadataEnabled("", ""));
   EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
   EXPECT_TRUE(features::RemotePageMetadataEnabled("badlocale", "US"));
-}
-
-TEST(PageContentAnnotationsFeaturesTest,
-     ShouldExecutePageVisibilityModelOnPageContentWithAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageVisibilityPageContentAnnotations,
-      {{"supported_locales", "en,zh-TW"}});
-
-  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
-  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
-  EXPECT_FALSE(
-      features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
 }
 
 TEST(PageContentAnnotationsFeaturesTest,

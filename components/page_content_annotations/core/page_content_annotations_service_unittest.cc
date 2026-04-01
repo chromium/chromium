@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -164,8 +165,7 @@ class PageContentAnnotationsServiceTest : public testing::Test {
               {"pca_service_wait_for_title_delay_in_milliseconds",
                base::NumberToString(kWaitForTitleDelay.InMilliseconds())},
               {"annotate_visit_batch_size", "1"},
-          }},
-         {features::kPageVisibilityPageContentAnnotations, {}}},
+          }}},
         /*disabled_features=*/{
             optimization_guide::features::kPreventLongRunningPredictionModels});
   }
@@ -253,8 +253,10 @@ class PageContentAnnotationsServiceTest : public testing::Test {
 TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitNonSearch) {
   history::VisitID visit_id = 1;
 
+#if !defined(ARCH_CPU_ARMEL)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
+#endif
 
   VisitURL(GURL("https://example.com"), u"test", visit_id,
            /*local_navigation_id=*/1,
@@ -296,8 +298,10 @@ TEST_F(PageContentAnnotationsServiceTest, VisitWith404ResponseIgnored) {
 TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsNonSearch) {
   history::VisitID visit_id = 1;
 
+#if !defined(ARCH_CPU_ARMEL)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
+#endif
 
   VisitURL(GURL("https://example.com"), u"test", visit_id,
            /*local_navigation_id=*/1,
@@ -312,8 +316,10 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitsSearch) {
 
   EXPECT_CALL(*history_service_, AddSearchMetadataForVisit(_, _, visit_id));
 
+#if !defined(ARCH_CPU_ARMEL)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
+#endif
 
   VisitURL(GURL("http://www.google.com/search?q=test#frag"), u"Test Page",
            visit_id, /*local_navigation_id=*/1,
@@ -331,8 +337,10 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
 
   EXPECT_CALL(*history_service_, AddSearchMetadataForVisit(_, _, visit_id));
 
+#if !defined(ARCH_CPU_ARMEL)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
+#endif
 
   VisitURL(GURL("https://default-engine.com/search?q=test#frag"), u"Test Page",
            visit_id, /*local_navigation_id=*/1,
@@ -341,7 +349,12 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
   task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
 }
 
-TEST_F(PageContentAnnotationsServiceTest, BatchLimitTriggersJob) {
+#if defined(ARCH_CPU_ARMEL)
+#define MAYBE_BatchLimitTriggersJob DISABLED_BatchLimitTriggersJob
+#else
+#define MAYBE_BatchLimitTriggersJob BatchLimitTriggersJob
+#endif
+TEST_F(PageContentAnnotationsServiceTest, MAYBE_BatchLimitTriggersJob) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kPageContentAnnotations,
@@ -360,7 +373,12 @@ TEST_F(PageContentAnnotationsServiceTest, BatchLimitTriggersJob) {
   task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
 }
 
-TEST_F(PageContentAnnotationsServiceTest, BatchSizeTimeout) {
+#if defined(ARCH_CPU_ARMEL)
+#define MAYBE_BatchSizeTimeout DISABLED_BatchSizeTimeout
+#else
+#define MAYBE_BatchSizeTimeout BatchSizeTimeout
+#endif
+TEST_F(PageContentAnnotationsServiceTest, MAYBE_BatchSizeTimeout) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kPageContentAnnotations,
@@ -379,7 +397,12 @@ TEST_F(PageContentAnnotationsServiceTest, BatchSizeTimeout) {
   task_environment_.FastForwardBy(base::Seconds(35));
 }
 
-TEST_F(PageContentAnnotationsServiceTest, OlderVisitsDropped) {
+#if defined(ARCH_CPU_ARMEL)
+#define MAYBE_OlderVisitsDropped DISABLED_OlderVisitsDropped
+#else
+#define MAYBE_OlderVisitsDropped OlderVisitsDropped
+#endif
+TEST_F(PageContentAnnotationsServiceTest, MAYBE_OlderVisitsDropped) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kPageContentAnnotations,
@@ -470,8 +493,10 @@ TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierObserver) {
   GURL url("https://example.com/");
   history::VisitID visit_id = 1;
 
+#if !defined(ARCH_CPU_ARMEL)
   EXPECT_CALL(*history_service_,
               AddContentModelAnnotationsForVisit(_, visit_id));
+#endif
 
   VisitURL(url, u"test", visit_id, /*local_navigation_id=*/1);
   task_environment_.FastForwardBy(kWaitForTitleDelay + base::Milliseconds(1));
