@@ -13,7 +13,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"  // nogncheck
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -21,7 +21,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/test/gmock_expected_support.h"
@@ -58,7 +58,7 @@ TEST_F(CreateChooserTitleTest, UrlFrameTree) {
             CreateChooserTitle(subframe, kTitleResourceId));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(CreateChooserTitleTest, ExtensionsFrameTree) {
   auto manifest = base::DictValue()
                       .Set("name", "Chooser Title Subframe Test")
@@ -91,7 +91,7 @@ TEST_F(CreateChooserTitleTest, ExtensionsFrameTree) {
   EXPECT_EQ(u"Chooser Title Subframe Test wants to connect",
             CreateChooserTitle(subframe, kTitleResourceId));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(CreateChooserTitleTest, IsolatedWebAppFrameTree) {

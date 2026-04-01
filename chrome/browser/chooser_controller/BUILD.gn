@@ -47,14 +47,15 @@ source_set("unit_tests") {
     "//services/data_decoder/public/cpp:test_support",
     "//url",
   ]
-  if (enable_extensions) {
-    deps += [ "//chrome/browser/extensions" ]
-  }
-  if (!is_android) {
+  if (enable_extensions_core) {
     deps += [
+      "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
-      "//chrome/browser/web_applications:web_applications_test_support",
       "//extensions:test_support",
     ]
+  }
+  if (!is_android) {
+    deps +=
+        [ "//chrome/browser/web_applications:web_applications_test_support" ]
   }
 }
