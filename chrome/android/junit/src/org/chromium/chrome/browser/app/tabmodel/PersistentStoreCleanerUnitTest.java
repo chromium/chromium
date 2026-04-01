@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabStateStorageService;
-import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -43,7 +41,6 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabPersistent
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 import java.util.Collections;
-import java.util.List;
 
 /** Unit tests for {@link PersistentStoreCleaner}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -75,11 +72,9 @@ public class PersistentStoreCleanerUnitTest {
     @Mock private Tab mTab;
     @Mock private TabModel mCustomTabModel;
     @Mock private Tab mCustomTab;
-    @Mock private TabStateStorageService mTabStateStorageService;
 
     @Captor private ArgumentCaptor<TabWindowManager.Observer> mObserverCaptor;
     @Captor private ArgumentCaptor<int[]> mTabIdsCaptor;
-    @Captor private ArgumentCaptor<List<String>> mWindowTagsCaptor;
 
     @Before
     public void setUp() {
@@ -123,8 +118,6 @@ public class PersistentStoreCleanerUnitTest {
         when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
         when(mCustomTabModel.iterator())
                 .thenReturn(Collections.singletonList(mCustomTab).iterator());
-
-        TabStateStorageServiceFactory.setForTesting(mTabStateStorageService);
     }
 
     @After
@@ -142,12 +135,6 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(mTabIdsCaptor.capture());
         assertArrayEquals(
                 new int[] {ARCHIVED_TAB_ID, TAB_ID, CUSTOM_TAB_ID}, mTabIdsCaptor.getValue());
-
-        verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
-        List<String> windowTags = mWindowTagsCaptor.getValue();
-        assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
-                windowTags.toArray());
     }
 
     @Test
@@ -158,7 +145,6 @@ public class PersistentStoreCleanerUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
-        verify(mTabStateStorageService, never()).clearAllWindowsExcept(any());
 
         verify(mTabWindowManager).addObserver(mObserverCaptor.capture());
         mObserverCaptor.getValue().onAllTabModelStateInitialized();
@@ -168,27 +154,6 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(mTabIdsCaptor.capture());
         assertArrayEquals(
                 new int[] {ARCHIVED_TAB_ID, TAB_ID, CUSTOM_TAB_ID}, mTabIdsCaptor.getValue());
-
-        verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
-        List<String> windowTags = mWindowTagsCaptor.getValue();
-        assertArrayEquals(
-                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
-                windowTags.toArray());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
-    public void testScheduleCleanUnusedData_TabStorageDisabled() {
-        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
-
-        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(mTabIdsCaptor.capture());
-        assertArrayEquals(
-                new int[] {ARCHIVED_TAB_ID, TAB_ID, CUSTOM_TAB_ID}, mTabIdsCaptor.getValue());
-
-        verify(mTabStateStorageService, never()).clearAllWindowsExcept(any());
     }
 
     @Test
@@ -202,7 +167,7 @@ public class PersistentStoreCleanerUnitTest {
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testCleanUnusedWindows_ArchivedSelectorNull() {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
         when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(null);

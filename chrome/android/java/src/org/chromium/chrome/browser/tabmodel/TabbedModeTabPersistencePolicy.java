@@ -378,12 +378,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     @Override
     public void cleanupUnusedFiles(Callback<TabPersistenceFileInfo> tabDataToDelete) {
         synchronized (CLEAN_UP_TASK_LOCK) {
-            // ClearAllWindowsExceptForTask has priority over CleanUpTabStateDataTask.
-            if (sCleanupTask instanceof CleanUpTabStateDataTask) {
-                sCleanupTask.cancel(true);
-            } else if (sCleanupTask != null) {
-                return;
-            }
+            if (sCleanupTask != null) sCleanupTask.cancel(true);
             sCleanupTask =
                     new CleanUpTabStateDataTask(
                             tabDataToDelete, () -> getOtherTabsId(getMetadataFileName()));
@@ -421,10 +416,8 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         }
         synchronized (CLEAN_UP_TASK_LOCK) {
             // ClearAllWindowsExceptForTask has priority over CleanUpTabStateDataTask.
-            if (sCleanupTask instanceof CleanUpTabStateDataTask) {
+            if (sCleanupTask != null && sCleanupTask instanceof CleanUpTabStateDataTask) {
                 sCleanupTask.cancel(true);
-            } else if (sCleanupTask != null) {
-                return;
             }
             sCleanupTask =
                     new CleanUpTabStateDataTask(
@@ -511,12 +504,14 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             File[] stateFiles = stateDirectory.listFiles();
             if (stateFiles == null) return null;
 
-            for (File stateFile : stateFiles) {
-                if (!TabMetadataFileManager.isMetadataFile(stateFile.getName())) {
+            for (File baseStateFile : stateFiles) {
+                if (!TabMetadataFileManager.isMetadataFile(baseStateFile.getName())) {
                     continue;
                 }
-                if (mExcludedFileNames.contains(stateFile.getName())) continue;
-                TabMetadataFileManager.deleteMetadataFile(stateFile);
+                if (mExcludedFileNames.contains(baseStateFile.getName())) continue;
+                if (!baseStateFile.delete()) {
+                    Log.e(TAG, "Failed to delete metadata file: " + baseStateFile);
+                }
             }
             return null;
         }

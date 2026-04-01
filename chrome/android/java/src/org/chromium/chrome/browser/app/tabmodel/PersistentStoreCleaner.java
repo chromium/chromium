@@ -20,8 +20,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
-import org.chromium.chrome.browser.tab.TabStateStorageService;
-import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -220,15 +218,18 @@ public class PersistentStoreCleaner {
         assertOnUiThread();
 
         ProfileScopedUnusedDataDeps deps = sProfileScopedUnusedDataDeps.get(profile);
-        if (deps == null || deps.mCleanupRunnable != null) return;
+        if (deps == null) return;
 
-        deps.mCleanupRunnable = () -> cleanUnusedWindows(deps);
+        deps.mCleanupRunnable =
+                () -> {
+                    sProfileScopedUnusedDataDeps.remove(profile);
+                    cleanUnusedWindows(deps);
+                };
 
         PostTask.postTask(TaskTraits.UI_DEFAULT, deps.mCleanupRunnable);
     }
 
     private static void cleanUnusedWindows(ProfileScopedUnusedDataDeps deps) {
-        deps.mCleanupRunnable = null;
         TabContentManager validManager = null;
         for (TabContentManager manager : deps.mTabContentManagers) {
             if (!manager.isDestroyed()) {
@@ -239,7 +240,6 @@ public class PersistentStoreCleaner {
 
         if (validManager == null) {
             deps.mTabContentManagers.clear();
-            sProfileScopedUnusedDataDeps.remove(deps.mProfile);
             return;
         }
 
@@ -248,7 +248,10 @@ public class PersistentStoreCleaner {
         List<TabModelSelector> selectors = new ArrayList<>();
 
         TabModelSelector archivedTabModelSelector = tabWindowManager.getArchivedTabModelSelector();
-        assert archivedTabModelSelector != null;
+        if (archivedTabModelSelector == null) {
+            deps.mTabContentManagers.clear();
+            return;
+        }
         selectors.add(archivedTabModelSelector);
         windowTags.add(ARCHIVED_WINDOW_TAG);
 
@@ -285,7 +288,7 @@ public class PersistentStoreCleaner {
         }
 
         deleteAllTabDataExceptFor(validManager, tabIds);
-        deleteAllWindowsExceptFor(deps.mProfile, windowTags);
+        deleteAllWindowsExceptFor(windowTags);
 
         sProfileScopedUnusedDataDeps.remove(deps.mProfile);
     }
@@ -298,22 +301,8 @@ public class PersistentStoreCleaner {
         manager.removeAllTabThumbnailsExceptForIds(tabIdsArray);
     }
 
-    private static void deleteAllWindowsExceptFor(Profile profile, List<String> windowTags) {
-        SequencedTaskRunner sequencedTaskRunner =
-                PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING_MAY_BLOCK);
-
-        // Do not need to provide a valid window ID, since it is not used for any operation.
-        TabbedModeTabPersistencePolicy policy =
-                new TabbedModeTabPersistencePolicy(
-                        /* selectorIndex= */ TabWindowManager.INVALID_WINDOW_ID,
-                        /* mergeTabsOnStartup= */ false,
-                        /* tabMergingEnabled= */ false);
-        policy.performInitialization(sequencedTaskRunner);
-        policy.clearAllWindowsExceptFor(windowTags);
-
-        if (TabStateStorageFlagHelper.isTabStorageEnabled()) {
-            TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
-            if (service != null) service.clearAllWindowsExcept(windowTags);
-        }
+    private static void deleteAllWindowsExceptFor(List<String> windowTags) {
+        // TODO(crbug.com/479562321): Implement this.
+        windowTags.clear();
     }
 }
