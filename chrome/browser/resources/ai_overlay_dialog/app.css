@@ -15,13 +15,12 @@
 }
 
 #mock-buttons-column {
+  width: 100%;
+  max-height: 100px;
+  overflow-y: auto;
+  scrollbar-width: none;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  max-height: 100px;
-  margin-inline-end: 20px;
-  pointer-events: auto;
-  scrollbar-width: none;
 }
 
 #mock-buttons-column[hidden] {
@@ -34,16 +33,11 @@
   align-items: flex-end;
 }
 
-#persona-container {
-  /* Allow clicks on the character UI only */
-  pointer-events: auto;
-  width: 100px;
-  height: 100px;
-}
-
 video {
-  width: 100%;
-  height: 100%;
+  /* The resources are 4:3 aspect ratio but include extra space on the sides.
+   * Use a square and object-fit: cover to clip the empty space. */
+  width: 240px;
+  height: 240px;
   object-fit: cover;
 }
 
@@ -94,7 +88,6 @@ video[hidden],
   margin-bottom: 20px;
   max-width: 300px;
   text-align: right;
-  pointer-events: none;
 }
 
 #transcription[hidden] {
@@ -115,7 +108,6 @@ video[hidden],
 .inject-audio {
   margin: 0;
   cursor: pointer;
-  pointer-events: auto;
   width: 150px;
   box-sizing: border-box;
   overflow: hidden;

@@ -656,10 +656,9 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
       }
       size = gfx::Size(dialog_width, dialog_height);
     }
-    int margin = 20;
-    gfx::Point top_left =
-        non_devtools_contents_bounds.bottom_right() -
-        gfx::Vector2d(size.width() + margin, size.height() + margin);
+    int x_margin = 15;
+    gfx::Point top_left = non_devtools_contents_bounds.bottom_right() -
+                          gfx::Vector2d(size.width() + x_margin, size.height());
     gfx::Rect rect(top_left, size);
     layouts.child_layouts.emplace_back(ai_overlay_dialog_view_.get(),
                                        ai_overlay_dialog_view_->GetVisible(),
