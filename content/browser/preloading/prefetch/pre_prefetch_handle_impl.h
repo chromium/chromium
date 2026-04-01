@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PRE_PREFETCH_HANDLE_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PRE_PREFETCH_HANDLE_IMPL_H_
 
+#include "content/browser/preloading/prefetch/pre_prefetch_container.h"
 #include "content/public/browser/pre_prefetch_handle.h"
 
 namespace content {
@@ -12,8 +13,12 @@ namespace content {
 // Please see pre_prefetch_handle.h for the thread model and more details.
 class PrePrefetchHandleImpl final : public PrePrefetchHandle {
  public:
-  PrePrefetchHandleImpl();
+  explicit PrePrefetchHandleImpl(
+      std::unique_ptr<PrePrefetchContainer> pre_prefetch_container);
   ~PrePrefetchHandleImpl() override;
+
+ private:
+  std::unique_ptr<PrePrefetchContainer> pre_prefetch_container_;
 };
 
 }  // namespace content

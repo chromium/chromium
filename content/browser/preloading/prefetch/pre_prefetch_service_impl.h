@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/pre_prefetch_handle.h"
 #include "content/public/browser/pre_prefetch_service.h"
 #include "content/public/browser/prefetch_priority.h"
@@ -33,7 +34,7 @@ class PrePrefetchServiceCore;
 // WARNING: Currently it is `PrePrefetchServiceImpl` owner's responsibility to
 // ensure that the dtor on UI thread and non-main thread calls cannot happen
 // simultaneously, otherwise this will lead a data race for `core_`.
-class PrePrefetchServiceImpl : public PrePrefetchService {
+class CONTENT_EXPORT PrePrefetchServiceImpl : public PrePrefetchService {
  public:
   explicit PrePrefetchServiceImpl(BrowserContext* browser_context);
   ~PrePrefetchServiceImpl() override;
@@ -55,6 +56,11 @@ class PrePrefetchServiceImpl : public PrePrefetchService {
       bool should_append_variations_header,
       bool should_disable_block_until_head_timeout,
       bool should_bypass_http_cache) override;
+
+  // Sets the URLLoaderFactory for testing. The caller must keep the ownership
+  // of the factory during the test.
+  static void SetURLLoaderFactoryForTesting(
+      network::SharedURLLoaderFactory* url_loader_factory);
 
  private:
   scoped_refptr<base::SequencedTaskRunner> core_task_runner_;

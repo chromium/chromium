@@ -9,7 +9,9 @@
 
 namespace content {
 
-PrePrefetchHandleImpl::PrePrefetchHandleImpl() {
+PrePrefetchHandleImpl::PrePrefetchHandleImpl(
+    std::unique_ptr<PrePrefetchContainer> pre_prefetch_container)
+    : pre_prefetch_container_(std::move(pre_prefetch_container)) {
   CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
 }

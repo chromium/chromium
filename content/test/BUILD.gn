@@ -2810,6 +2810,7 @@ test("content_unittests") {
     "../browser/preloading/prefetch/contamination_delay_navigation_throttle_unittest.cc",
     "../browser/preloading/prefetch/no_vary_search_helper_unittest.cc",
     "../browser/preloading/prefetch/pre_prefetch_container_unittest.cc",
+    "../browser/preloading/prefetch/pre_prefetch_service_impl_unittest.cc",
     "../browser/preloading/prefetch/prefetch_canary_checker_unittest.cc",
     "../browser/preloading/prefetch/prefetch_container_unittest.cc",
     "../browser/preloading/prefetch/prefetch_cookie_listener_unittest.cc",
