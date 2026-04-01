@@ -4452,7 +4452,6 @@ static_library("browser") {
     }
 
     if (!is_win) {
-      deps += [ "//chrome:packed_resources" ]
       sources += [
         "certificate_viewer_stub.cc",
         "chrome_browser_main_posix.cc",
