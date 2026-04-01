@@ -455,6 +455,11 @@ BASE_FEATURE(kHandleMdmErrorsForDasherAccounts,
 BASE_FEATURE(kIdentityInAuthErrorFollowUps, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_IOS)
+// Feature flag to ignore invalid grant errors in AuthenticationService.
+BASE_FEATURE(kIgnoreInvalidGrantError, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kMakeIdentityManagerSourceOfAccounts,
              base::FEATURE_DISABLED_BY_DEFAULT);

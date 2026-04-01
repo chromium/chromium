@@ -422,6 +422,12 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kIdentityInAuthErrorFollowUps);
 #endif
 
+#if BUILDFLAG(IS_IOS)
+// Feature flag to ignore invalid grant errors in AuthenticationService.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kIgnoreInvalidGrantError);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 // Allow to switch the source of truth for accounts from AccountManagerFacade to
 // IdentityManager.

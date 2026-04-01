@@ -13295,6 +13295,21 @@
             ]
         }
     ],
+    "IgnoreInvalidGrantError": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IgnoreInvalidGrantError"
+                    ]
+                }
+            ]
+        }
+    ],
     "IgnoreIpMatching": [
         {
             "platforms": [

@@ -686,6 +686,12 @@ void AuthenticationService::OnAccessTokenRefreshFailed(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(switches::kIgnoreInvalidGrantError)) {
+    // `InvalidGrantError` is the iOS naming for the persistent auth error, it
+    // shouldn't trigger a sign-out.
+    return;
+  }
+
   if (!error.isInvalidGrantError) {
     // If the failure is not due to an invalid grant, the identity is not
     // invalid and there is nothing to do.
