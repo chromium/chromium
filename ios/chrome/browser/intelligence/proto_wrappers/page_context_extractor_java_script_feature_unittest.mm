@@ -802,6 +802,110 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_EQ(*label_for_dom_node_id, *input_dom_node_id);
 }
 
+// Test the Scroller Info extraction.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_ScrollerInfo) {
+  const std::string html =
+      "<html><body>"
+      "  <div id=\"scroller\" style=\"width: 100px; height: 100px; overflow: "
+      "auto;\">"
+      "    <div style=\"width: 200px; height: 300px;\"></div>"
+      "  </div>"
+      "  <script>"
+      "    let el = document.getElementById('scroller');"
+      "    el.scrollLeft = 50;"
+      "    el.scrollTop = 70;"
+      "  </script>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 1u);
+
+  const base::DictValue& div_node = (*children)[0].GetDict();
+  const base::DictValue* interaction_info =
+      div_node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info);
+
+  const base::DictValue* scroller_info =
+      interaction_info->FindDict("scrollerInfo");
+  ASSERT_TRUE(scroller_info);
+
+  const base::DictValue* scrolling_bounds =
+      scroller_info->FindDict("scrollingBounds");
+  ASSERT_TRUE(scrolling_bounds);
+
+  std::optional<double> width = scrolling_bounds->FindDouble("width");
+  ASSERT_TRUE(width.has_value());
+  EXPECT_EQ(static_cast<int>(width.value()), 200);
+
+  std::optional<double> height = scrolling_bounds->FindDouble("height");
+  ASSERT_TRUE(height.has_value());
+  EXPECT_EQ(static_cast<int>(height.value()), 300);
+
+  const base::DictValue* visible_area = scroller_info->FindDict("visibleArea");
+  ASSERT_TRUE(visible_area);
+
+  std::optional<double> visible_x = visible_area->FindDouble("x");
+  ASSERT_TRUE(visible_x.has_value());
+  EXPECT_EQ(static_cast<int>(visible_x.value()), 50);
+
+  std::optional<double> visible_y = visible_area->FindDouble("y");
+  ASSERT_TRUE(visible_y.has_value());
+  EXPECT_EQ(static_cast<int>(visible_y.value()), 70);
+
+  std::optional<double> visible_w = visible_area->FindDouble("width");
+  ASSERT_TRUE(visible_w.has_value());
+  EXPECT_EQ(static_cast<int>(visible_w.value()), 100);
+
+  std::optional<double> visible_h = visible_area->FindDouble("height");
+  ASSERT_TRUE(visible_h.has_value());
+  EXPECT_EQ(static_cast<int>(visible_h.value()), 100);
+
+  std::optional<double> visible_t = visible_area->FindDouble("top");
+  ASSERT_TRUE(visible_t.has_value());
+  EXPECT_EQ(static_cast<int>(visible_t.value()), 70);
+
+  std::optional<double> visible_l = visible_area->FindDouble("left");
+  ASSERT_TRUE(visible_l.has_value());
+  EXPECT_EQ(static_cast<int>(visible_l.value()), 50);
+
+  std::optional<double> visible_b = visible_area->FindDouble("bottom");
+  ASSERT_TRUE(visible_b.has_value());
+  EXPECT_EQ(static_cast<int>(visible_b.value()), 170);
+
+  std::optional<double> visible_r = visible_area->FindDouble("right");
+  ASSERT_TRUE(visible_r.has_value());
+  EXPECT_EQ(static_cast<int>(visible_r.value()), 150);
+
+  std::optional<bool> user_scrollable_horizontal =
+      scroller_info->FindBool("userScrollableHorizontal");
+  ASSERT_TRUE(user_scrollable_horizontal.has_value());
+  EXPECT_TRUE(user_scrollable_horizontal.value());
+
+  std::optional<bool> user_scrollable_vertical =
+      scroller_info->FindBool("userScrollableVertical");
+  ASSERT_TRUE(user_scrollable_vertical.has_value());
+  EXPECT_TRUE(user_scrollable_vertical.value());
+}
+
 // Verifies that ExtractPageContext payload is a string when IPC optimization
 // is enabled and a dictionary otherwise.
 TEST_P(PageContextExtractorJavaScriptFeatureTest,

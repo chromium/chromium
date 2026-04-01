@@ -241,6 +241,13 @@ const ARIA_LABEL = 'aria-label';
 const ARIA_LABEL_SEPARATOR = /\s+/;
 
 /**
+ * Returns true if page context IPC optimization is enabled.
+ */
+function isPageContextIPCOptimizationEnabled() {
+  return (window as any).gCrWebPlaceholderPageContextIPCOptimization ?? false;
+}
+
+/**
  * Maps a tag name to its corresponding PageContentAnnotatedRole.
  *
  * @param tagName The tag name to map.
@@ -605,32 +612,66 @@ function getScrollerInfo(element: HTMLElement, style: CSSStyleDeclaration):
     return undefined;
   }
 
-  // Populate bounds.
-  // Scrolling bounds = whole content size.
-  const scrollingBounds = {
-    width: element.scrollWidth,
-    height: element.scrollHeight,
-  };
+  // TODO(crbug.com/480945289): Remove this when page context IPC optimization
+  // is enabled.
+  if (isPageContextIPCOptimizationEnabled()) {
+    // Make sure to call element.clientWidth before element.scrollWidth.
+    // This will guide the layout engine to perform the shallow layout first
+    // and then the deep layout calculation.
+    const visibleArea = {
+      x: element.scrollLeft,
+      y: element.scrollTop,
+      width: element.clientWidth,
+      height: element.clientHeight,
+      top: element.scrollTop,
+      right: element.scrollLeft + element.clientWidth,
+      bottom: element.scrollTop + element.clientHeight,
+      left: element.scrollLeft,
+    };
 
-  const visibleArea = {
-    x: element.scrollLeft,
-    y: element.scrollTop,
-    width: element.clientWidth,
-    height: element.clientHeight,
-    top: element.scrollTop,
-    right: element.scrollLeft + element.clientWidth,
-    bottom: element.scrollTop + element.clientHeight,
-    left: element.scrollLeft,
-  };
+    // Populate bounds.
+    // Scrolling bounds = whole content size.
+    const scrollingBounds = {
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+    };
 
-  return {
-    scrollingBounds,
-    visibleArea,
-    userScrollableHorizontal:
-        isScrollableX && (element.scrollWidth > element.clientWidth),
-    userScrollableVertical:
-        isScrollableY && (element.scrollHeight > element.clientHeight),
-  };
+    return {
+      scrollingBounds,
+      visibleArea,
+      userScrollableHorizontal:
+          isScrollableX && (element.scrollWidth > element.clientWidth),
+      userScrollableVertical:
+          isScrollableY && (element.scrollHeight > element.clientHeight),
+    };
+  } else {
+    // Populate bounds.
+    // Scrolling bounds = whole content size.
+    const scrollingBounds = {
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+    };
+
+    const visibleArea = {
+      x: element.scrollLeft,
+      y: element.scrollTop,
+      width: element.clientWidth,
+      height: element.clientHeight,
+      top: element.scrollTop,
+      right: element.scrollLeft + element.clientWidth,
+      bottom: element.scrollTop + element.clientHeight,
+      left: element.scrollLeft,
+    };
+
+    return {
+      scrollingBounds,
+      visibleArea,
+      userScrollableHorizontal:
+          isScrollableX && (element.scrollWidth > element.clientWidth),
+      userScrollableVertical:
+          isScrollableY && (element.scrollHeight > element.clientHeight),
+    };
+  }
 }
 
 /**
