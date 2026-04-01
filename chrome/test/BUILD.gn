@@ -2676,6 +2676,7 @@ if (!is_android) {
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/picture_in_picture:browser_tests",
       "//chrome/browser/picture_in_picture:test_support_ui",
+      "//chrome/browser/plugins:browser_tests",
       "//chrome/browser/plus_addresses:browser_tests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",
@@ -4268,7 +4269,6 @@ if (!is_android) {
         "../browser/pdf/pdf_extension_js_test.cc",
         "../browser/pdf/pdf_extension_test.cc",
         "../browser/pdf/pdf_find_request_manager_browsertest.cc",
-        "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
       ]
       deps += [
         "../browser/pdf",
@@ -4575,13 +4575,6 @@ if (!is_android) {
 
     if (is_win || is_chromeos || is_mac) {
       deps += [ "//chrome/browser/webshare:browser_tests" ]
-    }
-
-    if (enable_plugins) {
-      sources += [
-        "../browser/plugins/plugin_info_host_impl_browsertest.cc",
-        "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
-      ]
     }
 
     if (enable_dice_support) {
@@ -6695,7 +6688,6 @@ test("unit_tests") {
     "../browser/performance_manager/policies/working_set_trimmer_policy_unittest.cc",
     "../browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper_unittest.cc",
     "../browser/persisted_state_db/session_proto_db_factory_unittest.cc",
-    "../browser/plugins/pdf_iframe_navigation_throttle_unittest.cc",
     "../browser/policy/chrome_browser_policy_connector_unittest.cc",
     "../browser/policy/cloud/user_policy_signin_service_unittest.cc",
     "../browser/policy/cloud/user_policy_signin_service_util_unittest.cc",
@@ -7106,6 +7098,7 @@ test("unit_tests") {
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:unit_tests",
+    "//chrome/browser/plugins:unit_tests",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/policy:unit_tests",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
@@ -10452,14 +10445,6 @@ test("unit_tests") {
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/views/save_to_drive:unit_tests" ]
     }
-  }
-
-  if (enable_plugins) {
-    sources += [
-      "../browser/plugins/chrome_plugin_service_filter_unittest.cc",
-      "../browser/plugins/plugin_info_host_impl_unittest.cc",
-      "../browser/plugins/plugin_prefs_unittest.cc",
-    ]
   }
 
   if (enable_printing) {

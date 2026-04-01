@@ -1,0 +1,203 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//content/public/common/features.gni")
+import("//pdf/features.gni")
+
+source_set("plugins") {
+  sources = [ "pdf_iframe_navigation_throttle.h" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+
+  deps = [
+    "//chrome/browser:chrome_content_browser_client_parts",
+    "//chrome/common",
+  ]
+
+  if (enable_plugins) {
+    sources += [
+      "chrome_content_browser_client_plugins_part.h",
+      "chrome_plugin_service_filter.h",
+      "plugin_info_host_impl.h",
+      "plugin_metadata.h",
+      "plugin_observer.h",
+      "plugin_prefs.h",
+      "plugin_prefs_factory.h",
+      "plugin_response_interceptor_url_loader_throttle.h",
+      "plugin_utils.h",
+      "reload_plugin_infobar_delegate.h",
+    ]
+
+    public_deps += [
+      "//components/content_settings/core/common",
+      "//components/infobars/core",
+      "//components/keyed_service/core",
+      "//components/prefs",
+      "//extensions/buildflags",
+      "//media:media_buildflags",
+      "//services/network/public/mojom",
+      "//third_party/blink/public/common",
+    ]
+  }
+
+  if (enable_plugins || is_android) {
+    sources += [ "plugin_observer_common.h" ]
+  }
+
+  if (is_android) {
+    sources += [ "plugin_observer_android.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [ "pdf_iframe_navigation_throttle.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":plugins",
+    "//components/pdf/common:constants",
+    "//components/pdf/common:util",
+    "//net",
+  ]
+
+  if (enable_plugins) {
+    sources += [
+      "chrome_content_browser_client_plugins_part.cc",
+      "chrome_plugin_service_filter.cc",
+      "plugin_info_host_impl.cc",
+      "plugin_metadata.cc",
+      "plugin_observer.cc",
+      "plugin_prefs.cc",
+      "plugin_prefs_factory.cc",
+      "plugin_response_interceptor_url_loader_throttle.cc",
+      "plugin_utils.cc",
+      "reload_plugin_infobar_delegate.cc",
+    ]
+
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/extensions",
+      "//chrome/browser/infobars",
+      "//components/component_updater",
+      "//components/content_settings/core/browser",
+      "//components/download/public/common:public",
+      "//components/guest_view/browser",
+      "//components/keyed_service/content",
+      "//components/metrics_services_manager",
+      "//components/pref_registry",
+      "//extensions/browser",
+      "//extensions/common",
+      "//mojo/public/cpp/bindings",
+      "//pdf:features",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//services/service_manager/public/cpp",
+      "//ui/base",
+      "//url",
+    ]
+  }
+
+  if (enable_plugins || is_android) {
+    sources += [ "plugin_observer_common.cc" ]
+  }
+
+  if (is_android) {
+    sources += [ "plugin_observer_android.cc" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "plugin_test_utils.cc",
+    "plugin_test_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "pdf_iframe_navigation_throttle_unittest.cc" ]
+  deps = [
+    ":plugins",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/test:test_support",
+    "//components/pdf/common:constants",
+    "//components/pdf/common:util",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (enable_plugins) {
+    sources += [
+      "chrome_plugin_service_filter_unittest.cc",
+      "plugin_info_host_impl_unittest.cc",
+      "plugin_prefs_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//components/content_settings/core/browser",
+      "//components/sync_preferences:test_support",
+      "//content/public/browser",
+      "//net",
+      "//testing/gmock",
+      "//url",
+    ]
+  }
+}
+
+if (!is_android && (enable_pdf || enable_plugins)) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = []
+    deps = [
+      ":plugins",
+      "//base",
+      "//chrome/browser",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+
+    if (enable_pdf) {
+      sources += [ "pdf_iframe_navigation_throttle_browsertest.cc" ]
+      deps += [
+        "//chrome/browser/pdf:pdf_extension_test_utils",
+        "//components/pdf/common:constants",
+        "//pdf:buildflags",
+        "//services/network/public/cpp",
+      ]
+    }
+
+    if (enable_plugins) {
+      sources += [
+        "plugin_info_host_impl_browsertest.cc",
+        "plugin_response_interceptor_url_loader_throttle_browsertest.cc",
+      ]
+      deps += [
+        "//chrome/browser/extensions:test_support",
+        "//chrome/common",
+        "//net:test_support",
+        "//url",
+      ]
+    }
+  }
+}

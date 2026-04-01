@@ -781,8 +781,6 @@ static_library("browser") {
     "performance_manager/user_tuning/user_tuning_utils.cc",
     "platform_util_internal.cc",
     "platform_util_internal.h",
-    "plugins/pdf_iframe_navigation_throttle.cc",
-    "plugins/pdf_iframe_navigation_throttle.h",
     "policy/browsing_history_policy_handler.cc",
     "policy/browsing_history_policy_handler.h",
     "policy/chrome_browser_policy_connector.cc",
@@ -1237,6 +1235,7 @@ static_library("browser") {
     "//chrome/browser/optimization_guide:impl",
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/permissions",
+    "//chrome/browser/plugins:impl",
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/prefs:impl",
     "//chrome/browser/prefs:util_impl",
@@ -1644,6 +1643,7 @@ static_library("browser") {
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:impl",
+    "//chrome/browser/plugins:impl",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/plus_addresses:impl",
     "//chrome/browser/policy:path_parser",
@@ -2959,8 +2959,6 @@ static_library("browser") {
       "performance_manager/policies/process_rank_policy_android.cc",
       "performance_manager/policies/process_rank_policy_android.h",
       "platform_util_android.cc",
-      "plugins/plugin_observer_android.cc",
-      "plugins/plugin_observer_android.h",
       "policy/android/cloud_management_shared_preferences.cc",
       "policy/android/cloud_management_shared_preferences.h",
       "policy/browser_dm_token_storage_android.cc",
@@ -7570,42 +7568,6 @@ static_library("browser") {
     ]
   }
 
-  if (enable_plugins) {
-    sources += [
-      "plugins/chrome_content_browser_client_plugins_part.cc",
-      "plugins/chrome_content_browser_client_plugins_part.h",
-      "plugins/chrome_plugin_service_filter.cc",
-      "plugins/chrome_plugin_service_filter.h",
-      "plugins/plugin_info_host_impl.cc",
-      "plugins/plugin_info_host_impl.h",
-      "plugins/plugin_metadata.cc",
-      "plugins/plugin_metadata.h",
-      "plugins/plugin_observer.cc",
-      "plugins/plugin_observer.h",
-      "plugins/plugin_prefs.cc",
-      "plugins/plugin_prefs.h",
-      "plugins/plugin_prefs_factory.cc",
-      "plugins/plugin_prefs_factory.h",
-      "plugins/plugin_response_interceptor_url_loader_throttle.cc",
-      "plugins/plugin_response_interceptor_url_loader_throttle.h",
-      "plugins/plugin_utils.cc",
-      "plugins/plugin_utils.h",
-      "plugins/reload_plugin_infobar_delegate.cc",
-      "plugins/reload_plugin_infobar_delegate.h",
-    ]
-    deps += [
-      "//media:media_buildflags",
-      "//services/network/public/mojom",
-    ]
-  }
-
-  if (enable_plugins || is_android) {
-    sources += [
-      "plugins/plugin_observer_common.cc",
-      "plugins/plugin_observer_common.h",
-    ]
-  }
-
   if (enable_request_header_integrity) {
     deps += [ "//chrome/common/request_header_integrity" ]
   }
@@ -7875,6 +7837,7 @@ group("browser_public_dependencies") {
     "//chrome/app/vector_icons",
     "//chrome/browser/browsing_topics",
     "//chrome/browser/optimization_guide:optimization_guide_on_device_model_installer",
+    "//chrome/browser/plugins",
     "//chrome/browser/ui:ui_public_dependencies",
     "//chrome/common",
     "//chrome/common:buildflags",
@@ -8436,8 +8399,6 @@ static_library("test_support") {
     "notifications/metrics/mock_notification_metrics_logger.h",
     "notifications/stub_notification_display_service.cc",
     "notifications/stub_notification_display_service.h",
-    "plugins/plugin_test_utils.cc",
-    "plugins/plugin_test_utils.h",
     "policy/messaging_layer/upload/fake_upload_client.cc",
     "policy/messaging_layer/upload/fake_upload_client.h",
     "resource_coordinator/tab_load_tracker_test_support.cc",
@@ -8466,6 +8427,7 @@ static_library("test_support") {
     "//chrome/browser/interstitials:test_support",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/notifications",
+    "//chrome/browser/plugins:test_support",
     "//chrome/browser/predictors:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator",
