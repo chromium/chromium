@@ -23,189 +23,208 @@ found in the LICENSE file.
         android:background="@drawable/default_popup_menu_bg"
         android:elevation="@dimen/app_menu_elevation">
 
-        <include
-            android:id="@+id/extensions_menu_header"
-            layout="@layout/extensions_menu_header"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/extensions_menu_main_page"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
-            android:id="@+id/extensions_menu_site_settings_toggle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp" />
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <View
-            android:id="@+id/extensions_menu_header_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_site_settings_toggle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:background="?android:attr/listDivider"
-            android:layout_marginTop="8dp" />
-
-        <!-- State Container: Wraps both Active and Zero states to mutually exclude them -->
-        <FrameLayout
-            android:id="@+id/extensions_menu_state_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header_divider"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer_divider"
-            app:layout_constrainedHeight="true"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintVertical_bias="0">
-
-            <!-- Active State: Contains Reload, Access Requests, and Menu Items -->
-            <LinearLayout
-                android:id="@+id/extensions_menu_active_state"
+            <include
+                android:id="@+id/extensions_menu_header"
+                layout="@layout/extensions_menu_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
+            <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
+                android:id="@+id/extensions_menu_site_settings_toggle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp" />
+
+            <View
+                android:id="@+id/extensions_menu_header_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                app:layout_constraintTop_toBottomOf="@+id/extensions_menu_site_settings_toggle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="?android:attr/listDivider"
+                android:layout_marginTop="8dp" />
+
+            <!-- State Container: Wraps both Active and Zero states to mutually exclude them -->
+            <FrameLayout
+                android:id="@+id/extensions_menu_state_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header_divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer_divider"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintVertical_bias="0">
+
+                <!-- Active State: Contains Reload, Access Requests, and Menu Items -->
                 <LinearLayout
-                    android:id="@+id/extensions_menu_reload_section"
+                    android:id="@+id/extensions_menu_active_state"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingStart="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingEnd="16dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/extensions_menu_reload_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/extensions_menu_message_section_reload_container_description_text"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-
-                    <org.chromium.ui.widget.ButtonCompat
-                        android:id="@+id/extensions_menu_reload_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/extensions_menu_message_section_reload_container_button_text"
-                        android:contentDescription="@string/extensions_menu_message_section_reload_container_button_tooltip" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/extensions_request_access_section"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/extensions_request_access_section_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="24dp"
-                        android:paddingEnd="24dp"
-                        android:paddingTop="16dp"
-                        android:paddingBottom="8dp"
-                        android:text="@string/extensions_menu_requests_access_section_title"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/extensions_request_access_list"
+                        android:id="@+id/extensions_menu_reload_section"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingTop="16dp"
+                        android:paddingEnd="16dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/extensions_menu_reload_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/extensions_menu_message_section_reload_container_description_text"
+                            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+                        <org.chromium.ui.widget.ButtonCompat
+                            android:id="@+id/extensions_menu_reload_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_gravity="center_horizontal"
+                            android:text="@string/extensions_menu_message_section_reload_container_button_text"
+                            android:contentDescription="@string/extensions_menu_message_section_reload_container_button_tooltip" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/extensions_request_access_section"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/extensions_request_access_section_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="24dp"
+                            android:paddingEnd="24dp"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="8dp"
+                            android:text="@string/extensions_menu_requests_access_section_title"
+                            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+                        <LinearLayout
+                            android:id="@+id/extensions_request_access_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/extensions_menu_items"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minWidth="320dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:layout_marginTop="8dp" />
                 </LinearLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/extensions_menu_items"
+                <!-- Zero State: Mutually exclusive with the active state -->
+                <LinearLayout
+                    android:id="@+id/extensions_menu_zero_state"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minWidth="320dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:layout_marginTop="8dp"
-                    />
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:visibility="gone">
 
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="200dp"
+                        android:layout_height="94dp"
+                        app:srcCompat="@drawable/extensions_zero_state"
+                        android:contentDescription="@null" />
 
-            <!-- Zero State: Mutually exclusive with the active state -->
-            <LinearLayout
-                android:id="@+id/extensions_menu_zero_state"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/extensions_menu_zero_state_header"
+                        android:textAppearance="@style/TextAppearance.Headline2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="@string/extensions_menu_zero_state_desc"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+                    <org.chromium.ui.widget.ButtonCompat
+                        android:id="@+id/btn_open_store"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="24dp"
+                        android:text="@string/open_web_store_button_text"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        app:cornerRadius="20dp" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <View
+                android:id="@+id/extensions_menu_footer_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                app:layout_constraintTop_toBottomOf="@+id/extensions_menu_state_container"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer"
+                android:background="?android:attr/listDivider"
+                android:layout_marginTop="8dp" />
+
+            <include
+                android:id="@+id/extensions_menu_footer"
+                layout="@layout/extensions_menu_footer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minWidth="320dp"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="24dp"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="94dp"
-                    app:srcCompat="@drawable/extensions_zero_state"
-                    android:contentDescription="@null" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/extensions_menu_zero_state_header"
-                    android:textAppearance="@style/TextAppearance.Headline2" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center"
-                    android:text="@string/extensions_menu_zero_state_desc"
-                    android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-
-                <org.chromium.ui.widget.ButtonCompat
-                    android:id="@+id/btn_open_store"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:text="@string/open_web_store_button_text"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    app:cornerRadius="20dp" />
-            </LinearLayout>
-        </FrameLayout>
-
-        <View
-            android:id="@+id/extensions_menu_footer_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_state_container"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer"
-            android:background="?android:attr/listDivider"
-            android:layout_marginTop="8dp" />
+                app:layout_constraintTop_toBottomOf="@+id/extensions_menu_footer_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp"
+                android:paddingBottom="8dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
-            android:id="@+id/extensions_menu_footer"
-            layout="@layout/extensions_menu_footer"
+            android:id="@+id/extensions_menu_site_permissions_page"
+            layout="@layout/extensions_menu_site_permissions_page"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/extensions_menu_footer_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp"
-            android:paddingBottom="8dp"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

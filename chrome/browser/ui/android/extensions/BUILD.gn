@@ -213,6 +213,7 @@ android_resources("java_resources") {
     "java/res/layout/extensions_menu_footer.xml",
     "java/res/layout/extensions_menu_header.xml",
     "java/res/layout/extensions_menu_item.xml",
+    "java/res/layout/extensions_menu_site_permissions_page.xml",
     "java/res/layout/extensions_request_access_item.xml",
     "java/res/layout/extensions_toolbar_container.xml",
     "java/res/values-night/colors.xml",
@@ -228,5 +229,6 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/theme:java_resources",
     "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/styles/android:java_resources",
+    "//ui/android:ui_java_resources",
   ]
 }

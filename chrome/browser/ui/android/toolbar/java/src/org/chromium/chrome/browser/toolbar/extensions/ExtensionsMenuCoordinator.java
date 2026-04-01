@@ -59,7 +59,9 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
     private final View mContentView;
     private final Profile mProfile;
     private final PropertyModel mPropertyModel;
+    private final PropertyModel mSitePermissionsPropertyModel;
     private final PropertyModelChangeProcessor mChangeProcessor;
+    private final PropertyModelChangeProcessor mSitePermissionsChangeProcessor;
     private final ModelList mExtensionModels;
     private final ChromeAndroidTask mTask;
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
@@ -74,7 +76,8 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
      * @param context The context for this component.
      * @param extensionsMenuButton The puzzle icon in the toolbar.
      * @param themeColorProvider The provider for theme colors.
-     * @param taskSupplier Supplies the {@link ChromeAndroidTask}.
+     * @param task Supplies the {@link ChromeAndroidTask}.
+     * @param profile The current profile.
      * @param currentTabSupplier Supplies the current {@link Tab}.
      * @param tabCreator {@link TabCreator} to handle a new tab creation.
      * @param extensionsToolbarBridge {@link ExtensionsToolbarBridge} to use.
@@ -158,12 +161,23 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         mThemeColorProvider.addTintObserver(mTintObserver);
         mExtensionsToolbarBridge.addObserver(this);
 
+        // Create the main page property model and bind it to its view.
         mPropertyModel = model;
         setupMenuPropertyModel();
-
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mPropertyModel, mContentView, ExtensionsMenuViewBinder::bind);
+
+        // Create the site permissions page property model and bind it to its view.
+        mSitePermissionsPropertyModel =
+                new PropertyModel.Builder(SitePermissionsPageProperties.ALL_KEYS).build();
+        View sitePermissionsView =
+                mContentView.findViewById(R.id.extensions_menu_site_permissions_page);
+        mSitePermissionsChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mSitePermissionsPropertyModel,
+                        sitePermissionsView,
+                        SitePermissionsPageViewBinder::bind);
 
         mExtensionModels = new ModelList();
         setUpExtensionsRecyclerView(mContentView, mContext, mExtensionModels);
@@ -184,6 +198,10 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         // Clear old data before repopulating.
         mExtensionModels.clear();
 
+        // Ensure we start on the main page.
+        mPropertyModel.set(
+                ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
+
         // Instantiate the mediator, which will initialize the JNI bridge to the native code.
         mMediator =
                 new ExtensionsMenuMediator(
@@ -193,6 +211,7 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
                         mCurrentTabSupplier,
                         mExtensionModels,
                         mPropertyModel,
+                        mSitePermissionsPropertyModel,
                         /* onReady= */ () -> {
                             mExtensionsMenuButton.showMenu();
                         });
@@ -372,6 +391,7 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         mExtensionsMenuButton.setOnClickListener(null);
         mThemeColorProvider.removeTintObserver(mTintObserver);
         mChangeProcessor.destroy();
+        mSitePermissionsChangeProcessor.destroy();
     }
 
     @VisibleForTesting

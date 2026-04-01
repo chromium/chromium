@@ -35,7 +35,8 @@ public class ExtensionsMenuViewBinder {
         // resizing, preventing the menu from abruptly "jumping" to its new height.
         if (key == ExtensionsMenuProperties.IS_ZERO_STATE
                 || key == ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE
-                || key == ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE) {
+                || key == ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE
+                || key == ExtensionsMenuProperties.CURRENT_PAGE) {
             TransitionManager.beginDelayedTransition((ViewGroup) view);
         }
 
@@ -70,6 +71,21 @@ public class ExtensionsMenuViewBinder {
             } else {
                 activeStateView.setVisibility(View.VISIBLE);
                 zeroStateView.setVisibility(View.GONE);
+            }
+        } else if (key == ExtensionsMenuProperties.CURRENT_PAGE) {
+            // Toggles visibility between the main page and the extension-specific site permissions
+            // page.
+            int currentPage = model.get(ExtensionsMenuProperties.CURRENT_PAGE);
+            View mainPage = view.findViewById(R.id.extensions_menu_main_page);
+            View sitePermissionsPage =
+                    view.findViewById(R.id.extensions_menu_site_permissions_page);
+
+            if (currentPage == ExtensionsMenuProperties.Page.MAIN) {
+                mainPage.setVisibility(View.VISIBLE);
+                sitePermissionsPage.setVisibility(View.GONE);
+            } else if (currentPage == ExtensionsMenuProperties.Page.SITE_PERMISSIONS) {
+                mainPage.setVisibility(View.GONE);
+                sitePermissionsPage.setVisibility(View.VISIBLE);
             }
         } else if (key == ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER) {
             view.findViewById(R.id.extensions_menu_manage_extensions_button)

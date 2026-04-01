@@ -44,6 +44,9 @@ public class ExtensionsMenuItemProperties {
     public static final WritableObjectPropertyKey<String> SITE_ACCESS_TOGGLE_TOOLTIP =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<View.OnClickListener>
+            SITE_PERMISSIONS_BUTTON_ON_CLICK = new WritableObjectPropertyKey<>();
+
     public static final WritableIntPropertyKey SITE_PERMISSIONS_BUTTON_STATUS =
             new WritableIntPropertyKey();
 
@@ -65,6 +68,7 @@ public class ExtensionsMenuItemProperties {
                 SITE_ACCESS_TOGGLE_STATUS,
                 SITE_ACCESS_TOGGLE_TOOLTIP,
                 SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME,
+                SITE_PERMISSIONS_BUTTON_ON_CLICK,
                 SITE_PERMISSIONS_BUTTON_STATUS,
                 SITE_PERMISSIONS_BUTTON_TEXT
             };

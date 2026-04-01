@@ -39,6 +39,8 @@ android_library("java") {
     "ExtensionsToolbarCoordinatorImpl.java",
     "ExtensionsToolbarDragTouchHandler.java",
     "ExtensionsToolbarProperties.java",
+    "SitePermissionsPageProperties.java",
+    "SitePermissionsPageViewBinder.java",
   ]
   deps = [
     "//base:base_java",

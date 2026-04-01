@@ -93,6 +93,7 @@ public class ExtensionsMenuMediatorTest {
     @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
     @Mock private MenuModelBridge mActionContextMenuModelBridge;
     @Mock private PropertyModel mMenuPropertyModel;
+    @Mock private PropertyModel mSitePermissionsPropertyModel;
     @Mock private Runnable mOnReadyRunnable;
 
     @Captor private ArgumentCaptor<ExtensionsMenuBridge> mBridgeCaptor;
@@ -148,6 +149,7 @@ public class ExtensionsMenuMediatorTest {
                         mCurrentTabSupplier,
                         mActionModels,
                         mMenuPropertyModel,
+                        mSitePermissionsPropertyModel,
                         mOnReadyRunnable);
 
         // Capture the bridge instance created inside the constructor
@@ -224,6 +226,7 @@ public class ExtensionsMenuMediatorTest {
                         mCurrentTabSupplier,
                         mActionModels,
                         mMenuPropertyModel,
+                        mSitePermissionsPropertyModel,
                         mOnReadyRunnable);
 
         // Verify it should have populated immediately without needing a callback.
@@ -930,6 +933,59 @@ public class ExtensionsMenuMediatorTest {
         verify(mMenuPropertyModel)
                 .set(eq(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS), listCaptor.capture());
         assertTrue(listCaptor.getValue().isEmpty());
+    }
+
+    /**
+     * Tests that clicking on an extension's site permissions button opens the site permissions page
+     * for such extension.
+     */
+    @Test
+    public void testSitePermissionsButton_ClickNavigates() {
+        // Initialize an action with enabled site permissions button.
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        ExtensionsMenuTypes.ControlState sitePermissionsButtonState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "Ask on every visit",
+                        /* accessibleName= */ "Ask on every visit. Select to change site"
+                                + " permissions",
+                        /* tooltipText= */ "Change site permissions",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        entries.add(
+                ExtensionTestUtils.createMenuEntry(
+                        "id_a",
+                        "Extension A",
+                        ICON_RED,
+                        /* isPinned= */ false,
+                        toggleState,
+                        sitePermissionsButtonState));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Open extensions menu.
+        mBridgeCaptor.getValue().onReady();
+
+        // Trigger the click listener for the site permissions button.
+        PropertyModel itemModel = mActionModels.get(0).model;
+        View.OnClickListener listener =
+                itemModel.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ON_CLICK);
+        listener.onClick(null);
+
+        // Assert that the menu model and site permissions model are updated correctly.
+        verify(mMenuPropertyModel)
+                .set(
+                        ExtensionsMenuProperties.CURRENT_PAGE,
+                        ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+        verify(mSitePermissionsPropertyModel)
+                .set(SitePermissionsPageProperties.EXTENSION_ID, "id_a");
     }
 
     /** Helper to assert that the item at the given index has the correct information. */

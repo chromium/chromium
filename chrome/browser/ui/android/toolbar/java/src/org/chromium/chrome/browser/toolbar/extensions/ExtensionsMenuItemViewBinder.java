@@ -71,6 +71,12 @@ public class ExtensionsMenuItemViewBinder {
                             model.get(
                                     ExtensionsMenuItemProperties
                                             .SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME));
+        } else if (key == ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ON_CLICK) {
+            // Set the listener to handle navigation to the site permissions page.
+            getMenuItemSitePermissionsButton(view)
+                    .setOnClickListener(
+                            model.get(
+                                    ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ON_CLICK));
         } else if (key == ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS) {
             @Status
             int status = model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS);
