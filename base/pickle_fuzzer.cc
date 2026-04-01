@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/notreached.h"
 
 namespace {
 constexpr int kIterations = 16;
@@ -37,7 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   for (int i = 0; i < kIterations; i++) {
     uint8_t read_type =
         data_provider.ConsumeIntegral<uint8_t>() % kReadDataTypes;
-    bool ok = false;
+    bool ok;
     switch (read_type) {
       case 0: {
         bool result = false;
@@ -113,7 +114,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       case 14: {
         int read_length =
             data_provider.ConsumeIntegralInRange(0, kMaxReadLength);
-        std::ignore = iter.ReadBytes(static_cast<size_t>(read_length));
+        ok = iter.ReadBytes(static_cast<size_t>(read_length)).has_value();
         break;
       }
       case 15: {
@@ -126,6 +127,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
             data_provider.ConsumeIntegralInRange(0, kMaxSkipBytes)));
         break;
       }
+      default:
+        NOTREACHED();
     }
     // Any failure should cause the iterator to be poisoned
     // (https://crbug.com/479458085).
