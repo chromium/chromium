@@ -318,7 +318,7 @@ void MediaCodecVideoDecoder::DestroyAsync(
   // WARNING: This will lose the callback we've given to MediaCodecBridge for
   // asynchronous notifications; so we must not leave this function with any
   // work necessary from PumpCodec().
-  self->weak_factory_.InvalidateWeakPtrs();
+  self->weak_factory_.InvalidateWeakPtrsAndDoom();
 
   if (self->media_crypto_context_) {
     // Cancel previously registered callback (if any).
@@ -332,7 +332,7 @@ void MediaCodecVideoDecoder::DestroyAsync(
     std::move(self->reset_cb_).Run();
 
   // Cancel callbacks we no longer want.
-  self->codec_allocator_weak_factory_.InvalidateWeakPtrs();
+  self->codec_allocator_weak_factory_.InvalidateWeakPtrsAndDoom();
   self->CancelPendingDecodes(DecoderStatus::Codes::kAborted);
   self->StartDrainingCodec(DrainType::kForDestroy);
 
