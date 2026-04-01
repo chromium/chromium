@@ -5603,6 +5603,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "inline-script-cache",
+    "owners": [
+      "tnak@chromium.org",
+      "chrome-loading@google.com"
+    ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "input-on-viz",
     "owners": [ "woa-performance-team@google.com", "amanvr@google.com", "jonross@chromium.org", "kartarsingh@google.com", "nuskos@chromium.org" ],
     "expiry_milestone": 150

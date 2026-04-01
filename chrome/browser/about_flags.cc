@@ -13018,6 +13018,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUsePersistentCacheForCodeCacheDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kUsePersistentCacheForCodeCache)},
 
+    {"inline-script-cache", flag_descriptions::kInlineScriptCacheName,
+     flag_descriptions::kInlineScriptCacheDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kInlineScriptCache)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
