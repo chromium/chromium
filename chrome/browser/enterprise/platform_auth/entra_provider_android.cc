@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/platform_auth/entra_provider_android.h"
 
+#include "base/android/callback_android.h"
+#include "base/android/jni_string.h"
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -14,6 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/android/chrome_jni_headers/PlatformAuthEntraTokensReader_jni.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -21,6 +24,9 @@
 namespace enterprise_auth {
 
 namespace {
+
+using OnJavaReadTokensCallback = EntraProviderAndroid::OnJavaReadTokensCallback;
+using TokenReadResult = EntraProviderAndroid::TokenReadResult;
 
 static constexpr auto kSupportedOrigins =
     base::MakeFixedFlatSet<std::string_view>(
@@ -32,18 +38,17 @@ static constexpr char kHeaderNamePrefix[] = "x-ms-";
 
 static constexpr char kLogTag[] = "[Android Entra SSO]";
 
-std::string TokenReadResultToString(
-    EntraProviderAndroid::TokenReadResult result_code) {
+std::string TokenReadResultToString(TokenReadResult result_code) {
   switch (result_code) {
-    case EntraProviderAndroid::TokenReadResult::kOk:
+    case TokenReadResult::kOk:
       return "kOk";
-    case EntraProviderAndroid::TokenReadResult::kUnexpectedError:
+    case TokenReadResult::kUnexpectedError:
       return "kUnexpectedError";
-    case EntraProviderAndroid::TokenReadResult::kNoBrokerRegistered:
+    case TokenReadResult::kNoBrokerRegistered:
       return "kNoBrokerRegistered";
-    case EntraProviderAndroid::TokenReadResult::kSignatureVerificationFailed:
+    case TokenReadResult::kSignatureVerificationFailed:
       return "kSignatureVerificationFailed";
-    case EntraProviderAndroid::TokenReadResult::kInvalidBundleFormat:
+    case TokenReadResult::kInvalidBundleFormat:
       return "kInvalidBundleFormat";
   }
 }
@@ -110,6 +115,24 @@ void ParseJsonHeaders(PlatformAuthProviderManager::GetDataCallback callback,
   std::move(callback).Run(std::move(result_headers));
 }
 
+void InvokeJavaReadTokens(const std::string& url,
+                          OnJavaReadTokensCallback callback) {
+  auto bridge_callback = base::BindOnce(
+      [](OnJavaReadTokensCallback final_callback, int result_code_int,
+         std::string result) {
+        std::move(final_callback)
+            .Run(static_cast<
+                     enterprise_auth::EntraProviderAndroid::TokenReadResult>(
+                     result_code_int),
+                 std::move(result));
+      },
+      std::move(callback));
+
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  Java_PlatformAuthEntraTokensReader_readTokens(env, url,
+                                                std::move(bridge_callback));
+}
+
 }  // namespace
 
 EntraProviderAndroid::EntraProviderAndroid() = default;
@@ -150,14 +173,14 @@ void EntraProviderAndroid::GetData(
 
   // Create a task to run on a thread pool which will synchronously read tokens
   // from the Android OS.
-  base::OnceCallback<void()> task;
+  base::OnceClosure task;
   if (mock_java_read_tokens_) {
     CHECK_IS_TEST();
     task =
         base::BindOnce(mock_java_read_tokens_, std::move(thread_safe_callback));
   } else {
-    // TODO: b/484014627 - use the real Java call for the task.
-    CHECK(false) << "not implemented";
+    task = base::BindOnce(&InvokeJavaReadTokens, std::string(url.spec()),
+                          std::move(thread_safe_callback));
   }
 
   base::ThreadPool::PostTask(

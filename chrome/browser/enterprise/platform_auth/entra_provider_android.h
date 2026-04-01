@@ -17,6 +17,9 @@ class EntraProviderAndroid : public enterprise_auth::PlatformAuthProvider {
 
   ~EntraProviderAndroid() override;
 
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  // org.chromium.chrome.browser.enterprise.platform_auth.entra_provider_android)
   enum class TokenReadResult {
     kOk = 0,
     kUnexpectedError,
@@ -25,6 +28,10 @@ class EntraProviderAndroid : public enterprise_auth::PlatformAuthProvider {
     kInvalidBundleFormat,
     kMax = kInvalidBundleFormat
   };
+
+  using OnJavaReadTokensCallback = base::OnceCallback<void(
+      enterprise_auth::EntraProviderAndroid::TokenReadResult,
+      std::string)>;
 
   inline void SetMockJavaReadTokensForTesting(
       base::RepeatingCallback<void(
@@ -49,8 +56,7 @@ class EntraProviderAndroid : public enterprise_auth::PlatformAuthProvider {
   SEQUENCE_CHECKER(sequence_checker);
   bool sso_disabled_ = false;
 
-  base::RepeatingCallback<void(
-      base::OnceCallback<void(TokenReadResult, std::string)>)>
+  base::RepeatingCallback<void(OnJavaReadTokensCallback)>
       mock_java_read_tokens_;
 
   base::WeakPtrFactory<EntraProviderAndroid> weak_ptr_factory_{this};

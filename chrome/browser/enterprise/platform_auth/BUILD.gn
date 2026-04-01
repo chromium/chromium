@@ -33,3 +33,11 @@ source_set("test_utils") {
     "//testing/gmock",
   ]
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_cpp_enum("entra_auth_enum_javagen") {
+    sources = [ "entra_provider_android.h" ]
+  }
+}

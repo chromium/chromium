@@ -68,6 +68,9 @@ class PlatformAuthProviderManager {
   void GetData(const GURL& url, GetDataCallback callback) const;
 
   const base::flat_set<url::Origin>& GetOriginsForTesting() { return origins_; }
+  base::flat_set<url::Origin>& GetMutableOriginsForTesting() {
+    return origins_;
+  }
 
  private:
   friend class ScopedSetProviderForTesting;
