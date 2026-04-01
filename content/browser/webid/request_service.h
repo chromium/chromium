@@ -680,10 +680,6 @@ class CONTENT_EXPORT RequestService
   // initiated by the IDP.
   GURL intercepted_url_;
 
-  // A clone of the NavigationUIData from the intercepted navigation, for use in
-  // the redirect load.
-  std::unique_ptr<NavigationUIData> intercepted_navigation_ui_data_;
-
   // Whether the callback for the current request has been delayed.
   bool complete_request_delayed_{false};
 
