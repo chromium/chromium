@@ -31,6 +31,9 @@ class SVGFETileElement final : public SVGFilterPrimitiveStandardAttributes {
 
  public:
   explicit SVGFETileElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFETileElement;
+  }
 
   SVGAnimatedString* in1() { return in1_.Get(); }
 

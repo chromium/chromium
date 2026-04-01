@@ -32,6 +32,9 @@ class CORE_EXPORT SVGSetElement final : public SVGAnimateElement {
 
  public:
   explicit SVGSetElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGSetElement;
+  }
 
  private:
   AnimationMode CalculateAnimationMode() override;

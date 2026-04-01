@@ -27,6 +27,9 @@ class CORE_EXPORT MathMLScriptsElement : public MathMLElement {
   MathScriptType GetScriptType() const { return script_type_; }
 
   MathMLScriptsElement(const QualifiedName& tagName, Document& document);
+  ElementType GetElementType() const override {
+    return ElementType::kMathMLScriptsElement;
+  }
 
  private:
   const MathScriptType script_type_;

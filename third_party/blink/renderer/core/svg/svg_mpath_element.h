@@ -34,6 +34,10 @@ class SVGMPathElement final : public SVGElement, public SVGURIReference {
   explicit SVGMPathElement(Document&);
   ~SVGMPathElement() override;
 
+  ElementType GetElementType() const final {
+    return ElementType::kSVGMPathElement;
+  }
+
   SVGPathElement* PathElement();
 
   void TargetPathChanged();

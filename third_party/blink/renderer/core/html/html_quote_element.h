@@ -36,8 +36,8 @@ class HTMLQuoteElement final : public HTMLElement {
 
  public:
   HTMLQuoteElement(const QualifiedName&, Document&);
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLQuoteElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLQuoteElement;
   }
   void AdjustPseudoStyleLocale(ComputedStyleBuilder& pseudo_style_builder);
 

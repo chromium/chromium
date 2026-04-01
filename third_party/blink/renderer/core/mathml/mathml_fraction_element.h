@@ -15,6 +15,9 @@ class CSSToLengthConversionData;
 class MathMLFractionElement final : public MathMLElement {
  public:
   explicit MathMLFractionElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kMathMLFractionElement;
+  }
 
   void AddMathFractionBarThicknessIfNeeded(ComputedStyleBuilder&,
                                            const CSSToLengthConversionData&);

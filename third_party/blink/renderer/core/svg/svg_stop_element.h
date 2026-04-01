@@ -34,6 +34,9 @@ class SVGStopElement final : public SVGElement {
 
  public:
   explicit SVGStopElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGStopElement;
+  }
 
   Color StopColorIncludingOpacity() const;
 

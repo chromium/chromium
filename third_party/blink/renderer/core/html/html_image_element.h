@@ -65,8 +65,8 @@ class CORE_EXPORT HTMLImageElement
   explicit HTMLImageElement(Document&, bool created_by_parser = false);
   ~HTMLImageElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLImageElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLImageElement;
   }
 
   void Trace(Visitor*) const override;

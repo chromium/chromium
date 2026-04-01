@@ -37,6 +37,9 @@ class SVGFEDiffuseLightingElement final
 
  public:
   explicit SVGFEDiffuseLightingElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEDiffuseLightingElement;
+  }
 
   void LightElementAttributeChanged(const SVGFELightElement*,
                                     const QualifiedName&);

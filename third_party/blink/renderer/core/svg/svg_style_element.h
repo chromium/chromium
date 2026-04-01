@@ -34,6 +34,10 @@ class SVGStyleElement final : public SVGElement, public StyleElement {
   SVGStyleElement(Document&, const CreateElementFlags);
   ~SVGStyleElement() override;
 
+  ElementType GetElementType() const final {
+    return ElementType::kSVGStyleElement;
+  }
+
   using StyleElement::sheet;
 
   bool disabled() const;

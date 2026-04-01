@@ -35,6 +35,9 @@ class SVGViewElement final : public SVGElement,
 
  public:
   explicit SVGViewElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGViewElement;
+  }
 
   void Trace(Visitor*) const override;
 

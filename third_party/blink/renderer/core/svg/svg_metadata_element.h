@@ -30,6 +30,9 @@ class SVGMetadataElement final : public SVGElement {
 
  public:
   explicit SVGMetadataElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGMetadataElement;
+  }
 
  private:
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override {

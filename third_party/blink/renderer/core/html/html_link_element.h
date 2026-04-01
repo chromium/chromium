@@ -62,8 +62,8 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   HTMLLinkElement(Document&, const CreateElementFlags);
   ~HTMLLinkElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLLinkElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLLinkElement;
   }
 
   KURL Href() const;

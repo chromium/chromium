@@ -43,8 +43,8 @@ class CORE_EXPORT HTMLAreaElement final : public HTMLAnchorElementBase {
   explicit HTMLAreaElement(Document&);
   ~HTMLAreaElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLAreaElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLAreaElement;
   }
 
   bool IsDefault() const { return shape_ == kDefault; }

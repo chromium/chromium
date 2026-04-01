@@ -33,6 +33,9 @@ class SVGFEMergeNodeElement final : public SVGElement {
 
  public:
   explicit SVGFEMergeNodeElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEMergeNodeElement;
+  }
 
   SVGAnimatedString* in1() { return in1_.Get(); }
 

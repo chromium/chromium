@@ -41,8 +41,8 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
                             const CreateElementFlags = CreateElementFlags());
   ~HTMLStyleElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLStyleElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLStyleElement;
   }
 
   // TODO(crbug.com/448174611): Remove this and make IsModule private once we

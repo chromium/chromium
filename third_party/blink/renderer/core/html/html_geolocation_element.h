@@ -26,8 +26,8 @@ class CORE_EXPORT HTMLGeolocationElement final
  public:
   explicit HTMLGeolocationElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLGeolocationElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLGeolocationElement;
   }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(location, kLocation)

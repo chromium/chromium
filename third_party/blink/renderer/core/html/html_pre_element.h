@@ -33,8 +33,8 @@ class HTMLPreElement final : public HTMLElement {
  public:
   HTMLPreElement(const QualifiedName&, Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLPreElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLPreElement;
   }
 
  private:

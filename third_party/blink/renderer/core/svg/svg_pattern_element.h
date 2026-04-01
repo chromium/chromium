@@ -43,6 +43,9 @@ class SVGPatternElement final : public SVGElement,
 
  public:
   explicit SVGPatternElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGPatternElement;
+  }
 
   AffineTransform LocalCoordinateSpaceTransform(CTMScope) const override;
 

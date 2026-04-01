@@ -13,8 +13,8 @@ class HTMLSearchElement : public HTMLElement {
  public:
   explicit HTMLSearchElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLSearchElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLSearchElement;
   }
 };
 

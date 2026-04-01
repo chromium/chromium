@@ -46,6 +46,10 @@ class SVGUseElement final : public SVGGraphicsElement,
   explicit SVGUseElement(Document&);
   ~SVGUseElement() override;
 
+  ElementType GetElementType() const final {
+    return ElementType::kSVGUseElement;
+  }
+
   void InvalidateShadowTree();
   void InvalidateTargetReference();
 

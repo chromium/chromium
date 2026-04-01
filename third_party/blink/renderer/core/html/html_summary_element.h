@@ -32,8 +32,8 @@ class HTMLSummaryElement final : public HTMLElement {
  public:
   explicit HTMLSummaryElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLSummaryElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLSummaryElement;
   }
 
   void Trace(Visitor*) const override;

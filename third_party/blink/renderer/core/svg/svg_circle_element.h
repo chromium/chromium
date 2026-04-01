@@ -33,6 +33,9 @@ class SVGCircleElement final : public SVGGeometryElement {
 
  public:
   explicit SVGCircleElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGCircleElement;
+  }
 
   Path AsPath() const override;
   PathBuilder AsMutablePath() const override;

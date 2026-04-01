@@ -42,6 +42,9 @@ class SVGFEConvolveMatrixElement final
 
  public:
   explicit SVGFEConvolveMatrixElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEConvolveMatrixElement;
+  }
 
   SVGAnimatedBoolean* preserveAlpha() { return preserve_alpha_.Get(); }
   SVGAnimatedNumber* divisor() { return divisor_.Get(); }

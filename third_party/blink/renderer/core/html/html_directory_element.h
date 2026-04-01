@@ -33,8 +33,8 @@ class HTMLDirectoryElement final : public HTMLElement {
  public:
   explicit HTMLDirectoryElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLDirectoryElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLDirectoryElement;
   }
 };
 

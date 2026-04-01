@@ -31,6 +31,10 @@ class SVGTitleElement final : public SVGElement {
  public:
   explicit SVGTitleElement(Document&);
 
+  ElementType GetElementType() const final {
+    return ElementType::kSVGTitleElement;
+  }
+
   void SetText(const String&);
 
  private:

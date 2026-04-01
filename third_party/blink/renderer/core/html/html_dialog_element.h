@@ -52,8 +52,8 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
  public:
   explicit HTMLDialogElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLDialogElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLDialogElement;
   }
 
   void Trace(Visitor*) const override;

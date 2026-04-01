@@ -29,6 +29,9 @@ class SVGFESpotLightElement final : public SVGFELightElement {
 
  public:
   explicit SVGFESpotLightElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFESpotLightElement;
+  }
 
  private:
   scoped_refptr<LightSource> GetLightSource(Filter*) const override;

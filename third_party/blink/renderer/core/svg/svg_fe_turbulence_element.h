@@ -47,6 +47,9 @@ class SVGFETurbulenceElement final
 
  public:
   explicit SVGFETurbulenceElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFETurbulenceElement;
+  }
 
   SVGAnimatedNumber* baseFrequencyX();
   SVGAnimatedNumber* baseFrequencyY();

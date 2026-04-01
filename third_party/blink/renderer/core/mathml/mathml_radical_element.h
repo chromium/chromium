@@ -15,6 +15,9 @@ class Document;
 class CORE_EXPORT MathMLRadicalElement : public MathMLRowElement {
  public:
   MathMLRadicalElement(const QualifiedName&, Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kMathMLRadicalElement;
+  }
 
   bool HasIndex() const;
 

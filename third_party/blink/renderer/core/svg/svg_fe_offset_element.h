@@ -33,6 +33,9 @@ class SVGFEOffsetElement final : public SVGFilterPrimitiveStandardAttributes {
 
  public:
   explicit SVGFEOffsetElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEOffsetElement;
+  }
 
   SVGAnimatedNumber* dx() { return dx_.Get(); }
   SVGAnimatedNumber* dy() { return dy_.Get(); }

@@ -33,6 +33,9 @@ class SVGAnimateTransformElement final : public SVGAnimateElement {
 
  public:
   explicit SVGAnimateTransformElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGAnimateTransformElement;
+  }
 
  private:
   bool HasValidAnimation() const override;

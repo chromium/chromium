@@ -33,6 +33,9 @@ class SVGEllipseElement final : public SVGGeometryElement {
 
  public:
   explicit SVGEllipseElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGEllipseElement;
+  }
 
   Path AsPath() const override;
   PathBuilder AsMutablePath() const override;

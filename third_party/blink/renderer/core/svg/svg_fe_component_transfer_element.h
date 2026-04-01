@@ -32,6 +32,9 @@ class SVGFEComponentTransferElement final
 
  public:
   explicit SVGFEComponentTransferElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEComponentTransferElement;
+  }
 
   SVGAnimatedString* in1() { return in1_.Get(); }
 

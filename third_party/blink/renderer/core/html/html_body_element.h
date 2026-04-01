@@ -42,8 +42,8 @@ class CORE_EXPORT HTMLBodyElement final : public HTMLElement,
   ~HTMLBodyElement() override;
 
   // HTMLElement override
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLBodyElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLBodyElement;
   }
   bool IsHTMLBodyElement() const override { return true; }
 

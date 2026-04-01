@@ -45,8 +45,8 @@ class CORE_EXPORT HTMLAudioElement final : public HTMLMediaElement {
 
   HTMLAudioElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLAudioElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLAudioElement;
   }
 
   bool IsHTMLAudioElement() const override { return true; }

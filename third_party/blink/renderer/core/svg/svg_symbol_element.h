@@ -30,6 +30,9 @@ class SVGSymbolElement final : public SVGViewportContainerElement {
 
  public:
   explicit SVGSymbolElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGSymbolElement;
+  }
 
   void Trace(Visitor*) const override;
 

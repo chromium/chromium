@@ -38,6 +38,9 @@ class SVGFEMorphologyElement final
 
  public:
   explicit SVGFEMorphologyElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEMorphologyElement;
+  }
 
   SVGAnimatedNumber* radiusX();
   SVGAnimatedNumber* radiusY();

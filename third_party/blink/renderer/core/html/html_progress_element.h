@@ -39,8 +39,8 @@ class CORE_EXPORT HTMLProgressElement final : public HTMLElement {
   explicit HTMLProgressElement(Document&);
   ~HTMLProgressElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLProgressElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLProgressElement;
   }
 
   double value() const;

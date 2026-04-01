@@ -41,6 +41,9 @@ class SVGScriptElement final : public SVGElement,
 
  public:
   SVGScriptElement(Document&, const CreateElementFlags);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGScriptElement;
+  }
 
   ScriptLoader* Loader() const final { return loader_.Get(); }
 

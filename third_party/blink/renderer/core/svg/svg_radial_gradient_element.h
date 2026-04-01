@@ -35,6 +35,9 @@ class SVGRadialGradientElement final : public SVGGradientElement {
 
  public:
   explicit SVGRadialGradientElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGRadialGradientElement;
+  }
 
   SVGAnimatedLength* cx() const { return cx_.Get(); }
   SVGAnimatedLength* cy() const { return cy_.Get(); }

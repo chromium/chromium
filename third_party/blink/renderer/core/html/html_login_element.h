@@ -24,8 +24,8 @@ class CORE_EXPORT HTMLLoginElement : public HTMLElement {
  public:
   explicit HTMLLoginElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLLoginElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLLoginElement;
   }
 
   ScriptValue credential(ScriptState*) const;

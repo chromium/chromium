@@ -30,6 +30,9 @@ class SVGDefsElement final : public SVGGraphicsElement {
 
  public:
   explicit SVGDefsElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGDefsElement;
+  }
 
  private:
   FocusableState SupportsFocus(UpdateBehavior) const override {

@@ -9,9 +9,7 @@
 #include "{{base_element_header}}"
 #include "third_party/blink/renderer/core/{{namespace|lower}}_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-{% if namespace == "HTML" %}
-#include "third_party/blink/renderer/core/html_element_type_enum.h"
-{% endif %}
+#include "third_party/blink/renderer/core/element_type_enum.h"
 
 namespace blink {
 
@@ -22,46 +20,9 @@ class Document;
 class {{tag.interface}};
 template <>
 struct DowncastTraits<{{tag.interface}}> {
-{% if namespace == "HTML" %}
   static bool AllowFrom(const Node& node) {
-    return node.GetHTMLElementType() == HTMLElementType::k{{tag.interface}};
+    return node.GetElementType() == ElementType::k{{tag.interface}};
   }
-{% else %}
-  // AllowFrom(const {{namespace}}Element&) and AllowFrom(const Element&)
-  // have the same code, but the {{namespace}}Element ones are a little
-  // more efficient because of the
-  // {{namespace}}Element::HasTagName(const {{namespace}}QualifiedName&)
-  // override.
-  static bool AllowFrom(const {{namespace}}Element& element) {
-    {% if tag.runtimeEnabled %}
-    // If the following line doesn't compile, your feature may vary by context,
-    // in which case you'll need to write your own type helpers that can
-    // distinguish elements without relying solely on tag name.
-    if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled())
-      return false;
-    {% endif %}
-    return element.HasTagName({{cpp_namespace}}::{{tag|symbol}}Tag);
-  }
-  static bool AllowFrom(const Element& element) {
-    {% if tag.runtimeEnabled %}
-    // If the following line doesn't compile, your feature may vary by context,
-    // in which case you'll need to write your own type helpers that can
-    // distinguish elements without relying solely on tag name.
-    if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled())
-      return false;
-    {% endif %}
-    return element.HasTagName({{cpp_namespace}}::{{tag|symbol}}Tag);
-  }
-  // Force this helper to only be instantiated when used. Otherwise, the
-  // `IsA<...>` calls will always trigger a build failure since
-  // {{tag.interface}} is forward declared and not included.
-  template <typename T = {{tag.interface}}>
-  static bool AllowFrom(const Node& node) {
-    // UnsafeTo<> is safe because Is*Element(), by definition, only returns
-    // true if `node` is derived from `Element`.
-    return node.Is{{namespace}}Element() && IsA<{{tag.interface}}>(UnsafeTo<{{namespace}}Element>(node));
-  }
-{% endif %}
 };
 
 {% endfor %}
@@ -74,12 +35,12 @@ struct DowncastTraits<{{tag.interface}}> {
 // Do NOT use this function with SVG tag names and SVGElements.
 // If |tag_name| is an undefined HTML tag name HTMLUnknownElement is returned.
 //
-// Note that this will return the HTMLElementType corresponding to the
+// Note that this will return the ElementType corresponding to the
 // JavaScript interface, not the C++ class. For instance, <bdi> is implemented
-// in blink::HTMLBDIElement, yet we will return HTMLElementType::kHTMLElement
+// in blink::HTMLBDIElement, yet we will return ElementType::kHTMLElement
 // for it here, since there is no specialized JS interface for it in the standard.
-// This is unlike Node::GetHTMLElementType().
-HTMLElementType HtmlElementTypeForTag(const AtomicString& tag_name, const Document*);
+// This is unlike Node::GetElementType().
+ElementType HtmlElementTypeForTag(const AtomicString& tag_name, const Document*);
 
 bool IsKnownBuiltinTagName(const AtomicString& tag_name);
 

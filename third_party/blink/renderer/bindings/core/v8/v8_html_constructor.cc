@@ -26,7 +26,7 @@ namespace blink {
 void V8HTMLConstructor::HtmlConstructor(
     const v8::FunctionCallbackInfo<v8::Value>& info,
     const WrapperTypeInfo& wrapper_type_info,
-    const HTMLElementType element_interface_name) {
+    const ElementType element_interface_name) {
   TRACE_EVENT0("blink", "HTMLConstructor");
   DCHECK(info.IsConstructCall());
 

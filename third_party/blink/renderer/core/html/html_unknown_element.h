@@ -40,8 +40,8 @@ class HTMLUnknownElement final : public HTMLElement {
  public:
   HTMLUnknownElement(const QualifiedName&, Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLUnknownElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLUnknownElement;
   }
 
  private:

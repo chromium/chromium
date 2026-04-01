@@ -30,6 +30,9 @@ class SVGDescElement final : public SVGElement {
 
  public:
   explicit SVGDescElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGDescElement;
+  }
 
  private:
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override {

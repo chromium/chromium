@@ -16,17 +16,17 @@
 
 namespace blink {
 {% if namespace == "HTML" %}
-using HTMLTypeMap = HashMap<AtomicString, HTMLElementType>;
+using HTMLTypeMap = HashMap<AtomicString, ElementType>;
 
 HTMLTypeMap CreateHTMLTypeMap() {
   HTMLTypeMap html_type_map;
   html_type_map.ReserveCapacityForSize({{tags|count}});
   static const struct {
     const QualifiedName* name;
-    HTMLElementType type;
+    ElementType type;
   } kTags[] = {
     {% for tag in tags|sort(attribute='name') %}
-    { &html_names::{{tag|symbol}}Tag, HTMLElementType::k{{tag.js_interface}} },
+    { &html_names::{{tag|symbol}}Tag, ElementType::k{{tag.js_interface}} },
     {% endfor %}
   };
   for (const auto& tag : kTags)
@@ -39,17 +39,17 @@ static const HTMLTypeMap& GetHTMLTypeMap() {
   return html_type_map;
 }
 
-HTMLElementType HtmlElementTypeForTag(const AtomicString& tag_name, const Document* document) {
+ElementType HtmlElementTypeForTag(const AtomicString& tag_name, const Document* document) {
   const auto& html_type_map = GetHTMLTypeMap();
   auto it = html_type_map.find(tag_name);
   if (it == html_type_map.end())
-    return HTMLElementType::kHTMLUnknownElement;
+    return ElementType::kHTMLUnknownElement;
 
   {% for tag in tags|sort(attribute='name') %}
   {% if tag.runtimeEnabled %}
   if (tag_name == "{{tag.name}}") {
     if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled(document->GetExecutionContext())) {
-      return HTMLElementType::kHTMLUnknownElement;
+      return ElementType::kHTMLUnknownElement;
     }
   }
   {% endif %}

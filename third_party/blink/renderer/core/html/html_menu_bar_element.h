@@ -16,8 +16,8 @@ class CORE_EXPORT HTMLMenuBarElement final : public HTMLMenuOwnerElement {
  public:
   explicit HTMLMenuBarElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLMenuBarElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLMenuBarElement;
   }
 };
 

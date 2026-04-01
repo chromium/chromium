@@ -35,8 +35,8 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
   explicit HTMLMeterElement(Document&);
   ~HTMLMeterElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLMeterElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLMeterElement;
   }
 
   enum GaugeRegion {

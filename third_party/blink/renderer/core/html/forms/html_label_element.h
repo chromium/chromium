@@ -36,8 +36,8 @@ class CORE_EXPORT HTMLLabelElement final : public HTMLElement {
  public:
   explicit HTMLLabelElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLLabelElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLLabelElement;
   }
 
   HTMLElement* controlForBinding() const;

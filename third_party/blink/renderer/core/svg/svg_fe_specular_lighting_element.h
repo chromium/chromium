@@ -37,6 +37,9 @@ class SVGFESpecularLightingElement final
 
  public:
   explicit SVGFESpecularLightingElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFESpecularLightingElement;
+  }
 
   void LightElementAttributeChanged(const SVGFELightElement*,
                                     const QualifiedName&);

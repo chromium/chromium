@@ -59,6 +59,9 @@ class SVGTextPathElement final : public SVGTextContentElement,
 
   explicit SVGTextPathElement(Document&);
   ~SVGTextPathElement() override;
+  ElementType GetElementType() const final {
+    return ElementType::kSVGTextPathElement;
+  }
 
   SVGAnimatedLength* startOffset() const { return start_offset_.Get(); }
   SVGAnimatedEnumeration<SVGTextPathMethodType>* method() {

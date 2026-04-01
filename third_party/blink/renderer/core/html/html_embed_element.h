@@ -34,8 +34,8 @@ class CORE_EXPORT HTMLEmbedElement final : public HTMLPlugInElement {
  public:
   HTMLEmbedElement(Document&, const CreateElementFlags = CreateElementFlags());
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLEmbedElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLEmbedElement;
   }
 
   // Returns attributes that should be checked against Trusted Types

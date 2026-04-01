@@ -38,8 +38,8 @@ class CORE_EXPORT HTMLFrameElement final : public HTMLFrameElementBase {
  public:
   explicit HTMLFrameElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLFrameElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLFrameElement;
   }
 
   bool HasFrameBorder() const;

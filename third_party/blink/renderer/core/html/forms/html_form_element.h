@@ -63,8 +63,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   ~HTMLFormElement() override;
   void Trace(Visitor*) const override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLFormElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLFormElement;
   }
 
   HTMLFormControlsCollection* elements();

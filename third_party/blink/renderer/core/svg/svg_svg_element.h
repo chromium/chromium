@@ -49,6 +49,10 @@ class SVGSVGElement final : public SVGViewportContainerElement,
   explicit SVGSVGElement(Document&);
   ~SVGSVGElement() override;
 
+  ElementType GetElementType() const final {
+    return ElementType::kSVGSVGElement;
+  }
+
   std::optional<float> IntrinsicWidth() const;
   std::optional<float> IntrinsicHeight() const;
   const SVGRect& CurrentViewBox() const override;

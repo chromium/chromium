@@ -46,6 +46,10 @@ class CORE_EXPORT SVGFilterElement final : public SVGElement,
   explicit SVGFilterElement(Document&);
   ~SVGFilterElement() override;
 
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFilterElement;
+  }
+
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }
   SVGAnimatedLength* width() const { return width_.Get(); }

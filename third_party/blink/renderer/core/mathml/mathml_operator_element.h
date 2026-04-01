@@ -25,6 +25,10 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLTokenElement {
  public:
   explicit MathMLOperatorElement(Document&);
 
+  ElementType GetElementType() const final {
+    return ElementType::kMathMLOperatorElement;
+  }
+
   enum OperatorPropertyFlag {
     kStretchy = 0x1,
     kSymmetric = 0x2,

@@ -525,8 +525,8 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
     }
   }
 
-  switch (element.GetHTMLElementType()) {
-    case HTMLElementType::kHTMLImageElement: {
+  switch (element.GetElementType()) {
+    case ElementType::kHTMLImageElement: {
       auto& image = To<HTMLImageElement>(element);
       if (image.IsCollapsed() || builder.Display() == EDisplay::kContents) {
         builder.SetDisplay(EDisplay::kNone);
@@ -534,7 +534,7 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
       break;
     }
 
-    case HTMLElementType::kHTMLTableElement:
+    case ElementType::kHTMLTableElement:
       // Tables never support the -webkit-* values for text-align and will reset
       // back to the default.
       if (builder.GetTextAlign() == ETextAlign::kWebkitLeft ||
@@ -544,8 +544,8 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
       }
       break;
 
-    case HTMLElementType::kHTMLFrameElement:
-    case HTMLElementType::kHTMLFrameSetElement:
+    case ElementType::kHTMLFrameElement:
+    case ElementType::kHTMLFrameSetElement:
       // Frames and framesets never honor position:relative or
       // position:absolute. This is necessary to fix a crash where a site tries
       // to position these objects. They also never honor display nor floating.
@@ -554,7 +554,7 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
       builder.SetFloating(EFloat::kNone);
       break;
 
-    case HTMLElementType::kHTMLFencedFrameElement:
+    case ElementType::kHTMLFencedFrameElement:
       // Force the CSS style `zoom` property to 1 so that the embedder cannot
       // communicate into the fenced frame by adjusting it, but still include
       // the page zoom factor in the effective zoom, which is safe because it
@@ -563,7 +563,7 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
           element.GetDocument().GetStyleResolver().InitialZoom());
       break;
 
-    case HTMLElementType::kHTMLLegendElement:
+    case ElementType::kHTMLLegendElement:
       if (builder.Display() != EDisplay::kContents) {
         // Allow any blockified display value for legends. Note that according
         // to the spec, this shouldn't affect computed style (like we do here).
@@ -576,13 +576,13 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
       }
       break;
 
-    case HTMLElementType::kHTMLMarqueeElement:
+    case ElementType::kHTMLMarqueeElement:
       // For now, <marquee> requires an overflow clip to work properly.
       builder.SetOverflowX(EOverflow::kHidden);
       builder.SetOverflowY(EOverflow::kHidden);
       break;
 
-    case HTMLElementType::kHTMLTextAreaElement:
+    case ElementType::kHTMLTextAreaElement:
       // Textarea considers overflow visible as auto.
       builder.SetOverflowX(builder.OverflowX() == EOverflow::kVisible
                                ? EOverflow::kAuto
@@ -598,8 +598,8 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
 
       break;
 
-    case HTMLElementType::kHTMLEmbedElement:
-    case HTMLElementType::kHTMLObjectElement: {
+    case ElementType::kHTMLEmbedElement:
+    case ElementType::kHTMLObjectElement: {
       auto& html_plugin_element = To<HTMLPlugInElement>(element);
       builder.SetRequiresAcceleratedCompositingForExternalReasons(
           html_plugin_element.ShouldAccelerate());
@@ -609,22 +609,22 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
       break;
     }
 
-    case HTMLElementType::kHTMLBodyElement:
+    case ElementType::kHTMLBodyElement:
       if (element.GetDocument().FirstBodyElement() != element) {
         builder.SetIsSecondaryBodyElement();
       }
       break;
 
-    case HTMLElementType::kHTMLBRElement:
-    case HTMLElementType::kHTMLWBRElement:
-    case HTMLElementType::kHTMLMeterElement:
-    case HTMLElementType::kHTMLProgressElement:
-    case HTMLElementType::kHTMLCanvasElement:
-    case HTMLElementType::kHTMLAudioElement:
-    case HTMLElementType::kHTMLVideoElement:
-    case HTMLElementType::kHTMLInputElement:
-    case HTMLElementType::kHTMLSelectElement:
-    case HTMLElementType::kHTMLIFrameElement:
+    case ElementType::kHTMLBRElement:
+    case ElementType::kHTMLWBRElement:
+    case ElementType::kHTMLMeterElement:
+    case ElementType::kHTMLProgressElement:
+    case ElementType::kHTMLCanvasElement:
+    case ElementType::kHTMLAudioElement:
+    case ElementType::kHTMLVideoElement:
+    case ElementType::kHTMLInputElement:
+    case ElementType::kHTMLSelectElement:
+    case ElementType::kHTMLIFrameElement:
       // See https://drafts.csswg.org/css-display/#unbox-html
       if (builder.Display() == EDisplay::kContents) {
         builder.SetDisplay(EDisplay::kNone);

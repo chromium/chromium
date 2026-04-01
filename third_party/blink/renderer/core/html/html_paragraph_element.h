@@ -34,8 +34,8 @@ class CORE_EXPORT HTMLParagraphElement final : public HTMLElement {
  public:
   explicit HTMLParagraphElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLParagraphElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLParagraphElement;
   }
 
  private:

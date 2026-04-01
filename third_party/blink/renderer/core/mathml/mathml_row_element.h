@@ -16,6 +16,9 @@ class Document;
 class CORE_EXPORT MathMLRowElement : public MathMLElement {
  public:
   explicit MathMLRowElement(const QualifiedName&, Document&);
+  ElementType GetElementType() const override {
+    return ElementType::kMathMLRowElement;
+  }
 
   void ChildrenChanged(const ChildrenChange&) override;
 

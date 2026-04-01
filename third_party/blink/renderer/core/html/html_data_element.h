@@ -16,8 +16,8 @@ class CORE_EXPORT HTMLDataElement final : public HTMLElement {
  public:
   HTMLDataElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLDataElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLDataElement;
   }
 };
 

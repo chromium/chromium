@@ -34,6 +34,9 @@ class SVGFEDropShadowElement final
 
  public:
   explicit SVGFEDropShadowElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEDropShadowElement;
+  }
 
   void setStdDeviation(float std_deviation_x, float std_deviation_y);
 

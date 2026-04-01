@@ -40,8 +40,8 @@ class CORE_EXPORT HTMLTableRowElement final : public HTMLTablePartElement {
  public:
   explicit HTMLTableRowElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLTableRowElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLTableRowElement;
   }
 
   int rowIndex() const;

@@ -33,8 +33,8 @@ class HTMLUListElement final : public HTMLElement {
  public:
   explicit HTMLUListElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLUListElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLUListElement;
   }
 
  private:

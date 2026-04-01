@@ -82,8 +82,8 @@ class CORE_EXPORT HTMLSelectElement final
   explicit HTMLSelectElement(Document&);
   ~HTMLSelectElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLSelectElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLSelectElement;
   }
 
   int selectedIndex() const;

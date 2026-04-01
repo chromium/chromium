@@ -40,8 +40,8 @@ namespace blink {
 class HTMLWBRElement final : public HTMLElement {
  public:
   explicit HTMLWBRElement(Document&);
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLWBRElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLWBRElement;
   }
 
  private:

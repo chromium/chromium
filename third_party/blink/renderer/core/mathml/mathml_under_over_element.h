@@ -17,6 +17,10 @@ class Document;
 class CORE_EXPORT MathMLUnderOverElement final : public MathMLScriptsElement {
  public:
   MathMLUnderOverElement(const QualifiedName& tagName, Document& document);
+  ElementType GetElementType() const final {
+    return ElementType::kMathMLUnderOverElement;
+  }
+
   std::optional<bool> Accent() const;
   std::optional<bool> AccentUnder() const;
 

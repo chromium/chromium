@@ -12,9 +12,8 @@ namespace blink {
 
 // NOTE: uint8_t is because Clang seemingly does not want to do
 // the const vtable propagation optimization otherwise.
-enum class HTMLElementType : uint8_t {
+enum class ElementType : uint8_t {
   kIsNotElement = 0,
-  kIsNotHTMLElement,  // Used for non-HTML elements (e.g., SVG).
   {% for element in elements|sort %}k{{element}},
   {% endfor %}
 };

@@ -38,8 +38,8 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
  public:
   explicit HTMLButtonElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLButtonElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLButtonElement;
   }
 
   void setType(const AtomicString&);

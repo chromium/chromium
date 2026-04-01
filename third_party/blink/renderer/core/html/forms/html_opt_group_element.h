@@ -40,8 +40,8 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   explicit HTMLOptGroupElement(Document&);
   ~HTMLOptGroupElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLOptGroupElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLOptGroupElement;
   }
 
   bool IsDisabledFormControl() const override;

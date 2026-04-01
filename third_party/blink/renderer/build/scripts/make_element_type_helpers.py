@@ -53,7 +53,6 @@ class MakeElementTypeHelpersWriter(json5_generator.Writer):
 
         basename = self.namespace.lower() + '_element_type'
         self._outputs = {
-            (basename + '_enum.h'): self.generate_enum_header,
             (basename + '_helpers.h'): self.generate_helper_header,
             (basename + '_helpers.cc'): self.generate_helper_implementation,
         }
@@ -85,11 +84,6 @@ class MakeElementTypeHelpersWriter(json5_generator.Writer):
             tag['multipleTagNames'] = (
                 interface_counts[tag['interface']] > 1
                 or tag['interface'] == self.fallback_interface)
-
-    @template_expander.use_jinja("templates/element_type_enum.h.tmpl",
-                                 filters=filters)
-    def generate_enum_header(self):
-        return self._template_context
 
     @template_expander.use_jinja(
         "templates/element_type_helpers.h.tmpl", filters=filters)

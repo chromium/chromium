@@ -33,6 +33,10 @@ class SVGClipPathElement final : public SVGTransformableElement {
  public:
   explicit SVGClipPathElement(Document&);
 
+  ElementType GetElementType() const final {
+    return ElementType::kSVGClipPathElement;
+  }
+
   SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>* clipPathUnits() {
     return clip_path_units_.Get();
   }

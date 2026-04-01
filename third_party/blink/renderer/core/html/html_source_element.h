@@ -42,8 +42,8 @@ class HTMLSourceElement final : public HTMLElement {
   explicit HTMLSourceElement(Document&);
   ~HTMLSourceElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLSourceElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLSourceElement;
   }
 
   const AtomicString& type() const;

@@ -18,6 +18,9 @@ class Document;
 class CORE_EXPORT MathMLTokenElement : public MathMLElement {
  public:
   explicit MathMLTokenElement(const QualifiedName&, Document&);
+  ElementType GetElementType() const override {
+    return ElementType::kMathMLTokenElement;
+  }
 
   struct TokenContent {
     String characters;

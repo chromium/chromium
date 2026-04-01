@@ -45,8 +45,10 @@ namespace blink {
 // layout such elements.
 class SVGUnknownElement final : public SVGElement {
  public:
-
   SVGUnknownElement(const QualifiedName&, Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGUnknownElement;
+  }
 
  private:
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override {

@@ -44,6 +44,11 @@ class SVGFEImageElement final : public SVGFilterPrimitiveStandardAttributes,
 
   explicit SVGFEImageElement(Document&);
   ~SVGFEImageElement() override;
+
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEImageElement;
+  }
+
   SVGAnimatedPreserveAspectRatio* preserveAspectRatio() {
     return preserve_aspect_ratio_.Get();
   }

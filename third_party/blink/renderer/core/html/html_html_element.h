@@ -36,8 +36,8 @@ class CORE_EXPORT HTMLHtmlElement final : public HTMLElement {
  public:
   explicit HTMLHtmlElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLHtmlElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLHtmlElement;
   }
 
   void InsertedByParser();

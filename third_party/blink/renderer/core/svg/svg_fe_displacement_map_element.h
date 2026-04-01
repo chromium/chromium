@@ -37,6 +37,9 @@ class SVGFEDisplacementMapElement final
 
  public:
   explicit SVGFEDisplacementMapElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEDisplacementMapElement;
+  }
 
   static ChannelSelectorType StringToChannel(const String&);
 

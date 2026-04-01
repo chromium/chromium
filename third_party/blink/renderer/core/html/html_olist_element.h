@@ -35,8 +35,8 @@ class HTMLOListElement final : public HTMLElement {
  public:
   explicit HTMLOListElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLOListElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLOListElement;
   }
 
   int64_t InitialCounter() const {

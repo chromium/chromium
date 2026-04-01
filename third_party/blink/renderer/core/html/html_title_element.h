@@ -32,8 +32,8 @@ class HTMLTitleElement final : public HTMLElement {
  public:
   explicit HTMLTitleElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLTitleElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLTitleElement;
   }
 
   String text() const;

@@ -16,8 +16,8 @@ class CORE_EXPORT HTMLTimeElement final : public HTMLElement {
  public:
   HTMLTimeElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLTimeElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLTimeElement;
   }
 };
 

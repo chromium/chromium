@@ -15,6 +15,9 @@ class CSSToLengthConversionData;
 class MathMLSpaceElement final : public MathMLElement {
  public:
   explicit MathMLSpaceElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kMathMLSpaceElement;
+  }
 
   void AddMathBaselineIfNeeded(ComputedStyleBuilder&,
                                const CSSToLengthConversionData&);

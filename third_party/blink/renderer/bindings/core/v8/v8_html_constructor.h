@@ -19,7 +19,7 @@ class CORE_EXPORT V8HTMLConstructor {
  public:
   static void HtmlConstructor(const v8::FunctionCallbackInfo<v8::Value>&,
                               const WrapperTypeInfo&,
-                              const HTMLElementType);
+                              const ElementType);
 };
 
 }  // namespace blink

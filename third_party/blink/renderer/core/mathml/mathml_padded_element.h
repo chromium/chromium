@@ -17,6 +17,9 @@ class Document;
 class CORE_EXPORT MathMLPaddedElement final : public MathMLRowElement {
  public:
   explicit MathMLPaddedElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kMathMLPaddedElement;
+  }
 
   void AddMathBaselineIfNeeded(ComputedStyleBuilder&,
                                const CSSToLengthConversionData&);

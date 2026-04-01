@@ -97,7 +97,7 @@ bool CustomElement::ShouldCreateCustomizedBuiltinElement(
     const AtomicString& local_name,
     const Document& document) {
   return HtmlElementTypeForTag(local_name, &document) !=
-         HTMLElementType::kHTMLUnknownElement;
+         ElementType::kHTMLUnknownElement;
 }
 
 bool CustomElement::ShouldCreateCustomizedBuiltinElement(

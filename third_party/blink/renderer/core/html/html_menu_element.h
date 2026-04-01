@@ -33,8 +33,8 @@ class HTMLMenuElement final : public HTMLElement {
  public:
   explicit HTMLMenuElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLMenuElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLMenuElement;
   }
 };
 

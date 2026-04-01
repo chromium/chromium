@@ -32,6 +32,9 @@ class SVGForeignObjectElement final : public SVGGraphicsElement {
 
  public:
   explicit SVGForeignObjectElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGForeignObjectElement;
+  }
 
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }

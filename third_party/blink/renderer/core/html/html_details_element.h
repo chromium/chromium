@@ -36,8 +36,8 @@ class HTMLDetailsElement final : public HTMLElement {
   explicit HTMLDetailsElement(Document&);
   ~HTMLDetailsElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLDetailsElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLDetailsElement;
   }
 
   Element& MainSummary() const;

@@ -35,6 +35,9 @@ class SVGFEGaussianBlurElement final
 
  public:
   explicit SVGFEGaussianBlurElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEGaussianBlurElement;
+  }
 
   void setStdDeviation(float std_deviation_x, float std_deviation_y);
 

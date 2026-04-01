@@ -30,6 +30,9 @@ class SVGFEFloodElement final : public SVGFilterPrimitiveStandardAttributes {
 
  public:
   explicit SVGFEFloodElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEFloodElement;
+  }
 
  private:
   bool SetFilterEffectAttribute(FilterEffect*,

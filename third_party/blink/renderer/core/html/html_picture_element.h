@@ -27,8 +27,8 @@ class HTMLPictureElement final : public HTMLElement {
  public:
   explicit HTMLPictureElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLPictureElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLPictureElement;
   }
 
   void SourceChanged(ImageSourceChangeType);

@@ -33,8 +33,8 @@ class HTMLDListElement final : public HTMLElement {
  public:
   explicit HTMLDListElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLDListElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLDListElement;
   }
 };
 

@@ -35,6 +35,10 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   explicit SVGAnimateMotionElement(Document&);
   ~SVGAnimateMotionElement() override;
 
+  ElementType GetElementType() const final {
+    return ElementType::kSVGAnimateMotionElement;
+  }
+
   void ChildMPathChanged();
 
   void Trace(Visitor*) const override;

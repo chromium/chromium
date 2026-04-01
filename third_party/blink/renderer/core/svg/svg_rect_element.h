@@ -33,6 +33,9 @@ class SVGRectElement final : public SVGGeometryElement {
 
  public:
   explicit SVGRectElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGRectElement;
+  }
 
   Path AsPath() const override;
   PathBuilder AsMutablePath() const override;

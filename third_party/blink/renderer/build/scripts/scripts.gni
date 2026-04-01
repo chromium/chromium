@@ -65,10 +65,15 @@ make_element_factory_files =
       "$_scripts_dir/templates/element_factory.h.tmpl",
     ]
 
+make_element_type_enum_files =
+    make_qualified_names_files + [
+      "$_scripts_dir/make_element_type_enum.py",
+      "$_scripts_dir/templates/element_type_enum.h.tmpl",
+    ]
+
 make_element_type_helpers_files =
     make_qualified_names_files + [
       "$_scripts_dir/make_element_type_helpers.py",
-      "$_scripts_dir/templates/element_type_enum.h.tmpl",
       "$_scripts_dir/templates/element_type_helpers.cc.tmpl",
       "$_scripts_dir/templates/element_type_helpers.h.tmpl",
     ]

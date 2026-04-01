@@ -38,6 +38,9 @@ class SVGFECompositeElement final
 
  public:
   explicit SVGFECompositeElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFECompositeElement;
+  }
 
   SVGAnimatedNumber* k1() { return k1_.Get(); }
   SVGAnimatedNumber* k2() { return k2_.Get(); }

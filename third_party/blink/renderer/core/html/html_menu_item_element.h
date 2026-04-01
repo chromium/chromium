@@ -20,8 +20,8 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
  public:
   explicit HTMLMenuItemElement(Document&);
   ~HTMLMenuItemElement() override;
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLMenuItemElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLMenuItemElement;
   }
   void Trace(Visitor* visitor) const override;
 

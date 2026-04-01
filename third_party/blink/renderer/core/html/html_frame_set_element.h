@@ -44,8 +44,8 @@ class HTMLFrameSetElement final : public HTMLElement,
  public:
   explicit HTMLFrameSetElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLFrameSetElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLFrameSetElement;
   }
 
   // HTMLElement override

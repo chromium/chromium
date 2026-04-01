@@ -35,8 +35,8 @@ class CORE_EXPORT HTMLHRElement final : public HTMLElement {
  public:
   explicit HTMLHRElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLHRElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLHRElement;
   }
 
   bool CanContainRangeEndPoint() const override { return HasChildren(); }

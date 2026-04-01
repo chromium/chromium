@@ -35,8 +35,8 @@ class HTMLLIElement final : public HTMLElement {
  public:
   explicit HTMLLIElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLLIElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLLIElement;
   }
 
  private:

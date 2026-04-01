@@ -30,6 +30,9 @@ class SVGFEFuncRElement final : public SVGComponentTransferFunctionElement {
 
  public:
   explicit SVGFEFuncRElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEFuncRElement;
+  }
 };
 
 }  // namespace blink

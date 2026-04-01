@@ -33,6 +33,9 @@ class SVGLineElement final : public SVGGeometryElement {
 
  public:
   explicit SVGLineElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGLineElement;
+  }
 
   Path AsPath() const override;
   PathBuilder AsMutablePath() const override;

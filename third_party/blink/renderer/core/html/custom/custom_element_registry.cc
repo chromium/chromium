@@ -176,7 +176,7 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
       return nullptr;
     // 7.2. If element interface is undefined element, throw exception
     if (HtmlElementTypeForTag(extends, owner_->document()) ==
-        HTMLElementType::kHTMLUnknownElement) {
+        ElementType::kHTMLUnknownElement) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           StrCat({"\"", extends, "\" is an HTMLUnknownElement"}));

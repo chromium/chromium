@@ -38,8 +38,8 @@ class HTMLTableSectionElement final : public HTMLTablePartElement {
  public:
   HTMLTableSectionElement(const QualifiedName& tag_name, Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLTableSectionElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLTableSectionElement;
   }
 
   HTMLElement* insertRow(int index, ExceptionState&);

@@ -2210,7 +2210,7 @@ def make_constructor_function_def(cg_context, function_name):
         text = _format(
             "V8HTMLConstructor::HtmlConstructor("
             "${info}, *${class_name}::GetWrapperTypeInfo(), "
-            "HTMLElementType::{});",
+            "ElementType::{});",
             name_style.constant(cg_context.class_like.identifier))
         body.append(T(text))
         body.accumulate(

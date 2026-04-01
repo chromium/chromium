@@ -38,8 +38,8 @@ class CORE_EXPORT HTMLMapElement final : public HTMLElement {
   explicit HTMLMapElement(Document&);
   ~HTMLMapElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLMapElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLMapElement;
   }
 
   const AtomicString& GetName() const { return name_; }

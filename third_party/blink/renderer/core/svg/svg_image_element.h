@@ -43,6 +43,9 @@ class CORE_EXPORT SVGImageElement final
 
  public:
   explicit SVGImageElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGImageElement;
+  }
 
   void Trace(Visitor*) const override;
 

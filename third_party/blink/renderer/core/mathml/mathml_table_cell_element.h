@@ -12,6 +12,9 @@ namespace blink {
 class CORE_EXPORT MathMLTableCellElement final : public MathMLElement {
  public:
   explicit MathMLTableCellElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kMathMLTableCellElement;
+  }
 
   unsigned colSpan() const;
   unsigned rowSpan() const;

@@ -49,8 +49,8 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   explicit HTMLTemplateElement(Document&);
   ~HTMLTemplateElement() override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLTemplateElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLTemplateElement;
   }
 
   bool HasNonInBodyInsertionMode() const override { return true; }

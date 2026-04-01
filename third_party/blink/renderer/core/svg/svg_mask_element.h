@@ -35,6 +35,9 @@ class SVGMaskElement final : public SVGElement, public SVGTests {
 
  public:
   explicit SVGMaskElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGMaskElement;
+  }
 
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }

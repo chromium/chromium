@@ -25,8 +25,8 @@ class CORE_EXPORT HTMLUserMediaElement
   DEFINE_ATTRIBUTE_EVENT_LISTENER(stream, kStream)
 
   // HTML Element
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLUserMediaElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLUserMediaElement;
   }
   bool IsHTMLUserMediaElement() const final { return true; }
 

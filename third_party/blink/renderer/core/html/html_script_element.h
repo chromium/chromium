@@ -49,8 +49,8 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   HTMLScriptElement(Document&, const CreateElementFlags);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLScriptElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLScriptElement;
   }
 
   // Returns attributes that should be checked against Trusted Types

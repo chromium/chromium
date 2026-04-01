@@ -34,8 +34,8 @@ class HTMLModElement final : public HTMLElement {
  public:
   HTMLModElement(const QualifiedName&, Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLModElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLModElement;
   }
 
  private:

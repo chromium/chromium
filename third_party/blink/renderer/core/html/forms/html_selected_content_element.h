@@ -17,8 +17,8 @@ class HTMLSelectedContentElement : public HTMLElement {
  public:
   explicit HTMLSelectedContentElement(Document&);
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLSelectedContentElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLSelectedContentElement;
   }
 
   // TODO(crbug.com/357649033): Make this clone all selected options, not just

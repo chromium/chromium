@@ -58,6 +58,9 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
   };
 
   explicit SVGMarkerElement(Document&);
+  ElementType GetElementType() const final {
+    return ElementType::kSVGMarkerElement;
+  }
 
   AffineTransform ViewBoxToViewTransform(const gfx::SizeF& viewport_size) const;
 

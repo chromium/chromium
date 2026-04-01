@@ -59,8 +59,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   ~HTMLOptionElement() override;
   void Trace(Visitor* visitor) const override;
 
-  HTMLElementType GetHTMLElementType() const final {
-    return HTMLElementType::kHTMLOptionElement;
+  ElementType GetElementType() const final {
+    return ElementType::kHTMLOptionElement;
   }
 
   // A text to be shown to users.  The difference from |label()| is |label()|

@@ -31,6 +31,10 @@ class SVGFEMergeElement final : public SVGFilterPrimitiveStandardAttributes {
  public:
   explicit SVGFEMergeElement(Document&);
 
+  ElementType GetElementType() const final {
+    return ElementType::kSVGFEMergeElement;
+  }
+
  private:
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override { return false; }
