@@ -749,5 +749,50 @@ TEST(NativeValueTraitsImplTest, PassAsSpanSequenceOfUnrestricted) {
                            std::numeric_limits<double>::infinity(), 42));
 }
 
+using PassAsSpanWithReentry =
+    PassAsSpan<PassAsSpanMarkerBase::Flags::kSupportReentry, void>;
+
+template <typename T>
+using TypedPassAsSpanWithReentry =
+    PassAsSpan<PassAsSpanMarkerBase::Flags::kSupportReentry, T>;
+
+TEST(NativeValueTraitsImplTest, TypedPassAsSpanDetach) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  NonThrowableExceptionState exception_state;
+
+  {
+    v8::Local<v8::Object> v8_object = EvaluateScriptForObject(scope, R"(
+        self.arrbuf = new Uint8Array(10000).fill(42).buffer;
+    )");
+    auto converted = NativeValueTraits<PassAsSpanWithReentry>::ArgumentValue(
+        scope.GetIsolate(), 0, v8_object, exception_state);
+
+    EvaluateScriptForObject(scope, "self.arrbuf.transfer(0)");
+    EXPECT_THAT(converted.as_span(), testing::Contains(42).Times(10000));
+  }
+  {
+    v8::Local<v8::Object> v8_object = EvaluateScriptForObject(scope, R"(
+        self.arr1 = new Uint8Array(10000).fill(42);
+    )");
+    auto converted = NativeValueTraits<PassAsSpanWithReentry>::ArgumentValue(
+        scope.GetIsolate(), 0, v8_object, exception_state);
+
+    EvaluateScriptForObject(scope, "self.arr1.buffer.transfer(0)");
+    EXPECT_THAT(converted.as_span(), testing::Contains(42).Times(10000));
+  }
+  {
+    v8::Local<v8::Object> v8_object = EvaluateScriptForObject(scope, R"(
+        self.arr2 = new Uint16Array(10000).fill(42);
+    )");
+    auto converted =
+        NativeValueTraits<TypedPassAsSpanWithReentry<uint16_t>>::ArgumentValue(
+            scope.GetIsolate(), 0, v8_object, exception_state);
+
+    EvaluateScriptForObject(scope, "self.arr2.buffer.transfer(0)");
+    EXPECT_THAT(converted.as_span(), testing::Contains(42).Times(10000));
+  }
+}
+
 }  // namespace
 }  // namespace blink
