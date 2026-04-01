@@ -40,5 +40,7 @@ source_set("android") {
     "//chrome/browser/finds",
     "//chrome/browser/finds/core",
     "//chrome/browser/profiles:profile",
+    "//components/optimization_guide/core:features",
+    "//components/prefs",
   ]
 }

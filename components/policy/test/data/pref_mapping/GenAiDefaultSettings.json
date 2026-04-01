@@ -447,6 +447,9 @@
           },
           "contextual_search.search_content_sharing_settings": {
             "value": 0
+          },
+          "optimization_guide.model_execution.finds_enterprise_policy_allowed": {
+            "value": 0
           }
         }
       },
@@ -460,6 +463,9 @@
           },
           "contextual_search.search_content_sharing_settings": {
             "value": 0
+          },
+          "optimization_guide.model_execution.finds_enterprise_policy_allowed": {
+            "value": 1
           }
         }
       },
@@ -473,6 +479,9 @@
           },
           "contextual_search.search_content_sharing_settings": {
             "value": 1
+          },
+          "optimization_guide.model_execution.finds_enterprise_policy_allowed": {
+            "value": 2
           }
         }
       },
@@ -484,6 +493,9 @@
           },
           "contextual_search.search_content_sharing_settings": {
             "default_value": 0
+          },
+          "optimization_guide.model_execution.finds_enterprise_policy_allowed": {
+            "default_value": 0
           }
         }
       },
@@ -491,13 +503,17 @@
         "policies": {
           "GenAiDefaultSettings": 1,
           "AIModeSettings": 1,
-          "SearchContentSharingSettings": 1
+          "SearchContentSharingSettings": 1,
+          "FindsSettings": 1
         },
         "prefs": {
           "omnibox.ai_mode_settings": {
             "value": 1
           },
           "contextual_search.search_content_sharing_settings": {
+            "value": 1
+          },
+          "optimization_guide.model_execution.finds_enterprise_policy_allowed": {
             "value": 1
           }
         }
@@ -506,13 +522,17 @@
         "policies": {
           "GenAiDefaultSettings": 2,
           "AIModeSettings": 1,
-          "SearchContentSharingSettings": 1
+          "SearchContentSharingSettings": 1,
+          "FindsSettings": 1
         },
         "prefs": {
           "omnibox.ai_mode_settings": {
             "value": 1
           },
           "contextual_search.search_content_sharing_settings": {
+            "value": 1
+          },
+          "optimization_guide.model_execution.finds_enterprise_policy_allowed": {
             "value": 1
           }
         }

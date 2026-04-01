@@ -64,6 +64,8 @@ std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature) {
       return "optimization_guide.history_search_setting_state";
     case UserVisibleFeatureKey::kPasswordChangeSubmission:
       return "optimization_guide.password_change_submission_setting_state";
+    case UserVisibleFeatureKey::kFinds:
+      return "optimization_guide.finds_setting_state";
   }
 }
 

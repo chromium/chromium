@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kComposeSettingsVisibility);
 BASE_DECLARE_FEATURE(kTabOrganizationSettingsVisibility);
 BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
 BASE_DECLARE_FEATURE(kHistorySearchSettingsVisibility);
+BASE_DECLARE_FEATURE(kFindsSettingsVisibility);
 
 // Comma-separated list of performance classes (e.g. "3,4,5") accepted by
 // History Search. Use "*" if there is no performance class requirement.
@@ -34,6 +35,7 @@ extern const base::FeatureParam<std::string>
 BASE_DECLARE_FEATURE(kComposeGraduated);
 BASE_DECLARE_FEATURE(kTabOrganizationGraduated);
 BASE_DECLARE_FEATURE(kWallpaperSearchGraduated);
+BASE_DECLARE_FEATURE(kFindsGraduated);
 
 // Feature for disabling the model execution user account capability check.
 BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);

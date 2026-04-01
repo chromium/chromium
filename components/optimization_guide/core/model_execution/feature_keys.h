@@ -117,6 +117,7 @@ enum class UserVisibleFeatureKey {
   kHistorySearch = static_cast<int>(ModelBasedCapabilityKey::kHistorySearch),
   kPasswordChangeSubmission =
       static_cast<int>(ModelBasedCapabilityKey::kPasswordChangeSubmission),
+  kFinds = static_cast<int>(ModelBasedCapabilityKey::kFinds),
 };
 
 inline constexpr auto kAllUserVisibleFeatureKeys =
@@ -126,6 +127,7 @@ inline constexpr auto kAllUserVisibleFeatureKeys =
         UserVisibleFeatureKey::kWallpaperSearch,
         UserVisibleFeatureKey::kHistorySearch,
         UserVisibleFeatureKey::kPasswordChangeSubmission,
+        UserVisibleFeatureKey::kFinds,
     });
 
 inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
@@ -141,6 +143,8 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kHistorySearch;
     case UserVisibleFeatureKey::kPasswordChangeSubmission:
       return ModelBasedCapabilityKey::kPasswordChangeSubmission;
+    case UserVisibleFeatureKey::kFinds:
+      return ModelBasedCapabilityKey::kFinds;
   }
 }
 

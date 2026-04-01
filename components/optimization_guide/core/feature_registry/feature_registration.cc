@@ -62,6 +62,9 @@ const char kGeminiAntiscamProtectionEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.gemini_antiscam_protection_enterprise_"
     "policy_allowed";
 
+const char kFindsEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.finds_enterprise_policy_allowed";
+
 }  // namespace prefs
 
 namespace features {
@@ -97,6 +100,8 @@ BASE_FEATURE(kContextualTasksContextMqlsLogging,
 
 BASE_FEATURE(kGeminiAntiscamProtectionMqlsLogging,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFindsMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 
@@ -314,6 +319,22 @@ void RegisterGeminiAntiscamProtection() {
           FeedbackUnspecified()));
 }
 
+void RegisterFinds() {
+  const char kFindsName[] = "Finds";
+  EnterprisePolicyPref enterprise_policy =
+      EnterprisePolicyRegistry::GetInstance().Register(
+          prefs::kFindsEnterprisePolicyAllowed);
+
+  auto ui_metadata = std::make_unique<SettingsUiMetadata>(
+      kFindsName, UserVisibleFeatureKey::kFinds, enterprise_policy);
+  SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
+
+  auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
+      kFindsName, proto::LogAiDataRequest::FeatureCase::kFinds,
+      enterprise_policy, &features::kFindsMqlsLogging, FeedbackUnspecified());
+  MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
+}
+
 }  // anonymous namespace
 
 void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
@@ -336,6 +357,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterBlingPrototyping();
     RegisterContextualTasksContext();
     RegisterGeminiAntiscamProtection();
+    RegisterFinds();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);
