@@ -1,0 +1,22 @@
+<style include="cr-shared-style settings-shared">
+  .cr-row {
+    padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
+    gap: 16px;
+  }
+
+  settings-dropdown-menu {
+    margin-inline-start: auto;
+  }
+</style>
+<settings-section page-title="$i18n{searchKeyboardKeyTitle}">
+  <div class="cr-row first">
+    $i18n{searchKeyboardKeyDescription}
+    <settings-dropdown-menu
+        id="dropdown"
+        label="$i18n{searchKeyboardKeyDescription}"
+        pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
+        menu-options="[[keyboardShortcutMenuOptions_]]"
+        on-settings-control-change="onKeyboardShortcutSettingChange_">
+    </settings-dropdown-menu>
+  </div>
+</settings-section>

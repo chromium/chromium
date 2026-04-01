@@ -2870,6 +2870,9 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_SEARCH_EXTENSION_ENGINES_INACTIVE_SHORTCUTS_EXPLANATION},
       {"searchNoFeatureShortcutsFound",
        IDS_SETTINGS_SEARCH_NO_FEATURE_SHORTCUTS},
+      {"searchKeyboardKeyTitle", IDS_SETTINGS_SEARCH_KEYBOARD_KEY_TITLE},
+      {"searchKeyboardKeyDescription",
+       IDS_SETTINGS_SEARCH_KEYBOARD_KEY_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString("searchExplanationLearnMoreURL",

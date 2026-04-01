@@ -20,6 +20,10 @@
   <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]" restamp>
     <settings-feature-shortcuts-page slot="view" id="featureShortcuts">
     </settings-feature-shortcuts-page>
+
+    <settings-keyboard-shortcut-page slot="view" id="keyboardShortcut"
+        prefs="{{prefs}}">
+    </settings-keyboard-shortcut-page>
   </template>
 
   <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]" restamp>

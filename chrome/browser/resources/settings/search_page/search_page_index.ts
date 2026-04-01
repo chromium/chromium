@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import '/shared/settings/prefs/prefs.js';
 import './feature_shortcuts_page.js';
+import './keyboard_shortcut_page.js';
 import './search_page.js';
 import '../settings_shared.css.js';
 
@@ -65,7 +66,7 @@ export class SettingsSearchPageIndexElement extends
     const defaultViews: string[] = ['parent'];
 
     if (this.searchSettingsUpdateEnabled_) {
-      defaultViews.push('featureShortcuts');
+      defaultViews.push('featureShortcuts', 'keyboardShortcut');
     }
 
     this.$.viewManager.switchViews(
