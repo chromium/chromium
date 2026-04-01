@@ -3947,6 +3947,8 @@ RenderViewHost* RenderFrameHostImpl::GetRenderViewHost() const {
 }
 
 service_manager::InterfaceProvider* RenderFrameHostImpl::GetRemoteInterfaces() {
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
   DCHECK(IsRenderFrameLive());
   return remote_interfaces_.get();
 }
@@ -4966,6 +4968,8 @@ void RenderFrameHostImpl::OnMediaStreamAdded(MediaStreamType type) {
         delegate_->OnFrameIsCapturingMediaStreamChanged(this, true);
         break;
       case GetAudibleMediaStreamType():
+        // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK
+        // once we are sure this isn't hit.
         DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPrerendering);
         GetProcess()->OnMediaStreamAdded();
         delegate_->OnFrameAudioStateChanged(this, true);
@@ -6469,7 +6473,11 @@ void RenderFrameHostImpl::DidCommitPageActivation(
     // activation, so we need to ensure that the new frame replication being
     // stored in the browser is the same as the old and consistent with the
     // state we've sent to the renderers.
+    //
     // TODO - can we check main frame replication state?
+    //
+    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
     DCHECK(prerender_main_frame_replication_state ==
            frame_tree()->root()->current_replication_state());
 
@@ -8793,6 +8801,8 @@ void RenderFrameHostImpl::NavigateToNavigationApiKey(
 }
 
 void RenderFrameHostImpl::NavigateEventHandlerPresenceChanged(bool present) {
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
   DCHECK_NE(has_navigate_event_handler_, present);
   has_navigate_event_handler_ = present;
 }
@@ -9295,6 +9305,8 @@ void RenderFrameHostImpl::SuddenTerminationDisablerChanged(
       has_pagehide_handler_ = present;
       break;
     case blink::mojom::SuddenTerminationDisablerType::kUnloadHandler:
+      // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK
+      // once we are sure this isn't hit.
       DCHECK_NE(has_unload_handler_, present);
       if (IsNestedWithinFencedFrame()) {
         bad_message::ReceivedBadMessage(
@@ -17151,6 +17163,9 @@ void RenderFrameHostImpl::DidCommitNavigation(
   // RFH::DidCommitSameDocumentNavigation() and RFH::BeginNavigation()) so it
   // isn't possible to get a DidCommitNavigation IPC from the renderer in
   // kInBackForwardCache state.
+  //
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
   DCHECK(!IsInBackForwardCache());
 
   // TODO(https://crbug.com/445585641): Make this enforceable on Android.
@@ -18375,6 +18390,8 @@ void RenderFrameHostImpl::
 
   // These DCHECKs ensure that tests will fail if we got here, as
   // DumpWithoutCrashing won't fail tests.
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
   DCHECK_EQ(browser_method, params.method);
   DCHECK_EQ(browser_url_is_unreachable, params.url_is_unreachable);
   DCHECK_EQ(browser_post_id, params.post_id);

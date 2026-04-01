@@ -11712,6 +11712,9 @@ void NavigationRequest::CheckSoftNavigationHeuristicsInvariants() {
   // In NavigationControllerImpl::NavigateToExistingPendingEntry we're verifying
   // that the task ID is only passed along if the initiator RFH is the same as
   // the navigated RFH.
+  //
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
   DCHECK(IsSameDocument());
   DCHECK(IsInMainFrame());
   DCHECK(!frame_tree_node()->IsFencedFrameRoot());

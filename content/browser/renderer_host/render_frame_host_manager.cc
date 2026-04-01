@@ -969,6 +969,9 @@ void RenderFrameHostManager::DidNavigateFrame(
 
     // There should be no children of this frame; any policy changes should only
     // happen on navigation commit which will delete any child frames.
+    //
+    // TODO(https://crbug.com/497761255): Convert to CHECK, once we are sure it
+    // isn't reached.
     DCHECK(!frame_tree_node_->child_count());
 
     if (!frame_tree_node_->parent()) {
@@ -1904,6 +1907,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
 
   // A subframe should always be in the same BrowsingInstance as the parent
   // (see also https://crbug.com/1107269).
+  //
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
   RenderFrameHostImpl* parent = frame_tree_node_->parent();
   DCHECK(!parent ||
          dest_site_instance->IsRelatedSiteInstance(parent->GetSiteInstance()));
@@ -3331,6 +3337,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   }
 
   if (process_to_reuse) {
+    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
     DCHECK(frame_tree_node_->IsMainFrame());
     new_instance->ReuseExistingProcessIfPossible(process_to_reuse);
   }
