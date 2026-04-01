@@ -34,8 +34,9 @@ class FakeConnection : public Connection {
     OnRequestCallback callback;
   };
 
-  explicit FakeConnection(base::OnceCallback<void(ErrorCode)> on_disconnect,
-                          base::OnceClosure on_destruction = {});
+  explicit FakeConnection(
+      base::RepeatingCallback<void(ErrorCode)> on_disconnect,
+      base::OnceClosure on_destruction = {});
   ~FakeConnection() override;
 
   // Connection implementation:
@@ -52,7 +53,7 @@ class FakeConnection : public Connection {
   std::vector<PendingRequest>& pending_requests() { return pending_requests_; }
 
  private:
-  base::OnceCallback<void(ErrorCode)> on_disconnect_;
+  base::RepeatingCallback<void(ErrorCode)> on_disconnect_;
   base::OnceClosure on_destruction_;
   std::vector<PendingRequest> pending_requests_;
 };

@@ -27,10 +27,10 @@ class FakeConnectionFactory : public ConnectionFactory {
   ~FakeConnectionFactory() override = default;
 
   std::unique_ptr<Connection> Create(
-      base::OnceCallback<void(ErrorCode)> on_disconnect) override {
+      base::RepeatingCallback<void(ErrorCode)> on_disconnect) override {
     auto connection = std::make_unique<FakeConnection>(
-        base::BindOnce(&FakeConnectionFactory::on_disconnect,
-                       base::Unretained(this), std::move(on_disconnect)),
+        base::BindRepeating(&FakeConnectionFactory::on_disconnect,
+                            base::Unretained(this), on_disconnect),
         base::BindOnce(&FakeConnectionFactory::OnConnectionDestroyed,
                        base::Unretained(this), std::move(on_destruction_)));
     last_connection_ = connection.get();
@@ -39,9 +39,9 @@ class FakeConnectionFactory : public ConnectionFactory {
 
   FakeConnection* last_connection() { return last_connection_; }
 
-  void on_disconnect(base::OnceCallback<void(ErrorCode)> callback,
+  void on_disconnect(base::RepeatingCallback<void(ErrorCode)> callback,
                      ErrorCode error_code) {
-    std::move(callback).Run(error_code);
+    callback.Run(error_code);
 
     // Execute internal on_disconnect callback as well.
     if (on_disconnect_callback_) {
@@ -151,6 +151,46 @@ TEST_F(ConnectionManagerTest,
   factory_ = nullptr;
   manager_.reset();
   EXPECT_TRUE(destruction_future.IsReady());
+}
+
+TEST_F(ConnectionManagerTest,
+       OnlyFirstDisconnectFromSameConnectionIsProcessed) {
+  manager_->GetConnection();
+  FakeConnection* fake_connection = factory_->last_connection();
+
+  base::test::TestFuture<void> disconnect_future;
+  factory_->set_on_disconnect(disconnect_future.GetCallback());
+
+  // First disconnect should be processed.
+  fake_connection->SimulateDisconnect();
+  EXPECT_TRUE(disconnect_future.Wait());
+
+  // Subsequent disconnect from the same connection should be ignored.
+  // We can't easily check it was ignored other than ensuring no crash or
+  // unexpected side effects.
+  fake_connection->SimulateDisconnect();
+}
+
+TEST_F(ConnectionManagerTest, OldConnectionCannotDisconnectNewOne) {
+  manager_->GetConnection();
+  FakeConnection* fake_connection1 = factory_->last_connection();
+
+  base::test::TestFuture<void> disconnect_future;
+  factory_->set_on_disconnect(disconnect_future.GetCallback());
+
+  // Simulate disconnect for the first connection.
+  fake_connection1->SimulateDisconnect();
+  EXPECT_TRUE(disconnect_future.Wait());
+
+  // Create a second connection.
+  Connection* connection2 = manager_->GetConnection();
+  FakeConnection* fake_connection2 = factory_->last_connection();
+  EXPECT_NE(fake_connection1, fake_connection2);
+
+  // Subsequent disconnect from the first connection should not disconnect the
+  // second one.
+  fake_connection1->SimulateDisconnect();
+  EXPECT_EQ(manager_->GetConnection(), connection2);
 }
 
 }  // namespace private_ai

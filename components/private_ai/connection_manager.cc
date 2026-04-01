@@ -34,15 +34,20 @@ ConnectionManager::~ConnectionManager() {
 
 Connection* ConnectionManager::GetConnection() {
   if (!connection_) {
+    connection_id_++;
     connection_ = connection_factory_->Create(
-        base::BindOnce(&ConnectionManager::OnConnectionDisconnected,
-                       weak_factory_.GetWeakPtr()));
+        base::BindRepeating(&ConnectionManager::OnConnectionDisconnected,
+                            weak_factory_.GetWeakPtr(), connection_id_));
   }
   return connection_.get();
 }
 
-void ConnectionManager::OnConnectionDisconnected(ErrorCode error_code) {
-  CHECK(connection_);
+void ConnectionManager::OnConnectionDisconnected(int connection_id,
+                                                 ErrorCode error_code) {
+  if (connection_id != connection_id_ || !connection_) {
+    return;
+  }
+
   logger_->LogInfo(
       FROM_HERE, "Connection disconnected. Destroying connection with error: " +
                      base::ToString(error_code));

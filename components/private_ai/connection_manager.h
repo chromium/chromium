@@ -33,7 +33,7 @@ class ConnectionManager {
   Connection* GetConnection();
 
  private:
-  void OnConnectionDisconnected(ErrorCode error_code);
+  void OnConnectionDisconnected(int connection_id, ErrorCode error_code);
 
   // Destroy a connection that is pending destruction.
   //
@@ -43,6 +43,7 @@ class ConnectionManager {
   const raw_ptr<PrivateAiLogger> logger_;
   std::unique_ptr<ConnectionFactory> connection_factory_;
 
+  int connection_id_{0};
   std::unique_ptr<Connection> connection_;
   // When `connection_` is disconnected, a two-step destruction process is used
   // to propagate an error code through all connection layers, resolve pending

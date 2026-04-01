@@ -31,7 +31,7 @@ class FakeConnectionFactory : public ConnectionFactory {
   ~FakeConnectionFactory() override = default;
 
   std::unique_ptr<Connection> Create(
-      base::OnceCallback<void(ErrorCode)> on_disconnect) override {
+      base::RepeatingCallback<void(ErrorCode)> on_disconnect) override {
     total_connections_created_++;
     auto connection = std::make_unique<FakeConnection>(
         std::move(on_disconnect),
