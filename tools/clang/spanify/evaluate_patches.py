@@ -43,6 +43,26 @@ PROJECTS = {
             'base/allocator/partition_allocator/src/partition_alloc:partition_alloc'
         ],
     },
+    # http://go/autospan-dawn-tracker
+    'dawn': {
+        'spreadsheet_id': '11I41N369S7tcbMrWhsn6gStLKbOxseGSOMSTE3dsQok',
+        'build_targets': ['third_party/dawn/src/dawn:dawn'],
+    },
+    # http://go/autospan-skia-tracker
+    'skia': {
+        'spreadsheet_id': '1dJ5PIQMsQ4IBYTcZUrshOJUIOmoa0MOwedK-jGzHYxI',
+        'build_targets': ['skia:skia'],
+    },
+    # http://go/autospan-angle-tracker
+    'angle': {
+        'spreadsheet_id': '10g9-rrhGRQM1bGfHyZyK4Yris6X1ZfPmq-iRxw-9n38',
+        'build_targets': ['third_party/angle:angle'],
+    },
+    # http://go/autospan-webrtc-tracker
+    'webrtc': {
+        'spreadsheet_id': '1gDu0ZCAONoIm242lRscCoYKmrfWLbwflxtwgWi-NUVk',
+        'build_targets': ['third_party/webrtc_overrides:webrtc_component'],
+    },
 }
 
 
