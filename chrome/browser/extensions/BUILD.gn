@@ -1485,12 +1485,6 @@ source_set("extensions") {
       ]
     }
 
-    if (enable_printing && (is_win || is_mac || is_linux || is_chromeos)) {
-      # TODO(crbug.com/40183776)  Replace this with more accurate dependency
-      # once //chrome/browser/printing build is able to be cleanly targeted.
-      deps += [ "//chrome/services/printing/public/mojom" ]
-    }
-
     if (enable_pdf) {
       deps += [
         "//chrome/browser/pdf",
@@ -1527,6 +1521,10 @@ source_set("extensions") {
       deps += [ "//chrome/browser/ui/toasts" ]
     }
   }  # if (enable_extensions)
+
+  if (enable_printing) {
+    deps += [ "//chrome/browser/printing" ]
+  }
 
   if (enable_platform_apps) {
     sources += [

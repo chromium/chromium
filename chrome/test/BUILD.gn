@@ -744,6 +744,7 @@ static_library("test_support") {
       "../browser/printing/print_test_utils.cc",
       "../browser/printing/print_test_utils.h",
     ]
+    deps += [ "//chrome/browser/printing" ]
 
     if (is_chromeos) {
       sources += [
@@ -4282,6 +4283,7 @@ if (!is_android) {
 
       if (enable_printing) {
         sources += [ "../browser/pdf/pdf_extension_printing_test.cc" ]
+        deps += [ "//chrome/browser/printing" ]
 
         # TODO(crbug.com/40892214): All printToPdf tests consistently fail on ChromeOS
         if (!is_chromeos) {
@@ -10465,6 +10467,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/printing",
       "//chrome/common/printing",
       "//chrome/common/printing:unit_tests",
       "//components/printing/common:mojo_interfaces",
@@ -12220,6 +12223,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/system_web_apps/apps",
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+          "//chrome/browser/printing",
           "//chrome/browser/ui/ash/cast_config",
           "//chrome/browser/ui/ash/login",
           "//chrome/browser/ui/ash/multi_user",
@@ -13140,6 +13144,7 @@ if (!is_android && enable_print_preview) {
     deps = [
       "//base",
       "//chrome/browser",
+      "//chrome/browser/printing",
       "//components/printing/common:mojo_interfaces",
       "//content/public/browser",
     ]

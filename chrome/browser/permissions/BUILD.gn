@@ -6,6 +6,7 @@ import("//build/config/ui.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -182,6 +183,9 @@ source_set("permissions") {
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/shimless_rma",
     ]
+    if (use_cups) {
+      deps += [ "//chrome/browser/printing" ]
+    }
   }
 
   if (!is_android) {

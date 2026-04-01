@@ -5389,9 +5389,12 @@ static_library("ui") {
 
   if (enable_printing) {
     deps += [
+      "//chrome/browser/printing",
+      "//chrome/browser/printing:impl",
       "//components/printing/browser",
       "//printing",
     ]
+    allow_circular_includes_from += [ "//chrome/browser/printing:impl" ]
   }
 
   if (enable_print_preview) {

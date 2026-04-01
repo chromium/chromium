@@ -10,7 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
-#include "chrome/browser/ash/printing/local_printer.h"
+#include "chrome/browser/ash/printing/local_printer.h"  // nogncheck
 #include "chrome/browser/printing/web_api/in_progress_jobs_storage_chromeos.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/permission_result.h"

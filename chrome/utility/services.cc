@@ -90,7 +90,7 @@
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
     (BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_WIN))
 #include "chrome/services/printing/printing_service.h"
-#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)

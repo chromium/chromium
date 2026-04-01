@@ -31,6 +31,7 @@ static_library("history") {
 
   deps = [
     ":print_job_info_proto",
+    "//chrome/browser/printing",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/settings",

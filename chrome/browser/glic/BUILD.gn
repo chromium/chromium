@@ -496,6 +496,9 @@ source_set("impl") {
   if (enable_pdf) {
     deps += [ "//components/pdf/browser" ]
   }
+  if (enable_printing) {
+    deps += [ "//chrome/browser/printing" ]
+  }
 }
 
 mojom("mojo_bindings") {
@@ -734,6 +737,9 @@ source_set("browser_tests") {
   }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+  }
+  if (enable_print_preview) {
+    deps += [ "//chrome/browser/printing" ]
   }
 
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]

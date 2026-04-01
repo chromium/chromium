@@ -181,6 +181,10 @@ source_set("impl") {
     "//services/preferences/tracked:features",
   ]
 
+  if (enable_print_preview) {
+    deps += [ "//chrome/browser/printing" ]
+  }
+
   if (enable_extensions_core) {
     deps += [ "//extensions/common" ]
   }

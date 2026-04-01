@@ -48,6 +48,7 @@ if (!is_android) {
 
       deps = [
         "//chrome/browser",
+        "//chrome/browser/printing",
         "//chrome/browser/ui",
         "//chrome/test:test_support_ui",
         "//components/permissions",

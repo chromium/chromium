@@ -6868,150 +6868,15 @@ static_library("browser") {
     sources += [
       "policy/printing_restrictions_policy_handler.cc",
       "policy/printing_restrictions_policy_handler.h",
-      "printing/print_compositor_util.cc",
-      "printing/print_compositor_util.h",
-      "printing/print_error_dialog.cc",
-      "printing/print_error_dialog.h",
-      "printing/print_job.cc",
-      "printing/print_job.h",
-      "printing/print_job_manager.cc",
-      "printing/print_job_manager.h",
-      "printing/print_job_worker.cc",
-      "printing/print_job_worker.h",
-      "printing/print_view_manager_base.cc",
-      "printing/print_view_manager_base.h",
-      "printing/print_view_manager_common.cc",
-      "printing/print_view_manager_common.h",
-      "printing/printer_manager_dialog.h",
-      "printing/printer_query.cc",
-      "printing/printer_query.h",
-      "printing/printing_init.cc",
-      "printing/printing_init.h",
     ]
     deps += [
+      "//chrome/browser/printing",
+      "//chrome/browser/printing:impl",
       "//chrome/common/printing",
-      "//components/printing/browser",
       "//components/printing/browser/headless",
-      "//components/printing/browser/print_to_pdf",
-      "//components/services/print_compositor/public/cpp",
-      "//components/services/print_compositor/public/mojom",
-      "//printing",
-      "//printing/backend",
     ]
 
-    if (is_win) {
-      sources += [
-        "printing/pdf_to_emf_converter.cc",
-        "printing/pdf_to_emf_converter.h",
-        "printing/printer_manager_dialog_win.cc",
-        "printing/xps_features.cc",
-        "printing/xps_features.h",
-      ]
-    }
-    if (is_mac) {
-      sources += [ "printing/printer_manager_dialog_mac.cc" ]
-    }
-    if (is_chromeos) {
-      sources += [
-        "printing/local_printer_utils_chromeos.cc",
-        "printing/local_printer_utils_chromeos.h",
-      ]
-      deps += [
-        "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",
-        "//chromeos/crosapi/mojom",
-        "//chromeos/printing",
-      ]
-    }
-    if (is_linux) {
-      sources += [ "printing/printer_manager_dialog_linux.cc" ]
-    }
-    if (enable_oop_printing) {
-      sources += [
-        "printing/oop_features.cc",
-        "printing/oop_features.h",
-        "printing/print_backend_service_manager.cc",
-        "printing/print_backend_service_manager.h",
-        "printing/print_job_worker_oop.cc",
-        "printing/print_job_worker_oop.h",
-        "printing/printer_query_oop.cc",
-        "printing/printer_query_oop.h",
-      ]
-      deps += [
-        "//chrome/services/printing/public/mojom",
-        "//components/crash/core/common",
-      ]
-      if (is_win) {
-        sources += [
-          "printing/printer_xml_parser_impl.cc",
-          "printing/printer_xml_parser_impl.h",
-        ]
-        deps += [ "//printing:printing_base" ]
-      }
-    }
-    if (enable_oop_printing || enable_print_preview) {
-      sources += [
-        "printing/prefs_util.cc",
-        "printing/prefs_util.h",
-      ]
-    }
-    if (is_win || enable_print_preview) {
-      sources += [
-        "printing/printing_service.cc",
-        "printing/printing_service.h",
-      ]
-      deps += [ "//chrome/services/printing/public/mojom" ]
-    }
-    if (enable_print_preview) {
-      # Full printing on top of the above.
-      sources += [
-        "printing/background_printing_manager.cc",
-        "printing/background_printing_manager.h",
-        "printing/pdf_nup_converter_client.cc",
-        "printing/pdf_nup_converter_client.h",
-        "printing/print_preview_context_menu_observer.cc",
-        "printing/print_preview_context_menu_observer.h",
-        "printing/print_preview_data_service.cc",
-        "printing/print_preview_data_service.h",
-        "printing/print_preview_dialog_controller.cc",
-        "printing/print_preview_dialog_controller.h",
-        "printing/print_preview_sticky_settings.cc",
-        "printing/print_preview_sticky_settings.h",
-        "printing/print_view_manager.cc",
-        "printing/print_view_manager.h",
-        "printing/pwg_raster_converter.cc",
-        "printing/pwg_raster_converter.h",
-        "printing/web_api/web_printing_service_binder.cc",
-        "printing/web_api/web_printing_service_binder.h",
-      ]
-      if (is_chromeos) {
-        sources += [
-          "printing/pdf_blob_data_flattener.cc",
-          "printing/pdf_blob_data_flattener.h",
-          "printing/print_job_controller.cc",
-          "printing/print_job_controller.h",
-        ]
-        if (use_cups) {
-          sources += [
-            "printing/web_api/in_progress_jobs_storage_chromeos.cc",
-            "printing/web_api/in_progress_jobs_storage_chromeos.h",
-            "printing/web_api/web_printing_permission_context.cc",
-            "printing/web_api/web_printing_permission_context.h",
-            "printing/web_api/web_printing_service_chromeos.cc",
-            "printing/web_api/web_printing_service_chromeos.h",
-            "printing/web_api/web_printing_type_converters.cc",
-            "printing/web_api/web_printing_type_converters.h",
-            "printing/web_api/web_printing_utils.cc",
-            "printing/web_api/web_printing_utils.h",
-          ]
-        }
-      }
-    } else {
-      # Partial - only printing support.
-      sources += [
-        "printing/print_view_manager_basic.cc",
-        "printing/print_view_manager_basic.h",
-      ]
-    }
+    allow_circular_includes_from += [ "//chrome/browser/printing:impl" ]
   }
 
   if (enable_paint_preview) {
@@ -8770,6 +8635,10 @@ static_library("test_support") {
       "notifications/win/fake_itoastnotification.cc",
       "notifications/win/fake_itoastnotification.h",
     ]
+  }
+
+  if (enable_printing) {
+    deps += [ "//chrome/browser/printing" ]
   }
 
   if (enable_oop_printing) {

@@ -232,7 +232,10 @@ static_library("utility") {
     ]
 
     if (!is_android) {
-      deps += [ "//chrome/services/printing:lib" ]
+      deps += [
+        "//chrome/services/printing:lib",
+        "//chrome/services/printing/public/mojom",
+      ]
     }
   }
 

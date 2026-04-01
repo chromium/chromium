@@ -38,7 +38,7 @@
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"
+#include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"  // nogncheck
 #endif
 
 using content::NavigationController;

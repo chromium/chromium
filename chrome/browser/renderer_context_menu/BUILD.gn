@@ -4,6 +4,7 @@
 
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 
 source_set("renderer_context_menu") {
   if (!is_android) {
@@ -145,6 +146,10 @@ source_set("impl") {
       "//ui/menus",
       "//url",
     ]
+
+    if (enable_print_preview) {
+      deps += [ "//chrome/browser/printing" ]
+    }
   }
 
   if (is_chromeos) {

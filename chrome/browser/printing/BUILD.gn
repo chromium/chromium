@@ -1,0 +1,272 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
+
+if (enable_printing) {
+  source_set("printing") {
+    public = [
+      "print_compositor_util.h",
+      "print_error_dialog.h",
+      "print_job.h",
+      "print_job_manager.h",
+      "print_job_worker.h",
+      "print_view_manager_base.h",
+      "print_view_manager_common.h",
+      "printer_manager_dialog.h",
+      "printer_query.h",
+      "printing_init.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//build:chromeos_buildflags",
+      "//chrome/services/printing/public/mojom",
+      "//components/enterprise/buildflags",
+      "//components/prefs",
+      "//components/printing/browser",
+      "//components/printing/browser/print_to_pdf",
+      "//components/printing/common:mojo_interfaces",
+      "//components/renderer_context_menu",
+      "//components/services/print_compositor/public/mojom",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//printing",
+      "//printing/backend",
+      "//printing/buildflags",
+      "//printing/mojom",
+      "//services/data_decoder/public/cpp",
+      "//ui/accessibility",
+      "//ui/gfx/geometry",
+    ]
+
+    if (is_win) {
+      public += [
+        "pdf_to_emf_converter.h",
+        "xps_features.h",
+      ]
+    }
+
+    if (is_chromeos) {
+      public += [ "local_printer_utils_chromeos.h" ]
+      public_deps += [
+        "//chromeos/crosapi/mojom",
+        "//chromeos/printing",
+      ]
+    }
+
+    if (enable_oop_printing) {
+      public += [
+        "oop_features.h",
+        "print_backend_service_manager.h",
+        "print_job_worker_oop.h",
+        "printer_query_oop.h",
+      ]
+      if (is_win) {
+        public += [ "printer_xml_parser_impl.h" ]
+      }
+    }
+
+    if (enable_oop_printing || enable_print_preview) {
+      public += [ "prefs_util.h" ]
+    }
+
+    if (is_win || enable_print_preview) {
+      public += [ "printing_service.h" ]
+    }
+
+    if (enable_print_preview) {
+      public += [
+        "background_printing_manager.h",
+        "pdf_nup_converter_client.h",
+        "print_preview_context_menu_observer.h",
+        "print_preview_data_service.h",
+        "print_preview_dialog_controller.h",
+        "print_preview_sticky_settings.h",
+        "print_view_manager.h",
+        "pwg_raster_converter.h",
+        "web_api/web_printing_service_binder.h",
+      ]
+      public_deps += [ "//chrome/browser/tab_contents" ]
+      if (is_chromeos) {
+        public += [
+          "pdf_blob_data_flattener.h",
+          "print_job_controller.h",
+        ]
+        if (use_cups) {
+          public += [
+            "web_api/in_progress_jobs_storage_chromeos.h",
+            "web_api/web_printing_permission_context.h",
+            "web_api/web_printing_service_chromeos.h",
+            "web_api/web_printing_type_converters.h",
+            "web_api/web_printing_utils.h",
+          ]
+          public_deps += [
+            "//components/permissions",
+            "//third_party/blink/public/mojom:mojom_platform",
+          ]
+        }
+      }
+    } else {
+      public += [ "print_view_manager_basic.h" ]
+    }
+  }
+
+  source_set("impl") {
+    sources = [
+      "print_compositor_util.cc",
+      "print_error_dialog.cc",
+      "print_job.cc",
+      "print_job_manager.cc",
+      "print_job_worker.cc",
+      "print_view_manager_base.cc",
+      "print_view_manager_common.cc",
+      "printer_query.cc",
+      "printing_init.cc",
+    ]
+
+    public_deps = [ ":printing" ]
+
+    deps = [
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/headless",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/common",
+      "//chrome/common/printing",
+      "//components/crash/core/common:crash_key",
+      "//components/device_event_log",
+      "//components/embedder_support:user_agent",
+      "//components/printing/browser/headless",
+      "//components/services/print_compositor/public/cpp",
+    ]
+
+    if (enable_pdf) {
+      deps += [
+        "//components/pdf/browser",
+        "//pdf:features",
+      ]
+    }
+
+    if (is_android) {
+      deps += [
+        "//chrome/browser/android:tabs_public",
+        "//ui/android",
+      ]
+    }
+
+    if (is_win) {
+      sources += [
+        "pdf_to_emf_converter.cc",
+        "printer_manager_dialog_win.cc",
+        "xps_features.cc",
+      ]
+      deps += [
+        "//chrome/browser:primitives",
+        "//ui/views",
+      ]
+    }
+
+    if (is_mac) {
+      sources += [ "printer_manager_dialog_mac.cc" ]
+    }
+
+    if (is_chromeos) {
+      sources += [ "local_printer_utils_chromeos.cc" ]
+    }
+
+    if (is_linux) {
+      sources += [ "printer_manager_dialog_linux.cc" ]
+    }
+
+    if (enable_extensions_core) {
+      deps += [ "//extensions/browser" ]
+    }
+
+    if (enable_oop_printing) {
+      sources += [
+        "oop_features.cc",
+        "print_backend_service_manager.cc",
+        "print_job_worker_oop.cc",
+        "printer_query_oop.cc",
+      ]
+      deps += [ "//components/crash/core/common" ]
+      if (is_linux) {
+        deps += [ "//ui/linux:linux_ui" ]
+      }
+      if (is_win) {
+        sources += [ "printer_xml_parser_impl.cc" ]
+        deps += [ "//printing:printing_base" ]
+      }
+    }
+
+    if (enable_oop_printing || enable_print_preview) {
+      sources += [ "prefs_util.cc" ]
+    }
+
+    if (is_win || enable_print_preview) {
+      sources += [ "printing_service.cc" ]
+    }
+
+    if (enable_print_preview) {
+      sources += [
+        "background_printing_manager.cc",
+        "pdf_nup_converter_client.cc",
+        "print_preview_context_menu_observer.cc",
+        "print_preview_data_service.cc",
+        "print_preview_dialog_controller.cc",
+        "print_preview_sticky_settings.cc",
+        "print_view_manager.cc",
+        "pwg_raster_converter.cc",
+        "web_api/web_printing_service_binder.cc",
+      ]
+      deps += [
+        "//chrome/browser/pdf:pdf_pref_names",
+        "//chrome/browser/task_manager",
+        "//chrome/browser/ui/webui",
+        "//components/cloud_devices/common",
+        "//components/guest_view/browser",
+        "//components/pref_registry",
+        "//components/web_modal",
+        "//ui/web_dialogs",
+      ]
+      if (is_chromeos) {
+        sources += [
+          "pdf_blob_data_flattener.cc",
+          "print_job_controller.cc",
+        ]
+        deps += [
+          "//chrome/browser/ash/arc/print_spooler",
+          "//chrome/browser/ash/printing",
+          "//chrome/browser/chromeos/policy/dlp",
+        ]
+        if (use_cups) {
+          sources += [
+            "web_api/in_progress_jobs_storage_chromeos.cc",
+            "web_api/web_printing_permission_context.cc",
+            "web_api/web_printing_service_chromeos.cc",
+            "web_api/web_printing_type_converters.cc",
+            "web_api/web_printing_utils.cc",
+          ]
+          deps += [
+            "//chrome/browser/chromeos/printing",
+            "//chrome/browser/web_applications",
+            "//chrome/common/printing",
+            "//components/content_settings/browser",
+            "//components/content_settings/core/browser",
+            "//components/content_settings/core/common",
+          ]
+        }
+      }
+    } else {
+      sources += [ "print_view_manager_basic.cc" ]
+    }
+  }
+}

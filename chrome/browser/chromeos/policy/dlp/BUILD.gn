@@ -279,6 +279,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/chromeos/policy/dlp/test:test_support",
       "//chrome/browser/enterprise/data_controls",
       "//chrome/browser/enterprise/data_controls:test_support",
+      "//chrome/browser/printing",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/test:print_preview_test_support",
