@@ -239,6 +239,10 @@ GlicNavigationThrottle::WillStartRequest() {
   NavigateParams params(profile, target_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::CURRENT_TAB;
   params.source_contents = web_contents;
+  params.initiator_origin = navigation_handle()->GetInitiatorOrigin();
+  params.is_renderer_initiated = navigation_handle()->IsRendererInitiated();
+  params.user_gesture = navigation_handle()->HasUserGesture();
+  params.original_user_gesture = navigation_handle()->HasUserGesture();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce([](NavigateParams params) { Navigate(&params); },
