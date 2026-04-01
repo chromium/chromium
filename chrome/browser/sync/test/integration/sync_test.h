@@ -34,6 +34,7 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
@@ -211,6 +212,10 @@ class SyncTest : public PlatformBrowserTest,
   // Subclasses should override this method to specify the desired mode, often
   // in conjunction with test parameterization.
   virtual SetupSyncMode GetSetupSyncMode() const;
+
+  // Returns the URL to be opened in the initial tab of each profile's browser
+  // window.
+  virtual GURL GetInitialURL() const;
 
   // Returns a pointer to the sync profile that is used to verify changes to
   // individual sync profiles. Callee owns the object and manages its lifetime.

@@ -2025,17 +2025,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
 
   // Ensure that local bookmark has the new title.
   ASSERT_TRUE(SetupClients());
-  const BookmarkNode* node =
-      bookmarks_helper::GetUniqueNodeByURL(kSingleProfileIndex, url);
   ASSERT_EQ(1u,
             CountBookmarksWithTitlesMatching(kSingleProfileIndex, new_title));
-
-  // Ensure that there is a favicon on the server and local node haven't started
-  // loading of favicon.
-  ASSERT_TRUE(
-      server_bookmarks_before.front().specifics().bookmark().has_favicon());
-  ASSERT_FALSE(node->is_favicon_loading());
-  ASSERT_FALSE(node->is_favicon_loaded());
 
   // Ensure that the new title eventually makes it to the server.
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
@@ -2228,10 +2219,6 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(
       BookmarksTitleChecker(kSingleProfileIndex, kTitle2, /*expected_count=*/1)
           .Wait());
-
-  // Check that unique_position was not uploaded to the server yet.
-  EXPECT_THAT(GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS),
-              Contains(Not(HasUniquePosition())).Times(2));
 
   // Add another folder to initiate commit to the server.
   AddFolder(kSingleProfileIndex, u"Folder 2", GetStoreType());

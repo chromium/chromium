@@ -1129,11 +1129,17 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTestSettings,
   // Post migration, manage cards bubble is neither visible nor clicked.
   int tab_count, manage_cards_shown_count, manage_cards_clicked_count;
   if (IsPageActionMigrationEnabled()) {
-    tab_count = 1;
+    // There are two initial tabs, the default one from
+    // InProcessBrowserTest/SyncTest and the one explicitly added in
+    // SetUpOnMainThread(). No additional tab is opened because the manage cards
+    // bubble is unreachable.
+    tab_count = 2;
     manage_cards_shown_count = 0;
     manage_cards_clicked_count = 0;
   } else {
-    tab_count = 2;
+    // In addition to the two initial tabs, a third tab is opened with the
+    // settings page by clicking the "Manage cards" button in the bubble.
+    tab_count = 3;
     manage_cards_shown_count = 1;
     manage_cards_clicked_count = 1;
   }

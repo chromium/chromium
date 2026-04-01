@@ -91,7 +91,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
   ConfigureEnterprisePasswordProtection(
       PasswordProtectionTrigger::PASSWORD_REUSE);
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
-  chrome::NewTab(GetBrowser(0));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       GetBrowser(0), embedded_test_server()->GetURL(kLoginPageUrl)));
   base::HistogramTester histograms;

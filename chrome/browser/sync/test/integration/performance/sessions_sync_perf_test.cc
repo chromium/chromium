@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -49,6 +50,10 @@ class SessionsSyncPerfTest : public SyncTest {
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return SetupSyncMode::kSyncTransportOnly;
+  }
+
+  GURL GetInitialURL() const override {
+    return GURL(chrome::kChromeUINewTabURL);
   }
 
   // Opens |num_tabs| new tabs on |profile|.

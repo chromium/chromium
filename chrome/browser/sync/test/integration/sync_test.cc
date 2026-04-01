@@ -129,6 +129,7 @@
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -512,12 +513,13 @@ Browser* SyncTest::AddBrowser(int profile_index) {
   profiles_.push_back(profile);
   DCHECK_EQ(browsers_.size(), profiles_.size());
 
+  Browser* browser = browsers_.back();
+  chrome::AddSelectedTabWithURL(browser, GetInitialURL(),
+                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   // Show the browser window. Otherwise, the rendering pipeline might not
   // initialize or produce frames (e.g., on Wayland headless bots), which
   // can cause tests relying on hit test data or visual state to time out.
-  Browser* browser = browsers_.back();
   browser->window()->Show();
-
   return browser;
 }
 
@@ -565,6 +567,10 @@ syncer::UserSelectableTypeSet SyncTest::GetRegisteredSelectableTypes(
 
 SyncTest::SetupSyncMode SyncTest::GetSetupSyncMode() const {
   return SetupSyncMode::kSyncTheFeature;
+}
+
+GURL SyncTest::GetInitialURL() const {
+  return GURL(url::kAboutBlankURL);
 }
 
 std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>>
@@ -693,10 +699,15 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
 #if !BUILDFLAG(IS_ANDROID)
   browsers_.push_back(Browser::Create(Browser::CreateParams(profile, true)));
   DCHECK_EQ(static_cast<size_t>(index), browsers_.size() - 1);
+
+  Browser* browser = browsers_.back();
+  chrome::AddSelectedTabWithURL(browser, GetInitialURL(),
+                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+
   // Show the browser window. Otherwise, the rendering pipeline might not
   // initialize or produce frames (e.g., on Wayland headless bots), which
   // can cause tests relying on hit test data or visual state to time out.
-  browsers_.back()->window()->Show();
+  browser->window()->Show();
 #endif
 
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {

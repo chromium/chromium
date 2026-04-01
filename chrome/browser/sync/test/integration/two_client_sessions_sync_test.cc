@@ -17,6 +17,7 @@
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/test/fake_server_verifier.h"
 #include "components/sync/test/sessions_hierarchy.h"
@@ -60,6 +61,10 @@ class TwoClientSessionsSyncTest
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
+  }
+
+  GURL GetInitialURL() const override {
+    return GURL(chrome::kChromeUINewTabURL);
   }
 
  private:
@@ -122,7 +127,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
     std::string url = base::StringPrintf(
         kURLTemplate,
         base::Uuid::GenerateRandomV4().AsLowercaseString().c_str());
-    ASSERT_TRUE(OpenTab(i, GURL(url)));
+    NavigateTab(i, GURL(url));
   }
 
   // Get foreign session data from all clients and check it against all
@@ -143,8 +148,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, BothChanged) {
   ASSERT_TRUE(CheckInitialState(0));
   ASSERT_TRUE(CheckInitialState(1));
 
-  ASSERT_TRUE(OpenTab(0, GURL(kURL1)));
-  ASSERT_TRUE(OpenTab(1, GURL(kURL2)));
+  NavigateTab(0, GURL(kURL1));
+  NavigateTab(1, GURL(kURL2));
 
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
   EXPECT_TRUE(WaitForForeignSessionsToSync(1, 0));
@@ -161,7 +166,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, DeleteIdleSession) {
   ASSERT_TRUE(CheckInitialState(1));
 
   // Client 0 opened some tabs then went idle.
-  ASSERT_TRUE(OpenTab(0, GURL(kURL1)));
+  NavigateTab(0, GURL(kURL1));
   ASSERT_TRUE(WaitForForeignSessionsToSync(0, 1));
 
   // Get foreign session data from client 1.
@@ -181,7 +186,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, DeleteActiveSession) {
   ASSERT_TRUE(CheckInitialState(1));
 
   // Client 0 opened some tabs then went idle.
-  ASSERT_TRUE(OpenTab(0, GURL(kURL1)));
+  NavigateTab(0, GURL(kURL1));
   ASSERT_TRUE(WaitForForeignSessionsToSync(0, 1));
 
   SyncedSessionVector sessions1;
@@ -205,12 +210,12 @@ IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, MultipleWindowsMultipleTabs) {
   ASSERT_TRUE(CheckInitialState(0));
   ASSERT_TRUE(CheckInitialState(1));
 
-  EXPECT_TRUE(OpenTab(0, GURL(kURL1)));
+  NavigateTab(0, GURL(kURL1));
   EXPECT_TRUE(OpenTabAtIndex(0, 1, GURL(kURL2)));
 
   // Add a second browser for profile 0. This browser ends up in index 2.
   AddBrowser(0);
-  EXPECT_TRUE(OpenTab(2, GURL(kURL3)));
+  NavigateTab(2, GURL(kURL3));
   EXPECT_TRUE(OpenTabAtIndex(2, 1, GURL(kURL4)));
 
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));

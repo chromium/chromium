@@ -246,10 +246,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserEventsSyncTest, Encryption) {
   // Just checking that we don't see test_event2 isn't very convincing yet,
   // because it may simply not have reached the server yet. So let's send
   // something else through the system that we can wait on before checking.
-  // Tab/SESSIONS data was picked fairly arbitrarily, note that we expect 2
-  // entries, one for the window/header and one for the tab.
+  // Tab/SESSIONS data was picked fairly arbitrarily, note that we expect 3
+  // entries, one for the window/header and two for tabs (one opened
+  // automatically by the framework and the second one opened below).
   sessions_helper::OpenTab(0, GURL("https://www.one.com/"));
-  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::SESSIONS, 2).Wait());
+  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::SESSIONS, 3).Wait());
   EXPECT_TRUE(ExpectUserEvents({test_event1}));
 }
 

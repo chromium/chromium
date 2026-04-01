@@ -19,7 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using sessions_helper::CheckInitialState;
-using sessions_helper::OpenTab;
+using sessions_helper::NavigateTab;
 using testing::Eq;
 using testing::Ge;
 using testing::Le;
@@ -45,6 +45,10 @@ class SingleClientPollingSyncTest
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
+  }
+
+  GURL GetInitialURL() const override {
+    return GURL(chrome::kChromeUINewTabURL);
   }
 
   void SetUpOnMainThread() override {
@@ -90,7 +94,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
   // Trigger a sync-cycle.
   ASSERT_TRUE(CheckInitialState(0));
   const GURL url = embedded_test_server()->GetURL("/sync/simple.html");
-  ASSERT_TRUE(OpenTab(0, url));
+  NavigateTab(0, url);
   SessionHierarchyMatchChecker checker(
       fake_server::SessionsHierarchy({{url.spec()}}), GetSyncService(0),
       GetFakeServer());
@@ -129,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
   // Trigger a sync-cycle.
   ASSERT_TRUE(CheckInitialState(0));
   const GURL url = embedded_test_server()->GetURL("/sync/simple.html");
-  ASSERT_TRUE(OpenTab(0, url));
+  NavigateTab(0, url);
   ASSERT_TRUE(SessionHierarchyMatchChecker(
                   fake_server::SessionsHierarchy({{url.spec()}}),
                   GetSyncService(0), GetFakeServer())
