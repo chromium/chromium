@@ -113,7 +113,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   void PlaceGridLanesItems(
       GridItems& grid_items,
       const GridLayoutSubtree* layout_subtree,
-      const GridLayoutData& layout_data,
+      GridLayoutData& layout_data,
       GridLanesRunningPositions& running_positions,
       std::optional<SizingConstraint> sizing_constraint = std::nullopt);
 
@@ -131,7 +131,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   void RunGridLanesPlacementPhase(
       GridItems& grid_items,
       const GridLayoutSubtree* layout_subtree,
-      const GridLayoutData& layout_data,
+      GridLayoutData& layout_data,
       std::optional<SizingConstraint> sizing_constraint,
       LayoutUnit stacking_axis_gap,
       PlacementPhase placement_phase,

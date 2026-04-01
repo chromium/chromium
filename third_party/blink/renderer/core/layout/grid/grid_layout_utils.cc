@@ -23,9 +23,8 @@
 namespace blink {
 
 LayoutUnit GetTrackBaseline(const GridItemData& grid_item,
-                            const GridLayoutTrackCollection& track_collection) {
-  const auto track_direction = track_collection.Direction();
-
+                            const GridLayoutData& layout_data,
+                            GridTrackSizingDirection track_direction) {
   // "If a box spans multiple shared alignment contexts, then it participates
   //  in first/last baseline alignment within its start-most/end-most shared
   //  alignment context along that axis"
@@ -34,8 +33,8 @@ LayoutUnit GetTrackBaseline(const GridItemData& grid_item,
       grid_item.SetIndices(track_direction);
 
   return (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
-             ? track_collection.MajorBaseline(begin_set_index)
-             : track_collection.MinorBaseline(end_set_index - 1);
+             ? layout_data.MajorBaseline(track_direction, begin_set_index)
+             : layout_data.MinorBaseline(track_direction, end_set_index - 1);
 }
 
 LayoutUnit GetLogicalBaseline(const LogicalBoxFragment& baseline_fragment,
@@ -51,7 +50,7 @@ void StoreItemBaseline(const LogicalBoxFragment& baseline_fragment,
                        GridTrackSizingDirection track_direction,
                        FontBaseline font_baseline,
                        LayoutUnit extra_margin,
-                       GridSizingTrackCollection& track_collection,
+                       GridLayoutData& layout_data,
                        GridItemData& item) {
   const bool has_synthesized_baseline =
       !baseline_fragment.FirstBaseline().has_value();
@@ -70,20 +69,21 @@ void StoreItemBaseline(const LogicalBoxFragment& baseline_fragment,
       item.SetIndices(track_direction);
 
   if (item.BaselineGroup(track_direction) == BaselineGroup::kMajor) {
-    track_collection.SetMajorBaseline(begin_set_index, total_baseline);
+    layout_data.SetMajorBaseline(track_direction, begin_set_index,
+                                 total_baseline);
   } else {
-    track_collection.SetMinorBaseline(end_set_index - 1, total_baseline);
+    layout_data.SetMinorBaseline(track_direction, end_set_index - 1,
+                                 total_baseline);
   }
 }
 
-LayoutUnit ComputeBaselineOffset(
-    const GridItemData& grid_item,
-    const GridLayoutTrackCollection& track_collection,
-    const LogicalBoxFragment& baseline_fragment,
-    const LogicalBoxFragment& fragment,
-    FontBaseline font_baseline,
-    GridTrackSizingDirection track_direction,
-    LayoutUnit available_size) {
+LayoutUnit ComputeBaselineOffset(const GridItemData& grid_item,
+                                 const GridLayoutData& layout_data,
+                                 const LogicalBoxFragment& baseline_fragment,
+                                 const LogicalBoxFragment& fragment,
+                                 FontBaseline font_baseline,
+                                 GridTrackSizingDirection track_direction,
+                                 LayoutUnit available_size) {
   if (!grid_item.IsBaselineAligned(track_direction)) {
     return LayoutUnit();
   }
@@ -91,7 +91,7 @@ LayoutUnit ComputeBaselineOffset(
   // The baseline offset is the difference between the grid item's baseline
   // and its track baseline.
   const LayoutUnit baseline_delta =
-      GetTrackBaseline(grid_item, track_collection) -
+      GetTrackBaseline(grid_item, layout_data, track_direction) -
       GetLogicalBaseline(baseline_fragment, font_baseline,
                          grid_item.IsLastBaselineSpecified(track_direction));
 
@@ -961,6 +961,39 @@ GridLayoutTrackCollection* CreateSubgridTrackCollection(
       is_for_columns_in_parent
           ? subgrid_data->is_opposite_direction_in_root_grid_columns
           : subgrid_data->is_opposite_direction_in_root_grid_rows);
+}
+
+GridTrackBaselines* CreateSubgridBaselines(
+    const SubgriddedItemData& subgrid_data,
+    const ComputedStyle& style,
+    const ConstraintSpace& space,
+    const BoxStrut& border_scrollbar_padding,
+    const LogicalSize grid_available_size,
+    GridTrackSizingDirection track_direction,
+    const GridTrackBaselines& parent_baselines) {
+  DCHECK(subgrid_data.IsSubgrid());
+
+  const bool is_for_columns_in_parent = subgrid_data->is_parallel_with_root_grid
+                                            ? track_direction == kForColumns
+                                            : track_direction == kForRows;
+
+  const auto& parent_track_collection =
+      is_for_columns_in_parent ? subgrid_data.Columns() : subgrid_data.Rows();
+  const auto& range_indices = is_for_columns_in_parent
+                                  ? subgrid_data->column_range_indices
+                                  : subgrid_data->row_range_indices;
+
+  return parent_track_collection.CreateSubgridBaselines(
+      range_indices.begin, range_indices.end,
+      GridTrackSizingAlgorithm::CalculateGutterSize(
+          style, grid_available_size, track_direction,
+          parent_track_collection.GutterSize()),
+      ComputeMarginsForSelf(space, style), border_scrollbar_padding,
+      track_direction,
+      is_for_columns_in_parent
+          ? subgrid_data->is_opposite_direction_in_root_grid_columns
+          : subgrid_data->is_opposite_direction_in_root_grid_rows,
+      parent_baselines);
 }
 
 void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,

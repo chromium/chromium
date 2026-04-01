@@ -100,10 +100,11 @@ class GridBaselineAccumulator : public BaselineAccumulator {
     }
   }
 
-  void AccumulateRows(const GridLayoutTrackCollection& rows) {
+  void AccumulateRows(const GridLayoutTrackCollection& rows,
+                      const GridTrackBaselines& baselines) {
     for (wtf_size_t i = 0; i < rows.GetSetCount(); ++i) {
       LayoutUnit set_offset = rows.GetSetOffset(i);
-      LayoutUnit major_baseline = rows.MajorBaseline(i);
+      LayoutUnit major_baseline = baselines.major[i];
       if (major_baseline != LayoutUnit::Min()) {
         LayoutUnit baseline_offset = set_offset + major_baseline;
         if (!first_major_baseline_) {
@@ -112,7 +113,7 @@ class GridBaselineAccumulator : public BaselineAccumulator {
         last_major_baseline_.emplace(i, baseline_offset);
       }
 
-      LayoutUnit minor_baseline = rows.MinorBaseline(i);
+      LayoutUnit minor_baseline = baselines.minor[i];
       if (minor_baseline != LayoutUnit::Min()) {
         LayoutUnit baseline_offset =
             set_offset + rows.CalculateSetSpanSize(i, i + 1) - minor_baseline;

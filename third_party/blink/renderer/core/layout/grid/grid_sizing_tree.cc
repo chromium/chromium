@@ -64,6 +64,11 @@ void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
   tree_node.virtual_items = virtual_items;
   tree_node.layout_data = layout_data;
   tree_node.writing_mode = grid_node.Style().GetWritingMode();
+
+  if (layout_data->HasBaselines(kForColumns) ||
+      layout_data->HasBaselines(kForRows)) {
+    tree_has_baselines_ = true;
+  }
 }
 
 const GridLayoutTree* GridSizingTree::FinalizeTree() const {
@@ -73,10 +78,25 @@ const GridLayoutTree* GridSizingTree::FinalizeTree() const {
   layout_tree_data.ReserveInitialCapacity(tree_size);
 
   for (const auto& grid_tree_node : tree_data_) {
+    auto* layout_data = grid_tree_node.layout_data.Get();
+
+    // Avoid copying layout data when it won't be mutated during baseline
+    // alignment. A copy is needed only when this node has baselines that
+    // will be reset/recomputed. The tree_has_baselines_ flag (set during
+    // SetSizingNodeData) ensures we skip all copies when no node in the
+    // tree has baselines.
+    const bool needs_copy =
+        tree_has_baselines_ && (layout_data->HasBaselines(kForColumns) ||
+                                layout_data->HasBaselines(kForRows));
+
+    GridLayoutData* finalized_data = layout_data;
+    if (needs_copy) {
+      finalized_data = MakeGarbageCollected<GridLayoutData>(*layout_data);
+    }
+
     layout_tree_data.emplace_back(
         MakeGarbageCollected<GridLayoutTree::GridTreeNode>(
-            MakeGarbageCollected<GridLayoutData>(*grid_tree_node.layout_data),
-            grid_tree_node.subtree_size));
+            finalized_data, grid_tree_node.subtree_size));
   }
 
   for (wtf_size_t i = tree_size; i; --i) {

@@ -85,7 +85,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
         sizing_constraint, should_apply_inline_size_containment, &grid_items);
     CHECK(grid_items);
 
-    const auto* layout_data = layout_subtree->LayoutData();
+    auto* layout_data = layout_subtree->LayoutData();
     const auto& track_collection =
         is_for_columns ? layout_data->Columns() : layout_data->Rows();
 
@@ -151,21 +151,22 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
                                &grid_items, &oof_children);
     CHECK(grid_items);
 
-  const auto* layout_data = layout_subtree->LayoutData();
-  const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
+    auto* layout_data = layout_subtree->LayoutData();
+    const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
 
-  if (!grid_items->IsEmpty()) {
-    const auto& track_collection = grid_axis_direction == kForColumns
-                                       ? layout_data->Columns()
-                                       : layout_data->Rows();
+    if (!grid_items->IsEmpty()) {
+      const auto& track_collection = grid_axis_direction == kForColumns
+                                         ? layout_data->Columns()
+                                         : layout_data->Rows();
 
-    GridLanesRunningPositions running_positions(
-        track_collection, Style(),
-        ResolveFlowToleranceForGridLanes(Style(), grid_lanes_available_size_));
+      GridLanesRunningPositions running_positions(
+          track_collection, Style(),
+          ResolveFlowToleranceForGridLanes(Style(),
+                                           grid_lanes_available_size_));
 
-    PlaceGridLanesItems(*grid_items, layout_subtree, *layout_data,
-                        running_positions, SizingConstraint::kLayout);
-  }
+      PlaceGridLanesItems(*grid_items, layout_subtree, *layout_data,
+                          running_positions, SizingConstraint::kLayout);
+    }
 
   // TODO(layout-dev): This isn't great but matches legacy. Ideally this
   // would only apply when we have only flexible track(s).
@@ -322,7 +323,7 @@ LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
 void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     GridItems& grid_items,
     const GridLayoutSubtree* layout_subtree,
-    const GridLayoutData& layout_data,
+    GridLayoutData& layout_data,
     GridLanesRunningPositions& running_positions,
     std::optional<SizingConstraint> sizing_constraint) {
   const auto& style = Style();
@@ -420,7 +421,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
 void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     GridItems& grid_items,
     const GridLayoutSubtree* layout_subtree,
-    const GridLayoutData& layout_data,
+    GridLayoutData& layout_data,
     std::optional<SizingConstraint> sizing_constraint,
     LayoutUnit stacking_axis_gap,
     PlacementPhase placement_phase,
@@ -631,12 +632,12 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       LayoutUnit block_baseline_offset;
       if (is_for_columns) {
         inline_baseline_offset = ComputeBaselineOffset(
-            grid_lanes_item, track_collection, baseline_fragment, fragment,
+            grid_lanes_item, layout_data, baseline_fragment, fragment,
             style.GetFontBaseline(), kForColumns,
             containing_grid_area.size.inline_size);
       } else {
         block_baseline_offset = ComputeBaselineOffset(
-            grid_lanes_item, track_collection, baseline_fragment, fragment,
+            grid_lanes_item, layout_data, baseline_fragment, fragment,
             style.GetFontBaseline(), kForRows,
             containing_grid_area.size.block_size);
       }
@@ -698,8 +699,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
           GetBaselineSideMargin(grid_lanes_item, margins, grid_axis_direction);
 
       StoreItemBaseline(baseline_fragment, grid_axis_direction,
-                        style.GetFontBaseline(), extra_margin,
-                        To<GridSizingTrackCollection>(track_collection),
+                        style.GetFontBaseline(), extra_margin, layout_data,
                         grid_lanes_item);
     } else {
       // Items are only added to the container in the final placement pass.
@@ -1352,8 +1352,10 @@ void GridLanesLayoutAlgorithm::BuildSizingCollection(
   layout_data.SetTrackCollection(
       MakeGarbageCollected<GridSizingTrackCollection>(
           BuildRanges(), grid_axis_direction,
-          /*must_create_baselines=*/has_baseline_aligned_items,
           /*should_store_collapsed_track_indexes=*/true));
+  if (has_baseline_aligned_items) {
+    layout_data.CreateBaselines(grid_axis_direction);
+  }
 }
 
 void GridLanesLayoutAlgorithm::InitializeTrackSizes(
@@ -1370,6 +1372,13 @@ void GridLanesLayoutAlgorithm::InitializeTrackSizes(
   // TODO(almaher): For grid-lanes subgrids, we will want to get the tracks from
   // the parent.
   auto& track_collection = layout_data.SizingCollection(grid_axis_direction);
+
+  // Allocate the major/minor baseline vectors now that we know the set count.
+  if (layout_data.HasBaselines(grid_axis_direction)) {
+    layout_data.ResetBaselines(grid_axis_direction,
+                               track_collection.GetSetCount());
+  }
+
   if (track_collection.HasNonDefiniteTrack()) {
     GridTrackSizingAlgorithm::CacheGridItemsProperties(
         track_collection, &sizing_subtree.GetVirtualItems());
@@ -1498,17 +1507,18 @@ void GridLanesLayoutAlgorithm::ComputeBaselineAlignment(
     const GridSizingSubtree& sizing_subtree) {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
-  auto& track_collection =
-      sizing_subtree.LayoutData().SizingCollection(grid_axis_direction);
+  auto& layout_data = sizing_subtree.LayoutData();
+  auto& track_collection = layout_data.SizingCollection(grid_axis_direction);
 
-  if (!track_collection.HasBaselines()) {
+  if (!layout_data.HasBaselines(grid_axis_direction)) {
     return;
   }
 
   // TODO(almaher): We will need special subgrid logic here utilizing
   // `opt_subgrid_data`, similar to grid.
 
-  track_collection.ResetBaselines();
+  layout_data.ResetBaselines(grid_axis_direction,
+                             track_collection.GetSetCount());
 
   const bool is_for_columns = grid_axis_direction == kForColumns;
   const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(

@@ -23,7 +23,6 @@ class GridLayoutData;
 class GridItems;
 class GridLayoutTrackCollection;
 class GridLineResolver;
-class GridSizingTrackCollection;
 class GridTrackList;
 class LayoutBox;
 class LogicalBoxFragment;
@@ -142,7 +141,8 @@ LayoutUnit ClampIntrinsicMinSize(LayoutUnit min_content_contribution,
 // Returns the track baseline for a grid item based on its baseline-sharing
 // group.
 LayoutUnit GetTrackBaseline(const GridItemData& grid_item,
-                            const GridLayoutTrackCollection& track_collection);
+                            const GridLayoutData& layout_data,
+                            GridTrackSizingDirection track_direction);
 
 // Returns the baseline of an item from its fragment. Handles both first and
 // last baseline based on `is_last_baseline`.
@@ -157,21 +157,20 @@ void StoreItemBaseline(const LogicalBoxFragment& baseline_fragment,
                        GridTrackSizingDirection track_direction,
                        FontBaseline font_baseline,
                        LayoutUnit extra_margin,
-                       GridSizingTrackCollection& track_collection,
+                       GridLayoutData& layout_data,
                        GridItemData& item);
 
 // Computes the baseline offset for aligning a grid item within its
 // baseline-sharing group. Returns the offset needed to align the item's
 // baseline with its track's baseline, accounting for major/minor baseline
 // groups.
-LayoutUnit ComputeBaselineOffset(
-    const GridItemData& grid_item,
-    const GridLayoutTrackCollection& track_collection,
-    const LogicalBoxFragment& baseline_fragment,
-    const LogicalBoxFragment& fragment,
-    FontBaseline font_baseline,
-    GridTrackSizingDirection track_direction,
-    LayoutUnit available_size);
+LayoutUnit ComputeBaselineOffset(const GridItemData& grid_item,
+                                 const GridLayoutData& layout_data,
+                                 const LogicalBoxFragment& baseline_fragment,
+                                 const LogicalBoxFragment& fragment,
+                                 FontBaseline font_baseline,
+                                 GridTrackSizingDirection track_direction,
+                                 LayoutUnit available_size);
 
 // Aggregate all direct out of flow children from the grid container associated
 // with `algorithm` to `opt_oof_children`, unless it's not provided.
@@ -258,6 +257,15 @@ GridLayoutTrackCollection* CreateSubgridTrackCollection(
     const BoxStrut& border_scrollbar_padding,
     const LogicalSize grid_available_size,
     GridTrackSizingDirection track_direction);
+
+GridTrackBaselines* CreateSubgridBaselines(
+    const SubgriddedItemData& subgrid_data,
+    const ComputedStyle& style,
+    const ConstraintSpace& space,
+    const BoxStrut& border_scrollbar_padding,
+    const LogicalSize grid_available_size,
+    GridTrackSizingDirection track_direction,
+    const GridTrackBaselines& parent_baselines);
 
 // Initialize the track collections of a given grid sizing data.
 void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,

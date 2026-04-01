@@ -72,29 +72,25 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
   GridLayoutData& operator=(GridLayoutData&&) = delete;
 
   GridLayoutData(const GridLayoutData& other) {
-    // Do a deep copy of the track collections if they have baselines, since
-    // they may be mutated per-subgrid with baseline alignment; otherwise,
-    // shallow copy is sufficient.
-    if (other.columns_) {
-      if (other.columns_->HasBaselines()) {
-        columns_ =
-            MakeGarbageCollected<GridLayoutTrackCollection>(other.Columns());
-      } else {
-        columns_ = other.columns_;
-      }
+    // Track collections are pure geometry; always shallow-copy.
+    columns_ = other.columns_;
+    rows_ = other.rows_;
+    // Deep-copy baselines since they may be mutated per-subgrid.
+    if (other.column_baselines_) {
+      column_baselines_ =
+          MakeGarbageCollected<GridTrackBaselines>(*other.column_baselines_);
     }
-    if (other.rows_) {
-      if (other.rows_->HasBaselines()) {
-        rows_ = MakeGarbageCollected<GridLayoutTrackCollection>(other.Rows());
-      } else {
-        rows_ = other.rows_;
-      }
+    if (other.row_baselines_) {
+      row_baselines_ =
+          MakeGarbageCollected<GridTrackBaselines>(*other.row_baselines_);
     }
   }
 
   bool operator==(const GridLayoutData& other) const {
     return base::ValuesEquivalent(columns_, other.columns_) &&
-           base::ValuesEquivalent(rows_, other.rows_);
+           base::ValuesEquivalent(rows_, other.rows_) &&
+           base::ValuesEquivalent(column_baselines_, other.column_baselines_) &&
+           base::ValuesEquivalent(row_baselines_, other.row_baselines_);
   }
 
   bool HasSubgriddedAxis(GridTrackSizingDirection track_direction) const {
@@ -158,9 +154,91 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
            (rows_ && Rows().HasIndefiniteSet());
   }
 
+  bool HasBaselines(GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? !!column_baselines_
+                                            : !!row_baselines_;
+  }
+
+  LayoutUnit MajorBaseline(GridTrackSizingDirection track_direction,
+                           wtf_size_t set_index) const {
+    const auto* baselines = (track_direction == kForColumns)
+                                ? column_baselines_.Get()
+                                : row_baselines_.Get();
+    if (!baselines || set_index >= baselines->major.size()) {
+      return LayoutUnit::Min();
+    }
+    return baselines->major[set_index];
+  }
+
+  LayoutUnit MinorBaseline(GridTrackSizingDirection track_direction,
+                           wtf_size_t set_index) const {
+    const auto* baselines = (track_direction == kForColumns)
+                                ? column_baselines_.Get()
+                                : row_baselines_.Get();
+    if (!baselines || set_index >= baselines->minor.size()) {
+      return LayoutUnit::Min();
+    }
+    return baselines->minor[set_index];
+  }
+
+  void CreateBaselines(GridTrackSizingDirection track_direction) {
+    auto& baselines =
+        (track_direction == kForColumns) ? column_baselines_ : row_baselines_;
+    baselines = MakeGarbageCollected<GridTrackBaselines>();
+  }
+
+  void ResetBaselines(GridTrackSizingDirection track_direction,
+                      wtf_size_t set_count) {
+    auto& baselines =
+        (track_direction == kForColumns) ? column_baselines_ : row_baselines_;
+    if (!baselines) {
+      baselines = MakeGarbageCollected<GridTrackBaselines>();
+    }
+    baselines->Reset(set_count);
+  }
+
+  void SetMajorBaseline(GridTrackSizingDirection track_direction,
+                        wtf_size_t set_index,
+                        LayoutUnit candidate_baseline) {
+    auto* baselines = (track_direction == kForColumns) ? column_baselines_.Get()
+                                                       : row_baselines_.Get();
+    DCHECK(baselines && set_index < baselines->major.size());
+    if (candidate_baseline > baselines->major[set_index]) {
+      baselines->major[set_index] = candidate_baseline;
+    }
+  }
+
+  void SetMinorBaseline(GridTrackSizingDirection track_direction,
+                        wtf_size_t set_index,
+                        LayoutUnit candidate_baseline) {
+    auto* baselines = (track_direction == kForColumns) ? column_baselines_.Get()
+                                                       : row_baselines_.Get();
+    DCHECK(baselines && set_index < baselines->minor.size());
+    if (candidate_baseline > baselines->minor[set_index]) {
+      baselines->minor[set_index] = candidate_baseline;
+    }
+  }
+
+  void SetBaselines(GridTrackSizingDirection track_direction,
+                    GridTrackBaselines* baselines) {
+    if (track_direction == kForColumns) {
+      column_baselines_ = baselines;
+    } else {
+      row_baselines_ = baselines;
+    }
+  }
+
+  const GridTrackBaselines* GetBaselines(
+      GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? column_baselines_.Get()
+                                            : row_baselines_.Get();
+  }
+
   void Trace(Visitor* visitor) const {
     visitor->Trace(columns_);
     visitor->Trace(rows_);
+    visitor->Trace(column_baselines_);
+    visitor->Trace(row_baselines_);
   }
 
   const HashMap<GridTrackSize, LayoutUnit>* IntrinsicRepeatTrackSizes() const {
@@ -190,6 +268,9 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
   Member<GridLayoutTrackCollection> columns_;
   Member<GridLayoutTrackCollection> rows_;
 
+  Member<GridTrackBaselines> column_baselines_;
+  Member<GridTrackBaselines> row_baselines_;
+
   // Intrinsic repeat track sizes for grid-lanes. Used across sizing passes
   // to store the resolved sizes of intrinsic tracks within a repeat()
   // definition.
@@ -209,7 +290,7 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
 class GridLayoutTree : public GarbageCollected<GridLayoutTree> {
  public:
   struct GridTreeNode : public GarbageCollected<GridTreeNode> {
-    GridTreeNode(const GridLayoutData* layout_data, wtf_size_t subtree_size)
+    GridTreeNode(GridLayoutData* layout_data, wtf_size_t subtree_size)
         : has_unresolved_geometry(layout_data->HasIndefiniteSet()),
           layout_data(layout_data),
           subtree_size(subtree_size) {}
@@ -217,7 +298,7 @@ class GridLayoutTree : public GarbageCollected<GridLayoutTree> {
     void Trace(Visitor* visitor) const { visitor->Trace(layout_data); }
 
     bool has_unresolved_geometry;
-    Member<const GridLayoutData> layout_data;
+    Member<GridLayoutData> layout_data;
     wtf_size_t subtree_size;
   };
 
@@ -247,9 +328,9 @@ class GridLayoutTree : public GarbageCollected<GridLayoutTree> {
     return tree_data_[index]->has_unresolved_geometry;
   }
 
-  const GridLayoutData* LayoutData(wtf_size_t index) const {
+  GridLayoutData* LayoutData(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
-    return tree_data_[index]->layout_data;
+    return tree_data_[index]->layout_data.Get();
   }
 
   wtf_size_t Size() const { return tree_data_.size(); }
@@ -305,7 +386,7 @@ class GridLayoutSubtree : public GarbageCollected<GridLayoutSubtree>,
     return LayoutTree().HasUnresolvedGeometry(subtree_root_);
   }
 
-  const GridLayoutData* LayoutData() const {
+  GridLayoutData* LayoutData() const {
     return LayoutTree().LayoutData(subtree_root_);
   }
 

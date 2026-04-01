@@ -84,6 +84,29 @@ struct CORE_EXPORT GridRange {
 
 using GridRangeVector = Vector<GridRange, 16>;
 
+struct CORE_EXPORT GridTrackBaselines
+    : public GarbageCollected<GridTrackBaselines> {
+  GridTrackBaselines() = default;
+  GridTrackBaselines(const GridTrackBaselines&) = default;
+  GridTrackBaselines& operator=(const GridTrackBaselines&) = default;
+
+  void Reset(wtf_size_t set_count) {
+    major.resize(set_count);
+    minor.resize(set_count);
+    std::fill(major.begin(), major.end(), LayoutUnit::Min());
+    std::fill(minor.begin(), minor.end(), LayoutUnit::Min());
+  }
+
+  bool operator==(const GridTrackBaselines& other) const {
+    return major == other.major && minor == other.minor;
+  }
+
+  void Trace(Visitor*) const {}
+
+  Vector<LayoutUnit, 16> major;
+  Vector<LayoutUnit, 16> minor;
+};
+
 class CORE_EXPORT GridRangeBuilder {
   STACK_ALLOCATED();
 
@@ -195,10 +218,6 @@ class CORE_EXPORT GridLayoutTrackCollection
   LayoutUnit StartExtraMargin(wtf_size_t set_index = 0) const;
   LayoutUnit EndExtraMargin(wtf_size_t set_index = kNotFound) const;
 
-  bool HasBaselines() const { return baselines_.has_value(); }
-  LayoutUnit MajorBaseline(wtf_size_t set_index) const;
-  LayoutUnit MinorBaseline(wtf_size_t set_index) const;
-
   // Increase by `delta` the offset of the set at `set_index`.
   void AdjustSingleSetOffset(wtf_size_t set_index, LayoutUnit delta);
 
@@ -212,7 +231,7 @@ class CORE_EXPORT GridLayoutTrackCollection
                                   wtf_size_t end_set_index) const;
 
   // Creates a track collection containing every |Range| with index in the range
-  // [begin, end], including their respective |SetGeometry| and baselines.
+  // [begin, end], including their respective |SetGeometry|.
   GridLayoutTrackCollection* CreateSubgridTrackCollection(
       wtf_size_t begin_range_index,
       wtf_size_t end_range_index,
@@ -221,6 +240,18 @@ class CORE_EXPORT GridLayoutTrackCollection
       const BoxStrut& subgrid_border_scrollbar_padding,
       GridTrackSizingDirection subgrid_track_direction,
       bool is_opposite_direction_in_root_grid) const;
+
+  // Creates adjusted baselines for a subgrid's span within its parent,
+  // accounting for margins, padding, and gutter size differences.
+  GridTrackBaselines* CreateSubgridBaselines(
+      wtf_size_t begin_range_index,
+      wtf_size_t end_range_index,
+      LayoutUnit subgrid_gutter_size,
+      const BoxStrut& subgrid_margin,
+      const BoxStrut& subgrid_border_scrollbar_padding,
+      GridTrackSizingDirection subgrid_track_direction,
+      bool is_opposite_direction_in_root_grid,
+      const GridTrackBaselines& parent_baselines) const;
 
   GridTrackSizingDirection Direction() const { return track_direction_; }
   LayoutUnit GutterSize() const { return gutter_size_; }
@@ -242,11 +273,6 @@ class CORE_EXPORT GridLayoutTrackCollection
  protected:
   friend class GridLanesLayoutAlgorithmTest;
 
-  struct Baselines {
-    Vector<LayoutUnit, 16> major;
-    Vector<LayoutUnit, 16> minor;
-  };
-
   // Checks whether any set in the range [begin, end) is indefinite.
   bool IsSpanningIndefiniteSet(wtf_size_t begin_set_index,
                                wtf_size_t end_set_index) const;
@@ -256,9 +282,6 @@ class CORE_EXPORT GridLayoutTrackCollection
   TrackSpanProperties properties_;
   Vector<SetGeometry, 16> sets_geometry_;
   GridTrackSizingDirection track_direction_;
-
-  // Baselines are only created when there are items with baseline alignment.
-  std::optional<Baselines> baselines_;
 
   // Initially we only know some of the set sizes - others will be indefinite.
   // To represent this we store a vector of the last indefinite indices for each
@@ -425,7 +448,6 @@ class CORE_EXPORT GridSizingTrackCollection final
   explicit GridSizingTrackCollection(
       GridRangeVector&& ranges,
       GridTrackSizingDirection track_direction = kForColumns,
-      bool must_create_baselines = false,
       bool should_store_collapsed_track_indexes = false);
 
   // This class should be specifically used for grid sizing.
@@ -461,10 +483,6 @@ class CORE_EXPORT GridSizingTrackCollection final
   // Caches the final geometry used to layout grid items.
   void FinalizeSetsGeometry(LayoutUnit first_set_offset,
                             LayoutUnit override_gutter_size);
-
-  void ResetBaselines();
-  void SetMajorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
-  void SetMinorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
 
  private:
   friend class GridLayoutAlgorithmTest;

@@ -546,10 +546,7 @@ const LayoutResult* LayoutGridItemForMeasure(
 LayoutUnit Baseline(const GridItemData& grid_item,
                     const GridLayoutData& layout_data,
                     GridTrackSizingDirection track_direction) {
-  const auto& track_collection = (track_direction == kForColumns)
-                                     ? layout_data.Columns()
-                                     : layout_data.Rows();
-  return GetTrackBaseline(grid_item, track_collection);
+  return GetTrackBaseline(grid_item, layout_data, track_direction);
 }
 
 LayoutUnit GetExtraMarginForBaseline(const BoxStrut& margins,
@@ -856,8 +853,10 @@ void GridLayoutAlgorithm::BuildSizingCollection(
 
   layout_data.SetTrackCollection(
       MakeGarbageCollected<GridSizingTrackCollection>(
-          range_builder.FinalizeRanges(), track_direction,
-          must_create_baselines));
+          range_builder.FinalizeRanges(), track_direction));
+  if (must_create_baselines) {
+    layout_data.CreateBaselines(track_direction);
+  }
 }
 
 GridLineResolver GridLayoutAlgorithm::BuildGridLineResolver(
@@ -959,14 +958,15 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
     bool is_track_sizing) const {
-  auto& track_collection = sizing_subtree.SizingCollection(track_direction);
+  auto& layout_data = sizing_subtree.LayoutData();
 
-  if (!track_collection.HasBaselines()) {
+  if (!layout_data.HasBaselines(track_direction)) {
     return;
   }
 
+  auto& track_collection = sizing_subtree.SizingCollection(track_direction);
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
-  track_collection.ResetBaselines();
+  layout_data.ResetBaselines(track_direction, track_collection.GetSetCount());
 
   for (auto& grid_item :
        sizing_subtree.GetGridItems().IncludeSubgriddedItems()) {
@@ -1035,7 +1035,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
 
     StoreItemBaseline(baseline_fragment, track_direction,
                       grid_item.parent_grid_font_baseline, extra_margin,
-                      track_collection, grid_item);
+                      layout_data, grid_item);
   }
 }
 
@@ -1084,8 +1084,9 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
                 : border_scrollbar_padding.block_start);
       }
 
-      if (track_collection.HasBaselines()) {
-        track_collection.ResetBaselines();
+      if (layout_data.HasBaselines(track_direction)) {
+        layout_data.ResetBaselines(track_direction,
+                                   track_collection.GetSetCount());
       }
     }
   };
@@ -1341,14 +1342,18 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
               opt_subgrid_data->is_parallel_with_root_grid
                   ? track_direction == kForColumns
                   : track_direction == kForRows;
-          const auto& parent_track_collection = is_for_columns_in_parent
-                                                    ? opt_subgrid_data.Columns()
-                                                    : opt_subgrid_data.Rows();
-          if (parent_track_collection.HasBaselines()) {
-            layout_data.SetTrackCollection(CreateSubgridTrackCollection(
-                opt_subgrid_data, Style(), GetConstraintSpace(),
-                BorderScrollbarPadding(), GetGridAvailableSize(),
-                track_direction));
+          const auto parent_baseline_direction =
+              is_for_columns_in_parent ? kForColumns : kForRows;
+          const auto* parent_baselines =
+              opt_subgrid_data.ParentLayoutData()->GetBaselines(
+                  parent_baseline_direction);
+          if (parent_baselines) {
+            layout_data.SetBaselines(
+                track_direction,
+                CreateSubgridBaselines(
+                    opt_subgrid_data, Style(), GetConstraintSpace(),
+                    BorderScrollbarPadding(), GetGridAvailableSize(),
+                    track_direction, *parent_baselines));
           }
         } else {
           ComputeGridItemBaselines(
@@ -1857,13 +1862,13 @@ void GridLayoutAlgorithm::PlaceGridItems(
     LogicalBoxFragment fragment(container_writing_direction, physical_fragment);
 
     LayoutUnit inline_baseline_offset = ComputeBaselineOffset(
-        grid_item, layout_data->Columns(),
+        grid_item, *layout_data,
         LogicalBoxFragment(grid_item.BaselineWritingDirection(kForColumns),
                            physical_fragment),
         fragment, grid_item.parent_grid_font_baseline, kForColumns,
         containing_grid_area.size.inline_size);
     LayoutUnit block_baseline_offset = ComputeBaselineOffset(
-        grid_item, layout_data->Rows(),
+        grid_item, *layout_data,
         LogicalBoxFragment(grid_item.BaselineWritingDirection(kForRows),
                            physical_fragment),
         fragment, grid_item.parent_grid_font_baseline, kForRows,
@@ -1940,8 +1945,9 @@ void GridLayoutAlgorithm::PlaceGridItems(
   }
 
   // Propagate the baselines.
-  if (layout_data->Rows().HasBaselines()) {
-    baseline_accumulator.AccumulateRows(layout_data->Rows());
+  if (layout_data->HasBaselines(kForRows)) {
+    baseline_accumulator.AccumulateRows(layout_data->Rows(),
+                                        *layout_data->GetBaselines(kForRows));
   }
   if (auto first_baseline = baseline_accumulator.FirstBaseline())
     container_builder_.SetFirstBaseline(*first_baseline);

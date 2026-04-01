@@ -66,6 +66,8 @@ class SubgriddedItemData {
                : parent_layout_data_->Columns();
   }
 
+  const GridLayoutData* ParentLayoutData() const { return parent_layout_data_; }
+
  private:
   const GridItemData* item_data_in_parent_{nullptr};
   const GridLayoutData* parent_layout_data_{nullptr};
@@ -169,6 +171,7 @@ class CORE_EXPORT GridSizingTree {
       subgridded_item_data_lookup_map_;
 
   HeapVector<GridTreeNode, 16> tree_data_;
+  bool tree_has_baselines_{false};
 };
 
 // This class represents a subtree in a `GridSizingTree` and provides seamless
