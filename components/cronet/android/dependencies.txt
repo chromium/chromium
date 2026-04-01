@@ -67,6 +67,7 @@
 //third_party/modp_b64
 //third_party/perfetto
 //third_party/protobuf
+//third_party/re2
 //third_party/rust/anstyle
 //third_party/rust/clap
 //third_party/rust/clap_builder
