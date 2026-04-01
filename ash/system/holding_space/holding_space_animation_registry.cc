@@ -312,11 +312,15 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
   // which time a pulse animation is created and started.
   HoldingSpaceProgress cumulative_progress_;
 
+  // TODO(crbug.com/498077579): remove when the
+  // ProgressIndicatorAnimationDelegate is no longer outliving the
+  // HoldingSpaceController and HoldingSpaceModel it observes.
   base::ScopedObservation<HoldingSpaceController,
-                          HoldingSpaceControllerObserver>
-      controller_observation_{this};
+                          HoldingSpaceControllerObserver>::
+      LeakedDanglingUntriaged controller_observation_{this};
 
-  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+  base::ScopedObservation<HoldingSpaceModel,
+                          HoldingSpaceModelObserver>::LeakedDanglingUntriaged
       model_observation_{this};
 
   base::WeakPtrFactory<ProgressIndicatorAnimationDelegate> weak_factory_{this};
