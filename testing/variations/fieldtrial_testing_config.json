@@ -2345,6 +2345,37 @@
             ]
         }
     ],
+    "AutofillAiIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAiAvailableByDefault",
+                        "AutofillAiDedupeEntities",
+                        "AutofillAiReauthRequired",
+                        "AutofillAiServerModel",
+                        "AutofillAiVoteForFormatStringsForFlightNumbers",
+                        "AutofillAiWalletFlightReservation",
+                        "AutofillAiWalletPrivatePasses",
+                        "AutofillAiWalletPrivatePassesDeepLink",
+                        "AutofillAiWalletVehicleRegistration",
+                        "AutofillAiWithDataSchema",
+                        "FormsClassificationsMqlsLogging",
+                        "SyncAccountSettings",
+                        "SyncAutofillValuable",
+                        "SyncAutofillValuableMetadata",
+                        "SyncWalletFlightReservations",
+                        "SyncWalletVehicleRegistrations",
+                        "WalletApiPrivatePassesEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAiM4": [
         {
             "platforms": [
