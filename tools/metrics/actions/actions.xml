@@ -49486,6 +49486,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SupervisedUsers_Extensions_AskParentDialog_Approved">
+  <owner>richui@chromium.org</owner>
+  <owner>agawronska@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>
+    Emitted when the user continues the request for parent approval, which will
+    trigger the parent authentication flow.
+  </description>
+</action>
+
+<action name="SupervisedUsers_Extensions_AskParentDialog_Canceled">
+  <owner>richui@chromium.org</owner>
+  <owner>agawronska@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>
+    Emitted when the user cancels the Ask Parent Dialog, denying the attempt to
+    enable an extension.
+  </description>
+</action>
+
+<action name="SupervisedUsers_Extensions_AskParentDialog_Opened">
+  <owner>richui@chromium.org</owner>
+  <owner>agawronska@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>
+    Emitted when a supervised user initiates the flow to install an extension
+    that requires parent approval, and opens the Ask Parent Dialog.
+  </description>
+</action>
+
 <action name="SupervisedUsers_Extensions_Disabled">
   <owner>tobyhuang@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>

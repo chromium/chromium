@@ -818,6 +818,19 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </token>
 </histogram>
 
+<histogram name="SupervisedUsers.AskParentDialog"
+    enum="SupervisedUserAskParentDialog" expires_after="2026-11-01">
+  <owner>richui@google.com</owner>
+  <owner>agawronska@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The supervised user extensions installation flow on android desktop is
+    comprised of three different steps: ask parent dialog, parent auth dialog,
+    and extension installation dialog. This histogram records the actions on the
+    Ask Parent Dialog.
+  </summary>
+</histogram>
+
 <histogram
     name="SupervisedUsers.ClassifyUrlThrottle.EarlierThanContentResponse"
     units="ms" expires_after="2026-08-02">

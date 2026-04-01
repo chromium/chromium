@@ -587,6 +587,11 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallStatusCheckDone(
     } else if (supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
                !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
                    profile_)) {
+      supervised_user_extensions_metrics_recorder_
+          .RecordAskParentDialogUmaMetrics(
+              SupervisedUserExtensionsMetricsRecorder::AskParentDialogState::
+                  kOpened);
+
       // This install requires parent permission, so show the Ask Parent dialog.
       ShowExtensionInstallAskParentDialog(
           web_contents,
@@ -645,6 +650,9 @@ void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
                          OnExtensionApprovalDone,
                      this);
 #else
+  supervised_user_extensions_metrics_recorder_.RecordAskParentDialogUmaMetrics(
+      SupervisedUserExtensionsMetricsRecorder::AskParentDialogState::kApproved);
+
   auto extension_approval_callback =
       base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
                          OnParentAuthenticationDone,
@@ -699,11 +707,14 @@ void WebstorePrivateBeginInstallWithManifest3Function::
                          OnExtensionApprovalDone,
                      this));
 
+  auto prompt = std::make_unique<ExtensionInstallPrompt::Prompt>(
+      ExtensionInstallPrompt::EXTENSION_PARENT_APPROVAL_PROMPT);
+  prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
+
   install_prompt_ = std::make_unique<ExtensionInstallPrompt>(web_contents);
   install_prompt_->ShowDialog(
       std::move(dialog_callback), dummy_extension_.get(), &icon_,
-      std::make_unique<ExtensionInstallPrompt::Prompt>(
-          ExtensionInstallPrompt::EXTENSION_PARENT_APPROVAL_PROMPT),
+      std::move(prompt),
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -912,6 +923,9 @@ void WebstorePrivateBeginInstallWithManifest3Function::
             IDS_EXTENSIONS_SUPERVISED_USER_PARENTAL_PERMISSION_FAILURE),
         WebstoreInstaller::FailureReason::FAILURE_REASON_CANCELLED);
   }
+
+  supervised_user_extensions_metrics_recorder_.RecordAskParentDialogUmaMetrics(
+      SupervisedUserExtensionsMetricsRecorder::AskParentDialogState::kCanceled);
 
   Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
                         kWebstoreUserCancelledError));

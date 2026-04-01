@@ -59,6 +59,21 @@ const char SupervisedUserExtensionsMetricsRecorder::
 const char SupervisedUserExtensionsMetricsRecorder::
     kIncorrectParentPasswordProvidedActionName[] =
         "SupervisedUsers_Extensions_IncorrectParentPasswordProvided";
+
+// Ask Parent Dialog.
+const char
+    SupervisedUserExtensionsMetricsRecorder::kAskParentDialogHistogramName[] =
+        "SupervisedUsers.AskParentDialog";
+const char SupervisedUserExtensionsMetricsRecorder::
+    kAskParentDialogOpenedActionName[] =
+        "SupervisedUsers_Extensions_AskParentDialog_Opened";
+const char SupervisedUserExtensionsMetricsRecorder::
+    kAskParentDialogCanceledActionName[] =
+        "SupervisedUsers_Extensions_AskParentDialog_Canceled";
+const char SupervisedUserExtensionsMetricsRecorder::
+    kAskParentDialogApprovedActionName[] =
+        "SupervisedUsers_Extensions_AskParentDialog_Approved";
+
 // Enabling and disabling extensions.
 const char SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName[] =
     "SupervisedUsers.ExtensionEnablement";
@@ -162,6 +177,25 @@ void SupervisedUserExtensionsMetricsRecorder::
     case ParentPermissionDialogState::kFailed:
     case ParentPermissionDialogState::kNoParentError:
       // Nothing to do here.
+      break;
+  }
+}
+
+void SupervisedUserExtensionsMetricsRecorder::RecordAskParentDialogUmaMetrics(
+    AskParentDialogState state) {
+  base::UmaHistogramEnumeration(kAskParentDialogHistogramName, state);
+  switch (state) {
+    case AskParentDialogState::kOpened:
+      base::RecordAction(
+          base::UserMetricsAction(kAskParentDialogOpenedActionName));
+      break;
+    case AskParentDialogState::kCanceled:
+      base::RecordAction(
+          base::UserMetricsAction(kAskParentDialogCanceledActionName));
+      break;
+    case AskParentDialogState::kApproved:
+      base::RecordAction(
+          base::UserMetricsAction(kAskParentDialogApprovedActionName));
       break;
   }
 }

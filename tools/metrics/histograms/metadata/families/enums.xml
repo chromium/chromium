@@ -349,6 +349,22 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Requests Disabled"/>
 </enum>
 
+<enum name="SupervisedUserAskParentDialog">
+  <summary>Tracks the actions on the Ask Parent Dialog.</summary>
+  <int value="0" label="Opened">
+    Recorded when the Ask Parent Dialog is opened.
+  </int>
+  <int value="1" label="Canceled">
+    Recorded when the Ask Parent Dialog is canceled (either by pressing the
+    cancel button, hitting escape, or navigating away), denying the supervised
+    user's attempt to request approval for the extension install.
+  </int>
+  <int value="2" label="Approved">
+    Recorded when the Ask Parent Dialog is approved and we proceed to requesting
+    parent auth.
+  </int>
+</enum>
+
 <!-- LINT.IfChange(SupervisedUserExtension2) -->
 
 <enum name="SupervisedUserExtension2">

@@ -688,6 +688,12 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
                          DoneCallbackPayload(
                              result, extensions::ScopedTestDialogAutoConfirm::
                                          GetJustification())));
+#if BUILDFLAG(IS_ANDROID)
+      // Since the Android tests for supervised user extension installation does
+      // not directly create the ExtensionInstallPrompt, this is needed to
+      // ensure the observers are notified when we auto confirm the prompt.
+      prompt_->OnDialogAccepted();
+#endif  // BUILDFLAG(IS_ANDROID)
       return true;
     }
     case extensions::ScopedTestDialogAutoConfirm::CANCEL: {
@@ -696,6 +702,12 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
           base::BindOnce(std::move(done_callback_),
                          DoneCallbackPayload(
                              ExtensionInstallPrompt::Result::USER_CANCELED)));
+#if BUILDFLAG(IS_ANDROID)
+      // Since the Android tests for supervised user extension installation does
+      // not directly create the ExtensionInstallPrompt, this is needed to
+      // ensure the observers are notified when we auto confirm the prompt.
+      prompt_->OnDialogCanceled();
+#endif  // BUILDFLAG(IS_ANDROID)
       return true;
     }
   }
