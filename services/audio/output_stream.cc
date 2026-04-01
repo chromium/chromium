@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -198,13 +199,13 @@ OutputStream::OutputStream(
   DCHECK(created_callback);
   DCHECK(delete_callback_);
   DCHECK(coordinator_);
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   TRACE_EVENT_BEGIN("audio", "audio::OutputStream",
                     perfetto::Track::FromPointer(this));
   TRACE_EVENT_BEGIN("audio", "OutputStream", perfetto::Track::FromPointer(this),
                     "device id", output_device_id, "params",
                     params.AsHumanReadableString());
-  SendLogMessage(
-      "%s", GetCtorLogString(audio_manager, output_device_id, params).c_str());
+  SendLogMessage(GetCtorLogString(audio_manager, output_device_id, params));
 
   // |this| owns these objects, so unretained is safe.
   base::RepeatingClosure error_handler =
@@ -231,10 +232,14 @@ OutputStream::OutputStream(
   }
 
   CreateAudioPipe(std::move(created_callback));
+  SendLogMessage(base::StringPrintf(
+      "Create => (duration=%" PRId64 " ms)",
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 OutputStream::~OutputStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  const base::TimeTicks start_time = base::TimeTicks::Now();
 
   if (log_) {
     log_->OnClosed();
@@ -262,30 +267,40 @@ OutputStream::~OutputStream() {
                   /* OutputStream */ perfetto::Track::FromPointer(this));
   TRACE_EVENT_END("audio",
                   /* audio::OutputStream */ perfetto::Track::FromPointer(this));
+  SendLogMessage(base::StringPrintf(
+      "Dtor => (completed, duration=%" PRId64 " ms)",
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 void OutputStream::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  SendLogMessage("%s()", __func__);
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  SendLogMessage(base::StringPrintf("%s()", __func__));
 
   controller_.Play();
   if (log_)
     log_->OnStarted();
+  SendLogMessage(base::StringPrintf(
+      "%s() => (duration=%" PRId64 " ms)", __func__,
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 void OutputStream::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  SendLogMessage("%s()", __func__);
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  SendLogMessage(base::StringPrintf("%s()", __func__));
 
   controller_.Pause();
   if (log_)
     log_->OnStopped();
+  SendLogMessage(base::StringPrintf(
+      "%s() => (duration=%" PRId64 " ms)", __func__,
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 void OutputStream::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  SendLogMessage("%s()", __func__);
-
+  SendLogMessage(base::StringPrintf("%s()", __func__));
   controller_.Flush();
 }
 
@@ -317,10 +332,11 @@ void OutputStream::SwitchAudioOutputDeviceId(
 
 void OutputStream::CreateAudioPipe(CreatedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   DCHECK(reader_.IsValid());
   TRACE_EVENT_INSTANT("audio", "CreateAudioPipe",
                       perfetto::Track::FromPointer(this));
-  SendLogMessage("%s()", __func__);
+  SendLogMessage(base::StringPrintf("%s()", __func__));
 
   base::UnsafeSharedMemoryRegion shared_memory_region =
       reader_.TakeSharedMemoryRegion();
@@ -334,6 +350,9 @@ void OutputStream::CreateAudioPipe(CreatedCallback created_callback) {
   std::move(created_callback)
       .Run({std::in_place, std::move(shared_memory_region),
             std::move(socket_handle)});
+  SendLogMessage(base::StringPrintf(
+      "%s() => (duration=%" PRId64 " ms)", __func__,
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 void OutputStream::OnControllerPlaying() {
@@ -383,7 +402,7 @@ void OutputStream::OnControllerError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_INSTANT("audio", "OnControllerError",
                       perfetto::Track::FromPointer(this));
-  SendLogMessage("%s()", __func__);
+  SendLogMessage(base::StringPrintf("%s()", __func__));
 
   // Stop checking the audio level to avoid using this object while it's being
   // torn down.
@@ -444,16 +463,13 @@ void OutputStream::OnAudibleStateChanged(bool is_audible) {
   }
 }
 
-void OutputStream::SendLogMessage(const char* format, ...) {
+void OutputStream::SendLogMessage(const std::string& message) {
   if (!log_)
     return;
-  va_list args;
-  va_start(args, format);
   log_->OnLogMessage(
-      "audio::OS::" + UNSAFE_TODO(base::StringPrintV(format, args)) +
+      "audio::OS::" + message +
       base::StringPrintf(" [controller=0x%" PRIXPTR "]",
                          reinterpret_cast<uintptr_t>(&controller_)));
-  va_end(args);
 }
 
 // Static

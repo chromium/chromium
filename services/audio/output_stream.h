@@ -120,7 +120,7 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   // point out its origin. Compare with OutputController::EventHandler::OnLog()
   // which only will be called by the |controller_| object. These logs are
   // prepended with "AOC::" where AOC corresponds to AudioOutputController.
-  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
+  void SendLogMessage(const std::string& message);
 
   SEQUENCE_CHECKER(owning_sequence_);
 
