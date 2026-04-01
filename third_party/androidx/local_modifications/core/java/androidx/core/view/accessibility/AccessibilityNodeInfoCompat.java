@@ -40,8 +40,10 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeInfo.MathInfo;
 import android.view.accessibility.AccessibilityNodeInfo.Selection;
 import android.view.accessibility.AccessibilityNodeInfo.SelectionPosition;
+import android.view.accessibility.AccessibilityNodeInfo.StructuredDataInfo;
 import android.view.accessibility.AccessibilityNodeInfo.TouchDelegateInfo;
 
 import androidx.annotation.IntDef;
@@ -50,6 +52,7 @@ import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresFlag;
 import androidx.annotation.RestrictTo;
+import androidx.annotation.StringDef;
 import androidx.core.R;
 import androidx.core.accessibilityservice.AccessibilityServiceInfoCompat;
 import androidx.core.flagging.Flags;
@@ -72,6 +75,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -1554,6 +1558,353 @@ public class AccessibilityNodeInfoCompat {
     }
 
     /**
+     * Compat class for {@link AccessibilityNodeInfo.StructuredDataInfo}, which is a abstract base
+     * class for holding structured semantic information about a node.
+     *
+     * @see AccessibilityNodeInfo.StructuredDataInfo
+     *
+     * Compatibility:
+     * <ul>
+     *     <li>API &lt: 36.1: Class methods perform no-op behavior.</li>
+     * </ul>
+     */
+    public abstract static class StructuredDataInfoCompat {
+        @Nullable
+        final StructuredDataInfo mStructuredDataInfo;
+
+        /**
+         * Instantiates a new StructuredDataInfoCompat.
+         *
+         * @param structuredDataInfo The underlying StructuredDataInfo to wrap.
+         */
+        protected StructuredDataInfoCompat(@Nullable StructuredDataInfo structuredDataInfo) {
+            mStructuredDataInfo = structuredDataInfo;
+        }
+
+        /**
+         * @return The tag for this structured semantic information.
+         *
+         * Compatibility:
+         * <ul>
+         *     <li>API &lt: 36.1: Always returns {@code null}</li>
+         * </ul>
+         */
+        @Nullable
+        public String getTag() {
+            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+                return FlagA11yMathApiImpl.getStructuredDataInfoTag(mStructuredDataInfo);
+            }
+
+            return null;
+        }
+
+        /**
+         * Adds an attribute.
+         *
+         * @param attributeKey The attribute key.
+         * @param value The attribute value.
+         *
+         * Compatibility:
+         * <ul>
+         *     <li>API &lt: 36.1: Performs no-op behavior</li>
+         * </ul>
+         */
+        public void putAttribute(@NonNull String attributeKey,
+                @NonNull String value) {
+            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+                FlagA11yMathApiImpl.putStructuredDataInfoAttribute(
+                        mStructuredDataInfo, attributeKey, value);
+            }
+        }
+
+        /**
+         * Removes an attribute.
+         *
+         * @param attributeKey The attribute key.
+         *
+         * Compatibility:
+         * <ul>
+         *     <li>API &lt: 36.1: Performs no-op behavior</li>
+         * </ul>
+         */
+        public void removeAttribute(@NonNull String attributeKey) {
+            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+                FlagA11yMathApiImpl.removeStructuredDataInfoAttribute(mStructuredDataInfo,
+                        attributeKey);
+            }
+        }
+
+        /**
+         * Gets the value of an attribute.
+         *
+         * @param attributeKey The attribute key.
+         * @return The attribute value.
+         *
+         * Compatibility:
+         * <ul>
+         *     <li>API &lt: 36.1: Always returns {@code null}</li>
+         * </ul>
+         */
+        @Nullable
+        public String getAttribute(@NonNull String attributeKey) {
+            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+                return FlagA11yMathApiImpl.getStructuredDataInfoAttribute(
+                        mStructuredDataInfo, attributeKey);
+            }
+
+            return null;
+        }
+
+        /**
+         * @return The map of attributes.
+         *
+         * Compatibility:
+         * <ul>
+         *     <li>API &lt: 36.1: Always returns an empty map</li>
+         * </ul>
+         */
+        @NonNull
+        public Map<String, String> getAttributes() {
+            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+                return FlagA11yMathApiImpl.getStructuredDataInfoAttributes(mStructuredDataInfo);
+            }
+
+            return Collections.emptyMap();
+        }
+
+        /**
+         * Compatibility:
+         * <ul>
+         *     <li>API &lt: 36.1: Always returns {@code 0}</li>
+         * </ul>
+         */
+        @Override
+        public int hashCode() {
+            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+                return FlagA11yMathApiImpl.structuredDataInfoHashCode(mStructuredDataInfo);
+            }
+
+            return 0;
+        }
+
+        /**
+         * Compatibility:
+         * <ul>
+         *     <li>API &lt: 36.1: Returns {@code true} if this object is identical to {@code obj},
+         *     else {@code false}</li>
+         * </ul>
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+                if (obj instanceof StructuredDataInfoCompat) {
+                    return FlagA11yMathApiImpl.structuredDataInfoEquals(mStructuredDataInfo,
+                            ((StructuredDataInfoCompat) obj).mStructuredDataInfo);
+                }
+            }
+
+            return this == obj;
+        }
+    }
+
+    /**
+     * Compat class for {@link AccessibilityNodeInfo.MathInfo}, which is a class that holds
+     * information about a node that represents a mathematical expression.
+     *
+     * @see AccessibilityNodeInfo.MathInfo
+     *
+     * Compatibility:
+     * <ul>
+     *     <li>API &lt: 36.1: Class methods perform no-op behavior.</li>
+     * </ul>
+     */
+    public static class MathInfoCompat extends StructuredDataInfoCompat {
+        @StringDef(
+            value = {
+                MATH_TAG_MATH,
+                MATH_TAG_FRACTION,
+                MATH_TAG_IDENTIFIER,
+                MATH_TAG_MULTISCRIPTS,
+                MATH_TAG_NONE_SCRIPT,
+                MATH_TAG_NUMBER,
+                MATH_TAG_OPERATOR,
+                MATH_TAG_OVER,
+                MATH_TAG_PRESCRIPT_DELIMITER,
+                MATH_TAG_ROOT,
+                MATH_TAG_ROW,
+                MATH_TAG_SQUARE_ROOT,
+                MATH_TAG_STRING_LITERAL,
+                MATH_TAG_SUB,
+                MATH_TAG_SUB_SUP,
+                MATH_TAG_SUP,
+                MATH_TAG_TABLE,
+                MATH_TAG_TABLE_CELL,
+                MATH_TAG_TABLE_ROW,
+                MATH_TAG_TEXT,
+                MATH_TAG_UNDER,
+                MATH_TAG_UNDER_OVER,
+            })
+        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface MathTag {}
+
+        /** The top-level root element that encapsulates a MathML expression. */
+        public static final String MATH_TAG_MATH = "math";
+        /** An element for creating fractions. */
+        public static final String MATH_TAG_FRACTION = "mfrac";
+        /** An element for symbolic names or arbitrary text to be rendered as an identifier. */
+        public static final String MATH_TAG_IDENTIFIER = "mi";
+        /**
+         * An element for attaching any number of prescripts and postscripts to a base
+         * expression.
+         */
+        public static final String MATH_TAG_MULTISCRIPTS = "mmultiscripts";
+        /**
+         * Represents an empty element, often used as a placeholder in elements like
+         * {@code mmultiscripts}.
+         */
+        public static final String MATH_TAG_NONE_SCRIPT = "none";
+        /** An element for a numeric literal. */
+        public static final String MATH_TAG_NUMBER = "mn";
+        /** An element for an operator, fence, separator, or accent. */
+        public static final String MATH_TAG_OPERATOR = "mo";
+        /** An element that attaches an accent or a limit over a base expression. */
+        public static final String MATH_TAG_OVER = "mover";
+        /**
+         * An empty element used within {@code mmultiscripts} to separate postscripts from
+         * prescripts.
+         */
+        public static final String MATH_TAG_PRESCRIPT_DELIMITER = "mprescripts";
+        /** An element for radicals with an explicit index, such as a cube root. */
+        public static final String MATH_TAG_ROOT = "mroot";
+        /** An element for grouping sub-expressions horizontally. */
+        public static final String MATH_TAG_ROW = "mrow";
+        /** An element for a square root. */
+        public static final String MATH_TAG_SQUARE_ROOT = "msqrt";
+        /** An element for representing string literals, often for computer algebra systems. */
+        public static final String MATH_TAG_STRING_LITERAL = "ms";
+        /** An element that attaches a subscript to a base expression. */
+        public static final String MATH_TAG_SUB = "msub";
+        /** An element that attaches both a subscript and a superscript to a base expression. */
+        public static final String MATH_TAG_SUB_SUP = "msubsup";
+        /** An element that attaches a superscript to a base expression. */
+        public static final String MATH_TAG_SUP = "msup";
+        /** An element for creating tables or matrices. */
+        public static final String MATH_TAG_TABLE = "mtable";
+        /** An element representing a single cell in a table or matrix. */
+        public static final String MATH_TAG_TABLE_CELL = "mtd";
+        /** An element representing a single row in a a table or matrix. */
+        public static final String MATH_TAG_TABLE_ROW = "mtr";
+        /** An element for arbitrary text to be rendered as itself, often used for commentary. */
+        public static final String MATH_TAG_TEXT = "mtext";
+        /** An element that attaches an accent or a limit under a base expression. */
+        public static final String MATH_TAG_UNDER = "munder";
+        /** An element that attaches scripts both under and over a base expression. */
+        public static final String MATH_TAG_UNDER_OVER = "munderover";
+
+        @StringDef(
+            value = {
+                MATH_ATTRIBUTE_INTENT,
+                MATH_ATTRIBUTE_ARG,
+            })
+        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface MathAttribute {}
+
+        /**
+         * An attribute that provides a semantic annotation for the element on which it is
+         * specified.
+         *
+         * <p>
+         * The {@code intent} attribute's value is a string that can be parsed to determine
+         * the meaning of the element and its children. An {@code intent} value is a string
+         * consisting of a single token, or a function-like expression.
+         *
+         * <p>
+         * Use this attribute on a container node to disambiguate mathematical notation. For
+         * example, the expression {@code (a, b)} is ambiguous; it could be a point, an open
+         * interval, or the greatest common divisor. By setting
+         * {@code intent="open-interval($1, $2)"} on the parent node, you provide a precise,
+         * machine-readable meaning that accessibility services can use to provide a better
+         * experience. The {@code $1} and {@code $2} are placeholders for the arguments, which are
+         * identified on child nodes using the {@link #MATH_ATTRIBUTE_ARG} attribute.
+         */
+        public static final String MATH_ATTRIBUTE_INTENT = "intent";
+
+        /**
+         * An attribute used to associate a child element with one of the arguments in its parent's
+         * {@link #MATH_ATTRIBUTE_INTENT} value.
+         *
+         * <p>
+         * The value of the {@code arg} attribute is a token that must match one of the argument
+         * names in the parent's {@code intent} value.
+         *
+         * <p>
+         * Use this attribute on a child node to explicitly link it to one of the argument
+         * placeholders in its parent's {@code intent} string. For example, if a parent node has
+         * {@code intent="gcd($1, $2)"}, the child node representing the first parameter of the
+         * function should have its {@code arg} attribute set to "1".
+         */
+        public static final String MATH_ATTRIBUTE_ARG = "arg";
+
+        /**
+         * Instantiates a new MathInfoCompat.
+         *
+         * @param tag The MathML tag for this node.
+         */
+        public MathInfoCompat(@NonNull @MathTag String tag) {
+            super(Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")
+                    ? (StructuredDataInfo) FlagA11yMathApiImpl.createMathInfo(tag) : null);
+        }
+
+        /**
+         * Instantiates a new MathInfoCompat.
+         *
+         * @param mathInfo The underlying MathInfo to wrap.
+         */
+        public MathInfoCompat(@Nullable MathInfo mathInfo) {
+            super(Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")
+                    ? (StructuredDataInfo) mathInfo : null);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        @Nullable
+        @MathTag
+        public String getTag() {
+            return super.getTag();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void putAttribute(@NonNull @MathAttribute String attributeKey,
+                @NonNull String value) {
+            super.putAttribute(attributeKey, value);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void removeAttribute(@NonNull @MathAttribute String attributeKey) {
+            super.removeAttribute(attributeKey);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        @Nullable
+        public String getAttribute(@NonNull @MathAttribute String attributeKey) {
+            return super.getAttribute(attributeKey);
+        }
+    }
+
+    /**
      * Class with information if a node is a range.
      */
     public static class RangeInfoCompat {
@@ -1896,15 +2247,21 @@ public class AccessibilityNodeInfoCompat {
         /**
          * Compatibility:
          * <ul>
-         *     <li>API &lt: 36.1: Always returns {@code false}</li>
+         *     <li>API &lt: 36.1: Returns {@code true} if this object is identical to {@code other},
+         *     else {@code false}</li>
          * </ul>
          */
         @Override
         public boolean equals(Object other) {
             if (BuildCompat.isAtLeastB_1()) {
-                return mPosition != null ? mPosition.equals(other) : false;
+                if (!(other instanceof SelectionPositionCompat)) {
+                    return false;
+                }
+                return mPosition != null
+                        ? mPosition.equals(((SelectionPositionCompat) other).mPosition)
+                        : false;
             } else {
-                return false;
+                return this == other;
             }
         }
     }
@@ -2012,15 +2369,21 @@ public class AccessibilityNodeInfoCompat {
         /**
          * Compatibility:
          * <ul>
-         *     <li>API &lt: 36.1: Always returns {@code false}</li>
+         *     <li>API &lt: 36.1: Returns {@code true} if this object is identical to {@code obj},
+         *     else {@code false}</li>
          * </ul>
          */
         @Override
         public boolean equals(Object obj) {
             if (BuildCompat.isAtLeastB_1()) {
-                return mSelection != null ? mSelection.equals(obj) : false;
+                if (!(obj instanceof SelectionCompat)) {
+                    return false;
+                }
+                return mSelection != null
+                        ? mSelection.equals(((SelectionCompat) obj).mSelection)
+                        : false;
             } else {
-                return false;
+                return this == obj;
             }
         }
     }
@@ -4617,6 +4980,58 @@ public class AccessibilityNodeInfoCompat {
     }
 
     /**
+     * Gets additional structured data properties of this node. This is only populated for nodes
+     * that offer additional structured data, like a mathematical expression.
+     *
+     * @return A subclass of {@link StructuredDataInfoCompat} representing the type and
+     *         additional structured data for this node, or {@code null} if this node does not have
+     *         additional structured data attached.
+     * @see #setStructuredDataInfo(StructuredDataInfoCompat)
+     *
+     * Compatibility:
+     * <ul>
+     *     <li>API &lt: 36.1: Always returns {@code null}</li>
+     * </ul>
+     */
+    @Nullable
+    public StructuredDataInfoCompat getStructuredDataInfo() {
+        if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+            StructuredDataInfo structuredDataInfo =
+                    FlagA11yMathApiImpl.getStructuredDataInfo(mInfo);
+            if (structuredDataInfo == null) {
+                return null;
+            }
+            if (structuredDataInfo instanceof MathInfo) {
+                return new MathInfoCompat((MathInfo) structuredDataInfo);
+            }
+            // Unknown structured data type, fallback to null.
+            return null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets additional structured data properties of this node, such as for a mathematical
+     * expression.
+     *
+     * @param structuredDataInfoCompat The {@link StructuredDataInfoCompat} object (e.g., an
+     *                                 instance of {@link MathInfoCompat}) describing the node.
+     * @see #getStructuredDataInfo()
+     *
+     * Compatibility:
+     * <ul>
+     *     <li>API &lt: 36.1: Do nothing</li>
+     * </ul>
+     */
+    public void setStructuredDataInfo(@Nullable StructuredDataInfoCompat structuredDataInfoCompat) {
+        if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+            FlagA11yMathApiImpl.setStructuredDataInfo(mInfo, structuredDataInfoCompat == null
+                    ? null : structuredDataInfoCompat.mStructuredDataInfo);
+        }
+    }
+
+    /**
      * Gets the range info if this node is a range.
      *
      * @return The range.
@@ -6396,7 +6811,7 @@ public class AccessibilityNodeInfoCompat {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES_FULL.BAKLAVA_1)
+    @RequiresApi(37)
     @RequiresFlag("android.view.accessibility.a11y_selection_position_app_getters_api")
     private static class FlagA11ySelectionPositionAppGettersApiImpl {
         private FlagA11ySelectionPositionAppGettersApiImpl() {
@@ -6409,6 +6824,107 @@ public class AccessibilityNodeInfoCompat {
 
         static int getVirtualDescendantId(SelectionPosition selectionPosition) {
             return selectionPosition.getVirtualDescendantId();
+        }
+    }
+
+    @RequiresApi(10000)
+    @RequiresFlag("android.view.accessibility.a11y_math_api")
+    private static class FlagA11yMathApiImpl {
+        private FlagA11yMathApiImpl() {
+            // This class is non instantiable.
+        }
+
+        @NonNull
+        public static MathInfo createMathInfo(@NonNull String tag) {
+            return new MathInfo(tag);
+        }
+
+        public static void setStructuredDataInfo(
+                @Nullable AccessibilityNodeInfo nodeInfo,
+                @Nullable StructuredDataInfo structuredDataInfo) {
+            if (nodeInfo == null) {
+                return;
+            }
+
+            nodeInfo.setStructuredDataInfo(structuredDataInfo);
+        }
+
+        @Nullable
+        public static StructuredDataInfo getStructuredDataInfo(
+                @Nullable AccessibilityNodeInfo nodeInfo) {
+            if (nodeInfo == null) {
+                return null;
+            }
+
+            return nodeInfo.getStructuredDataInfo();
+        }
+
+        @Nullable
+        public static String getStructuredDataInfoTag(
+                @Nullable StructuredDataInfo structuredDataInfo) {
+            if (structuredDataInfo == null) {
+                return null;
+            }
+
+            return structuredDataInfo.getTag();
+        }
+
+        public static void putStructuredDataInfoAttribute(
+                @Nullable StructuredDataInfo structuredDataInfo,
+                @NonNull String attributeKey,
+                @NonNull String value) {
+            if (structuredDataInfo == null) {
+                return;
+            }
+
+            structuredDataInfo.putAttribute(attributeKey, value);
+        }
+
+        public static void removeStructuredDataInfoAttribute(
+                @Nullable StructuredDataInfo structuredDataInfo, @NonNull String attributeKey) {
+            if (structuredDataInfo == null) {
+                return;
+            }
+
+            structuredDataInfo.removeAttribute(attributeKey);
+        }
+
+        @Nullable
+        public static String getStructuredDataInfoAttribute(
+                @Nullable StructuredDataInfo structuredDataInfo, @NonNull String attributeKey) {
+            if (structuredDataInfo == null) {
+                return null;
+            }
+
+            return structuredDataInfo.getAttribute(attributeKey);
+        }
+
+        @NonNull
+        public static Map<String, String> getStructuredDataInfoAttributes(
+                @Nullable StructuredDataInfo structuredDataInfo) {
+            if (structuredDataInfo == null) {
+                return Collections.emptyMap();
+            }
+
+            return structuredDataInfo.getAttributes();
+        }
+
+        public static int structuredDataInfoHashCode(
+                @Nullable StructuredDataInfo structuredDataInfo) {
+            if (structuredDataInfo == null) {
+                return 0;
+            }
+
+            return structuredDataInfo.hashCode();
+        }
+
+        public static boolean structuredDataInfoEquals(@Nullable Object a,
+                @Nullable Object b) {
+            if (a == null) {
+                return b == null;
+            }
+
+            return a.equals(b);
         }
     }
 }
