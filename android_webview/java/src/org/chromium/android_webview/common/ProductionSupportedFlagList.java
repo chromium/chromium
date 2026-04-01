@@ -701,7 +701,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8PreconfigureOldGen"),
         Flag.baseFeature("V8ScavengerHigherCapacity"),
         Flag.baseFeature("V8IncrementalMarkingStartUserVisible"),
-        Flag.baseFeature("V8ExternalMemoryAccountedInGlobalLimit"),
         Flag.baseFeature(
                 "PMProcessPriorityPolicy",
                 "Controls whether the priority of renderers is controlled by the performance "
