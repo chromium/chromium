@@ -107,7 +107,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
     std::string tag_;
   };
 
-  virtual ~FileTransferAnalysisDelegate();
+  ~FileTransferAnalysisDelegate() override;
 
   // Create the FileTransferAnalysisDelegate. This function uses the factory if
   // it is set via `SetFactoryForTesting()`.

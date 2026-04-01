@@ -10,6 +10,8 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/common/proto/connectors.pb.h"
+#import "components/enterprise/connectors/core/analysis_settings.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -25,6 +27,8 @@
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_analysis_request_handler.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h"
+#import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -41,10 +45,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-namespace {
-
-}  // namespace
 
 DownloadManagerTabHelper::DownloadManagerTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
@@ -417,14 +417,29 @@ void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
 
+  const GURL& url = task_->GetRedirectedUrl();
+  std::optional<enterprise_connectors::AnalysisSettings> settings =
+      std::nullopt;
+
+  enterprise_connectors::ConnectorsService* connectors_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
+  if (connectors_service) {
+    settings = connectors_service->GetAnalysisSettings(
+        url, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+  }
+
+  auto content_analysis_info =
+      std::make_unique<enterprise_connectors::ContentAnalysisInfo>(
+          url,
+          settings.has_value() ? std::move(settings.value())
+                               : enterprise_connectors::AnalysisSettings(),
+          enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD,
+          web_state_->GetWeakPtr());
+
   // Send the download file for enterprise DLP download content scanning.
-  //
-  // TODO(crbug.com/485126116): Replace the nullptr with a valid
-  // `ContentAnalysisInfo` once the refactoring for
-  // ContentAnalysisInfoBase is done.
   analysis_request_handler_ = std::make_unique<
       enterprise_connectors::IOSAnalysisRequestHandler>(
-      nullptr, profile, "",
+      std::move(content_analysis_info), profile, "",
       enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
       task_->GetResponsePath(),
       base::BindOnce(

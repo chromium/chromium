@@ -78,6 +78,8 @@ source_set("model") {
     "//ios/chrome/browser/drive/model:policy",
     "//ios/chrome/browser/drive/model:upload_task",
     "//ios/chrome/browser/enterprise/cloud_content_scanning/model",
+    "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/connectors/analysis",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/overlays/model",

@@ -50,7 +50,7 @@ class ContentAreaUserProvider : public ContentAnalysisInfo {
                              const GURL& tab_url);
   static std::string GetUser(const content::ClipboardEndpoint& endpoint);
 
-  ~ContentAreaUserProvider();
+  ~ContentAreaUserProvider() override;
 
  private:
   const AnalysisSettings& settings() const override;
@@ -86,7 +86,7 @@ class DownloadContentAreaUserProvider : public ContentAnalysisInfo {
  public:
   explicit DownloadContentAreaUserProvider(
       download::DownloadItem& download_item);
-  ~DownloadContentAreaUserProvider();
+  ~DownloadContentAreaUserProvider() override;
 
   // ContentAnalysisInfo:
   const GURL& url() const override;

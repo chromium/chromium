@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_INFO_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_INFO_H_
 
+#import "base/memory/weak_ptr.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #import "components/enterprise/connectors/core/content_analysis_info_base.h"
@@ -26,8 +27,8 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
       const GURL& url,
       AnalysisSettings settings,
       ContentAnalysisRequest::Reason reason,
-      web::WebState* web_state);
-  ~ContentAnalysisInfo();
+      base::WeakPtr<web::WebState> web_state);
+  ~ContentAnalysisInfo() override;
 
   // ContentAnalysisInfoBase override:
   void InitializeRequest(BinaryUploadRequest* request,

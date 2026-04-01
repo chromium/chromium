@@ -19,20 +19,20 @@ namespace enterprise_connectors {
 ContentAnalysisInfo::ContentAnalysisInfo(const GURL& url,
                                          AnalysisSettings settings,
                                          ContentAnalysisRequest::Reason reason,
-                                         web::WebState* web_state)
-    : settings_(std::move(settings)),
-      url_(url),
-      tab_url_(web_state->GetLastCommittedURL()) {
+                                         base::WeakPtr<web::WebState> web_state)
+    : settings_(std::move(settings)), url_(url) {
+  CHECK(web_state);
+  tab_url_ = web_state->GetLastCommittedURL();
+  title_ = base::UTF16ToUTF8(web_state->GetTitle());
+  reason_ = reason;
+  user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
+
   auto* identity_manager = IdentityManagerFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 
   if (identity_manager) {
     identity_manager_ = identity_manager->GetWeakPtr();
   }
-
-  title_ = base::UTF16ToUTF8(web_state->GetTitle());
-  reason_ = reason;
-  user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
 }
 
 ContentAnalysisInfo::~ContentAnalysisInfo() = default;

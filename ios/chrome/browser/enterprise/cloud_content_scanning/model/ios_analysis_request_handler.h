@@ -36,12 +36,13 @@ class IOSAnalysisRequestHandler {
   // primarily accessed via `path`.
   // - `callback`: the callback to be run once the analysis is complete,
   // informing the caller of the result.
-  IOSAnalysisRequestHandler(ContentAnalysisInfo* content_analysis_info,
-                            ProfileIOS* profile,
-                            const std::string& content_transfer_method,
-                            DeepScanAccessPoint access_point,
-                            const base::FilePath path,
-                            CompletionCallback callback);
+  IOSAnalysisRequestHandler(
+      std::unique_ptr<ContentAnalysisInfo> content_analysis_info,
+      ProfileIOS* profile,
+      const std::string& content_transfer_method,
+      DeepScanAccessPoint access_point,
+      const base::FilePath path,
+      CompletionCallback callback);
 
   IOSAnalysisRequestHandler(const IOSAnalysisRequestHandler&) = delete;
   IOSAnalysisRequestHandler& operator=(const IOSAnalysisRequestHandler&) =

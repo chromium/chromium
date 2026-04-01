@@ -11,7 +11,7 @@
 namespace enterprise_connectors {
 
 IOSAnalysisRequestHandler::IOSAnalysisRequestHandler(
-    ContentAnalysisInfo* content_analysis_info,
+    std::unique_ptr<ContentAnalysisInfo> content_analysis_info,
     ProfileIOS* profile,
     const std::string& content_transfer_method,
     DeepScanAccessPoint access_point,

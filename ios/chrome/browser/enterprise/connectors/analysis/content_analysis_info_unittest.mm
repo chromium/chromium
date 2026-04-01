@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
@@ -82,7 +83,7 @@ TEST_F(ContentAnalysisInfoTest, SetupCloudBinaryUploadRequest) {
       ContentAnalysisRequest::NORMAL_DOWNLOAD;
   // Passing settings from test utils.
   ContentAnalysisInfo info(GURL(kTestDomain), std::move(settings), reason,
-                           web_state());
+                           web_state()->GetWeakPtr());
   FakeBinaryUploadRequest request(
       test::NormalDlpAndMalwareSettings()->cloud_or_local_settings);
 

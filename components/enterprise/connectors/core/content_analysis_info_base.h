@@ -26,6 +26,7 @@ class BinaryUploadRequest;
 // not important (ex. when populating protos).
 class ContentAnalysisInfoBase {
  public:
+  virtual ~ContentAnalysisInfoBase() = default;
   // Adds shared fields to `request` before sending it to the binary upload
   // service. Connector-specific fields need to be added to the request
   // separately.
