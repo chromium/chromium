@@ -243,7 +243,6 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
   GetViewAccessibility().SetIsMultiselectable(true);
 
-  tab_strip_ = AddChildView(CreateTabStrip(this, browser_view));
   BrowserWindowInterface* const browser = browser_view->browser();
 
   if (browser &&
@@ -273,6 +272,8 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
                                  views::LayoutAlignment::kCenter);
   }
 
+  std::unique_ptr<TabStrip> tab_strip = CreateTabStrip(this, browser_view);
+
   // Add and configure the TabSearchContainer and TabStripComboButton.
   std::unique_ptr<TabSearchContainer> tab_search_container;
   std::unique_ptr<TabStripActionContainer> tab_strip_action_container;
@@ -287,7 +288,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
     } else if (!base::FeatureList::IsEnabled(
                    tabs::kHorizontalTabStripComboButton)) {
       tab_search_container = std::make_unique<TabSearchContainer>(
-          render_tab_search_before_tab_strip_, this, tab_strip_);
+          render_tab_search_before_tab_strip_, this, tab_strip.get());
       tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                         views::LayoutAlignment::kCenter);
     }
@@ -303,6 +304,8 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
     // extra spacing.
     tab_search_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   }
+
+  tab_strip_ = AddChildView(std::move(tab_strip));
 
   // Allow the |tab_strip_| to grow into the free space available in
   // the HorizontalTabStripRegionView.
