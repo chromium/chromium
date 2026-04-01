@@ -30,10 +30,12 @@
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "media/base/format_utils.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -1180,12 +1182,29 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     destination_gl->GenTextures(1, &texture);
     destination_gl->BindTexture(target, texture);
 
-    renderer_.CopyVideoFrameTexturesToGLTexture(
-        media_context_.get(), destination_gl, frame, target, texture, GL_RGBA,
-        GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
-        kTopLeft_GrSurfaceOrigin);
-
     gfx::Size expected_size = frame->visible_rect().size();
+
+    const auto shared_image = frame->shared_image();
+    if (destination_gl->CanCopySharedImageDirectlyToGLTexture(
+            media::IsOpaque(frame->format()), shared_image.get(), target,
+            GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType)) {
+      std::unique_ptr<gpu::RasterScopedAccess> destination_access =
+          destination_gl->CopySharedImageDirectlyToGLTexture(
+              frame->visible_rect(), shared_image.get(),
+              frame->acquire_sync_token(), media::IsOpaque(frame->format()),
+              target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+              kUnpremul_SkAlphaType, kTopLeft_GrSurfaceOrigin);
+
+      media::PaintCanvasVideoRenderer::SynchronizeVideoFrameRead(
+          std::move(frame), destination_gl,
+          destination_context_->ContextSupport(),
+          std::move(destination_access));
+    } else {
+      renderer_.CopyVideoFrameTexturesToGLTexture(
+          media_context_.get(), destination_gl, frame, target, texture, GL_RGBA,
+          GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
+          kTopLeft_GrSurfaceOrigin);
+    }
 
     base::HeapArray<uint8_t> pixels =
         ReadbackTexture(destination_gl, texture, expected_size);

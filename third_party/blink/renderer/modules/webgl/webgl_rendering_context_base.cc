@@ -44,11 +44,13 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/blink/public/common/features.h"
@@ -6430,13 +6432,37 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     // Go through the fast path doing a GPU-GPU textures copy without a readback
     // to system memory if possible.  Otherwise, it will fall back to the normal
     // SW path.
-    if (media_video_frame->HasSharedImage() &&
-        video_renderer->CopyVideoFrameTexturesToGLTexture(
-            raster_context_provider, ContextGL(), media_video_frame,
-            params.target, texture->Object(), adjusted_internalformat,
-            params.format, params.type, params.level,
-            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
-      return;
+    if (media_video_frame->HasSharedImage()) {
+      auto* gl = ContextGL();
+      const auto shared_image = media_video_frame->shared_image();
+      SkAlphaType dst_alpha_type = params.GetDestinationAlphaType();
+      if (gl->CanCopySharedImageDirectlyToGLTexture(
+              media::IsOpaque(media_video_frame->format()), shared_image.get(),
+              params.target, adjusted_internalformat, params.type, params.level,
+              dst_alpha_type)) {
+        std::unique_ptr<gpu::RasterScopedAccess> destination_access =
+            gl->CopySharedImageDirectlyToGLTexture(
+                media_video_frame->visible_rect(), shared_image.get(),
+                media_video_frame->acquire_sync_token(),
+                media::IsOpaque(media_video_frame->format()), params.target,
+                texture->Object(), adjusted_internalformat, params.format,
+                params.type, params.level, dst_alpha_type,
+                params.GetDestinationOrigin());
+
+        media::PaintCanvasVideoRenderer::SynchronizeVideoFrameRead(
+            std::move(media_video_frame), gl,
+            raster_context_provider->ContextSupport(),
+            std::move(destination_access));
+        return;
+      }
+
+      if (video_renderer->CopyVideoFrameTexturesToGLTexture(
+              raster_context_provider, gl, media_video_frame, params.target,
+              texture->Object(), adjusted_internalformat, params.format,
+              params.type, params.level, dst_alpha_type,
+              params.GetDestinationOrigin())) {
+        return;
+      }
     }
   }
 

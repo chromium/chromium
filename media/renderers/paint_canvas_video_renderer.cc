@@ -1427,22 +1427,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
   const auto shared_image = video_frame->shared_image();
 
-  if (destination_gl->CanCopySharedImageDirectlyToGLTexture(
-          media::IsOpaque(video_frame->format()), shared_image.get(), target,
-          internal_format, type, level, dst_alpha_type)) {
-    std::unique_ptr<gpu::RasterScopedAccess> destination_access =
-        destination_gl->CopySharedImageDirectlyToGLTexture(
-            video_frame->visible_rect(), shared_image.get(),
-            video_frame->acquire_sync_token(),
-            media::IsOpaque(video_frame->format()), target, texture,
-            internal_format, format, type, level, dst_alpha_type, dst_origin);
-
-    SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
-                              raster_context_provider->ContextSupport(),
-                              std::move(destination_access));
-    return true;
-  }
-
   // Take the two-copy path:
   // * Copy the source SharedImage to a single-planar SI that's usable by GL
   // * Perform a direct texture-to-texture copy from the intermediate SI
