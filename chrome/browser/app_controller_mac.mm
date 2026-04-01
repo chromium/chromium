@@ -138,6 +138,8 @@
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
+BASE_FEATURE(kDisableNSEventMouseCoalescing, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // True while AppController is calling chrome::NewEmptyWindow(). We need a
@@ -1211,6 +1213,10 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 // This is called after profiles have been loaded and preferences registered.
 // It is safe to access the default profile here.
 - (void)applicationDidFinishLaunching:(NSNotification*)notify {
+  if (base::FeatureList::IsEnabled(kDisableNSEventMouseCoalescing)) {
+    NSEvent.mouseCoalescingEnabled = NO;
+  }
+
   if (g_browser_process->browser_policy_connector()
           ->chrome_browser_cloud_management_controller()
           ->IsEnterpriseStartupDialogShowing()) {

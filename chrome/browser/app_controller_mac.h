@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APP_CONTROLLER_MAC_H_
 #define CHROME_BROWSER_APP_CONTROLLER_MAC_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,10 @@ class TabMenuBridge;
 namespace ui {
 class ColorProvider;
 }  // namespace ui
+
+// Whether the default AppKit behavior of coalescing mouse movement events is
+// disabled. See https://crbug.com/465798393.
+BASE_DECLARE_FEATURE(kDisableNSEventMouseCoalescing);
 
 // The application controller object, created by loading the MainMenu nib.
 // This handles things like responding to menus when there are no windows
