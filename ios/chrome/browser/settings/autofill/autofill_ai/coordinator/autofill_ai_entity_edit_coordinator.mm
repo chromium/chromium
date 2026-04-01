@@ -116,32 +116,8 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
           self.browser->GetProfile());
   CHECK(entityDataManager);
 
-  std::optional<autofill::EntityInstance> instance;
-  if (_editMode == AutofillAIEntityEditMode::kCreate) {
-    CHECK(_entityType.has_value());
-
-    // Default to local.
-    autofill::EntityInstance::RecordType targetRecordType =
-        autofill::EntityInstance::RecordType::kLocal;
-
-    if (autofill::CanPerformAutofillAiAction(
-            self.browser->GetProfile(),
-            autofill::AutofillAiAction::kImportToWallet, _entityType)) {
-      targetRecordType = autofill::EntityInstance::RecordType::kServerWallet;
-    }
-
-    instance = GetEmptyEntityInstanceForType(*_entityType, targetRecordType);
-  } else {
-    CHECK(_entityID.has_value());
-
-    // Fetch the existing entity.
-    base::optional_ref<const autofill::EntityInstance> existingInstance =
-        entityDataManager->GetEntityInstance(*_entityID);
-
-    if (existingInstance.has_value()) {
-      instance = *existingInstance;
-    }
-  }
+  std::optional<autofill::EntityInstance> instance =
+      [self getOrCreateEntityInstanceWithDataManager:*entityDataManager];
 
   if (!instance.has_value()) {
     [self.delegate autofillAIEntityEditCoordinatorDidFinish:self];
@@ -265,6 +241,40 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
       identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   return base::SysUTF8ToNSString(accountInfo.email);
+}
+
+// Returns a new empty entity instance for `_entityType` if `_editMode` is
+// `kCreate`. Otherwise, returns the existing entity instance for `_entityID`.
+- (std::optional<autofill::EntityInstance>)
+    getOrCreateEntityInstanceWithDataManager:
+        (const autofill::EntityDataManager&)entityDataManager {
+  if (_editMode == AutofillAIEntityEditMode::kCreate) {
+    CHECK(_entityType.has_value());
+
+    // Default to local.
+    autofill::EntityInstance::RecordType targetRecordType =
+        autofill::EntityInstance::RecordType::kLocal;
+
+    if (autofill::CanPerformAutofillAiAction(
+            self.browser->GetProfile(),
+            autofill::AutofillAiAction::kImportToWallet, _entityType)) {
+      targetRecordType = autofill::EntityInstance::RecordType::kServerWallet;
+    }
+
+    return GetEmptyEntityInstanceForType(*_entityType, targetRecordType);
+  } else {
+    CHECK(_entityID.has_value());
+
+    // Fetch the existing entity.
+    base::optional_ref<const autofill::EntityInstance> existingInstance =
+        entityDataManager.GetEntityInstance(*_entityID);
+
+    if (existingInstance.has_value()) {
+      return *existingInstance;
+    }
+
+    return std::nullopt;
+  }
 }
 
 @end
