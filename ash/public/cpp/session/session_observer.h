@@ -97,7 +97,11 @@ class ASH_PUBLIC_EXPORT ScopedSessionObserver {
   virtual ~ScopedSessionObserver();
 
  private:
-  base::ScopedObservation<SessionController, SessionObserver> observation_;
+  // TODO(crbug.com/498581945): remove when the ScopedSessionObserver is
+  // no longer outliving the SessionController it observes.
+  base::ScopedObservation<SessionController,
+                          SessionObserver>::LeakedDanglingUntriaged
+      observation_;
 };
 
 }  // namespace ash
