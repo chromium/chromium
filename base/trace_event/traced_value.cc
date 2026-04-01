@@ -10,9 +10,9 @@
 #include <atomic>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/bits.h"
-#include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
@@ -235,7 +235,7 @@ class PickleWriter final : public TracedValue::Writer {
       }
     };
 
-    base::circular_deque<State> state_stack;
+    std::vector<State> state_stack;
 
     out->append("{");
     state_stack.push_back({State::kTypeDict});
