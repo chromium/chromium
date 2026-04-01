@@ -80,7 +80,7 @@ public class ActorNotificationFactory {
         } else if (state == ActorTaskState.FINISHED) {
             return buildSuccessNotification(builder, context, task, notificationId);
         } else {
-            return buildInterruptedNotification(builder, context, task, notificationId);
+            return buildInterruptedNotification(builder, context, task);
         }
     }
 
@@ -161,14 +161,14 @@ public class ActorNotificationFactory {
     }
 
     private static NotificationWrapper buildInterruptedNotification(
-            NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
+            NotificationWrapperBuilder builder, Context context, ActorTask task) {
         String body =
                 context.getString(R.string.actor_notification_body_interrupted, task.getTitle());
         builder.setOngoing(true)
-                .setContentTitle(context.getString(R.string.actor_notification_title_task_paused))
+                .setContentTitle(
+                        context.getString(R.string.actor_notification_title_task_interrupted))
                 .setContentText(body)
                 .setBigTextStyle(body);
-        addViewAction(builder, context, id, task);
         return builder.buildNotificationWrapper();
     }
 
