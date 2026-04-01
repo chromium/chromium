@@ -36,11 +36,15 @@ void ExtensionActionDelegateAndroid::DetachFromModel() {
 }
 
 void ExtensionActionDelegateAndroid::RegisterCommand() {
-  // TODO(crbug.com/461981075)
+  // No-op. On Android, toolbar action executions (as well as named commands)
+  // are both handled by `extension_keybinding_registry`, instead of by each
+  // action.
 }
 
 void ExtensionActionDelegateAndroid::UnregisterCommand() {
-  // TODO(crbug.com/461981075)
+  // No-op. On Android, toolbar action executions (as well as named commands)
+  // are both handled by `extension_keybinding_registry`, instead of by each
+  // action.
 }
 
 bool ExtensionActionDelegateAndroid::IsShowingPopup() const {

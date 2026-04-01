@@ -68,8 +68,9 @@ void ExtensionKeybindingRegistry::AddExtensionKeybindings(
     return;
   }
 
-  // Add all the active keybindings (except toolbar action executions,
-  // which are handled elsewhere).
+  // Add all the active keybindings. On Desktop, `PopulateCommands()` doesn't
+  // add toolbar action executions (and hence returns `false`) because they are
+  // handled by the Views for each action.
   ui::CommandMap commands;
   if (!PopulateCommands(extension, &commands)) {
     return;
