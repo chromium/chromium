@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Android Open Source Project
+ * Copyright 2024 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-package androidx.window.extensions.layout;
+package androidx.window.extensions.util;
 
-import android.graphics.Rect;
+import android.util.ArraySet;
+
+import androidx.annotation.RequiresApi;
+import androidx.annotation.RestrictTo;
 
 import org.jspecify.annotations.NonNull;
 
-/** Description of a physical feature on the display. */
-public interface DisplayFeature {
+import java.util.Set;
 
-    /**
-     * The bounding rectangle of the feature within the application window in the window coordinate
-     * space.
-     *
-     * @return bounds of display feature.
-     */
-    @NonNull Rect getBounds();
+/** Set utilities for creating working with newer {@link ArraySet} apis. */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+@RequiresApi(23)
+public final class SetUtilApi23 {
+
+    private SetUtilApi23() {}
+
+    /** Creates an instance of {@link ArraySet}. */
+    public static <T> @NonNull Set<T> createSet() {
+        return new ArraySet<>();
+    }
 }

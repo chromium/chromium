@@ -18,12 +18,13 @@ package androidx.window.extensions.area;
 
 import android.util.DisplayMetrics;
 
-import androidx.annotation.NonNull;
+import androidx.window.extensions.RequiresVendorApiLevel;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * Interface to provide information around the current status of a window area feature.
  *
- * Since {@link androidx.window.extensions.WindowExtensions#VENDOR_API_LEVEL_3}
  * @see WindowAreaComponent#addRearDisplayPresentationStatusListener
  */
 public interface ExtensionWindowAreaStatus {
@@ -32,6 +33,7 @@ public interface ExtensionWindowAreaStatus {
      * Returns the {@link androidx.window.extensions.area.WindowAreaComponent.WindowAreaStatus}
      * value that relates to the current status of a feature.
      */
+    @RequiresVendorApiLevel(level = 3)
     @WindowAreaComponent.WindowAreaStatus
     int getWindowAreaStatus();
 
@@ -39,6 +41,6 @@ public interface ExtensionWindowAreaStatus {
      * Returns the {@link DisplayMetrics} that corresponds to the window area that a feature
      * interacts with. This is converted to size class information provided to developers.
      */
-    @NonNull
-    DisplayMetrics getWindowAreaDisplayMetrics();
+    @RequiresVendorApiLevel(level = 3)
+    @NonNull DisplayMetrics getWindowAreaDisplayMetrics();
 }

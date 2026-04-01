@@ -16,8 +16,10 @@
 
 package androidx.window.extensions.embedding;
 
-import androidx.annotation.Nullable;
+import androidx.window.extensions.RequiresVendorApiLevel;
 import androidx.window.extensions.core.util.function.Function;
+
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -26,25 +28,21 @@ import java.util.Objects;
  * updating from the core library.
  */
 public abstract class EmbeddingRule {
-    @Nullable
-    private final String mTag;
+    private final @Nullable String mTag;
 
     EmbeddingRule(@Nullable String tag) {
         mTag = tag;
     }
 
     /**
-     * A unique string to identify this {@link EmbeddingRule}.
-     * The suggested usage is to set the tag in the corresponding rule builder to be able to
-     * differentiate between different rules in {@link SplitAttributes} calculator function. For
-     * example, it can be used to compute the {@link SplitAttributes} for the specific
-     * {@link SplitRule} in the {@link Function} set with
+     * A unique string to identify this {@link EmbeddingRule}. The suggested usage is to set the tag
+     * in the corresponding rule builder to be able to differentiate between different rules in
+     * {@link SplitAttributes} calculator function. For example, it can be used to compute the
+     * {@link SplitAttributes} for the specific {@link SplitRule} in the {@link Function} set with
      * {@link ActivityEmbeddingComponent#setSplitAttributesCalculator(Function)}.
-     *
-     * Since {@link androidx.window.extensions.WindowExtensions#VENDOR_API_LEVEL_2}
      */
-    @Nullable
-    public String getTag() {
+    @RequiresVendorApiLevel(level = 2)
+    public @Nullable String getTag() {
         return mTag;
     }
 

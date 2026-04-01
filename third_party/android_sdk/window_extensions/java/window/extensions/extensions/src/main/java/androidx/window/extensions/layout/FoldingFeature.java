@@ -19,77 +19,64 @@ package androidx.window.extensions.layout;
 import android.graphics.Rect;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * A feature that describes a fold in a flexible display
- * or a hinge between two physical display panels.
+ * A feature that describes a fold in a flexible display or a hinge between two physical display
+ * panels.
  */
 public class FoldingFeature implements DisplayFeature {
 
-    /**
-     * A fold in the flexible screen without a physical gap.
-     */
+    /** A fold in the flexible screen without a physical gap. */
     public static final int TYPE_FOLD = 1;
 
-    /**
-     * A physical separation with a hinge that allows two display panels to fold.
-     */
+    /** A physical separation with a hinge that allows two display panels to fold. */
     public static final int TYPE_HINGE = 2;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
-            TYPE_FOLD,
-            TYPE_HINGE,
+        TYPE_FOLD,
+        TYPE_HINGE,
     })
-    @interface Type{}
+    @interface Type {}
 
     /**
      * The foldable device's hinge is completely open, the screen space that is presented to the
-     * user is flat. See the
-     * <a href="https://developer.android.com/guide/topics/ui/foldables#postures">Posture</a>
-     * section in the official documentation for visual samples and references.
+     * user is flat. See the <a
+     * href="https://developer.android.com/guide/topics/ui/foldables#postures">Posture</a> section
+     * in the official documentation for visual samples and references.
      */
     public static final int STATE_FLAT = 1;
 
     /**
      * The foldable device's hinge is in an intermediate position between opened and closed state,
      * there is a non-flat angle between parts of the flexible screen or between physical screen
-     * panels. See the
-     * <a href="https://developer.android.com/guide/topics/ui/foldables#postures">Posture</a>
-     * section in the official documentation for visual samples and references.
+     * panels. See the <a
+     * href="https://developer.android.com/guide/topics/ui/foldables#postures">Posture</a> section
+     * in the official documentation for visual samples and references.
      */
     public static final int STATE_HALF_OPENED = 2;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({
-            STATE_HALF_OPENED,
-            STATE_FLAT
-    })
+    @IntDef({STATE_HALF_OPENED, STATE_FLAT})
     @interface State {}
 
     /**
-     * The bounding rectangle of the feature within the application window in the window
-     * coordinate space.
+     * The bounding rectangle of the feature within the application window in the window coordinate
+     * space.
      */
-    @NonNull
-    private final Rect mBounds;
+    private final @NonNull Rect mBounds;
 
-    /**
-     * The physical type of the feature.
-     */
-    @Type
-    private final int mType;
+    /** The physical type of the feature. */
+    @Type private final int mType;
 
-    /**
-     * The state of the feature.
-     */
-    @State
-    private final int mState;
+    /** The state of the feature. */
+    @State private final int mState;
 
     public FoldingFeature(@NonNull Rect bounds, @Type int type, @State int state) {
         validateFeatureBounds(bounds);
@@ -99,9 +86,8 @@ public class FoldingFeature implements DisplayFeature {
     }
 
     /** Gets the bounding rect of the display feature in window coordinate space. */
-    @NonNull
     @Override
-    public Rect getBounds() {
+    public @NonNull Rect getBounds() {
         return new Rect(mBounds);
     }
 
@@ -117,21 +103,20 @@ public class FoldingFeature implements DisplayFeature {
         return mState;
     }
 
-    /**
-     * Verifies the bounds of the folding feature.
-     */
+    /** Verifies the bounds of the folding feature. */
     private static void validateFeatureBounds(@NonNull Rect bounds) {
         if (bounds.width() == 0 && bounds.height() == 0) {
             throw new IllegalArgumentException("Bounds must be non zero.  Bounds: " + bounds);
         }
         if (bounds.left != 0 && bounds.top != 0) {
-            throw new IllegalArgumentException("Bounding rectangle must start at the top or "
-                    + "left window edge for folding features.  Bounds: " + bounds);
+            throw new IllegalArgumentException(
+                    "Bounding rectangle must start at the top or "
+                            + "left window edge for folding features.  Bounds: "
+                            + bounds);
         }
     }
 
-    @NonNull
-    private static String typeToString(int type) {
+    private static @NonNull String typeToString(int type) {
         switch (type) {
             case TYPE_FOLD:
                 return "FOLD";
@@ -142,8 +127,7 @@ public class FoldingFeature implements DisplayFeature {
         }
     }
 
-    @NonNull
-    private static String stateToString(int state) {
+    private static @NonNull String stateToString(int state) {
         switch (state) {
             case STATE_FLAT:
                 return "FLAT";
@@ -154,11 +138,15 @@ public class FoldingFeature implements DisplayFeature {
         }
     }
 
-    @NonNull
     @Override
-    public String toString() {
-        return "ExtensionDisplayFoldFeature { " + mBounds
-                + ", type=" + typeToString(getType()) + ", state=" + stateToString(mState) + " }";
+    public @NonNull String toString() {
+        return "ExtensionDisplayFoldFeature { "
+                + mBounds
+                + ", type="
+                + typeToString(getType())
+                + ", state="
+                + stateToString(mState)
+                + " }";
     }
 
     @Override
@@ -179,10 +167,7 @@ public class FoldingFeature implements DisplayFeature {
         return mBounds.equals(other.mBounds);
     }
 
-    /**
-     * Manually computes the hashCode for the {@link Rect} since it is not implemented
-     * on API 15
-     */
+    /** Manually computes the hashCode for the {@link Rect} since it is not implemented on API 15 */
     private static int hashBounds(Rect bounds) {
         int result = bounds.left;
         result = 31 * result + bounds.top;

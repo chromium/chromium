@@ -16,40 +16,102 @@
 
 package androidx.window.extensions.layout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.RestrictTo;
+import androidx.window.extensions.RequiresVendorApiLevel;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-/**
- * Contains information about the layout of display features within the window.
- */
+/** Contains information about the layout of display features within the window. */
 public class WindowLayoutInfo {
 
     /**
+     * A flag indicating the engagement mode includes a visual presentation. When this flag is set,
+     * it means the user can visually see the app UI on visible window.
+     */
+    public static final int ENGAGEMENT_MODE_FLAG_VISUALS_ON = 1 << 0;
+
+    /**
+     * A flag indicating the engagement mode includes an audio presentation. This can be set with or
+     * without {@link #ENGAGEMENT_MODE_FLAG_VISUALS_ON}. When set without, it signifies an
+     * audio-only experience.
+     */
+    public static final int ENGAGEMENT_MODE_FLAG_AUDIO_ON = 1 << 1;
+
+    /** Annotation for the engagement mode flags. */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef(
+            flag = true,
+            value = {ENGAGEMENT_MODE_FLAG_VISUALS_ON, ENGAGEMENT_MODE_FLAG_AUDIO_ON})
+    public @interface EngagementModeFlags {}
+
+    private static final int DEFAULT_ENGAGEMENT_MODE =
+            ENGAGEMENT_MODE_FLAG_VISUALS_ON | ENGAGEMENT_MODE_FLAG_AUDIO_ON;
+
+    /**
      * List of display features within the window.
+     *
      * <p>NOTE: All display features returned with this container must be cropped to the application
      * window and reported within the coordinate space of the window that was provided by the app.
      */
-    @NonNull
-    private List<DisplayFeature> mDisplayFeatures;
+    private final @NonNull List<DisplayFeature> mDisplayFeatures;
 
-    public WindowLayoutInfo(@NonNull List<DisplayFeature> displayFeatures) {
-        mDisplayFeatures = Collections.unmodifiableList(displayFeatures);
-    }
+    /** The user engagement mode flags for this window. */
+    private final @EngagementModeFlags int mEngagementModeFlags;
 
     /**
-     * Gets the list of display features present within the window.
+     * @deprecated Use the {@link Builder} instead.
      */
-    @NonNull
-    public List<DisplayFeature> getDisplayFeatures() {
+    @RequiresVendorApiLevel(level = 1, deprecatedSince = 10)
+    @Deprecated
+    public WindowLayoutInfo(@NonNull List<DisplayFeature> displayFeatures) {
+        this(displayFeatures, DEFAULT_ENGAGEMENT_MODE);
+    }
+
+    private WindowLayoutInfo(
+            @NonNull List<DisplayFeature> displayFeatures,
+            @EngagementModeFlags int engagementModeFlags) {
+        mDisplayFeatures = Collections.unmodifiableList(displayFeatures);
+        mEngagementModeFlags = engagementModeFlags;
+    }
+
+    /** Gets the list of display features present within the window. */
+    public @NonNull List<DisplayFeature> getDisplayFeatures() {
         return mDisplayFeatures;
     }
 
-    @NonNull
+    /**
+     * Returns the current user engagement mode flags for this window.
+     *
+     * @return The current {@link EngagementModeFlags}.
+     */
+    @RequiresVendorApiLevel(level = 10)
+    @EngagementModeFlags
+    public int getEngagementModeFlags() {
+        return mEngagementModeFlags;
+    }
+
+    /**
+     * Checks if a specific flag is present in the engagement mode.
+     *
+     * @param flag The specific {@link EngagementModeFlags} flag to check for.
+     * @return {@code true} if the flag is set, {@code false} otherwise.
+     */
+    @RequiresVendorApiLevel(level = 10)
+    public boolean hasEngagementModeFlag(@EngagementModeFlags int flag) {
+        return (mEngagementModeFlags & flag) == flag;
+    }
+
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("ExtensionWindowLayoutInfo { ExtensionDisplayFeatures[ ");
         for (int i = 0; i < mDisplayFeatures.size(); i = i + 1) {
@@ -58,7 +120,7 @@ public class WindowLayoutInfo {
                 sb.append(", ");
             }
         }
-        sb.append(" ] }");
+        sb.append(" ], ExtensionEngagementModeFlags=").append(mEngagementModeFlags).append(" }");
         return sb.toString();
     }
 
@@ -70,16 +132,55 @@ public class WindowLayoutInfo {
         if (!(obj instanceof WindowLayoutInfo)) {
             return false;
         }
-        final WindowLayoutInfo
-                other = (WindowLayoutInfo) obj;
-        if (mDisplayFeatures == null) {
-            return other.mDisplayFeatures == null;
-        }
-        return mDisplayFeatures.equals(other.mDisplayFeatures);
+        final WindowLayoutInfo other = (WindowLayoutInfo) obj;
+        return mDisplayFeatures.equals(other.mDisplayFeatures)
+                && mEngagementModeFlags == other.mEngagementModeFlags;
     }
 
     @Override
     public int hashCode() {
-        return mDisplayFeatures != null ? mDisplayFeatures.size() : 0;
+        return Objects.hash(mDisplayFeatures, mEngagementModeFlags);
+    }
+
+    /** Builder for {@link WindowLayoutInfo}. */
+    public static final class Builder {
+        private @NonNull List<DisplayFeature> mDisplayFeatures = Collections.emptyList();
+        private @EngagementModeFlags int mEngagementModeFlags = DEFAULT_ENGAGEMENT_MODE;
+
+        /** Creates a new instance of the {@link Builder}. */
+        public Builder() {}
+
+        /**
+         * Sets the list of {@link DisplayFeature} present within the window.
+         *
+         * @param displayFeatures the list of {@link DisplayFeature} to set.
+         * @return this {@link Builder} instance.
+         */
+        public @NonNull Builder setDisplayFeatures(@NonNull List<DisplayFeature> displayFeatures) {
+            mDisplayFeatures = displayFeatures;
+            return this;
+        }
+
+        /**
+         * Sets the current user engagement mode flags for this window.
+         *
+         * @param flags the {@link EngagementModeFlags} to set.
+         * @return this {@link Builder} instance.
+         */
+        @RequiresVendorApiLevel(level = 10)
+        public @NonNull Builder setEngagementModeFlags(@EngagementModeFlags int flags) {
+            mEngagementModeFlags = flags;
+            return this;
+        }
+
+        /**
+         * Builds a new {@link WindowLayoutInfo} instance.
+         *
+         * @return a new {@link WindowLayoutInfo} instance.
+         */
+        @RequiresVendorApiLevel(level = 10)
+        public @NonNull WindowLayoutInfo build() {
+            return new WindowLayoutInfo(mDisplayFeatures, mEngagementModeFlags);
+        }
     }
 }
