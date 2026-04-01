@@ -174,6 +174,9 @@ extern const char kFootnoteLinkURLManagedAccount[];
 extern const char kSecondBoxLinkURLManagedAccount[];
 extern const char kSecondBoxLink1URLNonManagedAccount[];
 extern const char kSecondBoxLink2URLNonManagedAccount[];
+extern const char kLivePrivacyNoticeLinkURL[];
+extern const char kLiveLearnMoreLinkURL[];
+extern const char kLivePrivacyPolicyLinkURL[];
 
 // Action identifier on a tap on links in the footnote.
 extern NSString* const kGeminiFirstFootnoteLinkAction;
@@ -182,6 +185,9 @@ extern NSString* const kGeminiFootnoteLinkActionManagedAccount;
 extern NSString* const kGeminiSecondBoxLinkActionManagedAccount;
 extern NSString* const kGeminiSecondBoxLink1ActionNonManagedAccount;
 extern NSString* const kGeminiSecondBoxLink2ActionNonManagedAccount;
+extern NSString* const kGeminiLivePrivacyNoticeLinkAction;
+extern NSString* const kGeminiLiveLearnMoreLinkAction;
+extern NSString* const kGeminiLivePrivacyPolicyLinkAction;
 
 // The sliding window for displaying a Gemini contextual cue chip. Chips are
 // shown within this time range (in hours) relative to the last chip that was

@@ -14,6 +14,9 @@
 // Did consent to Gemini.
 - (void)didConsentGemini;
 
+// Did consent to Live Gemini.
+- (void)didConsentToLiveGemini;
+
 // Did refuse Gemini consent. Triggered by cancel.
 - (void)didRefuseGeminiConsent;
 

@@ -129,6 +129,11 @@
   }];
 }
 
+// Did consent to Live Gemini.
+- (void)didConsentToLiveGemini {
+  // TODO(crbug.com/462400054): launch live.
+}
+
 // Did dismiss the Consent UI.
 - (void)didRefuseGeminiConsent {
   gemini::UpdateUserConsentPrefs(NO, _prefService);

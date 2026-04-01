@@ -28,6 +28,11 @@ const char kSecondBoxLink2URLNonManagedAccount[] =
     "https://support.google.com/gemini/answer/"
     "13594961?hl=en#location_info&zippy=%2Cwhat-location-information-do-gemini-"
     "apps-collect-why-and-how-is-it-used";
+const char kLivePrivacyNoticeLinkURL[] =
+    "https://support.google.com/gemini/answer/13594961";
+const char kLiveLearnMoreLinkURL[] =
+    "https://support.google.com/gemini/answer/13594961";
+const char kLivePrivacyPolicyLinkURL[] = "https://policies.google.com/privacy";
 
 // Accessibility identifiers for Gemini consent view.
 NSString* const kGeminiFootNoteTextViewAccessibilityIdentifier =
@@ -51,6 +56,12 @@ NSString* const kGeminiSecondBoxLink1ActionNonManagedAccount =
     @"GeminiSecondBoxLink1ActionNonManagedAccount";
 NSString* const kGeminiSecondBoxLink2ActionNonManagedAccount =
     @"GeminiSecondBoxLink2ActionNonManagedAccount";
+NSString* const kGeminiLivePrivacyNoticeLinkAction =
+    @"GeminiLivePrivacyNoticeLinkAction";
+NSString* const kGeminiLiveLearnMoreLinkAction =
+    @"GeminiLiveLearnMoreLinkAction";
+NSString* const kGeminiLivePrivacyPolicyLinkAction =
+    @"GeminiLivePrivacyPolicyLinkAction";
 
 const int kGeminiContextualCueChipSlidingWindow = 2;
 

@@ -236,8 +236,10 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
       NSDirectionalEdgeInsetsMake(kLogoTopGap, 0, 0, 0);
   [mainScrollView addSubview:_mainStackView];
 
-  _logosStackView = [self createLogosStackView];
-  [_mainStackView addArrangedSubview:_logosStackView];
+  if (_FREType != GeminiFREType::kLive) {
+    _logosStackView = [self createLogosStackView];
+    [_mainStackView addArrangedSubview:_logosStackView];
+  }
 
   self.contentScrollView = [[UIScrollView alloc] init];
   self.contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -261,33 +263,44 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 
   [self.contentScrollView addSubview:_contentHorizontalStackView];
 
-  [_mainStackView setCustomSpacing:kExtraSpacingTitleContent
-                         afterView:_logosStackView];
+  if (_FREType != GeminiFREType::kLive) {
+    [_mainStackView setCustomSpacing:kExtraSpacingTitleContent
+                           afterView:_logosStackView];
+  }
   [_mainStackView addArrangedSubview:self.contentScrollView];
 
-  [NSLayoutConstraint activateConstraints:@[
-    // Main vertical stack view constraints.
-    [_mainStackView.topAnchor
-        constraintEqualToAnchor:mainScrollView.contentLayoutGuide.topAnchor],
-    [_mainStackView.leadingAnchor
-        constraintEqualToAnchor:mainScrollView.contentLayoutGuide
-                                    .leadingAnchor],
-    [_mainStackView.trailingAnchor
-        constraintEqualToAnchor:mainScrollView.contentLayoutGuide
-                                    .trailingAnchor],
-    [_mainStackView.widthAnchor
-        constraintEqualToAnchor:mainScrollView.frameLayoutGuide.widthAnchor],
-    [_mainStackView.bottomAnchor
-        constraintEqualToAnchor:mainScrollView.contentLayoutGuide.bottomAnchor],
+  NSMutableArray<NSLayoutConstraint*>* constraints =
+      [NSMutableArray arrayWithArray:@[
+        // Main vertical stack view constraints.
+        [_mainStackView.topAnchor
+            constraintEqualToAnchor:mainScrollView.contentLayoutGuide
+                                        .topAnchor],
+        [_mainStackView.leadingAnchor
+            constraintEqualToAnchor:mainScrollView.contentLayoutGuide
+                                        .leadingAnchor],
+        [_mainStackView.trailingAnchor
+            constraintEqualToAnchor:mainScrollView.contentLayoutGuide
+                                        .trailingAnchor],
+        [_mainStackView.widthAnchor
+            constraintEqualToAnchor:mainScrollView.frameLayoutGuide
+                                        .widthAnchor],
+        [_mainStackView.bottomAnchor
+            constraintEqualToAnchor:mainScrollView.contentLayoutGuide
+                                        .bottomAnchor],
 
-    // Center the logos stack view within the main stack view.
-    [_logosStackView.centerXAnchor
-        constraintEqualToAnchor:_mainStackView.centerXAnchor],
-    [_contentHorizontalStackView.widthAnchor
-        constraintEqualToAnchor:self.contentScrollView.frameLayoutGuide
-                                    .widthAnchor
-                     multiplier:[self contentStackViewWidthMultiplier]]
-  ]];
+        [_contentHorizontalStackView.widthAnchor
+            constraintEqualToAnchor:self.contentScrollView.frameLayoutGuide
+                                        .widthAnchor
+                         multiplier:[self contentStackViewWidthMultiplier]]
+      ]];
+
+  if (_FREType != GeminiFREType::kLive) {
+    [constraints
+        addObject:[_logosStackView.centerXAnchor
+                      constraintEqualToAnchor:_mainStackView.centerXAnchor]];
+  }
+
+  [NSLayoutConstraint activateConstraints:constraints];
 }
 
 // Returns the width multiplier for the content stack view based on the number
@@ -347,6 +360,9 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 // Calculates the total height of the content to be displayed in the sheet.
 - (CGFloat)contentHeight {
   CGFloat childContentHeight = [self childContentHeight];
+  if (_FREType == GeminiFREType::kLive) {
+    return childContentHeight;
+  }
   return childContentHeight + kLogoPointSize + kLogoTopGap +
          kExtraSpacingTitleContent;
 }
