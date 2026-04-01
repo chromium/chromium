@@ -88,7 +88,7 @@ void URLLoaderMockFactoryImpl::RegisterURLProtocol(
     const WebString& protocol,
     const WebURLResponse& response,
     const WebString& file_path) {
-  DCHECK(protocol.ContainsOnlyASCII());
+  DCHECK(protocol.ContainsOnlyAscii());
 
   ResponseInfo response_info;
   response_info.response = response;

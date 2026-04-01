@@ -114,7 +114,7 @@ void WebContentDecryptionModuleImpl::GetStatusForPolicy(
     const WebString& min_hdcp_version_string,
     WebContentDecryptionModuleResult result) {
   std::optional<media::HdcpVersion> min_hdcp_version = std::nullopt;
-  if (min_hdcp_version_string.ContainsOnlyASCII()) {
+  if (min_hdcp_version_string.ContainsOnlyAscii()) {
     min_hdcp_version =
         media::MaybeHdcpVersionFromString(min_hdcp_version_string.Ascii());
   }

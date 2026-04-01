@@ -35,7 +35,7 @@ struct MimeRegistryPtrHolder {
 };
 
 std::string ToASCIIOrEmpty(const WebString& string) {
-  return string.ContainsOnlyASCII() ? string.Ascii() : std::string();
+  return string.ContainsOnlyAscii() ? string.Ascii() : std::string();
 }
 
 template <typename CharType>

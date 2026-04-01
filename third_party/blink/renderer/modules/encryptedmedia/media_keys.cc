@@ -210,7 +210,7 @@ class GetStatusForPolicyResultPromise
         builder.SetUseHardwareSecureCodecs(
             static_cast<int>(GetMediaKeysConfig().use_hardware_secure_codecs));
         std::optional<media::HdcpVersion> hdcp_version;
-        if (min_hdcp_version_.ContainsOnlyASCII()) {
+        if (min_hdcp_version_.ContainsOnlyAscii()) {
           hdcp_version =
               media::MaybeHdcpVersionFromString(min_hdcp_version_.Ascii());
         }

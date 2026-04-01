@@ -144,7 +144,7 @@ class BLINK_PLATFORM_EXPORT WebString {
   std::string Ascii() const;
 
   // Use this rather than calling base::IsStringASCII().
-  bool ContainsOnlyASCII() const;
+  bool ContainsOnlyAscii() const;
 
   // Does same as FromLatin1 but asserts if the given string has non-ascii char.
   static WebString FromAscii(std::string_view);

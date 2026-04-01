@@ -509,8 +509,8 @@ bool KeySystemConfigSelector::GetSupportedCapabilities(
     ConfigState proposed_config_state = *config_state;
 
     // 3.4-3.11. (Implemented by IsSupportedContentType().)
-    if (!capability.mime_type.ContainsOnlyASCII() ||
-        !capability.codecs.ContainsOnlyASCII() ||
+    if (!capability.mime_type.ContainsOnlyAscii() ||
+        !capability.codecs.ContainsOnlyAscii() ||
         !IsSupportedContentType(
             key_system, media_type, capability.mime_type.Ascii(),
             capability.codecs.Ascii(), &proposed_config_state)) {
@@ -525,8 +525,9 @@ bool KeySystemConfigSelector::GetSupportedCapabilities(
     //       from |key_systems_| for the empty robustness.
     std::string requested_robustness_ascii;
     if (!capability.robustness.IsEmpty()) {
-      if (!capability.robustness.ContainsOnlyASCII())
+      if (!capability.robustness.ContainsOnlyAscii()) {
         continue;
+      }
       requested_robustness_ascii = capability.robustness.Ascii();
     }
     // Both of these should not be true.
@@ -1005,7 +1006,7 @@ void KeySystemConfigSelector::SelectConfig(
   // 6.1 If keySystem is not one of the Key Systems supported by the user
   //     agent, reject promise with a NotSupportedError. String comparison
   //     is case-sensitive.
-  if (!key_system.ContainsOnlyASCII()) {
+  if (!key_system.ContainsOnlyAscii()) {
     DVLOG(1) << "Rejecting requested configuration because "
              << "key system contains unsupported characters.";
     std::move(cb).Run(Status::kUnsupportedKeySystem, nullptr, nullptr);

@@ -34,8 +34,9 @@ GURL GetRssUrlFromLinkElement(const blink::WebElement& link_element) {
   }
   blink::WebString web_type = link_element.GetAttribute("type");
   blink::WebString web_rel = link_element.GetAttribute("rel");
-  if (!web_type.ContainsOnlyASCII() || !web_rel.ContainsOnlyASCII())
+  if (!web_type.ContainsOnlyAscii() || !web_rel.ContainsOnlyAscii()) {
     return GURL();
+  }
   std::string type = web_type.Ascii();
   if (!(base::EqualsCaseInsensitiveASCII(type, "application/rss+xml") ||
         base::EqualsCaseInsensitiveASCII(type, "application/rss+atom") ||

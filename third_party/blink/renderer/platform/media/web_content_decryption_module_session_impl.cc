@@ -119,8 +119,9 @@ bool SanitizeSessionId(const WebString& session_id,
   // The user agent should thoroughly validate the sessionId value before
   // passing it to the CDM. At a minimum, this should include checking that
   // the length and value (e.g. alphanumeric) are reasonable.
-  if (!session_id.ContainsOnlyASCII())
+  if (!session_id.ContainsOnlyAscii()) {
     return false;
+  }
 
   sanitized_session_id->assign(session_id.Ascii());
   if (sanitized_session_id->length() > media::limits::kMaxSessionIdLength)

@@ -182,7 +182,7 @@ PerProcessReporterMap& GetPerProcessReporterMap() {
 static PerProcessReporter* GetPerProcessReporter(const WebString& key_system) {
   // Assumes that empty will not be found by GetKeySystemNameForUMA().
   std::string key_system_ascii;
-  if (key_system.ContainsOnlyASCII()) {
+  if (key_system.ContainsOnlyAscii()) {
     key_system_ascii = key_system.Ascii();
   }
 
@@ -344,8 +344,9 @@ WebEncryptedMediaClientImpl::Reporter* WebEncryptedMediaClientImpl::GetReporter(
     const WebString& key_system) {
   // Assumes that empty will not be found by GetKeySystemNameForUMA().
   std::string key_system_ascii;
-  if (key_system.ContainsOnlyASCII())
+  if (key_system.ContainsOnlyAscii()) {
     key_system_ascii = key_system.Ascii();
+  }
 
   // Return a per-frame singleton so that UMA reports will be once-per-frame.
   std::string uma_name = media::GetKeySystemNameForUMA(key_system_ascii);
