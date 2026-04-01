@@ -1090,16 +1090,24 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
 #if BUILDFLAG(IS_MAC)
   // Shared image uses iosurface as native resource which is compatible to
   // WebGPU always.
+  // Gate this on SharedImage usage as ScopedAccess now CHECKs for it.
+  // TODO(crbug.com/413659843): Move this support check as part of
+  // SharedImageCapabilities.
   is_webgpu_compatible =
-      media::IOSurfaceIsWebGPUCompatible(handle.io_surface().get());
+      media::IOSurfaceIsWebGPUCompatible(handle.io_surface().get()) &&
+      frame_resource->shared_image->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // TOOD(crbug.com/425634684): Check for webgpu support from
-  // SharedImageCapabilities, once this metadata is compatible.
+  // Gate this on SharedImage usage as ScopedAccess now CHECKs for it.
+  // TOOD(crbug.com/425634684, crbug.com/413659843): Check for webgpu support
+  // from SharedImageCapabilities, once this metadata is compatible.
   is_webgpu_compatible =
       handle.type == gfx::NATIVE_PIXMAP &&
-      handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
+      handle.native_pixmap_handle().supports_zero_copy_webgpu_import &&
+      frame_resource->shared_image->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
 #endif
 
   // Bind the texture and create or rebind the image. This image may be read
