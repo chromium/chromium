@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_DIALOG_DELEGATE_H_
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 
@@ -41,6 +42,8 @@ class Rect;
 namespace web_app {
 
 enum InstallDialogType { kSimple, kDetailed, kDiy, kMaxValue = kDiy };
+
+std::ostream& operator<<(std::ostream& os, InstallDialogType type);
 
 inline constexpr int kIconSize = 32;
 

@@ -114,6 +114,18 @@ NewPageActionHighlight(content::WebContents& web_contents) {
 
 constexpr int kMinBoundsForInstallDialog = 50;
 
+std::ostream& operator<<(std::ostream& os, InstallDialogType type) {
+  switch (type) {
+    case InstallDialogType::kSimple:
+      return os << "kSimple";
+    case InstallDialogType::kDetailed:
+      return os << "kDetailed";
+    case InstallDialogType::kDiy:
+      return os << "kDiy";
+  }
+  return os << "Unknown";
+}
+
 std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
   std::u16string normalized = title;
   if (base::StartsWith(normalized, u"https://")) {
