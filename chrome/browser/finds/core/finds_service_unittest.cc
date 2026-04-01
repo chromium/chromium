@@ -823,6 +823,10 @@ TEST_F(FindsServiceTest, RecordThemeURLVisitedThresholdTriggersOptIn) {
 
   service_->RecordThemeURLVisited(
       optimization_guide::proto::FindsMetadata::SHOPPING);
+  it = theme_url_visit_count().find(
+      optimization_guide::proto::FindsMetadata::SHOPPING);
+  EXPECT_NE(it, theme_url_visit_count().end());
+  EXPECT_EQ(it->second, 0);
 
   service_->RemoveObserver(&observer);
 }

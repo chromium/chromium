@@ -204,11 +204,14 @@ void FindsService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // TODO(crbug.com/494040435): Add logic to clean out deprecated themes.
   registry->RegisterDictionaryPref(
       prefs::kFindsNotInterestedThemesLastTimestamp);
-  // TODO(crbug.com/497928018): Remove the deprecated user interacted pref.
   registry->RegisterBooleanPref(prefs::kFindsOptInPromoUserInteracted, false);
+  // TODO(crbug.com/497928018): Remove the deprecated user interacted pref.
   registry->RegisterIntegerPref(prefs::kFindsOptInPromoInteractedCount, 0);
+  // TODO(crbug.com/497928018): Remove the deprecated user interacted pref.
   registry->RegisterInt64Pref(prefs::kFindsOptInPromoLastInteractedTimestamp,
                               0);
+  registry->RegisterIntegerPref(prefs::kFindsOptInPromoShownCount, 0);
+  registry->RegisterInt64Pref(prefs::kFindsOptInPromoLastShownTimestamp, 0);
 }
 
 FindsService::FindsService(
@@ -286,6 +289,9 @@ void FindsService::RecordThemeURLVisited(
       finds::features::kThemeUrlVisitCountForOptIn.Get()) {
     for (auto& observer : observers_) {
       observer.OnOptInCriteriaFulfilled();
+
+      // Reset the count for the theme type.
+      theme_url_visit_count_[theme_type] = 0;
     }
   }
 }
@@ -318,7 +324,8 @@ bool FindsService::ScheduleNotificationForInternalsPage() {
 
 void FindsService::CheckFindsNotificationsEnabledAndMaybeExecute() {
   // TODO(crbug.com/497928018): Remove this when deprecated pref removed.
-  pref_service_->ClearPref(prefs::kFindsOptInPromoUserInteracted);
+  pref_service_->ClearPref(prefs::kFindsOptInPromoInteractedCount);
+  pref_service_->ClearPref(prefs::kFindsOptInPromoLastInteractedTimestamp);
 
 #if BUILDFLAG(IS_ANDROID)
   FindsServiceAndroid::CheckAreFindsNotificationsEnabledAndroid(

@@ -30,13 +30,17 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class ChromeFindsUtils {
     // LINT.IfChange(FindsOptInPromoInteractionPrefs)
-    // Deprecated. Do not remove.
     public static final String FINDS_OPT_IN_PROMO_USER_INTERACTED =
             "finds.opt_in_promo.user_interacted";
+    // Deprecated. Do not remove.
     public static final String FINDS_OPT_IN_PROMO_INTERACTED_COUNT =
             "finds.opt_in_promo.interacted_count";
+    // Deprecated. Do not remove.
     public static final String FINDS_OPT_IN_PROMO_LAST_INTERACTED_TIMESTAMP =
             "finds.opt_in_promo.last_interacted_timestamp";
+    public static final String FINDS_OPT_IN_PROMO_SHOWN_COUNT = "finds.opt_in_promo.shown_count";
+    public static final String FINDS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP =
+            "finds.opt_in_promo.last_shown_timestamp";
 
     // LINT.ThenChange(//chrome/browser/finds/core/finds_pref_names.cc:FindsOptInPromoInteractionPrefs)
 
@@ -138,10 +142,20 @@ public class ChromeFindsUtils {
      *
      * @param profile The current user {@link Profile}.
      */
-    public static void setOptInPromoInteractedData(Profile profile) {
+    public static void setOptInPromoInteracted(Profile profile) {
         PrefService prefs = UserPrefs.get(profile);
-        int count = prefs.getInteger(FINDS_OPT_IN_PROMO_INTERACTED_COUNT);
-        prefs.setInteger(FINDS_OPT_IN_PROMO_INTERACTED_COUNT, count + 1);
-        prefs.setLong(FINDS_OPT_IN_PROMO_LAST_INTERACTED_TIMESTAMP, System.currentTimeMillis());
+        prefs.setBoolean(FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
+    }
+
+    /**
+     * Sets data indicating a user has seen the Chrome Finds opt-in promo.
+     *
+     * @param profile The current user {@link Profile}.
+     */
+    public static void setOptInPromoSeen(Profile profile) {
+        PrefService prefs = UserPrefs.get(profile);
+        int count = prefs.getInteger(FINDS_OPT_IN_PROMO_SHOWN_COUNT);
+        prefs.setInteger(FINDS_OPT_IN_PROMO_SHOWN_COUNT, count + 1);
+        prefs.setLong(FINDS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP, System.currentTimeMillis());
     }
 }

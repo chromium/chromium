@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -67,9 +66,6 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManagerProxy);
         UserPrefs.setPrefServiceForTesting(mPrefService);
 
-        when(mPrefService.getInteger(ChromeFindsUtils.FINDS_OPT_IN_PROMO_INTERACTED_COUNT))
-                .thenReturn(0);
-
         mCoordinator =
                 new ChromeFindsOptInCoordinator(
                         mActivity, mProfile, mBottomSheetController, mSnackbarManager);
@@ -83,6 +79,9 @@ public class ChromeFindsOptInCoordinatorUnitTest {
                         ChromeFindsMetrics.ChromeFindsOptInEvent.SHOWN);
         mCoordinator.showBottomSheet();
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
+        verify(mPrefService).setInteger(ChromeFindsUtils.FINDS_OPT_IN_PROMO_SHOWN_COUNT, 1);
+        verify(mPrefService)
+                .setLong(eq(ChromeFindsUtils.FINDS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP), anyLong());
         watcher.assertExpected();
     }
 
@@ -113,11 +112,7 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         // Verify snackbar is shown
         verify(mSnackbarManager).showSnackbar(any());
         // Verify preference is set via UserPrefs
-        verify(mPrefService).setInteger(ChromeFindsUtils.FINDS_OPT_IN_PROMO_INTERACTED_COUNT, 1);
-        verify(mPrefService)
-                .setLong(
-                        eq(ChromeFindsUtils.FINDS_OPT_IN_PROMO_LAST_INTERACTED_TIMESTAMP),
-                        anyLong());
+        verify(mPrefService).setBoolean(ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 
@@ -150,11 +145,7 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         assertNotNull(intent);
         assertEquals(Settings.ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
         // Verify preference is set via UserPrefs
-        verify(mPrefService).setInteger(ChromeFindsUtils.FINDS_OPT_IN_PROMO_INTERACTED_COUNT, 1);
-        verify(mPrefService)
-                .setLong(
-                        eq(ChromeFindsUtils.FINDS_OPT_IN_PROMO_LAST_INTERACTED_TIMESTAMP),
-                        anyLong());
+        verify(mPrefService).setBoolean(ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 
@@ -188,11 +179,7 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         assertNotNull(intent);
         assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
         // Verify preference is set via UserPrefs
-        verify(mPrefService).setInteger(ChromeFindsUtils.FINDS_OPT_IN_PROMO_INTERACTED_COUNT, 1);
-        verify(mPrefService)
-                .setLong(
-                        eq(ChromeFindsUtils.FINDS_OPT_IN_PROMO_LAST_INTERACTED_TIMESTAMP),
-                        anyLong());
+        verify(mPrefService).setBoolean(ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 
@@ -207,11 +194,7 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         // Verify channel is created and disabled
         verify(mNotificationManagerProxy).createNotificationChannel(any());
         // Verify preference is set via UserPrefs
-        verify(mPrefService).setInteger(ChromeFindsUtils.FINDS_OPT_IN_PROMO_INTERACTED_COUNT, 1);
-        verify(mPrefService)
-                .setLong(
-                        eq(ChromeFindsUtils.FINDS_OPT_IN_PROMO_LAST_INTERACTED_TIMESTAMP),
-                        anyLong());
+        verify(mPrefService).setBoolean(ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 }

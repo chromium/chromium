@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.finds.FindsService;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** Unit tests for {@link FindsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,6 +40,7 @@ public class FindsManagerUnitTest {
     @Mock private Profile mProfile;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private FindsService mFindsService;
+    @Mock private PrefService mPrefService;
 
     private FindsManager mManager;
     private Activity mActivity;
@@ -46,6 +49,7 @@ public class FindsManagerUnitTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        UserPrefs.setPrefServiceForTesting(mPrefService);
 
         mManager =
                 new FindsManager(

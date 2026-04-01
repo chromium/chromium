@@ -131,7 +131,7 @@ public class ChromeFindsOptInCoordinator {
                         ChromeFindsMetrics.recordOptInAccepted(/* firstTime= */ false);
                     }
 
-                    ChromeFindsUtils.setOptInPromoInteractedData(mProfile);
+                    ChromeFindsUtils.setOptInPromoInteracted(mProfile);
                 });
     }
 
@@ -162,7 +162,7 @@ public class ChromeFindsOptInCoordinator {
                         ChromeChannelDefinitions.getInstance(),
                         mContext.getResources())
                 .ensureInitializedAndDisabled(ChannelId.CHROME_FINDS);
-        ChromeFindsUtils.setOptInPromoInteractedData(mProfile);
+        ChromeFindsUtils.setOptInPromoInteracted(mProfile);
         ChromeFindsMetrics.recordOptOutClicked();
     }
 
@@ -173,6 +173,7 @@ public class ChromeFindsOptInCoordinator {
     /** Shows the Chrome Finds opt-in bottom sheet. */
     public void showBottomSheet() {
         mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
+        ChromeFindsUtils.setOptInPromoSeen(mProfile);
         ChromeFindsMetrics.recordOptInShown();
     }
 

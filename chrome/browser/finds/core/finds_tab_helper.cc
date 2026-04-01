@@ -59,6 +59,10 @@ bool IsFindsOptInPromoMaxCountExceeded(const PrefService* pref_service) {
          finds::features::kFindsOptInPromoMaxInteractedCount.Get();
 }
 
+bool IsFindsOptInPromoAlreadyInteracted(const PrefService* pref_service) {
+  return pref_service->GetBoolean(prefs::kFindsOptInPromoUserInteracted);
+}
+
 }  // namespace
 
 FindsTabHelper::FindsTabHelper(content::WebContents* web_contents,
@@ -91,8 +95,10 @@ void FindsTabHelper::DidFinishNavigation(
   }
 
   // Early exit if the opt in promo has already been interacted with enough
-  // times determined by max count, or if the cooldown has not passed yet.
-  if (IsFindsOptInPromoMaxCountExceeded(pref_service_) ||
+  // times determined by max count, or if the cooldown has not passed yet, or if
+  // the user has already interacted with the promo.
+  if (IsFindsOptInPromoAlreadyInteracted(pref_service_) ||
+      IsFindsOptInPromoMaxCountExceeded(pref_service_) ||
       !IsFindsOptInPromoCooldownPassed(pref_service_)) {
     return;
   }
