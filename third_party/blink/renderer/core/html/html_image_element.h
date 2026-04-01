@@ -133,7 +133,7 @@ class CORE_EXPORT HTMLImageElement
   virtual void EnsureCollapsedOrFallbackContent();
   virtual void EnsureFallbackForGeneratedContent();
   virtual void EnsurePrimaryContent();
-  void ResetLayoutDisposition();
+  void OnImageLoadComplete();
   bool IsCollapsed() const;
   bool IsPrimaryContent() const;
 
@@ -240,6 +240,7 @@ class CORE_EXPORT HTMLImageElement
   void CollectExtraStyleForPresentationAttribute(
       HeapVector<CSSPropertyValue, 8>&) override;
   void SetLayoutDisposition(LayoutDisposition, bool force_reattach = false);
+  void ResetLayoutDisposition();
 
   void AttachLayoutTree(AttachContext&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;

@@ -83,12 +83,8 @@ void ImageReplacement::StartReplacement(
   if (image_element_->HasImageReplacement()) {
     return;
   }
-  // If the image hasn't loaded yet, we don't start the replacement and reset
-  // the handle.
-  // TODO(b/489470758): We should wait for the image load to complete and then
-  // start the replacement (if the load is successful).
   if (!image_element_->complete()) {
-    image_element_->ResetImageReplacement();
+    pending_host_remote_ = std::move(host_remote);
     return;
   }
   ImageResourceContent* image_content = image_element_->CachedImage();
@@ -175,6 +171,7 @@ void ImageReplacement::CreateImageReplacementShadowTree(
 void ImageReplacement::Reset(Document& document) {
   receiver_.reset();
   host_.reset();
+  pending_host_remote_.reset();
   image_element_ = nullptr;
 }
 
@@ -187,6 +184,19 @@ void ImageReplacement::OnDisconnect() {
     // after this line.
     image_element_->ResetImageReplacement();
   }
+}
+
+bool ImageReplacement::ResumeReplacementAfterImageLoad() {
+  if (!pending_host_remote_.is_valid()) {
+    return false;
+  }
+  CHECK(image_element_ && image_element_->complete());
+  mojo::PendingRemote<mojom::blink::ImageReplacementHost> remote =
+      std::move(pending_host_remote_);
+  StartReplacement(std::move(remote));
+  // Note: `image_element_` can be nullptr here if the image load failed with
+  // an error (StartReplacement will reset the image replacement in that case).
+  return image_element_ && image_element_->HasImageReplacement();
 }
 
 }  // namespace blink

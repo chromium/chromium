@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -59,6 +60,21 @@ class ClickEventListener : public NativeEventListener {
 
  private:
   bool clicked_ = false;
+};
+
+class ErrorEventListener : public NativeEventListener {
+ public:
+  explicit ErrorEventListener(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+
+  void Invoke(ExecutionContext*, Event* event) override {
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace
@@ -351,7 +367,7 @@ TEST_F(ImageReplacementSimTest,
   EXPECT_EQ(0u, CountDrawImageRectOps(GetDocument().View()->GetPaintRecord()));
 }
 
-TEST_F(ImageReplacementSimTest, ImageReplacementFailsIfNotLoaded) {
+TEST_F(ImageReplacementSimTest, ImageReplacementWaitsForLoadAndResumes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kImageReplacement);
   SimRequest main_resource("https://example.com/index.html", "text/html");
@@ -375,25 +391,28 @@ TEST_F(ImageReplacementSimTest, ImageReplacementFailsIfNotLoaded) {
       mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
-  // Replacement should not have started since the image is not loaded.
   EXPECT_FALSE(img->HasImageReplacement());
   EXPECT_FALSE(img->UserAgentShadowRoot());
   EXPECT_FALSE(mock_host.frame_token().has_value());
+  ImageReplacement* replacement =
+      DocumentImageReplacements::From(GetDocument()).GetImageReplacement(img);
+  ASSERT_TRUE(replacement);
 
-  // Finish the load (with invalid data to cause an error).
-  image_resource.Complete("invalid data");
+  // 1x1 transparent GIF
+  static const unsigned char kGifBytes[] = {
+      0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80,
+      0x00, 0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x21, 0xf9, 0x04,
+      0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00, 0x00, 0x01,
+      0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44, 0x01, 0x00, 0x3b};
+  Vector<char> gif_data;
+  gif_data.append_range(kGifBytes);
+  // Finish image load.
+  image_resource.Complete(gif_data);
   test::RunPendingTasks();
-  EXPECT_TRUE(img->CachedImage()->ErrorOccurred());
 
-  // Replacement should not have started since the image load failed.
-  mock_host.receiver().reset();
-  replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote());
-  test::RunPendingTasks();
-  EXPECT_FALSE(img->HasImageReplacement());
-  EXPECT_FALSE(replacement_remote.is_connected());
-  EXPECT_FALSE(DocumentImageReplacements::FromIfExists(GetDocument())
-                   ->GetImageReplacement(img));
+  EXPECT_TRUE(img->HasImageReplacement());
+  EXPECT_TRUE(img->UserAgentShadowRoot());
+  EXPECT_TRUE(mock_host.frame_token().has_value());
 }
 
 TEST_F(ImageReplacementSimTest, ImageReplacementRemovedFromDocument) {
@@ -561,6 +580,60 @@ TEST_F(ImageReplacementSimTest, ImageReplacementCreateWithFailedLoadFails) {
 
   auto result = ImageReplacement::CreateAndBindReceiver(*img);
   EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(ImageReplacementSimTest, ResumeReplacementFailsIfImageLoadFails) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  SimSubresourceRequest image_resource("https://example.com/foo.png",
+                                       "image/png");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="foo.png" id="target"></img>
+  )");
+  // Image not loaded yet.
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  // Replacement should not have started since the image is not loaded.
+  EXPECT_FALSE(img->HasImageReplacement());
+  EXPECT_FALSE(img->UserAgentShadowRoot());
+  EXPECT_FALSE(mock_host.frame_token().has_value());
+
+  ImageReplacement* replacement =
+      DocumentImageReplacements::From(GetDocument()).GetImageReplacement(img);
+  ASSERT_TRUE(replacement);
+
+  base::test::TestFuture<void> future;
+  auto* error_listener =
+      MakeGarbageCollected<ErrorEventListener>(future.GetCallback());
+  img->addEventListener(AtomicString("error"), error_listener);
+
+  // Finish the load (with invalid data to cause an error).
+  image_resource.Complete("invalid data");
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(img->CachedImage()->ErrorOccurred());
+
+  // Replacement should not have started since the image load failed.
+  mock_host.receiver().reset();
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+  EXPECT_FALSE(img->HasImageReplacement());
+  EXPECT_FALSE(replacement_remote.is_connected());
+  EXPECT_FALSE(DocumentImageReplacements::FromIfExists(GetDocument())
+                   ->GetImageReplacement(img));
 }
 
 TEST_F(ImageReplacementSimTest, ImageReplacementResetAfterSrcChange) {

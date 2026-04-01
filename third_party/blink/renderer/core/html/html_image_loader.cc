@@ -96,7 +96,7 @@ void HTMLImageLoader::ImageNotifyFinished(ImageResourceContent*) {
 
   bool load_error = cached_image->ErrorOccurred();
   if (auto* image = DynamicTo<HTMLImageElement>(*element)) {
-    image->ResetLayoutDisposition();
+    image->OnImageLoadComplete();
   }
 
   if (auto* input = DynamicTo<HTMLInputElement>(*element)) {

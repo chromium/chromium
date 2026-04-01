@@ -1088,6 +1088,23 @@ void HTMLImageElement::ResetLayoutDisposition() {
   }
 }
 
+void HTMLImageElement::OnImageLoadComplete() {
+  if (DocumentImageReplacements* replacements =
+          DocumentImageReplacements::FromIfExists(GetDocument())) {
+    if (ImageReplacement* replacement =
+            replacements->GetImageReplacement(this)) {
+      if (replacement->ResumeReplacementAfterImageLoad()) {
+        // Replacement is now complete and the layout disposition is now
+        // kImageReplacement. We don't need to reset it, so we skip the call
+        // to ResetLayoutDisposition() below.
+        return;
+      }
+    }
+  }
+
+  ResetLayoutDisposition();
+}
+
 bool HTMLImageElement::IsCollapsed() const {
   return layout_disposition_ == LayoutDisposition::kCollapsed;
 }
