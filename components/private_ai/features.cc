@@ -66,4 +66,8 @@ const base::FeatureParam<base::TimeDelta> kPrivateAiTryGetAuthTokensBugBackoff{
 const base::FeatureParam<double> kPrivateAiBackoffJitter{
     &kPrivateAi, /*name=*/"backoff-jitter", /*default_value=*/0.25};
 
+const base::FeatureParam<base::TimeDelta> kPrivateAiUnusedConnectionTimeout{
+    &kPrivateAi, /*name=*/"unused-connection-timeout",
+    /*default_value=*/base::Minutes(1)};
+
 }  // namespace private_ai

@@ -16,6 +16,8 @@
 #include "components/private_ai/connection_proxy.h"
 #include "components/private_ai/connection_timeout.h"
 #include "components/private_ai/connection_token_attestation.h"
+#include "components/private_ai/connection_unused_timeout.h"
+#include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "components/private_ai/secure_channel.h"
 #include "components/private_ai/secure_channel_impl.h"
@@ -51,6 +53,10 @@ std::unique_ptr<Connection> CreateConnectionStack(
   }
 
   connection = std::make_unique<ConnectionMetrics>(std::move(connection));
+
+  connection = std::make_unique<ConnectionUnusedTimeout>(
+      std::move(connection), on_disconnect,
+      kPrivateAiUnusedConnectionTimeout.Get());
 
   return connection;
 }

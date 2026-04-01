@@ -64,6 +64,10 @@ extern const base::FeatureParam<base::TimeDelta>
 // The jitter factor to apply to backoff durations.
 extern const base::FeatureParam<double> kPrivateAiBackoffJitter;
 
+// The unused timeout for a Private AI connection after creation.
+extern const base::FeatureParam<base::TimeDelta>
+    kPrivateAiUnusedConnectionTimeout;
+
 }  // namespace private_ai
 
 #endif  // COMPONENTS_PRIVATE_AI_FEATURES_H_

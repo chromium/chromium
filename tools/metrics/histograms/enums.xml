@@ -23512,6 +23512,7 @@ Called by update_net_error_codes.py.-->
   <int value="10" label="Timeout"/>
   <int value="11" label="ClientAttestationFailed"/>
   <int value="12" label="Destroyed"/>
+  <int value="13" label="UnusedConnection"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/private_ai/error_code.h:ErrorCode) -->
