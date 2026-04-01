@@ -13034,6 +13034,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInlineScriptCacheDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kInlineScriptCache)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"logo-view-refactor", flag_descriptions::kLogoViewRefactorName,
+     flag_descriptions::kLogoViewRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kLogoViewRefactor)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
