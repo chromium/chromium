@@ -14580,6 +14580,7 @@ from previous Chrome versions.
   <int value="188610022" label="NewMessageListView:enabled"/>
   <int value="189721469" label="kEnableOidcProfileRemoteCommands:enabled"/>
   <int value="189728101" label="FasterLocationReload:disabled"/>
+  <int value="189765932" label="WebNNLiteRT:disabled"/>
   <int value="189777537" label="DisableInitialMostVisitedFadeIn:enabled"/>
   <int value="190395448" label="SearchWebInSidePanel:enabled"/>
   <int value="190906756"
@@ -18737,6 +18738,7 @@ from previous Chrome versions.
   <int value="1577205328"
       label="DataReductionProxyEnabledWithNetworkService:enabled"/>
   <int value="1577651674" label="SafetyHub:enabled"/>
+  <int value="1578493560" label="WebNNLiteRT:enabled"/>
   <int value="1578770829" label="PersistAcrossReboots:disabled"/>
   <int value="1579084737" label="TemporaryUnexpireFlagsM80:disabled"/>
   <int value="1579461102" label="MemoryCoordinator:disabled"/>

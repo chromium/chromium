@@ -376,7 +376,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
-  if (!context_impl) {
+  if (!context_impl &&
+      base::FeatureList::IsEnabled(mojom::features::kWebNNLiteRT)) {
     CreateLiteRtContext(
         std::move(scoped_trace), std::move(options),
         std::move(write_tensor_producer), std::move(write_tensor_consumer),
@@ -562,14 +563,16 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
              << env_creation_results.error();
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
-  CreateLiteRtContext(
-      std::move(scoped_trace), std::move(options),
-      std::move(write_tensor_producer), std::move(write_tensor_consumer),
-      std::move(read_tensor_producer), std::move(read_tensor_consumer),
-      command_buffer_id, std::move(gpu_sequence), std::move(task_runner),
-      std::move(receiver), std::move(remote), std::move(callback), is_incognito,
-      std::move(memory_tracker));
-  return;
+  if (base::FeatureList::IsEnabled(mojom::features::kWebNNLiteRT)) {
+    CreateLiteRtContext(
+        std::move(scoped_trace), std::move(options),
+        std::move(write_tensor_producer), std::move(write_tensor_consumer),
+        std::move(read_tensor_producer), std::move(read_tensor_consumer),
+        command_buffer_id, std::move(gpu_sequence), std::move(task_runner),
+        std::move(receiver), std::move(remote), std::move(callback),
+        is_incognito, std::move(memory_tracker));
+    return;
+  }
 #endif  // BUILDFLAG(WEBNN_USE_LITERT)
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)

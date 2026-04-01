@@ -55,3 +55,9 @@ feature kWebNNOnnxRuntime {
   const string name = "WebNNOnnxRuntime";
   const bool default_state = true;
 };
+
+// Enables the LiteRT Runtime backend for WebNN.
+feature kWebNNLiteRT {
+  const string name = "WebNNLiteRT";
+  const bool default_state = false;
+};

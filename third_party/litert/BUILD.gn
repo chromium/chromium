@@ -9,7 +9,13 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
 import("//third_party/cpuinfo/cpuinfo.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/litert/features.gni")
 import("//third_party/protobuf/proto_library.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "BUILD_LITERT_WITH_XNNPACK=$build_litert_with_xnnpack" ]
+}
 
 config("warnings_config") {
   cflags = [
@@ -65,6 +71,11 @@ config("litert_config") {
     "LITERT_DISABLE_OPENGL_SUPPORT",
     "LITERT_HAS_OPENCL_SUPPORT=0",
   ]
+
+  if (!build_litert_with_xnnpack) {
+    defines += [ "LITERT_DISABLE_CPU" ]
+  }
+
   visibility = [ ":*" ]
 }
 
@@ -154,7 +165,6 @@ source_set("litert_headers") {
     "src/litert/core/util/tensor_type_util.h",
     "src/litert/runtime/accelerator_registry.h",
     "src/litert/runtime/accelerators/auto_registration.h",
-    "src/litert/runtime/accelerators/xnnpack/xnnpack_accelerator.h",
     "src/litert/runtime/ahwb_buffer.h",
     "src/litert/runtime/compiled_model.h",
     "src/litert/runtime/custom_buffer.h",
@@ -178,6 +188,12 @@ source_set("litert_headers") {
     "src/litert/runtime/tfl_utils.h",
     "src/weight_loader/external_weight_loader_litert.h",
   ]
+
+  if (build_litert_with_xnnpack) {
+    public +=
+        [ "src/litert/runtime/accelerators/xnnpack/xnnpack_accelerator.h" ]
+  }
+
   public_deps = [
     ":mutable_tflite_schema",
     "//third_party/abseil-cpp:absl",
@@ -210,7 +226,7 @@ copy("litert_build_config") {
   outputs = [ "$target_gen_dir/src/litert/build_common/build_config.h" ]
 }
 
-source_set("litert_c") {
+static_library("litert_c") {
   sources = [
     "src/litert/c/internal/litert_accelerator.cc",
     "src/litert/c/internal/litert_accelerator_registration.cc",
@@ -249,7 +265,7 @@ source_set("litert_c") {
   visibility = [ ":litert" ]
 }
 
-source_set("litert_cc") {
+static_library("litert_cc") {
   sources = [
     "src/litert/cc/internal/litert_op_options.cc",
     "src/litert/cc/internal/litert_runtime_builtin.cc",
@@ -282,33 +298,38 @@ source_set("litert_cc") {
   visibility = [ ":litert" ]
 }
 
-source_set("litert_compiler") {
+static_library("litert_compiler") {
   sources = [
     "src/litert/compiler/plugin/algo.cc",
     "src/litert/compiler/plugin/compiler_plugin.cc",
     "src/litert/compiler/plugin/litert_compiler_options.cc",
   ]
-  deps = [
-    ":litert_headers",
-    "//third_party/xnnpack",
-  ]
+  deps = [ ":litert_headers" ]
+
+  if (build_litert_with_xnnpack) {
+    deps += [ "//third_party/xnnpack" ]
+  }
+
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   visibility = [ ":litert" ]
 }
 
-source_set("litert_runtime_accelerators") {
-  sources = [
-    "src/litert/runtime/accelerators/auto_registration.cc",
-    "src/litert/runtime/accelerators/xnnpack/xnnpack_accelerator.cc",
-  ]
+static_library("litert_runtime_accelerators") {
+  sources = [ "src/litert/runtime/accelerators/auto_registration.cc" ]
+
+  if (build_litert_with_xnnpack) {
+    sources +=
+        [ "src/litert/runtime/accelerators/xnnpack/xnnpack_accelerator.cc" ]
+  }
+
   deps = [ ":litert_headers" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   visibility = [ ":litert" ]
 }
 
-source_set("litert_core") {
+static_library("litert_core") {
   sources = [
     "src/litert/core/buffer_error_reporter.cc",
     "src/litert/core/build_stamp.cc",
@@ -340,7 +361,7 @@ source_set("litert_core") {
   visibility = [ ":litert" ]
 }
 
-source_set("litert_runtime") {
+static_library("litert_runtime") {
   sources = [
     "src/litert/runtime/accelerator_registry.cc",
     "src/litert/runtime/compiled_model.cc",
@@ -372,10 +393,10 @@ source_set("litert_runtime") {
       "src/litert/runtime/ahwb_wrapper.cc",
     ]
   }
-  deps = [
-    ":litert_headers",
-    "//third_party/xnnpack",
-  ]
+  deps = [ ":litert_headers" ]
+  if (build_litert_with_xnnpack) {
+    deps += [ "//third_party/xnnpack" ]
+  }
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
