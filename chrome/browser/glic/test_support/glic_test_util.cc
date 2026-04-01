@@ -248,10 +248,11 @@ void SetGlicCapability(Profile* profile, bool enabled) {
 }
 
 void SetGlicCapability(AccountCapabilitiesTestMutator& mutator, bool enabled) {
-  base::FeatureList::IsEnabled(
-      switches::kGlicEligibilitySeparateAccountCapability)
-      ? mutator.set_can_use_gemini_in_chrome(enabled)
-      : mutator.set_can_use_model_execution_features(enabled);
+  if (base::FeatureList::IsEnabled(
+          switches::kGlicEligibilitySeparateAccountCapability)) {
+    mutator.set_can_use_gemini_in_chrome(enabled);
+  }
+  mutator.set_can_use_model_execution_features(enabled);
 }
 
 void SetFRECompletion(Profile* profile, prefs::FreStatus fre_status) {

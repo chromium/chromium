@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
@@ -116,6 +117,12 @@ void GlicActorTaskManager::CreateTask(
         base::unexpected(mojom::CreateTaskErrorReason::kExistingActiveTask));
     return;
   }
+
+  const GlicActorPolicyChecker::CannotActReason reason_to_log =
+      actor_policy_checker_->CanActOnWeb()
+          ? GlicActorPolicyChecker::CannotActReason::kNone
+          : actor_policy_checker_->CannotActOnWebReason();
+  base::UmaHistogramEnumeration("Actor.Task.CreateFailedReason", reason_to_log);
 
   if (!actor_policy_checker_->CanActOnWeb()) {
     // TODO(bokan): This was moved here to preserve behavior; the failure case

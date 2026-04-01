@@ -3,12 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/actor/actor_metrics.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace glic::actor {
 namespace {
-
 using ::actor::ActorObservationOutcome;
 using ::actor::ActorTabObservationResult;
 using ::glic::actor::ScopedMockTabObservationResult;
@@ -31,8 +39,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTest,
   ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
   EXPECT_NE(task_id, TaskId());
 
-  constexpr std::string_view kActorTaskCreatedHistogram = "Actor.Task.Created";
-  histogram_tester.ExpectUniqueSample(kActorTaskCreatedHistogram, true, 1);
+  histogram_tester.ExpectUniqueSample("Actor.Task.Created", true, 1);
+  histogram_tester.ExpectUniqueSample("Actor.Task.CreateFailedReason", 0, 1);
 }
 
 class GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption
@@ -61,8 +69,59 @@ IN_PROC_BROWSER_TEST_F(
   base::expected<TaskId, std::string> result = CreateTask();
   EXPECT_FALSE(result.has_value());
 
-  constexpr std::string_view kActorTaskCreatedHistogram = "Actor.Task.Created";
-  histogram_tester.ExpectUniqueSample(kActorTaskCreatedHistogram, false, 1);
+  histogram_tester.ExpectUniqueSample("Actor.Task.Created", false, 1);
+  histogram_tester.ExpectTotalCount("Actor.Task.CreateFailedReason", 1);
+}
+
+class GlicActorMetricsFunctionalBrowserTestWithDisabledPolicy
+    : public GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    glic_test_environment().SetForceSigninAndModelExecutionCapability(true);
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+    policy::ManagementServiceFactory::GetForPlatform()
+        ->SetManagementAuthoritiesForTesting(
+            policy::EnterpriseManagementAuthority::CLOUD);
+    GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption::
+        SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+    policy::ManagementServiceFactory::GetForProfile(browser()->profile())
+        ->SetManagementAuthoritiesForTesting(
+            policy::EnterpriseManagementAuthority::CLOUD);
+    GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption::
+        SetUpOnMainThread();
+    policy::PolicyMap policies;
+    // Set GeminiActOnWebSettings to Disabled (1)
+    policies.Set(policy::key::kGeminiActOnWebSettings,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(1),
+                 nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+
+    glic_test_service().SetModelExecutionCapability(true);
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTestWithDisabledPolicy,
+                       LogsActorTaskFailedOnCreateTaskPolicyDisabled) {
+  base::HistogramTester histogram_tester;
+
+  base::expected<TaskId, std::string> result = CreateTask();
+  EXPECT_FALSE(result.has_value());
+
+  histogram_tester.ExpectUniqueSample("Actor.Task.Created", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Actor.Task.CreateFailedReason",
+      GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy, 1);
 }
 
 class GlicActorPageContextMetricsFunctionalBrowserTest

@@ -762,6 +762,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Task.CreateFailedReason"
+    enum="ActorTaskCreateFailedReason" expires_after="2026-12-31">
+  <owner>rosiey@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    Tracks the reason why the Browser Agent might be blocked from performing an
+    actuation on a web page. This is recorded every time a new task is initiated
+    via GlicActorTaskManager::CreateTask. The logged value comes from the
+    GlicActorPolicyChecker::CannotActReason enum, detailing the specific policy
+    or capability issue (e.g., kDisabledByPolicy, kAccountCapabilityIneligible).
+    Note that if a domain is exempted from a block via a URL allowlist, the
+    actuation succeeds and logs kNone.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Task.Duration.NotVisible.{StoppedReason}" units="ms"
     expires_after="2026-08-11">
   <owner>kenok@google.com</owner>

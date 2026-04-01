@@ -70,22 +70,25 @@ class GlicActorPolicyChecker : public actor::EnterprisePolicyUrlChecker,
   base::CallbackListSubscription AddUrlListsUpdateObserverForTesting(
       base::RepeatingClosure callback);
 
+  // LINT.IfChange(CannotActReason)
   enum class CannotActReason {
     // Browser can actuate.
-    kNone,
+    kNone = 0,
     // The enterprise policy disables the actuation feature. Only applicable to
     // managed clients (Profile level, browser level or machine level).
-    kDisabledByPolicy,
+    kDisabledByPolicy = 1,
     // The account is not eligible for the actuation.
-    kAccountCapabilityIneligible,
+    kAccountCapabilityIneligible = 2,
     // The account is not subscribed to one of the required AI subscription
     // tiers.
-    kAccountMissingChromeBenefits,
+    kAccountMissingChromeBenefits = 3,
     // An enterprise account is logged in but there is no management to deliver
     // the policy. Actuation is disabled because the policy pref default value
     // is disabled.
-    kEnterpriseWithoutManagement,
+    kEnterpriseWithoutManagement = 4,
+    kMaxValue = kEnterpriseWithoutManagement,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorTaskCreateFailedReason)
 
   bool CanActOnWeb() const;
   CannotActReason CannotActOnWebReason() const;

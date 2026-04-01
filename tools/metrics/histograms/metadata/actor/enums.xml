@@ -244,6 +244,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorTabObservationResult) -->
 
+<!-- LINT.IfChange(ActorTaskCreateFailedReason) -->
+
+<enum name="ActorTaskCreateFailedReason">
+  <int value="0" label="None">Browser can actuate.</int>
+  <int value="1" label="DisabledByPolicy">
+    The enterprise policy disables the actuation feature.
+  </int>
+  <int value="2" label="AccountCapabilityIneligible">
+    The account is not eligible for the actuation.
+  </int>
+  <int value="3" label="AccountMissingChromeBenefits">
+    The account is not subscribed to one of the required AI subscription tiers.
+  </int>
+  <int value="4" label="EnterpriseWithoutManagement">
+    An enterprise account is logged in but there is no management to deliver the
+    policy.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/actor/glic_actor_policy_checker.h:CannotActReason) -->
+
 <!-- LINT.IfChange(ActorUiTabControllerError) -->
 
 <enum name="ActorUiTabControllerError">
