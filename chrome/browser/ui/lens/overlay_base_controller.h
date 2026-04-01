@@ -234,6 +234,13 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Notification that the tab was foregrounded.
   virtual void NotifyTabWillEnterBackground() = 0;
 
+  struct PreselectionBubbleResources {
+    int message_string_id;
+  };
+
+  // Returns the resources for the preselection bubble.
+  virtual PreselectionBubbleResources GetPreselectionBubbleResources() = 0;
+
   // Returns if the overlay view can be shared between multiple tabs.
   virtual bool IsOverlayViewShared() const = 0;
 
@@ -251,6 +258,10 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // on the live page. The callee should call `ReshowScreenshot` when the
   // screenshot is ready.
   virtual void ReshowOverlay();
+
+  // Show preselection toast bubble. Creates a preselection bubble if it does
+  // not exist.
+  virtual void ShowPreselectionBubble();
 
   // This is callwed when the webUI acknowledges the intent to reshow the
   // overlay. Since it already is showing an old screenshot the opacity is set
@@ -316,10 +327,6 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // is determined by checking if any of the children of the overlay view are
   // visible.
   void MaybeHideSharedOverlayView();
-
-  // Show preselection toast bubble. Creates a preselection bubble if it does
-  // not exist.
-  void ShowPreselectionBubble();
 
   // Closes the preselection bubble and reopens it. Used to prevent UI conflicts
   // between the preselection bubble and top chrome in fullscreen.

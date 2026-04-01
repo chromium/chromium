@@ -1371,6 +1371,14 @@ bool LensOverlayController::ShouldShowPreselectionBubble() {
   return !pending_region_ && !IsResultsSidePanelShowing();
 }
 
+void LensOverlayController::ShowPreselectionBubble() {
+  // Don't show the preselection bubble if the overlay is not being shown.
+  if (IsResultsSidePanelShowing()) {
+    return;
+  }
+  OverlayBaseController::ShowPreselectionBubble();
+}
+
 bool LensOverlayController::UseOverlayBlur() {
   return lens::features::GetLensOverlayUseBlur();
 }
@@ -1499,6 +1507,12 @@ void LensOverlayController::NotifyTabWillEnterBackground() {
     interface->AbortFeaturePromo(
         feature_engagement::kIPHiOSLensPromoDesktopFeature);
   }
+}
+
+OverlayBaseController::PreselectionBubbleResources
+LensOverlayController::GetPreselectionBubbleResources() {
+  return {.message_string_id =
+              IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED};
 }
 
 bool LensOverlayController::IsOverlayViewShared() const {

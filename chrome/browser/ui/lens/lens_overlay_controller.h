@@ -607,11 +607,13 @@ class LensOverlayController : public OverlayBaseController,
   void StartScreenshotFlow() override;
   void FinishedWaitingForReflow(base::TimeTicks reflow_start_time) override;
   bool ShouldShowPreselectionBubble() override;
+  void ShowPreselectionBubble() override;
   bool UseOverlayBlur() override;
   void NotifyPageNavigated() override;
   void NotifyOverlayClosing() override;
   void NotifyTabForegrounded() override;
   void NotifyTabWillEnterBackground() override;
+  PreselectionBubbleResources GetPreselectionBubbleResources() override;
   bool IsOverlayViewShared() const override;
 
   // content::WebContentsDelegate:

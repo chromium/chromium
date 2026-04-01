@@ -332,6 +332,12 @@ void SelectionOverlayController::NotifyTabForegrounded() {}
 
 void SelectionOverlayController::NotifyTabWillEnterBackground() {}
 
+OverlayBaseController::PreselectionBubbleResources
+SelectionOverlayController::GetPreselectionBubbleResources() {
+  return {.message_string_id =
+              IDS_GLIC_SELECTION_OVERLAY_PRESELECTION_BUBBLE_TEXT};
+}
+
 bool SelectionOverlayController::IsOverlayViewShared() const {
   // Glic's selection overlay's WebView is attached to the ContentsContainerView
   // which cannot be shared across multiple tabs.

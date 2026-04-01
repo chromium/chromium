@@ -110,6 +110,7 @@ class SelectionOverlayController
   void NotifyPageNavigated() override;
   void NotifyTabForegrounded() override;
   void NotifyTabWillEnterBackground() override;
+  PreselectionBubbleResources GetPreselectionBubbleResources() override;
   bool IsOverlayViewShared() const override;
 
   // `selection::SelectionOverlayPageHandler`:
