@@ -40,6 +40,8 @@ BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 BASE_DECLARE_FEATURE(kBackToOpener);
 
 BASE_DECLARE_FEATURE(kHorizontalTabStripComboButton);
+extern const base::FeatureParam<bool>
+    kHorizontalTabStripComboButtonShowStartOnly;
 
 bool IsVerticalTabsFeatureEnabled();
 

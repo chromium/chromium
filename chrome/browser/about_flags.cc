@@ -535,6 +535,16 @@ const FeatureEntry::FeatureVariation kDXGIWaitableSwapChainVariations[] = {
     {"Max 3 Frames", kDXGIWaitableSwapChain3Frames, nullptr}};
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kHorizontalTabStripComboButtonShowStartOnly[] =
+    {{"show_start_only", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kHorizontalTabStripComboButtonVariations[] = {
+        {"show start button only", kHorizontalTabStripComboButtonShowStartOnly,
+         nullptr}};
+#endif
+
 #if BUILDFLAG(ENABLE_VR)
 const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -12816,7 +12826,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"horizontal-tab-strip-combo-button",
      flag_descriptions::kHorizontalTabStripComboButtonName,
      flag_descriptions::kHorizontalTabStripComboButtonDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(tabs::kHorizontalTabStripComboButton)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(tabs::kHorizontalTabStripComboButton,
+                                    kHorizontalTabStripComboButtonVariations,
+                                    "HorizontalTabStripComboButton")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

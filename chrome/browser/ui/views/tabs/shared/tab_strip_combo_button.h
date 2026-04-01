@@ -110,6 +110,8 @@ class TabStripComboButton : public views::View,
 
   void MaybeHideTabSearchButton();
 
+  bool IsTabSearchPinned();
+
   actions::ActionItem* GetStartButtonActionItem();
   actions::ActionItem* GetEndButtonActionItem();
 
