@@ -27,7 +27,9 @@ config("libwebp_config") {
     "WEBP_DISABLE_STATS",
     "WEBP_USE_THREAD",
   ]
-  if (!is_chromeos) {
+
+  # WEBP_REDUCE_SIZE is defined for non-desktop platforms only.
+  if (!is_chromeos && !is_win && !is_mac && !is_linux) {
     defines += [ "WEBP_REDUCE_SIZE" ]
   }
   if (!is_ios) {

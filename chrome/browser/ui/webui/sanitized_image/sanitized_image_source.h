@@ -59,6 +59,10 @@ class IdentityManager;
 // [CrOS only]: If the source is an animated image, it will be re-encoded as an
 // animated WebP image; otherwise it will be re-encoded as a static image as
 // though `static-encode` attribute had been set.
+//
+// [Desktop platforms only, except CrOS]: If the source is an animated image,
+// it will be re-encoded as a static image unless the `static-encode` attribute
+// had been set to false.
 class SanitizedImageSource : public content::URLDataSource {
  public:
   using DecodeImageCallback = data_decoder::DecodeImageCallback;
@@ -120,7 +124,11 @@ class SanitizedImageSource : public content::URLDataSource {
     ~RequestAttributes();
 
     GURL image_url = GURL();
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+    bool static_encode = true;
+#else
     bool static_encode = false;
+#endif
     EncodeType encode_type = EncodeType::kPng;
     std::optional<signin::AccessTokenInfo> access_token_info;
   };

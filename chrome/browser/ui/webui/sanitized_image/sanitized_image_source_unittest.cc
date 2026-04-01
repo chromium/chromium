@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
@@ -103,15 +104,12 @@ TEST_F(SanitizedImageSourceTest, MultiRequest) {
     std::string url;
     std::string body;
     std::tie(color, url, body) = datum;
-    EXPECT_CALL(*mock_data_decoder_delegate_, DecodeAnimation(body, testing::_))
+    EXPECT_CALL(*mock_data_decoder_delegate_, DecodeImage(body, testing::_))
         .Times(1)
-        .WillOnce(
-            [color](const std::string&,
-                    SanitizedImageSource::DecodeAnimationCallback callback) {
-              std::vector<AnimationFramePtr> frames;
-              frames.push_back(MakeImageFrame(color));
-              std::move(callback).Run(std::move(frames));
-            });
+        .WillOnce([color](const std::string&,
+                          SanitizedImageSource::DecodeImageCallback callback) {
+          std::move(callback).Run(MakeImageFrame(color)->bitmap);
+        });
     auto image = gfx::Image::CreateFrom1xBitmap(MakeImageFrame(color)->bitmap);
     EXPECT_CALL(callback, Run(MemoryEq(image.As1xPNGBytes()))).Times(1);
   }
@@ -121,7 +119,8 @@ TEST_F(SanitizedImageSourceTest, MultiRequest) {
     std::string url;
     std::tie(std::ignore, url, std::ignore) = datum;
     sanitized_image_source_->StartDataRequest(
-        GURL(base::StrCat({chrome::kChromeUIImageURL, "?", url})),
+        GURL(base::StrCat(
+            {chrome::kChromeUIImageURL, "?url=", url, "&staticEncode=true"})),
         content::WebContents::Getter(), callback.Get());
   }
 
@@ -311,14 +310,11 @@ TEST_F(SanitizedImageSourceTest, StaticImage) {
 
   // Set up expectations and mock data.
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
-  EXPECT_CALL(*mock_data_decoder_delegate_,
-              DecodeAnimation(test_body, testing::_))
+  EXPECT_CALL(*mock_data_decoder_delegate_, DecodeImage(test_body, testing::_))
       .Times(1)
       .WillOnce([](const std::string&,
-                   SanitizedImageSource::DecodeAnimationCallback callback) {
-        std::vector<AnimationFramePtr> frames;
-        frames.push_back(MakeImageFrame(SK_ColorRED));
-        std::move(callback).Run(std::move(frames));
+                   SanitizedImageSource::DecodeImageCallback callback) {
+        std::move(callback).Run(MakeImageFrame(SK_ColorRED)->bitmap);
       });
   auto image =
       gfx::Image::CreateFrom1xBitmap(MakeImageFrame(SK_ColorRED)->bitmap);
@@ -326,7 +322,8 @@ TEST_F(SanitizedImageSourceTest, StaticImage) {
 
   // Issue requests.
   sanitized_image_source_->StartDataRequest(
-      GURL(base::StrCat({chrome::kChromeUIImageURL, "?", test_url})),
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", test_url,
+                         "&staticEncode=true"})),
       content::WebContents::Getter(), callback.Get());
 
   // Answer requests and check correctness.
@@ -346,14 +343,11 @@ TEST_F(SanitizedImageSourceTest, StaticImageWithWebPEncode) {
 
   // Set up expectations and mock data.
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
-  EXPECT_CALL(*mock_data_decoder_delegate_,
-              DecodeAnimation(test_body, testing::_))
+  EXPECT_CALL(*mock_data_decoder_delegate_, DecodeImage(test_body, testing::_))
       .Times(1)
       .WillOnce([](const std::string&,
-                   SanitizedImageSource::DecodeAnimationCallback callback) {
-        std::vector<AnimationFramePtr> frames;
-        frames.push_back(MakeImageFrame(SK_ColorRED));
-        std::move(callback).Run(std::move(frames));
+                   SanitizedImageSource::DecodeImageCallback callback) {
+        std::move(callback).Run(MakeImageFrame(SK_ColorRED)->bitmap);
       });
   auto image =
       gfx::Image::CreateFrom1xBitmap(MakeImageFrame(SK_ColorRED)->bitmap);
@@ -367,8 +361,8 @@ TEST_F(SanitizedImageSourceTest, StaticImageWithWebPEncode) {
 
   // Issue requests.
   sanitized_image_source_->StartDataRequest(
-      GURL(base::StrCat(
-          {chrome::kChromeUIImageURL, "?url=", test_url, "&encodeType=webp"})),
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", test_url,
+                         "&staticEncode=true&encodeType=webp"})),
       content::WebContents::Getter(), callback.Get());
 
   // Answer requests and check correctness.
@@ -425,7 +419,10 @@ TEST_F(SanitizedImageSourceTest, AnimatedImage) {
 
   task_environment_.RunUntilIdle();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_LINUX)
 TEST_F(SanitizedImageSourceTest, AnimatedImageWithStaticEncode) {
   const std::string test_body = "abc";
   const std::string test_url = "https://foo.com/img.png";
@@ -459,5 +456,54 @@ TEST_F(SanitizedImageSourceTest, AnimatedImageWithStaticEncode) {
 
   task_environment_.RunUntilIdle();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_LINUX)
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+TEST_F(SanitizedImageSourceTest, AnimatedImageWithStaticEncodeFalse) {
+  const std::string test_body = "abc";
+  const std::string test_url = "https://foo.com/img.png";
+
+  // Set up expectations and mock data.
+  base::RunLoop run_loop;
+  base::MockCallback<content::URLDataSource::GotDataCallback> callback;
+  EXPECT_CALL(*mock_data_decoder_delegate_,
+              DecodeAnimation(test_body, testing::_))
+      .Times(1)
+      .WillOnce([](const std::string&,
+                   SanitizedImageSource::DecodeAnimationCallback callback) {
+        std::vector<AnimationFramePtr> frames;
+        frames.push_back(MakeImageFrame(SK_ColorRED));
+        frames.push_back(MakeImageFrame(SK_ColorBLUE));
+        frames.push_back(MakeImageFrame(SK_ColorGREEN));
+        std::move(callback).Run(std::move(frames));
+      });
+  auto image =
+      gfx::Image::CreateFrom1xBitmap(MakeImageFrame(SK_ColorRED)->bitmap);
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce([&run_loop](scoped_refptr<base::RefCountedMemory> bytes) {
+        std::string data_string(reinterpret_cast<char const*>(bytes->data()));
+        // Make sure the image is encoded into WebP format.
+        EXPECT_TRUE(base::StartsWith(data_string, "RIFF"));
+        run_loop.Quit();
+      });
+
+  // Issue requests.
+  sanitized_image_source_->StartDataRequest(
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", test_url,
+                         "&staticEncode=false"})),
+      content::WebContents::Getter(), callback.Get());
+
+  // Answer requests and check correctness.
+  auto* request = test_url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+            request->request.credentials_mode);
+  EXPECT_EQ(test_url, request->request.url);
+  test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
+      request, test_body);
+
+  run_loop.Run();
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

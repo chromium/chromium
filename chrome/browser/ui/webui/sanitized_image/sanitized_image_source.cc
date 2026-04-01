@@ -304,6 +304,10 @@ void SanitizedImageSource::OnImageLoaded(
                      std::move(request_attributes), std::move(callback)));
 }
 
+// The underlying animation transcoding business logic depends on libwebp's
+// WebPPictureCopy function, which is explicitly excluded from the binaries
+// through the WEBP_REDUCE_SIZE preprocessor macro for non-desktop platforms.
+// See libwebp/BUILD.gn for more details.
 void SanitizedImageSource::OnAnimationDecoded(
     RequestAttributes request_attributes,
     content::URLDataSource::GotDataCallback callback,
@@ -315,14 +319,16 @@ void SanitizedImageSource::OnAnimationDecoded(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_LINUX)
   if (mojo_frames.size() > 1) {
     // The image is animated, re-encode as WebP animated image and send to
     // requester.
     EncodeAndReplyAnimatedImage(std::move(callback), std::move(mojo_frames));
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_LINUX)
 
   // Re-encode as static image and send to requester.
   EncodeAndReplyStaticImage(std::move(request_attributes), std::move(callback),
