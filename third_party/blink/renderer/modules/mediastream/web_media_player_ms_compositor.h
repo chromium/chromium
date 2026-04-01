@@ -332,6 +332,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   ReproductionJitterEstimator capture_reproduction_jitter_estimator_;
   // Used to compute reproduction jitter for remote UMA metrics.
   ReproductionJitterEstimator remote_reproduction_jitter_estimator_;
+  // Used to count frames where the display duration was negative.
+  size_t negative_display_duration_count_ = 0;
 
   // Used to compute presentation errors.
   std::optional<FrameTimestamps> last_displayed_frame_timestamps_;

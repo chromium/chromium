@@ -17,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
@@ -370,7 +371,8 @@ void VideoFrameSubmitter::OnBeginFrame(
   Vector<uint32_t> frame_tokens;
   for (const auto& id : timing_details.Keys())
     frame_tokens.push_back(id);
-  std::sort(frame_tokens.begin(), frame_tokens.end());
+  std::sort(frame_tokens.begin(), frame_tokens.end(),
+            [](uint32_t a, uint32_t b) { return viz::FrameTokenGT(b, a); });
 
   for (const auto& frame_token : frame_tokens) {
     if (viz::FrameTokenGT(frame_token, *next_frame_token_))

@@ -8743,6 +8743,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.WebMediaPlayerCompositor.NegativeDisplayDurationCount"
+    units="count" expires_after="2026-10-15">
+  <owner>handellm@google.com</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The number of times the compositor presented consecutive frames whose
+    duration since last displayed frame was negative. The metric is reported
+    every 10 seconds provided relevant frames have been presented.
+  </summary>
+</histogram>
+
 <histogram name="Media.WebMediaPlayerCompositor.ReasonToClearRenderBuffer"
     enum="ReasonToClearRenderBuffer" expires_after="2026-10-15">
   <owner>kron@chromium.org</owner>

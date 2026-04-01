@@ -89,6 +89,10 @@ class PLATFORM_EXPORT VideoFrameSubmitter
       uint32_t sequence_id) override {}
   void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
 
+  void SetNextFrameTokenForTesting(uint32_t token) {
+    next_frame_token_.SetValueForTesting(token);
+  }
+
  private:
   friend class VideoFrameSubmitterTest;
   class FrameSinkBundleProxy;

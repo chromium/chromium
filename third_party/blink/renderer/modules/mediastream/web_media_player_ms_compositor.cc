@@ -838,8 +838,12 @@ void WebMediaPlayerMSCompositor::OnFramePresented(
         display_time - last_displayed_frame_timestamps_->display_time;
     if (displayed_diff >= kMaxGapToForget) {
       last_displayed_frame_timestamps_ = std::nullopt;
+    } else if (displayed_diff.InMilliseconds() < 0) {
+      // These frames do exist at least in tests and so we need to check
+      // how common they are. See crbug.com/496714028.
+      ++negative_display_duration_count_;
+      return;
     } else {
-      DCHECK_GE(displayed_diff.InMilliseconds(), 0);
       harmonic_framerate_estimator_.AddSample(displayed_diff);
 
       if (capture_begin_time.has_value() &&
@@ -899,6 +903,14 @@ void WebMediaPlayerMSCompositor::OnFramePresented(
 void WebMediaPlayerMSCompositor::
     MaybeEmitHarmonicFramerateAndReproductionJitter() {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+
+  if (negative_display_duration_count_ > 0) {
+    base::UmaHistogramCounts100(
+        "Media.WebMediaPlayerCompositor.NegativeDisplayDurationCount",
+        negative_display_duration_count_);
+    negative_display_duration_count_ = 0;
+  }
+
   // Emit harmonic frame rate histogram. We omit this for screenshare since this
   // is often variable frame rate which makes the harmonic frame rate metric
   // meaningless.

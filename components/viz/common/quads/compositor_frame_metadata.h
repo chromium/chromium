@@ -77,6 +77,8 @@ class VIZ_COMMON_EXPORT FrameTokenGenerator {
 
   inline uint32_t operator*() const { return frame_token_; }
 
+  void SetValueForTesting(uint32_t value) { frame_token_ = value; }
+
  private:
   uint32_t frame_token_ = kInvalidFrameToken;
 };
