@@ -11,6 +11,7 @@
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -26,14 +27,15 @@
 namespace {
 
 BrowserWindow* GetWindowFromWebContents(content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  return browser ? browser->window() : nullptr;
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  return browser ? browser->GetBrowserForMigrationOnly()->window() : nullptr;
 }
 
 content::WebContents* GetCurrentWebContents(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  return browser ? browser->tab_strip_model()->GetActiveWebContents() : nullptr;
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  return browser ? browser->GetTabStripModel()->GetActiveWebContents()
+                 : nullptr;
 }
 
 SharingDialogType GetSharingDialogType(bool has_devices, bool has_apps) {

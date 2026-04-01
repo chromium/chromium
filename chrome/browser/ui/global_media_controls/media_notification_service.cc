@@ -84,7 +84,7 @@ void CancelRequest(
 // focused.
 bool IsWebContentsFocused(content::WebContents* web_contents) {
   DCHECK(web_contents);
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return false;
   }
@@ -94,7 +94,7 @@ bool IsWebContentsFocused(content::WebContents* web_contents) {
   if (GetLastActiveBrowserWindowInterfaceWithAnyProfile() != browser) {
     return false;
   }
-  return browser->tab_strip_model()->GetActiveWebContents() == web_contents;
+  return browser->GetTabStripModel()->GetActiveWebContents() == web_contents;
 }
 
 bool ShouldInitializeWithRemotePlaybackSource(

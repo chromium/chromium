@@ -40,14 +40,14 @@ void FocusTabAfterNavigationHelper::ReadyToCommitNavigation(
 bool FocusTabAfterNavigationHelper::ShouldFocusTabContents(
     content::NavigationHandle* navigation) {
   // Don't focus content in an inactive window or tab.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return false;
   }
-  if (!browser->window()->IsActive()) {
+  if (!browser->GetWindow()->IsActive()) {
     return false;
   }
-  if (browser->tab_strip_model()->GetActiveWebContents() != web_contents()) {
+  if (browser->GetTabStripModel()->GetActiveWebContents() != web_contents()) {
     return false;
   }
 

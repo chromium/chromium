@@ -83,8 +83,10 @@ bool IsValidWebContentsForIntentPicker(content::WebContents* web_contents) {
     return false;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  if (browser &&
+      (browser->GetType() == BrowserWindowInterface::TYPE_APP ||
+       browser->GetType() == BrowserWindowInterface::TYPE_APP_POPUP)) {
     return false;
   }
   return true;
@@ -115,12 +117,12 @@ void ShowIntentPickerBubbleForApps(
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }
 
-  browser->window()->ShowIntentPickerBubble(
+  browser->GetBrowserForMigrationOnly()->window()->ShowIntentPickerBubble(
       std::move(apps), show_stay_in_chrome, show_remember_selection,
       apps::IntentPickerBubbleType::kLinkCapturing, std::nullopt,
       std::move(callback));
@@ -349,7 +351,7 @@ void IntentPickerTabHelper::ShowIconForLinkIntent(bool should_show_icon) {
 void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   should_show_icon_ = should_show_icon;
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
   }
@@ -359,7 +361,8 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
         tabs::TabInterface::GetFromContents(&GetWebContents());
     UpdatePageAction(tab_interface, should_show_icon);
   } else {
-    browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
+    browser->GetBrowserForMigrationOnly()->window()->UpdatePageActionIcon(
+        PageActionIconType::kIntentPicker);
   }
 
   icon_resolved_ = true;

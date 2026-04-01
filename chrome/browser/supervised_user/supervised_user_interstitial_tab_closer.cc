@@ -12,6 +12,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
@@ -41,9 +42,10 @@ TabCloser::TabCloser(content::WebContents* web_contents)
 void TabCloser::CloseTabImpl() {
   // On Android, FindBrowserWithTab and TabStripModel don't exist.
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(&GetWebContents());
   DCHECK(browser);
-  TabStripModel* tab_strip = browser->tab_strip_model();
+  TabStripModel* tab_strip = browser->GetTabStripModel();
   DCHECK_NE(TabStripModel::kNoTab,
             tab_strip->GetIndexOfWebContents(&GetWebContents()));
   if (tab_strip->count() <= 1) {

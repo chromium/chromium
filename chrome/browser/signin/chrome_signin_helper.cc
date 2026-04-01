@@ -51,6 +51,7 @@
 #else
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -200,9 +201,9 @@ bool IsWebContentsForemost(Profile* profile,
                            content::WebContents* web_contents,
                            GAIAServiceType service_type) {
 #if BUILDFLAG(IS_CHROMEOS)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   // Do not do anything if the navigation happened in the "background".
-  if (!browser || !browser->window()->IsActive()) {
+  if (!browser || !browser->GetWindow()->IsActive()) {
     return false;
   }
 

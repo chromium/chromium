@@ -841,7 +841,7 @@ enum class BackNavigationMenuIPHTrigger : int {
 
 const char kBackNavigationMenuIPHExperimentParamName[] = "x_experiment";
 
-void MaybeShowFeatureBackNavigationMenuPromo(Browser* browser,
+void MaybeShowFeatureBackNavigationMenuPromo(BrowserWindowInterface* browser,
                                              WebContents* web_contents) {
   if (!base::FeatureList::IsEnabled(
           feature_engagement::kIPHBackNavigationMenuFeature)) {
@@ -892,7 +892,7 @@ void GoBack(content::WebContents* web_contents) {
   // Try regular back navigation first.
   if (web_contents->GetController().CanGoBack()) {
     web_contents->GetController().GoBack();
-    Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
     if (browser) {
       MaybeShowFeatureBackNavigationMenuPromo(browser, web_contents);
     }

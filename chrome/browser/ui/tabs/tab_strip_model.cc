@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -2961,7 +2962,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::UmaHistogramCounts1000(
           "Tab.ContextMenu.ToggleVertical.SelectedTabsCount",
           selection_model_.size());
-      const Browser* const browser =
+      const BrowserWindowInterface* const browser =
           chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
       if (auto* controller =
               tabs::VerticalTabStripStateController::From(browser)) {

@@ -15,6 +15,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
@@ -123,10 +124,13 @@ void AppTabHelper::DidFinishNavigation(
   ExtensionRegistry* registry = ExtensionRegistry::Get(context);
   const ExtensionSet& enabled_extensions = registry->enabled_extensions();
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
-    const Extension* extension = registry->GetInstalledExtension(
-        web_app::GetAppIdFromApplicationName(browser->app_name()));
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  if (browser &&
+      (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP)) {
+    const Extension* extension =
+        registry->GetInstalledExtension(web_app::GetAppIdFromApplicationName(
+            browser->GetBrowserForMigrationOnly()->app_name()));
     if (extension && AppLaunchInfo::GetFullLaunchURL(extension).is_valid()) {
       DCHECK(extension->is_app());
       SetExtensionApp(extension);

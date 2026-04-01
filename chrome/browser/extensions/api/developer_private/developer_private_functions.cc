@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -2112,16 +2113,17 @@ ExtensionFunction::ResponseAction DeveloperPrivateOpenDevToolsFunction::Run() {
   }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Once we open the inspector, we focus on the appropriate tab...
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
 
   // ... but some pages (popups and apps) don't have tabs, and some (background
   // pages) don't have an associated browser. For these, the inspector opens in
   // a new window, and our work is done.
-  if (!browser || !browser->is_type_normal()) {
+  if (!browser ||
+      browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
     return RespondNow(NoArguments());
   }
 
-  TabStripModel* tab_strip = browser->tab_strip_model();
+  TabStripModel* tab_strip = browser->GetTabStripModel();
   tab_strip->ActivateTabAt(tab_strip->GetIndexOfWebContents(
       web_contents));  // Not through direct user gesture.
 #endif                 // BUILDFLAG(ENABLE_EXTENSIONS)

@@ -105,12 +105,14 @@ std::u16string CoreTabHelper::GetStatusText() const {
 void CoreTabHelper::UpdateContentRestrictions(int content_restrictions) {
   content_restrictions_ = content_restrictions;
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
   }
 
-  browser->command_controller()->ContentRestrictionsChanged();
+  browser->GetFeatures()
+      .browser_command_controller()
+      ->ContentRestrictionsChanged();
 #endif
 }
 
@@ -455,9 +457,11 @@ void CoreTabHelper::NavigationEntriesDeleted() {
 void CoreTabHelper::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser) {
-    browser->command_controller()->WebContentsFocusChanged();
+    browser->GetFeatures()
+        .browser_command_controller()
+        ->WebContentsFocusChanged();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -465,9 +469,11 @@ void CoreTabHelper::OnWebContentsFocused(
 void CoreTabHelper::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser) {
-    browser->command_controller()->WebContentsFocusChanged();
+    browser->GetFeatures()
+        .browser_command_controller()
+        ->WebContentsFocusChanged();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

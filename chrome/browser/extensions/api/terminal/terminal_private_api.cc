@@ -49,8 +49,10 @@
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/terminal_private.h"
@@ -713,7 +715,8 @@ ExtensionFunction::ResponseAction TerminalPrivateOpenWindowFunction::Run() {
   if (as_tab) {
     auto* browser = chrome::FindBrowserWithTab(GetSenderWebContents());
     if (browser) {
-      chrome::AddTabAt(browser, GURL(*url), -1, true);
+      chrome::AddTabAt(browser->GetBrowserForMigrationOnly(), GURL(*url), -1,
+                       true);
     } else {
       LOG(ERROR) << "cannot find the browser";
     }

@@ -13,6 +13,7 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_dialog.h"
@@ -30,9 +31,9 @@ using SharingMessage = components_sharing_message::SharingMessage;
 ClickToCallUiController* ClickToCallUiController::GetOrCreateFromWebContents(
     content::WebContents* web_contents) {
   // Use active WebContents if available.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (browser)
-    web_contents = browser->tab_strip_model()->GetActiveWebContents();
+    web_contents = browser->GetTabStripModel()->GetActiveWebContents();
   ClickToCallUiController::CreateForWebContents(web_contents);
   return ClickToCallUiController::FromWebContents(web_contents);
 }

@@ -964,10 +964,11 @@ void PasswordsPrivateDelegateImpl::SwitchBiometricAuthBeforeFillingState(
 
 void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   DCHECK(browser);
   web_app::CreateWebAppFromCurrentWebContents(
-      browser, web_app::WebAppInstallFlow::kInstallSite);
+      browser->GetBrowserForMigrationOnly(),
+      web_app::WebAppInstallFlow::kInstallSite);
   base::UmaHistogramEnumeration(
       "PasswordManager.ShortcutMetric",
       password_manager::metrics_util::PasswordManagerShortcutMetric::
@@ -977,14 +978,14 @@ void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
 void PasswordsPrivateDelegateImpl::ShowExportedFileInShell(
     content::WebContents* web_contents,
     std::string file_path) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   DCHECK(browser);
 #if !BUILDFLAG(IS_WIN)
   base::FilePath path(file_path);
 #else
   base::FilePath path(base::UTF8ToWide(file_path));
 #endif
-  platform_util::ShowItemInFolder(browser->profile(), path);
+  platform_util::ShowItemInFolder(browser->GetProfile(), path);
 }
 
 void PasswordsPrivateDelegateImpl::ChangePasswordManagerPin(
@@ -1128,8 +1129,9 @@ void PasswordsPrivateDelegateImpl::MaybeShowPasswordShareButtonIPH(
   if (!web_contents) {
     return;
   }
-  Browser* browser = chrome::FindBrowserWithTab(web_contents.get());
-  if (!browser || !browser->window()) {
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(web_contents.get());
+  if (!browser || !browser->GetWindow()) {
     return;
   }
   BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(

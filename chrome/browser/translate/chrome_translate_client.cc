@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -396,7 +397,7 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
   DCHECK(translate_manager_);
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
 
   // |browser| might be NULL when testing. In this case, Show(...) should be
   // called because the implementation for testing is used.
@@ -406,7 +407,7 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
                                         error_type, is_user_gesture);
   }
 
-  if (web_contents() != browser->tab_strip_model()->GetActiveWebContents()) {
+  if (web_contents() != browser->GetTabStripModel()->GetActiveWebContents()) {
     return ShowTranslateBubbleResult::kWebContentsNotActive;
   }
 
@@ -439,8 +440,9 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
           TranslateBubbleController::From(browser);
       if (controller && controller->GetTranslateBubble()) {
         return TranslateBubbleFactory::Show(
-            browser->window(), web_contents(), step, source_language,
-            target_language, error_type, is_user_gesture);
+            browser->GetBrowserForMigrationOnly()->window(), web_contents(),
+            step, source_language, target_language, error_type,
+            is_user_gesture);
       }
 
       if (is_toast_enabled) {
@@ -456,9 +458,9 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
     }
   }
 
-  return TranslateBubbleFactory::Show(browser->window(), web_contents(), step,
-                                      source_language, target_language,
-                                      error_type, is_user_gesture);
+  return TranslateBubbleFactory::Show(
+      browser->GetBrowserForMigrationOnly()->window(), web_contents(), step,
+      source_language, target_language, error_type, is_user_gesture);
 }
 #endif
 

@@ -25,6 +25,7 @@ source_set("impl") {
     ":vr",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//device/vr/buildflags",
     "//third_party/blink/public/common:headers",
   ]
@@ -34,6 +35,8 @@ source_set("impl") {
       "//base",
       "//chrome/browser/flags:flags_android",
     ]
+  } else {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
   }
 }
 

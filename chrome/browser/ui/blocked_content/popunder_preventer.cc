@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
@@ -44,9 +45,11 @@ PopunderPreventer::~PopunderPreventer() {
   for (base::WeakPtr<content::WebContents>& popup : popups_) {
     auto* browser = popup ? chrome::FindBrowserWithTab(popup.get()) : nullptr;
     // Only popup, app, or app-popup browser windows are potential popunders.
-    if (browser && (browser->is_type_app() || browser->is_type_popup() ||
-                    browser->is_type_app_popup())) {
-      browser->ActivateContents(popup.get());
+    if (browser &&
+        (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+         browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP ||
+         browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP)) {
+      browser->GetBrowserForMigrationOnly()->ActivateContents(popup.get());
     }
   }
 }

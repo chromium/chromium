@@ -246,7 +246,11 @@ void HatsServiceDesktop::LaunchSurveyForWebContents(
          "desktop.";
   if (ShouldShowSurvey(trigger) && web_contents &&
       web_contents->GetVisibility() == content::Visibility::VISIBLE) {
-    LaunchSurveyForBrowser(chrome::FindBrowserWithTab(web_contents), trigger,
+    BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+    if (!browser) {
+      return;
+    }
+    LaunchSurveyForBrowser(browser->GetBrowserForMigrationOnly(), trigger,
                            std::move(success_callback),
                            std::move(failure_callback),
                            product_specific_bits_data,

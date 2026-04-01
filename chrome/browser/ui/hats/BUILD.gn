@@ -57,7 +57,10 @@ source_set("impl") {
       "trust_safety_sentiment_service_factory.cc",
     ]
 
-    deps += [ "//chrome/browser/ui/performance_controls" ]
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/performance_controls",
+    ]
   }
   deps += [
     ":hats",
