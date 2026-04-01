@@ -263,8 +263,13 @@ void DisplayResourceProvider::ReceiveFromChild(
     }
 
     ResourceId local_id = resource_id_generator_.GenerateNextId();
-    resources_.emplace(local_id,
-                       ChildResource(child_id, transferable_resource));
+    bool inserted =
+        resources_
+            .emplace(local_id, ChildResource(child_id, transferable_resource))
+            .second;
+    // Verify there wasn't a ResourceId collision. A collision is only possible
+    // after `resource_id_generator_` hit the max ID and wrapped around.
+    CHECK(inserted);
     child_info.child_to_parent_map[transferable_resource.id] = local_id;
   }
 }
