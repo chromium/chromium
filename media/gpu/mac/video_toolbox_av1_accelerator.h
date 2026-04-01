@@ -21,7 +21,6 @@
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -37,7 +36,6 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
   VideoToolboxAV1Accelerator(std::unique_ptr<MediaLog> media_log,
-                             const gfx::HDRMetadata& hdr_metadata,
                              DecodeCB decode_cb,
                              OutputCB output_cb);
   ~VideoToolboxAV1Accelerator() override;
@@ -59,7 +57,6 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
                      base::span<const uint8_t> data);
 
   std::unique_ptr<MediaLog> media_log_;
-  gfx::HDRMetadata hdr_metadata_;
 
   // Callbacks are called synchronously, which is always re-entrant.
   DecodeCB decode_cb_;
@@ -68,7 +65,6 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
   // Parameters of the active format.
   VideoColorSpace active_color_space_;
   VideoCodecProfile active_profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
-  gfx::HDRMetadata active_hdr_metadata_;
   gfx::Size active_coded_size_;
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;

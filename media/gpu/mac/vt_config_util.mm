@@ -9,7 +9,6 @@
 #include "base/apple/bridging.h"
 #include "base/logging.h"
 #include "media/base/mac/color_space_util_mac.h"
-#include "ui/gfx/hdr_metadata_mac.h"
 
 namespace {
 
@@ -138,22 +137,6 @@ CFStringRef GetMatrix(media::VideoColorSpace::MatrixID matrix_id) {
   }
 }
 
-void SetContentLightLevelInfo(NSMutableDictionary<NSString*, id>* extensions,
-                              const gfx::HDRMetadata& hdr_metadata) {
-  SetDictionaryValue(
-      extensions, kCMFormatDescriptionExtension_ContentLightLevelInfo,
-      base::apple::CFToNSPtrCast(
-          gfx::GenerateContentLightLevelInfo(hdr_metadata).get()));
-}
-
-void SetColorVolumeMetadata(NSMutableDictionary<NSString*, id>* extensions,
-                            const gfx::HDRMetadata& hdr_metadata) {
-  SetDictionaryValue(
-      extensions, kCMFormatDescriptionExtension_MasteringDisplayColorVolume,
-      base::apple::CFToNSPtrCast(
-          gfx::GenerateMasteringDisplayColorVolume(hdr_metadata).get()));
-}
-
 void SetVp9CodecConfigurationBox(NSMutableDictionary<NSString*, id>* extensions,
                                  media::VideoCodecProfile codec_profile,
                                  const media::VideoColorSpace& color_space) {
@@ -216,7 +199,6 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
     VideoCodecProfile profile,
     int bit_depth,
     const VideoColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
     std::optional<base::span<const uint8_t>> csd_box) {
   NSMutableDictionary* extensions = [[NSMutableDictionary alloc] init];
 
@@ -249,12 +231,6 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
   // Set full range flag.
   SetDictionaryValue(extensions, kCMFormatDescriptionExtension_FullRangeVideo,
                      @(color_space.range == gfx::ColorSpace::RangeID::FULL));
-
-  // Set metadata for PQ signals.
-  if (color_space.transfer == VideoColorSpace::TransferID::SMPTEST2084) {
-    SetContentLightLevelInfo(extensions, hdr_metadata);
-    SetColorVolumeMetadata(extensions, hdr_metadata);
-  }
 
   if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
     SetVp9CodecConfigurationBox(extensions, profile, color_space);

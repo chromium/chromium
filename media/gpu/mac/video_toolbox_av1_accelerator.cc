@@ -15,11 +15,9 @@ namespace media {
 
 VideoToolboxAV1Accelerator::VideoToolboxAV1Accelerator(
     std::unique_ptr<MediaLog> media_log,
-    const gfx::HDRMetadata& hdr_metadata,
     DecodeCB decode_cb,
     OutputCB output_cb)
     : media_log_(std::move(media_log)),
-      hdr_metadata_(hdr_metadata),
       decode_cb_(std::move(decode_cb)),
       output_cb_(std::move(output_cb)) {
   DVLOG(1) << __func__;
@@ -190,11 +188,6 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
       break;
   }
 
-  gfx::HDRMetadata hdr_metadata = pic.dynamic_hdr_metadata();
-  if (hdr_metadata.IsEmpty()) {
-    hdr_metadata = hdr_metadata_;
-  }
-
   // TODO(crbug.com/40936765): Should this be the current frame size, or the
   // sequence max frame size?
   gfx::Size coded_size(base::strict_cast<int>(pic.frame_header.width),
@@ -202,7 +195,6 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
 
   // If the parameters have changed, generate a new format.
   if (color_space != active_color_space_ || profile != active_profile_ ||
-      hdr_metadata != active_hdr_metadata_ ||
       coded_size != active_coded_size_) {
     active_format_.reset();
 
@@ -218,7 +210,7 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
         CreateFormatExtensions(kCMVideoCodecType_AV1, profile,
                                sequence_header.color_config.bitdepth,
-                               color_space, hdr_metadata, av1c_span);
+                               color_space, av1c_span);
     if (!format_config) {
       MEDIA_LOG(ERROR, media_log_.get())
           << "Failed to create format extensions";
@@ -242,7 +234,6 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     // Save the configuration for later comparison.
     active_color_space_ = color_space;
     active_profile_ = profile;
-    active_hdr_metadata_ = hdr_metadata;
     active_coded_size_ = coded_size;
 
     // Update session configuration.

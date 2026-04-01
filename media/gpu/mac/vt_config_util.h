@@ -15,7 +15,6 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/gpu/media_gpu_export.h"
-#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -24,7 +23,6 @@ CreateFormatExtensions(CMVideoCodecType codec_type,
                        VideoCodecProfile profile,
                        int bit_depth,
                        const VideoColorSpace& color_space,
-                       const gfx::HDRMetadata& hdr_metadata,
                        std::optional<base::span<const uint8_t>> csd_box);
 
 }  // namespace media

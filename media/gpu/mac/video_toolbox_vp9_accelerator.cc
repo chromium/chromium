@@ -16,11 +16,9 @@ namespace media {
 
 VideoToolboxVP9Accelerator::VideoToolboxVP9Accelerator(
     std::unique_ptr<MediaLog> media_log,
-    const gfx::HDRMetadata& hdr_metadata,
     DecodeCB decode_cb,
     OutputCB output_cb)
     : media_log_(std::move(media_log)),
-      hdr_metadata_(hdr_metadata),
       decode_cb_(std::move(decode_cb)),
       output_cb_(std::move(output_cb)) {
   DVLOG(1) << __func__;
@@ -153,11 +151,6 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
       break;
   }
 
-  gfx::HDRMetadata hdr_metadata = pic->dynamic_hdr_metadata();
-  if (hdr_metadata.IsEmpty()) {
-    hdr_metadata = hdr_metadata_;
-  }
-
   gfx::Size coded_size(static_cast<int>(pic->frame_hdr->frame_width),
                        static_cast<int>(pic->frame_hdr->frame_height));
   if (coded_size.IsEmpty()) {
@@ -167,14 +160,13 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
 
   // If the parameters have changed, generate a new format.
   if (color_space != active_color_space_ || profile != active_profile_ ||
-      hdr_metadata != active_hdr_metadata_ ||
       coded_size != active_coded_size_) {
     active_format_.reset();
 
     base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
         CreateFormatExtensions(kCMVideoCodecType_VP9, profile,
                                pic->frame_hdr->bit_depth, color_space,
-                               hdr_metadata, std::nullopt);
+                               std::nullopt);
     if (!format_config) {
       MEDIA_LOG(ERROR, media_log_.get())
           << "Failed to create format extensions";
@@ -194,7 +186,6 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
 
     active_color_space_ = color_space;
     active_profile_ = profile;
-    active_hdr_metadata_ = hdr_metadata;
     active_coded_size_ = coded_size;
 
     session_metadata_ = VideoToolboxDecompressionSessionMetadata{

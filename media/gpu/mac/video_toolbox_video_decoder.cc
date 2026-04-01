@@ -193,8 +193,7 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     case VideoCodec::kVP9:
       accelerator_ = std::make_unique<VP9Decoder>(
           std::make_unique<VideoToolboxVP9Accelerator>(
-              media_log_->Clone(), config.hdr_metadata(),
-              std::move(accelerator_decode_cb),
+              media_log_->Clone(), std::move(accelerator_decode_cb),
               std::move(accelerator_output_cb)),
           config.profile(), config.color_space_info());
       break;
@@ -202,8 +201,7 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     case VideoCodec::kAV1:
       accelerator_ = std::make_unique<AV1Decoder>(
           std::make_unique<VideoToolboxAV1Accelerator>(
-              media_log_->Clone(), config.hdr_metadata(),
-              std::move(accelerator_decode_cb),
+              media_log_->Clone(), std::move(accelerator_decode_cb),
               std::move(accelerator_output_cb)),
           config.profile(), config.color_space_info());
       break;
@@ -375,16 +373,12 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
         gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
   }
 
-  // TODO(https://crbug.com/395659818): Access `metadata->picture` directly in
-  // VideoToolboxFrameConverter::Convert, rather than redundantly putting it
-  // here.
-  metadata->hdr_metadata = metadata->picture->dynamic_hdr_metadata();
-  if (metadata->hdr_metadata.IsEmpty()) {
-    // Note: The VP9 accelerator contains this same logic so that the format
-    // description can include HDR metadata (there is no in-band HDR metadata
-    // in VP9). The other accelerators use only in-band HDR metadata.
-    metadata->hdr_metadata = config_.hdr_metadata();
-  }
+  // Merge the dynamic metadata (from `picture`) on top of the static metadata
+  // (from `config_`) to determine the final metadata that will be attached to
+  // the VideoFrame when it is created.
+  metadata->hdr_metadata = config_.hdr_metadata();
+  metadata->hdr_metadata.MergeMetadataFrom(
+      metadata->picture->dynamic_hdr_metadata());
 
   metadata->session_metadata = session_metadata;
 
