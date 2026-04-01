@@ -33,10 +33,6 @@ class OverscrollRefreshHandler;
 }
 #endif
 
-namespace url {
-class Origin;
-}
-
 namespace content {
 class RenderFrameHost;
 class RenderWidgetHostImpl;
@@ -83,14 +79,13 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
   //   different).  See the function header comment for:
   //   `blink::DragController::StartDrag()`.
   virtual void StartDragging(
+      RenderFrameHost& source_rfh,
       const DropData& drop_data,
-      const url::Origin& source_origin,
       blink::DragOperationsMask allowed_ops,
       const gfx::ImageSkia& image,
       const gfx::Vector2d& cursor_offset,
       const gfx::Rect& drag_obj_rect,
-      const blink::mojom::DragEventSourceInfo& event_info,
-      RenderWidgetHostImpl* source_rwh) {}
+      const blink::mojom::DragEventSourceInfo& event_info) {}
 
   // The page wants to update the mouse cursor during a drag & drop operation.
   // `operation` describes the current operation (none, move, copy, link.).

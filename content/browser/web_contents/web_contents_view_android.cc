@@ -450,14 +450,15 @@ void WebContentsViewAndroid::ShowPopupMenu(
 }
 
 void WebContentsViewAndroid::StartDragging(
+    RenderFrameHost& source_rfh,
     const DropData& drop_data,
-    const url::Origin& source_origin,
     blink::DragOperationsMask allowed_ops,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& cursor_offset,
     const gfx::Rect& drag_obj_rect,
-    const blink::mojom::DragEventSourceInfo& event_info,
-    RenderWidgetHostImpl* source_rwh) {
+    const blink::mojom::DragEventSourceInfo& event_info) {
+  RenderWidgetHostImpl* const source_rwh =
+      static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
   current_source_rwh_for_drag_ = source_rwh->GetWeakPtr();
   if (!IsDragEnabledForDropData(drop_data)) {
     // Need to clear drag and drop state in blink.

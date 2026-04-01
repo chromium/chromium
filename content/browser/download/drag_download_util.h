@@ -11,27 +11,11 @@
 #include "content/browser/download/drag_download_file.h"
 #include "ui/base/dragdrop/download_file_interface.h"
 
-class GURL;
-
 namespace base {
 class FilePath;
 }
 
 namespace content {
-
-// Parse the download metadata set in DataTransfer.setData. The metadata
-// consists of a set of the following values separated by ":"
-// * MIME type
-// * File name
-// * URL
-// If the file name contains special characters, they need to be escaped
-// appropriately.
-// For example, we can have
-//   text/plain:example.txt:http://example.com/example.txt
-bool ParseDownloadMetadata(const std::u16string& metadata,
-                           std::u16string* mime_type,
-                           base::FilePath* file_name,
-                           GURL* url);
 
 // Create a new file at the specified path. If the file already exists, try to
 // insert the sequential unifier to produce a new file, like foo-01.txt.

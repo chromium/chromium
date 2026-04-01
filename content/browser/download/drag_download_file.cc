@@ -14,12 +14,14 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -35,22 +37,17 @@ using OnCompleted = base::OnceCallback<void(bool)>;
 class DragDownloadFile::DragDownloadFileUI
     : public download::DownloadItem::Observer {
  public:
-  DragDownloadFileUI(const GURL& url,
+  DragDownloadFileUI(WeakDocumentPtr source_document,
+                     const GURL& url,
                      const Referrer& referrer,
                      const std::string& referrer_encoding,
-                     std::optional<url::Origin> initiator_origin,
-                     int render_process_id,
-                     int render_frame_id,
                      OnCompleted on_completed)
       : on_completed_(std::move(on_completed)),
+        source_document_(std::move(source_document)),
         url_(url),
         referrer_(referrer),
-        referrer_encoding_(referrer_encoding),
-        initiator_origin_(initiator_origin),
-        render_process_id_(render_process_id),
-        render_frame_id_(render_frame_id) {
+        referrer_encoding_(referrer_encoding) {
     DCHECK(on_completed_);
-    DCHECK_GE(render_frame_id_, 0);
     // May be called on any thread.
     // Do not call weak_ptr_factory_.GetWeakPtr() outside the UI thread.
   }
@@ -62,12 +59,9 @@ class DragDownloadFile::DragDownloadFileUI
                         const base::FilePath& file_path) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    RenderFrameHost* host =
-        RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+    RenderFrameHost* host = source_document_.AsRenderFrameHostIfValid();
     if (!host)
       return;
-    // TODO(crbug.com/40470366) This should use the frame actually
-    // containing the link being dragged rather than the main frame of the tab.
     net::NetworkTrafficAnnotationTag traffic_annotation =
         net::DefineNetworkTrafficAnnotation("drag_download_file", R"(
         semantics {
@@ -97,10 +91,7 @@ class DragDownloadFile::DragDownloadFileUI
         Referrer::ReferrerPolicyForUrlRequest(referrer_.policy));
     params->set_referrer_encoding(referrer_encoding_);
 
-    // `initiator_origin_` (coming from
-    // `OSExchangeDataProvider::GetRendererTaintedOrigin`) is more accurate than
-    // `host` (coming from `WebContents::GetPrimaryMainFrame`).
-    params->set_initiator(initiator_origin_);
+    params->set_initiator(host->GetLastCommittedOrigin());
 
     params->set_callback(base::BindOnce(&DragDownloadFileUI::OnDownloadStarted,
                                         weak_ptr_factory_.GetWeakPtr()));
@@ -178,31 +169,26 @@ class DragDownloadFile::DragDownloadFileUI
   }
 
   OnCompleted on_completed_;
+  WeakDocumentPtr source_document_;
   GURL url_;
   Referrer referrer_;
   std::string referrer_encoding_;
-  std::optional<url::Origin> initiator_origin_;
-  int render_process_id_;
-  int render_frame_id_;
   raw_ptr<download::DownloadItem> download_item_ = nullptr;
 
   // Only used in the callback from DownloadManager::DownloadUrl().
   base::WeakPtrFactory<DragDownloadFileUI> weak_ptr_factory_{this};
 };
 
-DragDownloadFile::DragDownloadFile(const base::FilePath& file_path,
+DragDownloadFile::DragDownloadFile(WeakDocumentPtr source_document,
+                                   const base::FilePath& file_path,
                                    base::File file,
                                    const GURL& url,
                                    const Referrer& referrer,
-                                   const std::string& referrer_encoding,
-                                   std::optional<url::Origin> initiator_origin,
-                                   WebContents* web_contents)
+                                   const std::string& referrer_encoding)
     : file_path_(file_path), file_(std::move(file)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
   drag_ui_ = new DragDownloadFileUI(
-      url, referrer, referrer_encoding, initiator_origin,
-      host->GetProcess()->GetDeprecatedID(), host->GetRoutingID(),
+      std::move(source_document), url, referrer, referrer_encoding,
       base::BindOnce(&DragDownloadFile::DownloadCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   DCHECK(!file_path_.empty());

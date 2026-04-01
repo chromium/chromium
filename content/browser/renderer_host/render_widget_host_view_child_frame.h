@@ -109,8 +109,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 #if BUILDFLAG(IS_ANDROID)
   bool IsTouchSequencePotentiallyActiveOnViz() override;
   void RequestInputBackForDragAndDrop(
+      WeakDocumentPtr source_document,
       blink::mojom::DragDataPtr drag_data,
-      const url::Origin& source_origin,
       blink::DragOperationsMask drag_operations_mask,
       SkBitmap bitmap,
       gfx::Vector2d cursor_offset_in_dip,

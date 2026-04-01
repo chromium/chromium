@@ -22,7 +22,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -35,6 +34,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -201,29 +201,24 @@ void PrepareDragForFileContents(const DropData& drop_data,
 #endif
 
 #if BUILDFLAG(IS_WIN)
-void PrepareDragForDownload(const DropData& drop_data,
-                            ui::OSExchangeDataProvider* provider,
-                            WebContentsImpl* web_contents) {
-  const GURL& page_url = web_contents->GetLastCommittedURL();
-  const std::string& page_encoding = web_contents->GetEncoding();
+void PrepareDragForDownload(RenderFrameHost& source_rfh,
+                            const DropData& drop_data,
+                            ui::OSExchangeDataProvider* provider) {
+  DCHECK(drop_data.download_metadata.has_value());
 
-  // Parse the download metadata.
-  std::u16string mime_type;
-  base::FilePath file_name;
-  GURL download_url;
-  if (!ParseDownloadMetadata(drop_data.download_metadata,
-                             &mime_type,
-                             &file_name,
-                             &download_url))
-    return;
+  const GURL& page_url = source_rfh.GetLastCommittedURL();
+  const std::string& page_encoding =
+      static_cast<RenderFrameHostImpl&>(source_rfh).GetPage().GetEncoding();
+
+  const GURL& download_url = drop_data.download_metadata->url;
 
   // Generate the file name based on both mime type and proposed file name.
   std::string default_name =
       GetContentClient()->browser()->GetDefaultDownloadName();
-  base::FilePath generated_download_file_name =
-      net::GenerateFileName(download_url, std::string(), std::string(),
-                            base::WideToUTF8(file_name.value()),
-                            base::UTF16ToUTF8(mime_type), default_name);
+  base::FilePath generated_download_file_name = net::GenerateFileName(
+      download_url, std::string(), std::string(),
+      drop_data.download_metadata->suggested_file_name,
+      drop_data.download_metadata->mime_type, default_name);
 
   // http://crbug.com/332579
   ScopedAllowBlockingForViewAura allow_file_operations;
@@ -244,9 +239,9 @@ void PrepareDragForDownload(const DropData& drop_data,
   // Provide the data as file (CF_HDROP). A temporary download file with the
   // Zone.Identifier ADS (Alternate Data Stream) attached will be created.
   auto download_file = std::make_unique<DragDownloadFile>(
-      download_path, base::File(), download_url,
-      Referrer(page_url, drop_data.referrer_policy), page_encoding,
-      provider->GetRendererTaintedOrigin(), web_contents);
+      source_rfh.GetWeakDocumentPtr(), download_path, base::File(),
+      download_url, Referrer(page_url, drop_data.referrer_policy),
+      page_encoding);
   ui::DownloadFileInfo file_download(base::FilePath(),
                                      std::move(download_file));
   provider->SetDownloadFileInfo(&file_download);
@@ -262,16 +257,16 @@ const ui::ClipboardFormatType& GetFileSystemFileFormatType() {
 }
 
 // Utility to fill a ui::OSExchangeDataProvider object from DropData.
-void PrepareDragData(const DropData& drop_data,
-                     const url::Origin source_origin,
-                     ui::OSExchangeDataProvider* provider,
-                     WebContentsImpl* web_contents) {
-  provider->MarkRendererTaintedFromOrigin(source_origin);
+void PrepareDragData(RenderFrameHost& source_rfh,
+                     const DropData& drop_data,
+                     ui::OSExchangeDataProvider* provider) {
+  provider->MarkRendererTaintedFromOrigin(source_rfh.GetLastCommittedOrigin());
 #if BUILDFLAG(IS_WIN)
   // Put download before file contents to prefer the download of a image over
   // its thumbnail link.
-  if (!drop_data.download_metadata.empty())
-    PrepareDragForDownload(drop_data, provider, web_contents);
+  if (drop_data.download_metadata.has_value()) {
+    PrepareDragForDownload(source_rfh, drop_data, provider);
+  }
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // We set the file contents before the URL because the URL also sets file
@@ -1200,15 +1195,16 @@ bool WebContentsViewAura::IsDragAllowedByDataControlPolicy(
 }
 
 void WebContentsViewAura::StartDragging(
+    RenderFrameHost& source_rfh,
     const DropData& drop_data,
-    const url::Origin& source_origin,
     blink::DragOperationsMask operations,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& cursor_offset,
     const gfx::Rect& drag_obj_rect,
-    const blink::mojom::DragEventSourceInfo& event_info,
-    RenderWidgetHostImpl* source_rwh) {
+    const blink::mojom::DragEventSourceInfo& event_info) {
   aura::Window* root_window = GetNativeView()->GetRootWindow();
+  RenderWidgetHostImpl* const source_rwh =
+      static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
   if (!aura::client::GetDragDropClient(root_window)) {
     web_contents_->SystemDragEnded(source_rwh);
     return;
@@ -1257,7 +1253,7 @@ void WebContentsViewAura::StartDragging(
     selection_controller->HideAndDisallowShowingAutomatically();
   std::unique_ptr<ui::OSExchangeDataProvider> provider =
       ui::OSExchangeDataProviderFactory::CreateProvider();
-  PrepareDragData(drop_data, source_origin, provider.get(), web_contents_);
+  PrepareDragData(source_rfh, drop_data, provider.get());
 
   auto data = std::make_unique<ui::OSExchangeData>(std::move(provider));
   data->SetSource(std::make_unique<ui::DataTransferEndpoint>(

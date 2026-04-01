@@ -39,6 +39,7 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
@@ -200,14 +201,16 @@ WebContentsViewMac::GetBackForwardTransitionAnimationManager() {
 void WebContentsViewMac::DestroyBackForwardTransitionAnimationManager() {}
 
 void WebContentsViewMac::StartDragging(
+    RenderFrameHost& source_rfh,
     const DropData& drop_data,
-    const url::Origin& source_origin,
     DragOperationsMask allowed_operations,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& cursor_offset,
     const gfx::Rect& drag_obj_rect,
-    const blink::mojom::DragEventSourceInfo& event_info,
-    RenderWidgetHostImpl* source_rwh) {
+    const blink::mojom::DragEventSourceInfo& event_info) {
+  RenderWidgetHostImpl* source_rwh =
+      static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
+  url::Origin source_origin = source_rfh.GetLastCommittedOrigin();
   // By allowing nested tasks, the code below also allows Close(),
   // which would deallocate |this|.  The same problem can occur while
   // processing -sendEvent:, so Close() is deferred in that case.
@@ -258,11 +261,17 @@ void WebContentsViewMac::StartDragging(
 
   // TODO(crbug.com/40825138): The param `drag_obj_rect` is unused.
 
+  const content::ChildProcessId render_process_id =
+      source_rfh.GetProcess()->GetID();
+  const blink::DocumentToken& document_token =
+      static_cast<RenderFrameHostImpl&>(source_rfh).GetDocumentToken();
   if (remote_ns_view_) {
-    remote_ns_view_->StartDrag(drop_data, source_origin, mask, image,
-                               cursor_offset, is_privileged);
+    remote_ns_view_->StartDrag(render_process_id, document_token, source_origin,
+                               drop_data, mask, image, cursor_offset,
+                               is_privileged);
   } else {
-    in_process_ns_view_bridge_->StartDrag(drop_data, source_origin, mask, image,
+    in_process_ns_view_bridge_->StartDrag(render_process_id, document_token,
+                                          source_origin, drop_data, mask, image,
                                           cursor_offset, is_privileged);
   }
 }
@@ -606,12 +615,21 @@ bool WebContentsViewMac::PerformDragOperation(DraggingInfoPtr dragging_info,
   return true;
 }
 
-bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
-                                            const DropData& drop_data,
-                                            const GURL& download_url,
-                                            const url::Origin& source_origin,
-                                            base::FilePath* out_file_path) {
+bool WebContentsViewMac::DragPromisedFileTo(
+    content::ChildProcessId render_process_id,
+    const blink::DocumentToken& document_token,
+    const base::FilePath& file_path,
+    const DropData& drop_data,
+    base::FilePath* out_file_path) {
   *out_file_path = file_path;
+
+  RenderFrameHostImpl* source_rfh =
+      RenderFrameHostImpl::FromDocumentToken(render_process_id, document_token);
+  if (!source_rfh) {
+    *out_file_path = base::FilePath();
+    return true;
+  }
+
   // This is called by -namesOfPromisedFilesDroppedAtDestination, which is
   // requesting, on the UI thread, the name of the file that will be written
   // by a drag operation. To know the name of this file, it is necessary to
@@ -625,12 +643,13 @@ bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
 
   SetReadWritePermissionsForFile(file);
 
-  if (download_url.is_valid() && web_contents_) {
+  if (web_contents_) {
     auto drag_file_downloader = std::make_unique<DragDownloadFile>(
-        *out_file_path, std::move(file), download_url,
-        content::Referrer(web_contents_->GetLastCommittedURL(),
+        source_rfh->GetWeakDocumentPtr(), *out_file_path, std::move(file),
+        drop_data.download_metadata->url,
+        content::Referrer(source_rfh->GetLastCommittedURL(),
                           drop_data.referrer_policy),
-        web_contents_->GetEncoding(), source_origin, web_contents_);
+        source_rfh->GetPage().GetEncoding());
 
     DragDownloadFile* downloader = drag_file_downloader.get();
     // The finalizer will take care of closing and deletion.
@@ -717,13 +736,13 @@ void WebContentsViewMac::PerformDragOperation(
 }
 
 void WebContentsViewMac::DragPromisedFileTo(
+    content::ChildProcessId render_process_id,
+    const blink::DocumentToken& document_token,
     const base::FilePath& file_path,
     const DropData& drop_data,
-    const GURL& download_url,
-    const url::Origin& source_origin,
     DragPromisedFileToCallback callback) {
   base::FilePath actual_file_path;
-  DragPromisedFileTo(file_path, drop_data, download_url, source_origin,
+  DragPromisedFileTo(render_process_id, document_token, file_path, drop_data,
                      &actual_file_path);
   std::move(callback).Run(actual_file_path);
 }

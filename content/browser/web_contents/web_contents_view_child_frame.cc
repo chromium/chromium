@@ -289,19 +289,19 @@ void WebContentsViewChildFrame::ShowPopupMenu(
 #endif  // BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 
 void WebContentsViewChildFrame::StartDragging(
+    RenderFrameHost& source_rfh,
     const DropData& drop_data,
-    const url::Origin& source_origin,
     DragOperationsMask ops,
     const gfx::ImageSkia& image,
     const gfx::Vector2d& cursor_offset,
     const gfx::Rect& drag_obj_rect,
-    const blink::mojom::DragEventSourceInfo& event_info,
-    RenderWidgetHostImpl* source_rwh) {
+    const blink::mojom::DragEventSourceInfo& event_info) {
   if (auto* view = GetOuterDelegateView()) {
-    view->StartDragging(drop_data, source_origin, ops, image, cursor_offset,
-                        drag_obj_rect, event_info, source_rwh);
+    view->StartDragging(source_rfh, drop_data, ops, image, cursor_offset,
+                        drag_obj_rect, event_info);
   } else {
-    web_contents_->GetOuterWebContents()->SystemDragEnded(source_rwh);
+    web_contents_->GetOuterWebContents()->SystemDragEnded(
+        source_rfh.GetRenderWidgetHost());
   }
 }
 

@@ -98,14 +98,14 @@ class CONTENT_EXPORT WebContentsViewMac
   void DestroyBackForwardTransitionAnimationManager() override;
 
   // RenderViewHostDelegateView:
-  void StartDragging(const DropData& drop_data,
-                     const url::Origin& source_origin,
-                     blink::DragOperationsMask allowed_operations,
-                     const gfx::ImageSkia& image,
-                     const gfx::Vector2d& cursor_offset,
-                     const gfx::Rect& drag_obj_rect,
-                     const blink::mojom::DragEventSourceInfo& event_info,
-                     RenderWidgetHostImpl* source_rwh) override;
+  void StartDragging(
+      RenderFrameHost& source_rfh,
+      const DropData& drop_data,
+      blink::DragOperationsMask allowed_operations,
+      const gfx::ImageSkia& image,
+      const gfx::Vector2d& cursor_offset,
+      const gfx::Rect& drag_obj_rect,
+      const blink::mojom::DragEventSourceInfo& event_info) override;
   void UpdateDragOperation(ui::mojom::DragOperation operation,
                            bool document_is_handling_drag) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
@@ -176,10 +176,10 @@ class CONTENT_EXPORT WebContentsViewMac
                        uint32_t* out_result) override;
   bool PerformDragOperation(remote_cocoa::mojom::DraggingInfoPtr dragging_info,
                             bool* out_result) override;
-  bool DragPromisedFileTo(const base::FilePath& file_path,
+  bool DragPromisedFileTo(content::ChildProcessId render_process_id,
+                          const blink::DocumentToken& document_token,
+                          const base::FilePath& file_path,
                           const DropData& drop_data,
-                          const GURL& download_url,
-                          const url::Origin& source_origin,
                           base::FilePath* out_file_path) override;
   void EndDrag(uint32_t drag_operation,
                const gfx::PointF& local_point,
@@ -199,10 +199,10 @@ class CONTENT_EXPORT WebContentsViewMac
                        DraggingUpdatedCallback callback) override;
   void PerformDragOperation(remote_cocoa::mojom::DraggingInfoPtr dragging_info,
                             PerformDragOperationCallback callback) override;
-  void DragPromisedFileTo(const base::FilePath& file_path,
+  void DragPromisedFileTo(content::ChildProcessId render_process_id,
+                          const blink::DocumentToken& document_token,
+                          const base::FilePath& file_path,
                           const DropData& drop_data,
-                          const GURL& download_url,
-                          const url::Origin& source_origin,
                           DragPromisedFileToCallback callback) override;
 
   // Return the list of child RenderWidgetHostViewMacs. This will remove any

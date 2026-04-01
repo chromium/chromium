@@ -224,6 +224,8 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 }
 
 - (void)startDragWithDropData:(const DropData&)dropData
+              renderProcessId:(content::ChildProcessId)renderProcessId
+                documentToken:(const blink::DocumentToken&)documentToken
                  sourceOrigin:(const url::Origin&)sourceOrigin
             dragOperationMask:(NSDragOperation)operationMask
                         image:(NSImage*)image
@@ -244,8 +246,10 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
                                           pressure:1.0];
 
   _dragSource = [[WebDragSource alloc] initWithHost:_host
-                                           dropData:dropData
+                                    renderProcessId:renderProcessId
+                                      documentToken:documentToken
                                        sourceOrigin:sourceOrigin
+                                           dropData:dropData
                                        isPrivileged:isPrivileged];
   NSDraggingItem* draggingItem =
       [[NSDraggingItem alloc] initWithPasteboardWriter:_dragSource];

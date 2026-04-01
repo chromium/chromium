@@ -2820,8 +2820,8 @@ bool RenderWidgetHostViewAndroid::IsTouchSequencePotentiallyActiveOnViz() {
 }
 
 void RenderWidgetHostViewAndroid::RequestInputBackForDragAndDrop(
+    WeakDocumentPtr source_document,
     blink::mojom::DragDataPtr drag_data,
-    const url::Origin& source_origin,
     blink::DragOperationsMask drag_operations_mask,
     SkBitmap bitmap,
     gfx::Vector2d cursor_offset_in_dip,
@@ -2836,11 +2836,11 @@ void RenderWidgetHostViewAndroid::RequestInputBackForDragAndDrop(
       base::BindOnce(&RenderWidgetHostViewAndroid::CleanupDraggingCallback,
                      GetWeakPtrAndroid()));
   CHECK(host());
-  start_dragging_callback_ =
-      base::BindOnce(&RenderWidgetHostImpl::StartDragging, host()->GetWeakPtr(),
-                     std::move(drag_data), source_origin, drag_operations_mask,
-                     std::move(bitmap), std::move(cursor_offset_in_dip),
-                     std::move(drag_obj_rect_in_dip), std::move(event_info));
+  start_dragging_callback_ = base::BindOnce(
+      &RenderWidgetHostImpl::AsyncStartDragging, host()->GetWeakPtr(),
+      std::move(source_document), std::move(drag_data), drag_operations_mask,
+      std::move(bitmap), std::move(cursor_offset_in_dip),
+      std::move(drag_obj_rect_in_dip), std::move(event_info));
 }
 
 void RenderWidgetHostViewAndroid::DismissTextHandles() {

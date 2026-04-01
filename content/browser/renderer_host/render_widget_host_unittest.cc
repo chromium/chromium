@@ -46,6 +46,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -55,6 +56,7 @@
 #include "content/test/stub_render_widget_host_owner_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_render_widget_host.h"
+#include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -68,6 +70,7 @@
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/display/display_util.h"
 #include "ui/display/screen.h"
@@ -284,21 +287,24 @@ class MockRenderViewHostDelegateView : public RenderViewHostDelegateView {
   ~MockRenderViewHostDelegateView() override = default;
 
   int start_dragging_count() const { return start_dragging_count_; }
+  const DropData& drop_data() const { return drop_data_; }
 
   // RenderViewHostDelegateView:
-  void StartDragging(const DropData& drop_data,
-                     const url::Origin& source_origin,
-                     blink::DragOperationsMask allowed_ops,
-                     const gfx::ImageSkia& image,
-                     const gfx::Vector2d& cursor_offset,
-                     const gfx::Rect& drag_obj_rect,
-                     const blink::mojom::DragEventSourceInfo& event_info,
-                     RenderWidgetHostImpl* source_rwh) override {
+  void StartDragging(
+      RenderFrameHost& source_rfh,
+      const DropData& drop_data,
+      blink::DragOperationsMask allowed_ops,
+      const gfx::ImageSkia& image,
+      const gfx::Vector2d& cursor_offset,
+      const gfx::Rect& drag_obj_rect,
+      const blink::mojom::DragEventSourceInfo& event_info) override {
     ++start_dragging_count_;
+    drop_data_ = drop_data;
   }
 
  private:
   int start_dragging_count_ = 0;
+  DropData drop_data_;
 };
 
 // FakeRenderFrameMetadataObserver -----------------------------------------
@@ -2264,38 +2270,141 @@ TEST_F(RenderWidgetHostTest, VisualProperties) {
             visual_properties.compositor_viewport_pixel_rect);
 }
 
-// Make sure no dragging occurs after renderer exited. See crbug.com/704832.
-TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
-  host_->SetView(new TestView(host_.get()));
+class DragTestContentBrowserClient : public ContentBrowserClient {
+ public:
+  // The default implementation returns `false`, but this means that
+  // `CanRequestURL()` for a URL with a file scheme ends up returning true,
+  // since `ChildProcessSecurityPolicy` assumes that unhandled schemes are
+  // external protocols.
+  bool IsHandledURL(const GURL& url) override {
+    return url.SchemeIs(url::kFileScheme);
+  }
+};
 
-  EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 0);
+class RenderWidgetHostDragTest : public RenderViewHostImplTestHarness {
+ public:
+  RenderWidgetHostDragTest() {
+    old_browser_client_ = SetBrowserClientForTesting(&drag_browser_client_);
+  }
+
+  ~RenderWidgetHostDragTest() override {
+    SetBrowserClientForTesting(old_browser_client_);
+  }
+
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    contents()->set_delegate_view(&mock_delegate_view_);
+    main_test_rfh()->InitializeRenderFrameIfNeeded();
+  }
+
+  void StartDragWithDropData(const DropData& drop_data) {
+    StartDragWithDragData(
+        DropDataToDragData(drop_data, GetFileSystemAccessManager(),
+                           main_test_rfh()->GetProcess()->GetDeprecatedID(),
+                           GetChromeBlobStorageContext()));
+  }
+
+  void StartDragWithDragData(blink::mojom::DragDataPtr drag_data) {
+    GetRenderWidgetHost()->StartDragging(
+        *main_test_rfh(), std::move(drag_data), blink::kDragOperationEvery,
+        SkBitmap(), gfx::Vector2d(), gfx::Rect(),
+        blink::mojom::DragEventSourceInfo::New());
+  }
+
+  RenderWidgetHostImpl* GetRenderWidgetHost() {
+    return static_cast<RenderWidgetHostImpl*>(
+        main_test_rfh()->GetRenderWidgetHost());
+  }
+
+  FileSystemAccessManagerImpl* GetFileSystemAccessManager() {
+    return static_cast<StoragePartitionImpl*>(
+               contents()->GetBrowserContext()->GetDefaultStoragePartition())
+        ->GetFileSystemAccessManager();
+  }
+
+  scoped_refptr<ChromeBlobStorageContext> GetChromeBlobStorageContext() {
+    return ChromeBlobStorageContext::GetFor(contents()->GetBrowserContext());
+  }
+
+  int start_dragging_count() const {
+    return mock_delegate_view_.start_dragging_count();
+  }
+
+  const DropData& drop_data() const { return mock_delegate_view_.drop_data(); }
+
+ private:
+  DragTestContentBrowserClient drag_browser_client_;
+  raw_ptr<ContentBrowserClient> old_browser_client_;
+  MockRenderViewHostDelegateView mock_delegate_view_;
+};
+
+// Make sure no dragging occurs after renderer exited. See crbug.com/704832.
+TEST_F(RenderWidgetHostDragTest, RendererExitedNoDrag) {
+  EXPECT_EQ(start_dragging_count(), 0);
 
   GURL http_url = GURL("http://www.domain.com/index.html");
   DropData drop_data;
   drop_data.url_infos = {ui::ClipboardUrlInfo{http_url, u""}};
   drop_data.html_base_url = http_url;
-  FileSystemAccessManagerImpl* file_system_manager =
-      static_cast<StoragePartitionImpl*>(process_->GetStoragePartition())
-          ->GetFileSystemAccessManager();
-  blink::DragOperationsMask drag_operation = blink::kDragOperationEvery;
-  host_->StartDragging(
-      DropDataToDragData(
-          drop_data, file_system_manager, process_->GetDeprecatedID(),
-          ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
-      url::Origin(), drag_operation, SkBitmap(), gfx::Vector2d(), gfx::Rect(),
-      blink::mojom::DragEventSourceInfo::New());
-  EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 1);
+
+  StartDragWithDropData(drop_data);
+  EXPECT_EQ(start_dragging_count(), 1);
 
   // Simulate that renderer exited due navigation to the next page.
-  host_->RendererExited();
-  EXPECT_FALSE(host_->GetView());
-  host_->StartDragging(
-      DropDataToDragData(
-          drop_data, file_system_manager, process_->GetDeprecatedID(),
-          ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
-      url::Origin(), drag_operation, SkBitmap(), gfx::Vector2d(), gfx::Rect(),
-      blink::mojom::DragEventSourceInfo::New());
-  EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 1);
+  GetRenderWidgetHost()->RendererExited();
+  EXPECT_FALSE(GetRenderWidgetHost()->GetView());
+
+  StartDragWithDropData(drop_data);
+  EXPECT_EQ(start_dragging_count(), 1);
+}
+
+TEST_F(RenderWidgetHostDragTest, NonFileUrlSpecifiesDownloadUrlWithFileUrl) {
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_EQ(start_dragging_count(), 0);
+
+  // This test uses `blink::mojom::DragData` directly; the
+  // `DropDataToDragData()` helper is primarily intended for drags into Blink,
+  // and `download_metadata` is not handled since it is not currently consumed
+  // in Blink.
+  auto drag_data = blink::mojom::DragData::New();
+  blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
+  item->string_type = ui::kMimeTypeDownloadUrl;
+  item->string_data = u"text/plain:test.txt:file:///test.txt";
+  drag_data->items.push_back(
+      blink::mojom::DragItem::NewString(std::move(item)));
+
+  // A regular HTTP page cannot request file:// URLs so this should be filtered
+  // out.
+  StartDragWithDragData(std::move(drag_data));
+
+  EXPECT_EQ(start_dragging_count(), 1);
+  EXPECT_FALSE(drop_data().download_metadata.has_value());
+}
+
+// TODO(crbug.com/497882858): Add more tests that other fields in
+// `content::DropData` are filtered.
+
+TEST_F(RenderWidgetHostDragTest, FileUrlSpecifiesDownloadUrlWithFileUrl) {
+  NavigateAndCommit(GURL("file:///test.html"));
+  EXPECT_EQ(start_dragging_count(), 0);
+
+  // This test uses `blink::mojom::DragData` directly; the
+  // `DropDataToDragData()` helper is primarily intended for drags into Blink,
+  // and `download_metadata` is not handled since it is not currently consumed
+  // in Blink.
+  auto drag_data = blink::mojom::DragData::New();
+  blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
+  item->string_type = ui::kMimeTypeDownloadUrl;
+  item->string_data = u"text/plain:test.txt:file:///test.txt";
+  drag_data->items.push_back(
+      blink::mojom::DragItem::NewString(std::move(item)));
+
+  // A file:// page should be able to set a DownloadURL pointing to a file://
+  // though.
+  StartDragWithDragData(std::move(drag_data));
+
+  EXPECT_EQ(start_dragging_count(), 1);
+  EXPECT_TRUE(drop_data().download_metadata.has_value());
 }
 
 // Hiding the RenderWidgetHostImpl instance via a call to WasHidden should

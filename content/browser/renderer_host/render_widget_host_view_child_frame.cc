@@ -428,8 +428,8 @@ bool RenderWidgetHostViewChildFrame::IsTouchSequencePotentiallyActiveOnViz() {
 }
 
 void RenderWidgetHostViewChildFrame::RequestInputBackForDragAndDrop(
+    WeakDocumentPtr source_document,
     blink::mojom::DragDataPtr drag_data,
-    const url::Origin& source_origin,
     blink::DragOperationsMask drag_operations_mask,
     SkBitmap bitmap,
     gfx::Vector2d cursor_offset_in_dip,
@@ -438,7 +438,7 @@ void RenderWidgetHostViewChildFrame::RequestInputBackForDragAndDrop(
   RenderWidgetHostViewBase* root_view = GetRootView();
   CHECK(root_view);
   root_view->RequestInputBackForDragAndDrop(
-      std::move(drag_data), std::move(source_origin), drag_operations_mask,
+      std::move(source_document), std::move(drag_data), drag_operations_mask,
       std::move(bitmap), std::move(cursor_offset_in_dip),
       std::move(drag_obj_rect_in_dip), std::move(event_info));
 }

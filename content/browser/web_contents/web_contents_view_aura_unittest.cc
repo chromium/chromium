@@ -765,11 +765,10 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
 
   DropData drop_data;
   drop_data.text.emplace(u"Hello World!");
-  view->StartDragging(drop_data, url::Origin(),
+  view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
-                      blink::mojom::DragEventSourceInfo(),
-                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+                      blink::mojom::DragEventSourceInfo());
 
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
   EXPECT_TRUE(exchange_data);
@@ -840,11 +839,10 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   view->drag_in_progress_ = true;
 
   DropData drop_data;
-  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+  view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
-                      blink::mojom::DragEventSourceInfo(),
-                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+                      blink::mojom::DragEventSourceInfo());
 
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
   EXPECT_TRUE(exchange_data);
@@ -868,11 +866,10 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromHiddenWebContents) {
   drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
 
   view->GetContentNativeView()->Hide();
-  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+  view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
-                      blink::mojom::DragEventSourceInfo(),
-                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+                      blink::mojom::DragEventSourceInfo());
 
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
   EXPECT_FALSE(exchange_data);
@@ -907,14 +904,12 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromOutsideView) {
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 
   view->StartDragging(
-      drop_data, url::Origin::Create(GURL(kGoogleUrl)),
-      blink::DragOperationsMask::kDragOperationNone, gfx::ImageSkia(),
-      gfx::Vector2d(), gfx::Rect(),
+      *main_rfh(), drop_data, blink::DragOperationsMask::kDragOperationNone,
+      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
       blink::mojom::DragEventSourceInfo(
           {view_bounds_on_screen.x() + view_bounds_on_screen.width() + 1,
            view_bounds_on_screen.y() + 1},
-          ui::mojom::DragEventSource::kMouse),
-      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+          ui::mojom::DragEventSource::kMouse));
 
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -948,11 +943,10 @@ TEST_F(WebContentsViewAuraTest, EmptyTextInDropDataIsNonNullInOSExchangeData) {
   DropData drop_data;
   drop_data.text = empty_string;
 
-  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+  view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
-                      blink::mojom::DragEventSourceInfo(),
-                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+                      blink::mojom::DragEventSourceInfo());
 
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
   EXPECT_TRUE(exchange_data);
@@ -982,11 +976,10 @@ TEST_F(WebContentsViewAuraTest,
   drop_data.text = empty_string;
   drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
 
-  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+  view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
-                      blink::mojom::DragEventSourceInfo(),
-                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+                      blink::mojom::DragEventSourceInfo());
 
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
   EXPECT_TRUE(exchange_data);
@@ -1015,11 +1008,10 @@ TEST_F(WebContentsViewAuraTest,
   DropData drop_data;
   drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
 
-  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+  view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
-                      blink::mojom::DragEventSourceInfo(),
-                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+                      blink::mojom::DragEventSourceInfo());
 
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
   EXPECT_TRUE(exchange_data);
@@ -1051,11 +1043,10 @@ TEST_F(WebContentsViewAuraTest, EndDragIsCalledAfterAsyncDrop) {
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
 
-  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+  view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
-                      blink::mojom::DragEventSourceInfo(),
-                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+                      blink::mojom::DragEventSourceInfo());
 
   // Simulate drop.
   auto callback = base::BindOnce(&WebContentsViewAuraTest::OnDropComplete,
@@ -1122,13 +1113,11 @@ TEST_F(WebContentsViewAuraTest, StartDragBlockedByPolicy) {
   DropData drop_data;
   drop_data.text = u"Blocked Data";
 
-  auto* rwh = RenderWidgetHostImpl::From(rvh()->GetWidget());
-
   static_cast<RenderViewHostDelegateView*>(&mock_view)
-      ->StartDragging(drop_data, url::Origin(),
+      ->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationCopy,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
-                      blink::mojom::DragEventSourceInfo(), rwh);
+                      blink::mojom::DragEventSourceInfo());
 
   EXPECT_FALSE(drag_drop_client.GetDragDropData());
 }
@@ -1151,13 +1140,11 @@ TEST_F(WebContentsViewAuraTest, StartDragAllowedByPolicy) {
   DropData drop_data;
   drop_data.text = u"Allowed Data";
 
-  auto* rwh = RenderWidgetHostImpl::From(rvh()->GetWidget());
-
   static_cast<RenderViewHostDelegateView*>(&mock_view)
-      ->StartDragging(drop_data, url::Origin(),
+      ->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationCopy,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
-                      blink::mojom::DragEventSourceInfo(), rwh);
+                      blink::mojom::DragEventSourceInfo());
 
   EXPECT_TRUE(drag_drop_client.GetDragDropData());
 }

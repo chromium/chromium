@@ -116,6 +116,7 @@ namespace content {
 class FrameTree;
 class MockRenderWidgetHost;
 class MockRenderWidgetHostImpl;
+class RenderFrameHost;
 class RenderWidgetHostFactory;
 class RenderWidgetHostOwnerDelegate;
 class SiteInstanceGroup;
@@ -970,13 +971,25 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const std::optional<cc::BrowserControlsOffsetTagModifications>&
           offset_tag_modifications);
 
-  void StartDragging(blink::mojom::DragDataPtr drag_data,
-                     const url::Origin& source_origin,
+  void StartDragging(RenderFrameHost& source_rfh,
+                     blink::mojom::DragDataPtr drag_data,
                      blink::DragOperationsMask drag_operations_mask,
                      const SkBitmap& unsafe_bitmap,
                      const gfx::Vector2d& cursor_offset_in_dip,
                      const gfx::Rect& drag_obj_rect_in_dip,
                      blink::mojom::DragEventSourceInfoPtr event_info);
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, drag and drop may need to request input back from Viz, so the
+  // actual drag and drop may be started asynchronously.
+  void AsyncStartDragging(WeakDocumentPtr source_document,
+                          blink::mojom::DragDataPtr drag_data,
+                          blink::DragOperationsMask drag_operations_mask,
+                          const SkBitmap& unsafe_bitmap,
+                          const gfx::Vector2d& cursor_offset_in_dip,
+                          const gfx::Rect& drag_obj_rect_in_dip,
+                          blink::mojom::DragEventSourceInfoPtr event_info);
+#endif
 
   // Notifies the widget that the viz::FrameSinkId assigned to it is now bound
   // to its renderer side widget. If the renderer issued a FrameSink request

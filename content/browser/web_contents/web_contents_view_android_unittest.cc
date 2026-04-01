@@ -84,10 +84,10 @@ TEST_F(WebContentsViewAndroidTest, StartDragging_BlockedByPolicy) {
   DropData drop_data;
   drop_data.text = u"Blocked Data";
 
-  view()->StartDragging(drop_data, url::Origin(), blink::kDragOperationCopy,
-                        CreateValidDragImage(), gfx::Vector2d(), gfx::Rect(),
-                        blink::mojom::DragEventSourceInfo(),
-                        GetRenderWidgetHost());
+  view()->StartDragging(*web_contents()->GetPrimaryMainFrame(), drop_data,
+                        blink::kDragOperationCopy, CreateValidDragImage(),
+                        gfx::Vector2d(), gfx::Rect(),
+                        blink::mojom::DragEventSourceInfo());
 
   EXPECT_TRUE(view()->was_called());
   EXPECT_TRUE(view()->system_drag_ended_called());

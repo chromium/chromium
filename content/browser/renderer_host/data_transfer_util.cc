@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -52,6 +53,43 @@ content::PathType MaybeRemapPath(base::FilePath* entry_path) {
   }
 #endif
   return content::PathType::kLocal;
+}
+
+// Parse the download metadata set in DataTransfer.setData. The metadata
+// consists of a set of the following values separated by ":"
+// * MIME type
+// * File name
+// * URL
+// If the file name contains special characters, they need to be escaped
+// appropriately.
+// For example, we can have
+//   text/plain:example.txt:http://example.com/example.txt
+// TODO(crbug.com/497928951): Move this to the renderer.
+std::optional<DownloadUrlMetadata> ParseDownloadMetadata(
+    std::u16string_view metadata) {
+  const char16_t separator = L':';
+
+  size_t mime_type_end_pos = metadata.find(separator);
+  if (mime_type_end_pos == std::u16string_view::npos) {
+    return std::nullopt;
+  }
+
+  size_t file_name_end_pos = metadata.find(separator, mime_type_end_pos + 1);
+  if (file_name_end_pos == std::u16string_view::npos) {
+    return std::nullopt;
+  }
+
+  GURL parsed_url = GURL(metadata.substr(file_name_end_pos + 1));
+  if (!parsed_url.is_valid()) {
+    return std::nullopt;
+  }
+
+  DownloadUrlMetadata result;
+  result.mime_type = base::UTF16ToUTF8(metadata.substr(0, mime_type_end_pos));
+  result.suggested_file_name = base::UTF16ToUTF8(metadata.substr(
+      mime_type_end_pos + 1, file_name_end_pos - mime_type_end_pos - 1));
+  result.url = std::move(parsed_url);
+  return result;
 }
 
 }  // namespace
@@ -152,7 +190,7 @@ blink::mojom::DragDataPtr DropDataToDragData(
     int child_id,
     scoped_refptr<ChromeBlobStorageContext> chrome_blob_storage_context) {
   // These fields are currently unused when dragging into Blink.
-  DCHECK(drop_data.download_metadata.empty());
+  DCHECK(!drop_data.download_metadata.has_value());
   DCHECK(drop_data.file_contents_content_disposition.empty());
 
   std::vector<blink::mojom::DragItemPtr> items;
@@ -336,7 +374,8 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
             result.url_infos.front().title = *string_item->title;
           }
         } else if (str_type == ui::kMimeTypeDownloadUrl) {
-          result.download_metadata = string_item->string_data;
+          result.download_metadata =
+              ParseDownloadMetadata(string_item->string_data);
           result.referrer_policy = drag_data.referrer_policy;
         } else if (str_type == ui::kMimeTypeHtml) {
           result.html = string_item->string_data;

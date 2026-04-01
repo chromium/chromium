@@ -58,8 +58,10 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
   void SetVisible(bool visible) override;
   void MakeFirstResponder() override;
   void TakeFocus(bool reverse) override;
-  void StartDrag(const content::DropData& drop_data,
+  void StartDrag(content::ChildProcessId render_process_id,
+                 const blink::DocumentToken& document_token,
                  const url::Origin& source_origin,
+                 const content::DropData& drop_data,
                  uint32_t operation_mask,
                  const gfx::ImageSkia& image,
                  const gfx::Vector2d& image_offset,

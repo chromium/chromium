@@ -85,10 +85,9 @@ TEST_F(WebContentsViewMacTest, StartDragging_DisallowedByPolicy) {
   DropData drop_data;
   drop_data.text = u"test data";
 
-  view()->StartDragging(drop_data, url::Origin(), blink::kDragOperationCopy,
+  view()->StartDragging(*main_rfh(), drop_data, blink::kDragOperationCopy,
                         CreateValidDragImage(), gfx::Vector2d(), gfx::Rect(),
-                        blink::mojom::DragEventSourceInfo(),
-                        GetRenderWidgetHost());
+                        blink::mojom::DragEventSourceInfo());
 
   EXPECT_TRUE(fake_client().was_called());
 }

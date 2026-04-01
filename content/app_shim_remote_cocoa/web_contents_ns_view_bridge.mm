@@ -123,14 +123,20 @@ void WebContentsNSViewBridge::TakeFocus(bool reverse) {
     [[ns_view_ window] selectNextKeyView:ns_view_];
 }
 
-void WebContentsNSViewBridge::StartDrag(const content::DropData& drop_data,
-                                        const url::Origin& source_origin,
-                                        uint32_t operation_mask,
-                                        const gfx::ImageSkia& image,
-                                        const gfx::Vector2d& image_offset,
-                                        bool is_privileged) {
+void WebContentsNSViewBridge::StartDrag(
+    content::ChildProcessId render_process_id,
+    const blink::DocumentToken& document_token,
+    const url::Origin& source_origin,
+    const content::DropData& drop_data,
+    uint32_t operation_mask,
+    const gfx::ImageSkia& image,
+    const gfx::Vector2d& image_offset,
+    bool is_privileged) {
   NSPoint offset = gfx::PointAtOffsetFromOrigin(image_offset).ToCGPoint();
+  // TODO(dcheng): Check if is_privileged still needs to be passed here.
   [ns_view_ startDragWithDropData:drop_data
+                  renderProcessId:render_process_id
+                    documentToken:document_token
                      sourceOrigin:source_origin
                 dragOperationMask:operation_mask
                             image:gfx::NSImageFromImageSkia(image)

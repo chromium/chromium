@@ -15,10 +15,12 @@
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/download/drag_download_util.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
@@ -103,8 +105,8 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_NetError) {
   Referrer referrer;
   std::string referrer_encoding;
   auto file = std::make_unique<DragDownloadFile>(
-      name, base::File(), url, referrer, referrer_encoding, std::nullopt,
-      shell()->web_contents());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      name, base::File(), url, referrer, referrer_encoding);
   scoped_refptr<MockDownloadFileObserver> observer(
       new MockDownloadFileObserver());
   EXPECT_CALL(*observer.get(), OnDownloadAborted())
@@ -122,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_Complete) {
   Referrer referrer;
   std::string referrer_encoding;
   auto file = std::make_unique<DragDownloadFile>(
-      name, base::File(), url, referrer, referrer_encoding, std::nullopt,
-      shell()->web_contents());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      name, base::File(), url, referrer, referrer_encoding);
   scoped_refptr<MockDownloadFileObserver> observer(
       new MockDownloadFileObserver());
   EXPECT_CALL(*observer.get(), OnDownloadCompleted(_))
@@ -138,13 +140,11 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_Initiator) {
   base::FilePath name(
       downloads_directory().AppendASCII("DragDownloadFileTest_Initiator.txt"));
   GURL url = embedded_test_server()->GetURL("/echoheader?sec-fetch-site");
-  url::Origin initiator =
-      url::Origin::Create(GURL("https://initiator.example.com"));
   Referrer referrer;
   std::string referrer_encoding;
   auto file = std::make_unique<DragDownloadFile>(
-      name, base::File(), url, referrer, referrer_encoding, initiator,
-      shell()->web_contents());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      name, base::File(), url, referrer, referrer_encoding);
   base::FilePath downloaded_path;
   scoped_refptr<MockDownloadFileObserver> observer(
       new MockDownloadFileObserver());
@@ -174,8 +174,8 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_ClosePage) {
   Referrer referrer;
   std::string referrer_encoding;
   auto file = std::make_unique<DragDownloadFile>(
-      name, base::File(), url, referrer, referrer_encoding, std::nullopt,
-      shell()->web_contents());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      name, base::File(), url, referrer, referrer_encoding);
   scoped_refptr<MockDownloadFileObserver> observer(
       new MockDownloadFileObserver());
   ON_CALL(*observer.get(), OnDownloadAborted())

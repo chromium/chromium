@@ -69,14 +69,14 @@ class WebContentsViewChildFrame : public WebContentsView,
   // Backend implementation of RenderViewHostDelegateView.
   void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
-  void StartDragging(const DropData& drop_data,
-                     const url::Origin& source_origin,
-                     blink::DragOperationsMask allowed_ops,
-                     const gfx::ImageSkia& image,
-                     const gfx::Vector2d& cursor_offset,
-                     const gfx::Rect& drag_obj_rect,
-                     const blink::mojom::DragEventSourceInfo& event_info,
-                     RenderWidgetHostImpl* source_rwh) override;
+  void StartDragging(
+      RenderFrameHost& source_rfh,
+      const DropData& drop_data,
+      blink::DragOperationsMask allowed_ops,
+      const gfx::ImageSkia& image,
+      const gfx::Vector2d& cursor_offset,
+      const gfx::Rect& drag_obj_rect,
+      const blink::mojom::DragEventSourceInfo& event_info) override;
   void UpdateDragOperation(ui::mojom::DragOperation operation,
                            bool document_is_handling_drag) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;

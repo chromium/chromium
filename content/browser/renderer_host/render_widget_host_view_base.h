@@ -29,6 +29,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -193,8 +194,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual bool IsTouchSequencePotentiallyActiveOnViz() = 0;
 
   virtual void RequestInputBackForDragAndDrop(
+      WeakDocumentPtr source_document,
       blink::mojom::DragDataPtr drag_data,
-      const url::Origin& source_origin,
       blink::DragOperationsMask drag_operations_mask,
       SkBitmap bitmap,
       gfx::Vector2d cursor_offset_in_dip,

@@ -306,18 +306,18 @@ class WebContentsNSViewHostStub
   void PerformDragOperation(DraggingInfoPtr dragging_info,
                             PerformDragOperationCallback callback) override {}
 
-  bool DragPromisedFileTo(const ::base::FilePath& file_path,
+  bool DragPromisedFileTo(content::ChildProcessId render_process_id,
+                          const blink::DocumentToken& document_token,
+                          const ::base::FilePath& file_path,
                           const ::content::DropData& drop_data,
-                          const ::GURL& download_url,
-                          const ::url::Origin& source_origin,
                           ::base::FilePath* out_file_path) override {
     return false;
   }
 
-  void DragPromisedFileTo(const ::base::FilePath& file_path,
+  void DragPromisedFileTo(content::ChildProcessId render_process_id,
+                          const blink::DocumentToken& document_token,
+                          const ::base::FilePath& file_path,
                           const ::content::DropData& drop_data,
-                          const ::GURL& download_url,
-                          const ::url::Origin& source_origin,
                           DragPromisedFileToCallback callback) override {}
 
   void EndDrag(uint32_t drag_operation,

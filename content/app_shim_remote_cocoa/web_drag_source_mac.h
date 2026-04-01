@@ -10,7 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/drop_data.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 struct DropData;
@@ -31,8 +33,10 @@ CONTENT_EXPORT
 
 // Initialize a WebDragSource object for a drag.
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
-                    dropData:(const content::DropData&)dropData
+             renderProcessId:(content::ChildProcessId)renderProcessId
+               documentToken:(const blink::DocumentToken&)documentToken
                 sourceOrigin:(const url::Origin&)sourceOrigin
+                    dropData:(const content::DropData&)dropData
                 isPrivileged:(BOOL)privileged;
 
 // Call when the WebContents is gone.

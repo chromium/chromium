@@ -123,8 +123,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
 
   // The origin of the context which initiated the request. See
   // net::URLRequest::initiator().
-  void set_initiator(const std::optional<url::Origin>& initiator) {
-    initiator_ = initiator;
+  void set_initiator(std::optional<url::Origin> initiator) {
+    initiator_ = std::move(initiator);
   }
 
   // If this is a request for resuming an HTTP/S download, |last_modified|

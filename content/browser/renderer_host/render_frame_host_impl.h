@@ -394,6 +394,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // matching document token but not a matching process ID, invokes
   // `process_mismatch_callback` (if non-null) and returns `nullptr`.
   static RenderFrameHostImpl* FromDocumentToken(
+      ChildProcessId process_id,
+      const blink::DocumentToken& document_token,
+      mojo::ReportBadMessageCallback* process_mismatch_callback = nullptr);
+  // TODO(crbug.com/379869738) Remove this method when usages are ported.
+  static RenderFrameHostImpl* FromDocumentToken(
       int process_id,
       const blink::DocumentToken& document_token,
       mojo::ReportBadMessageCallback* process_mismatch_callback = nullptr);

@@ -85,14 +85,14 @@ class MockDraggingRenderViewHostDelegateView
     : public RenderViewHostDelegateView {
  public:
   ~MockDraggingRenderViewHostDelegateView() override {}
-  void StartDragging(const DropData& drop_data,
-                     const url::Origin& source_origin,
-                     blink::DragOperationsMask allowed_ops,
-                     const gfx::ImageSkia& image,
-                     const gfx::Vector2d& cursor_offset,
-                     const gfx::Rect& drag_obj_rect,
-                     const blink::mojom::DragEventSourceInfo& event_info,
-                     RenderWidgetHostImpl* source_rwh) override {
+  void StartDragging(
+      RenderFrameHost& source_rfh,
+      const DropData& drop_data,
+      blink::DragOperationsMask allowed_ops,
+      const gfx::ImageSkia& image,
+      const gfx::Vector2d& cursor_offset,
+      const gfx::Rect& drag_obj_rect,
+      const blink::mojom::DragEventSourceInfo& event_info) override {
     drag_url_ = drop_data.url_infos.front().url;
     html_base_url_ = drop_data.html_base_url;
   }

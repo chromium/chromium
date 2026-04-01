@@ -46,6 +46,10 @@
   // The drop data.
   content::DropData _dropData;
 
+  // The (child process ID, token) of the document that started the drag.
+  content::ChildProcessId _renderProcessId;
+  blink::DocumentToken _documentToken;
+
   // The source origin the drop data came from.
   url::Origin _sourceOrigin;
 
@@ -63,14 +67,18 @@
 }
 
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
-                    dropData:(const content::DropData&)dropData
+             renderProcessId:(content::ChildProcessId)renderProcessId
+               documentToken:(const blink::DocumentToken&)documentToken
                 sourceOrigin:(const url::Origin&)sourceOrigin
+                    dropData:(const content::DropData&)dropData
                 isPrivileged:(BOOL)privileged {
   if ((self = [super init])) {
     _host = host;
     _dropData = dropData;
     _sourceOrigin = sourceOrigin;
     _privileged = privileged;
+    _renderProcessId = renderProcessId;
+    _documentToken = documentToken;
   }
 
   return self;
@@ -105,12 +113,10 @@
 
   // File.
   if (!_dropData.file_contents.empty() ||
-      !_dropData.download_metadata.empty()) {
+      _dropData.download_metadata.has_value()) {
     std::string mimeType;
 
-    // TODO(crbug.com/40599578): The |downloadFileName_| and
-    // |downloadURL_| values should be computed by the caller.
-    if (_dropData.download_metadata.empty()) {
+    if (!_dropData.download_metadata.has_value()) {
       std::optional<base::FilePath> suggestedFilename =
           _dropData.GetSafeFilenameForImageFileContents();
       if (suggestedFilename) {
@@ -118,23 +124,19 @@
         net::GetMimeTypeFromFile(_downloadFileName, &mimeType);
       }
     } else {
-      std::u16string mimeType16;
-      base::FilePath filename;
-      if (content::ParseDownloadMetadata(_dropData.download_metadata,
-                                         &mimeType16, &filename,
-                                         &_downloadURL)) {
-        // Generate the file name based on both mime type and proposed file
-        // name.
-        std::string defaultName = content::GetContentClient()->browser()
-                                      ? content::GetContentClient()
-                                            ->browser()
-                                            ->GetDefaultDownloadName()
-                                      : std::string();
-        mimeType = base::UTF16ToUTF8(mimeType16);
-        _downloadFileName =
-            net::GenerateFileName(_downloadURL, std::string(), std::string(),
-                                  filename.value(), mimeType, defaultName);
-      }
+      mimeType = _dropData.download_metadata->mime_type;
+      _downloadURL = _dropData.download_metadata->url;
+
+      // Generate the file name based on both mime type and proposed file
+      // name.
+      std::string defaultName =
+          content::GetContentClient()->browser()
+              ? content::GetContentClient()->browser()->GetDefaultDownloadName()
+              : std::string();
+      _downloadFileName = net::GenerateFileName(
+          _downloadURL, std::string(), std::string(),
+          _dropData.download_metadata->suggested_file_name, mimeType,
+          defaultName);
     }
 
     if (!mimeType.empty()) {
@@ -264,8 +266,8 @@
     base::FilePath filePath =
         base::apple::NSURLToFilePath([NSURL URLWithString:dropDestination]);
     filePath = filePath.Append(_downloadFileName);
-    _host->DragPromisedFileTo(filePath, _dropData, _downloadURL, _sourceOrigin,
-                              &filePath);
+    _host->DragPromisedFileTo(_renderProcessId, _documentToken, filePath,
+                              _dropData, &filePath);
 
     // The process of writing the file may have altered the value of
     // `filePath` if, say, an existing file at the drop site already had that

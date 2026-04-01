@@ -569,6 +569,22 @@ mojom("mojo_bindings") {
     },
   ]
 
+  if (is_mac) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "remote_cocoa.mojom.ChildProcessId"
+            cpp = "::content::ChildProcessId"
+            copyable_pass_by_value = true
+          },
+        ]
+        traits_headers = [ "child_process_id_mojom_traits.h" ]
+        traits_public_deps = [ "//base" ]
+      },
+    ]
+  }
+
   public_deps = [
     "//cc/mojom",
     "//components/attribution_reporting:mojom",

@@ -12,6 +12,17 @@
 
 namespace content {
 
+DownloadUrlMetadata::DownloadUrlMetadata() = default;
+DownloadUrlMetadata::~DownloadUrlMetadata() = default;
+
+DownloadUrlMetadata::DownloadUrlMetadata(const DownloadUrlMetadata&) = default;
+DownloadUrlMetadata& DownloadUrlMetadata::operator=(
+    const DownloadUrlMetadata&) = default;
+
+DownloadUrlMetadata::DownloadUrlMetadata(DownloadUrlMetadata&&) = default;
+DownloadUrlMetadata& DownloadUrlMetadata::operator=(DownloadUrlMetadata&&) =
+    default;
+
 // static
 DropData::Metadata DropData::Metadata::CreateForMimeType(
     Kind kind,

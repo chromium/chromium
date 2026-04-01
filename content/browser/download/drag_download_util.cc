@@ -23,37 +23,6 @@
 
 namespace content {
 
-bool ParseDownloadMetadata(const std::u16string& metadata,
-                           std::u16string* mime_type,
-                           base::FilePath* file_name,
-                           GURL* url) {
-  const char16_t separator = L':';
-
-  size_t mime_type_end_pos = metadata.find(separator);
-  if (mime_type_end_pos == std::u16string::npos)
-    return false;
-
-  size_t file_name_end_pos = metadata.find(separator, mime_type_end_pos + 1);
-  if (file_name_end_pos == std::u16string::npos)
-    return false;
-
-  GURL parsed_url = GURL(metadata.substr(file_name_end_pos + 1));
-  if (!parsed_url.is_valid())
-    return false;
-
-  if (mime_type)
-    *mime_type = metadata.substr(0, mime_type_end_pos);
-  if (file_name) {
-    std::u16string file_name_str = metadata.substr(
-        mime_type_end_pos + 1, file_name_end_pos - mime_type_end_pos - 1);
-    *file_name = base::FilePath::FromUTF16Unsafe(file_name_str);
-  }
-  if (url)
-    *url = parsed_url;
-
-  return true;
-}
-
 base::File CreateFileForDrop(base::FilePath* file_path) {
   DCHECK(file_path && !file_path->empty());
 

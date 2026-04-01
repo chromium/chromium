@@ -6,11 +6,20 @@ module remote_cocoa.mojom;
 
 import "content/public/common/drop_data.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/events/mojom/event.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+
+// This is intentionally defined here instead of somewhere more general to avoid
+// potential misuse. In general, child process IDs should not be passed to the
+// renderer process to avoid code accidentally depending on a (potentially
+// spoofed) child process ID coming from a compromised renderer.
+struct ChildProcessId {
+  int32 id;
+};
 
 // Interface through which a WebContentsViewMac communicates with its NSView in
 // another process.
@@ -45,8 +54,10 @@ interface WebContentsNSView {
   // processes.) Rather, the last argument uses the term "privileged" to refer
   // to whether the WebContents initiating the drag is being used to implement
   // a UI surface. See `WebContentsDelegate::IsPrivileged()` for more context.
-  StartDrag(content.mojom.DropData drop_data,
+  StartDrag(ChildProcessId render_process_id,
+            blink.mojom.DocumentToken document_token,
             url.mojom.Origin source_origin,
+            content.mojom.DropData drop_data,
             uint32 operation_mask,
             gfx.mojom.ImageSkia? image,
             gfx.mojom.Vector2d image_offset,
@@ -140,11 +151,11 @@ interface WebContentsNSViewHost {
   // requested destination file, and the output |file_path| is the actual
   // destination file.
   [Sync]
-  DragPromisedFileTo(mojo_base.mojom.FilePath file_path,
-                     content.mojom.DropData drop_data,
-                     url.mojom.Url download_url,
-                     url.mojom.Origin source_origin) =>
-                         (mojo_base.mojom.FilePath file_path);
+  DragPromisedFileTo(ChildProcessId render_process_id,
+                     blink.mojom.DocumentToken document_token,
+                     mojo_base.mojom.FilePath file_path,
+                     content.mojom.DropData drop_data)
+      => (mojo_base.mojom.FilePath file_path);
 
   // Called in to the -draggedImage: method being called on the NSView.
   EndDrag(uint32 drag_operation,
