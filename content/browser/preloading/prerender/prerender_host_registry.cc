@@ -305,6 +305,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kBrowsingDataRemoved:
       NOTREACHED();
     case PrerenderFinalStatus::kPrerenderHostReused:
+    case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
       NOTREACHED();
   }
 

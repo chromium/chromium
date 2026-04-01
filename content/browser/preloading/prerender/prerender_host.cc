@@ -1537,6 +1537,7 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kSlowNetwork:
     case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
     case PrerenderFinalStatus::kBrowsingDataRemoved:
+    case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
       if (attempt_) {
         attempt_->SetFailureReason(
             ToPreloadingFailureReason(reason.final_status()));

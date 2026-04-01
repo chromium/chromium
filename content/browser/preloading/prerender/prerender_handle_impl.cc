@@ -140,6 +140,8 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
     // The PrerenderHost is reused by another prerender request.
     case PrerenderFinalStatus::kPrerenderHostReused:
       return false;
+    case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
+      return false;
   }
 }
 

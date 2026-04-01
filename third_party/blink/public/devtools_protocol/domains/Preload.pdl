@@ -190,6 +190,7 @@ experimental domain Preload
       PrerenderFailedDuringPrefetch
       BrowsingDataRemoved
       PrerenderHostReused
+      FormSubmitWhenPrerendering
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

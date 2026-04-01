@@ -193,6 +193,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::BrowsingDataRemoved;
     case PrerenderFinalStatus::kPrerenderHostReused:
       return Preload::PrerenderFinalStatusEnum::PrerenderHostReused;
+    case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
+      return Preload::PrerenderFinalStatusEnum::FormSubmitWhenPrerendering;
   }
 }
 

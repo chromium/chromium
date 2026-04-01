@@ -17712,6 +17712,8 @@ class PrerenderFormSubmissionOriginTrialBrowserTest
     host_observer.WaitForDestroyed();
     // The prerender host should be destroyed.
     EXPECT_FALSE(HasHostForUrl(prerender_url));
+    ExpectFinalStatusForSpeculationRule(
+        PrerenderFinalStatus::kFormSubmitWhenPrerendering);
   }
 };
 
