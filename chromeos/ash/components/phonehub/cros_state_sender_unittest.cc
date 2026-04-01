@@ -53,6 +53,7 @@ class CrosStateSenderTest : public testing::Test {
   }
 
   base::TimeDelta GetRetryDelay() { return cros_state_sender_->retry_delay_; }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeMessageSender> fake_message_sender_;
   std::unique_ptr<secure_channel::FakeConnectionManager>
@@ -60,12 +61,10 @@ class CrosStateSenderTest : public testing::Test {
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<MutablePhoneModel> phone_model_;
-  raw_ptr<FakeAttestationCertificateGenerator, DanglingUntriaged>
-      fake_attestation_certificate_generator_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
-
- private:
   std::unique_ptr<CrosStateSender> cros_state_sender_;
+  raw_ptr<FakeAttestationCertificateGenerator>
+      fake_attestation_certificate_generator_;
+  raw_ptr<base::MockOneShotTimer> mock_timer_;
 };
 
 TEST_F(CrosStateSenderTest, PerformUpdateCrosStateRetrySequence) {
