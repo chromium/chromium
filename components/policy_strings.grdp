@@ -1343,10 +1343,10 @@ Additional details:
     Your administrator restarted your device
   </message>
   <message name="IDS_POLICY_DEVICE_LOCATED_TITLE" desc="The title for notification informing the user that the device was located by the administrator.">
-    Device found
+    Device unlocked
   </message>
   <message name="IDS_POLICY_DEVICE_LOCATED_MESSAGE" desc="The body for notification informing the user that the device was located by the administrator.">
-    Your administrator located your disabled device
+    Your administrator located this device while it was disabled. It has been re-enabled and is ready to use.
   </message>
   <message name="IDS_POLICY_BROWSING_DATA_DEPENDENCY_APPLIED_INFO" desc="The text displayed in the status column when a browsing data policy is applied for types for which sync will be automatically disabled.">
     This policy automatically disables syncing across devices for: <ph name="ACTION_LIST">$1<ex>passwords, autofill</ex></ph>.
