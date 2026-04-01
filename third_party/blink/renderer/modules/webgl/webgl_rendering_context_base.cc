@@ -852,6 +852,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
 
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    // Create an accelerated CRP in order to produce an accelerated snapshot.
     resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         SharedGpuContext::ContextProviderWrapper(), shared_image_usages);
@@ -860,12 +861,8 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
       return nullptr;
     }
 
-    bool copy_succeeded =
-        resource_provider->IsAccelerated()
-            ? CopyRenderingResultsFromDrawingBufferAccelerated(
-                  resource_provider.get(), kBackBuffer)
-            : CopyRenderingResultsFromDrawingBufferUnaccelerated(
-                  resource_provider.get(), kBackBuffer);
+    bool copy_succeeded = CopyRenderingResultsFromDrawingBufferAccelerated(
+        resource_provider.get(), kBackBuffer);
     if (!copy_succeeded) {
       return nullptr;
     }
@@ -873,7 +870,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   } else {
     // Match the SBI configuration to that produced when using GPU compositing:
     // N32 and premul (as set by
-    // `CopyRenderingResultsFromDrawingBuffer{Accelerated, Unaccelerated}`) and
+    // `CopyRenderingResultsFromDrawingBufferAccelerated`) and
     // top-left origin (the orientation that is used by
     // `CanvasResourceProvider::Snapshot()` when it is not passed an orientation
     // explicitly).
