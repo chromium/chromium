@@ -8614,6 +8614,25 @@
             ]
         }
     ],
+    "DnsOverHttpsQuad9Secure": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260203",
+                    "enable_features": [
+                        "DohProviderQuad9Secure"
+                    ]
+                }
+            ]
+        }
+    ],
     "DomStorageSqliteInMemory": [
         {
             "platforms": [
