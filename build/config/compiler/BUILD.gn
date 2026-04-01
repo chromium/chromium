@@ -2138,7 +2138,7 @@ config("tot_warnings") {
   # Entries should generally require both is_clang and llvm_force_head_revision,
   # but may have additional constraints as well (e.g. only some OSes)
   if (is_clang && llvm_force_head_revision) {
-    cflags_cc += [
+    cflags += [
       # TODO(crbug.com/495753203): Fix and re-enable
       "-Wno-unused-but-set-global",
     ]
