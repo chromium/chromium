@@ -17,7 +17,7 @@ TEST_F(CreditCardScannerStringUtilTest,
   NSDateComponents* components = ExtractExpirationDateFromText(@"10/25");
 
   EXPECT_EQ(components.month, 10);
-  EXPECT_EQ(components.year, 2025);
+  EXPECT_EQ(components.year, 25);
 }
 
 // Tests extracting month and year from a valid date text with extra text.
@@ -27,7 +27,7 @@ TEST_F(CreditCardScannerStringUtilTest,
       ExtractExpirationDateFromText(@"Valid Thru: 10/25");
 
   EXPECT_EQ(components.month, 10);
-  EXPECT_EQ(components.year, 2025);
+  EXPECT_EQ(components.year, 25);
 }
 
 // Tests extracting month and year from invalid date text.
@@ -52,6 +52,36 @@ TEST_F(CreditCardScannerStringUtilTest,
   NSDateComponents* components = ExtractExpirationDateFromText(@"aa/aa");
 
   EXPECT_FALSE(components);
+}
+
+// Tests extracting month and year from 1-digit month, 2-digit year date text.
+TEST_F(
+    CreditCardScannerStringUtilTest,
+    TestExtractExpirationDateFromValidDateTextWithOneDigitMonthTwoDigitYear) {
+  NSDateComponents* components = ExtractExpirationDateFromText(@"1/25");
+
+  EXPECT_EQ(components.month, 1);
+  EXPECT_EQ(components.year, 25);
+}
+
+// Tests extracting month and year from 1-digit month, 4-digit year date text.
+TEST_F(
+    CreditCardScannerStringUtilTest,
+    TestExtractExpirationDateFromValidDateTextWithOneDigitMonthFourDigitYear) {
+  NSDateComponents* components = ExtractExpirationDateFromText(@"1/2025");
+
+  EXPECT_EQ(components.month, 1);
+  EXPECT_EQ(components.year, 25);
+}
+
+// Tests extracting month and year from 2-digit month, 4-digit year date text.
+TEST_F(
+    CreditCardScannerStringUtilTest,
+    TestExtractExpirationDateFromValidDateTextWithTwoDigitMonthFourDigitYear) {
+  NSDateComponents* components = ExtractExpirationDateFromText(@"10/2025");
+
+  EXPECT_EQ(components.month, 10);
+  EXPECT_EQ(components.year, 25);
 }
 
 #pragma mark - Test ExtractCreditCardNumber

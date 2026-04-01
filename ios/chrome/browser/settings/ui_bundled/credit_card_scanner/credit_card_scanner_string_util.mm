@@ -16,11 +16,8 @@ NSDateComponents* ExtractExpirationDateFromText(NSString* string) {
   }
 
   // Extract dates from longer strings, e.g. "Valid thru 01/30"
-  //
-  // TODO(crbug.com/442869727): Although no examples have been seen so far, it
-  // may be possible for an expiration date to have a single-digit month or a
-  // four-digit year. Expand the regex to handle these cases.
-  NSString* pattern = @"(0[1-9]|1[0-2])\\/\\d{2}";
+  // Matches M/YY, MM/YY, M/YYYY, and MM/YYYY formats.
+  NSString* pattern = @"\\b(0?[1-9]|1[0-2])\\/([0-9]{4}|[0-9]{2})\\b";
   NSError* error = nil;
   NSRegularExpression* regex =
       [NSRegularExpression regularExpressionWithPattern:pattern
@@ -41,20 +38,29 @@ NSDateComponents* ExtractExpirationDateFromText(NSString* string) {
 
   // Currently we support only the first match, with the assumption that it will
   // be rare to extract a single string with two dates in it.
-  NSString* dateString = [text substringWithRange:[matches[0] range]];
+  NSTextCheckingResult* match = matches[0];
 
-  NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-  [formatter setDateFormat:@"MM/yy"];
-  NSDate* date = [formatter dateFromString:dateString];
-
-  if (date) {
-    NSCalendar* gregorian = [[NSCalendar alloc]
-        initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    return [gregorian components:NSCalendarUnitMonth | NSCalendarUnitYear
-                        fromDate:date];
+  // The regex pattern has two capture groups: month at index 1, and year at
+  // index 2.
+  if (match.numberOfRanges < 3) {
+    return nil;
   }
 
-  return nil;
+  NSString* monthString = [text substringWithRange:[match rangeAtIndex:1]];
+  NSString* yearString = [text substringWithRange:[match rangeAtIndex:2]];
+
+  NSDateComponents* components = [[NSDateComponents alloc] init];
+  components.month = [monthString integerValue];
+
+  NSInteger year = [yearString integerValue];
+  // If the parsed year is 4 digits (e.g., "2025"), convert it to a 2-digit year
+  // ("25") to match the MM/YY display format.
+  if (yearString.length == 4) {
+    year %= 100;
+  }
+  components.year = year;
+
+  return components;
 }
 
 NSString* ExtractCreditCardNumber(NSString* string) {
