@@ -147,14 +147,19 @@ void DeviceStatisticsTracker::Start(base::OnceClosure callback) {
     return;
   }
 
-  // If there are no accounts, there's not much to do.
-  if (accounts.empty()) {
-    RecordOverallDevicesOutcome();
-    RecordOverallPlatformsOutcome();
+  if (primary_account_.IsEmpty()) {
+    // Record the PrimaryAccountMulti[Device|Platform]Readiness metrics for the
+    // signed-out case.
     RecordPrimaryAccountMultiDeviceReadiness(
         /*other_devices=*/0, /*other_devices_with_history_opt_in=*/0);
     RecordPrimaryAccountMultiPlatformReadiness(
         /*other_platforms=*/0, /*other_platforms_with_history_opt_in=*/0);
+  }
+
+  // If there are no accounts at all, there's not much to do.
+  if (accounts.empty()) {
+    RecordOverallDevicesOutcome();
+    RecordOverallPlatformsOutcome();
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback_));
@@ -334,7 +339,7 @@ void DeviceStatisticsTracker::RecordPrimaryAccountMultiDeviceReadiness(
     size_t other_devices,
     size_t other_devices_with_history_opt_in) const {
   base::UmaHistogramEnumeration(
-      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness",
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness2",
       GetPrimaryAccountMultiDeviceReadiness(other_devices,
                                             other_devices_with_history_opt_in));
 }
@@ -343,7 +348,7 @@ void DeviceStatisticsTracker::RecordPrimaryAccountMultiPlatformReadiness(
     size_t other_platforms,
     size_t other_platforms_with_history_opt_in) const {
   base::UmaHistogramEnumeration(
-      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiPlatformReadiness",
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiPlatformReadiness2",
       GetPrimaryAccountMultiPlatformReadiness(
           other_platforms, other_platforms_with_history_opt_in));
 }

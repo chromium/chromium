@@ -1326,7 +1326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness"
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness2"
     enum="SyncDeviceStatisticsMultiDeviceReadiness" expires_after="2026-08-30">
   <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
@@ -1338,7 +1338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiPlatformReadiness"
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiPlatformReadiness2"
     enum="SyncDeviceStatisticsMultiPlatformReadiness"
     expires_after="2026-08-30">
   <owner>treib@chromium.org</owner>
