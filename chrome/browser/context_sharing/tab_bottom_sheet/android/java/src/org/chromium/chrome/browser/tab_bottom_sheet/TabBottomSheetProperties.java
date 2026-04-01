@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 /** Properties for the "Tab Bottom Sheet" bottom sheet. */
@@ -17,8 +18,17 @@ public class TabBottomSheetProperties {
             new ReadableObjectPropertyKey<>("bottom_sheet_views");
     public static final WritableIntPropertyKey SHEET_HEIGHT =
             new WritableIntPropertyKey("sheet_height");
+    public static final WritableFloatPropertyKey PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA =
+            new WritableFloatPropertyKey("peek_view_alpha_and_expanded_content_alpha");
+    public static final WritableIntPropertyKey PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY =
+            new WritableIntPropertyKey("peek_view_and_expanded_content_visibility");
 
-    public static final PropertyKey[] ALL_KEYS = {BOTTOM_SHEET_VIEWS, SHEET_HEIGHT};
+    public static final PropertyKey[] ALL_KEYS = {
+        BOTTOM_SHEET_VIEWS,
+        SHEET_HEIGHT,
+        PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA,
+        PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY,
+    };
 
     /**
      * Creates a default model structure. Listeners will be populated by the Coordinator.

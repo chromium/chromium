@@ -176,7 +176,7 @@ public class TabBottomSheetCoordinator {
             @Override
             public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
                 if (mSheetContent == null) return;
-                mMediator.onSheetStateChanged(state);
+                mMediator.onSheetStateChanged(state, mCoBrowseViews.hasPeekView());
                 if (state == SheetState.HIDDEN) {
                     cleanupSheetResources();
                     if (mOnClose != null) {

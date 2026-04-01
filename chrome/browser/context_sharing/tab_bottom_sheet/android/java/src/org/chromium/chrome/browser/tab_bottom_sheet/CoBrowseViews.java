@@ -68,6 +68,10 @@ public class CoBrowseViews {
         return mView;
     }
 
+    public boolean hasPeekView() {
+        return mPeekView != null;
+    }
+
     /** Destroys the co-browse view and its components. */
     @CalledByNative
     private void destroy() {

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.Context;
 import android.view.MotionEvent;
+import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -34,8 +35,27 @@ public class TabBottomSheetMediator {
         mFullheightRatio = 0.7f;
     }
 
-    void onSheetStateChanged(@SheetState int state) {
+    void onSheetStateChanged(@SheetState int state, boolean hasPeekView) {
         mCurrentSheetState = state;
+        if (!hasPeekView) return;
+        if (state == SheetState.PEEK) {
+            showPeekViewAndHideExpandedContent();
+        } else {
+            hidePeekViewAndShowExpandedContent();
+        }
+    }
+
+    private void showPeekViewAndHideExpandedContent() {
+        // TODO(crbug.com/494311176): Implement cross-fade animation for peek view.
+        mModel.set(TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA, 1.0f);
+        mModel.set(
+                TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY, View.VISIBLE);
+    }
+
+    private void hidePeekViewAndShowExpandedContent() {
+        // TODO(crbug.com/494311176): Implement cross-fade animation for peek view.
+        mModel.set(TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA, 0.0f);
+        mModel.set(TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY, View.GONE);
     }
 
     /**
