@@ -571,7 +571,7 @@ void VerticalDraggedTabsContainer::HandleTabDragInContainer(
   // the drag exceeds its bounds.
   if (drag_handler.HandleDraggedTabsIntoPosition(*collection_node_, target) ||
       !target) {
-    host_view_->DeprecatedLayoutImmediately();
+    host_view_->InvalidateLayout();
   }
 }
 

@@ -130,6 +130,10 @@ class VerticalTabDragTest
   ~VerticalTabDragTest() override = default;
 
  protected:
+  auto RunScheduledLayout() {
+    return Do([&]() { views::test::RunScheduledLayout(&GetBrowserView()); });
+  }
+
   auto NameTabViewAt(std::string_view tab_name, int tab_index) {
     return NameView(
         tab_name, base::BindLambdaForTesting([&, tab_index]() {
@@ -156,7 +160,7 @@ class VerticalTabDragTest
         If([this]() { return mouse_util().GetTouchMode(); },
            Then(Steps(PollState(kDragStatePoller, GetDragActive()),
                       WaitForState(kDragStatePoller, true)))),
-        MoveMouseTo(kTabToDragTo));
+        MoveMouseTo(kTabToDragTo), RunScheduledLayout());
   }
 
   auto StartDragFromGroupToTab(int from_group_index, int to_tab_index) {
@@ -169,14 +173,16 @@ class VerticalTabDragTest
             kBrowserViewElementId, kGroupToDragFrom, from_group_index),
         NameTabViewAt(kTabToDragTo, to_tab_index),
         MoveMouseTo(kGroupToDragFrom),
-        DragMouseTo(kTabToDragTo, CenterPoint(), /*release=*/false));
+        DragMouseTo(kTabToDragTo, CenterPoint(), /*release=*/false),
+        RunScheduledLayout());
   }
 
   auto ContinueDragToTab(int to_tab_index) {
     const char kTabToDragTo[] = "Tab to drag to";
     return Steps(
         Log("Continue drag to tab at " + base::NumberToString(to_tab_index)),
-        NameTabViewAt(kTabToDragTo, to_tab_index), MoveMouseTo(kTabToDragTo));
+        NameTabViewAt(kTabToDragTo, to_tab_index), MoveMouseTo(kTabToDragTo),
+        RunScheduledLayout());
   }
 
   auto PressEscAsync() {
