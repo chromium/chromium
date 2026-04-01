@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -733,10 +734,14 @@ std::unique_ptr<FileStreamReader> BlobReader::CreateFileStreamReader(
           item.offset() + additional_offset, item.expected_modification_time(),
           item.file_access());
     case BlobDataItem::Type::kFileFilesystem: {
-      int64_t max_bytes_to_read =
-          item.length() == std::numeric_limits<uint64_t>::max()
-              ? kMaximumLength
-              : item.length() - additional_offset;
+      int64_t max_bytes_to_read;
+      if (item.length() == std::numeric_limits<uint64_t>::max()) {
+        max_bytes_to_read = kMaximumLength;
+      } else {
+        max_bytes_to_read = base::CheckSub(item.length(), additional_offset)
+                                .ValueOrDie<int64_t>();
+        CHECK_GE(max_bytes_to_read, 0);
+      }
       if (file_stream_provider_for_testing_) {
         return file_stream_provider_for_testing_->CreateFileStreamReader(
             item.filesystem_url().ToGURL(), item.offset() + additional_offset,
