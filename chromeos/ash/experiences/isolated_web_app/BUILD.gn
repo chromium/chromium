@@ -10,6 +10,8 @@ component("isolated_web_app") {
   sources = [
     "cros_isolated_web_app_enabler.cc",
     "cros_isolated_web_app_enabler.h",
+    "isolated_web_app_api_allowlist.cc",
+    "isolated_web_app_api_allowlist.h",
     "isolated_web_app_api_bridge_impl.cc",
     "isolated_web_app_api_bridge_impl.h",
     "shaped_window_targeter.cc",

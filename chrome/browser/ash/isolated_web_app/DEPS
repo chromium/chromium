@@ -18,5 +18,6 @@ specific_include_rules = {
     "+chrome/browser/web_applications/isolated_web_apps",
     "+chrome/browser/web_applications/isolated_web_apps/test",
     "+chrome/test/base",
+    "+components/web_package/test_support/signed_web_bundles/signing_keys.h",
   ],
 }

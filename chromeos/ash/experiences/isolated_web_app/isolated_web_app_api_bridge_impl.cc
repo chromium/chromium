@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/notimplemented.h"
+#include "chromeos/ash/experiences/isolated_web_app/isolated_web_app_api_allowlist.h"
 #include "chromeos/ash/experiences/isolated_web_app/shaped_window_targeter.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/document_user_data.h"
@@ -20,6 +21,7 @@
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
+#include "url/origin.h"
 
 namespace ash {
 
@@ -27,9 +29,16 @@ namespace {
 
 // True if the IWA blink extension API is enabled for `render_frame_host`.
 bool ApiIsEnabledFor(content::RenderFrameHost& render_frame_host) {
-  return chromeos::features::IsCrosIsolatedWebAppSetShapeEnabled() &&
-         render_frame_host.GetWebExposedIsolationLevel() >=
-             content::WebExposedIsolationLevel::kIsolatedApplication;
+  if (render_frame_host.GetWebExposedIsolationLevel() <
+      content::WebExposedIsolationLevel::kIsolatedApplication) {
+    return false;
+  }
+
+  if (CanOriginAccessCrosIwaApi(render_frame_host.GetLastCommittedOrigin())) {
+    return true;
+  }
+
+  return chromeos::features::IsCrosIsolatedWebAppSetShapeEnabled();
 }
 
 void SetShapeAndEventTargeter(views::Widget& widget,

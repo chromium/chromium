@@ -19,6 +19,8 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/isolated_web_app",
+    "//components/web_package/test_support",
     "//content/public/common",
     "//content/test:test_support",
     "//testing/gtest",
