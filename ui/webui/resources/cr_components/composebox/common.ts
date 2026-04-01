@@ -160,6 +160,15 @@ export enum GlifAnimationState {
   FINISHED = 'finished',
 }
 
+// LINT.IfChange(ContextualSearchInputStateDeletionType)
+export enum ContextualSearchInputStateDeletionType {
+  FILE = 0,
+  TAB = 1,
+  TOOL = 2,
+  MAX_VALUE = 2,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchInputStateDeletionType)
+
 export function recordEnumerationValue(
     metricName: string, value: number, enumSize: number) {
   chrome.histograms.recordEnumerationValue(metricName, value, enumSize);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -396,10 +397,12 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
         testProxy.searchboxHandler.getArgs('deleteContext')[0];
     assertEquals(idArg, deletedId);
     assertFalse(fromChip);
-    const metricName =
-        'ContextualSearch.UserAction.InputStateDeletion.File.NewTabPage';
-    assertEquals(1, testProxy.metrics.count(metricName, 0));
-    assertEquals(1, testProxy.metrics.count(metricName, true));
+    const histogramName =
+        'ContextualSearch.UserAction.InputStateDeletion.NewTabPage';
+    assertEquals(
+        1,
+        testProxy.metrics.count(
+            histogramName, ContextualSearchInputStateDeletionType.FILE));
   });
 
   test('delete tab', async () => {
@@ -420,10 +423,12 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
     await microtasksFinished();
 
     // Assert.
-    const metricName =
-        'ContextualSearch.UserAction.InputStateDeletion.Tab.NewTabPage';
-    assertEquals(1, testProxy.metrics.count(metricName, 0));
-    assertEquals(1, testProxy.metrics.count(metricName, true));
+    const histogramName =
+        'ContextualSearch.UserAction.InputStateDeletion.NewTabPage';
+    assertEquals(
+        1,
+        testProxy.metrics.count(
+            histogramName, ContextualSearchInputStateDeletionType.TAB));
   });
 
   test('image upload button clicks file input', () => {

@@ -408,12 +408,13 @@ suite('SearchboxTest', () => {
     }));
 
     // Assert.
-    const submitMetricName =
+    const submitUserActionName =
         'ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.NewTabPage';
-    // One histogram and one action metric should be emitted.
-    assertEquals(2, metrics.count(submitMetricName));
-    // Only one histogram should be recorded.
-    assertEquals(1, metrics.count(submitMetricName, true));
+    assertEquals(1, metrics.count(submitUserActionName));
+
+    const submitHistogramName =
+        'ContextualSearch.UserAction.SubmitQueryV2.NewTabPage';
+    assertEquals(1, metrics.count(submitHistogramName, /*WithoutContext*/ 0));
 
     const buttonMetricName = 'ContextualSearch.AiModeButtonClick.NtpRealbox';
     // One histogram and one action metric should be emitted.

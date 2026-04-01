@@ -42,6 +42,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/grit/components_scaled_resources.h"
@@ -816,8 +817,10 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
   // Queries from the AI mode button will never have context.
   base::RecordAction(base::UserMetricsAction(
       "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.Omnibox"));
-  base::UmaHistogramBoolean(
-      "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.Omnibox", true);
+  base::UmaHistogramEnumeration(
+      "ContextualSearch.UserAction.SubmitQueryV2.Omnibox",
+      contextual_search::ContextualSearchContextState::kWithoutContext,
+      contextual_search::ContextualSearchContextState::kMaxValue);
 
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),

@@ -4,6 +4,7 @@
 
 import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
 import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -940,9 +941,11 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(ToolMode.kUnspecified, activeTool);
 
     const metricName =
-        'ContextualSearch.UserAction.InputStateDeletion.Tool.NewTabPage';
-    assertEquals(1, testProxy.metrics.count(metricName, 0));
-    assertEquals(1, testProxy.metrics.count(metricName, true));
+        'ContextualSearch.UserAction.InputStateDeletion.NewTabPage';
+    assertEquals(
+        1,
+        testProxy.metrics.count(
+            metricName, ContextualSearchInputStateDeletionType.TOOL));
   });
 
   test('ShowContextMenuDescription', async () => {

@@ -163,12 +163,14 @@ void ContextualSearchMetricsRecorder::RecordQueryMetrics(
       base::StrCat({kContextualSearchQueryFileCount, ".", metrics_suffix_}),
       file_count);
 
+  ContextualSearchContextState state =
+      ContextualSearchContextState::kWithoutContext;
   std::string context_state = "WithoutContext";
-  // It is possible for a query to have both, but in this case it is preferred
-  // to be recorded as including tab context.
   if (has_tab_context) {
+    state = ContextualSearchContextState::kWithTabContext;
     context_state = "WithTabContext";
   } else if (has_non_tab_context) {
+    state = ContextualSearchContextState::kWithNonTabContext;
     context_state = "WithNonTabContext";
   }
 
@@ -177,10 +179,10 @@ void ContextualSearchMetricsRecorder::RecordQueryMetrics(
                     ".", metrics_suffix_})
           .c_str()));
 
-  base::UmaHistogramBoolean(
-      base::StrCat({"ContextualSearch.UserAction.SubmitQueryV2.", context_state,
-                    ".", metrics_suffix_}),
-      true);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"ContextualSearch.UserAction.SubmitQueryV2.", metrics_suffix_}),
+      state);
 
   if (text_length == 0 && file_count > 0) {
     base::RecordAction(base::UserMetricsAction(
@@ -189,11 +191,10 @@ void ContextualSearchMetricsRecorder::RecordQueryMetrics(
              metrics_suffix_})
             .c_str()));
 
-    base::UmaHistogramBoolean(
+    base::UmaHistogramEnumeration(
         base::StrCat(
-            {"ContextualSearch.UserAction.SubmitQueryV2.WithContextNoText.",
-             metrics_suffix_}),
-        true);
+            {"ContextualSearch.UserAction.SubmitQueryV2.", metrics_suffix_}),
+        ContextualSearchContextState::kWithContextNoText);
   }
 
   // Query funnel metrics.

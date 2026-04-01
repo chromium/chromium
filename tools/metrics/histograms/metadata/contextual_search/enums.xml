@@ -48,6 +48,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputType) -->
 
+<!-- LINT.IfChange(ContextualSearchContextState) -->
+
+<enum name="ContextualSearchContextState">
+  <int value="0" label="WithoutContext"/>
+  <int value="1" label="WithTabContext"/>
+  <int value="2" label="WithNonTabContext"/>
+  <int value="3" label="WithContextNoText"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchContextState,//ui/webui/resources/cr_components/searchbox/searchbox.ts:ContextualSearchContextState) -->
+
 <!-- LINT.IfChange(ContextualSearchErrorPage) -->
 
 <enum name="ContextualSearchErrorPage">
@@ -67,6 +78,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/common.ts:FileValidationError) -->
+
+<!-- LINT.IfChange(ContextualSearchInputStateDeletionType) -->
+
+<enum name="ContextualSearchInputStateDeletionType">
+  <int value="0" label="File"/>
+  <int value="1" label="Tab"/>
+  <int value="2" label="Tool"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/common.ts:ContextualSearchInputStateDeletionType) -->
 
 <enum name="ContextualSearchMultimodalState">
   <int value="0" label="Text Only"/>

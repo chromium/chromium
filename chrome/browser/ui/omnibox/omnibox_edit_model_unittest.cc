@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
@@ -1777,8 +1778,8 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabled_ForcedNavigationEnabled) {
                 "Omnibox"),
             1);
   histogram_tester.ExpectUniqueSample(
-      "ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.Omnibox", true,
-      1);
+      "ContextualSearch.UserAction.SubmitQueryV2.Omnibox",
+      contextual_search::ContextualSearchContextState::kWithoutContext, 1);
 
   testing::Mock::VerifyAndClearExpectations(client());
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));

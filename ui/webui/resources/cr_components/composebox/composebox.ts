@@ -34,7 +34,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, FILE_VALIDATION_ERRORS_MAP, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -758,11 +758,18 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     if (fromUserAction === true) {
       const isTab = !!file?.tabId;
-      const type = isTab ? 'Tab' : 'File';
+      const deletionType = isTab ? ContextualSearchInputStateDeletionType.TAB :
+                                   ContextualSearchInputStateDeletionType.FILE;
       const metricName = `ContextualSearch.UserAction.InputStateDeletion.${
-          type}.${this.composeboxSource}`;
-      recordUserAction(metricName);
-      recordBoolean(metricName, true);
+          this.composeboxSource}`;
+      recordEnumerationValue(
+          metricName, deletionType,
+          ContextualSearchInputStateDeletionType.MAX_VALUE + 1);
+
+      const typeStr = isTab ? 'Tab' : 'File';
+      const userActionName = `ContextualSearch.UserAction.InputStateDeletion.${
+          typeStr}.${this.composeboxSource}`;
+      recordUserAction(userActionName);
     }
 
     this.files = new Map(
@@ -1247,10 +1254,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     const newToolMode = isTogglingOff ? ToolMode.kUnspecified : tool;
 
     if (isTogglingOff) {
-      const metricName = `ContextualSearch.UserAction.InputStateDeletion.Tool.${
+      const metricName = `ContextualSearch.UserAction.InputStateDeletion.${
           this.composeboxSource}`;
-      recordUserAction(metricName);
-      recordBoolean(metricName, true);
+      recordEnumerationValue(
+          metricName, ContextualSearchInputStateDeletionType.TOOL,
+          ContextualSearchInputStateDeletionType.MAX_VALUE + 1);
+
+      const userActionName =
+          `ContextualSearch.UserAction.InputStateDeletion.Tool.${
+              this.composeboxSource}`;
+      recordUserAction(userActionName);
     } else {
       this.searchboxHandler_.recordToolSelectionAction(newToolMode);
     }

@@ -635,10 +635,16 @@ export class SearchboxElement extends SearchboxElementBase implements
         'ContextualSearch.AiModeButtonClick.NtpRealbox', true);
 
     if (!this.composeboxEnabled || this.$.input.inputElement.value.trim()) {
-      const metricName =
+      const histogramName =
+          'ContextualSearch.UserAction.SubmitQueryV2.NewTabPage';
+      // LINT.IfChange(ContextualSearchContextState)
+      chrome.histograms.recordEnumerationValue(
+          histogramName, /*WithoutContext */ 0, 3);
+      // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchContextState)
+
+      const userActionName =
           'ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.NewTabPage';
-      chrome.histograms.recordUserAction(metricName);
-      chrome.histograms.recordBoolean(metricName, true);
+      chrome.histograms.recordUserAction(userActionName);
 
       // Construct navigation url.
       const searchParams = new URLSearchParams();

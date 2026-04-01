@@ -52,6 +52,16 @@ enum class ContextualSearchMultimodalState {
   kMaxValue = kTextAndFile,
 };
 
+// LINT.IfChange(ContextualSearchContextState)
+enum class ContextualSearchContextState {
+  kWithoutContext = 0,
+  kWithTabContext = 1,
+  kWithNonTabContext = 2,
+  kWithContextNoText = 3,
+  kMaxValue = kWithContextNoText,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchContextState)
+
 enum class SessionState {
   kNone = 0,
   kSessionStarted = 1,
