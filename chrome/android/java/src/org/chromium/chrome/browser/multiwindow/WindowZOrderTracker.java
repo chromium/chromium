@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -126,6 +127,16 @@ class WindowZOrderTracker implements ApplicationStatus.WindowFocusChangedListene
     public SparseArray<List<ActivityWindowAndroid>> getWindowZOrder() {
         ThreadUtils.assertOnUiThread();
         return mZOrder;
+    }
+
+    /**
+     * Returns an iterable of the tracked windows.
+     *
+     * @return An iterable of tracked windows.
+     */
+    public Iterable<ActivityWindowAndroid> getAllWindowAndroids() {
+        ThreadUtils.assertOnUiThread();
+        return Collections.unmodifiableSet(mTrackedWindows);
     }
 
     @Override
