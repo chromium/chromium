@@ -270,9 +270,9 @@ class KeyboardAccessoryViewBinder {
                             || item.getSuggestion().applyDeactivatedStyle();
 
             if (isLoading) {
-                chipView.showLoadingView(null);
+                chipView.showLoadingView(/* loadingViewObserver= */ null);
             } else {
-                chipView.hideLoadingView(null);
+                chipView.hideLoadingView(/* loadingViewObserver= */ null, /* skipDelay= */ true);
             }
 
             float iconAlpha;

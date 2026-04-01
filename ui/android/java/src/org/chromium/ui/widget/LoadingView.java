@@ -130,11 +130,20 @@ public class LoadingView extends ProgressBar {
      * fades out.
      */
     public void hideLoadingUi() {
+        hideLoadingUi(false);
+    }
+
+    /**
+     * Hide loading UI.
+     *
+     * @param skipDelay If true, the loading UI hides immediately without fading out.
+     */
+    public void hideLoadingUi(boolean skipDelay) {
         removeCallbacks(mDelayedShow);
         removeCallbacks(mDelayedHide);
         mShouldShow = false;
 
-        if (getVisibility() == VISIBLE) {
+        if (!skipDelay && getVisibility() == VISIBLE) {
             postDelayed(
                     mDelayedHide,
                     Math.max(
@@ -166,6 +175,7 @@ public class LoadingView extends ProgressBar {
     }
 
     private void onHideLoadingFinished() {
+        animate().cancel();
         setVisibility(GONE);
         for (Observer observer : mObservers) {
             observer.onHideLoadingUiComplete();

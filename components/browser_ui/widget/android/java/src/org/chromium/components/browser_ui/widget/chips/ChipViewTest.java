@@ -250,6 +250,25 @@ public final class ChipViewTest {
 
     @Test
     @SmallTest
+    public void loadingViewSkipDelay() {
+        mChipView.setIconWithTint(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ false);
+        LoadingView loadingView = mChipView.findViewById(R.id.chip_view_loading_view);
+        ImageView startIcon = mChipView.findViewById(R.id.chip_view_start_icon);
+
+        LoadingView.Observer firstObserver = mock(LoadingView.Observer.class);
+        mChipView.showLoadingView(firstObserver);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(View.VISIBLE, loadingView.getVisibility());
+
+        LoadingView.Observer secondObserver = mock(LoadingView.Observer.class);
+        mChipView.hideLoadingView(secondObserver, /* skipDelay= */ true);
+        assertEquals(View.GONE, loadingView.getVisibility());
+        assertEquals(View.VISIBLE, startIcon.getVisibility());
+        verify(secondObserver).onHideLoadingUiComplete();
+    }
+
+    @Test
+    @SmallTest
     public void cancelButton() {
         assertNull(mChipView.findViewById(R.id.chip_view_end_icon));
 

@@ -180,4 +180,26 @@ public class LoadingViewTest {
                 1,
                 mTestObserver2.showLoadingCallback.getCallCount());
     }
+
+    @Test
+    @SmallTest
+    public void testHideLoadingSkipDelay() {
+        mLoadingView.showLoadingUi();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        Assert.assertEquals(View.VISIBLE, mLoadingView.getVisibility());
+
+        mLoadingView.hideLoadingUi(/* skipDelay= */ true);
+        Assert.assertEquals(
+                "Progress bar should be hidden immediately.",
+                View.GONE,
+                mLoadingView.getVisibility());
+        Assert.assertEquals(
+                "hideLoadingCallback1 should be executed immediately.",
+                1,
+                mTestObserver1.hideLoadingCallback.getCallCount());
+        Assert.assertEquals(
+                "hideLoadingCallback2 should be executed immediately.",
+                1,
+                mTestObserver2.hideLoadingCallback.getCallCount());
+    }
 }

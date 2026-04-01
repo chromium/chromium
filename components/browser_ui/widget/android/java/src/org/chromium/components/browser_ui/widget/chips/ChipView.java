@@ -416,10 +416,22 @@ public class ChipView extends LinearLayout {
      *     LoadingView.
      */
     public void hideLoadingView(LoadingView.@Nullable Observer loadingViewObserver) {
+        hideLoadingView(loadingViewObserver, /* skipDelay= */ false);
+    }
+
+    /**
+     * Hides the {@link LoadingView} at the start of the chip view.
+     *
+     * @param loadingViewObserver An optional {@link LoadingView.Observer} to add to the
+     *     LoadingView.
+     * @param skipDelay If true, the loading UI hides immediately without fading out.
+     */
+    public void hideLoadingView(
+            LoadingView.@Nullable Observer loadingViewObserver, boolean skipDelay) {
         if (loadingViewObserver != null) {
             mLoadingView.addObserver(loadingViewObserver);
         }
-        mLoadingView.hideLoadingUi();
+        mLoadingView.hideLoadingUi(skipDelay);
     }
 
     /** Adds a remove icon (X button) at the trailing end of the chip next to the primary text. */
