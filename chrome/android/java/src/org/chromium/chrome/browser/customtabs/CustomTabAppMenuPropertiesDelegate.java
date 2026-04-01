@@ -419,6 +419,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             modelList.add(buildTranslateMenuItem(currentTab, false));
         }
 
+        // --- Site controls ---
+        if (shouldShowPageInfoItem()) {
+            modelList.add(buildPageInfoItem(currentTab));
+        }
+
         // --- Open with ---
         if (shouldShowOpenWithItem(currentTab)) {
             modelList.add(buildOpenWithItem(currentTab, false));
