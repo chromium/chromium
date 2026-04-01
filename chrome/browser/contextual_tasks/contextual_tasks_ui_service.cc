@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
@@ -60,10 +61,12 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
@@ -131,6 +134,22 @@ bool IsSignInDomain(const GURL& url) {
     }
   }
   return false;
+}
+
+// Returns whether the chrome-native scheme should be used for contextual tasks.
+// On Android we wrap the WebUI and fusebox inside a native page.
+bool ShouldUseChromeNativeScheme() {
+  return BUILDFLAG(IS_ANDROID);
+}
+
+// Returns the host name for the native contextual tasks page only used on
+// Android.
+std::string_view GetNativeContextualTasksHost() {
+#if BUILDFLAG(IS_ANDROID)
+  return chrome::kChromeUINativeContextualTasksHost;
+#else
+  return "";
+#endif
 }
 
 // LINT.IfChange(EntrypointSource)
@@ -1057,9 +1076,20 @@ void ContextualTasksUiService::OpenFeedbackUi(BrowserWindowInterface* browser,
 }
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
     const base::Uuid& task_id) {
-  GURL url(chrome::kChromeUIContextualTasksURL);
-  url = net::AppendQueryParameter(url, kTaskQueryParam,
-                                  task_id.AsLowercaseString());
+  GURL url;
+  if (ShouldUseChromeNativeScheme()) {
+    // Final URL format:
+    // chrome-native://contextual-tasks-page?chrome_task_id=<task_id>
+    url = GURL(base::StrCat({content::kChromeNativeScheme,
+                             url::kStandardSchemeSeparator,
+                             GetNativeContextualTasksHost(), "/"}));
+    url = net::AppendQueryParameter(url, kTaskQueryParam,
+                                    task_id.AsLowercaseString());
+  } else {
+    url = GURL(chrome::kChromeUIContextualTasksURL);
+    url = net::AppendQueryParameter(url, kTaskQueryParam,
+                                    task_id.AsLowercaseString());
+  }
   omnibox::ChromeAimEntryPoint entry_point =
       GetInitialEntryPointForTask(task_id);
   return AppendAimEntryPointParams(url, entry_point);
@@ -1314,6 +1344,12 @@ bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {
 }
 
 bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
+  if (ShouldUseChromeNativeScheme()) {
+    if (url.scheme() == content::kChromeNativeScheme &&
+        url.host() == GetNativeContextualTasksHost()) {
+      return true;
+    }
+  }
   return url.scheme() == content::kChromeUIScheme &&
          url.host() == chrome::kChromeUIContextualTasksHost;
 }
