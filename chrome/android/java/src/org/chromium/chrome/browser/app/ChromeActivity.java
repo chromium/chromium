@@ -224,7 +224,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.webapps.AppInstallMenuHandler;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
@@ -660,6 +659,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             mChromeActivitySnackbarHelper =
                     new ChromeActivitySnackbarHelper(
+                            this,
                             getEdgeToEdgeSupplier(),
                             assertNonNull(mRootUiCoordinator.getBottomSheetController()));
             SnackbarManager snackbarManager =
@@ -670,6 +670,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             mChromeActivitySnackbarHelper.getBottomMarginSupplier(),
                             getModalDialogManager());
             mSnackbarManagerSupplier.set(snackbarManager);
+            mChromeActivitySnackbarHelper.setSnackbarManager(snackbarManager);
             getInsetObserver().addObserver(snackbarManager);
             SnackbarManagerProvider.attach(getWindowAndroid(), snackbarManager);
             // TODO (crbug.com/365110749): Remove wiring the InsetObserver when the dialog window
@@ -1996,19 +1997,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      */
     protected void onDestroyInternal() {}
 
-    /**
-     * @return The unified manager for all snackbar related operations.
-     */
+    /** Returns snackbar manager for all snackbar related operations. */
     @Override
     public SnackbarManager getSnackbarManager() {
-        BottomSheetController controller =
-                mRootUiCoordinator == null ? null : mRootUiCoordinator.getBottomSheetController();
-        if (mRootUiCoordinator != null
-                && controller != null
-                && controller.isSheetOpen()
-                && !controller.isSheetHiding()) {
-            return mRootUiCoordinator.getBottomSheetSnackbarManager();
-        }
         return mSnackbarManagerSupplier.get();
     }
 

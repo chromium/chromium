@@ -87,6 +87,7 @@ public class SnackbarManager
         ParentOverrideSlot.HUB,
         ParentOverrideSlot.TAB_LIST_EDITOR,
         ParentOverrideSlot.ARCHIVED_TABS_DIALOG,
+        ParentOverrideSlot.BOTTOM_SHEET,
         ParentOverrideSlot.ONE_OFF,
         ParentOverrideSlot.NUM_ENTRIES
     })
@@ -96,8 +97,9 @@ public class SnackbarManager
         int HUB = 0;
         int TAB_LIST_EDITOR = 1;
         int ARCHIVED_TABS_DIALOG = 2;
-        int ONE_OFF = 3; // LAST
-        int NUM_ENTRIES = 4;
+        int BOTTOM_SHEET = 3;
+        int ONE_OFF = 4; // LAST
+        int NUM_ENTRIES = 5;
     }
 
     /** Interface that shows the ability to provide a snackbar manager. */
