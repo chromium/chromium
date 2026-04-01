@@ -1040,6 +1040,46 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
+                       PasswordLoginClicksSubmitButton) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/sign_in_page.html");
+  const GURL signin_success_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  mock_login_service().SetCredential(MakeTestCredential(
+      u"username", url, /*immediately_available_to_login=*/true));
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  std::optional<int> password_button_id =
+      content::GetDOMNodeId(*main_frame(), "#submit-button");
+  ASSERT_TRUE(password_button_id);
+  std::optional<int> provider_button_id =
+      content::GetDOMNodeId(*main_frame(), "#provider-button");
+  ASSERT_TRUE(provider_button_id);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequestByNodeIds(
+      *active_tab(), password_button_id, provider_button_id);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  const auto& action_results = result.Get();
+  // Although we have multiple tools invoked internally, we should not expose
+  // this to the caller.
+  EXPECT_EQ(1, action_results.size());
+
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  EXPECT_EQ(
+      signin_success_url.ReplaceComponents(replacements),
+      web_contents()->GetLastCommittedURL().ReplaceComponents(replacements));
+  EXPECT_TRUE(mock_login_service().last_sequence_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
                        FederatedLoginProviderErrorAfterClick) {
   const GURL idp_url = GURL("https://accounts.google.com");
   const GURL url = embedded_https_test_server().GetURL(

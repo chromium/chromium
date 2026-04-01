@@ -109,7 +109,6 @@ class AttemptLoginTool : public Tool {
 
   tabs::TabHandle tab_handle_;
 
-  // TODO(crbug.com/479504052): Make use of these fields.
   // Identifies a button to submit (or advance) a password form.
   std::optional<PageTarget> password_button_;
   // Identifies a "Sign in with Google" button.

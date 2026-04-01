@@ -475,6 +475,27 @@ void AttemptLoginTool::OnAttemptLogin(
     return;
   }
 
+  // The availability of the password submit target is bundled with federated
+  // support.
+  if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin) &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginFederatedClickFromActor) &&
+      (login_status.value() ==
+           actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled ||
+       login_status.value() ==
+           actor_login::LoginStatusResult::kSuccessUsernameFilled ||
+       login_status.value() ==
+           actor_login::LoginStatusResult::kSuccessPasswordFilled) &&
+      password_button_.has_value()) {
+    CHECK_EQ(selected_credential.type, actor_login::CredentialType::kPassword);
+    tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
+        tab_handle_, *password_button_, mojom::ClickType::kLeft,
+        mojom::ClickCount::kSingle, requires_opening_web_contents_));
+    PostResponseTask(std::move(invoke_callback_),
+                     MakeOkResult(/*requires_page_stabilization=*/false));
+    return;
+  }
+
   mojom::ActionResultCode code = LoginResultToActorResult(login_status.value());
   PostResponseTask(std::move(invoke_callback_),
                    IsOk(code) ? MakeOkResult() : MakeResult(code));
