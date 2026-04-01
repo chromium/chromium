@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
+#include "chrome/browser/ui/views/frame/shadow_frame_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
@@ -79,6 +80,15 @@ namespace {
 constexpr int kResizeAreaWidth = 5;
 constexpr int kCollapsedResizeAreaWidth = 2;
 constexpr int kKeyboardResizeWidth = 50;
+
+// Shadow is used in expand-on-hover mode. Shadow radius and opacity are dynamic
+// and set by the layout.
+constexpr int kExpandOnHoverShadowElevation = 4;
+constexpr ShadowFrameView::ShadowAlpha kExpandOnHoverShadowAlpha(
+    {.light_key = 0.3,
+     .light_ambient = 0.0,
+     .dark_key = 0.6,
+     .dark_ambient = 0.0});
 
 // TODO(crbug.com/493593208): This value was chosen arbitrarily and should be
 // updated based on ux feedback.
@@ -167,6 +177,10 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       *this, *browser_view,
       /*primary_color=*/CustomCornersBackground::FrameTheme(),
       /*corner_color=*/CustomCornersBackground::ToolbarTheme()));
+
+  shadow_frame_ = AddChildView(std::make_unique<ShadowFrameView>(
+      kExpandOnHoverShadowElevation, kExpandOnHoverShadowAlpha));
+  shadow_frame_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   UpdateColors();
 }
@@ -324,6 +338,7 @@ void VerticalTabStripRegionView::Layout(PassKey) {
   resize_area_->SetBoundsRect(gfx::Rect(bounds().right() - resize_area_width_,
                                         0, resize_area_width_,
                                         bounds().height()));
+  shadow_frame_->SetBoundsRect(GetLocalBounds());
 }
 
 views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {

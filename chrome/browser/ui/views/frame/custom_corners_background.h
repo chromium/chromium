@@ -56,6 +56,7 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   // Specifies whether outline strokes should be drawn.
   struct Outline {
     ui::ColorId color = ui::kColorSeparator;
+    double opacity = 1.0;
     bool top = false;
     bool leading = false;
     bool bottom = false;

@@ -177,8 +177,10 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
   if (outline.has_strokes()) {
     cc::PaintFlags stroke_flags;
     stroke_flags.setStrokeWidth(views::Separator::kThickness);
-    stroke_flags.setColor(
-        GetView().GetColorProvider()->GetColor(outline.color));
+    SkColor color = GetView().GetColorProvider()->GetColor(outline.color);
+    color = SkColorSetA(color,
+                        base::ClampRound(SkColorGetA(color) * outline.opacity));
+    stroke_flags.setColor(color);
     stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
     stroke_flags.setAntiAlias(true);
 

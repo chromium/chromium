@@ -26,13 +26,14 @@
 #include "ui/views/focus/focus_manager.h"
 
 class BrowserView;
+class HoverTabSelector;
 class RootTabCollectionNode;
+class TabDragContext;
 class VerticalUnpinnedTabContainerView;
 class VerticalPinnedTabContainerView;
 class VerticalTabStripBottomContainer;
 class VerticalTabStripTopContainer;
-class TabDragContext;
-class HoverTabSelector;
+class ShadowFrameView;
 
 namespace tabs {
 class VerticalTabStripStateController;
@@ -157,6 +158,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   }
 
   bool is_expanded_on_hover() const { return is_expanded_on_hover_; }
+  ShadowFrameView* shadow_frame() { return shadow_frame_; }
 
   views::ResizeArea* resize_area_for_testing() { return resize_area_; }
   RootTabCollectionNode* root_node_for_testing() { return root_node_.get(); }
@@ -243,6 +245,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   raw_ptr<VerticalTabStripBottomContainer> bottom_button_container_ = nullptr;
   raw_ptr<views::View> gemini_button_ = nullptr;
   raw_ptr<views::ResizeArea> resize_area_ = nullptr;
+  raw_ptr<ShadowFrameView> shadow_frame_ = nullptr;
   int resize_area_width_;
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
 
