@@ -39,6 +39,18 @@ VIEWS_EXPORT gfx::Rect GetHeadlessWindowBounds(HWND window);
 VIEWS_EXPORT void ShowSystemMenuAtScreenPixelLocation(HWND window,
                                                       const gfx::Point& point);
 
+// Returns the IAccessible* for the parent HWND of a View. The returned pointer
+// is valid only for the lifetime of the WindowTreeHost in which the View
+// resides.
+VIEWS_EXPORT gfx::NativeViewAccessible HWNDNativeViewAccessibleForView(
+    const View* view);
+
+// Returns the IAccessible* for the parent HWND of a Widget. The returned
+// pointer is valid only for the lifetime of the WindowTreeHost in which the
+// Widget resides.
+VIEWS_EXPORT gfx::NativeViewAccessible HWNDNativeViewAccessibleForWidget(
+    const Widget* widget);
+
 }  // namespace views
 
 #endif  // UI_VIEWS_WIN_HWND_UTIL_H_

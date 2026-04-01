@@ -6,15 +6,30 @@
 
 #include <windows.h>
 
+#include <oleacc.h>
+#include <wrl/client.h>
+
+#include <utility>
+
 #include "base/i18n/rtl.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/class_property.h"
 #include "ui/views/widget/widget.h"
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(Microsoft::WRL::ComPtr<IAccessible>*)
+
 namespace views {
+
+namespace {
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(Microsoft::WRL::ComPtr<IAccessible>,
+                                   kParentAccessibleKey)
+
+}  // namespace
 
 HWND HWNDForView(const View* view) {
   return view->GetWidget() ? HWNDForWidget(view->GetWidget()) : nullptr;
@@ -79,6 +94,53 @@ void ShowSystemMenuAtScreenPixelLocation(HWND window, const gfx::Point& point) {
   if (command) {
     ::SendMessage(window, WM_SYSCOMMAND, static_cast<WPARAM>(command), 0);
   }
+}
+
+gfx::NativeViewAccessible HWNDNativeViewAccessibleForView(const View* view) {
+  if (!view) {
+    return nullptr;
+  }
+  if (const Widget* widget = view->GetWidget(); widget) {
+    return HWNDNativeViewAccessibleForWidget(widget);
+  }
+  return nullptr;
+}
+
+gfx::NativeViewAccessible HWNDNativeViewAccessibleForWidget(
+    const Widget* widget) {
+  if (!widget) {
+    return nullptr;
+  }
+  aura::Window* window = widget->GetNativeWindow();
+  if (!window) {
+    return nullptr;
+  }
+  window = window->GetRootWindow();
+  if (!window) {
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<IAccessible>* parent_accessible =
+      window->GetProperty(kParentAccessibleKey);
+  if (parent_accessible) {
+    // Return the held reference for this root window.
+    return parent_accessible->Get();
+  }
+
+  Microsoft::WRL::ComPtr<IAccessible> new_parent;
+  if (FAILED(::AccessibleObjectFromWindow(
+          window->GetHost()->GetAcceleratedWidget(), OBJID_WINDOW,
+          IID_PPV_ARGS(&new_parent)))) {
+    return nullptr;
+  }
+
+  // Hold a reference to the parent IAccessible in the root window. It will be
+  // released when the Window is destroyed, which happens when destruction of
+  // the HWND leads to DesktopWindowTreeHostWin::HandleDestroyed.
+  parent_accessible =
+      window->SetProperty(kParentAccessibleKey, std::move(new_parent));
+
+  return parent_accessible->Get();
 }
 
 }  // namespace views

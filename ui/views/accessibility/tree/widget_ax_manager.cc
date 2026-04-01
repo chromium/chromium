@@ -17,8 +17,6 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <oleacc.h>
-
 #include "ui/views/win/hwnd_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -310,21 +308,12 @@ WidgetAXManager::AccessibilityGetNativeViewAccessible() {
           static_cast<NativeWidgetMac*>(widget_->native_widget())) {
     return native_widget->GetNativeViewAccessibleForNSView();
   }
-#elif BUILDFLAG(IS_WIN)
-  // Hold a reference to the parent in this instance to ensure that it lives
-  // long enough for the caller to take its own reference, if needed.
-  if (!parent_accessible_) {
-    HWND hwnd = HWNDForView(widget_->GetRootView());
-    if (!hwnd) {
-      return nullptr;
-    }
-    if (SUCCEEDED(::AccessibleObjectFromWindow(
-            hwnd, OBJID_WINDOW, IID_PPV_ARGS(&parent_accessible_)))) {
-      return parent_accessible_.Get();
-    }
-  }
-#endif
   return gfx::NativeViewAccessible();
+#elif BUILDFLAG(IS_WIN)
+  return HWNDNativeViewAccessibleForWidget(widget_);
+#else
+  return gfx::NativeViewAccessible();
+#endif
 }
 
 gfx::NativeViewAccessible

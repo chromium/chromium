@@ -4,8 +4,6 @@
 
 #include "ui/views/accessibility/view_ax_platform_node_delegate_win.h"
 
-#include <oleacc.h>
-
 #include <memory>
 
 #include "base/notimplemented.h"
@@ -65,20 +63,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateWin::GetParent() const {
   }
 
   // Return the IAccessible for this RootView's HWND.
-  HWND hwnd = HWNDForView(view());
-  if (!hwnd) {
-    return nullptr;
-  }
-
-  // Hold a reference to the parent in this instance to ensure that it lives
-  // long enough for the caller to take its own reference, if needed. Always
-  // fetch fresh to avoid needing to handle reparenting.
-  if (FAILED(::AccessibleObjectFromWindow(hwnd, OBJID_WINDOW,
-                                          IID_PPV_ARGS(&parent_)))) {
-    parent_.Reset();
-  }
-
-  return parent_.Get();
+  return HWNDNativeViewAccessibleForView(view());
 }
 
 gfx::AcceleratedWidget
