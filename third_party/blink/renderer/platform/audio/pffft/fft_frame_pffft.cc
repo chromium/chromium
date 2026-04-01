@@ -12,16 +12,14 @@
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/pffft/src/pffft.h"
+
 namespace blink {
 
-// Not really clear what the largest size of FFT PFFFT supports, but the docs
-// indicate it can go up to at least 1048576 (order 20).  Since we're using
-// single-floats, accuracy decreases quite a bit at that size.  Plus we only
-// need 32K (order 15) for WebAudio.
-const unsigned kMaxFFTPow2Size = 20;
+// PFFFT supports real FFTs up to at least order 20 (1048576 samples).
+constexpr unsigned kMaxFFTPow2Size = 20;
 
 // PFFFT has a minimum real FFT order of 5 (32-point transforms).
-const unsigned kMinFFTPow2Size = 5;
+constexpr unsigned kMinFFTPow2Size = 5;
 
 FFTFrame::FFTSetup::FFTSetup(unsigned fft_size) {
   CHECK_LE(fft_size, 1U << kMaxFFTPow2Size);
@@ -47,9 +45,9 @@ HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
   // A HashMap to hold all of the possible FFT setups we need.  The setups are
   // initialized lazily.  The key is the fft size, and the value is the setup
   // data.
-  typedef HashMap<unsigned, std::unique_ptr<FFTSetup>> FFTHashMap_t;
+  using FFTHashMap = HashMap<unsigned, std::unique_ptr<FFTSetup>>;
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(FFTHashMap_t, fft_setups, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(FFTHashMap, fft_setups, ());
 
   if (first_call) {
     DEFINE_STATIC_LOCAL(base::Lock, setup_lock, ());
@@ -142,7 +140,7 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
       imag_data_(frame.fft_size_ / 2),
       complex_data_(frame.fft_size_),
       pffft_work_(frame.fft_size_) {
-  // Initialize the PFFFT_Setup object here wo that it will be ready when we
+  // Initialize the PFFFT_Setup object here so that it will be ready when we
   // compute FFTs.
   InitializeFFTSetupForSize(fft_size_);
 

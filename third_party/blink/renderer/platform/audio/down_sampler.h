@@ -62,7 +62,7 @@ class PLATFORM_EXPORT DownSampler final {
 
   unsigned input_block_size_;
 
-  // Half-band filter. SimpleFFTConvolver is always faster than DirectConvolver.
+  // Half-band filter for the odd output sample-frames.
   SimpleFFTConvolver convolver_;
 
   AudioFloatArray temp_buffer_;
