@@ -51,8 +51,8 @@ export function getHtml(this: ComposeboxElement) {
           .submitEnabled="${this.submitEnabled}"
           .entrypointName="${this.entrypointName}"
           .cancelButtonTitle="${this.computeCancelButtonTitle_()}"
-          @input-input="${this.onInputInput_}"
-          @input-focusin="${this.onInputFocusin_}"
+          @input-input="${this.onInputInput}"
+          @input-focusin="${this.onInputFocusin}"
           @cancel-click="${this.onCancelClick_}">
       </cr-composebox-input>
       <div id="context" part="context-entrypoint"

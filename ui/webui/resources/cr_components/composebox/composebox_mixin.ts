@@ -8,12 +8,12 @@ import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {getLoadTimeBoolean} from './common.js';
+import {ComposeboxFileValidationError, getLoadTimeBoolean, ProcessFilesError, recordEnumerationValue} from './common.js';
 import type {ComposeboxFile, ComposeboxState} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
-import {ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
+import {InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 import type {InputState} from './composebox_query.mojom-webui.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -173,6 +173,10 @@ export const ComposeboxEmbedderMixin =
         // Embedder-provided methods for DOM and Mojo access
         // =====================================================================
 
+        closeMenu() {
+          assertNotReached();
+        }
+
         getInputElement(): ComposeboxInputElement {
           assertNotReached();
         }
@@ -223,9 +227,126 @@ export const ComposeboxEmbedderMixin =
           this.getDropdownElement().selectIndex(e.detail.index);
         }
 
+        onInputInput(_e: CustomEvent<Event>) {
+          this.input = this.getInputElement().input;
+
+          // `clearMatches` is true if input is empty stop any in progress
+          // providers before requerying for on-focus (zero-suggest) inputs. The
+          // searchbox doesn't allow zero-suggest requests to be made while the
+          // ACController is not done.
+          if (this.composeboxNoFlickerSuggestionsFix) {
+            // If the composebox no flickering fix is enabled, stop the
+            // ACController from querying for suggestions when the input is
+            // empty, but don't clear the matches so the dropdown doesn't close.
+            if (this.input === '') {
+              this.getSearchboxHandler().stopAutocomplete(
+                  /*clearResult=*/ true);
+            }
+            this.queryAutocomplete(/* clearMatches= */ false);
+          } else {
+            this.queryAutocomplete(/* clearMatches= */ this.input === '');
+          }
+        }
+
+        onInputFocusin() {
+          // if there's a last queried input, it's guaranteed that at least
+          // the verbatim match will exist.
+          if (this.lastQueriedInput) {
+            this.selectFirstMatch();
+          }
+        }
+
         // =====================================================================
         // Common helper methods
         // =====================================================================
+
+        focusInput() {
+          this.getInputElement().inputElement.focus();
+        }
+
+        hasContent(): boolean {
+          return this.inputState?.activeTool !== ToolMode.kUnspecified ||
+              this.input.trim().length > 0 || this.files.size > 0;
+        }
+
+        clearInput() {
+          this.input = '';
+          this.lastQueriedInput = '';
+          this.getDropdownElement().unselect();
+        }
+
+        handleProcessFilesError(error: ProcessFilesError) {
+          if (error === ProcessFilesError.NONE) {
+            return;
+          }
+
+          let metric = ComposeboxFileValidationError.NONE;
+
+          switch (error) {
+            case ProcessFilesError.MAX_FILES_EXCEEDED:
+              metric = ComposeboxFileValidationError.TOO_MANY_FILES;
+              this.errorMessage =
+                  loadTimeData.getString('maxFilesReachedError');
+              break;
+            case ProcessFilesError.MAX_IMAGES_EXCEEDED:
+              metric = ComposeboxFileValidationError.TOO_MANY_FILES;
+              this.errorMessage =
+                  loadTimeData.getString('maxImagesReachedError');
+              break;
+            case ProcessFilesError.MAX_PDFS_EXCEEDED:
+              metric = ComposeboxFileValidationError.TOO_MANY_FILES;
+              this.errorMessage = loadTimeData.getString('maxPdfsReachedError');
+              break;
+            case ProcessFilesError.FILE_EMPTY:
+              metric = ComposeboxFileValidationError.FILE_EMPTY;
+              this.errorMessage = loadTimeData.getString(
+                  'composeboxFileUploadInvalidEmptySize');
+              break;
+            case ProcessFilesError.FILE_TOO_LARGE:
+              metric = ComposeboxFileValidationError.FILE_SIZE_TOO_LARGE;
+              this.errorMessage =
+                  loadTimeData.getString('composeboxFileUploadInvalidTooLarge');
+              break;
+            case ProcessFilesError.INVALID_TYPE:
+              this.errorMessage =
+                  loadTimeData.getString('composeFileTypesAllowedError');
+              break;
+            case ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED:
+              this.errorMessage =
+                  loadTimeData.getString('composeboxFileUploadNotAllowed');
+              break;
+            default:
+              break;
+          }
+
+          this.recordFileValidationMetric(metric);
+          this.closeMenu();
+        }
+
+        getInputType(type: string): InputType {
+          if (type === 'tab') {
+            return InputType.kBrowserTab;
+          }
+          if (type === 'image') {
+            return InputType.kLensImage;
+          }
+          if (type === 'pdf') {
+            return InputType.kLensFile;
+          }
+
+          if (this.imageFileTypes.some(t => {
+                if (t.endsWith('/*')) {
+                  const prefix = t.slice(0, -1);
+                  return type.startsWith(prefix);
+                }
+                return type === t;
+              })) {
+            return InputType.kLensImage;
+          }
+
+          // Arbitrary file types are treated as Lens files.
+          return InputType.kLensFile;
+        }
 
         setDefaultModel() {
           if (this.inputState?.activeModel &&
@@ -302,6 +423,13 @@ export const ComposeboxEmbedderMixin =
           // Embedders can override this.
           return false;
         }
+
+        recordFileValidationMetric(enumValue: ComposeboxFileValidationError) {
+          recordEnumerationValue(
+              'ContextualSearch.File.WebUI.UploadAttemptFailure.' +
+                  this.composeboxSource,
+              enumValue, ComposeboxFileValidationError.MAX_VALUE + 1);
+        }
       }
 
       return ComposeboxEmbedderMixin;
@@ -360,6 +488,7 @@ export interface ComposeboxEmbedderMixinInterface {
   lensSendRawFileMediaTypesEnabled: boolean;
 
   // Embedder-provided methods for DOM and Mojo access
+  closeMenu(): void;
   getInputElement(): ComposeboxInputElement;
   getDropdownElement(): ComposeboxDropdownElement;
   getActiveElement(): Element|null;
@@ -372,8 +501,15 @@ export interface ComposeboxEmbedderMixinInterface {
   onDismissErrorScrim(): void;
   onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
   onMatchFocusin(e: CustomEvent<{index: number}>): void;
+  onInputInput(e: CustomEvent<Event>): void;
+  onInputFocusin(): void;
 
   // Common helper methods
+  focusInput(): void;
+  hasContent(): boolean;
+  clearInput(): void;
+  handleProcessFilesError(error: ProcessFilesError): void;
+  getInputType(type: string): InputType;
   setDefaultModel(): void;
   resetToolsAndModels(): void;
   closeDropdown(): void;
@@ -385,4 +521,5 @@ export interface ComposeboxEmbedderMixinInterface {
   clearAutocompleteMatches(): void;
   computeSubmitEnabled(): boolean;
   hasValidQuery(): boolean;
+  recordFileValidationMetric(enumValue: ComposeboxFileValidationError): void;
 }
