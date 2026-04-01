@@ -114,7 +114,7 @@ base::OnceCallback<void(const HttpStatus&)> CheckStatusThenQuitRunLoopCallback(
     HttpStatus::Code expected_status_code,
     base::RunLoop* run_loop) {
   return base::BindLambdaForTesting([=](const HttpStatus& status) {
-    ASSERT_EQ(expected_status_code, status.error_code())
+    ASSERT_EQ(status.error_code(), expected_status_code)
         << "Incorrect status code. Location: " << from_here.ToString();
     run_loop->QuitWhenIdle();
   });
@@ -465,7 +465,7 @@ TEST_F(FtlMessageChannelStrategyTest, TimeoutIncreasesToMaximum) {
             // Quit if delay is ~kBackoffMaxDelay three times.
             if (hitting_max_delay_count == 3) {
               std::move(on_channel_ready).Run();
-              ASSERT_EQ(0, GetRetryFailureCount());
+              ASSERT_EQ(GetRetryFailureCount(), 0);
               run_loop.Quit();
               return;
             }

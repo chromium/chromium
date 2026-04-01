@@ -352,27 +352,27 @@ class FtlSignalStrategyTest : public testing::Test,
 };
 
 TEST_F(FtlSignalStrategyTest, OAuthTokenGetterAuthError) {
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::OK, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::OK);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 
   ExpectGetOAuthTokenFails(OAuthTokenGetter::AUTH_ERROR);
 
   signal_strategy_->Connect();
 
-  ASSERT_EQ(2u, state_history_.size());
-  ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, state_history_[1]);
+  ASSERT_EQ(state_history_.size(), 2u);
+  ASSERT_EQ(state_history_[0], SignalStrategy::State::CONNECTING);
+  ASSERT_EQ(state_history_[1], SignalStrategy::State::DISCONNECTED);
 
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::AUTHENTICATION_FAILED,
-            signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(),
+            SignalStrategy::Error::AUTHENTICATION_FAILED);
   ASSERT_TRUE(signal_strategy_->IsSignInError());
 }
 
 TEST_F(FtlSignalStrategyTest, SignInGaiaAuthError_InvalidatesOAuthToken) {
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::OK, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::OK);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
@@ -382,18 +382,18 @@ TEST_F(FtlSignalStrategyTest, SignInGaiaAuthError_InvalidatesOAuthToken) {
 
   signal_strategy_->Connect();
 
-  ASSERT_EQ(2u, state_history_.size());
-  ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, state_history_[1]);
+  ASSERT_EQ(state_history_.size(), 2u);
+  ASSERT_EQ(state_history_[0], SignalStrategy::State::CONNECTING);
+  ASSERT_EQ(state_history_[1], SignalStrategy::State::DISCONNECTED);
 
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::NETWORK_ERROR, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::NETWORK_ERROR);
   ASSERT_TRUE(signal_strategy_->IsSignInError());
 }
 
 TEST_F(FtlSignalStrategyTest, StartStream_Success) {
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::OK, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::OK);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
@@ -402,18 +402,18 @@ TEST_F(FtlSignalStrategyTest, StartStream_Success) {
   signal_strategy_->Connect();
   messaging_client_->AcceptReceivingMessages();
 
-  ASSERT_EQ(2u, state_history_.size());
-  ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
-  ASSERT_EQ(SignalStrategy::State::CONNECTED, state_history_[1]);
+  ASSERT_EQ(state_history_.size(), 2u);
+  ASSERT_EQ(state_history_[0], SignalStrategy::State::CONNECTING);
+  ASSERT_EQ(state_history_[1], SignalStrategy::State::CONNECTED);
 
-  ASSERT_EQ(SignalStrategy::State::CONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::OK, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::CONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::OK);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 }
 
 TEST_F(FtlSignalStrategyTest, StartStream_Failure) {
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::OK, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::OK);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
@@ -426,18 +426,18 @@ TEST_F(FtlSignalStrategyTest, StartStream_Failure) {
   // Remain signed-in for non-auth related error.
   ASSERT_TRUE(registration_manager_->IsSignedIn());
 
-  ASSERT_EQ(2u, state_history_.size());
-  ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, state_history_[1]);
+  ASSERT_EQ(state_history_.size(), 2u);
+  ASSERT_EQ(state_history_[0], SignalStrategy::State::CONNECTING);
+  ASSERT_EQ(state_history_[1], SignalStrategy::State::DISCONNECTED);
 
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::NETWORK_ERROR, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::NETWORK_ERROR);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 }
 
 TEST_F(FtlSignalStrategyTest, StreamRemotelyClosed) {
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::OK, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::OK);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
@@ -450,13 +450,13 @@ TEST_F(FtlSignalStrategyTest, StreamRemotelyClosed) {
   // Remain signed-in for non-auth related error.
   ASSERT_TRUE(registration_manager_->IsSignedIn());
 
-  ASSERT_EQ(3u, state_history_.size());
-  ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
-  ASSERT_EQ(SignalStrategy::State::CONNECTED, state_history_[1]);
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, state_history_[2]);
+  ASSERT_EQ(state_history_.size(), 3u);
+  ASSERT_EQ(state_history_[0], SignalStrategy::State::CONNECTING);
+  ASSERT_EQ(state_history_[1], SignalStrategy::State::CONNECTED);
+  ASSERT_EQ(state_history_[2], SignalStrategy::State::DISCONNECTED);
 
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::NETWORK_ERROR, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::NETWORK_ERROR);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 }
 
@@ -504,13 +504,13 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_AuthError) {
           HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated")));
   signal_strategy_->SendMessage(std::move(jingle_message));
 
-  ASSERT_EQ(3u, state_history_.size());
-  ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
-  ASSERT_EQ(SignalStrategy::State::CONNECTED, state_history_[1]);
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, state_history_[2]);
+  ASSERT_EQ(state_history_.size(), 3u);
+  ASSERT_EQ(state_history_[0], SignalStrategy::State::CONNECTING);
+  ASSERT_EQ(state_history_[1], SignalStrategy::State::CONNECTED);
+  ASSERT_EQ(state_history_[2], SignalStrategy::State::DISCONNECTED);
 
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::NETWORK_ERROR, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::NETWORK_ERROR);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 }
 
@@ -534,12 +534,12 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_NetworkError) {
           HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable")));
   signal_strategy_->SendMessage(std::move(jingle_message));
 
-  ASSERT_EQ(1u, received_messages_.size());
+  ASSERT_EQ(received_messages_.size(), 1u);
   auto& error_message = received_messages_[0];
-  ASSERT_EQ(kIqTypeError, error_message->Attr(kQNameType));
-  ASSERT_EQ(stanza_id, error_message->Attr(kQNameId));
-  ASSERT_EQ(kFakeRemoteFtlId, error_message->Attr(kQNameFrom));
-  ASSERT_EQ(kFakeLocalFtlId, error_message->Attr(kQNameTo));
+  ASSERT_EQ(error_message->Attr(kQNameType), kIqTypeError);
+  ASSERT_EQ(error_message->Attr(kQNameId), stanza_id);
+  ASSERT_EQ(error_message->Attr(kQNameFrom), kFakeRemoteFtlId);
+  ASSERT_EQ(error_message->Attr(kQNameTo), kFakeLocalFtlId);
 }
 
 TEST_F(FtlSignalStrategyTest, ReceiveStanza_Success) {
@@ -559,11 +559,11 @@ TEST_F(FtlSignalStrategyTest, ReceiveStanza_Success) {
   messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
                                message);
 
-  ASSERT_EQ(1u, received_messages_.size());
-  EXPECT_EQ(std::string(kFakeLocalFtlId),
-            received_messages_[0]->Attr(kQNameTo));
-  EXPECT_EQ(std::string(kFakeRemoteFtlId),
-            received_messages_[0]->Attr(kQNameFrom));
+  ASSERT_EQ(received_messages_.size(), 1u);
+  EXPECT_EQ(received_messages_[0]->Attr(kQNameTo),
+            std::string(kFakeLocalFtlId));
+  EXPECT_EQ(received_messages_[0]->Attr(kQNameFrom),
+            std::string(kFakeRemoteFtlId));
 }
 
 TEST_F(FtlSignalStrategyTest, ReceiveMessage_DelieverMessageAndDropStanza) {
@@ -583,11 +583,11 @@ TEST_F(FtlSignalStrategyTest, ReceiveMessage_DelieverMessageAndDropStanza) {
         SignalingAddress expected_address =
             SignalingAddress::CreateFtlSignalingAddress(
                 kFakeRemoteUsername, kFakeRemoteRegistrationId);
-        EXPECT_EQ(expected_address.id(), sender_address.id());
+        EXPECT_EQ(sender_address.id(), expected_address.id());
 
         auto xml = JingleMessageToXml(received_message);
-        EXPECT_EQ(std::string(kFakeLocalFtlId), xml->Attr(kQNameTo));
-        EXPECT_EQ(std::string(kFakeRemoteFtlId), xml->Attr(kQNameFrom));
+        EXPECT_EQ(xml->Attr(kQNameTo), std::string(kFakeLocalFtlId));
+        EXPECT_EQ(xml->Attr(kQNameFrom), std::string(kFakeRemoteFtlId));
         return true;
       });
 
@@ -600,7 +600,7 @@ TEST_F(FtlSignalStrategyTest, ReceiveMessage_DelieverMessageAndDropStanza) {
                                message);
 
   // Message has already been consumed in OnSignalingMessage().
-  ASSERT_EQ(0u, received_messages_.size());
+  ASSERT_EQ(received_messages_.size(), 0u);
 }
 
 TEST_F(FtlSignalStrategyTest, ReceiveStanza_DropMessageWithMalformedXmpp) {
@@ -617,7 +617,7 @@ TEST_F(FtlSignalStrategyTest, ReceiveStanza_DropMessageWithMalformedXmpp) {
   messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
                                message);
 
-  ASSERT_EQ(0u, received_messages_.size());
+  ASSERT_EQ(received_messages_.size(), 0u);
 }
 
 TEST_F(FtlSignalStrategyTest, ReceiveStanza_RejectStanzaWithDtd) {
@@ -686,13 +686,13 @@ TEST_F(FtlSignalStrategyTest, SendMessage_AuthError) {
                                                   kFakeRemoteRegistrationId),
       std::move(message));
 
-  ASSERT_EQ(3u, state_history_.size());
-  ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
-  ASSERT_EQ(SignalStrategy::State::CONNECTED, state_history_[1]);
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, state_history_[2]);
+  ASSERT_EQ(state_history_.size(), 3u);
+  ASSERT_EQ(state_history_[0], SignalStrategy::State::CONNECTING);
+  ASSERT_EQ(state_history_[1], SignalStrategy::State::CONNECTED);
+  ASSERT_EQ(state_history_[2], SignalStrategy::State::DISCONNECTED);
 
-  ASSERT_EQ(SignalStrategy::State::DISCONNECTED, signal_strategy_->GetState());
-  ASSERT_EQ(SignalStrategy::Error::NETWORK_ERROR, signal_strategy_->GetError());
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  ASSERT_EQ(signal_strategy_->GetError(), SignalStrategy::Error::NETWORK_ERROR);
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 
   // Sign-out due to auth related error.
@@ -721,7 +721,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_NetworkError) {
                                                   kFakeRemoteRegistrationId),
       std::move(message));
 
-  ASSERT_EQ(0u, received_messages_.size());
+  ASSERT_EQ(received_messages_.size(), 0u);
   // Remain signed-in for non-auth related error.
   ASSERT_TRUE(registration_manager_->IsSignedIn());
 }
@@ -782,8 +782,8 @@ TEST_F(FtlSignalStrategyTest, ReceiveIqStanzaOnly_Success) {
   EXPECT_CALL(*this, OnSignalingMessage(_, _))
       .WillOnce([&](const SignalingAddress& sender_address,
                     const JingleMessage& received_message) {
-        EXPECT_EQ(stanza_id, received_message.message_id);
-        EXPECT_EQ(std::string(kFakeRemoteFtlId), sender_address.id());
+        EXPECT_EQ(received_message.message_id, stanza_id);
+        EXPECT_EQ(sender_address.id(), std::string(kFakeRemoteFtlId));
         return true;
       });
 
@@ -811,8 +811,8 @@ TEST_F(FtlSignalStrategyTest, ReceiveIqStanzaAndStanza_PreferIqStanza) {
   EXPECT_CALL(*this, OnSignalingMessage(_, _))
       .WillOnce([&](const SignalingAddress& sender_address,
                     const JingleMessage& received_message) {
-        EXPECT_EQ(proto_stanza_id, received_message.message_id);
-        EXPECT_EQ(std::string(kFakeRemoteFtlId), sender_address.id());
+        EXPECT_EQ(received_message.message_id, proto_stanza_id);
+        EXPECT_EQ(sender_address.id(), std::string(kFakeRemoteFtlId));
         return true;
       });
 

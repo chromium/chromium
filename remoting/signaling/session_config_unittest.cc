@@ -45,7 +45,7 @@ TEST(SessionConfig, SelectCommon) {
   selected = SessionConfig::SelectCommon(default_candidate_config.get(),
                                          default_candidate_config.get());
   ASSERT_TRUE(selected);
-  EXPECT_EQ(SessionConfig::Protocol::WEBRTC, selected->protocol());
+  EXPECT_EQ(selected->protocol(), SessionConfig::Protocol::WEBRTC);
 
   // ICE protocol is not supported by default.
   selected = SessionConfig::SelectCommon(default_candidate_config.get(),
@@ -56,13 +56,13 @@ TEST(SessionConfig, SelectCommon) {
   selected = SessionConfig::SelectCommon(default_candidate_config.get(),
                                          hybrid_candidate_config.get());
   ASSERT_TRUE(selected);
-  EXPECT_EQ(SessionConfig::Protocol::WEBRTC, selected->protocol());
+  EXPECT_EQ(selected->protocol(), SessionConfig::Protocol::WEBRTC);
 
   // WebRTC is selected when both peers support it.
   selected = SessionConfig::SelectCommon(hybrid_candidate_config.get(),
                                          hybrid_candidate_config.get());
   ASSERT_TRUE(selected);
-  EXPECT_EQ(SessionConfig::Protocol::WEBRTC, selected->protocol());
+  EXPECT_EQ(selected->protocol(), SessionConfig::Protocol::WEBRTC);
 }
 
 TEST(SessionConfig, GetFinalConfig) {

@@ -16,37 +16,37 @@ TEST(SignalingIdUtilTest, NormalizeSignalingId) {
   EXPECT_EQ(NormalizeSignalingId("USER@DOMAIN.com/"), "user@domain.com/");
 
   // Jabber ID normalization
-  EXPECT_EQ("user.mixed.case@googlemail.com/RESOURCE",
-            NormalizeSignalingId("User.Mixed.Case@GOOGLEMAIL.com/RESOURCE"));
+  EXPECT_EQ(NormalizeSignalingId("User.Mixed.Case@GOOGLEMAIL.com/RESOURCE"),
+            "user.mixed.case@googlemail.com/RESOURCE");
 
   // FTL ID normalization
-  EXPECT_EQ("user@domain.com/chromoting_ftl_abc123",
-            NormalizeSignalingId("USER@DOMAIN.com/chromoting_ftl_abc123"));
-  EXPECT_EQ("user@domain.com/chromoting_ftl_abc123",
-            NormalizeSignalingId("  USER@DOMAIN.com/chromoting_ftl_abc123"));
+  EXPECT_EQ(NormalizeSignalingId("USER@DOMAIN.com/chromoting_ftl_abc123"),
+            "user@domain.com/chromoting_ftl_abc123");
+  EXPECT_EQ(NormalizeSignalingId("  USER@DOMAIN.com/chromoting_ftl_abc123"),
+            "user@domain.com/chromoting_ftl_abc123");
   EXPECT_EQ(
-      "usermixedcase@gmail.com/chromoting_ftl_abc123",
-      NormalizeSignalingId("User.Mixed.Case@GMAIL.com/chromoting_ftl_abc123"));
-  EXPECT_EQ("usermixedcase@gmail.com/chromoting_ftl_abc123",
-            NormalizeSignalingId(
-                "User.Mixed.Case@GOOGLEMAIL.com/chromoting_ftl_abc123"));
+      NormalizeSignalingId("User.Mixed.Case@GMAIL.com/chromoting_ftl_abc123"),
+      "usermixedcase@gmail.com/chromoting_ftl_abc123");
+  EXPECT_EQ(NormalizeSignalingId(
+                "User.Mixed.Case@GOOGLEMAIL.com/chromoting_ftl_abc123"),
+            "usermixedcase@gmail.com/chromoting_ftl_abc123");
   EXPECT_EQ(
-      "user.mixed.case@domain.com/chromoting_ftl_abc123",
-      NormalizeSignalingId("User.Mixed.Case@DOMAIN.com/chromoting_ftl_abc123"));
-  EXPECT_EQ("invalid.user/chromoting_ftl_abc123",
-            NormalizeSignalingId("  Invalid.User/chromoting_ftl_abc123"));
-  EXPECT_EQ("invalid.user@/chromoting_ftl_abc123",
-            NormalizeSignalingId("  Invalid.User@/chromoting_ftl_abc123"));
-  EXPECT_EQ("@gmail.com/chromoting_ftl_abc123",
-            NormalizeSignalingId("@googlemail.com/chromoting_ftl_abc123"));
+      NormalizeSignalingId("User.Mixed.Case@DOMAIN.com/chromoting_ftl_abc123"),
+      "user.mixed.case@domain.com/chromoting_ftl_abc123");
+  EXPECT_EQ(NormalizeSignalingId("  Invalid.User/chromoting_ftl_abc123"),
+            "invalid.user/chromoting_ftl_abc123");
+  EXPECT_EQ(NormalizeSignalingId("  Invalid.User@/chromoting_ftl_abc123"),
+            "invalid.user@/chromoting_ftl_abc123");
+  EXPECT_EQ(NormalizeSignalingId("@googlemail.com/chromoting_ftl_abc123"),
+            "@gmail.com/chromoting_ftl_abc123");
 
   // Corp ID normalization.
-  EXPECT_EQ("user@corp.google.com/some-uuid",
-            NormalizeSignalingId("USER@corp.google.com/some-uuid"));
-  EXPECT_EQ("uuid@type.corp.google.com",
-            NormalizeSignalingId("uuid@TYPE.corp.google.com"));
-  EXPECT_EQ("uuid@type.corp.google.com/resource",
-            NormalizeSignalingId("uuid@TYPE.corp.google.com/resource"));
+  EXPECT_EQ(NormalizeSignalingId("USER@corp.google.com/some-uuid"),
+            "user@corp.google.com/some-uuid");
+  EXPECT_EQ(NormalizeSignalingId("uuid@TYPE.corp.google.com"),
+            "uuid@type.corp.google.com");
+  EXPECT_EQ(NormalizeSignalingId("uuid@TYPE.corp.google.com/resource"),
+            "uuid@type.corp.google.com/resource");
 }
 
 TEST(SignalingIdUtilTest, SplitSignalingIdResource) {

@@ -103,19 +103,19 @@ TEST_F(FtlRegistrationManagerTest, SignInGaiaAndAutorefresh) {
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
 
   ASSERT_TRUE(registration_manager_.IsSignedIn());
-  ASSERT_EQ("registration_id_1", registration_manager_.GetRegistrationId());
-  ASSERT_EQ(kAuthToken, registration_manager_.GetFtlAuthToken());
+  ASSERT_EQ(registration_manager_.GetRegistrationId(), "registration_id_1");
+  ASSERT_EQ(registration_manager_.GetFtlAuthToken(), kAuthToken);
 
   task_environment_.FastForwardBy(kAuthTokenExpiration);
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
-  ASSERT_EQ("registration_id_2", registration_manager_.GetRegistrationId());
+  ASSERT_EQ(registration_manager_.GetRegistrationId(), "registration_id_2");
 }
 
 TEST_F(FtlRegistrationManagerTest, FailedToSignIn_Backoff) {
   ASSERT_FALSE(registration_manager_.IsSignedIn());
   ASSERT_TRUE(registration_manager_.GetRegistrationId().empty());
   ASSERT_TRUE(registration_manager_.GetFtlAuthToken().empty());
-  ASSERT_EQ(0, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 0);
 
   EXPECT_CALL(*registration_client_, SignInGaia(_, _))
       .WillOnce([](const ftl::SignInGaiaRequest& request,
@@ -138,7 +138,7 @@ TEST_F(FtlRegistrationManagerTest, FailedToSignIn_Backoff) {
   registration_manager_.SignInGaia(done_callback_.Get());
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
   ASSERT_FALSE(registration_manager_.IsSignedIn());
-  ASSERT_EQ(1, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 1);
 
   EXPECT_CALL(done_callback_,
               Run(HasErrorCode(HttpStatus::Code::UNAUTHENTICATED)))
@@ -146,14 +146,14 @@ TEST_F(FtlRegistrationManagerTest, FailedToSignIn_Backoff) {
   registration_manager_.SignInGaia(done_callback_.Get());
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
   ASSERT_FALSE(registration_manager_.IsSignedIn());
-  ASSERT_EQ(2, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 2);
 
   EXPECT_CALL(done_callback_, Run(IsStatusOk())).Times(1);
   registration_manager_.SignInGaia(done_callback_.Get());
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
   ASSERT_TRUE(registration_manager_.IsSignedIn());
-  ASSERT_EQ("registration_id", registration_manager_.GetRegistrationId());
-  ASSERT_EQ(0, GetBackoff().failure_count());
+  ASSERT_EQ(registration_manager_.GetRegistrationId(), "registration_id");
+  ASSERT_EQ(GetBackoff().failure_count(), 0);
 }
 
 TEST_F(FtlRegistrationManagerTest, SignOut) {
@@ -169,8 +169,8 @@ TEST_F(FtlRegistrationManagerTest, SignOut) {
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
 
   ASSERT_TRUE(registration_manager_.IsSignedIn());
-  ASSERT_EQ("registration_id", registration_manager_.GetRegistrationId());
-  ASSERT_EQ(kAuthToken, registration_manager_.GetFtlAuthToken());
+  ASSERT_EQ(registration_manager_.GetRegistrationId(), "registration_id");
+  ASSERT_EQ(registration_manager_.GetFtlAuthToken(), kAuthToken);
 
   EXPECT_CALL(*registration_client_, CancelPendingRequests()).Times(1);
 
@@ -222,12 +222,12 @@ TEST_F(FtlRegistrationManagerTest, SignInGaia_ShortRefreshTime) {
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
 
   ASSERT_TRUE(registration_manager_.IsSignedIn());
-  ASSERT_EQ("registration_id", registration_manager_.GetRegistrationId());
+  ASSERT_EQ(registration_manager_.GetRegistrationId(), "registration_id");
 
   // Should refresh in 30 minutes.
   task_environment_.FastForwardBy(base::Minutes(30));
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
-  ASSERT_EQ("registration_id_2", registration_manager_.GetRegistrationId());
+  ASSERT_EQ(registration_manager_.GetRegistrationId(), "registration_id_2");
 }
 
 }  // namespace remoting

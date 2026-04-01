@@ -89,7 +89,7 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_SendOnePeerMessage) {
 #if BUILDFLAG(REMOTING_INTERNAL)
   // External builds use a DoNothing proto to back the request so we scope the
   // verification to internal builds only.
-  ASSERT_EQ(kFakeAuthzToken, request.messaging_authz_token());
+  ASSERT_EQ(request.messaging_authz_token(), kFakeAuthzToken);
 #endif
 
   test_responder_.AddResponseToMostRecentRequestUrl(HostSendMessageResponse());
@@ -157,7 +157,7 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_OverwritesMessageId) {
   HostSendMessageRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
 #if BUILDFLAG(REMOTING_INTERNAL)
-  ASSERT_NE("existing_message_id", request.peer_message().message_id());
+  ASSERT_NE(request.peer_message().message_id(), "existing_message_id");
   ASSERT_FALSE(request.peer_message().message_id().empty());
 #endif
 
