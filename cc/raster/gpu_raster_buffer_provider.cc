@@ -115,10 +115,15 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
   DCHECK(compositor_context_provider);
   CHECK(worker_context_provider);
 
-#if BUILDFLAG(IS_ANDROID)
   {
-    std::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
-    lock.emplace(worker_context_provider);
+    viz::RasterContextProvider::ScopedRasterContextLock lock(
+        worker_context_provider);
+
+    should_flush_tile_raster_commands_ =
+        worker_context_provider->ContextCapabilities()
+            .use_deferred_graphite_submit;
+
+#if BUILDFLAG(IS_ANDROID)
     auto is_using_vulkan =
         worker_context_provider->ContextCapabilities().using_vulkan_context;
 
@@ -126,8 +131,8 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
     // kUseDMSAAForTiles.
     is_using_dmsaa_ = !is_using_vulkan ||
                       base::FeatureList::IsEnabled(features::kUseDMSAAForTiles);
-  }
 #endif
+  }
 }
 
 GpuRasterBufferProvider::~GpuRasterBufferProvider() = default;
@@ -191,6 +196,22 @@ uint64_t GpuRasterBufferProvider::SetReadyToDrawCallback(
 }
 
 void GpuRasterBufferProvider::Shutdown() {}
+
+void GpuRasterBufferProvider::FlushTileRasterGraphiteCommands() {
+  if (!should_flush_tile_raster_commands_) {
+    return;
+  }
+
+  TRACE_EVENT0("cc",
+               "GpuRasterBufferProvider::FlushTileRasterGraphiteCommands");
+  viz::RasterContextProvider::ScopedRasterContextLock lock(
+      worker_context_provider_);
+  auto* ri = lock.RasterInterface();
+  ri->FlushTileRasterGraphiteCommandsCHROMIUM();
+  // This ensures that the next FlushPendingWork() will flush the
+  // FlushTileRasterGraphiteCommandsCHROMIUM command.
+  ri->OrderingBarrierCHROMIUM();
+}
 
 void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThread(
     const RasterSource* raster_source,

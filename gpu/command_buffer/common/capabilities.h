@@ -62,6 +62,8 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
 
   bool using_vulkan_context = false;
 
+  bool use_deferred_graphite_submit = false;
+
   base::flat_map<uint32_t, std::vector<uint64_t>> drm_formats_and_modifiers;
   uint64_t drm_device_id = 0;
 };

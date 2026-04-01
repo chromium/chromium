@@ -511,6 +511,34 @@ static_assert(sizeof(EndRasterCHROMIUM) == 4,
 static_assert(offsetof(EndRasterCHROMIUM, header) == 0,
               "offset of EndRasterCHROMIUM header should be 0");
 
+struct FlushTileRasterGraphiteCommandsCHROMIUM {
+  typedef FlushTileRasterGraphiteCommandsCHROMIUM ValueType;
+  static const CommandId kCmdId = kFlushTileRasterGraphiteCommandsCHROMIUM;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init() { SetHeader(); }
+
+  void* Set(void* cmd) {
+    static_cast<ValueType*>(cmd)->Init();
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+};
+
+static_assert(sizeof(FlushTileRasterGraphiteCommandsCHROMIUM) == 4,
+              "size of FlushTileRasterGraphiteCommandsCHROMIUM should be 4");
+static_assert(
+    offsetof(FlushTileRasterGraphiteCommandsCHROMIUM, header) == 0,
+    "offset of FlushTileRasterGraphiteCommandsCHROMIUM header should be 0");
+
 struct CreateTransferCacheEntryINTERNAL {
   typedef CreateTransferCacheEntryINTERNAL ValueType;
   static const CommandId kCmdId = kCreateTransferCacheEntryINTERNAL;

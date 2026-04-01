@@ -119,6 +119,14 @@ void EndRasterCHROMIUM() {
   }
 }
 
+void FlushTileRasterGraphiteCommandsCHROMIUM() {
+  raster::cmds::FlushTileRasterGraphiteCommandsCHROMIUM* c =
+      GetCmdSpace<raster::cmds::FlushTileRasterGraphiteCommandsCHROMIUM>();
+  if (c) {
+    c->Init();
+  }
+}
+
 void CreateTransferCacheEntryINTERNAL(GLuint entry_type,
                                       GLuint entry_id,
                                       GLuint handle_shm_id,

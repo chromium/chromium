@@ -29,6 +29,7 @@ struct Capabilities {
   bool mesa_framebuffer_flip_y;
   bool context_supports_distance_field_text;
   bool using_vulkan_context;
+  bool use_deferred_graphite_submit;
   map<uint32, array<uint64>> drm_formats_and_modifiers;
   uint64 drm_device_id;
 };

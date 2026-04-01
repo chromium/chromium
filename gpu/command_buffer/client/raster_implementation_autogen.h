@@ -37,6 +37,8 @@ GLenum GetGraphicsResetStatusKHR() override;
 
 void EndRasterCHROMIUM() override;
 
+void FlushTileRasterGraphiteCommandsCHROMIUM() override;
+
 void TraceBeginCHROMIUM(const char* category_name,
                         const char* trace_name) override;
 

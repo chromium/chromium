@@ -152,6 +152,13 @@ error::Error RasterDecoderImpl::HandleEndRasterCHROMIUM(
   return error::kNoError;
 }
 
+error::Error RasterDecoderImpl::HandleFlushTileRasterGraphiteCommandsCHROMIUM(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  DoFlushTileRasterGraphiteCommandsCHROMIUM();
+  return error::kNoError;
+}
+
 error::Error RasterDecoderImpl::HandleCreateTransferCacheEntryINTERNAL(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

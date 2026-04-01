@@ -298,15 +298,25 @@ class DidFinishRunningAllTilesTask : public TileTask {
   using CompletionCb = base::OnceCallback<void(bool has_pending_queries)>;
   DidFinishRunningAllTilesTask(base::SequencedTaskRunner* task_runner,
                                RasterQueryQueue* pending_raster_queries,
+                               RasterBufferProvider* raster_buffer_provider,
+                               size_t num_tile_tasks,
                                CompletionCb completion_cb)
       : TileTask(TileTask::SupportsConcurrentExecution::kNo,
                  TileTask::SupportsBackgroundThreadPriority::kYes),
         task_runner_(task_runner),
         pending_raster_queries_(pending_raster_queries),
+        // Only flush graphite commands if there are tile tasks that may have
+        // recorded graphite commands.
+        raster_buffer_provider_for_flush_(num_tile_tasks > 0
+                                              ? raster_buffer_provider
+                                              : nullptr),
         completion_cb_(std::move(completion_cb)) {}
 
   void RunOnWorkerThread() override {
     TRACE_EVENT0("cc", "DidFinishRunningAllTilesTask::RunOnWorkerThread");
+    if (raster_buffer_provider_for_flush_) {
+      raster_buffer_provider_for_flush_->FlushTileRasterGraphiteCommands();
+    }
     bool has_pending_queries = false;
     if (pending_raster_queries_) {
       has_pending_queries =
@@ -324,6 +334,7 @@ class DidFinishRunningAllTilesTask : public TileTask {
  private:
   raw_ptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<RasterQueryQueue> pending_raster_queries_;
+  raw_ptr<RasterBufferProvider> raster_buffer_provider_for_flush_;
   CompletionCb completion_cb_;
 };
 
@@ -1249,8 +1260,8 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
       task_set_finished_weak_ptr_factory_.GetWeakPtr(), start_time);
   scoped_refptr<TileTask> all_done_task =
       base::MakeRefCounted<DidFinishRunningAllTilesTask>(
-          task_runner_, pending_raster_queries_, std::move(all_done_cb));
-
+          task_runner_, pending_raster_queries_, raster_buffer_provider_.get(),
+          tiles_that_need_to_be_rasterized.size(), std::move(all_done_cb));
   // Build a new task queue containing all task currently needed. Tasks
   // are added in order of priority, highest priority task first.
   for (auto& prioritized_tile : tiles_that_need_to_be_rasterized) {

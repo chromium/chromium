@@ -25,6 +25,7 @@ virtual void GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint* params) = 0;
 virtual void LoseContextCHROMIUM(GLenum current, GLenum other) = 0;
 virtual GLenum GetGraphicsResetStatusKHR() = 0;
 virtual void EndRasterCHROMIUM() = 0;
+virtual void FlushTileRasterGraphiteCommandsCHROMIUM() = 0;
 virtual void TraceBeginCHROMIUM(const char* category_name,
                                 const char* trace_name) = 0;
 virtual void TraceEndCHROMIUM() = 0;

@@ -313,6 +313,11 @@ _FUNCTION_INFO = {
     'unit_test': False,
     'client_test': False,
   },
+  'FlushTileRasterGraphiteCommandsCHROMIUM': {
+    'decoder_func': 'DoFlushTileRasterGraphiteCommandsCHROMIUM',
+    'unit_test': False,
+    'client_test': False,
+  },
   'CreateTransferCacheEntryINTERNAL': {
     'decoder_func': 'DoCreateTransferCacheEntryINTERNAL',
     'cmd_args': 'GLuint entry_type, GLuint entry_id, GLuint handle_shm_id, '

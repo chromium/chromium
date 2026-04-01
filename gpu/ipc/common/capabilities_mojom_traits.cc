@@ -30,6 +30,7 @@ bool StructTraits<gpu::mojom::CapabilitiesDataView, gpu::Capabilities>::Read(
   out->context_supports_distance_field_text =
       data.context_supports_distance_field_text();
   out->using_vulkan_context = data.using_vulkan_context();
+  out->use_deferred_graphite_submit = data.use_deferred_graphite_submit();
   if (!data.ReadDrmFormatsAndModifiers(&out->drm_formats_and_modifiers)) {
     return false;
   }

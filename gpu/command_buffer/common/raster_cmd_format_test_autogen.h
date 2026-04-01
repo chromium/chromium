@@ -198,6 +198,17 @@ TEST_F(RasterFormatTest, EndRasterCHROMIUM) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(RasterFormatTest, FlushTileRasterGraphiteCommandsCHROMIUM) {
+  cmds::FlushTileRasterGraphiteCommandsCHROMIUM& cmd =
+      *GetBufferAs<cmds::FlushTileRasterGraphiteCommandsCHROMIUM>();
+  void* next_cmd = cmd.Set(&cmd);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::FlushTileRasterGraphiteCommandsCHROMIUM::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(RasterFormatTest, CreateTransferCacheEntryINTERNAL) {
   cmds::CreateTransferCacheEntryINTERNAL& cmd =
       *GetBufferAs<cmds::CreateTransferCacheEntryINTERNAL>();

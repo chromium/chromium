@@ -76,6 +76,9 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::CapabilitiesDataView,
   static bool using_vulkan_context(const gpu::Capabilities& cap) {
     return cap.using_vulkan_context;
   }
+  static bool use_deferred_graphite_submit(const gpu::Capabilities& cap) {
+    return cap.use_deferred_graphite_submit;
+  }
   static const base::flat_map<uint32_t, std::vector<uint64_t>>&
   drm_formats_and_modifiers(const gpu::Capabilities& cap) {
     return cap.drm_formats_and_modifiers;

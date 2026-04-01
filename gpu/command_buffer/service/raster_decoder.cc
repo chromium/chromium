@@ -772,6 +772,7 @@ class RasterDecoderImpl final : public RasterDecoder,
                                 GLuint font_shm_offset,
                                 GLuint font_shm_size);
   void DoEndRasterCHROMIUM();
+  void DoFlushTileRasterGraphiteCommandsCHROMIUM();
   void DoCreateTransferCacheEntryINTERNAL(GLuint entry_type,
                                           GLuint entry_id,
                                           GLuint handle_shm_id,
@@ -1179,6 +1180,8 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   } else if (graphite_shared_context()) {
     caps.context_supports_distance_field_text = true;
     caps.texture_half_float_linear = true;
+    caps.use_deferred_graphite_submit =
+        features::kSkiaGraphiteEnableDeferredSubmit.Get();
 #if BUILDFLAG(SKIA_USE_DAWN)
     if (shared_context_state_->IsGraphiteDawn()) {
       caps.texture_norm16 =
@@ -3138,6 +3141,26 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
   // flush above. Yield to the Scheduler to allow pre-emption before
   // processing more commands.
   ExitCommandProcessingEarly();
+}
+
+void RasterDecoderImpl::DoFlushTileRasterGraphiteCommandsCHROMIUM() {
+  if (!features::kSkiaGraphiteEnableDeferredSubmit.Get()) {
+    // Skip if we are not using Graphite's deferred submit feature.
+    return;
+  }
+
+  TRACE_EVENT0("gpu",
+               "RasterDecoderImpl::DoFlushTileRasterGraphiteCommandsCHROMIUM");
+
+  if (auto* graphite_context = graphite_shared_context()) {
+    // A SyncToken is not strictly required to order this flush before the
+    // compositor's Context::submit(). If this happens before the compositor's
+    // Context::submit(), it's ideal for maximizing parallelism. Otherwise,
+    // the tile raster commands will naturally be submitted together with the
+    // compositor's commands in the latter's Context::submit(), so GPU
+    // execution order is still guaranteed.
+    graphite_context->submit();
+  }
 }
 
 void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(

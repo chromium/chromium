@@ -394,7 +394,7 @@ BASE_FEATURE_PARAM(bool,
                    kSkiaGraphiteEnableDeferredSubmit,
                    &kSkiaGraphite,
                    "enable_deferred_submit",
-                   true);
+                   BUILDFLAG(IS_WIN));
 
 const base::FeatureParam<bool> kSkiaGraphiteEnableMSAAOnNewerIntel{
     &kSkiaGraphite, "enable_msaa_on_newer_intel", true};

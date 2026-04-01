@@ -71,4 +71,12 @@ void RasterImplementation::LoseContextCHROMIUM(GLenum current, GLenum other) {
   CheckGLError();
 }
 
+void RasterImplementation::FlushTileRasterGraphiteCommandsCHROMIUM() {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix()
+                     << "] glFlushTileRasterGraphiteCommandsCHROMIUM(" << ")");
+  helper_->FlushTileRasterGraphiteCommandsCHROMIUM();
+  CheckGLError();
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_IMPL_AUTOGEN_H_

@@ -110,6 +110,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
                       const ScrollOffsetMap* raster_inducing_scroll_offsets,
                       size_t* max_op_size_hint) override {}
   void EndRasterCHROMIUM() override {}
+  void FlushTileRasterGraphiteCommandsCHROMIUM() override {}
   void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,

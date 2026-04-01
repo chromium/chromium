@@ -68,6 +68,9 @@ class CC_EXPORT RasterBufferProvider {
       base::OnceClosure callback,
       uint64_t pending_callback_id) = 0;
 
+  // Must be called on worker thread
+  virtual void FlushTileRasterGraphiteCommands() {}
+
   // Shutdown for doing cleanup.
   virtual void Shutdown() = 0;
 
