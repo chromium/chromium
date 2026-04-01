@@ -17149,6 +17149,24 @@
             ]
         }
     ],
+    "PaymentHandlerDialogUseInitiatorInUrlLoad": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PaymentHandlerDialogUseInitiatorInUrlLoad"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaymentRequestRejectTooSmallWindows": [
         {
             "platforms": [
