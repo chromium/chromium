@@ -516,6 +516,9 @@ void UseCounterCallback(v8::Isolate* isolate,
                         WebFeature::kV8RegExpStaticPropertiesWithLastMatch);
       webdx_feature = WebDXFeature::kRegexpStaticProperties;
       break;
+    case v8::Isolate::kHoleyArrayReadthrough:
+      blink_feature = WebFeature::kV8HoleyArrayReadthrough;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.
