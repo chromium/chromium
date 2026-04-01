@@ -128,6 +128,10 @@ class ChromotingHost : public ClientSession::EventHandler,
   // Currently only Linux runs the ChromotingHostServices server on the host
   // process.
   void StartChromotingHostServices();
+
+  void BindChromotingHostServicesForServer(
+      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+      std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info);
 #endif
 
   void BindChromotingHostServices(

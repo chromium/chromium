@@ -4,6 +4,8 @@
 
 #include "remoting/host/chromoting_host_services_server.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/process/process.h"
@@ -18,6 +20,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
 #include "mojo/public/c/system/types.h"
@@ -138,9 +141,10 @@ TEST_F(ChromotingHostServicesServerTest,
   EXPECT_CALL(mock_bind_callback_, Run(_, _))
       .WillOnce(
           [&](mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-              base::ProcessId peer_pid) {
+              std::unique_ptr<named_mojo_ipc_server::ConnectionInfo>
+                  connection_info) {
             ASSERT_TRUE(receiver.is_valid());
-            ASSERT_NE(peer_pid, base::kNullProcessId);
+            ASSERT_NE(connection_info->pid, base::kNullProcessId);
           });
 
   base::Process client_process = LaunchClientProcess();

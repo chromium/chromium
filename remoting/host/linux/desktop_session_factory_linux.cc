@@ -485,6 +485,30 @@ void DesktopSessionFactoryLinux::TerminateAllSessions(Callback callback) {
   }
 }
 
+DesktopSession* DesktopSessionFactoryLinux::GetSessionByUid(uid_t uid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const auto& [display_name, session] : desktop_sessions_) {
+    if (!session) {
+      continue;
+    }
+    const auto* info =
+        remote_display_session_manager_.GetRemoteDisplayInfo(display_name);
+    if (!info) {
+      LOG(WARNING) << "  Cannot find remote display info for display name: "
+                   << display_name;
+      continue;
+    }
+    for (const auto& [path, remote_session] : info->sessions) {
+      if (remote_session.user_info.has_value() &&
+          remote_session.user_info->uid == uid) {
+        return session.get();
+      }
+    }
+  }
+  return nullptr;
+}
+
 void DesktopSessionFactoryLinux::OnStartResult(
     Callback callback,
     base::expected<void, Loggable> result) {

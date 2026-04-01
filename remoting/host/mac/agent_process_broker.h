@@ -83,7 +83,7 @@ class AgentProcessBroker final : public mojom::AgentProcessBroker {
 
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-      base::ProcessId peer_pid);
+      std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info);
 
   void OnAgentProcessDisconnected(size_t reference_id);
   void BrokerAgentProcesses();

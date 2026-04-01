@@ -432,9 +432,11 @@ class HostProcess : public ConfigWatcher::Delegate,
       ::mojo::PlatformHandle privileged_handle,
       ::mojo::PlatformHandle unprivileged_handle) override;
 #endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
       int peer_pid) override;
+#endif
 
 #if BUILDFLAG(IS_MAC)
   void ConnectAgentProcessBroker();
@@ -1308,6 +1310,7 @@ void HostProcess::InitializePairingRegistry(
 
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void HostProcess::BindChromotingHostServices(
     mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
     int peer_pid) {
@@ -1326,6 +1329,7 @@ void HostProcess::BindChromotingHostServices(
   }
   host_->BindChromotingHostServices(std::move(receiver), peer_pid);
 }
+#endif
 
 #if BUILDFLAG(IS_MAC)
 

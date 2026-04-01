@@ -150,11 +150,17 @@ void ChromotingHost::StartChromotingHostServices() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!ipc_server_);
 
-  ipc_server_ =
-      std::make_unique<ChromotingHostServicesServer>(base::BindRepeating(
-          &ChromotingHost::BindChromotingHostServices, base::Unretained(this)));
+  ipc_server_ = std::make_unique<ChromotingHostServicesServer>(
+      base::BindRepeating(&ChromotingHost::BindChromotingHostServicesForServer,
+                          base::Unretained(this)));
   ipc_server_->StartServer();
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
+}
+
+void ChromotingHost::BindChromotingHostServicesForServer(
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info) {
+  BindChromotingHostServices(std::move(receiver), connection_info->pid);
 }
 #endif
 
@@ -318,7 +324,7 @@ void ChromotingHost::BindSessionServices(
     return;
   }
 #endif
-  connected_client->BindReceiver(std::move(receiver));
+  connected_client->OnSessionServicesClientConnected(std::move(receiver));
   VLOG(1) << "Session services bound for receiver ID: "
           << receivers_.current_receiver();
 }

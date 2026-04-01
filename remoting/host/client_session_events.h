@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom-forward.h"
 #include "remoting/host/mojom/remote_security_key.mojom.h"
 
 namespace remoting {
@@ -31,6 +32,11 @@ class ClientSessionEvents {
   // the SecurityKeyForwarder receiver to it.
   virtual void OnSecurityKeyConnection(
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) = 0;
+
+  // Called when a ChromotingSessionServices client has connected and passes the
+  // ChromotingSessionServices receiver to it.
+  virtual void OnSessionServicesClientConnected(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) = 0;
 
  protected:
   ClientSessionEvents() = default;

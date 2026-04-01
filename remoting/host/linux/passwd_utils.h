@@ -9,6 +9,8 @@
 #ifndef REMOTING_HOST_LINUX_PASSWD_UTILS_H_
 #define REMOTING_HOST_LINUX_PASSWD_UTILS_H_
 
+#include <sys/types.h>
+
 #include <string>
 
 #include "base/files/file_path.h"
@@ -20,8 +22,8 @@ namespace remoting {
 
 struct PasswdUserInfo {
   std::string username;
-  int uid;
-  int gid;
+  uid_t uid;
+  gid_t gid;
   base::FilePath home_dir;
 };
 

@@ -163,6 +163,17 @@ DesktopSessionProxy::CreateRemoteWebAuthnStateChangeNotifier() {
       base::BindRepeating(&DesktopSessionProxy::SignalWebAuthnExtension, this));
 }
 
+#if BUILDFLAG(IS_LINUX)
+void DesktopSessionProxy::OnSessionServicesClientConnected(
+    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (client_session_events_) {
+    client_session_events_->OnSessionServicesClientConnected(
+        std::move(receiver));
+  }
+}
+#endif
+
 std::string DesktopSessionProxy::GetCapabilities() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

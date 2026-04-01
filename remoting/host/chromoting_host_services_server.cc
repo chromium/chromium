@@ -104,7 +104,7 @@ void ChromotingHostServicesServer::OnMessagePipeReady(
   bind_chromoting_host_services_.Run(
       mojo::PendingReceiver<mojom::ChromotingHostServices>(
           std::move(message_pipe)),
-      connection_info->pid);
+      std::move(connection_info));
 }
 
 }  // namespace remoting

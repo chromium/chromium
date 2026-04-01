@@ -943,6 +943,13 @@ void ClientSession::SetDisableInputs(bool disable_inputs) {
   host_clipboard_filter_.set_enabled(!disable_inputs);
 }
 
+void ClientSession::OnSessionServicesClientConnected(
+    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  session_services_receivers_.Add(this, std::move(receiver));
+}
+
 std::uint32_t ClientSession::desktop_session_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(desktop_environment_);
@@ -989,13 +996,6 @@ void ClientSession::OnMouseCursorPosition(
   for (const auto& [_, video_stream] : video_streams_) {
     video_stream->SetMouseCursorPosition(position);
   }
-}
-
-void ClientSession::BindReceiver(
-    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  session_services_receivers_.Add(this, std::move(receiver));
 }
 
 void ClientSession::BindWebAuthnProxy(

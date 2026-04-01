@@ -35,6 +35,9 @@ interface RemotingHostControl {
   // responsible for brokering all mojo IPCs, but it doesn't affect where the
   // receivers and remotes are bound. Please see comments on the
   // ChromotingHostServices interface.
+  // TODO: yuweih - Update Windows host to use
+  // DesktopSessionConnectionEvents::OnSessionServicesClientConnected.
+  [EnableIf=is_win|is_mac]
   BindChromotingHostServices(pending_receiver<ChromotingHostServices> receiver,
                              int32 peer_pid);
 };
@@ -57,6 +60,14 @@ interface DesktopSessionConnectionEvents {
   [EnableIf=is_win|is_linux]
   OnDesktopSessionAgentAttached(int32 terminal_id, int32 session_id,
                                 handle<message_pipe> desktop_pipe);
+
+  // Requests the network process to bind a pending receiver of
+  // ChromotingSessionServices coming from a user-launched process for the
+  // desktop session identified by |terminal_id|.
+  [EnableIf=is_linux]
+  OnSessionServicesClientConnected(
+      int32 terminal_id,
+      pending_receiver<ChromotingSessionServices> receiver);
 };
 
 // This enum mirrors the remoting::protocol::TransportRoute::RouteType enum.

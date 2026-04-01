@@ -23,6 +23,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/posix/safe_strerror.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -59,7 +60,8 @@
 
 namespace remoting {
 
-class DaemonProcessLinux : public DaemonProcess {
+class DaemonProcessLinux : public DaemonProcess,
+                           public mojom::ChromotingHostServices {
  public:
   DaemonProcessLinux(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                      scoped_refptr<AutoThreadTaskRunner> io_task_runner,
@@ -94,6 +96,11 @@ class DaemonProcessLinux : public DaemonProcess {
   void SendTerminalDisconnected(int terminal_id) override;
   void StartChromotingHostServices() override;
 
+  // mojom::ChromotingHostServices implementation.
+  void BindSessionServices(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
+      override;
+
   void OnStartDesktopSessionFactoryResult(
       base::expected<void, Loggable> result);
 
@@ -101,7 +108,7 @@ class DaemonProcessLinux : public DaemonProcess {
 
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-      base::ProcessId peer_pid);
+      std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info);
 
   // Mojo keeps the task runner passed to it alive forever, so an
   // AutoThreadTaskRunner should not be passed to it. Otherwise, the process may
@@ -117,6 +124,10 @@ class DaemonProcessLinux : public DaemonProcess {
   mojo::AssociatedRemote<mojom::DesktopSessionConnectionEvents>
       desktop_session_connection_events_;
   mojo::AssociatedRemote<mojom::RemotingHostControl> remoting_host_control_;
+
+  mojo::ReceiverSet<mojom::ChromotingHostServices,
+                    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo>>
+      receivers_;
 
   base::WeakPtrFactory<DaemonProcessLinux> weak_ptr_factory_{this};
 };
@@ -331,13 +342,38 @@ std::unique_ptr<DaemonProcess> DaemonProcess::Create(
 
 void DaemonProcessLinux::BindChromotingHostServices(
     mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-    base::ProcessId peer_pid) {
-  if (!remoting_host_control_.is_bound()) {
+    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info) {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  if (!connection_info) {
+    LOG(WARNING) << "Binding rejected because no connection info was provided.";
+    return;
+  }
+
+  // We cannot validate `connection_info` here, since the user may not have an
+  // active graphical session when ChromotingHostServices is bound. It will be
+  // validated in BindSessionServices().
+  // IsTrustedMojoEndpoint() has done some rudimental security checks when the
+  // client connected in, but it is PID-based which means it is susceptible of
+  // PID reuse attacks.
+  receivers_.Add(this, std::move(receiver), std::move(connection_info));
+}
+
+void DaemonProcessLinux::BindSessionServices(
+    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  if (!desktop_session_connection_events_.is_bound()) {
     LOG(ERROR) << "Binding rejected. Network process is not ready.";
     return;
   }
-  remoting_host_control_->BindChromotingHostServices(std::move(receiver),
-                                                     peer_pid);
+
+  uid_t uid = receivers_.current_context()->credentials.uid;
+  DesktopSession* session = desktop_session_factory_.GetSessionByUid(uid);
+  if (session) {
+    desktop_session_connection_events_->OnSessionServicesClientConnected(
+        session->id(), std::move(receiver));
+  } else {
+    LOG(WARNING) << "No desktop session found for UID " << uid;
+  }
 }
 
 }  // namespace remoting

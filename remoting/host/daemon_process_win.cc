@@ -150,7 +150,7 @@ class DaemonProcessWin : public DaemonProcess {
  private:
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-      base::ProcessId peer_pid);
+      std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info);
 
   // Mojo keeps the task runner passed to it alive forever, so an
   // AutoThreadTaskRunner should not be passed to it. Otherwise, the process may
@@ -451,13 +451,13 @@ bool DaemonProcessWin::OpenPairingRegistry() {
 
 void DaemonProcessWin::BindChromotingHostServices(
     mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-    base::ProcessId peer_pid) {
+    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info) {
   if (!remoting_host_control_.is_bound()) {
     LOG(ERROR) << "Binding rejected. Network process is not ready.";
     return;
   }
   remoting_host_control_->BindChromotingHostServices(std::move(receiver),
-                                                     peer_pid);
+                                                     connection_info->pid);
 }
 
 void DaemonProcessWin::ConfigureCrashReporting() {

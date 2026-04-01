@@ -128,6 +128,12 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
       int session_id,
       mojo::ScopedMessagePipeHandle desktop_pipe) override;
   void OnTerminalDisconnected(int terminal_id) override;
+#if BUILDFLAG(IS_LINUX)
+  void OnSessionServicesClientConnected(
+      int terminal_id,
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
+      override;
+#endif
 
  private:
   friend class IpcDesktopEnvironmentTest;

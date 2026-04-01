@@ -195,6 +195,9 @@ class ClientSession : public protocol::HostStub,
   void OnDesktopDetached() override;
   void OnSecurityKeyConnection(
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
+  void OnSessionServicesClientConnected(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
+      override;
 
   // ClientSessionDetails interface.
   std::uint32_t desktop_session_id() const override;
@@ -217,9 +220,6 @@ class ClientSession : public protocol::HostStub,
   void BindSecurityKeyForwarder(
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
 #endif
-
-  void BindReceiver(
-      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver);
 
   protocol::ConnectionToClient* connection() const { return connection_.get(); }
 

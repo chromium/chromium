@@ -60,6 +60,10 @@ class DesktopSessionFactoryLinux final
   // Terminates all active desktop sessions.
   void TerminateAllSessions(Callback callback);
 
+  // Finds a DesktopSession with the matching UID. With modern GDM, each user
+  // can only have one graphical session. Returns nullptr if not found.
+  DesktopSession* GetSessionByUid(uid_t uid);
+
  private:
   class DesktopSessionLinux;
 

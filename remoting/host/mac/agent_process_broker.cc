@@ -155,7 +155,7 @@ void AgentProcessBroker::OnAgentProcessLaunched(
 
 void AgentProcessBroker::BindChromotingHostServices(
     mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-    base::ProcessId peer_pid) {
+    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto active_iter = std::ranges::find_if(
@@ -167,9 +167,9 @@ void AgentProcessBroker::BindChromotingHostServices(
   }
   AgentProcess& process = active_iter->second;
   process.remoting_host_control_remote->BindChromotingHostServices(
-      std::move(receiver), peer_pid);
+      std::move(receiver), connection_info->pid);
   HOST_LOG << process.GetAgentProcessLogString(base::StringPrintf(
-      "bound ChromotingHostServices for peer PID %d", peer_pid));
+      "bound ChromotingHostServices for peer PID %d", connection_info->pid));
 }
 
 void AgentProcessBroker::OnAgentProcessDisconnected(size_t reference_id) {

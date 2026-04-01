@@ -341,6 +341,35 @@ void IpcDesktopEnvironmentFactory::OnTerminalDisconnected(int terminal_id) {
   }
 }
 
+#if BUILDFLAG(IS_LINUX)
+void IpcDesktopEnvironmentFactory::OnSessionServicesClientConnected(
+    int terminal_id,
+    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
+  if (!network_task_runner_->BelongsToCurrentThread()) {
+    network_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &IpcDesktopEnvironmentFactory::OnSessionServicesClientConnected,
+            base::Unretained(this), terminal_id, std::move(receiver)));
+    return;
+  }
+
+  auto it = connections_.find(terminal_id);
+  if (it != connections_.end()) {
+    DesktopSessionProxy* proxy = it->second.desktop_session_proxy;
+    if (proxy) {
+      proxy->OnSessionServicesClientConnected(std::move(receiver));
+    } else {
+      LOG(WARNING) << "ChromotingSessionServices bind request rejected: "
+                   << "Terminal is not connected to any client.";
+    }
+  } else {
+    LOG(WARNING) << "ChromotingSessionServices bind request rejected: "
+                 << "Invalid terminal ID " << terminal_id;
+  }
+}
+#endif
+
 IpcDesktopEnvironmentFactory::ConnectionsList::iterator
 IpcDesktopEnvironmentFactory::FindConnection(const DesktopSessionProxy* proxy) {
   return std::ranges::find_if(connections_, [proxy](const auto& pair) {

@@ -163,6 +163,10 @@ class MockClientSessionEvents : public ClientSessionEvents {
               OnSecurityKeyConnection,
               (mojo::PendingReceiver<mojom::SecurityKeyForwarder>),
               (override));
+  MOCK_METHOD(void,
+              OnSessionServicesClientConnected,
+              (mojo::PendingReceiver<mojom::ChromotingSessionServices>),
+              (override));
 };
 
 class MockClientSessionEventHandler : public ClientSession::EventHandler {
