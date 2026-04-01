@@ -61,6 +61,9 @@ class CORE_EXPORT PluginDocument final : public HTMLDocument {
 
 template <>
 struct DowncastTraits<PluginDocument> {
+  static bool AllowFrom(const Node& node) {
+    return node.IsDocumentNode() && To<Document>(node).IsPluginDocument();
+  }
   static bool AllowFrom(const Document& document) {
     return document.IsPluginDocument();
   }

@@ -1579,6 +1579,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/web/web_node.h',
+        ],
+        'allowed': [
+            # Explicit ::blink qualifier is needed to disambiguate from member
+            # function named `To`.
+            'blink::To',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/web/web_serialized_script_value.h',
         ],
         'allowed': [

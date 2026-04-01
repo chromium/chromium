@@ -58,7 +58,7 @@ WebPluginDocument& WebPluginDocument::operator=(PluginDocument* elem) {
 }
 
 WebPluginDocument::operator PluginDocument*() const {
-  return static_cast<PluginDocument*>(private_.Get());
+  return ::blink::To<PluginDocument>(private_.Get());
 }
 
 }  // namespace blink
