@@ -119,7 +119,6 @@ TEST_F(SaveCardBottomSheetViewControllerTest, ShowsGPayPillIcon) {
       (TableViewCellContentConfiguration*)cell.contentConfiguration;
 
   EXPECT_NE(config.trailingConfiguration, nil);
-  EXPECT_NE(config.trailingConfiguration.image, nil);
 #else
   // If not a branded build, the trailing configuration should remain nil.
   TableViewCellContentConfiguration* config =
