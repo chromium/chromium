@@ -1081,10 +1081,10 @@ bool IOSurfaceImageBacking::ReadbackToMemory(
 
     const void* io_surface_base_address =
         IOSurfaceGetBaseAddressOfPlane(io_surface_.get(), plane_index);
-    DCHECK_EQ(plane_size.width(), static_cast<int>(IOSurfaceGetWidthOfPlane(
+    CHECK_EQ(plane_size.width(), static_cast<int>(IOSurfaceGetWidthOfPlane(
+                                     io_surface_.get(), plane_index)));
+    CHECK_EQ(plane_size.height(), static_cast<int>(IOSurfaceGetHeightOfPlane(
                                       io_surface_.get(), plane_index)));
-    DCHECK_EQ(plane_size.height(), static_cast<int>(IOSurfaceGetHeightOfPlane(
-                                       io_surface_.get(), plane_index)));
 
     int io_surface_row_bytes = 0;
     int dst_bytes_per_row = 0;
@@ -1106,8 +1106,8 @@ bool IOSurfaceImageBacking::ReadbackToMemory(
 
     const int copy_bytes =
         static_cast<int>(pixmaps[plane_index].info().minRowBytes());
-    DCHECK_LE(copy_bytes, io_surface_row_bytes);
-    DCHECK_LE(copy_bytes, dst_bytes_per_row);
+    CHECK_LE(copy_bytes, io_surface_row_bytes);
+    CHECK_LE(copy_bytes, dst_bytes_per_row);
 
     CopyImagePlane(src_ptr, io_surface_row_bytes, dst_ptr, dst_bytes_per_row,
                    copy_bytes, plane_size.height());
@@ -1132,10 +1132,10 @@ bool IOSurfaceImageBacking::UploadFromMemory(
 
     void* io_surface_base_address =
         IOSurfaceGetBaseAddressOfPlane(io_surface_.get(), plane_index);
-    DCHECK_EQ(plane_size.width(), static_cast<int>(IOSurfaceGetWidthOfPlane(
+    CHECK_EQ(plane_size.width(), static_cast<int>(IOSurfaceGetWidthOfPlane(
+                                     io_surface_.get(), plane_index)));
+    CHECK_EQ(plane_size.height(), static_cast<int>(IOSurfaceGetHeightOfPlane(
                                       io_surface_.get(), plane_index)));
-    DCHECK_EQ(plane_size.height(), static_cast<int>(IOSurfaceGetHeightOfPlane(
-                                       io_surface_.get(), plane_index)));
 
     int io_surface_row_bytes = 0;
     int src_bytes_per_row = 0;
@@ -1155,8 +1155,8 @@ bool IOSurfaceImageBacking::UploadFromMemory(
 
     const int copy_bytes =
         static_cast<int>(pixmaps[plane_index].info().minRowBytes());
-    DCHECK_LE(copy_bytes, src_bytes_per_row);
-    DCHECK_LE(copy_bytes, io_surface_row_bytes);
+    CHECK_LE(copy_bytes, src_bytes_per_row);
+    CHECK_LE(copy_bytes, io_surface_row_bytes);
 
     uint8_t* dst_ptr = static_cast<uint8_t*>(io_surface_base_address);
 
