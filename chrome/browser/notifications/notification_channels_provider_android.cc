@@ -655,14 +655,6 @@ bool NotificationChannelsProviderAndroid::UpdateLastUsedTime(
   return false;
 }
 
-bool NotificationChannelsProviderAndroid::ResetLastVisitTime(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  // Last visited tracking is not implemented for this type.
-  return false;
-}
-
 bool NotificationChannelsProviderAndroid::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

@@ -181,6 +181,11 @@ UnusedSitePermissionsManager::UpdateOnBackgroundThread(
       if (!setting.primary_pattern.MatchesSingleOrigin()) {
         continue;
       }
+      // Skip permissions that are explicitly excluded from autorevocation by
+      // user.
+      if (setting.metadata.autorevocation_bypassed_by_user()) {
+        continue;
+      }
       if (setting.metadata.last_visited() != base::Time()) {
         if (setting.metadata.last_visited() < threshold) {
           // Converting a primary pattern to an origin is normally an
@@ -473,6 +478,9 @@ void UnusedSitePermissionsManager::UndoRegrantPermissionsForOrigin(
       &is_unused_site_revocation_running_, true);
   for (const auto& permission : unused_site_permission_types) {
     if (IsContentSetting(permission)) {
+      // Setting a new value to a permission will set
+      // `bypassed_autorevocation_by_user` to default (false) value so no need
+      // to reset it separately.
       hcsm()->SetContentSettingCustomScope(
           permissions_data.primary_pattern, ContentSettingsPattern::Wildcard(),
           permission, ContentSetting::CONTENT_SETTING_DEFAULT);
@@ -570,11 +578,10 @@ void UnusedSitePermissionsManager::IgnoreOriginForAutoRevocation(
     ContentSettingsType type = info->website_settings_info()->type();
 
     for (const auto& setting : hcsm()->GetSettingsForOneType(type)) {
-      if (setting.metadata.last_visited() != base::Time() &&
-          setting.primary_pattern.MatchesSingleOrigin() &&
+      if (setting.primary_pattern.MatchesSingleOrigin() &&
           setting.primary_pattern.Matches(origin.GetURL())) {
-        hcsm()->ResetLastVisitedTime(setting.primary_pattern,
-                                     setting.secondary_pattern, type);
+        hcsm()->SetAutorevocationBypassedByUser(
+            setting.primary_pattern, setting.secondary_pattern, type);
         break;
       }
     }

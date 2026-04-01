@@ -236,6 +236,12 @@ class RevokedPermissionsServiceTest
     return info.metadata.last_visited();
   }
 
+  bool GetAutorevocationBypassedByUser(GURL url, ContentSettingsType type) {
+    content_settings::SettingInfo info;
+    hcsm()->GetWebsiteSetting(url, url, type, &info);
+    return info.metadata.autorevocation_bypassed_by_user();
+  }
+
   ContentSettingsForOneType GetRevokedUnusedPermissions(
       HostContentSettingsMap* hcsm) {
     return hcsm->GetSettingsForOneType(revoked_unused_site_type);
@@ -898,6 +904,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   // Allow the permission for `url1` again, which is unused.
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url1)));
   if (ShouldSetupUnusedSites()) {
+    EXPECT_TRUE(GetAutorevocationBypassedByUser(GURL(url1), geolocation_type));
     EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
     // Check if the permissions of `url1` is regranted.
     EXPECT_EQ(
@@ -914,6 +921,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   // Allow the permission for `url2`, which is both abusive and unused.
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url2)));
   if (ShouldSetupUnusedSites()) {
+    EXPECT_TRUE(GetAutorevocationBypassedByUser(GURL(url2), geolocation_type));
     EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
     // Check if the permissions of `url2` is regranted.
     EXPECT_EQ(
@@ -960,6 +968,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   }
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url5)));
   if (ShouldSetupUnusedSites()) {
+    EXPECT_TRUE(GetAutorevocationBypassedByUser(GURL(url5), geolocation_type));
     EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
     // Check if the permissions of `url5` is regranted.
     EXPECT_EQ(
@@ -993,6 +1002,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   // permissions and reset its permissions.
   UndoRegrantPermissionsForUrl(url1, unused_permission_types);
   if (ShouldSetupUnusedSites()) {
+    EXPECT_FALSE(GetAutorevocationBypassedByUser(GURL(url1), geolocation_type));
     EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
     EXPECT_EQ(
         ContentSetting::CONTENT_SETTING_ASK,
@@ -1009,6 +1019,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   // Undoing `url2` adds it back to the revoked permissions lists.
   UndoRegrantPermissionsForUrl(url2, abusive_and_unused_permission_types);
   if (ShouldSetupUnusedSites()) {
+    EXPECT_FALSE(GetAutorevocationBypassedByUser(GURL(url2), geolocation_type));
     EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
     EXPECT_EQ(
         ContentSetting::CONTENT_SETTING_ASK,
@@ -1052,6 +1063,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   }
   UndoRegrantPermissionsForUrl(url5, {notifications_type, geolocation_type});
   if (ShouldSetupUnusedSites()) {
+    EXPECT_FALSE(GetAutorevocationBypassedByUser(GURL(url5), geolocation_type));
     EXPECT_EQ(3U, GetRevokedUnusedPermissions(hcsm()).size());
     EXPECT_EQ(
         ContentSetting::CONTENT_SETTING_ASK,
@@ -1111,6 +1123,8 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPreventsAutorevoke) {
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url2)));
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url3)));
   if (ShouldSetupUnusedSites()) {
+    EXPECT_TRUE(GetAutorevocationBypassedByUser(GURL(url1), geolocation_type));
+    EXPECT_TRUE(GetAutorevocationBypassedByUser(GURL(url2), geolocation_type));
     EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
   }
   if (ShouldSetupSafeBrowsing()) {
@@ -1148,9 +1162,11 @@ TEST_P(RevokedPermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
 
   // Permission remains revoked after regrant and undo.
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url1)));
+  EXPECT_TRUE(GetAutorevocationBypassedByUser(GURL(url1), geolocation_type));
   UndoRegrantPermissionsForUrl(url1, unused_permission_types,
                                revoked_permission.metadata.expiration(),
                                revoked_permission.metadata.lifetime());
+  EXPECT_FALSE(GetAutorevocationBypassedByUser(GURL(url1), geolocation_type));
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
 
   // Revoked permission is cleaned up after >30 days.

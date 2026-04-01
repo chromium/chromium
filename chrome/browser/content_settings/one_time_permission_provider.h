@@ -64,9 +64,6 @@ class OneTimePermissionProvider
                           const GURL& secondary_url,
                           ContentSettingsType content_type,
                           const base::Time time) override;
-  bool ResetLastVisitTime(const ContentSettingsPattern& primary_pattern,
-                          const ContentSettingsPattern& secondary_pattern,
-                          ContentSettingsType content_type) override;
   bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern,
                            ContentSettingsType content_type) override;

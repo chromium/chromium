@@ -276,11 +276,10 @@ bool PrefProvider::SetWebsiteSetting(
   return true;
 }
 
-bool PrefProvider::SetLastVisitTime(
+bool PrefProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const base::Time time) {
+    ContentSettingsType content_type) {
   return UpdateSetting(
       content_type,
       [&](const Rule& rule) -> bool {
@@ -290,7 +289,7 @@ bool PrefProvider::SetLastVisitTime(
       [&](Rule& rule) -> bool {
         // TODO(crbug.com/40267370): Re-add the DCHECK to ensure the existing
         // `last_visited` is not null.
-        rule.metadata.set_last_visited(time);
+        rule.metadata.set_last_visited(GetCoarseVisitedTime(clock_->Now()));
         return true;
       });
 }
@@ -351,22 +350,6 @@ bool PrefProvider::UpdateLastUsedTime(const GURL& primary_url,
         rule.metadata.set_last_used(time);
         return true;
       });
-}
-
-bool PrefProvider::ResetLastVisitTime(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
-                          base::Time());
-}
-
-bool PrefProvider::UpdateLastVisitTime(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
-                          GetCoarseVisitedTime(clock_->Now()));
 }
 
 bool PrefProvider::SetAutorevocationBypassedByUser(

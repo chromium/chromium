@@ -25,12 +25,6 @@ class UserModifiableProvider : public ObservableProvider {
                                   const GURL& secondary_url,
                                   ContentSettingsType content_type,
                                   const base::Time time) = 0;
-  // Resets the last_visit time for the given setting. Returns true if the
-  // setting was found and updated.
-  virtual bool ResetLastVisitTime(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type) = 0;
   // Updates the last_visit time for the given setting. Returns true if the
   // setting was found and updated.
   virtual bool UpdateLastVisitTime(
