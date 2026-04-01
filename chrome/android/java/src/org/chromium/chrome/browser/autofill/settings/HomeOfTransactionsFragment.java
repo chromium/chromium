@@ -146,6 +146,8 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
             @Override
             public boolean isPreferenceClickDisabled(Preference preference) {
                 if (PREF_PASSWORDS.equals(preference.getKey())) {
+                    // Password manager is always enabled, even if disabled by policy. In such case
+                    // a disclaimer text is displayed.
                     return false;
                 }
                 return super.isPreferenceClickDisabled(preference);

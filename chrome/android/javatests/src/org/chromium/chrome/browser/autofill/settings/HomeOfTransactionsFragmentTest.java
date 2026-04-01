@@ -118,7 +118,6 @@ public class HomeOfTransactionsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
-    @Policies.Remove({@Policies.Item(key = "PasswordManagerEnabled", string = "false")})
     public void testPasswordsItemWhenNotManaged() {
         mSettingsActivityTestRule.startSettingsActivity();
 
