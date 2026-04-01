@@ -29,10 +29,14 @@ StickyPositionScrollingConstraints::PerAxisData::PerAxisData(
     const PaintLayer* containing_scroll_container_layer,
     bool is_fixed_to_view,
     std::optional<LayoutUnit> min_inset,
-    std::optional<LayoutUnit> max_inset)
+    std::optional<LayoutUnit> max_inset,
+    std::optional<LayoutUnit> min_inset_for_get_computed_style,
+    std::optional<LayoutUnit> max_inset_for_get_computed_style)
     : axis(axis),
       min_inset(min_inset),
       max_inset(max_inset),
+      min_inset_for_get_computed_style(min_inset_for_get_computed_style),
+      max_inset_for_get_computed_style(max_inset_for_get_computed_style),
       scroll_container_relative_containing_block_range(
           RectToBoxEdge(axis, containing_block)),
       scroll_container_relative_sticky_box_range(

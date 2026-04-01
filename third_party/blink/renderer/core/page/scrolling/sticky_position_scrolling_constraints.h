@@ -101,7 +101,9 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final {
         const PaintLayer* containing_scroll_container_layer,
         bool is_fixed_to_view,
         std::optional<LayoutUnit> min_inset,
-        std::optional<LayoutUnit> max_inset);
+        std::optional<LayoutUnit> max_inset,
+        std::optional<LayoutUnit> min_inset_for_get_computed_style,
+        std::optional<LayoutUnit> max_inset_for_get_computed_style);
 
     // The axis this data represents.
     const PhysicalAxis axis;
@@ -110,6 +112,11 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final {
     // constrained to stay within.
     const std::optional<LayoutUnit> min_inset;
     const std::optional<LayoutUnit> max_inset;
+
+    // Used to return the "used value" for getComputedStyle(). The same as
+    // above but without correcting for the over-constrained cases.
+    const std::optional<LayoutUnit> min_inset_for_get_computed_style;
+    const std::optional<LayoutUnit> max_inset_for_get_computed_style;
 
     // The layout position of the containing block relative to the scroll
     // container. When calculating the sticky offset it is used to ensure the
@@ -248,6 +255,19 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final {
   }
   std::optional<LayoutUnit> BottomInset() const {
     return y_data_ ? y_data_->max_inset : std::nullopt;
+  }
+
+  std::optional<LayoutUnit> LeftInsetForGetComputedStyle() const {
+    return x_data_ ? x_data_->min_inset_for_get_computed_style : std::nullopt;
+  }
+  std::optional<LayoutUnit> RightInsetForGetComputedStyle() const {
+    return x_data_ ? x_data_->max_inset_for_get_computed_style : std::nullopt;
+  }
+  std::optional<LayoutUnit> TopInsetForGetComputedStyle() const {
+    return y_data_ ? y_data_->min_inset_for_get_computed_style : std::nullopt;
+  }
+  std::optional<LayoutUnit> BottomInsetForGetComputedStyle() const {
+    return y_data_ ? y_data_->max_inset_for_get_computed_style : std::nullopt;
   }
 
   const PaintLayer* ContainingScrollContainerLayer() const {

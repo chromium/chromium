@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
+#include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
@@ -824,17 +825,25 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
   }
 
   if (layout_object->IsStickyPositioned()) {
-    if (offset.IsPercent() || offset.IsCalculated()) {
-      UseCounter::Count(document, WebFeature::kPercentOrCalcStickyUsedOffset);
-      const LayoutBox* scroll_container =
-          layout_object->ContainingScrollContainer();
-      DCHECK(scroll_container);
-      const LayoutUnit containing_block_size =
-          is_horizontal_property == scroll_container->IsHorizontalWritingMode()
-              ? scroll_container->ContentLogicalWidth()
-              : scroll_container->ContentLogicalHeight();
-      return ZoomAdjustedPixelValue(
-          ValueForLength(offset, containing_block_size), style);
+    const auto sticky_constraints =
+        To<LayoutBoxModelObject>(layout_object)->StickyConstraints();
+    const std::optional<LayoutUnit> inset = ([&]() {
+      switch (property.PropertyID()) {
+        case CSSPropertyID::kLeft:
+          return sticky_constraints.LeftInsetForGetComputedStyle();
+        case CSSPropertyID::kTop:
+          return sticky_constraints.TopInsetForGetComputedStyle();
+        case CSSPropertyID::kRight:
+          return sticky_constraints.RightInsetForGetComputedStyle();
+        case CSSPropertyID::kBottom:
+          return sticky_constraints.BottomInsetForGetComputedStyle();
+        default:
+          NOTREACHED();
+      }
+    })();
+
+    if (inset) {
+      return ZoomAdjustedPixelValue(*inset, style);
     }
 
     return ZoomAdjustedPixelValueForLength(offset, style);

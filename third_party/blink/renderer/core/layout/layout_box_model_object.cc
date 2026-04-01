@@ -656,12 +656,16 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
     }
     std::optional<LayoutUnit> min_inset;
     std::optional<LayoutUnit> max_inset;
+    std::optional<LayoutUnit> min_inset_for_get_computed_style;
+    std::optional<LayoutUnit> max_inset_for_get_computed_style;
 
     if (!min_length.IsAuto()) {
-      min_inset = MinimumValueForLength(min_length, available_size);
+      min_inset = min_inset_for_get_computed_style =
+          MinimumValueForLength(min_length, available_size);
     }
     if (!max_length.IsAuto()) {
-      max_inset = MinimumValueForLength(max_length, available_size);
+      max_inset = max_inset_for_get_computed_style =
+          MinimumValueForLength(max_length, available_size);
     }
 
     // Reduce the end inset if there is not enough space to honor both insets.
@@ -683,7 +687,8 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
         scroll_container_relative_sticky_box_rect, constraining_rect,
         nearest_sticky_layer_shifting_sticky_box,
         nearest_sticky_layer_shifting_containing_block, &scroll_container_layer,
-        is_fixed_to_view, min_inset, max_inset);
+        is_fixed_to_view, min_inset, max_inset,
+        min_inset_for_get_computed_style, max_inset_for_get_computed_style);
   };
 
   const auto& style = StyleRef();
