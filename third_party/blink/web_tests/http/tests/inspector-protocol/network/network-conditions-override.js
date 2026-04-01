@@ -90,7 +90,7 @@
         testRunner.log('\nDisabling all overrides to reset to initial state...');
         await dp.Network[commandName]({
             offline: false,
-            latency: -1,
+            latency: 0,
             downloadThroughput: -1,
             uploadThroughput: -1,
         });

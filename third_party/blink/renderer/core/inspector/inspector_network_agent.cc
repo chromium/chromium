@@ -750,7 +750,7 @@ void SetNetworkStateOverride(bool offline,
   // According to the Chrome DevTools Protocol, negative throughput values
   // disable throttling. Any non-negative value (>= 0) is considered an active
   // override, with 0 representing full throttling.
-  if (offline || latency >= 0 || download_throughput >= 0 ||
+  if (offline || latency > 0 || download_throughput >= 0 ||
       upload_throughput >= 0) {
     std::optional<double> download_mbps;
     if (download_throughput >= 0) {
