@@ -34,7 +34,7 @@ export function getHtml(this: ComposeboxElement) {
         .disabledTabIds="${this.addedTabsIds}"
         .fileNum="${this.files.size}"
         ?upload-button-disabled="${this.uploadButtonDisabled}"
-        ?show-context-menu-description="${this.showContextMenuDescription_}">
+        ?show-context-menu-description="${this.showContextMenuDescription}">
     </cr-composebox-contextual-entrypoint-and-menu>
   ` : (hasAllowedInputs(this.inputState, this.usePecApi) ? html`
     <cr-composebox-contextual-entrypoint-button
@@ -43,7 +43,7 @@ export function getHtml(this: ComposeboxElement) {
         exportparts="context-menu-entrypoint-icon"
         class="upload-button no-overlap"
         ?upload-button-disabled="${this.uploadButtonDisabled}"
-        ?show-context-menu-description="${this.showContextMenuDescription_}">
+        ?show-context-menu-description="${this.showContextMenuDescription}">
     </cr-composebox-contextual-entrypoint-button>
   ` : '')}
   ${this.searchboxLayoutMode === 'Compact' && this.shouldShowVoiceSearch_() ? html`

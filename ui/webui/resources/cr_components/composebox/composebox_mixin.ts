@@ -26,6 +26,20 @@ export const ComposeboxEmbedderMixin =
         static get properties() {
           return {
             addedTabsIds: {type: Object},
+            isDraggingFile: {
+              reflect: true,
+              type: Boolean,
+            },
+            enableImageContextualSuggestions: {
+              reflect: true,
+              type: Boolean,
+            },
+            smartComposeEnabled: {
+              reflect: true,
+              type: Boolean,
+            },
+            showContextMenuDescription: {type: Boolean},
+            shouldShowGhostFiles: {type: Boolean},
             canSubmitFilesAndInput: {
               type: Boolean,
               reflect: true,
@@ -84,6 +98,37 @@ export const ComposeboxEmbedderMixin =
         }
 
         accessor addedTabsIds: Map<number, UnguessableToken> = new Map();
+        accessor isDraggingFile: boolean = false;
+        accessor enableImageContextualSuggestions: boolean =
+            loadTimeData.getBoolean('composeboxShowImageSuggest');
+        accessor smartComposeEnabled: boolean =
+            loadTimeData.getBoolean('composeboxSmartComposeEnabled');
+        contextMenuDescriptionEnabled: boolean =
+            loadTimeData.getBoolean('composeboxShowContextMenuDescription');
+        accessor showContextMenuDescription: boolean =
+            this.contextMenuDescriptionEnabled;
+        accessor shouldShowGhostFiles: boolean = false;
+        pendingUploads: Set<UnguessableToken> = new Set();
+        dragAndDropEnabled: boolean =
+            loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
+        composeboxSource: string = loadTimeData.getString('composeboxSource');
+        maxFileCount: number =
+            loadTimeData.getInteger('composeboxFileMaxCount');
+        maxFileSize: number = loadTimeData.getInteger('composeboxFileMaxSize');
+        attachmentFileTypes: string[] =
+            loadTimeData.getString('composeboxAttachmentFileTypes').split(',');
+        imageFileTypes: string[] =
+            loadTimeData.getString('composeboxImageFileTypes').split(',');
+        showTypedSuggestWithContext: boolean = getLoadTimeBoolean(
+            'composeboxShowTypedSuggestWithContext', /*defaultValue=*/ false);
+        queryZpsOnLoad: boolean =
+            getLoadTimeBoolean('queryZpsOnLoad', /*defaultValue=*/ true);
+        composeboxCloseByEscape: boolean = getLoadTimeBoolean(
+            'composeboxCloseByEscape', /*defaultValue=*/ true);
+        clearAllInputsWhenSubmittingQuery: boolean = getLoadTimeBoolean(
+            'clearAllInputsWhenSubmittingQuery', /*defaultValue=*/ false);
+        contextMenuOpened: boolean = false;
+
         accessor canSubmitFilesAndInput: boolean = true;
         accessor contextMenuEnabled: boolean =
             loadTimeData.getBoolean('composeboxShowContextMenu');
@@ -121,6 +166,8 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
         lastQueriedInput: string = '';
         haveReceivedAutcompleteResponse: boolean = false;
+        lensSendRawFileMediaTypesEnabled: boolean =
+            loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
 
         // =====================================================================
         // Embedder-provided methods for DOM and Mojo access
@@ -262,6 +309,24 @@ export const ComposeboxEmbedderMixin =
 
 export interface ComposeboxEmbedderMixinInterface {
   addedTabsIds: Map<number, UnguessableToken>;
+  isDraggingFile: boolean;
+  enableImageContextualSuggestions: boolean;
+  smartComposeEnabled: boolean;
+  contextMenuDescriptionEnabled: boolean;
+  showContextMenuDescription: boolean;
+  shouldShowGhostFiles: boolean;
+  pendingUploads: Set<UnguessableToken>;
+  dragAndDropEnabled: boolean;
+  composeboxSource: string;
+  maxFileCount: number;
+  maxFileSize: number;
+  attachmentFileTypes: string[];
+  imageFileTypes: string[];
+  showTypedSuggestWithContext: boolean;
+  queryZpsOnLoad: boolean;
+  composeboxCloseByEscape: boolean;
+  clearAllInputsWhenSubmittingQuery: boolean;
+  contextMenuOpened: boolean;
   errorMessage: string;
   files: Map<UnguessableToken, ComposeboxFile>;
   input: string;
@@ -292,6 +357,7 @@ export interface ComposeboxEmbedderMixinInterface {
   showTypedSuggest: boolean;
   lastQueriedInput: string;
   haveReceivedAutcompleteResponse: boolean;
+  lensSendRawFileMediaTypesEnabled: boolean;
 
   // Embedder-provided methods for DOM and Mojo access
   getInputElement(): ComposeboxInputElement;
