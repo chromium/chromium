@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/host_metrics.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -183,9 +184,12 @@ Host::Host(Profile* profile,
       instance_delegate_(instance_delegate),
       glic_instance_(glic_instance),
       sharing_manager_provider_(sharing_manager_provider),
-      metrics_(this) {}
+      metrics_(this) {
+  VLOG(1) << "Glic [Host] Constructor";
+}
 
 Host::~Host() {
+  VLOG(1) << "Glic [Host] Destructor";
   // Destroying the web contents results in calls back to the host, so do that
   // first.
   Shutdown();
@@ -197,6 +201,7 @@ void Host::SetDelegate(EmbedderDelegate* new_delegate) {
 }
 
 void Host::Shutdown() {
+  VLOG(1) << "Glic [Host] Shutdown";
   metrics_.Shutdown();
 
   handler_info_.reset();
@@ -293,6 +298,8 @@ void Host::CreateContents(bool initially_hidden) {
     return;
   }
 
+  VLOG(1) << "Glic [Host] CreateContents";
+
   glic_service().fre_controller().RecordFrameworkStartTime();
   if (base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
     contents_ = glic_service().web_contents_warming_pool().TakeContainer();
@@ -314,6 +321,7 @@ Host::PanelWillOpenOptions& Host::PanelWillOpenOptions::operator=(
 
 void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
                          PanelWillOpenOptions options) {
+  VLOG(1) << "Glic [Host] PanelWillOpen";
   CHECK(delegate_);
   invocation_source_ = invocation_source;
   if (handler_info_ && handler_info_->web_client) {
@@ -336,6 +344,7 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
 }
 
 void Host::PanelWasClosed() {
+  VLOG(1) << "Glic [Host] PanelWasClosed";
   invocation_source_ = std::nullopt;
   if (handler_info_ && handler_info_->web_client) {
     handler_info_->web_client->PanelWasClosed(base::DoNothing());

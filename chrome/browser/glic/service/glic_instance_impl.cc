@@ -258,6 +258,7 @@ GlicInstanceImpl::GlicInstanceImpl(
               contextual_cueing_service)),
       last_activation_timestamp_(base::Time::Now()),
       last_deactivation_timestamp_(base::TimeTicks::Now()) {
+  VLOG(1) << "Glic [InstanceImpl] Constructor, id=" << id_.value();
   base::trace_event::EmitNamedTrigger("glic-instance-created");
   TRACE_EVENT_INSTANT("glic", "GlicInstanceImpl::GlicInstanceImpl",
                       perfetto::Flow::FromPointer(this));
@@ -284,6 +285,7 @@ GlicInstanceImpl::GlicInstanceImpl(
 }
 
 GlicInstanceImpl::~GlicInstanceImpl() {
+  VLOG(1) << "Glic [InstanceImpl] Destructor, id=" << id_.value();
   TRACE_EVENT_INSTANT("glic", "GlicInstanceImpl::~GlicInstanceImpl",
                       perfetto::TerminatingFlow::FromPointer(this));
   // Destroying the web contents may result in calls back here, so do it first.
@@ -344,6 +346,8 @@ bool GlicInstanceImpl::IsLiveMode() {
 }
 
 void GlicInstanceImpl::Show(const ShowOptions& options) {
+  VLOG(1) << "Glic [InstanceImpl] Show, id=" << id_.value();
+
   TRACE_EVENT_INSTANT("glic", "GlicInstanceImpl::Show",
                       perfetto::Flow::FromPointer(this));
   if (const auto* side_panel_options =
@@ -421,6 +425,7 @@ void GlicInstanceImpl::Attach(tabs::TabHandle tab) {
 }
 
 void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
+  VLOG(1) << "Glic [InstanceImpl] Close, id=" << id_.value();
   auto* entry = GetEmbedderEntry(key);
   if (!entry || !entry->embedder) {
     return;
@@ -450,6 +455,7 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
                               glic::mojom::InvocationSource source,
                               std::optional<std::string> prompt_suggestion,
                               bool auto_send) {
+  VLOG(1) << "Glic [InstanceImpl] Toggle, id=" << id_.value();
   instance_metrics_.OnToggle(source, options, IsShowing());
   EmbedderKey key = GetEmbedderKey(options);
   // Close instance on toggle when it has an active embedder.
@@ -500,6 +506,7 @@ GlicSharingManager& GlicInstanceImpl::sharing_manager() {
 }
 
 void GlicInstanceImpl::CloseInstanceAndShutdown() {
+  VLOG(1) << "Glic [InstanceImpl] CloseInstanceAndShutdown, id=" << id_.value();
   if (actor_task_manager_) {
     // We have to do this here before the ActorKeyedService is shutdown.
     actor_task_manager_->CancelTask();
@@ -1335,6 +1342,7 @@ bool GlicInstanceImpl::IsHibernated() const {
 }
 
 void GlicInstanceImpl::Hibernate() {
+  VLOG(1) << "Glic [InstanceImpl] Hibernate, id=" << id_.value();
   DeactivateCurrentEmbedder();
   host_.Shutdown();
 }

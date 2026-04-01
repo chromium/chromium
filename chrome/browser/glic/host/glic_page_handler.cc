@@ -682,6 +682,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         receiver_(this, std::move(receiver)),
         annotation_manager_(
             std::make_unique<GlicAnnotationManager>(glic_service_)) {
+    VLOG(1) << "Glic [WebClientHandler] Constructor";
     if (base::FeatureList::IsEnabled(features::kGlicActor)) {
       journal_handler_ = std::make_unique<JournalHandler>(profile_);
     }
@@ -689,6 +690,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   ~GlicWebClientHandler() override {
+    VLOG(1) << "Glic [WebClientHandler] Destructor";
     active_state_calculator_.RemoveObserver(this);
     if (web_client_) {
       Uninstall();
@@ -739,6 +741,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void WebClientCreated(
       ::mojo::PendingRemote<glic::mojom::WebClient> web_client,
       WebClientCreatedCallback callback) override {
+    VLOG(1) << "Glic [WebClientHandler] WebClientCreated";
     web_client_.Bind(std::move(web_client));
     web_client_.set_disconnect_handler(base::BindOnce(
         &GlicWebClientHandler::WebClientDisconnected, base::Unretained(this)));
@@ -991,6 +994,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void WebClientInitialized() override {
+    VLOG(1) << "Glic [WebClientHandler] WebClientInitialized";
     host().SetWebClient(this);
     // If chrome://glic is opened in a tab for testing, send a synthetic open
     // signal.
@@ -2141,7 +2145,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  void WebClientDisconnected() { Uninstall(); }
+  void WebClientDisconnected() {
+    VLOG(1) << "Glic [WebClientHandler] WebClientDisconnected";
+    Uninstall();
+  }
 
   void OnPrefChanged(const std::string& pref_name) {
     if (pref_name == prefs::kGlicMicrophoneEnabled) {
@@ -2488,6 +2495,7 @@ GlicPageHandler::GlicPageHandler(
       browser_context_(webui_contents->GetBrowserContext()),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
+  VLOG(1) << "Glic [PageHandler] Constructor";
   GetGlicService()->host_manager().WebUIPageHandlerAdded(this, host_.get());
   host_->AddPanelStateObserver(this);
   UpdatePageState(host_->GetPanelState(web_client_handler_.get()).kind);
@@ -2501,6 +2509,7 @@ GlicPageHandler::GlicPageHandler(
 }
 
 GlicPageHandler::~GlicPageHandler() {
+  VLOG(1) << "Glic [PageHandler] Destructor";
   host_->RemovePanelStateObserver(this);
   WebUiStateChanged(glic::mojom::WebUiState::kUninitialized);
   // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
@@ -2545,6 +2554,7 @@ void GlicPageHandler::PrepareForClient(
 }
 
 void GlicPageHandler::WebviewCommitted(const GURL& url) {
+  VLOG(1) << "Glic [PageHandler] WebviewCommitted, url=" << url.spec();
   // TODO(crbug.com/388328847): Remove this code once launch issues are ironed
   // out.
   if (url.DomainIs("login.corp.google.com") ||
