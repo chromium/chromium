@@ -25,11 +25,7 @@ base::LazyInstance<base::android::ScopedJavaGlobalRef<jobject>>::
 /* static */ void JNI_OmniboxActionFactory_SetFactory(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& factory) {
-  if (factory) {
-    g_java_factory.Get().Reset(factory);
-  } else {
-    g_java_factory.Get().Reset(nullptr);
-  }
+  g_java_factory.Get().Reset(env, factory);
 }
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(

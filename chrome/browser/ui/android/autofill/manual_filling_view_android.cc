@@ -196,7 +196,7 @@ ManualFillingViewAndroid::~ManualFillingViewAndroid() {
   }
   Java_ManualFillingComponentBridge_destroy(
       base::android::AttachCurrentThread(), java_object_internal_);
-  java_object_internal_.Reset(nullptr);
+  java_object_internal_.Reset();
 }
 
 void ManualFillingViewAndroid::OnItemsAvailable(AccessorySheetData data) {
@@ -305,7 +305,7 @@ void ManualFillingViewAndroid::RequestAccessorySheet(JNIEnv* env,
 }
 
 void ManualFillingViewAndroid::OnViewDestroyed(JNIEnv* env) {
-  java_object_internal_.Reset(nullptr);
+  java_object_internal_.Reset();
 }
 
 base::android::ScopedJavaGlobalRef<jobject>

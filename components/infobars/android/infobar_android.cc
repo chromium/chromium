@@ -69,7 +69,7 @@ void InfoBarAndroid::CloseJavaInfoBar() {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_InfoBar_closeInfoBar(env, java_info_bar_);
     Java_InfoBar_resetNativeInfoBar(env, java_info_bar_);
-    java_info_bar_.Reset(nullptr);
+    java_info_bar_.Reset();
   }
 }
 
