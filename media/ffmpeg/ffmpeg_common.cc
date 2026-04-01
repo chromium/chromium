@@ -997,6 +997,10 @@ ChannelLayout ChannelLayoutToChromeChannelLayout(
     case AV_CH_FRONT_LEFT | AV_CH_FRONT_RIGHT | AV_CH_LOW_FREQUENCY |
         AV_CH_BACK_CENTER:
       return CHANNEL_LAYOUT_3_1_BACK;
+    case AV_CH_LAYOUT_5POINT1POINT4_BACK:
+      return CHANNEL_LAYOUT_5_1_4;
+    case AV_CH_LAYOUT_7POINT1POINT4_BACK:
+      return CHANNEL_LAYOUT_7_1_4;
     default:
       // FFmpeg channel_layout is 0 for .wav and .mp3.  Attempt to guess layout
       // based on the channel count.

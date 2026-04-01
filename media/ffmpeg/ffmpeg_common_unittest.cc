@@ -479,4 +479,21 @@ TEST_F(FFmpegCommonTest, VerifyDolbyVisionColorSpaceInfo_Profile8) {
 #endif  // BUILDFLAG (USE_PROPRIETARY_CODECS) &&
         // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
+TEST_F(FFmpegCommonTest, ChannelLayoutToChromeChannelLayout_HighChannelCount) {
+  AVChannelLayout layout_514;
+  layout_514.order = AV_CHANNEL_ORDER_NATIVE;
+  layout_514.nb_channels = 10;
+  layout_514.u.mask = AV_CH_LAYOUT_5POINT1POINT4_BACK;
+
+  AVChannelLayout layout_714;
+  layout_714.order = AV_CHANNEL_ORDER_NATIVE;
+  layout_714.nb_channels = 12;
+  layout_714.u.mask = AV_CH_LAYOUT_7POINT1POINT4_BACK;
+
+  EXPECT_EQ(CHANNEL_LAYOUT_5_1_4,
+            ChannelLayoutToChromeChannelLayout(layout_514));
+  EXPECT_EQ(CHANNEL_LAYOUT_7_1_4,
+            ChannelLayoutToChromeChannelLayout(layout_714));
+}
+
 }  // namespace media
