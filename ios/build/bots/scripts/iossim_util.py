@@ -34,23 +34,34 @@ def _compose_simulator_name(platform, version):
   return '%s %s test simulator' % (platform, version)
 
 
-def get_simulator_list(path=SIMULATOR_DEFAULT_PATH):
+def _compose_simctl_cmd(cmd: list[str], path: str = None) -> list[str]:
+  """Composes a simctl command"""
+  result = ['xcrun', 'simctl']
+  if path:
+    result += ['--set', path]
+  result += cmd
+  return result
+
+
+def get_simulator_list(path: str = None):
   """Gets list of available simulator as a dictionary.
 
   Args:
     path: (str) Path to be passed to '--set' option.
   """
   return json.loads(
-      subprocess.check_output(['xcrun', 'simctl', '--set', path, 'list',
-                               '-j']).decode('utf-8'))
+      subprocess.check_output(_compose_simctl_cmd(['list', '-j'],
+                                                  path)).decode('utf-8'))
 
 
-def get_simulator(platform, version, out_dir=None):
+def get_simulator(platform, version, out_dir=None, use_cache=False):
   """Gets a simulator or creates a new one if not exist by platform and version.
 
   Args:
     platform: (str) A platform name, e.g. "iPhone 11 Pro"
     version: (str) A version name, e.g. "13.4"
+    use_cache: (bool) Whether to use cache of prebooted simulators if a
+      simulator must be created.
 
   Returns:
     A udid of a simulator device.
@@ -59,7 +70,7 @@ def get_simulator(platform, version, out_dir=None):
                                                       out_dir)
   if udids:
     return udids[0]
-  return create_device_by_platform_and_version(platform, version)
+  return create_device_by_platform_and_version(platform, version, use_cache)
 
 
 def get_simulator_device_type_by_platform(simulators, platform):
@@ -227,23 +238,18 @@ def get_platform_type_by_platform(platform) -> constants.IOSPlatformType:
   raise test_runner.UnsupportedDeviceTypeError(device_type)
 
 
-def create_device_by_platform_and_version(platform, version):
-  """Creates a simulator and returns UDID of it.
-
-    Args:
-      platform: (str) A platform name, e.g. "iPhone 11"
-      version: (str) A version name, e.g. "13.2.2"
-  """
+def _create_device_by_platform_and_version(platform, version, path=None):
+  """Creates a simulator at the given path, returning its udid"""
   name = _compose_simulator_name(platform, version)
   LOGGER.info('Creating simulator %s', name)
-  simulators = get_simulator_list()
+  simulators = get_simulator_list(path)
   device_type = get_simulator_device_type_by_platform(simulators, platform)
   runtime = get_simulator_runtime_by_platform_and_version(
       simulators, platform, version)
   try:
     udid = subprocess.check_output(
-        ['xcrun', 'simctl', 'create', name, device_type,
-         runtime]).decode('utf-8').rstrip()
+        _compose_simctl_cmd(['create', name, device_type, runtime],
+                            path)).decode('utf-8').rstrip()
     LOGGER.info('Created simulator in first attempt with UDID: %s', udid)
     # Sometimes above command fails to create a simulator. Verify it and retry
     # once if first attempt failed.
@@ -251,13 +257,28 @@ def create_device_by_platform_and_version(platform, version):
       # Try to delete once to avoid duplicate in case of race condition.
       delete_simulator_by_udid(udid)
       udid = subprocess.check_output(
-          ['xcrun', 'simctl', 'create', name, device_type,
-           runtime]).decode('utf-8').rstrip()
+          _compose_simctl_cmd(['create', name, device_type, runtime],
+                              path)).decode('utf-8').rstrip()
       LOGGER.info('Created simulator in second attempt with UDID: %s', udid)
     return udid
   except subprocess.CalledProcessError as e:
     LOGGER.error('Error when creating simulator "%s": %s' % (name, e.output))
     raise e
+
+
+def create_device_by_platform_and_version(platform, version, use_cache=False):
+  """Creates a simulator and returns UDID of it.
+
+    Args:
+      platform: (str) A platform name, e.g. "iPhone 11"
+      version: (str) A version name, e.g. "13.2.2"
+      use_cache: (bool) Whether to try to use a clone of a prebooted simulator
+        in the cache.
+  """
+  if not use_cache:
+    return _create_device_by_platform_and_version(platform, version)
+  else:
+    raise NotImplementedError("Cacheing behavior not yet implemented.")
 
 
 def delete_simulator_by_udid(udid):
@@ -355,9 +376,7 @@ def update_dyld_shared_cache(runtime=None):
     LOGGER.warning('Failed to update dyld_shared_cache. Error: %s', e.output)
 
 
-def ensure_simulator_fully_booted(sim_udid: str,
-                                  path=SIMULATOR_DEFAULT_PATH,
-                                  num_attempts=1):
+def ensure_simulator_fully_booted(sim_udid: str, path=None, num_attempts=1):
   """Ensures simulator of given udid is fully booted.
 
   `xcrun simctl boot` launches only background processes and does not ensure the
@@ -379,17 +398,12 @@ def ensure_simulator_fully_booted(sim_udid: str,
     raise test_runner.SimulatorNotFoundError(
         f"Not found simulator with UDID: {sim_udid}")
 
-  # Ensure data migrations are run
-  cmd = [
-      'xcrun',
-      'simctl',
-      '--set',
-      path,
+    # Ensure data migrations are run
+  cmd = _compose_simctl_cmd([
       'bootstatus',
       sim_udid,
       '-bd',
-  ]
-
+  ], path)
   runtime = get_simulator_runtime_by_device_udid(sim_udid)
   for boot_attempt in range(num_attempts):
     try:

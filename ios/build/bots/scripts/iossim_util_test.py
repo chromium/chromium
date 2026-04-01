@@ -521,7 +521,8 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     self.assertTrue(expected_message in str(context.exception))
 
   @mock.patch('subprocess.check_output', autospec=True)
-  def test_create_device_by_platform_and_version(self, subprocess_mock, _, _2):
+  def test_create_device_by_platform_and_version_no_cache(
+      self, subprocess_mock, _, _2):
     """Ensures that command is correct."""
     subprocess_mock.return_value = b'NEW_UDID'
     self.assertEqual(
@@ -788,10 +789,7 @@ class GetiOSSimUtil(test_runner_test.TestCase):
       ]
       check_calls = [
           mock.call(dyld_cmd),
-          mock.call([
-              'xcrun', 'simctl', '--set', iossim_util.SIMULATOR_DEFAULT_PATH,
-              'bootstatus', udid, '-bd'
-          ],
+          mock.call(['xcrun', 'simctl', 'bootstatus', udid, '-bd'],
                     timeout=120),
           mock.call(dyld_cmd),
           mock.call(

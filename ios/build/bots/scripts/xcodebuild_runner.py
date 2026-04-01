@@ -314,6 +314,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       test_args: List of strings to pass as arguments to the test when
         launching.
       use_clang_coverage: Whether code coverage is enabled in this run.
+      use_simulator_cache: Whether to use prelaunched simulators in the cache
+        for this run.
       env_vars: List of environment variables to pass to the test itself.
 
     Raises:
@@ -333,6 +335,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     self.logs = collections.OrderedDict()
     self.release = kwargs.get('release') or False
     self.test_results['path_delimiter'] = '/'
+    self.use_simulator_cache = kwargs.get('use_simulator_cache') or False
 
     self.record_video_option = kwargs.get('record_video_option')
 

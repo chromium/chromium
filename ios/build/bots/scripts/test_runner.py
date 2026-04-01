@@ -762,6 +762,8 @@ class SimulatorTestRunner(TestRunner):
       test_cases: List of tests to be included in the test run. None or [] to
         include all tests.
       use_clang_coverage: Whether code coverage is enabled in this run.
+      use_simulator_cache: Whether to use prelaunched simulators in the cache
+        for this run.
       xctest: Whether or not this is an XCTest.
 
     Raises:
@@ -782,8 +784,10 @@ class SimulatorTestRunner(TestRunner):
     self.start_time = None
     self.version = version
     self.clones = kwargs.get('clones') or 1
+    self.use_simulator_cache = kwargs.get('use_simulator_cache') or False
     self.udid = iossim_util.get_simulator(self.platform, self.version,
-                                          self.out_dir)
+                                          self.out_dir,
+                                          self.use_simulator_cache)
     self.platform_type = iossim_util.get_platform_type_by_platform(
         self.platform)
     self.use_clang_coverage = kwargs.get('use_clang_coverage') or False
