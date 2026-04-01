@@ -11,18 +11,18 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/test/run_until.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
+#include "ui/views/accessibility/tree/widget_ax_manager_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
@@ -155,7 +155,7 @@ void DumpAccessibilityEventsViewsTestBase::SetUpOnMainThread() {
   // would batch initial node additions together with test-triggered changes,
   // and AXEventGenerator wouldn't detect attribute changes on newly-added
   // nodes (since there's no previous state to compare against).
-  base::RunLoop().RunUntilIdle();
+  WaitForPendingSerialization();
 
 #if BUILDFLAG(IS_LINUX)
   // On Wayland, widget activation is asynchronous (compositor-controlled).
@@ -178,8 +178,8 @@ void DumpAccessibilityEventsViewsTestBase::SetUpOnMainThread() {
   // Flush any remaining async events generated during setup (e.g.
   // OnActivationChanged() above queues kWindowActivated via WidgetAXManager
   // when ViewsAX is enabled). Without this, StopRecordingAndCompare()'s
-  // RunUntilIdle() would flush stale setup events during recording.
-  base::RunLoop().RunUntilIdle();
+  // wait would process stale setup events during recording.
+  WaitForPendingSerialization();
 }
 
 void DumpAccessibilityEventsViewsTestBase::TearDown() {
@@ -297,10 +297,12 @@ void DumpAccessibilityEventsViewsTestBase::StopRecordingAndCompare(
     root_view->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kEndOfTest,
                                                   true);
 
-    // Flush any pending async WidgetAXManager updates so that
-    // BrowserAccessibilityManager fires the corresponding platform events
-    // before we stop listening.
-    base::RunLoop().RunUntilIdle();
+    // When ViewsAX is enabled, events are processed asynchronously via
+    // WidgetAXManager::SendPendingUpdate() (a posted task). Wait for the
+    // pending serialization to complete so BrowserAccessibilityManager
+    // processes tree updates and fires auto-generated platform events (e.g.
+    // ATK state-change events on Linux) before we stop the recorder.
+    WaitForPendingSerialization();
 
     event_recorder_->StopListeningToEvents();
     event_recorder_->WaitForDoneRecording();
@@ -308,6 +310,16 @@ void DumpAccessibilityEventsViewsTestBase::StopRecordingAndCompare(
   }
 
   EXPECT_TRUE(ValidateAgainstExpectation(test_name, CollectEventLogs()));
+}
+
+void DumpAccessibilityEventsViewsTestBase::WaitForPendingSerialization() {
+  if (!IsViewsAXEnabled() || !widget_ || !widget_->ax_manager()) {
+    return;
+  }
+  WidgetAXManagerTestApi test_api(widget_->ax_manager());
+  if (test_api.processing_update_posted()) {
+    test_api.WaitForNextSerialization();
+  }
 }
 
 std::unique_ptr<ui::AXEventRecorder>

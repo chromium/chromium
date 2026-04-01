@@ -15,7 +15,11 @@ WidgetAXManagerTestApi::WidgetAXManagerTestApi(WidgetAXManager* manager)
       &WidgetAXManagerTestApi::OnUpdatesAndEvents, base::Unretained(this)));
 }
 
-WidgetAXManagerTestApi::~WidgetAXManagerTestApi() = default;
+WidgetAXManagerTestApi::~WidgetAXManagerTestApi() {
+  if (manager_) {
+    manager_->SetUpdatesAndEventsCallbackForTesting({});
+  }
+}
 
 void WidgetAXManagerTestApi::Enable() {
   manager_->Enable();
