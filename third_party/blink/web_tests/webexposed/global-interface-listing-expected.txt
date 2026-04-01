@@ -6003,10 +6003,13 @@ interface LanguageDetector
 interface LanguageModel : EventTarget
     static method availability
     static method create
+    static method params
     attribute @@toStringTag
     getter contextUsage
     getter contextWindow
     getter oncontextoverflow
+    getter temperature
+    getter topK
     method append
     method clone
     method constructor
@@ -6015,6 +6018,13 @@ interface LanguageModel : EventTarget
     method prompt
     method promptStreaming
     setter oncontextoverflow
+interface LanguageModelParams
+    attribute @@toStringTag
+    getter defaultTemperature
+    getter defaultTopK
+    getter maxTemperature
+    getter maxTopK
+    method constructor
 interface LanguageModelToolCall
     attribute @@toStringTag
     getter arguments

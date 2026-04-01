@@ -29,6 +29,7 @@
 
 namespace blink {
 
+class ExecutionContext;
 class LanguageModelCreateCoreOptions;
 class LanguageModelMessageContent;
 class LocalDOMWindow;
@@ -55,7 +56,8 @@ enum class SamplingParamsOptionError {
 // otherwise.
 MODULES_EXPORT base::expected<mojom::blink::AILanguageModelSamplingParamsPtr,
                               SamplingParamsOptionError>
-ResolveSamplingParamsOption(const LanguageModelCreateCoreOptions* options);
+ResolveSamplingParamsOption(const LanguageModelCreateCoreOptions* options,
+                            ExecutionContext* execution_context);
 
 mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptions(
     const SummarizerCreateOptions* options);

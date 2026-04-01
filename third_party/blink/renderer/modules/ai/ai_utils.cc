@@ -19,11 +19,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_performance_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_features.h"
 #include "third_party/blink/renderer/modules/ai/language_model_tool_call.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -261,13 +263,28 @@ Vector<mojom::blink::AILanguageModelExpectedPtr> ToMojoExpectations(
 
 base::expected<mojom::blink::AILanguageModelSamplingParamsPtr,
                SamplingParamsOptionError>
-ResolveSamplingParamsOption(const LanguageModelCreateCoreOptions* options) {
+ResolveSamplingParamsOption(const LanguageModelCreateCoreOptions* options,
+                            ExecutionContext* execution_context) {
   if (!options || (!options->hasTopK() && !options->hasTemperature())) {
     return nullptr;
   }
 
-  // The temperature and top_k are optional, but they must be provided
-  // together.
+  // Count deprecation if only legacy params are enabled, i.e. for extensions.
+  const bool count_deprecation =
+      RuntimeEnabledFeatures::AIPromptAPILegacyParamsEnabled(
+          execution_context) &&
+      !RuntimeEnabledFeatures::AIPromptAPIParamsEnabled(execution_context);
+  if (options->hasTopK() && count_deprecation) {
+    Deprecation::CountDeprecation(
+        execution_context, mojom::blink::WebFeature::kLanguageModel_TopK);
+  }
+  if (options->hasTemperature() && count_deprecation) {
+    Deprecation::CountDeprecation(
+        execution_context,
+        mojom::blink::WebFeature::kLanguageModel_Temperature);
+  }
+
+  // Both temperature and topK are optional, but must be provided together.
   if (options->hasTopK() != options->hasTemperature()) {
     return base::unexpected(
         SamplingParamsOptionError::kOnlyOneOfTopKAndTemperatureIsProvided);

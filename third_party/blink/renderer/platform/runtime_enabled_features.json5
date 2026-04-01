@@ -399,6 +399,19 @@
       public: true,
     },
     {
+      // Gates access to legacy aliases of renamed "AIPromptAPI" identifiers.
+      // TODO(crbug.com/498228550): Remove after extension context usage drops.
+      name: "AIPromptAPILegacyIdentifiers",
+      public: true,
+    },
+    {
+      // Gates access to legacy sampling parameter surfaces for "AIPromptAPI".
+      // Enabled in extension contexts, and for API enhancement experiments.
+      name: "AIPromptAPILegacyParams",
+      public: true,
+      implied_by: ["AIPromptAPIParams"],
+    },
+    {
       name: "AIPromptAPIMultimodalInput",
       status: {
         "Win": "experimental",
@@ -412,6 +425,18 @@
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
+    },
+    {
+      // Gates access to inference parameter enhancements for "AIPromptAPI".
+      // This feature alone does not expose any "AIPromptAPI" feature access.
+      name: "AIPromptAPIParams",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "ChromeOS": "experimental",
+        "default": "",
+      },
     },
     {
       // Gates access to the responseConstraint enhancement for "AIPromptAPI".
@@ -3425,10 +3450,6 @@
     },
     {
       name: "LanguageDetectionAPIForWorkers",
-      public: true,
-    },
-    {
-      name: "LanguageModelLegacyParamsAndAttributes",
       public: true,
     },
     {

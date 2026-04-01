@@ -1,0 +1,11 @@
+Tests LanguageModel renamed API surfaces and deprecation issues
+Test Results: {
+    results : {
+        inputQuotaExists : false
+        inputUsageExists : false
+        measureInputUsageExists : false
+        onquotaoverflowExists : false
+    }
+}
+No LanguageModel deprecation issues found.
+

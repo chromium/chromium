@@ -1,0 +1,14 @@
+Tests LanguageModel renamed API surfaces and deprecation issues
+LanguageModel deprecation issue found: LanguageModel_InputQuota
+LanguageModel deprecation issue found: LanguageModel_InputUsage
+LanguageModel deprecation issue found: LanguageModel_MeasureInputUsage
+LanguageModel deprecation issue found: LanguageModel_OnQuotaOverflow
+Test Results: {
+    results : {
+        inputQuotaExists : true
+        inputUsageExists : true
+        measureInputUsageExists : true
+        onquotaoverflowExists : true
+    }
+}
+

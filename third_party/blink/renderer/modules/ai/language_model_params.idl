@@ -4,9 +4,10 @@
 
 // https://github.com/webmachinelearning/prompt-api
 
+// **EXPERIMENTAL**: Only available in extension and experimental contexts.
 [
   Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
-  RuntimeEnabled=LanguageModelLegacyParamsAndAttributes,
+  RuntimeEnabled=AIPromptAPILegacyParams,
   SecureContext
 ]
 interface LanguageModelParams {

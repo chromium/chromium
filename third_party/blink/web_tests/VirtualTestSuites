@@ -43,6 +43,67 @@
     ],
     "expires": "Mar 1, 2027"
   },
+  {
+    "prefix": "ai-prompt-api-legacy-params-disabled",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "ChromeOS"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/issues/language-model-params.js"
+    ],
+    "args": [
+      "--disable-blink-features=AIPromptAPILegacyParams,AIPromptAPIParams"
+    ],
+    "owners": [
+      "msw@chromium.org",
+      "iahouma@google.com"
+    ],
+    "expires": "Jan 1, 2027"
+  },
+  {
+    "prefix": "ai-prompt-api-legacy-params",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "ChromeOS"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/issues/language-model-params.js"
+    ],
+    "args": [
+      "--disable-blink-features=AIPromptAPIParams",
+      "--enable-blink-features=AIPromptAPILegacyParams"
+    ],
+    "owners": [
+      "msw@chromium.org",
+      "iahouma@google.com"
+    ],
+    "expires": "Jan 1, 2027"
+  },
+  {
+    "prefix": "ai-prompt-api-legacy-identifiers",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "ChromeOS"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/issues/language-model-legacy-identifiers.js"
+    ],
+    "args": [
+      "--enable-blink-features=AIPromptAPILegacyIdentifiers"
+    ],
+    "owners": [
+      "msw@chromium.org",
+      "iahouma@google.com"
+    ],
+    "expires": "Jan 1, 2027"
+  },
   "This suite tests some android features on Linux and should never expire.",
   {
     "prefix": "android",

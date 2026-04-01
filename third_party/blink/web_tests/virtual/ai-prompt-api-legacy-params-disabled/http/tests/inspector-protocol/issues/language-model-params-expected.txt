@@ -1,0 +1,13 @@
+Tests LanguageModel params API surfaces and deprecation issues
+Test Results: {
+    results : {
+        languageModelParamsExists : false
+        paramsExists : false
+        session1TemperatureExists : false
+        session1TopKExists : false
+        session2TemperatureExists : false
+        session2TopKExists : false
+    }
+}
+No LanguageModel deprecation issues found.
+

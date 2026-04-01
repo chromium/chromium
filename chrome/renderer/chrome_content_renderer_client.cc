@@ -1455,13 +1455,13 @@ void ChromeContentRendererClient::
       blink::WebRuntimeFeatures::EnableAIPromptAPI(true);
     }
     blink::WebRuntimeFeatures::EnableAIPromptAPIForWorkers(true);
+    blink::WebRuntimeFeatures::EnableAIPromptAPILegacyIdentifiers(true);
+    blink::WebRuntimeFeatures::EnableAIPromptAPILegacyParams(true);
     blink::WebRuntimeFeatures::EnableAIRewriterAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableAISummarizationAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableAIWriterAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableLanguageDetectionAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableTranslationAPIForWorkers(true);
-    blink::WebRuntimeFeatures::EnableLanguageModelLegacyParamsAndAttributes(
-        true);
   }
 }
 
