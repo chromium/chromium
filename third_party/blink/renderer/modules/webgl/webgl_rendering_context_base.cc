@@ -1641,8 +1641,9 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   // Note: we push a frame only if (a) there is fresh content to produce and
   // (b) we successfully produced that content.
   auto* resource_provider =
-      PaintRenderingResultsToResourceProvider(kBackBuffer);
-  if (resource_provider && resource_provider_has_content_for_frame_push_) {
+      PaintRenderingResultsToResourceProvider(kBackBuffer,
+                                              /*only_if_fresh_content=*/true);
+  if (resource_provider) {
     submitted_frame =
         Host()->PushFrame(resource_provider->ProduceCanvasResource());
     resource_provider_has_content_for_frame_push_ = false;
@@ -2013,7 +2014,8 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
 
 CanvasNon2DResourceProviderSharedImage*
 WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
-    SourceDrawingBuffer source_buffer) {
+    SourceDrawingBuffer source_buffer,
+    bool only_if_fresh_content) {
   TRACE_EVENT0(
       "blink",
       "WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider");
@@ -2034,6 +2036,10 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   // is backgrounded.
 
   if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
+    if (only_if_fresh_content &&
+        !resource_provider_has_content_for_frame_push_) {
+      return nullptr;
+    }
     // `resource_provider_` already has the current contents, so it can can be
     // used by the caller as-is.
     return resource_provider_.get();

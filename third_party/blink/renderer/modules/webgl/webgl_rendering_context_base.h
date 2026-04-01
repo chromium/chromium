@@ -2039,7 +2039,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // CanvasNon2DResourceProviderSharedImage. Returns the provider if the paint
   // succeeded; otherwise returns nullptr.
   CanvasNon2DResourceProviderSharedImage*
-  PaintRenderingResultsToResourceProvider(SourceDrawingBuffer source_buffer);
+  PaintRenderingResultsToResourceProvider(SourceDrawingBuffer source_buffer,
+                                          bool only_if_fresh_content = false);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
       WebGLTexture*,
