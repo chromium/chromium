@@ -6,12 +6,16 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViewFactory_jni.h"
-#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViews_jni.h"
-#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/TabBottomSheetNativeInterface_jni.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// JNI headers must be included after standard headers to ensure types like
+// ui::WindowAndroid and content::WebContents are declared before use, and to
+// avoid 'specialization after instantiation' errors for ToJniType.
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViewFactory_jni.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViews_jni.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/TabBottomSheetNativeInterface_jni.h"
 
 using base::android::AttachCurrentThread;
 
@@ -48,9 +52,8 @@ void TabBottomSheetBridge::SetWebContents(content::WebContents* web_contents) {
     return;
   }
 
-  Java_CoBrowseViews_setWebContents(
-      AttachCurrentThread(), co_browse_views_,
-      web_contents ? web_contents->GetJavaWebContents() : nullptr);
+  Java_CoBrowseViews_setWebContents(AttachCurrentThread(), co_browse_views_,
+                                    web_contents);
 }
 
 bool TabBottomSheetBridge::Show(bool animate, bool starts_expanded) {
@@ -77,14 +80,19 @@ void TabBottomSheetBridge::CreateCoBrowseViews(
     content::WebContents* web_contents) {
   TabAndroid* tab_android = GetTabAndroid();
   if (!tab_android) {
-    LOG(DFATAL) << "Cannot create CoBrowseViews: TabAndroid is null.";
+    VLOG(1) << "Cannot create CoBrowseViews: TabAndroid is null.";
     return;
   }
 
-  ui::WindowAndroid* window_android =
-      tab_android->GetContents()->GetTopLevelNativeWindow();
+  content::WebContents* tab_contents = tab_android->GetContents();
+  if (!tab_contents) {
+    VLOG(1) << "Cannot create CoBrowseViews: TabAndroid has no WebContents.";
+    return;
+  }
+
+  ui::WindowAndroid* window_android = tab_contents->GetTopLevelNativeWindow();
   if (!window_android) {
-    LOG(DFATAL) << "Cannot create CoBrowseViews: WindowAndroid is null.";
+    VLOG(1) << "Cannot create CoBrowseViews: WindowAndroid is null.";
     return;
   }
 
@@ -93,8 +101,7 @@ void TabBottomSheetBridge::CreateCoBrowseViews(
   JNIEnv* env = base::android::AttachCurrentThread();
   // Call Factory to get CoBrowseViews and save it
   co_browse_views_.Reset(Java_CoBrowseViewFactory_getCoBrowseViews(
-      env, window_android->GetJavaObject(),
-      web_contents ? web_contents->GetJavaWebContents() : nullptr));
+      env, window_android, web_contents));
 }
 
 void TabBottomSheetBridge::DestroyCoBrowseViews() {

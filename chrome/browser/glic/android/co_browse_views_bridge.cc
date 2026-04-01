@@ -5,11 +5,15 @@
 #include "chrome/browser/glic/android/co_browse_views_bridge.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViewFactory_jni.h"
-#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViews_jni.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// JNI headers must be included after standard headers to ensure types like
+// ui::WindowAndroid and content::WebContents are declared before use, and to
+// avoid 'specialization after instantiation' errors for ToJniType.
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViewFactory_jni.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViews_jni.h"
 
 using base::android::AttachCurrentThread;
 
@@ -42,8 +46,7 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
 
   JNIEnv* env = AttachCurrentThread();
   java_co_browse_views_.Reset(Java_CoBrowseViewFactory_getCoBrowseViews(
-      env, window_android->GetJavaObject(),
-      web_contents ? web_contents->GetJavaWebContents() : nullptr));
+      env, window_android, web_contents));
 
   return !java_co_browse_views_.is_null();
 }
@@ -54,9 +57,7 @@ void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents) {
     return;
   }
   JNIEnv* env = AttachCurrentThread();
-  Java_CoBrowseViews_setWebContents(
-      env, java_co_browse_views_,
-      web_contents ? web_contents->GetJavaWebContents() : nullptr);
+  Java_CoBrowseViews_setWebContents(env, java_co_browse_views_, web_contents);
 }
 
 base::android::ScopedJavaLocalRef<jobject> CoBrowseViewsBridge::GetView() {
