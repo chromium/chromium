@@ -1901,7 +1901,7 @@ public class WebContentsAccessibilityTest {
             // Confirm slider values.
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH,
-                    20 + (2 * i),
+                    20 + i,
                     mNodeInfo.getRangeInfo().getCurrent(),
                     0.001);
 
@@ -1922,7 +1922,7 @@ public class WebContentsAccessibilityTest {
             // Confirm slider values.
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH,
-                    40 - (2 * i),
+                    30 - i,
                     mNodeInfo.getRangeInfo().getCurrent(),
                     0.001);
 
@@ -1992,7 +1992,7 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testNodeInfo_inputTypeRange_withRequiredMin() throws Throwable {
         // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
-        setupTestWithHTML("<input type='range' min='0' max='1000' step='1'>");
+        setupTestWithHTML("<input type='range' min='0' max='1000' step='50'>");
 
         // Find the input range and assert we have the correct node.
         int inputNodeVirtualViewId = waitForNodeMatching(sRangeInfoMatcher, "");

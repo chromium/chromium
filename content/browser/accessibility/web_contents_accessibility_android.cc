@@ -2168,36 +2168,13 @@ bool WebContentsAccessibilityAndroid::AdjustSlider(JNIEnv* env,
   if (!android_node->IsSlider() || !android_node->IsEnabled()) {
     return false;
   }
-
-  float value =
-      node->GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
-  float min =
-      node->GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange);
-  float max =
-      node->GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange);
-  if (max <= min) {
-    return false;
-  }
-
-  // If this node has defined a step value, move by that amount. Otherwise, to
-  // behave similarly to an Android SeekBar, move by an increment of ~5%.
-  float delta;
-  if (node->HasFloatAttribute(ax::mojom::FloatAttribute::kStepValueForRange)) {
-    delta =
-        node->GetFloatAttribute(ax::mojom::FloatAttribute::kStepValueForRange);
+  // TODO(crbug.com/498286808): Explore Android granular scrolling APIs.
+  if (increment) {
+    node->manager()->Increment(*node);
   } else {
-    delta = (max - min) / kDefaultNumberOfTicksForSliders;
+    node->manager()->Decrement(*node);
   }
-
-  // Add/Subtract based on |increment| boolean, then clamp to range.
-  float original_value = value;
-  value += (increment ? delta : -delta);
-  value = std::clamp(value, min, max);
-  if (value != original_value) {
-    node->manager()->SetValue(*node, base::NumberToString(value));
-    return true;
-  }
-  return false;
+  return true;
 }
 
 void WebContentsAccessibilityAndroid::ShowContextMenu(JNIEnv* env,
