@@ -486,6 +486,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/CachedZeroSuggestionsManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/DropdownItemViewInfoListBuilderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/DropdownItemViewInfoListManagerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/GroupSeparatorDecorationTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/OmniboxLoadUrlParamsUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/OmniboxSuggestionsContainerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/OmniboxSuggestionsDropdownAdapterUnitTest.java",
