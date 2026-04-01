@@ -2,16 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let outputCalled = false;
 function output(msg) {
-  if (outputCalled)
-    return;
-  outputCalled = true;
-  // Send the message periodically to ensure the test framework receives it
-  // even if it sets up its listener slightly after this is called.
-  setInterval(() => {
-    top.postMessage({testOutput: msg}, '*');
-  }, 50);
   top.postMessage({testOutput: msg}, '*');
 }
 
