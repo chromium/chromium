@@ -492,9 +492,8 @@ String LayoutText::PlainText() const {
     }
     last_end_offset = end_offset;
 
-    String text =
-        text_.Substring(text_box.dom_start_offset, text_box.dom_length)
-            .SimplifyWhiteSpace(kDoNotStripWhiteSpace);
+    String text = text_.substr(text_box.dom_start_offset, text_box.dom_length)
+                      .SimplifyWhiteSpace(kDoNotStripWhiteSpace);
     plain_text_builder.Append(text);
   }
   return plain_text_builder.ToString();

@@ -81,7 +81,7 @@ String InlineItemResult::ToString(const String& ifc_text_content,
   builder.Append(" ");
   if (item->Type() == InlineItem::kText) {
     builder.Append(
-        ifc_text_content.Substring(TextOffset().start, TextOffset().Length())
+        ifc_text_content.subview(TextOffset().start, TextOffset().Length())
             .EncodeForDebugging());
   } else if (IsRubyColumn()) {
     if (item->GetLayoutObject()) {

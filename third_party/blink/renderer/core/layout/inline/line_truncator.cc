@@ -73,8 +73,7 @@ void LineTruncator::SetupEllipsis() {
     BidiParagraph::Runs bidi_runs;
     bidi.GetVisualRuns(ellipsis_text, &bidi_runs);
     for (const BidiParagraph::Run& bidi_run : bidi_runs) {
-      String run_text =
-          ellipsis_text.Substring(bidi_run.start, bidi_run.Length());
+      String run_text = ellipsis_text.substr(bidi_run.start, bidi_run.Length());
       HarfBuzzShaper shaper(run_text);
       TextDirection run_direction = DirectionFromLevel(bidi_run.level);
       const ShapeResultView* run_shape_result =
