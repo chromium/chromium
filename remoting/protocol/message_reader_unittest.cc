@@ -154,7 +154,7 @@ TEST_F(MessageReaderTest, ReadError) {
 
   InitReader();
 
-  EXPECT_EQ(net::ERR_FAILED, read_error_);
+  EXPECT_EQ(read_error_, net::ERR_FAILED);
   EXPECT_FALSE(reader_);
 }
 
@@ -166,7 +166,7 @@ TEST_F(MessageReaderTest, EndOfStream) {
 
   InitReader();
 
-  EXPECT_EQ(0, read_error_);
+  EXPECT_EQ(read_error_, 0);
   EXPECT_FALSE(reader_);
 }
 

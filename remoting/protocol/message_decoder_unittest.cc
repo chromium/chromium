@@ -90,7 +90,7 @@ void SimulateReadSequence(base::span<const int> read_sequence) {
   }
 
   // Then verify the decoded messages.
-  EXPECT_EQ(10u, message_list.size());
+  EXPECT_EQ(message_list.size(), 10u);
 
   unsigned int index = 0;
   for (const auto& message : message_list) {
@@ -101,8 +101,8 @@ void SimulateReadSequence(base::span<const int> read_sequence) {
 
     // TODO(sergeyu): Don't use index here. Instead store the expected values
     // in an array.
-    EXPECT_EQ(kTestKey + index, message->key_event().usb_keycode());
-    EXPECT_EQ((index % 2) != 0, message->key_event().pressed());
+    EXPECT_EQ(message->key_event().usb_keycode(), kTestKey + index);
+    EXPECT_EQ(message->key_event().pressed(), (index % 2) != 0);
     ++index;
   }
 }

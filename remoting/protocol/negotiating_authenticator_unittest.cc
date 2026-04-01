@@ -149,8 +149,8 @@ class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
   virtual void VerifyAccepted() {
     ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
 
-    ASSERT_EQ(Authenticator::ACCEPTED, host_->state());
-    ASSERT_EQ(Authenticator::ACCEPTED, client_->state());
+    ASSERT_EQ(host_->state(), Authenticator::ACCEPTED);
+    ASSERT_EQ(client_->state(), Authenticator::ACCEPTED);
 
     client_auth_ = client_->CreateChannelAuthenticator();
     host_auth_ = host_->CreateChannelAuthenticator();
@@ -193,8 +193,8 @@ TEST_F(NegotiatingAuthenticatorTest, SuccessfulAuthSharedSecret) {
   ASSERT_NO_FATAL_FAILURE(
       InitAuthenticators(kNoClientId, kNoPairedSecret, kTestPin, kTestPin));
   VerifyAccepted();
-  EXPECT_EQ(AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519,
-            current_method());
+  EXPECT_EQ(current_method(),
+            AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519);
 }
 
 TEST_F(NegotiatingAuthenticatorTest, InvalidSharedSecret) {
@@ -221,8 +221,8 @@ TEST_F(NegotiatingAuthenticatorTest, PairingNotSupported) {
       InitAuthenticators(kTestClientId, kTestPairedSecret, kTestPin, kTestPin));
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
   VerifyAccepted();
-  EXPECT_EQ(AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519,
-            current_method());
+  EXPECT_EQ(current_method(),
+            AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519);
 }
 
 TEST_F(NegotiatingPairingAuthenticatorTest, PairingSupportedButNotPaired) {

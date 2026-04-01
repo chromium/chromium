@@ -68,10 +68,10 @@ TEST(IceConfigTest, ParseValid) {
                                         true) == config.turn_servers[5]);
 
   ASSERT_EQ(config.stun_servers.size(), 2U);
-  EXPECT_EQ(webrtc::SocketAddress("stun_server.com", 18344),
-            config.stun_servers[0]);
-  EXPECT_EQ(webrtc::SocketAddress("1.2.3.4", 3478), config.stun_servers[1]);
-  EXPECT_EQ(8000.0, config.max_bitrate_kbps);
+  EXPECT_EQ(config.stun_servers[0],
+            webrtc::SocketAddress("stun_server.com", 18344));
+  EXPECT_EQ(config.stun_servers[1], webrtc::SocketAddress("1.2.3.4", 3478));
+  EXPECT_EQ(config.max_bitrate_kbps, 8000.0);
 }
 
 TEST(IceConfigTest, ParseGetIceConfigResponse) {
@@ -194,7 +194,7 @@ TEST(IceConfigTest, UnspecifiedMaxRate_IsZero) {
 
   IceConfig config = IceConfig::Parse(*base::JSONReader::ReadDict(
       kTestConfigJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-  EXPECT_EQ(0, config.max_bitrate_kbps);
+  EXPECT_EQ(config.max_bitrate_kbps, 0);
 }
 
 TEST(IceConfigTest, OneSpecifiedMaxRate_IsUsed) {
@@ -217,7 +217,7 @@ TEST(IceConfigTest, OneSpecifiedMaxRate_IsUsed) {
 
   IceConfig config1 = IceConfig::Parse(*base::JSONReader::ReadDict(
       kTestConfigJson1, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-  EXPECT_EQ(1000, config1.max_bitrate_kbps);
+  EXPECT_EQ(config1.max_bitrate_kbps, 1000);
 
   const char kTestConfigJson2[] =
       "{"
@@ -238,7 +238,7 @@ TEST(IceConfigTest, OneSpecifiedMaxRate_IsUsed) {
 
   IceConfig config2 = IceConfig::Parse(*base::JSONReader::ReadDict(
       kTestConfigJson2, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-  EXPECT_EQ(2000, config2.max_bitrate_kbps);
+  EXPECT_EQ(config2.max_bitrate_kbps, 2000);
 }
 
 }  // namespace remoting::protocol

@@ -189,10 +189,10 @@ class FakeAudioPlayer : public AudioStub {
   void ProcessAudioPacket(std::unique_ptr<AudioPacket> packet,
                           base::OnceClosure done) override {
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
-    EXPECT_EQ(AudioPacket::ENCODING_RAW, packet->encoding());
-    EXPECT_EQ(AudioPacket::SAMPLING_RATE_48000, packet->sampling_rate());
-    EXPECT_EQ(AudioPacket::BYTES_PER_SAMPLE_2, packet->bytes_per_sample());
-    EXPECT_EQ(AudioPacket::CHANNELS_STEREO, packet->channels());
+    EXPECT_EQ(packet->encoding(), AudioPacket::ENCODING_RAW);
+    EXPECT_EQ(packet->sampling_rate(), AudioPacket::SAMPLING_RATE_48000);
+    EXPECT_EQ(packet->bytes_per_sample(), AudioPacket::BYTES_PER_SAMPLE_2);
+    EXPECT_EQ(packet->channels(), AudioPacket::CHANNELS_STEREO);
 
     data_.insert(data_.end(), packet->data(0).begin(), packet->data(0).end());
 

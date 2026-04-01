@@ -239,12 +239,12 @@ TEST_F(ChannelMultiplexerTest, WriteFailSync) {
   EXPECT_CALL(cb1, Run(net::ERR_FAILED));
   EXPECT_CALL(cb2, Run(net::ERR_FAILED));
 
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            host_socket1_->Write(buf.get(), buf->size(), cb1.Get(),
-                                 TRAFFIC_ANNOTATION_FOR_TESTS));
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            host_socket2_->Write(buf.get(), buf->size(), cb2.Get(),
-                                 TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_EQ(host_socket1_->Write(buf.get(), buf->size(), cb1.Get(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS),
+            net::ERR_IO_PENDING);
+  EXPECT_EQ(host_socket2_->Write(buf.get(), buf->size(), cb2.Get(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS),
+            net::ERR_IO_PENDING);
 
   base::RunLoop().RunUntilIdle();
 }
@@ -267,12 +267,12 @@ TEST_F(ChannelMultiplexerTest, WriteFailAsync) {
   EXPECT_CALL(cb1, Run(net::ERR_FAILED));
   EXPECT_CALL(cb2, Run(net::ERR_FAILED));
 
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            host_socket1_->Write(buf.get(), buf->size(), cb1.Get(),
-                                 TRAFFIC_ANNOTATION_FOR_TESTS));
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            host_socket2_->Write(buf.get(), buf->size(), cb2.Get(),
-                                 TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_EQ(host_socket1_->Write(buf.get(), buf->size(), cb1.Get(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS),
+            net::ERR_IO_PENDING);
+  EXPECT_EQ(host_socket2_->Write(buf.get(), buf->size(), cb2.Get(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS),
+            net::ERR_IO_PENDING);
 
   base::RunLoop().RunUntilIdle();
 }
@@ -298,12 +298,12 @@ TEST_F(ChannelMultiplexerTest, DeleteWhenFailed) {
       .Times(AtMost(1))
       .WillOnce(InvokeWithoutArgs(this, &ChannelMultiplexerTest::DeleteAll));
 
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            host_socket1_->Write(buf.get(), buf->size(), cb1.Get(),
-                                 TRAFFIC_ANNOTATION_FOR_TESTS));
-  EXPECT_EQ(net::ERR_IO_PENDING,
-            host_socket2_->Write(buf.get(), buf->size(), cb2.Get(),
-                                 TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_EQ(host_socket1_->Write(buf.get(), buf->size(), cb1.Get(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS),
+            net::ERR_IO_PENDING);
+  EXPECT_EQ(host_socket2_->Write(buf.get(), buf->size(), cb2.Get(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS),
+            net::ERR_IO_PENDING);
 
   base::RunLoop().RunUntilIdle();
 

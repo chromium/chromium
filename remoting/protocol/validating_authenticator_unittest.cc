@@ -112,7 +112,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_SingleMessage) {
 
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::ACCEPTED, validating_authenticator_->state());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::ACCEPTED);
 }
 
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_TwoMessages) {
@@ -127,7 +127,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_TwoMessages) {
 
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::MESSAGE_READY, validating_authenticator_->state());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::MESSAGE_READY);
 
   // Now 'retrieve' the message for the client which resets the state.
   EXPECT_CALL(*mock_authenticator_, state())
@@ -137,7 +137,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_TwoMessages) {
       .WillOnce(Return(JingleAuthentication()));
 
   validating_authenticator_->GetNextMessage();
-  ASSERT_EQ(Authenticator::WAITING_MESSAGE, validating_authenticator_->state());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::WAITING_MESSAGE);
 
   // Now send the second message for processing.
   EXPECT_CALL(*mock_authenticator_, state())
@@ -145,7 +145,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_TwoMessages) {
 
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::ACCEPTED, validating_authenticator_->state());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::ACCEPTED);
 }
 
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_SendBeforeAccept) {
@@ -164,11 +164,11 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_SendBeforeAccept) {
 
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::MESSAGE_READY, validating_authenticator_->state());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::MESSAGE_READY);
 
   // Now 'retrieve' the message for the client which resets the state.
   validating_authenticator_->GetNextMessage();
-  ASSERT_EQ(Authenticator::ACCEPTED, validating_authenticator_->state());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::ACCEPTED);
 }
 
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorInvalidCredentials) {
@@ -182,9 +182,9 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorInvalidCredentials) {
 
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::RejectionReason::INVALID_CREDENTIALS,
-            validating_authenticator_->rejection_reason());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::REJECTED);
+  ASSERT_EQ(validating_authenticator_->rejection_reason(),
+            Authenticator::RejectionReason::INVALID_CREDENTIALS);
 }
 
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorRejectedByUser) {
@@ -198,9 +198,9 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorRejectedByUser) {
 
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::RejectionReason::REJECTED_BY_USER,
-            validating_authenticator_->rejection_reason());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::REJECTED);
+  ASSERT_EQ(validating_authenticator_->rejection_reason(),
+            Authenticator::RejectionReason::REJECTED_BY_USER);
 }
 
 TEST_F(ValidatingAuthenticatorTest,
@@ -220,9 +220,9 @@ TEST_F(ValidatingAuthenticatorTest,
 
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::RejectionReason::REJECTED_BY_USER,
-            validating_authenticator_->rejection_reason());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::REJECTED);
+  ASSERT_EQ(validating_authenticator_->rejection_reason(),
+            Authenticator::RejectionReason::REJECTED_BY_USER);
 }
 
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorTooManyConnections) {
@@ -236,9 +236,9 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorTooManyConnections) {
 
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::RejectionReason::TOO_MANY_CONNECTIONS,
-            validating_authenticator_->rejection_reason());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::REJECTED);
+  ASSERT_EQ(validating_authenticator_->rejection_reason(),
+            Authenticator::RejectionReason::TOO_MANY_CONNECTIONS);
 }
 
 TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidCredentials) {
@@ -255,9 +255,9 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidCredentials) {
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::RejectionReason::INVALID_CREDENTIALS,
-            validating_authenticator_->rejection_reason());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::REJECTED);
+  ASSERT_EQ(validating_authenticator_->rejection_reason(),
+            Authenticator::RejectionReason::INVALID_CREDENTIALS);
 }
 
 TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidAccount) {
@@ -274,9 +274,9 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidAccount) {
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::RejectionReason::INVALID_ACCOUNT_ID,
-            validating_authenticator_->rejection_reason());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::REJECTED);
+  ASSERT_EQ(validating_authenticator_->rejection_reason(),
+            Authenticator::RejectionReason::INVALID_ACCOUNT_ID);
 }
 
 TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidState) {
@@ -292,9 +292,9 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidState) {
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
-  ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::RejectionReason::INVALID_STATE,
-            validating_authenticator_->rejection_reason());
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::REJECTED);
+  ASSERT_EQ(validating_authenticator_->rejection_reason(),
+            Authenticator::RejectionReason::INVALID_STATE);
 }
 
 TEST_F(ValidatingAuthenticatorTest, StateChangeAfterAccepted_Propagated) {

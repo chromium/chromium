@@ -425,11 +425,11 @@ TEST_F(JingleSessionTest, ConnectWithOutOfOrderIqs) {
 
   ASSERT_EQ(client_transport_.received_messages().size(), 2U);
   EXPECT_EQ(
-      "1",
-      client_transport_.received_messages()[0]->ice_credentials[0].channel);
+      client_transport_.received_messages()[0]->ice_credentials[0].channel,
+      "1");
   EXPECT_EQ(
-      "2",
-      client_transport_.received_messages()[1]->ice_credentials[0].channel);
+      client_transport_.received_messages()[1]->ice_credentials[0].channel,
+      "2");
 }
 
 // Verify that out-of-order messages are handled correctly when the session is
@@ -451,8 +451,8 @@ TEST_F(JingleSessionTest, ConnectWithOutOfOrderIqsDestroyOnFirstMessage) {
 
   ASSERT_EQ(client_transport_.received_messages().size(), 1U);
   EXPECT_EQ(
-      "1",
-      client_transport_.received_messages()[0]->ice_credentials[0].channel);
+      client_transport_.received_messages()[0]->ice_credentials[0].channel,
+      "1");
 }
 
 // Verify that connection is terminated when single-step auth fails.
@@ -488,7 +488,7 @@ TEST_F(JingleSessionTest, TestIncompatibleProtocol) {
   client_server_->set_protocol_config(std::move(config));
   ConnectClient(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
 
-  EXPECT_EQ(ErrorCode::INCOMPATIBLE_PROTOCOL, client_session_->error());
+  EXPECT_EQ(client_session_->error(), ErrorCode::INCOMPATIBLE_PROTOCOL);
   EXPECT_FALSE(host_session_);
 }
 
@@ -591,8 +591,8 @@ TEST_F(JingleSessionTest, TransportInfoDuringAuthentication) {
   // received.
   ASSERT_EQ(client_transport_.received_messages().size(), 1U);
   EXPECT_EQ(
-      "1",
-      client_transport_.received_messages()[0]->ice_credentials[0].channel);
+      client_transport_.received_messages()[0]->ice_credentials[0].channel,
+      "1");
 }
 
 TEST_F(JingleSessionTest, TestSessionPlugin) {

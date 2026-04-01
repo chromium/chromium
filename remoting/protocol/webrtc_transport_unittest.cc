@@ -259,8 +259,8 @@ class WebrtcTransportTest : public testing::Test {
     host_event_handler_.set_connected_callback({});
     client_event_handler_.set_connected_callback({});
 
-    EXPECT_EQ(ErrorCode::OK, client_error_);
-    EXPECT_EQ(ErrorCode::OK, host_error_);
+    EXPECT_EQ(client_error_, ErrorCode::OK);
+    EXPECT_EQ(host_error_, ErrorCode::OK);
   }
 
   void ExpectClientDataStream() {
@@ -277,7 +277,7 @@ class WebrtcTransportTest : public testing::Test {
 
   void OnIncomingChannel(const std::string& name,
                          std::unique_ptr<MessagePipe> pipe) {
-    EXPECT_EQ(kChannelName, name);
+    EXPECT_EQ(name, kChannelName);
     client_message_pipe_ = std::move(pipe);
     client_message_pipe_->Start(&client_message_pipe_event_handler_);
 
@@ -367,7 +367,7 @@ TEST_F(WebrtcTransportTest, InvalidAuthKey) {
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
-  EXPECT_EQ(ErrorCode::AUTHENTICATION_FAILED, client_error_);
+  EXPECT_EQ(client_error_, ErrorCode::AUTHENTICATION_FAILED);
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
@@ -400,11 +400,11 @@ TEST_F(WebrtcTransportTest, MAYBE_DataStream) {
       run_loop_->QuitClosure());
   run_loop_->Run();
 
-  ASSERT_EQ(1U, client_message_pipe_event_handler_.received_messages().size());
+  ASSERT_EQ(client_message_pipe_event_handler_.received_messages().size(), 1U);
 
   std::unique_ptr<TextEvent> received_message = ParseMessage<TextEvent>(
       client_message_pipe_event_handler_.received_messages().front().get());
-  EXPECT_EQ(message.text(), received_message->text());
+  EXPECT_EQ(received_message->text(), message.text());
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
@@ -464,7 +464,7 @@ TEST_F(WebrtcTransportTest, MAYBE_TerminateDataChannel) {
   run_loop_->Run();
 
   // Check that OnHostChannelClosed() has been called.
-  EXPECT_EQ(ErrorCode::OK, host_error_);
+  EXPECT_EQ(host_error_, ErrorCode::OK);
   EXPECT_FALSE(host_message_pipe_);
 }
 

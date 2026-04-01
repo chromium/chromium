@@ -49,8 +49,8 @@ TEST(WebrtcVideoFrameAdapter, AdapterHasCorrectSize) {
       new webrtc::RefCountedObject<WebrtcVideoFrameAdapter>(
           std::move(desktop_frame), std::move(frame_stats)));
 
-  EXPECT_EQ(100, adapter->width());
-  EXPECT_EQ(200, adapter->height());
+  EXPECT_EQ(adapter->width(), 100);
+  EXPECT_EQ(adapter->height(), 200);
 }
 
 TEST(WebrtcVideoFrameAdapter, EmptyUpdateRegionGivesFrameWithEmptyUpdateRect) {

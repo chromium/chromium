@@ -149,7 +149,7 @@ TEST(InputEventTrackerTest, ReleaseAllKeys) {
   EXPECT_FALSE(input_tracker.IsKeyPressed(static_cast<ui::DomCode>(1)));
   EXPECT_FALSE(input_tracker.IsKeyPressed(static_cast<ui::DomCode>(2)));
   EXPECT_TRUE(input_tracker.IsKeyPressed(static_cast<ui::DomCode>(3)));
-  EXPECT_EQ(1, input_tracker.PressedKeyCount());
+  EXPECT_EQ(input_tracker.PressedKeyCount(), 1);
 
   input_tracker.ReleaseAll();
 }
@@ -206,7 +206,7 @@ TEST(InputEventTrackerTest, TrackUsbKeyEvents) {
   EXPECT_TRUE(input_tracker.IsKeyPressed(static_cast<ui::DomCode>(5)));
   EXPECT_TRUE(input_tracker.IsKeyPressed(static_cast<ui::DomCode>(6)));
   EXPECT_TRUE(input_tracker.IsKeyPressed(static_cast<ui::DomCode>(7)));
-  EXPECT_EQ(4, input_tracker.PressedKeyCount());
+  EXPECT_EQ(input_tracker.PressedKeyCount(), 4);
 
   input_tracker.ReleaseAll();
 }
@@ -253,7 +253,7 @@ TEST(InputEventTrackerTest, InvalidEventsNotTracked) {
   EXPECT_FALSE(input_tracker.IsKeyPressed(static_cast<ui::DomCode>(1)));
   EXPECT_FALSE(input_tracker.IsKeyPressed(static_cast<ui::DomCode>(2)));
   EXPECT_TRUE(input_tracker.IsKeyPressed(static_cast<ui::DomCode>(3)));
-  EXPECT_EQ(1, input_tracker.PressedKeyCount());
+  EXPECT_EQ(input_tracker.PressedKeyCount(), 1);
 
   input_tracker.ReleaseAll();
 }

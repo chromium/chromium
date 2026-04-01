@@ -294,7 +294,7 @@ TEST_F(IceTransportTest, MAYBE_FailedChannelAuth) {
   run_loop_->Run();
 
   EXPECT_FALSE(host_message_pipe_);
-  EXPECT_EQ(ErrorCode::CHANNEL_CONNECTION_ERROR, error_);
+  EXPECT_EQ(error_, ErrorCode::CHANNEL_CONNECTION_ERROR);
 
   client_transport_->GetChannelFactory()->CancelChannelCreation(kChannelName);
 }
@@ -325,7 +325,7 @@ TEST_F(IceTransportTest, TestBrokenTransport) {
   // Verify that neither of the two ends of the channel is connected.
   EXPECT_FALSE(client_message_pipe_);
   EXPECT_FALSE(host_message_pipe_);
-  EXPECT_EQ(ErrorCode::CHANNEL_CONNECTION_ERROR, error_);
+  EXPECT_EQ(error_, ErrorCode::CHANNEL_CONNECTION_ERROR);
 
   client_transport_->GetChannelFactory()->CancelChannelCreation(kChannelName);
   host_transport_->GetChannelFactory()->CancelChannelCreation(kChannelName);

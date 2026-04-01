@@ -87,7 +87,7 @@ class ChromiumSocketFactoryTest : public testing::Test {
     // It is expected that send_packet was set using webrtc::TimeMillis(),
     // which will use the fake clock set above, so the times will be equal
     int64_t fake_clock_ms = webrtc::TimeMillis();
-    EXPECT_EQ(fake_clock_ms, sent_packet.send_time_ms);
+    EXPECT_EQ(sent_packet.send_time_ms, fake_clock_ms);
   }
 
   void VerifyCanSendAndReceive(webrtc::AsyncPacketSocket* sender,
@@ -198,8 +198,8 @@ TEST_F(ChromiumSocketFactoryTest, SendAndReceiveManyPackets) {
 }
 
 TEST_F(ChromiumSocketFactoryTest, SetOptions) {
-  EXPECT_EQ(0, socket_->SetOption(webrtc::Socket::OPT_SNDBUF, 4096));
-  EXPECT_EQ(0, socket_->SetOption(webrtc::Socket::OPT_RCVBUF, 4096));
+  EXPECT_EQ(socket_->SetOption(webrtc::Socket::OPT_SNDBUF, 4096), 0);
+  EXPECT_EQ(socket_->SetOption(webrtc::Socket::OPT_RCVBUF, 4096), 0);
 }
 
 TEST_F(ChromiumSocketFactoryTest, PortRange) {
@@ -239,7 +239,7 @@ TEST_F(ChromiumSocketFactoryTest, CreateMultiplePortsFromPortRange) {
       socket_factory_->CreateUdpSocket(webrtc_env_,
                                        webrtc::SocketAddress("127.0.0.1", 0),
                                        kMinPort, kMaxPort);
-  ASSERT_EQ(nullptr, extra_socket);
+  ASSERT_EQ(extra_socket, nullptr);
 }
 
 TEST_F(ChromiumSocketFactoryTest, TransientError) {

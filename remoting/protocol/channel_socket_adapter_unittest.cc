@@ -72,11 +72,11 @@ TEST_F(TransportChannelSocketAdapterTest, Read) {
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize.InBytes());
   base::expected<base::ByteSize, net::Error> result =
       target_->Recv(buffer.get(), kBufferSize, callback_);
-  ASSERT_EQ(net::ERR_IO_PENDING, result.error());
+  ASSERT_EQ(result.error(), net::ERR_IO_PENDING);
 
   channel_.NotifyPacketReceived(
       webrtc::ReceivedIpPacket(kTestData, webrtc::SocketAddress()));
-  EXPECT_EQ(kTestDataSize, callback_result_);
+  EXPECT_EQ(callback_result_, kTestDataSize);
 }
 
 // Verify that Read() after Close() returns error.
@@ -84,14 +84,14 @@ TEST_F(TransportChannelSocketAdapterTest, ReadClose) {
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize.InBytes());
   base::expected<base::ByteSize, net::Error> result =
       target_->Recv(buffer.get(), kBufferSize, callback_);
-  ASSERT_EQ(net::ERR_IO_PENDING, result.error());
+  ASSERT_EQ(result.error(), net::ERR_IO_PENDING);
 
   target_->Close(kTestError);
-  EXPECT_EQ(kTestError, callback_result_.error());
+  EXPECT_EQ(callback_result_.error(), kTestError);
 
   // All Recv() calls after Close() should return the error.
-  EXPECT_EQ(base::unexpected(kTestError),
-            target_->Recv(buffer.get(), kBufferSize, callback_));
+  EXPECT_EQ(target_->Recv(buffer.get(), kBufferSize, callback_),
+            base::unexpected(kTestError));
 }
 
 // Verify that Send sends the packet and returns correct result.
@@ -105,7 +105,7 @@ TEST_F(TransportChannelSocketAdapterTest, Send) {
 
   base::expected<base::ByteSize, net::Error> result =
       target_->Send(buffer.get(), kTestDataSize, callback_);
-  EXPECT_EQ(kTestDataSize, result);
+  EXPECT_EQ(result, kTestDataSize);
 }
 
 // Verify that the message is still sent if Send() is called while
@@ -123,7 +123,7 @@ TEST_F(TransportChannelSocketAdapterTest, SendPending) {
 
   base::expected<base::ByteSize, net::Error> result =
       target_->Send(buffer.get(), kTestDataSize, callback_);
-  ASSERT_EQ(base::ByteSize(0), result);
+  ASSERT_EQ(result, base::ByteSize(0));
 }
 
 }  // namespace remoting::protocol

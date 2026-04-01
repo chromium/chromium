@@ -133,7 +133,7 @@ TEST_F(ClientVideoDispatcherTest, WithoutAcks) {
   writer_.Write(SerializeAndFrameMessage(packet), {},
                 TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1U, video_packets_.size());
+  EXPECT_EQ(video_packets_.size(), 1U);
 
   std::move(packet_done_callbacks_.front()).Run();
   base::RunLoop().RunUntilIdle();
@@ -154,7 +154,7 @@ TEST_F(ClientVideoDispatcherTest, WithAcks) {
   writer_.Write(SerializeAndFrameMessage(packet), {},
                 TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1U, video_packets_.size());
+  EXPECT_EQ(video_packets_.size(), 1U);
 
   // Ack should only be sent after the packet is processed.
   EXPECT_TRUE(ack_messages_.empty());
@@ -165,8 +165,8 @@ TEST_F(ClientVideoDispatcherTest, WithAcks) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that the Ack message has been received.
-  ASSERT_EQ(1U, ack_messages_.size());
-  EXPECT_EQ(kTestFrameId, ack_messages_[0]->frame_id());
+  ASSERT_EQ(ack_messages_.size(), 1U);
+  EXPECT_EQ(ack_messages_[0]->frame_id(), kTestFrameId);
 }
 
 // Verifies that the dispatcher properly synthesizes VideoLayout message when
@@ -192,13 +192,13 @@ TEST_F(ClientVideoDispatcherTest, VideoLayout) {
                 TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(1, layout.video_track_size());
-  EXPECT_EQ(0, layout.video_track(0).position_x());
-  EXPECT_EQ(0, layout.video_track(0).position_y());
-  EXPECT_EQ(kScreenSize / kScaleFactor, layout.video_track(0).width());
-  EXPECT_EQ(kScreenSize / kScaleFactor, layout.video_track(0).height());
-  EXPECT_EQ(kDefaultDpi * kScaleFactor, layout.video_track(0).x_dpi());
-  EXPECT_EQ(kDefaultDpi * kScaleFactor, layout.video_track(0).y_dpi());
+  ASSERT_EQ(layout.video_track_size(), 1);
+  EXPECT_EQ(layout.video_track(0).position_x(), 0);
+  EXPECT_EQ(layout.video_track(0).position_y(), 0);
+  EXPECT_EQ(layout.video_track(0).width(), kScreenSize / kScaleFactor);
+  EXPECT_EQ(layout.video_track(0).height(), kScreenSize / kScaleFactor);
+  EXPECT_EQ(layout.video_track(0).x_dpi(), kDefaultDpi * kScaleFactor);
+  EXPECT_EQ(layout.video_track(0).y_dpi(), kDefaultDpi * kScaleFactor);
 }
 
 // Verify that Ack messages are sent in correct order.
@@ -219,7 +219,7 @@ TEST_F(ClientVideoDispatcherTest, AcksOrder) {
                 TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(2U, video_packets_.size());
+  EXPECT_EQ(video_packets_.size(), 2U);
   EXPECT_TRUE(ack_messages_.empty());
 
   // Call completion callbacks in revers order.
@@ -229,9 +229,9 @@ TEST_F(ClientVideoDispatcherTest, AcksOrder) {
   base::RunLoop().RunUntilIdle();
 
   // Verify order of Ack messages.
-  ASSERT_EQ(2U, ack_messages_.size());
-  EXPECT_EQ(kTestFrameId, ack_messages_[0]->frame_id());
-  EXPECT_EQ(kTestFrameId + 1, ack_messages_[1]->frame_id());
+  ASSERT_EQ(ack_messages_.size(), 2U);
+  EXPECT_EQ(ack_messages_[0]->frame_id(), kTestFrameId);
+  EXPECT_EQ(ack_messages_[1]->frame_id(), kTestFrameId + 1);
 }
 
 }  // namespace remoting::protocol

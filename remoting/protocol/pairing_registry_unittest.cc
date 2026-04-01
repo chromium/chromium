@@ -46,10 +46,10 @@ void VerifyPairing(PairingRegistry::Pairing expected,
                    const base::DictValue& actual) {
   const std::string* value = actual.FindString(PairingRegistry::kClientNameKey);
   ASSERT_TRUE(value);
-  EXPECT_EQ(expected.client_name(), *value);
+  EXPECT_EQ(*value, expected.client_name());
   value = actual.FindString(PairingRegistry::kClientIdKey);
   ASSERT_TRUE(value);
-  EXPECT_EQ(expected.client_id(), *value);
+  EXPECT_EQ(*value, expected.client_id());
 
   EXPECT_FALSE(actual.Find(PairingRegistry::kSharedSecretKey));
 }
@@ -68,7 +68,7 @@ class PairingRegistryTest : public testing::Test {
 
   void ExpectSecret(const std::string& expected,
                     PairingRegistry::Pairing actual) {
-    EXPECT_EQ(expected, actual.shared_secret());
+    EXPECT_EQ(actual.shared_secret(), expected);
     ++callback_count_;
   }
 
@@ -97,14 +97,14 @@ TEST_F(PairingRegistryTest, CreateAndGetPairings) {
       pairing_1.client_id(),
       base::BindOnce(&PairingRegistryTest::ExpectSecret, base::Unretained(this),
                      pairing_1.shared_secret()));
-  EXPECT_EQ(1, callback_count_);
+  EXPECT_EQ(callback_count_, 1);
 
   // Check that the second client is paired with a different shared secret.
   registry->GetPairing(
       pairing_2.client_id(),
       base::BindOnce(&PairingRegistryTest::ExpectSecret, base::Unretained(this),
                      pairing_2.shared_secret()));
-  EXPECT_EQ(2, callback_count_);
+  EXPECT_EQ(callback_count_, 2);
 }
 
 TEST_F(PairingRegistryTest, GetAllPairings) {
@@ -116,7 +116,7 @@ TEST_F(PairingRegistryTest, GetAllPairings) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(2u, pairings_.size());
+  ASSERT_EQ(pairings_.size(), 2u);
   const base::Value& actual_pairing_1_value = pairings_[0];
   ASSERT_TRUE(actual_pairing_1_value.is_dict());
   const base::Value& actual_pairing_2_value = pairings_[1];
@@ -151,14 +151,14 @@ TEST_F(PairingRegistryTest, DeletePairing) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(1u, pairings_.size());
+  ASSERT_EQ(pairings_.size(), 1u);
   const base::Value& actual_pairing_2_value = pairings_[0];
   ASSERT_TRUE(actual_pairing_2_value.is_dict());
   const std::string* actual_client_id =
       actual_pairing_2_value.GetDict().FindString(
           PairingRegistry::kClientIdKey);
   ASSERT_TRUE(actual_client_id);
-  EXPECT_EQ(pairing_2.client_id(), *actual_client_id);
+  EXPECT_EQ(*actual_client_id, pairing_2.client_id());
 }
 
 TEST_F(PairingRegistryTest, ClearAllPairings) {

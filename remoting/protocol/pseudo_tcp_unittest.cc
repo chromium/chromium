@@ -150,7 +150,7 @@ class PseudoTcpTestBase : public ::testing::Test,
     // TODO: OnTcpClosed is only ever notified in case of error in
     // the current implementation.  Solicited close is not (yet) supported.
     VLOG(1) << "Closed";
-    EXPECT_EQ(0U, error);
+    EXPECT_EQ(error, 0U);
     if (tcp == &remote_) {
       have_disconnected_ = true;
       if (transfer_complete_callback_) {
@@ -240,7 +240,7 @@ class PseudoTcpTest : public PseudoTcpTestBase {
     recv_buffer_.reserve(size);
     // Connect and wait until connected.
     start = base::TimeTicks::Now();
-    EXPECT_EQ(0, Connect());
+    EXPECT_EQ(Connect(), 0);
 
     // Wait for connection - use bounded loop instead of time-based
     for (int i = 0; i < kConnectTimeoutMs / 100 && !have_connected_; i++) {
@@ -315,9 +315,9 @@ class PseudoTcpTest : public PseudoTcpTestBase {
     received = recv_buffer_.size();
     // Ensure we closed down OK and we got the right data.
     // TODO: Ensure the errors are cleared properly.
-    // EXPECT_EQ(0, local_.GetError());
-    // EXPECT_EQ(0, remote_.GetError());
-    EXPECT_EQ(static_cast<size_t>(size), received);
+    // EXPECT_EQ(local_.GetError(), 0);
+    // EXPECT_EQ(remote_.GetError(), 0);
+    EXPECT_EQ(received, static_cast<size_t>(size));
     EXPECT_EQ(send_buffer_, recv_buffer_);
     VLOG(1) << "Transferred " << received << " bytes in "
             << elapsed.InMilliseconds() << " ms ("
@@ -425,7 +425,7 @@ class PseudoTcpTestPingPong : public PseudoTcpTestBase {
     recv_buffer_.reserve(size);
     // Connect and wait until connected.
     start = base::TimeTicks::Now();
-    EXPECT_EQ(0, Connect());
+    EXPECT_EQ(Connect(), 0);
 
     // Wait for connection
     for (int i = 0; i < kConnectTimeoutMs / 100 && !have_connected_; i++) {
@@ -590,7 +590,7 @@ class PseudoTcpTestReceiveWindow : public PseudoTcpTestBase {
     recv_buffer_.reserve(size);
 
     // Connect and wait until connected.
-    EXPECT_EQ(0, Connect());
+    EXPECT_EQ(Connect(), 0);
     base::TimeTicks start = base::TimeTicks::Now();
     while (!have_connected_ && (base::TimeTicks::Now() - start) <
                                    base::Milliseconds(kConnectTimeoutMs)) {
@@ -604,8 +604,8 @@ class PseudoTcpTestReceiveWindow : public PseudoTcpTestBase {
     }
     EXPECT_TRUE(have_disconnected_);
 
-    ASSERT_EQ(2u, send_position_.size());
-    ASSERT_EQ(2u, recv_position_.size());
+    ASSERT_EQ(send_position_.size(), 2u);
+    ASSERT_EQ(recv_position_.size(), 2u);
 
     const size_t estimated_recv_window = EstimateReceiveWindowSize();
 
@@ -616,7 +616,7 @@ class PseudoTcpTestReceiveWindow : public PseudoTcpTestBase {
     EXPECT_GE(1024u, estimated_recv_window - send_position_diff);
 
     // Receiver drained the receive window twice.
-    EXPECT_EQ(2 * estimated_recv_window, recv_position_[1]);
+    EXPECT_EQ(recv_position_[1], 2 * estimated_recv_window);
   }
 
   uint32_t EstimateReceiveWindowSize() const {
@@ -963,7 +963,7 @@ TEST_F(PseudoTcpTestReceiveWindow, TestSetVerySmallSendWindowSize) {
   SetOptAckDelay(0);
   SetOptSndBuf(900);
   TestTransfer(1024 * 1000);
-  EXPECT_EQ(900u, EstimateSendWindowSize());
+  EXPECT_EQ(EstimateSendWindowSize(), 900u);
 }
 
 // Test setting receive window size to a value other than default.
@@ -975,7 +975,7 @@ TEST_F(PseudoTcpTestReceiveWindow, TestSetReceiveWindowSize) {
   SetRemoteOptRcvBuf(100000);
   SetLocalOptRcvBuf(100000);
   TestTransfer(1024 * 1000);
-  EXPECT_EQ(100000u, EstimateReceiveWindowSize());
+  EXPECT_EQ(EstimateReceiveWindowSize(), 100000u);
 }
 
 /* Test sending data with mismatched MTUs. We should detect this and reduce

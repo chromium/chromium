@@ -183,13 +183,13 @@ class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
   }
 
   void CheckResults() {
-    EXPECT_EQ(0, write_errors_);
-    EXPECT_EQ(0, read_errors_);
+    EXPECT_EQ(write_errors_, 0);
+    EXPECT_EQ(read_errors_, 0);
 
-    ASSERT_EQ(kTestDataSize + kMessageSize, input_buffer_->capacity());
+    ASSERT_EQ(input_buffer_->capacity(), kTestDataSize + kMessageSize);
 
     output_buffer_->SetOffset(0);
-    ASSERT_EQ(kTestDataSize, output_buffer_->size());
+    ASSERT_EQ(output_buffer_->size(), kTestDataSize);
 
     EXPECT_EQ(output_buffer_->span(), input_buffer_->span_before_offset());
   }
@@ -338,8 +338,8 @@ TEST_F(PseudoTcpAdapterTest, DataTransfer) {
       client_pseudotcp_->Connect(client_connect_cb.callback());
   ASSERT_FALSE(rv2);
 
-  EXPECT_EQ(net::OK, host_connect_cb.WaitForResult());
-  EXPECT_EQ(net::OK, client_connect_cb.WaitForResult());
+  EXPECT_EQ(host_connect_cb.WaitForResult(), net::OK);
+  EXPECT_EQ(client_connect_cb.WaitForResult(), net::OK);
 
   scoped_refptr<TCPChannelTester> tester = new TCPChannelTester(
       base::SingleThreadTaskRunner::GetCurrentDefault(), host_pseudotcp_.get(),
@@ -373,8 +373,8 @@ TEST_F(PseudoTcpAdapterTest, LimitedChannel) {
       client_pseudotcp_->Connect(client_connect_cb.callback());
   ASSERT_FALSE(rv2);
 
-  EXPECT_EQ(net::OK, host_connect_cb.WaitForResult());
-  EXPECT_EQ(net::OK, client_connect_cb.WaitForResult());
+  EXPECT_EQ(host_connect_cb.WaitForResult(), net::OK);
+  EXPECT_EQ(client_connect_cb.WaitForResult(), net::OK);
 
   scoped_refptr<TCPChannelTester> tester = new TCPChannelTester(
       base::SingleThreadTaskRunner::GetCurrentDefault(), host_pseudotcp_.get(),
@@ -418,7 +418,7 @@ TEST_F(PseudoTcpAdapterTest, DeleteOnConnected) {
   client_pseudotcp_->Connect(client_connect_cb.callback());
   loop.Run();
 
-  ASSERT_EQ(NULL, host_pseudotcp_.get());
+  ASSERT_EQ(host_pseudotcp_.get(), nullptr);
 }
 
 // Verify that we can send/receive data with the write-waits-for-send
@@ -442,8 +442,8 @@ TEST_F(PseudoTcpAdapterTest, WriteWaitsForSendLetsDataThrough) {
       client_pseudotcp_->Connect(client_connect_cb.callback());
   ASSERT_FALSE(rv2);
 
-  EXPECT_EQ(net::OK, host_connect_cb.WaitForResult());
-  EXPECT_EQ(net::OK, client_connect_cb.WaitForResult());
+  EXPECT_EQ(host_connect_cb.WaitForResult(), net::OK);
+  EXPECT_EQ(client_connect_cb.WaitForResult(), net::OK);
 
   scoped_refptr<TCPChannelTester> tester = new TCPChannelTester(
       base::SingleThreadTaskRunner::GetCurrentDefault(), host_pseudotcp_.get(),

@@ -49,14 +49,14 @@ constexpr std::string_view kPreferredCodecFormatString =
 // line-endings to \r\n.
 TEST(SdpMessages, Normalize) {
   SdpMessage sdp_message("a=foo\n\r\nb=bar");
-  EXPECT_EQ("a=foo\r\nb=bar\r\n", sdp_message.ToString());
+  EXPECT_EQ(sdp_message.ToString(), "a=foo\r\nb=bar\r\n");
 }
 
 // Verify that the normalized form of SDP for signature calculation has
 // line-endings of \n, for compatibility with existing clients.
 TEST(SdpMessages, NormalizedForSignature) {
   SdpMessage sdp_message("a=foo\nb=bar\r\n");
-  EXPECT_EQ("a=foo\nb=bar\n", sdp_message.NormalizedForSignature());
+  EXPECT_EQ(sdp_message.NormalizedForSignature(), "a=foo\nb=bar\n");
 }
 
 TEST(SdpMessages, AddCodecParameter) {
@@ -67,13 +67,12 @@ TEST(SdpMessages, AddCodecParameter) {
       "a=rtcp-fb:96 transport-cc\n";
   SdpMessage sdp_message(kSourceSdp);
   EXPECT_TRUE(sdp_message.AddCodecParameter("VP8", "test_param=1"));
-  EXPECT_EQ(
-      "a=group:BUNDLE video\r\n"
-      "m=video 9 UDP/TLS/RTP/SAVPF 96\r\n"
-      "a=rtpmap:96 VP8/90000\r\n"
-      "a=fmtp:96 test_param=1\r\n"
-      "a=rtcp-fb:96 transport-cc\r\n",
-      sdp_message.ToString());
+  EXPECT_EQ(sdp_message.ToString(),
+            "a=group:BUNDLE video\r\n"
+            "m=video 9 UDP/TLS/RTP/SAVPF 96\r\n"
+            "a=rtpmap:96 VP8/90000\r\n"
+            "a=fmtp:96 test_param=1\r\n"
+            "a=rtcp-fb:96 transport-cc\r\n");
 }
 
 TEST(SdpMessages, AddCodecParameterMissingCodec) {
@@ -89,7 +88,7 @@ TEST(SdpMessages, AddCodecParameterMissingCodec) {
       "m=application 9 DTLS/SCTP 5000\r\n";
   SdpMessage sdp_message(kSourceSdp);
   EXPECT_FALSE(sdp_message.AddCodecParameter("VP8", "test_param=1"));
-  EXPECT_EQ(kSourceSdp, sdp_message.ToString());
+  EXPECT_EQ(sdp_message.ToString(), kSourceSdp);
 }
 
 TEST(SdpMessages, AddCodecParameter_MultipleTypes) {
@@ -106,21 +105,20 @@ TEST(SdpMessages, AddCodecParameter_MultipleTypes) {
       "a=rtcp-fb:99 transport-cc\n";
   SdpMessage sdp_message(kSourceSdp);
   EXPECT_TRUE(sdp_message.AddCodecParameter("VP8", "test_param=1"));
-  EXPECT_EQ(
-      "a=group:BUNDLE video\r\n"
-      "m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99\r\n"
-      "a=rtpmap:96 VP8/90000\r\n"
-      "a=fmtp:96 test_param=1\r\n"
-      "a=rtcp-fb:96 transport-cc\r\n"
-      "a=rtpmap:97 VP9/90000\r\n"
-      "a=rtcp-fb:97 transport-cc\r\n"
-      "a=rtpmap:98 VP8/90000\r\n"
-      "a=fmtp:98 test_param=1\r\n"
-      "a=rtcp-fb:98 transport-cc\r\n"
-      "a=rtpmap:99 VP8/90000\r\n"
-      "a=fmtp:99 test_param=1\r\n"
-      "a=rtcp-fb:99 transport-cc\r\n",
-      sdp_message.ToString());
+  EXPECT_EQ(sdp_message.ToString(),
+            "a=group:BUNDLE video\r\n"
+            "m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99\r\n"
+            "a=rtpmap:96 VP8/90000\r\n"
+            "a=fmtp:96 test_param=1\r\n"
+            "a=rtcp-fb:96 transport-cc\r\n"
+            "a=rtpmap:97 VP9/90000\r\n"
+            "a=rtcp-fb:97 transport-cc\r\n"
+            "a=rtpmap:98 VP8/90000\r\n"
+            "a=fmtp:98 test_param=1\r\n"
+            "a=rtcp-fb:98 transport-cc\r\n"
+            "a=rtpmap:99 VP8/90000\r\n"
+            "a=fmtp:99 test_param=1\r\n"
+            "a=rtcp-fb:99 transport-cc\r\n");
 }
 
 TEST(SdpMessages, SetPreferredVideoFormat_PayloadExists_VP8) {

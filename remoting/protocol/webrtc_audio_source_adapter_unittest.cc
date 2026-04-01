@@ -41,11 +41,11 @@ class FakeAudioSink : public webrtc::AudioTrackSinkInterface {
               int sample_rate,
               size_t number_of_channels,
               size_t number_of_samples) override {
-    EXPECT_EQ(kSampleRate, sample_rate);
-    EXPECT_EQ(kBytesPerSample * 8, bits_per_sample);
-    EXPECT_EQ(kChannels, static_cast<int>(number_of_channels));
-    EXPECT_EQ((kSampleRate * kFrameDuration).InSeconds(),
-              static_cast<int>(number_of_samples));
+    EXPECT_EQ(sample_rate, kSampleRate);
+    EXPECT_EQ(bits_per_sample, kBytesPerSample * 8);
+    EXPECT_EQ(static_cast<int>(number_of_channels), kChannels);
+    EXPECT_EQ(static_cast<int>(number_of_samples),
+              (kSampleRate * kFrameDuration).InSeconds());
     const int16_t* samples = static_cast<const int16_t*>(audio_data);
     size_t sample_count = number_of_samples * kChannels;
     samples_.reserve(samples_.size() + sample_count);
@@ -114,8 +114,8 @@ TEST_F(WebrtcAudioSourceAdapterTest, PartialFrames) {
   ASSERT_EQ(total_samples * kChannels, static_cast<int>(received.size()));
   sample_value = 1;
   for (int i = 0; i < total_samples; ++i) {
-    ASSERT_EQ(sample_value, received[i * kChannels]) << i;
-    ASSERT_EQ(-sample_value, received[i * kChannels + 1]);
+    ASSERT_EQ(received[i * kChannels], sample_value);
+    ASSERT_EQ(received[i * kChannels + 1], -sample_value);
     ++sample_value;
   }
 }
