@@ -768,6 +768,15 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTryQuicByDefault);
 // separate the values with a comma (e.g. "ABCD,EFGH").
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kQuicOptions);
 
+// When enabled, allows the browser to ignore IP matching and rely on
+// the hostname being present in the existing session's certificate when
+// connection coalescing.
+NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreIpMatching);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kNoIPQuicOption);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kIgnoreIpMatchingWhenFindingExistingSessions);
+
 NET_EXPORT BASE_DECLARE_FEATURE(kDnsResponseDiscardPartialQuestions);
 
 // When enabled, allows DoH upgrade even if there are local nameservers.

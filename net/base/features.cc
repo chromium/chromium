@@ -756,6 +756,18 @@ BASE_FEATURE_PARAM(std::string,
                    "quic_options",
                    "");
 
+BASE_FEATURE(kIgnoreIpMatching, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kNoIPQuicOption,
+                   &kIgnoreIpMatching,
+                   "noip_quic_option",
+                   "");
+BASE_FEATURE_PARAM(bool,
+                   kIgnoreIpMatchingWhenFindingExistingSessions,
+                   &kIgnoreIpMatching,
+                   "ignore_ip_matching_when_finding_existing_sessions",
+                   false);
+
 BASE_FEATURE(kDnsResponseDiscardPartialQuestions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

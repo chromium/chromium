@@ -13282,6 +13282,30 @@
             ]
         }
     ],
+    "IgnoreIpMatching": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_NOIP",
+                    "params": {
+                        "ignore_ip_matching_when_finding_existing_sessions": "true",
+                        "noip_quic_option": "NOIP"
+                    },
+                    "enable_features": [
+                        "IgnoreIpMatching"
+                    ]
+                }
+            ]
+        }
+    ],
     "ImageDescriptionsAlternateRouting": [
         {
             "platforms": [
@@ -13396,15 +13420,6 @@
                     "name": "EnabledWithIncreasedAmplificationFactor5",
                     "params": {
                         "quic_options": "5AFF"
-                    },
-                    "enable_features": [
-                        "TryQuicByDefault"
-                    ]
-                },
-                {
-                    "name": "EnabledWithNOIP",
-                    "params": {
-                        "quic_options": "NOIP"
                     },
                     "enable_features": [
                         "TryQuicByDefault"

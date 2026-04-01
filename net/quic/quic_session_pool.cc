@@ -1680,8 +1680,7 @@ QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
     // TODO(fayang): consider to use CanWaiveIpMatching().
     if (session->received_origins().contains(key.destination()) ||
         (ignore_ip_matching_when_finding_existing_sessions_ &&
-         session->config()->HasReceivedConnectionOptions() &&
-         quic::ContainsQuicTag(session->config()->ReceivedConnectionOptions(),
+         quic::ContainsQuicTag(session->received_connection_options(),
                                quic::kNOIP))) {
       std::set<std::string> dns_aliases;
       if (use_dns_aliases) {
@@ -2064,6 +2063,11 @@ QuicSessionPool::CreateSessionHelper(
   if (base::FeatureList::IsEnabled(features::kTryQuicByDefault)) {
     config.AddConnectionOptionsToSend(
         quic::ParseQuicTagVector(features::kQuicOptions.Get()));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kIgnoreIpMatching)) {
+    config.AddConnectionOptionsToSend(
+        quic::ParseQuicTagVector(features::kNoIPQuicOption.Get()));
   }
 
   auto keep_alive_timeout = ping_timeout_;
