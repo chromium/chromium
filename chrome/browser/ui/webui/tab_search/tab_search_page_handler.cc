@@ -417,8 +417,9 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
                              ->GetContentsSize()
                              .height();
 
-        WalkContainer(get_tabs_result.value(), window.get(), profile_data.get(),
-                      tab_dedup_keys, tab_group_ids);
+        int tab_index = 0;
+        WalkContainer(get_tabs_result.value(), tab_index, window.get(),
+                      profile_data.get(), tab_dedup_keys, tab_group_ids);
 
         profile_data->windows.push_back(std::move(window));
 
@@ -437,6 +438,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
 
 void TabSearchPageHandler::WalkContainer(
     const tabs_api::mojom::ContainerPtr& container,
+    int& tab_index,
     tab_search::mojom::Window* window,
     tab_search::mojom::ProfileData* profile_data,
     std::set<DedupKey>& tab_dedup_keys,
@@ -453,7 +455,7 @@ void TabSearchPageHandler::WalkContainer(
       if (tab_interface && tab_interface->GetContents()
                                ->GetController()
                                .GetLastCommittedEntry()) {
-        tab_search::mojom::TabPtr tab = GetTab(tab_interface);
+        tab_search::mojom::TabPtr tab = GetTab(tab_interface, tab_index++);
         tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
         window->tabs.push_back(std::move(tab));
       }
@@ -478,7 +480,8 @@ void TabSearchPageHandler::WalkContainer(
   }
 
   for (const auto& child : container->children) {
-    WalkContainer(child, window, profile_data, tab_dedup_keys, tab_group_ids);
+    WalkContainer(child, tab_index, window, profile_data, tab_dedup_keys,
+                  tab_group_ids);
   }
 }
 
@@ -608,14 +611,15 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
   return true;
 }
 
-tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
-    tabs::TabInterface* tab) const {
+tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(tabs::TabInterface* tab,
+                                                       int index) const {
   auto tab_mojom_data = tab_search::mojom::Tab::New();
   content::WebContents* contents = tab->GetContents();
 
   tab_mojom_data->active = tab->IsActivated();
   tab_mojom_data->visible = tab->IsVisible();
   tab_mojom_data->tab_id = tab->GetHandle().raw_value();
+  tab_mojom_data->index = index;
   const std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
   if (group_id.has_value()) {
     tab_mojom_data->group_id = group_id.value().token();
@@ -833,7 +837,7 @@ void TabSearchPageHandler::OnTabDataChanged(
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   tab_update_info->in_active_window = browser->IsActive();
   tab_update_info->in_host_window = browser == browser_;
-  tab_update_info->tab = GetTab(tab);
+  tab_update_info->tab = GetTab(tab, details->GetIndex());
   page_->TabUpdated(std::move(tab_update_info));
 }
 

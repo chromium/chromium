@@ -130,6 +130,7 @@ class TabSearchPageHandler
 
   // Walk the tab strip tree to collect tab and group data.
   void WalkContainer(const tabs_api::mojom::ContainerPtr& container,
+                     int& tab_index,
                      tab_search::mojom::Window* window,
                      tab_search::mojom::ProfileData* profile_data,
                      std::set<DedupKey>& tab_dedup_keys,
@@ -156,7 +157,7 @@ class TabSearchPageHandler
       std::set<tab_groups::TabGroupId>& tab_group_ids,
       std::vector<tab_search::mojom::TabGroupPtr>& tab_groups);
 
-  tab_search::mojom::TabPtr GetTab(tabs::TabInterface* tab) const;
+  tab_search::mojom::TabPtr GetTab(tabs::TabInterface* tab, int index) const;
   tab_search::mojom::RecentlyClosedTabPtr GetRecentlyClosedTab(
       sessions::tab_restore::Tab* tab,
       const base::Time& close_time);

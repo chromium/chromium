@@ -87,6 +87,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
         faviconUrl: null,
         groupId: null,
         alertStates: [],
+        index: 0,
         isDefaultFavicon: false,
         lastActiveElapsedText: '',
         lastActiveTimeTicks: {internalValue: BigInt(0)},

@@ -82,7 +82,7 @@ suite('TabSearchAppTest', () => {
             active: true,
             isHostWindow: true,
             height: SAMPLE_WINDOW_HEIGHT,
-            tabs: generateSampleTabsFromSiteNames(['OpenTab1']),
+            tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
           }],
           recentlyClosedTabs: generateSampleRecentlyClosedTabs(
               'Sample Tab', sampleTabCount, sampleToken(0n, 1n)),
@@ -127,7 +127,7 @@ suite('TabSearchAppTest', () => {
             active: true,
             isHostWindow: true,
             height: SAMPLE_WINDOW_HEIGHT,
-            tabs: generateSampleTabsFromSiteNames(['OpenTab1']),
+            tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
           }],
           recentlyClosedTabs: generateSampleRecentlyClosedTabsFromSiteNames(
               ['RecentlyClosedTab1', 'RecentlyClosedTab2']),
@@ -183,7 +183,7 @@ suite('TabSearchAppTest', () => {
             active: true,
             isHostWindow: true,
             height: SAMPLE_WINDOW_HEIGHT,
-            tabs: generateSampleTabsFromSiteNames(['Open sample tab']),
+            tabs: generateSampleTabsFromSiteNames(['Open sample tab'], true),
           }],
           recentlyClosedTabs: generateSampleRecentlyClosedTabs(
               'Sample Tab', sampleTabCount, sampleToken(0n, 1n)),
@@ -481,7 +481,7 @@ suite('TabSearchAppTest', () => {
         active: true,
         isHostWindow: true,
         height: SAMPLE_WINDOW_HEIGHT,
-        tabs: generateSampleTabsFromSiteNames(['OpenTab1']),
+        tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
       }],
     }));
     verifyTabIds(queryRows(), [1]);
@@ -528,7 +528,8 @@ suite('TabSearchAppTest', () => {
         active: true,
         isHostWindow: true,
         height: SAMPLE_WINDOW_HEIGHT,
-        tabs: generateSampleTabsFromSiteNames(['SampleTab', 'SampleTab2']),
+        tabs:
+            generateSampleTabsFromSiteNames(['SampleTab', 'SampleTab2'], true),
       }],
       recentlyClosedSectionExpanded: true,
     }));
@@ -666,12 +667,14 @@ suite('TabSearchAppTest', () => {
   test('Sort by most recent active tabs', async () => {
     const tabs = [
       createTab({
+        index: 0,
         tabId: 1,
         title: 'Google',
         url: 'https://www.google.com',
         lastActiveTimeTicks: {internalValue: BigInt(2)},
       }),
       createTab({
+        index: 1,
         tabId: 2,
         title: 'Bing',
         url: 'https://www.bing.com',
@@ -680,6 +683,7 @@ suite('TabSearchAppTest', () => {
         visible: true,
       }),
       createTab({
+        index: 2,
         tabId: 3,
         title: 'Gmail',
         url: 'https://www.gmail.com',
@@ -688,6 +692,7 @@ suite('TabSearchAppTest', () => {
         visible: true,
       }),
       createTab({
+        index: 3,
         tabId: 4,
         title: 'Yahoo',
         url: 'https://www.yahoo.com',
@@ -746,7 +751,7 @@ suite('TabSearchAppTest', () => {
         active: true,
         isHostWindow: true,
         height: SAMPLE_WINDOW_HEIGHT,
-        tabs: generateSampleTabsFromSiteNames(['SampleOpenTab']),
+        tabs: generateSampleTabsFromSiteNames(['SampleOpenTab'], true),
       }],
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       recentlyClosedSectionExpanded: true,

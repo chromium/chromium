@@ -114,7 +114,9 @@ class MockPage : public tab_search::mojom::Page {
 
 void ExpectNewTab(const tab_search::mojom::Tab* tab,
                   const std::string url,
-                  const std::string title) {
+                  const std::string title,
+                  int index) {
+  EXPECT_EQ(index, tab->index);
   EXPECT_LT(0, tab->tab_id);
   EXPECT_FALSE(tab->group_id.has_value());
   EXPECT_FALSE(tab->pinned);
@@ -336,11 +338,11 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
             ASSERT_EQ(2u, window1->tabs.size());
 
             auto* tab1 = window1->tabs[0].get();
-            ExpectNewTab(tab1, kTabUrl1, kTabName1);
+            ExpectNewTab(tab1, kTabUrl1, kTabName1, 0);
             ASSERT_TRUE(tab1->active);
 
             auto* tab2 = window1->tabs[1].get();
-            ExpectNewTab(tab2, kTabUrl2, kTabName2);
+            ExpectNewTab(tab2, kTabUrl2, kTabName2, 1);
             ASSERT_FALSE(tab2->active);
 
             auto* window2 = profile_tabs->windows[1].get();
@@ -348,7 +350,7 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
             ASSERT_EQ(1u, window2->tabs.size());
 
             auto* tab3 = window2->tabs[0].get();
-            ExpectNewTab(tab3, kTabUrl3, kTabName3);
+            ExpectNewTab(tab3, kTabUrl3, kTabName3, 0);
             ASSERT_TRUE(tab3->active);
 
             tab_id2 = tab2->tab_id;
@@ -697,7 +699,7 @@ TEST_F(TabSearchPageHandlerTest, TabsNotChanged) {
 bool VerifyTabUpdated(
     const tab_search::mojom::TabUpdateInfoPtr& tab_update_info) {
   const tab_search::mojom::TabPtr& tab = tab_update_info->tab;
-  ExpectNewTab(tab.get(), kTabUrl1, kTabName1);
+  ExpectNewTab(tab.get(), kTabUrl1, kTabName1, 1);
   return true;
 }
 
@@ -768,7 +770,7 @@ TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
           [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
             auto& tabs = profile_tabs->windows[0]->tabs;
             ASSERT_EQ(1u, tabs.size());
-            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1);
+            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1, 0);
             auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
             ASSERT_EQ(1u, recently_closed_tabs.size());
             ExpectRecentlyClosedTab(recently_closed_tabs[0].get(), kTabUrl2,
@@ -782,8 +784,8 @@ TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
           [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
             auto& tabs = profile_tabs->windows[0]->tabs;
             ASSERT_EQ(2u, tabs.size());
-            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1);
-            ExpectNewTab(tabs[1].get(), kTabUrl2, kTabName2);
+            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1, 0);
+            ExpectNewTab(tabs[1].get(), kTabUrl2, kTabName2, 1);
             auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
             ASSERT_EQ(0u, recently_closed_tabs.size());
           });
@@ -865,7 +867,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {
           [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
             auto& tabs = profile_tabs->windows[0]->tabs;
             ASSERT_EQ(1u, tabs.size());
-            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1);
+            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1, 0);
             auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
             ASSERT_EQ(0u, recently_closed_tabs.size());
           });
@@ -888,7 +890,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
           [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
             auto& tabs = profile_tabs->windows[0]->tabs;
             ASSERT_EQ(1u, tabs.size());
-            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1);
+            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1, 0);
             auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
             ASSERT_EQ(1u, recently_closed_tabs.size());
             ASSERT_TRUE(profile_tabs->recently_closed_section_expanded);
