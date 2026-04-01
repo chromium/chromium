@@ -210,7 +210,7 @@ void EnrollmentScreen::SetConfig() {
   effective_config_ = prescribed_config_;
   if (current_auth_ == AUTH_OAUTH &&
       effective_config_.is_mode_with_manual_fallback()) {
-    effective_config_ = effective_config_.GetManualFallbackConfig();
+    effective_config_ = effective_config_.GetManualFallbackConfig().value();
   }
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.

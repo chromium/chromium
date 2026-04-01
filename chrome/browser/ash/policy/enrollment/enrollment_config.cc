@@ -428,14 +428,14 @@ EnrollmentConfig EnrollmentConfig::GetEffectiveConfig() const {
   return manual_config;
 }
 
-EnrollmentConfig EnrollmentConfig::GetManualFallbackConfig() const {
-  CHECK(is_mode_with_manual_fallback())
-      << "Only automatic enrollment config can produce manual fallback config. "
-         "Got "
-      << *this;
+std::optional<EnrollmentConfig> EnrollmentConfig::GetManualFallbackConfig()
+    const {
+  if (!is_mode_with_manual_fallback()) {
+    return std::nullopt;
+  }
 
-  EnrollmentConfig manual_fallback_config = *this;
-  manual_fallback_config.mode = GetManualFallbackMode(mode);
+  std::optional<EnrollmentConfig> manual_fallback_config = *this;
+  manual_fallback_config->mode = GetManualFallbackMode(mode);
 
   return manual_fallback_config;
 }

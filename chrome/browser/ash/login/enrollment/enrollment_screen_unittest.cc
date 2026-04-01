@@ -834,13 +834,14 @@ class EnrollmentScreenAttestationFlowWithManualFallbackTest
     : public EnrollmentScreenAttestationFlowTest {
  protected:
   policy::EnrollmentConfig GetEnrollmentConfigForManualFallback() {
-    return GetEnrollmentConfig().GetManualFallbackConfig();
+    return CHECK_DEREF(GetEnrollmentConfig().GetManualFallbackConfig());
   }
 };
 
 TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
        ShouldAutomaticallyFallbackToManuallEnrollment) {
   const policy::EnrollmentConfig initial_config = GetEnrollmentConfig();
+  ASSERT_TRUE(initial_config.is_mode_with_manual_fallback());
   const policy::EnrollmentConfig fallback_config =
       GetEnrollmentConfigForManualFallback();
   {
@@ -872,6 +873,7 @@ TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
 TEST_P(EnrollmentScreenAttestationFlowWithManualFallbackTest,
        ShouldFallbackToManualEnrollmentOnUserAction) {
   const policy::EnrollmentConfig initial_config = GetEnrollmentConfig();
+  ASSERT_TRUE(initial_config.is_mode_with_manual_fallback());
   const policy::EnrollmentConfig fallback_config =
       GetEnrollmentConfigForManualFallback();
   {
@@ -931,7 +933,7 @@ class EnrollmentScreenTokenBasedEnrollmentTest
   }
 
   policy::EnrollmentConfig GetEnrollmentConfigForManualFallback() {
-    return GetEnrollmentConfig().GetManualFallbackConfig();
+    return CHECK_DEREF(GetEnrollmentConfig().GetManualFallbackConfig());
   }
 
   system::ScopedFakeStatisticsProvider statistics_provider_;
@@ -1109,6 +1111,7 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
 TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
        ShouldFallbackToManualEnrollmentOnUserAction) {
   const policy::EnrollmentConfig initial_config = GetEnrollmentConfig();
+  ASSERT_TRUE(initial_config.is_mode_with_manual_fallback());
   const policy::EnrollmentConfig fallback_config =
       GetEnrollmentConfigForManualFallback();
   {
@@ -1146,8 +1149,9 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
        RemoteDeploymentShouldFallbackToManualEnrollmentOnUserAction) {
   const policy::EnrollmentConfig initial_config = GetEnrollmentConfig(
       policy::EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED);
+  ASSERT_TRUE(initial_config.is_mode_with_manual_fallback());
   const policy::EnrollmentConfig fallback_config =
-      initial_config.GetManualFallbackConfig();
+      initial_config.GetManualFallbackConfig().value();
   EXPECT_TRUE(fallback_config.is_manual_fallback());
   {
     testing::InSequence s;

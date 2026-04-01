@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_CONFIG_H_
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_CONFIG_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -234,8 +235,9 @@ struct EnrollmentConfig {
   EnrollmentConfig GetEffectiveConfig() const;
 
   // Returns a manual fallback config corresponding to the given automatic
-  // enrollment config.
-  EnrollmentConfig GetManualFallbackConfig() const;
+  // enrollment config if `is_mode_with_manual_fallback` returns true.
+  // Otherwise returns `std::nullopt`.
+  std::optional<EnrollmentConfig> GetManualFallbackConfig() const;
 
   // Indicates the enrollment flow variant to trigger during OOBE.
   Mode mode = MODE_NONE;
