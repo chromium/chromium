@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/ui/payments/omnibox_autofill_delegate.h"
 
 #include "base/check_deref.h"
+#include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -78,6 +79,13 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
               kCompleteCreditCardForm)) {
     LogOmniboxAutofillShowChipDecisionPart1(
         OmniboxAutofillShowChipDecisionPart1::kNotCompleteCreditCardForm);
+    return;
+  }
+
+  // The client context and credit card form must be secure (not HTTP).
+  if (IsFormOrClientNonSecure(*client_, *form_structure)) {
+    LogOmniboxAutofillShowChipDecisionPart1(
+        OmniboxAutofillShowChipDecisionPart1::kFormOrClientContextNotSecure);
     return;
   }
 

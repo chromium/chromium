@@ -314,4 +314,28 @@ TEST_F(OmniboxAutofillDelegateTest,
       OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
 }
 
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_FormNotSecure_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  // Create a credit card form, specifically using http:// instead of https://.
+  FormData form;
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
+  autofill_client().set_last_committed_primary_main_frame_url(form.url());
+  test_api(form).Append(CreateTestFormField("Card Number", "cardnumber", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(
+      CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
+
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kFormOrClientContextNotSecure, 1);
+}
+
 }  // namespace autofill

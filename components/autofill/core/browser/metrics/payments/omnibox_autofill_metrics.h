@@ -32,8 +32,10 @@ enum class OmniboxAutofillShowChipDecisionPart1 {
   // The form did not have a credit card number and expiration date on it.
   kNotCompleteCreditCardForm = 3,
 
+  // The form or client context was not secure, such as being HTTP.
+  kFormOrClientContextNotSecure = 4,
+
   // Expected remaining buckets:
-  //  kCouldNotDeduceCardNumberField = 4,
   //  kNonAllowlistedIframe = 5,
 
   kSuccess = 6,

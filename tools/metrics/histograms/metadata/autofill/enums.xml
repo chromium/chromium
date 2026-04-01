@@ -5327,6 +5327,7 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Aborted; no credit cards saved"/>
   <int value="2" label="Aborted; failed to fetch cached form"/>
   <int value="3" label="Aborted; card number or expiration date field missing"/>
+  <int value="4" label="Aborted; form or client context not secure"/>
   <int value="6" label="All prior checks passed; started IntersectionObserver"/>
 </enum>
 
