@@ -32,6 +32,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           'Property type mismatch: {{propertyName}} is declared as {{declaredType}} reactive property but is typed as {{tsType}}.',
       bindingTypeMismatch:
           'Type mismatch in property binding: Property \'{{propertyName}}\' on element \'{{tagName}}\' expects type \'{{expectedType}}\', but was provided \'{{providedType}}\'.',
+      propertyNotFound:
+          'Property \'{{propertyName}}\' was not found on element \'{{tagName}}\'.',
     },
   },
   defaultOptions: [],
@@ -63,15 +65,33 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
       const elSymbol = mapSymbol.members.get(currentTagName);
       assert.ok(elSymbol);
       const elementType = checker.getTypeOfSymbolAtLocation(elSymbol, tsNode);
-      const propSymbol = elementType.getProperty(propBinding);
+      const apparentType = checker.getApparentType(elementType);
 
-      // Getting the symbol can fail for mixin inherited properties.
-      if (!propSymbol) {
+      const propSymbol = apparentType.getProperty(propBinding);
+      const expectedType = propSymbol ?
+          checker.getTypeOfSymbolAtLocation(propSymbol, tsNode) :
+          null;
+
+      // Non-existent property exception for cr-auto-img, TS compiler does not
+      // know HTMLImageElement has an autoSrc property.
+      if (!expectedType && propBinding === 'autoSrc' &&
+          currentTagName === 'img') {
         return;
       }
 
-      const expectedType =
-          checker.getTypeOfSymbolAtLocation(propSymbol, tsNode);
+      // Binding to non-existent property.
+      if (!expectedType) {
+        context.report({
+          node: expression,
+          messageId: 'propertyNotFound',
+          data: {
+            propertyName: propBinding,
+            tagName: currentTagName,
+          },
+        });
+        return;
+      }
+
       if (checker.isTypeAssignableTo(expressionType, expectedType)) {
         return;
       }
@@ -115,8 +135,9 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
     // for expressions of form "this.someProp". This can fail for reactive
     // properties that are inherited from mixins.
     function getReactivePropertyType(propName, declaredProps) {
-      const declaredProp =
-          declaredProps.find(prop => prop.key.name === propName);
+      const declaredProp = declaredProps ?
+          declaredProps.find(prop => prop.key.name === propName) :
+          null;
       if (!declaredProp) {
         return null;
       }
@@ -248,11 +269,6 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
 
         const declaredProps =
             extractPropertiesFromClass(classDefinitionFile, className);
-        if (!declaredProps) {
-          // Ignore seemingly missing properties, as these may come from mixins
-          // compiled in separate libraries.
-          return;
-        }
 
         const bindingRegex =
             /(\s+(?<attrName>[a-z0-9\-]+)|\?(?<boolName>[a-z0-9-]+)|\.(?<propName>[a-zA-Z0-9-]+))="$/;

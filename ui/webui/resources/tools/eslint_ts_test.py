@@ -673,6 +673,8 @@ class EslintTsTest(unittest.TestCase):
 
     _BINDING_TYPE_MISMATCH_ERROR = "Type mismatch in property binding: Property '%(propertyName)s' on element '%(tagName)s' expects type '%(expectedType)s', but was provided '%(providedType)s'"
 
+    _PROPERTY_NOT_FOUND_ERROR = "Property '%(propertyName)s' was not found on element '%(tagName)s'"
+
     _BINDING_TYPE_MISMATCH_PREFIX_ERROR = "Type mismatch in property binding: Property '%(propertyName)s' on element '%(tagName)s'"
 
     # The following strings *should* appear in the error output.
@@ -756,6 +758,10 @@ class EslintTsTest(unittest.TestCase):
             'propertyName': 'buttonDisabled',
             'declaredType': 'Boolean',
             'tsType': 'boolean | undefined',
+        },
+        _PROPERTY_NOT_FOUND_ERROR % {
+            'propertyName': 'nonExistentProperty',
+            'tagName': 'hello-world-child',
         },
     ]
     for e in errors:

@@ -119,7 +119,6 @@ export function getHtml(this: HistoryAppElement) {
                   searched-term="${this.queryResult_.info?.term}"
                   ?pending-delete="${this.pendingDelete_}"
                   @pending-delete-changed="${this.onListPendingDeleteChanged_}"
-                  .queryResult="${this.queryResult_}"
                   path="history"
                   .scrollTarget="${this.scrollTarget_}"
                   .scrollOffset="${this.tabContentScrollOffset_}">

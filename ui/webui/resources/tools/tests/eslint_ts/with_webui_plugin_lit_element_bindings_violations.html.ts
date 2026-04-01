@@ -21,7 +21,8 @@ export function getHtml(this: BindingsViolationsElement) {
 <hello-world-child .fooString="${this.value}" .fooNumber="${this.label}"
     .fooArray="${this.getErrorMessage()}"
     .fooBoolean="${this.getLabels()}"
-    .fooObject="${this.disabled ? 'A' : 'B'}">
+    .fooObject="${this.disabled ? 'A' : 'B'}"
+    .nonExistentProperty="${this.value}">
 </hello-world-child>
 <div ?hidden="${this.getErrorMessage()}" aria-label="${this.getLabels()}">
 </div>

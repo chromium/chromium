@@ -20,8 +20,6 @@ const HIGHLIGHTABLE_ITEMS_SELECTOR = '[role=group] > label, [role=option]';
 /* Selector for selectable options in the dropdown. */
 const SELECTABLE_ITEMS_SELECTOR = '[role=option]';
 
-export type OptionElement = HTMLElement&{value?: string};
-
 export interface ComboboxItem {
   key: string;
   label: string;
@@ -95,7 +93,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
   accessor rightAlignDropbox: boolean = false;
   private lastHighlightWasByKeyboard_: boolean = false;
   private domObserver_: MutationObserver|null = null;
-  private accessor selectedElement_: OptionElement|null = null;
+  private accessor selectedElement_: HTMLElement|null = null;
   accessor value: string|undefined;
 
   override connectedCallback() {
@@ -185,8 +183,8 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
   }
 
   protected getInputLabel_(): string {
-    if (this.selectedElement_ && this.selectedElement_.value &&
-        this.selectedElement_.value === this.value) {
+    if (this.selectedElement_ && this.selectedElement_.dataset['value'] &&
+        this.selectedElement_.dataset['value'] === this.value) {
       return this.selectedElement_.textContent;
     }
 
@@ -419,7 +417,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
       return;
     }
 
-    this.value = this.selectedElement_.value;
+    this.value = this.selectedElement_.dataset['value'];
   }
 
   private async selectItemFromValue_() {
@@ -428,7 +426,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     }
 
     if (this.selectedElement_?.isConnected &&
-        this.selectedElement_.value === this.value) {
+        this.selectedElement_.dataset['value'] === this.value) {
       // Selected element matches the value. Nothing left to do.
       return;
     }
@@ -446,9 +444,9 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     await this.updateComplete;
     this.selectItem_(
         Array
-            .from(this.shadowRoot.querySelectorAll<OptionElement>(
+            .from(this.shadowRoot.querySelectorAll<HTMLElement>(
                 SELECTABLE_ITEMS_SELECTOR))
-            .find(option => option.value === this.value) ||
+            .find(option => option.dataset['value'] === this.value) ||
         null);
   }
 
@@ -467,7 +465,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     }
 
     item.toggleAttribute('selected', true);
-    this.selectedElement_ = item as OptionElement;
+    this.selectedElement_ = item;
     return true;
   }
 

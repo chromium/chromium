@@ -57,6 +57,7 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   accessor dragDropPlaceholder: string =
       loadTimeData.getString('composeboxDragAndDropHint');
+  accessor entrypointName: string = '';
   accessor requiresVoice: boolean = false;
   accessor isCollapsible: boolean = false;
   accessor transcript: string = '';

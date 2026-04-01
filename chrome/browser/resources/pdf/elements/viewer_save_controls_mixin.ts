@@ -167,6 +167,9 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
 export interface ViewerSaveControlsMixinInterface {
   hasEdits: boolean;
   hasEnteredAnnotationMode: boolean;
+  // <if expr="enable_pdf_ink2">
+  hasInk2Edits: boolean;
+  // </if>
   isFormFieldFocused: boolean;
   getAriaHasPopup(): string;
   getMenu(): CrActionMenuElement;

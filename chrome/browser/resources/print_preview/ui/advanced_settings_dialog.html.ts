@@ -17,7 +17,7 @@ export function getHtml(this: AdvancedSettingsDialogElement) {
     <print-preview-search-box id="searchBox"
         ?hidden="${!this.hasMultipleItems_()}"
         label="$i18n{advancedSettingsSearchBoxPlaceholder}"
-        .search-query="${this.searchQuery_}"
+        .searchQuery="${this.searchQuery_}"
         @search-query-changed="${this.onSearchQueryChanged_}" autofocus>
     </print-preview-search-box>
     <div id="itemList" class="${this.isSearching_()}">
