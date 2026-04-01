@@ -533,9 +533,9 @@ void GpuWatchdogThread::ContinueWithNextWatchdogTimeoutTask() {
 }
 
 bool GpuWatchdogThread::SlowWatchdogThread() {
-  // If it takes 15 more seconds than the expected time between two
-  // OnWatchdogTimeout() calls, the system is considered slow and it's not a GPU
-  // hang.
+  // If it takes longer than kUnreasonableTimeoutDelay past the expected time
+  // between two OnWatchdogTimeout() calls, the system is considered slow and
+  // it's not a GPU hang.
   bool slow_watchdog_thread =
       (base::Time::Now() - next_on_watchdog_timeout_time_) >=
       kUnreasonableTimeoutDelay;
