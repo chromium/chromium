@@ -111,12 +111,14 @@ bool StructTraits<viz::mojom::BitmapInSharedMemoryDataView, SkBitmap>::Read(
     return false;
   }
 
-  if (!sk_bitmap->installPixels(image_info, mapping_ptr->memory(),
+  // Skia guarantees that it will call release proc, so we pass release()'ed
+  // pointer into it.
+  void* bitmap_memory = mapping_ptr->memory();
+  if (!sk_bitmap->installPixels(image_info, bitmap_memory,
                                 data.row_bytes(), &DeleteSharedMemoryMapping,
-                                mapping_ptr.get())) {
+                                mapping_ptr.release())) {
     return false;
   }
-  mapping_ptr.release();
   return true;
 }
 
