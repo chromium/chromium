@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using testing::_;
 
@@ -53,35 +54,6 @@ class SchedulingAffectingFeaturesTest : public SimTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-TEST_F(SchedulingAffectingFeaturesTest, WebSocketIsTracked) {
-  SimRequest main_resource("https://example.com/", "text/html");
-
-  LoadURL("https://example.com/");
-
-  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre());
-
-  main_resource.Complete(
-      "<script>"
-      "  var socket = new WebSocket(\"ws://www.example.com/websocket\");"
-      "</script>");
-
-  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre(
-                  SchedulingPolicy::Feature::kWebSocket,
-                  SchedulingPolicy::Feature::kWebSocketSticky));
-  test::RunPendingTasks();
-
-  MainFrame().ExecuteScript(WebScriptSource(WebString("socket.close();")));
-
-  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre(
-                  SchedulingPolicy::Feature::kWebSocketSticky));
-}
 
 TEST_F(SchedulingAffectingFeaturesTest, CacheControl_NoStore) {
   SimRequest::Params params;
@@ -219,6 +191,61 @@ TEST_F(SchedulingAffectingFeaturesTest, NonPlugins) {
                 testing::Not(testing::Contains(
                     SchedulingPolicy::Feature::kContainsPlugins)));
   }
+}
+
+class WebSocketSchedulingAffectingFeaturesTest
+    : public SchedulingAffectingFeaturesTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    SchedulingAffectingFeaturesTest::SetUp();
+    scoped_feature_.emplace(IsDisconnectWebSocketEnabled());
+  }
+  bool IsDisconnectWebSocketEnabled() const { return GetParam(); }
+
+  private:
+    std::optional<ScopedDisconnectWebSocketOnBFCacheForTest> scoped_feature_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebSocketSchedulingAffectingFeaturesTest,
+                         testing::Bool());
+
+TEST_P(WebSocketSchedulingAffectingFeaturesTest, WebSocketIsTracked) {
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+              testing::UnorderedElementsAre());
+
+  main_resource.Complete(R"(
+    <script>
+      var socket = new WebSocket("ws://www.example.com/websocket");
+    </script>
+  )");
+
+  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  if (IsDisconnectWebSocketEnabled()) {
+    EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+                testing::UnorderedElementsAre(
+                    SchedulingPolicy::Feature::kWebSocketSticky));
+  } else {
+    EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+                testing::UnorderedElementsAre(
+                    SchedulingPolicy::Feature::kWebSocket,
+                    SchedulingPolicy::Feature::kWebSocketSticky));
+  }
+
+  test::RunPendingTasks();
+
+  MainFrame().ExecuteScript(WebScriptSource(WebString("socket.close();")));
+
+  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+              testing::UnorderedElementsAre(
+                  SchedulingPolicy::Feature::kWebSocketSticky));
 }
 
 }  // namespace blink

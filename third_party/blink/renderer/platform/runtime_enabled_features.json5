@@ -2166,6 +2166,10 @@
       status: "stable",
     },
     {
+      name: "DisconnectWebSocketOnBFCache",
+      status: "test",
+    },
+    {
       // `kHidden` and `kHiddenButPainting` visibility states are treated as
       // hidden in the sense of `document.visibilityState`.  However, they are
       // handled differently internally.  For example, video playback should

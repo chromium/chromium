@@ -4430,6 +4430,24 @@
     "expires": "Sep 10, 2026"
   },
   {
+    "prefix": "disconnect-websocket-on-bfcache-disabled",
+    "owners": ["annasato@chromium.org"],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "Fuchsia"
+    ],
+    "bases": [
+      "external/wpt/websockets/back-forward-cache-with-open-websocket-connection.window.js",
+      "wpt_internal/websockets/back-forward-cache/disconnect-websocket-on-bfcache.window.js"
+    ],
+    "args": [
+      "--disable-blink-features=DisconnectWebSocketOnBFCache"
+    ],
+    "expires": "Oct 17, 2026"
+  },
+  {
     "prefix": "target-device-scale-factor-2",
     "owners": [
       "leimy@google.com"

@@ -3170,43 +3170,6 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-// Disabled on Android, since we have problems starting up the websocket test
-// server in the host
-// TODO(crbug.com/40241677): Re-enable the test after solving the WS server.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_WebSocketNotCached DISABLED_WebSocketNotCached
-#else
-#define MAYBE_WebSocketNotCached WebSocketNotCached
-#endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, MAYBE_WebSocketNotCached) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  ASSERT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-
-  // Open a WebSocket.
-  const char script[] = R"(
-      new Promise(resolve => {
-        const socket = new WebSocket($1);
-        socket.addEventListener('open', () => resolve(42));
-      });)";
-  ASSERT_EQ(42,
-            EvalJs(rfh_a, JsReplace(script, net::test_server::GetWebSocketURL(
-                                                *embedded_test_server(),
-                                                "/echo-with-no-extension"))));
-
-  // 2) Navigate to B.
-  ASSERT_TRUE(NavigateToURL(shell(), url_b));
-
-  // Confirm A is evicted.
-  delete_observer_rfh_a.WaitUntilDeleted();
-}
-
 namespace {
 
 void RegisterServiceWorker(RenderFrameHostImpl* rfh) {

@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -479,13 +480,24 @@ bool DOMWebSocket::HasPendingActivity() const {
 
 void DOMWebSocket::ContextLifecycleStateChanged(
     mojom::FrameLifecycleState state) {
-  if (state == mojom::FrameLifecycleState::kRunning) {
+  if (state == mojom::blink::FrameLifecycleState::kRunning) {
     event_queue_->Unpause();
 
     // If |consumed_buffered_amount_| was updated while the object was paused
     // then the changes to |buffered_amount_| will not yet have been applied.
     // Post another task to update it.
     PostBufferedAmountUpdateTask();
+  } else if (state == mojom::blink::FrameLifecycleState::kFrozen &&
+             RuntimeEnabledFeatures::DisconnectWebSocketOnBFCacheEnabled()) {
+    event_queue_->Pause();
+    if (common_.GetState() == kConnecting || common_.GetState() == kOpen) {
+      if (auto* context = GetExecutionContext()) {
+        DCHECK(channel_);
+        channel_->Fail("Page entered Back-Forward Cache.",
+                       mojom::blink::ConsoleMessageLevel::kError,
+                       CaptureSourceLocation(context));
+      }
+    }
   } else {
     event_queue_->Pause();
   }
