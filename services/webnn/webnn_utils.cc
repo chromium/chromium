@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 
+#include "base/check.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
@@ -385,6 +386,7 @@ std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {
     strides[i] = stride.ValueOrDie();
     stride *= dimensions[i];
   }
+  CHECK(stride.IsValid());
   return strides;
 }
 

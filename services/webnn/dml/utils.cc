@@ -59,7 +59,10 @@ uint64_t CalculatePhysicalElementCount(base::span<const uint32_t> dimensions,
     CHECK_EQ(dimensions.size(), strides.size());
     base::CheckedNumeric<uint64_t> index_of_last_element = 0;
     for (size_t i = 0; i < dimensions.size(); ++i) {
-      index_of_last_element += (dimensions[i] - 1) * strides[i];
+      // TODO(https://crbug.com/497073734): Determine if it is ok to crash on
+      // overflow.
+      index_of_last_element +=
+          base::CheckMul(dimensions[i] - 1, strides[i]).ValueOrDie<uint32_t>();
     }
     checked_element_count = index_of_last_element + 1;
   }
