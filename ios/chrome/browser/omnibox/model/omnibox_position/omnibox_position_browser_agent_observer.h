@@ -15,6 +15,11 @@ class OmniboxPositionBrowserAgentObserver : public base::CheckedObserver {
   virtual void OmniboxPositionBrowserAgentHasNewBottomLayout(
       OmniboxPositionBrowserAgent* browser_agent,
       bool is_current_layout_bottom_omnibox) {}
+
+  // Called after the omnibox position has been updated and all observers have
+  // been notified of the initial layout change.
+  virtual void DidUpdatePosition(OmniboxPositionBrowserAgent* browser_agent,
+                                 bool is_current_layout_bottom_omnibox) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POSITION_OMNIBOX_POSITION_BROWSER_AGENT_OBSERVER_H_

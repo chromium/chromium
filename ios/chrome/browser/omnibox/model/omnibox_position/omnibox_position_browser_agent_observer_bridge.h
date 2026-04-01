@@ -23,6 +23,8 @@ class OmniboxPositionBrowserAgentObserverBridge final
   void OmniboxPositionBrowserAgentHasNewBottomLayout(
       OmniboxPositionBrowserAgent* browser_agent,
       bool is_current_layout_bottom_omnibox) override;
+  void DidUpdatePosition(OmniboxPositionBrowserAgent* browser_agent,
+                         bool is_current_layout_bottom_omnibox) override;
 
  private:
   __weak id<OmniboxPositionBrowserAgentObserving> observing_;

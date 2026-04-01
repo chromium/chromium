@@ -22,6 +22,19 @@ void OmniboxPositionBrowserAgentObserverBridge::
     OmniboxPositionBrowserAgentHasNewBottomLayout(
         OmniboxPositionBrowserAgent* browser_agent,
         bool is_current_layout_bottom_omnibox) {
-  [observing_ omniboxPositionBrowserAgent:browser_agent
-             isCurrentLayoutBottomOmnibox:is_current_layout_bottom_omnibox];
+  if ([observing_ respondsToSelector:@selector(omniboxPositionBrowserAgent:
+                                              isCurrentLayoutBottomOmnibox:)]) {
+    [observing_ omniboxPositionBrowserAgent:browser_agent
+               isCurrentLayoutBottomOmnibox:is_current_layout_bottom_omnibox];
+  }
+}
+
+void OmniboxPositionBrowserAgentObserverBridge::DidUpdatePosition(
+    OmniboxPositionBrowserAgent* browser_agent,
+    bool is_current_layout_bottom_omnibox) {
+  if ([observing_ respondsToSelector:@selector(omniboxPositionBrowserAgent:
+                                                         didUpdatePosition:)]) {
+    [observing_ omniboxPositionBrowserAgent:browser_agent
+                          didUpdatePosition:is_current_layout_bottom_omnibox];
+  }
 }

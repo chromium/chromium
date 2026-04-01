@@ -6,8 +6,10 @@
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 
 // Test fixture for testing FullscreenCoordinator class.
@@ -17,6 +19,7 @@ class FullscreenCoordinatorTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+    OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
     view_controller_ = [[UIViewController alloc] init];
     coordinator_ = [[FullscreenCoordinator alloc]
         initWithBaseViewController:view_controller_
@@ -24,6 +27,7 @@ class FullscreenCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* view_controller_;

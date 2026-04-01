@@ -6,10 +6,12 @@
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -23,12 +25,20 @@ class FullscreenMediatorTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+    OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
     mediator_ = [[FullscreenMediator alloc]
-        initWithBrowserAgent:FullscreenBrowserAgent::FromBrowser(browser_.get())
-                webStateList:browser_->GetWebStateList()];
+               initWithBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                        browser_.get())
+                       webStateList:browser_->GetWebStateList()
+        omniboxPositionBrowserAgent:OmniboxPositionBrowserAgent::FromBrowser(
+                                        browser_.get())];
   }
 
+  void TearDown() override { [mediator_ disconnect]; }
+
   base::test::TaskEnvironment task_environment_;
+
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FullscreenMediator* mediator_;

@@ -10,8 +10,15 @@ class OmniboxPositionBrowserAgent;
 // Objective-C protocol for observing OmniboxPositionBrowserAgent.
 @protocol OmniboxPositionBrowserAgentObserving <NSObject>
 
+@optional
+
 - (void)omniboxPositionBrowserAgent:(OmniboxPositionBrowserAgent*)browser_agent
        isCurrentLayoutBottomOmnibox:(BOOL)isCurrentLayoutBottomOmnibox;
+
+// Called after the omnibox position has been updated and all observers have
+// been notified of the initial layout change.
+- (void)omniboxPositionBrowserAgent:(OmniboxPositionBrowserAgent*)browser_agent
+                  didUpdatePosition:(BOOL)isCurrentLayoutBottomOmnibox;
 
 @end
 

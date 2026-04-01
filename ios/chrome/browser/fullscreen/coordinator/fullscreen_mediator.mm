@@ -9,6 +9,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/types/pass_key.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observing.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
@@ -36,6 +39,7 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
 
 @interface FullscreenMediator () <CRWWebStateObserver,
                                   CRWWebViewScrollViewProxyObserver,
+                                  OmniboxPositionBrowserAgentObserving,
                                   WebStateListObserving,
                                   WebViewProxyTabHelperObserving>
 
@@ -53,16 +57,22 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebViewProxyTabHelperObserverBridge> _webViewProxyObserver;
+  std::unique_ptr<OmniboxPositionBrowserAgentObserverBridge>
+      _omniboxPositionObserver;
   CGFloat _lastContentOffset;
+  BOOL _isBottomOmnibox;
 }
 
 #pragma mark - Public
 
 - (instancetype)initWithBrowserAgent:(FullscreenBrowserAgent*)browserAgent
-                        webStateList:(WebStateList*)webStateList {
+                        webStateList:(WebStateList*)webStateList
+         omniboxPositionBrowserAgent:
+             (OmniboxPositionBrowserAgent*)omniboxPositionBrowserAgent {
   if ((self = [super init])) {
     CHECK(browserAgent);
     CHECK(webStateList);
+    CHECK(omniboxPositionBrowserAgent);
     _browserAgent = browserAgent;
     _webStateList = webStateList;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -70,6 +80,11 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webViewProxyObserver =
         std::make_unique<WebViewProxyTabHelperObserverBridge>(self);
+    _omniboxPositionObserver =
+        std::make_unique<OmniboxPositionBrowserAgentObserverBridge>(
+            self, omniboxPositionBrowserAgent);
+    _isBottomOmnibox =
+        omniboxPositionBrowserAgent->IsCurrentLayoutBottomOmnibox();
     self.webState = _webStateList->GetActiveWebState();
 
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
@@ -92,12 +107,15 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
 
 - (void)disconnect {
   _browserAgent = nullptr;
-  _webStateList->RemoveObserver(_webStateListObserver.get());
-  _webStateListObserver = nullptr;
-  _webStateList = nullptr;
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateListObserver = nullptr;
+    _webStateList = nullptr;
+  }
   self.webState = nullptr;
   _webStateObserver = nullptr;
   _webViewProxyObserver = nullptr;
+  _omniboxPositionObserver = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -141,6 +159,17 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
   if (status.active_web_state_change()) {
     self.webState = status.new_active_web_state;
   }
+}
+
+#pragma mark - OmniboxPositionBrowserAgentObserving
+
+- (void)omniboxPositionBrowserAgent:(OmniboxPositionBrowserAgent*)browser_agent
+                  didUpdatePosition:(BOOL)isCurrentLayoutBottomOmnibox {
+  if (_isBottomOmnibox == isCurrentLayoutBottomOmnibox) {
+    return;
+  }
+  _isBottomOmnibox = isCurrentLayoutBottomOmnibox;
+  _browserAgent->InvalidateInsetRange(PassKey());
 }
 
 #pragma mark - CRWWebStateObserver

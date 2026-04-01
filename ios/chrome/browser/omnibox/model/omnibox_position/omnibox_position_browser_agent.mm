@@ -55,6 +55,9 @@ void OmniboxPositionBrowserAgent::SetIsCurrentLayoutBottomOmnibox(
     observer.OmniboxPositionBrowserAgentHasNewBottomLayout(
         this, is_current_layout_bottom_omnibox_);
   }
+  for (OmniboxPositionBrowserAgentObserver& observer : observers_) {
+    observer.DidUpdatePosition(this, is_current_layout_bottom_omnibox_);
+  }
 }
 
 void OmniboxPositionBrowserAgent::AddObserver(
