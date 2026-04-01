@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Robolectric tests for {@link DefaultBrowserPromoFirstRunFragment}. */
@@ -90,6 +92,10 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
         when(mMockDelegate.getProfileProviderSupplier()).thenReturn(profileSupplier);
         when(mMockDelegate.getWindowAndroid()).thenReturn(mMockWindow);
         TrackerFactory.setTrackerForTests(mMockTracker);
+
+        FeatureOverrides.newBuilder()
+                .enable(UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING)
+                .apply();
     }
 
     @After
@@ -100,7 +106,10 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
     }
 
     private void launchFragment(String armValue) {
-        ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(armValue);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
+                .param(DefaultBrowserPromoFirstRunFragment.FRE_PROMO_ARM, armValue)
+                .apply();
 
         // LaunchInContainer creates a minimal activity and attaches our fragment to it and
         // moves the fragment through all the lifecycles (onAttach -> onCreate -> onCreateView ->

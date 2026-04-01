@@ -248,7 +248,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+        if (FeatureList.isNativeInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)) {
             // Called by Android right before the First Run Activity is destroyed (toggle dark mode,
             // etc.). Before activity recreation, store which page the user was looking at.
             outState.putInt(KEY_LAST_PAGER_INDEX, mPager.getCurrentItem());
@@ -329,7 +330,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // fly according to the situation.
         BooleanSupplier showHistorySync =
                 () -> {
-                    if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)) {
                         return mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE)
                                 && !mHistorySyncStepCompleted;
                     } else {
@@ -343,8 +344,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
         mFreProgressStates.add(MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN);
 
-        // TODO(crbug.com/486749302): Confirm if cached feature flags are reliable in FRE.
-        if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)) {
             int promoIndex = mPages.size();
             BooleanSupplier showDefaultBrowserPromo =
                     () -> {
@@ -769,7 +769,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     /** Initialize local state from launch intent and from saved instance state. */
     private void initializeStateFromLaunchData() {
-        if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+        if (FeatureList.isNativeInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)) {
             // When a configuration change (like a theme toggle) occurs, the FirstRunActivity
             // instance is destroyed and recreated. We restore the saved state from the previous
             // instance's Bundle to ensure the user's progress in the FRE flow is preserved.
@@ -863,7 +864,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             mPager.endFakeDrag();
-                            if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()
+                            if (FeatureList.isNativeInitialized()
+                                    && ChromeFeatureList.isEnabled(
+                                            ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
                                     && mPager.getCurrentItem() != position) {
                                 // When the user stays signed out, we jump from index 0 (sign-in
                                 // page) to index 2 (promo page) and skip index 1 (History sync).

@@ -40,6 +40,7 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
     // If we are not triggering the RMD, use a small delay (500ms) that is greater than 450ms
     // (TRANSITION_DELAY_MS).
     private static final int ADVANCE_TO_NEXT_PAGE_DELAY_MS = 500;
+    public static final String FRE_PROMO_ARM = "fre_promo_arm";
 
     static final String RMD_DIRECT_INVOCATION = "rmd_direct_invocation";
     static final String PRIMER_NO_INSTRUCTIONS = "primer_no_instructions";
@@ -64,7 +65,9 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
     // TODO(https://crbug.com/494974037): Move the BehaviorType, InDef, and the selection logic into
     // a dedicated helper class.
     private @BehaviorType int getBehaviorType() {
-        String arm = ChromeFeatureList.sDefaultBrowserPromoFreArm.getValue();
+        String arm =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE, FRE_PROMO_ARM);
         if (PRIMER_NO_INSTRUCTIONS.equals(arm)) return BehaviorType.PRIMER_NO_INSTRUCTIONS;
         if (PRIMER_PROMOTIONAL_TEXT.equals(arm)) return BehaviorType.PRIMER_PROMOTIONAL_TEXT;
         // rmd_direct_invocation.

@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -47,6 +48,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
@@ -142,6 +144,10 @@ public class DefaultBrowserPromoFirstRunFragmentRenderTest {
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+
+        FeatureOverrides.newBuilder()
+                .enable(UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING)
+                .apply();
         mActivityTestRule.launchActivity(null);
 
         // Explicitly set the background color of the container to match the theme
@@ -188,7 +194,10 @@ public class DefaultBrowserPromoFirstRunFragmentRenderTest {
     }
 
     private void launchFragmentWithArm(String arm, int orientation) {
-        ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(arm);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
+                .param(DefaultBrowserPromoFirstRunFragment.FRE_PROMO_ARM, arm)
+                .apply();
 
         if (mActivityTestRule.getActivity().getResources().getConfiguration().orientation
                 != orientation) {

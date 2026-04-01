@@ -926,8 +926,6 @@ public abstract class ChromeFeatureList {
                     DEFAULT_BROWSER_PROMO_ENTRY_POINT,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sDefaultBrowserPromoFre =
-            newCachedFlag(DEFAULT_BROWSER_PROMO_FRE, false);
     public static final CachedFlag sDesktopAndroidLinkCapturing =
             newCachedFlag(DESKTOP_ANDROID_LINK_CAPTURING, false);
     public static final CachedFlag sDesktopUAOnConnectedDisplay =
@@ -1274,7 +1272,6 @@ public abstract class ChromeFeatureList {
                     sCpaTabGroupingButton,
                     sCrossDeviceTabPaneAndroid,
                     sDefaultBrowserPromoEntryPoint,
-                    sDefaultBrowserPromoFre,
                     sDesktopAndroidLinkCapturing,
                     sDesktopUAOnConnectedDisplay,
                     sDocumentPictureInPictureAPI,
@@ -1635,10 +1632,6 @@ public abstract class ChromeFeatureList {
             newStringCachedFeatureParam(
                     CCT_RESIZABLE_FOR_THIRD_PARTIES, "default_policy", "use-denylist");
 
-    public static final StringCachedFeatureParam sDefaultBrowserPromoFreArm =
-            newStringCachedFeatureParam(
-                    DEFAULT_BROWSER_PROMO_FRE, "fre_promo_arm", "rmd_direct_invocation");
-
     /**
      * A cached parameter representing the amount of latency to inject during Clank startup based on
      * experiment configuration.
@@ -1865,7 +1858,6 @@ public abstract class ChromeFeatureList {
                     sClampAutomotiveScalingMaxScalingPercentage,
                     sClankStartupLatencyInjectionAmountMs,
                     sDefaultBrowserPromoEntryPointShowAppMenu,
-                    sDefaultBrowserPromoFreArm,
                     sDesktopUAAllowedOnExternalDisplayForOem,
                     sEdgeToEdgeEverywhereOemList,
                     sEdgeToEdgeEverywhereOemMinVersions,

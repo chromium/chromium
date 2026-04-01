@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -32,6 +33,10 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureListJni;
+import org.chromium.base.FeatureOverrides;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
@@ -60,7 +65,10 @@ public final class FirstRunIntegrationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
+    @Mock private FeatureList.Natives mFeatureListNatives;
+    @Mock private LibraryLoader mLibraryLoader;
 
+    private static final String BROWSER_WINDOW_INTERFACE_MOBILE = "BrowserWindowInterfaceMobile";
     private final List<ActivityController> mActivityControllerList = new ArrayList<>();
 
     private Context mContext;
@@ -72,6 +80,14 @@ public final class FirstRunIntegrationUnitTest {
         mShadowApplication = shadowOf((Application) ApplicationProvider.getApplicationContext());
 
         ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
+
+        // Library and Feature flags mocks.
+        FeatureListJni.setInstanceForTesting(mFeatureListNatives);
+        when(mFeatureListNatives.isInitialized()).thenReturn(true);
+        LibraryLoader.setLibraryLoaderForTesting(mLibraryLoader);
+        when(mLibraryLoader.isInitialized()).thenReturn(true);
+
+        FeatureOverrides.newBuilder().enable(BROWSER_WINDOW_INTERFACE_MOBILE).apply();
 
         FirstRunStatus.setFirstRunFlowComplete(false);
         WebApkValidator.setDisableValidationForTesting(true);
@@ -312,6 +328,8 @@ public final class FirstRunIntegrationUnitTest {
     @Test
     @Features.EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
     public void testDefaultBrowserPromoStatePersistence() {
+        FeatureOverrides.newBuilder().enable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE).apply();
+
         FirstRunActivity activity =
                 (FirstRunActivity) createActivity(FirstRunActivity.class, new Intent());
 
@@ -337,6 +355,8 @@ public final class FirstRunIntegrationUnitTest {
     @Test
     @Features.EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
     public void testHistorySyncStepPersistence() {
+        FeatureOverrides.newBuilder().enable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE).apply();
+
         FirstRunActivity activity =
                 (FirstRunActivity) createActivity(FirstRunActivity.class, new Intent());
 

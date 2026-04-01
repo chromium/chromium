@@ -8,6 +8,7 @@ import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -81,7 +82,12 @@ public class DefaultBrowserStateProvider {
 
         //  Check if it is a different Chrome (e.g. the user is in Canary, but Stable is the
         // default).
+        boolean isFrePromoEnabled =
+                FeatureList.isNativeInitialized()
+                        && ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE);
+
         if (ChromeFeatureList.sDefaultBrowserPromoEntryPoint.isEnabled()
+                || isFrePromoEnabled
                 || needIdentifyOtherChromeDefault) {
             if (ChromePackageNameVariant.CHROME_PACKAGE_NAMES.contains(defaultPackage)) {
                 return DefaultBrowserState.OTHER_CHROME_DEFAULT;

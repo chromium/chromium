@@ -794,6 +794,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//components/policy/android:policy_java_test_support",
+      "//ui/android:ui_android_features_java",
     ]
   }
 

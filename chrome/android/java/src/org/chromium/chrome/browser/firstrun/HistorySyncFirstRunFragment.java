@@ -90,7 +90,8 @@ public class HistorySyncFirstRunFragment extends Fragment
         // contains logic to handle page mismatches, but this prevents the redundant advance trigger
         // from occurring in the first place.
         boolean canSkipAdvanceToNextPage =
-                ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled() && !isResumed();
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
+                        && !isResumed();
         if (signinManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
             if (!canSkipAdvanceToNextPage) {
                 Log.w(TAG, "No primary account set, dismissing the history sync screen.");
@@ -129,7 +130,7 @@ public class HistorySyncFirstRunFragment extends Fragment
         if (delegate == null) return;
 
         // We mark the step as completed no matter what the user chose.
-        if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)) {
             delegate.setHistorySyncStepCompleted(true);
         }
 
