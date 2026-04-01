@@ -401,7 +401,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                     PredefinedChannel.create(
                             ChannelId.CHROME_FINDS,
                             R.string.notification_category_finds,
-                            NotificationManager.IMPORTANCE_LOW,
+                            NotificationManager.IMPORTANCE_DEFAULT,
                             ChannelGroupId.GENERAL));
 
             MAP = Collections.unmodifiableMap(map);
