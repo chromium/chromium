@@ -3219,7 +3219,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
 }
 
 // Given the time-based nature of debouncing, testing with non-mocked clocks can
-// be flaky. This suite increases the applied delays to reduce the the chance of
+// be flaky. This suite increases the applied delays to reduce the chance of
 // flakiness. This suite is disabled on all slow binaries.
 #if defined(SLOW_BINARY)
 #define MAYBE_GlicApiTestWithOneTabMoreDebounceDelay \
@@ -4025,7 +4025,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills,
   GetHost()->NotifyContextualSkillsChanged(std::move(skills_batch_2));
   ContinueJsTest();
 }
-
 
 INSTANTIATE_TEST_SUITE_P(
     ,
