@@ -88,6 +88,7 @@ std::string GetContextualTasksArmShortName() {
   bool open_on_link = contextual_tasks::kOpenSidePanelOnLinkClicked.Get();
   bool lens_enabled = contextual_tasks::GetEnableLensInContextualTasks();
   bool tab_auto_chip = contextual_tasks::GetIsTabAutoSuggestionChipEnabled();
+  const auto entrypoint = contextual_tasks::kShowEntryPoint.Get();
 
   if (expand_button == ExpandButtonOption::kSidePanelExpandButton) {
     if (open_on_link && lens_enabled && tab_auto_chip) {
@@ -103,7 +104,9 @@ std::string GetContextualTasksArmShortName() {
       return "Arm 4";
     }
   } else if (expand_button == ExpandButtonOption::kToolbarCloseButton) {
-    if (open_on_link && lens_enabled && tab_auto_chip) {
+    if (open_on_link && lens_enabled && tab_auto_chip &&
+        entrypoint !=
+            contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
       return "Arm 5";
     }
     if (open_on_link && !lens_enabled && tab_auto_chip) {
@@ -111,6 +114,11 @@ std::string GetContextualTasksArmShortName() {
     }
     if (open_on_link && lens_enabled && !tab_auto_chip) {
       return "Arm 7";
+    }
+    if (open_on_link && lens_enabled && tab_auto_chip &&
+        entrypoint ==
+            contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+      return "Arm 8";
     }
   }
 

@@ -4483,6 +4483,10 @@ const FeatureEntry::FeatureParam
     kArm7FullBundleNoAutoAddedContextInSidePanelWithCloseToExpandButton[] = {
         {"ContextualTasksExpandButtonOptions", "toolbar-close-button"},
         {"ContextualTasksTabAutoSuggestionChipEnabled", "false"}};
+const FeatureEntry::FeatureParam
+    kArm8FullBundleEphemeralLogoEntrypointCloseToExpandButton[] = {
+        {"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"},
+        {"ContextualTasksExpandButtonOptions", "toolbar-close-button"}};
 
 const FeatureEntry::FeatureVariation kContextualTasksVariations[] = {
     {"Arm 1: Full bundle with expando button", kArm1FullBundleWithExpandoButton,
@@ -4500,7 +4504,9 @@ const FeatureEntry::FeatureVariation kContextualTasksVariations[] = {
     {"Arm 7: Full bundle, No auto added context in side panel, close to expand "
      "button",
      kArm7FullBundleNoAutoAddedContextInSidePanelWithCloseToExpandButton,
-     nullptr}};
+     nullptr},
+    {"Arm 8: Full bundle, Ephemeral logo entrypoint, close to expand",
+     kArm8FullBundleEphemeralLogoEntrypointCloseToExpandButton, nullptr}};
 // LINT.ThenChange(chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.cc)
 
 const FeatureEntry::FeatureParam kSmartTabSharingEnabled[] = {
