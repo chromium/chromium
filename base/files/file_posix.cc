@@ -571,7 +571,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
 
   if (flags & FLAG_CREATE_ALWAYS) {
     DCHECK(!open_flags);
-    DCHECK(flags & FLAG_WRITE);
+    DCHECK(flags & (FLAG_WRITE | FLAG_APPEND));
     open_flags = O_CREAT | O_TRUNC;
   }
 

@@ -408,7 +408,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
 
   if (flags & FLAG_CREATE_ALWAYS) {
     DCHECK(!disposition);
-    DCHECK(flags & FLAG_WRITE);
+    DCHECK(flags & (FLAG_WRITE | FLAG_APPEND));
     disposition = CREATE_ALWAYS;
   }
 
