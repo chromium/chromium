@@ -1090,6 +1090,21 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
         GetMetricName(request_data.request_type, "FailingPayloadSize"),
         request_data.payload.length());
 
+#if !BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            features::debug::kAutofillOverridePredictions) &&
+        request_data.callback) {
+      // When overriding server predictions, the callback requires a non null
+      // response, so sending an empty (non null) response is enough to allow
+      // server prediction overrides to be applied.
+      std::move(request_data.callback)
+          .Release()
+          .Run(QueryResponse(/*response=*/"",
+                             std::move(request_data.form_signatures)));
+      return;
+    }
+#endif
+
     // If the failure was a client error don't retry.
     if (response_code >= 400 && response_code <= 499) {
       return;
