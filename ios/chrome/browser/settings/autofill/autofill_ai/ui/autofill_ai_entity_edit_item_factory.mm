@@ -99,7 +99,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.attributeType = attributeType.name();
   item.selectionStyle = UITableViewCellSelectionStyleNone;
   item.customTextfieldAccessibilityIdentifier =
-      [NSString stringWithFormat:@"%d", (int)attributeType.name()];
+      base::SysUTF8ToNSString(attributeType.name_as_string());
   return item;
 }
 

@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "autofill_ai_settings_test_util.h",
+    "autofill_ai_settings_test_util.mm",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/public",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
+    "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "autofill_ai_settings_egtest.mm" ]
+  deps = [
+    ":test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/public",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
+    "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

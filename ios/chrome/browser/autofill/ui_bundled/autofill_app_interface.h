@@ -154,9 +154,17 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Triggers the Autofill AI save entity bubble.
 + (void)showAutofillAiSaveEntityBubble;
 
-// Saves a Redress Number entity with the given name and number.
-+ (BOOL)saveRedressNumberEntityWithName:(NSString*)name
-                                 number:(NSString*)number;
+// Saves a Redress Number entity with the given name and number. Returns the
+// UUID of the created entity. Because entities are saved asynchronously, it is
+// not immediately available to be retrieved from the EntityDataManager.
++ (NSString*)saveRedressNumberEntityWithName:(NSString*)name
+                                      number:(NSString*)number;
+
+// Removes the entity with the given UUID.
++ (void)removeEntityWithUUID:(NSString*)uuid;
+
+// Deletes all entities modified since the given time.
++ (void)removeEntityModifiedSince:(NSDate*)time;
 
 @end
 
