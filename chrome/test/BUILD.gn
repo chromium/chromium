@@ -1917,8 +1917,6 @@ if (is_android) {
     }
 
     sources = [
-      "../browser/accessibility/accessibility_prefs/android/accessibility_android_policy_browsertest.cc",
-      "../browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller_browsertest.cc",
       "../browser/android/cookies/cookies_fetcher_restore_util_browsertest.cc",
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/customtabs/tab_interaction_recorder_browsertest.cc",
@@ -1992,6 +1990,7 @@ if (is_android) {
       "//chrome:chrome_android_core",
       "//chrome/android:chrome_jni_headers",
       "//chrome/android:delegate_public_impl_java",
+      "//chrome/browser/accessibility/accessibility_prefs:browser_tests",
       "//chrome/browser/actor:browser_tests",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
