@@ -46,9 +46,6 @@ class UnguessableToken;
 // Whether the collection contains a tab or a file attachment.
 @property(nonatomic, readonly) BOOL hasTabOrFile;
 
-// The number of non tab attachments.
-@property(nonatomic, readonly) size_t nonTabAttachmentCount;
-
 // Number of images added.
 @property(nonatomic, readonly) size_t imagesCount;
 

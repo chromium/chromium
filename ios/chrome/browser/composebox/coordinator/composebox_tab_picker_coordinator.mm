@@ -104,10 +104,6 @@
   return [self.delegate attachedWebStateIDsInCurrentContext];
 }
 
-- (NSUInteger)nonTabAttachmentCount {
-  return [self.delegate nonTabAttachmentCount];
-}
-
 - (NSUInteger)maxTabAttachmentCount {
   return [self.delegate maxTabAttachmentCount];
 }
