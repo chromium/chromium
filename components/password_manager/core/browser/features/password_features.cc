@@ -20,6 +20,12 @@ BASE_FEATURE(kActorLoginGetCredentialsNoLoginForm,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginLocalClassificationModel,
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_IOS)
+
+BASE_FEATURE(kActorLoginSyncsPasswordPermissions,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kActorLoginPermissionsUseStrongAffiliations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginReauthTaskRefocus, base::FEATURE_ENABLED_BY_DEFAULT);

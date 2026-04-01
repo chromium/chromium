@@ -4,7 +4,10 @@
 
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/with_feature_override.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,7 +57,8 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
     const std::string& username_value,
     const std::string& password_element,
     const std::string& signon_realm,
-    const std::vector<InsecureType>& issue_types) {
+    const std::vector<InsecureType>& issue_types,
+    std::optional<bool> actor_login_approved = std::nullopt) {
   sync_pb::PasswordSpecificsData password_specifics;
   password_specifics.set_origin(origin);
   password_specifics.set_username_element(username_element);
@@ -89,6 +93,9 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_sharing_notification_displayed(true);
   password_specifics.set_sender_profile_image_url(
       "http://www.sender.com/profile_image");
+  if (actor_login_approved.has_value()) {
+    password_specifics.set_actor_login_approved(actor_login_approved.value());
+  }
   return password_specifics;
 }
 
@@ -108,12 +115,22 @@ sync_pb::PasswordSpecificsMetadata CreateSpecificsMetadata(
 
 }  // namespace
 
-TEST(PasswordProtoUtilsTest, ConvertIssueProtoToMapAndBack) {
+class PasswordProtoUtilsTest : public base::test::WithFeatureOverride,
+                               public testing::Test {
+ public:
+  PasswordProtoUtilsTest()
+      : WithFeatureOverride(features::kActorLoginSyncsPasswordPermissions) {}
+};
+
+TEST_P(PasswordProtoUtilsTest, ConvertIssueProtoToMapAndBack) {
+  std::optional<bool> actor_login_approved =
+      IsParamFeatureEnabled() ? std::make_optional(true) : std::nullopt;
   sync_pb::PasswordSpecificsData specifics_data =
       CreateSpecificsData("http://www.origin.com/", "username_element",
                           "username_value", "password_element", "signon_realm",
                           {InsecureType::kLeaked, InsecureType::kPhished,
-                           InsecureType::kReused, InsecureType::kWeak});
+                           InsecureType::kReused, InsecureType::kWeak},
+                          actor_login_approved);
 
   EXPECT_THAT(
       PasswordIssuesMapToProto(PasswordIssuesMapFromProto(specifics_data))
@@ -121,7 +138,7 @@ TEST(PasswordProtoUtilsTest, ConvertIssueProtoToMapAndBack) {
       Eq(specifics_data.password_issues().SerializeAsString()));
 }
 
-TEST(PasswordProtoUtilsTest, ConvertPasswordNoteToNotesProtoAndBack) {
+TEST_P(PasswordProtoUtilsTest, ConvertPasswordNoteToNotesProtoAndBack) {
   std::vector<PasswordNote> notes;
   notes.emplace_back(u"unique_display_name", u"value",
                      /*date_created*/ base::Time::Now(),
@@ -134,8 +151,8 @@ TEST(PasswordProtoUtilsTest, ConvertPasswordNoteToNotesProtoAndBack) {
                        PasswordNotesToProto(notes, base_notes_proto)));
 }
 
-TEST(PasswordProtoUtilsTest,
-     CacheNoteUniqueDisplayNameWhenNoteContainsUnknownField) {
+TEST_P(PasswordProtoUtilsTest,
+       CacheNoteUniqueDisplayNameWhenNoteContainsUnknownField) {
   const std::string kNoteUniqueDisplayName = "Note Unique Display Name";
   sync_pb::PasswordSpecificsData password_specifics_data;
   sync_pb::PasswordSpecificsData_Notes_Note* note =
@@ -150,7 +167,7 @@ TEST(PasswordProtoUtilsTest,
             trimmed_specifics.notes().note(0).unique_display_name());
 }
 
-TEST(PasswordProtoUtilsTest, ReconcileCachedNotesUsingUnqiueDisplayName) {
+TEST_P(PasswordProtoUtilsTest, ReconcileCachedNotesUsingUnqiueDisplayName) {
   const std::string kNoteUniqueDisplayName1 = "Note Unique Display Name 1";
   const std::string kNoteValue1 = "Note Value 1";
   const std::string kNoteUnknownFields1 = "Note Unknown Fields 1";
@@ -199,12 +216,14 @@ TEST(PasswordProtoUtilsTest, ReconcileCachedNotesUsingUnqiueDisplayName) {
   EXPECT_EQ(kNoteUnknownFields2, reconciled_notes.note(1).unknown_fields());
 }
 
-TEST(PasswordProtoUtilsTest, ConvertSpecificsToFormAndBack) {
+TEST_P(PasswordProtoUtilsTest, ConvertSpecificsToFormAndBack) {
   sync_pb::PasswordSpecifics specifics;
+  std::optional<bool> actor_login_approved =
+      IsParamFeatureEnabled() ? std::make_optional(true) : std::nullopt;
   *specifics.mutable_client_only_encrypted_data() =
       CreateSpecificsData("http://www.origin.com/", "username_element",
                           "username_value", "password_element", "signon_realm",
-                          /*issue_types=*/{});
+                          /*issue_types=*/{}, actor_login_approved);
   *specifics.mutable_unencrypted_metadata() =
       CreateSpecificsMetadata(specifics.client_only_encrypted_data());
 
@@ -215,12 +234,15 @@ TEST(PasswordProtoUtilsTest, ConvertSpecificsToFormAndBack) {
             specifics.SerializeAsString());
 }
 
-TEST(PasswordProtoUtilsTest, CopiesPasswordIssuesToMetadata) {
+TEST_P(PasswordProtoUtilsTest, CopiesPasswordIssuesToMetadata) {
+  std::optional<bool> actor_login_approved =
+      IsParamFeatureEnabled() ? std::make_optional(true) : std::nullopt;
   sync_pb::PasswordSpecificsData specifics_data =
       CreateSpecificsData("http://www.origin.com/", "username_element",
                           "username_value", "password_element", "signon_realm",
                           {InsecureType::kLeaked, InsecureType::kPhished,
-                           InsecureType::kReused, InsecureType::kWeak});
+                           InsecureType::kReused, InsecureType::kWeak},
+                          actor_login_approved);
 
   // Build expected password specfics.
   sync_pb::PasswordSpecifics specifics;
@@ -235,11 +257,15 @@ TEST(PasswordProtoUtilsTest, CopiesPasswordIssuesToMetadata) {
               Eq(specifics.SerializeAsString()));
 }
 
-TEST(PasswordProtoUtilsTest, SpecificsDataFromPasswordPreservesUnknownFields) {
+TEST_P(PasswordProtoUtilsTest,
+       SpecificsDataFromPasswordPreservesUnknownFieldsWithActorPermission) {
+  if (!IsParamFeatureEnabled()) {
+    GTEST_SKIP() << "This test checks the feature enabled case.";
+  }
   sync_pb::PasswordSpecificsData specifics =
       CreateSpecificsData("http://www.origin.com/", "username_element",
                           "username_value", "password_element", "signon_realm",
-                          /*issue_types=*/{});
+                          /*issue_types=*/{}, /*actor_login_approved=*/true);
 
   PasswordForm form = PasswordFromSpecifics(specifics);
 
@@ -254,11 +280,43 @@ TEST(PasswordProtoUtilsTest, SpecificsDataFromPasswordPreservesUnknownFields) {
             specifics.SerializeAsString());
 }
 
-TEST(PasswordProtoUtilsTest, SpecificsFromPasswordPreservesUnknownFields) {
+// The test passes with the feature enabled too, but for the wrong reasons.
+// If the feature is enabled, the permission bit will exist in the end result,
+// but because `PasswordFromSpecifics` sets it to true, NOT because it's being
+// preserved via the unknown fields logic.
+TEST_P(PasswordProtoUtilsTest,
+       SpecificsDataFromPasswordPreservesUnknownFieldsNoActorPermission) {
+  if (IsParamFeatureEnabled()) {
+    GTEST_SKIP() << "This test checks the feature disabled case.";
+  }
   sync_pb::PasswordSpecificsData specifics =
       CreateSpecificsData("http://www.origin.com/", "username_element",
                           "username_value", "password_element", "signon_realm",
-                          /*issue_types=*/{});
+                          /*issue_types=*/{}, /*actor_login_approved=*/true);
+
+  PasswordForm form = PasswordFromSpecifics(specifics);
+
+  *specifics.mutable_unknown_fields() = "unknown_fields";
+
+  sync_pb::PasswordSpecificsData specifics_with_only_unknown_fields;
+  *specifics_with_only_unknown_fields.mutable_unknown_fields() =
+      "unknown_fields";
+  specifics_with_only_unknown_fields.set_actor_login_approved(true);
+
+  EXPECT_EQ(SpecificsDataFromPassword(form, specifics_with_only_unknown_fields)
+                .SerializeAsString(),
+            specifics.SerializeAsString());
+}
+
+TEST_P(PasswordProtoUtilsTest,
+       SpecificsFromPasswordPreservesUnknownFieldsWithActorPermission) {
+  if (!IsParamFeatureEnabled()) {
+    GTEST_SKIP() << "This test checks the feature enabled case.";
+  }
+  sync_pb::PasswordSpecificsData specifics =
+      CreateSpecificsData("http://www.origin.com/", "username_element",
+                          "username_value", "password_element", "signon_realm",
+                          /*issue_types=*/{}, /*actor_login_approved=*/true);
 
   PasswordForm form = PasswordFromSpecifics(specifics);
 
@@ -274,4 +332,33 @@ TEST(PasswordProtoUtilsTest, SpecificsFromPasswordPreservesUnknownFields) {
             specifics.SerializeAsString());
 }
 
+// The test passes with the feature enabled too, but for the wrong reasons.
+// If the feature is enabled, the permission bit will exist in the end result,
+// but because `PasswordFromSpecifics` sets it to true, NOT because it's being
+// preserved via the unknown fields logic.
+TEST_P(PasswordProtoUtilsTest,
+       SpecificsFromPasswordPreservesUnknownFieldsNoActorPermission) {
+  if (IsParamFeatureEnabled()) {
+    GTEST_SKIP() << "This test checks the feature disabled case.";
+  }
+  sync_pb::PasswordSpecificsData specifics =
+      CreateSpecificsData("http://www.origin.com/", "username_element",
+                          "username_value", "password_element", "signon_realm",
+                          /*issue_types=*/{}, /*actor_login_approved=*/true);
+
+  PasswordForm form = PasswordFromSpecifics(specifics);
+
+  *specifics.mutable_unknown_fields() = "unknown_fields";
+
+  sync_pb::PasswordSpecificsData specifics_with_only_unknown_fields;
+  *specifics_with_only_unknown_fields.mutable_unknown_fields() =
+      "unknown_fields";
+  specifics_with_only_unknown_fields.set_actor_login_approved(true);
+
+  EXPECT_EQ(SpecificsFromPassword(form, specifics_with_only_unknown_fields)
+                .client_only_encrypted_data()
+                .SerializeAsString(),
+            specifics.SerializeAsString());
+}
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordProtoUtilsTest);
 }  // namespace password_manager

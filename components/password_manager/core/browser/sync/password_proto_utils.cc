@@ -7,8 +7,8 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 
 using autofill::FormData;
@@ -210,6 +210,10 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
   trimmed_password_data.clear_date_received_windows_epoch_micros();
   trimmed_password_data.clear_sharing_notification_displayed();
   trimmed_password_data.clear_sender_profile_image_url();
+  if (base::FeatureList::IsEnabled(
+          features::kActorLoginSyncsPasswordPermissions)) {
+    trimmed_password_data.clear_actor_login_approved();
+  }
   // LINT.ThenChange(//components/sync/protocol/password_specifics.proto:PasswordSpecificsData)
 
   TrimPasswordSpecificsDataNotesForCaching(trimmed_password_data);
@@ -291,6 +295,10 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
       password_form.sender_profile_image_url.is_valid()
           ? password_form.sender_profile_image_url.spec()
           : "");
+  if (base::FeatureList::IsEnabled(
+          features::kActorLoginSyncsPasswordPermissions)) {
+    password_data.set_actor_login_approved(password_form.actor_login_approved);
+  }
   return password_data;
 }
 
@@ -353,6 +361,10 @@ PasswordForm PasswordFromSpecifics(
       password_data.sharing_notification_displayed();
   password.sender_profile_image_url =
       GURL(password_data.sender_profile_image_url());
+  if (base::FeatureList::IsEnabled(
+          features::kActorLoginSyncsPasswordPermissions)) {
+    password.actor_login_approved = password_data.actor_login_approved();
+  }
   return password;
 }
 

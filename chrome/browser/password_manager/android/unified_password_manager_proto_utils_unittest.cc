@@ -4,9 +4,13 @@
 
 #include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
 #include "chrome/browser/password_manager/android/protos/password_info.pb.h"
 #include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +41,8 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
     const std::string& username_element,
     const std::string& username_value,
     const std::string& password_element,
-    const std::string& signon_realm) {
+    const std::string& signon_realm,
+    bool actor_login_approved = false) {
   sync_pb::PasswordSpecificsData password_specifics;
   password_specifics.set_origin(origin);
   password_specifics.set_username_element(username_element);
@@ -73,6 +78,8 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_date_received_windows_epoch_micros(0);
   password_specifics.set_sharing_notification_displayed(false);
   password_specifics.set_sender_profile_image_url("");
+  password_specifics.set_actor_login_approved(actor_login_approved);
+
   return password_specifics;
 }
 
@@ -81,14 +88,18 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
 class UnifiedPasswordManagerProtoUtilsTest
     : public testing::Test,
       public testing::WithParamInterface<
-          std::pair<IsAccountStore, PasswordForm::Store>> {};
+          std::pair<IsAccountStore, PasswordForm::Store>> {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kActorLoginSyncsPasswordPermissions};
+};
 
 TEST_P(UnifiedPasswordManagerProtoUtilsTest,
        ConvertPasswordWithLocalDataToFullPasswordFormAndBack) {
   PasswordWithLocalData password_data;
   *password_data.mutable_password_specifics_data() = CreateSpecificsData(
       kTestOrigin, kTestUsernameElementName, "username_value",
-      kTestPasswordElementName, "signon_realm");
+      kTestPasswordElementName, "signon_realm", /*actor_login_approved=*/true);
   (*password_data.mutable_local_data())
       .set_previously_associated_sync_account_email("test@gmail.com");
   const std::string kTestUsernameElementTypeStr(

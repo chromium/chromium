@@ -34,6 +34,12 @@ BASE_DECLARE_FEATURE(kActorLoginLocalClassificationModel);
 // Actor Login.
 BASE_DECLARE_FEATURE(kActorLoginPermissionsUseStrongAffiliations);
 BASE_DECLARE_FEATURE(kActorLoginReauthTaskRefocus);
+#endif  // !BUILDFLAG(IS_IOS)
+
+// Enables syncing password permissions.
+BASE_DECLARE_FEATURE(kActorLoginSyncsPasswordPermissions);
+
+#if !BUILDFLAG(IS_IOS)
 // Enables logging quality for actor login.
 BASE_DECLARE_FEATURE(kActorLoginQualityLogs);
 // Enables finding and filling forms in same-site iframes for actor login.
