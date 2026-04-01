@@ -120,6 +120,25 @@ enum class BnplFormEvent {
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplFormEvent)
 
+// LINT.IfChange(PayLaterFormEvent)
+
+// All Pay Later Tab Form Events are logged once per page load.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PayLaterFormEvent {
+  // Payments autofill suggestions were shown on a BNPL-eligible page,
+  // regardless of whether the Pay Later Tab was shown.
+  kSuggestionsShown = 0,
+
+  // Payments autofill suggestions were shown in Pay Now / Pay Later tabs.
+  kSuggestionsShownWithPayLaterTab = 1,
+
+  kMaxValue = kSuggestionsShownWithPayLaterTab,
+};
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:PayLaterFormEvent)
+
 // Logs if the buy-now-pay-later preference is changed by the user through the
 // pay-over-time toggle in the payment methods settings page. Records true when
 // the user switches on buy-now-pay-later. Records false when the user switches
@@ -158,6 +177,13 @@ void LogBnplPopupWindowResult(autofill::BnplIssuer::IssuerId issuer_id,
 void LogBnplPopupWindowLatency(base::TimeDelta duration,
                                autofill::BnplIssuer::IssuerId issuer_id,
                                BnplFlowResult result);
+
+// Logs suggestion shown events for the Pay Later tab.
+void LogSuggestionShownForPayLaterTab(bool contains_pay_later_tab_suggestions);
+
+// Logs Pay Later Tab form events. Please refer to `PayLaterFormEvent` for the
+// possible enumerations that can be logged.
+void LogPayLaterFormEvent(PayLaterFormEvent event);
 
 // Logs BNPL form events. Please refer to `BnplFormEvent` for the possible
 // enumerations that can be logged.

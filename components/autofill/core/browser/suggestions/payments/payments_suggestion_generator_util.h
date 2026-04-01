@@ -40,6 +40,8 @@ struct CreditCardSuggestionSummary {
   bool with_cvc = false;
   // True if any card is card info retrieval enrolled.
   bool with_card_info_retrieval_enrolled = false;
+  // True if there is a pay later tab suggestion.
+  bool with_pay_later_tab_suggestion = false;
   // Contains card metadata related information used for metrics logging.
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
 };

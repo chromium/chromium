@@ -59,11 +59,13 @@ void CreditCardFormEventLogger::OnDidFetchSuggestion(
     const std::vector<Suggestion>& suggestions,
     bool with_cvc,
     bool with_card_info_retrieval_enrolled,
+    bool with_pay_later_tab_suggestion,
     bool is_virtual_card_standalone_cvc_field,
     CardMetadataLoggingContext metadata_logging_context) {
   suggestion_contains_card_with_cvc_ = with_cvc;
   suggestion_contains_card_info_retrieval_enrolled_card_ =
       with_card_info_retrieval_enrolled;
+  suggestion_contains_pay_later_tab_entry_ = with_pay_later_tab_suggestion;
   is_virtual_card_standalone_cvc_field_ = is_virtual_card_standalone_cvc_field;
   // A new metadata logging context is received every time a suggestion is
   // fetched, i.e. when a form field is focused and provides suggestions. The
@@ -152,6 +154,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   if (!has_logged_suggestions_shown_on_bnpl_eligible_merchant_ &&
       payments::IsEligibleForBnpl(owner_->client())) {
     LogBnplFormEvent(BnplFormEvent::kSuggestionsShownOnBnplEligiblePage);
+    LogSuggestionShownForPayLaterTab(suggestion_contains_pay_later_tab_entry_);
     has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = true;
   }
 }
@@ -573,7 +576,7 @@ CreditCardFormEventLogger::GetCreditCardSuggestionSummaryForTesting() const {
   return CreditCardSuggestionSummary{
       suggestion_contains_card_with_cvc_,
       suggestion_contains_card_info_retrieval_enrolled_card_,
-      metadata_logging_context_};
+      suggestion_contains_pay_later_tab_entry_, metadata_logging_context_};
 }
 
 void CreditCardFormEventLogger::RecordParseForm() {

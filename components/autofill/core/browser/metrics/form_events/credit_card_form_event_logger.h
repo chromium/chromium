@@ -63,6 +63,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // the list.
   // `with_card_info_retrieval_enrolled` indicates whether at least one of the
   // suggestions contains card info retrieval enrolled card.
+  // `with_pay_later_tab_suggestion` indicates that whether at least one of the
+  // suggestions is for the Pay Later tab.
   // `is_virtual_card_standalone_cvc_field` indicates whether the `suggestions`
   // are fetched for a virtual card standalone CVC field.
   // `metadata_logging_context` contains information about whether any card has
@@ -71,6 +73,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       const std::vector<Suggestion>& suggestions,
       bool with_cvc,
       bool with_card_info_retrieval_enrolled,
+      bool with_pay_later_tab_suggestion,
       bool is_virtual_card_standalone_cvc_field,
       CardMetadataLoggingContext metadata_logging_context);
 
@@ -225,6 +228,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, one of the cards in the suggestions fetched card info retrieval
   // enrolled.
   bool suggestion_contains_card_info_retrieval_enrolled_card_ = false;
+  // If true, one of the suggestions will be shown in the Pay Later tab.
+  bool suggestion_contains_pay_later_tab_entry_ = false;
   // If true, the suggestions shown on BNPL eligible merchant is logged and
   // should not be logged again.
   bool has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = false;

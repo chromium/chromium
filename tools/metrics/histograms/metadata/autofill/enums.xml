@@ -5351,6 +5351,15 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Not Phishing"/>
 </enum>
 
+<!-- LINT.IfChange(PayLaterFormEvent) -->
+
+<enum name="PayLaterFormEvent">
+  <int value="0" label="Suggestions shown (once)"/>
+  <int value="1" label="Suggestions shown with Pay Now Pay Later tabs (once)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:PayLaterFormEvent) -->
+
 <enum name="PaymentsWindowUserConsentDialogResult">
   <int value="0" label="The tab or browser was closed"/>
   <int value="1" label="The escape key was pressed, closing the dialog"/>

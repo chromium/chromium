@@ -4220,6 +4220,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab"
+    enum="PayLaterFormEvent" expires_after="2026-08-02">
+  <owner>yishuil@google.com</owner>
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    This histogram records events related to Buy Now Pay Later (BNPL)
+    suggestions in tabbed pane. It tracks when the BNPL suggestion is shown,
+    selected, filled, and submitted from a suggestion dropdown with a tabbed
+    pane. Additionally, suggestion tab switch events are also tracked. Each
+    event log is emitted when the action occurs (suggestion shown, selected,
+    etc.). Each PayLaterFormEvent metric can be recorded once per page load.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.CardInfoRetrievalEnrolled"
     enum="CardInfoRetrievalEnrolledLoggingEvent" expires_after="2026-08-02">
   <owner>jialihuang@google.com</owner>

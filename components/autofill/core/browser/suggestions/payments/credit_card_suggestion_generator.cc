@@ -186,6 +186,7 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
           features::kAutofillEnablePayNowPayLaterTabs);
 
   if (should_show_pay_later_tab_suggestions) {
+    summary.with_pay_later_tab_suggestion = true;
     const PaymentsDataManager& payments_data_manager =
         client.GetPersonalDataManager().payments_data_manager();
     if (is_card_number_field_empty &&
@@ -643,6 +644,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
     credit_card_form_event_logger_->OnDidFetchSuggestion(
         suggestions, summary_.with_cvc,
         summary_.with_card_info_retrieval_enrolled,
+        summary_.with_pay_later_tab_suggestion,
         is_virtual_card_standalone_cvc_field,
         std::move(summary_.metadata_logging_context));
   }

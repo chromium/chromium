@@ -104,6 +104,20 @@ void LogBnplPopupWindowLatency(base::TimeDelta duration,
   base::UmaHistogramLongTimes(histogram_name, duration);
 }
 
+void LogSuggestionShownForPayLaterTab(bool contains_pay_later_tab_suggestions) {
+  autofill_metrics::LogPayLaterFormEvent(
+      autofill_metrics::PayLaterFormEvent::kSuggestionsShown);
+  if (contains_pay_later_tab_suggestions) {
+    autofill_metrics::LogPayLaterFormEvent(
+        autofill_metrics::PayLaterFormEvent::kSuggestionsShownWithPayLaterTab);
+  }
+}
+
+void LogPayLaterFormEvent(PayLaterFormEvent event) {
+  base::UmaHistogramEnumeration(
+      "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab", event);
+}
+
 void LogBnplFormEvent(BnplFormEvent event) {
   base::UmaHistogramEnumeration("Autofill.FormEvents.CreditCard.Bnpl", event);
 }
