@@ -20,7 +20,7 @@ schema_sources_ = [
   "debugger.json",
   "desktop_capture.json",
   "developer_private.webidl",
-  "downloads_internal.idl",
+  "downloads_internal.webidl",
   "downloads.webidl",
   "enterprise_hardware_platform.idl",
   "font_settings.json",
