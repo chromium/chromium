@@ -401,33 +401,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.WrenchMenu.MenuButtonPressedToMenuShown" units="ms"
-    expires_after="2024-11-06">
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Records the latency from when the app menu button is pressed to when the
-    menu is shown. It's logged every time the button is pressed.
-
-    This metric will be removed after M121 and is replaced by
-    Chrome.AppMenu.MenuHostInitToNextFramePresented. We do not want to use menu
-    button's compositor to track the app menu creation time.
-  </summary>
-</histogram>
-
-<histogram name="Chrome.WrenchMenu.MenuHostInitToNextFramePresented" units="ms"
-    expires_after="2024-11-06">
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Records time from when the menu host initialization is started to when the
-    next frame is successfully presented. It's logged every time the app menu
-    opens.
-
-    This metric will be removed after M121 and is replaced by
-    Chrome.AppMenu.MenuHostInitToNextFramePresented. We do not want to use menu
-    button's compositor to track the app menu creation time.
-  </summary>
-</histogram>
-
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
     expires_after="2026-09-27">
   <owner>tiborg@chromium.org</owner>
