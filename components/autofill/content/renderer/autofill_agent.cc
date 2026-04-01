@@ -342,10 +342,14 @@ AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
   };
 }
 
-// @memory should be triggered if no text is selected and the cursor is located
-// behind two '@' symbols.
+// @memory should be triggered if the field is not a password field, no text is
+// selected and the cursor is located behind two '@' symbols.
 bool ShouldTriggerAtMemorySearch(const blink::WebFormControlElement& element) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+    return false;
+  }
+  if (element.FormControlTypeForAutofill() ==
+      blink::mojom::FormControlType::kInputPassword) {
     return false;
   }
   const unsigned int sel_start = element.SelectionStart();

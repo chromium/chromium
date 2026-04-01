@@ -2124,6 +2124,30 @@ TEST_F(AutofillAgentTest, MemorySearchTriggerInMiddle) {
   SimulateUserInputChangeForElementById("f", "a@@");
 }
 
+// Tests that typing "@@" in the password field doesn't trigger @memory.
+TEST_F(AutofillAgentTest, MemorySearchNotTriggeredOnPasswordField) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAutofillAtMemory);
+
+  // 1. Setup Expectations:
+  // Ignore standard Autofill noise during setup.
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+      .Times(testing::AnyNumber());
+  // Expect no @memory trigger.
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(_, _, _,
+                                 AutofillSuggestionTriggerSource::kAtMemory, _))
+      .Times(0);
+
+  // 2. Act:
+  LoadHTML(R"(<input id="f" type="password">)");
+  WaitForFormsSeen();
+  Focus("f");
+  SimulateUserInputChangeForElementById("f", "a@@");
+}
+
 // Tests that ApplyFieldAction correctly handles targeted replacement of "@@"
 // in standard text inputs during the filling phase.
 TEST_F(AutofillAgentAtMemoryTest,
