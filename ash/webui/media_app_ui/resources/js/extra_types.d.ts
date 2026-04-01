@@ -67,7 +67,7 @@ interface Window {
 
 /**
  * Types for
- * https://crsrc.org/c/chrome/common/extensions/api/crash_report_private.idl.
+ * https://crsrc.org/c/chrome/common/extensions/api/crash_report_private.webidl.
  */
 declare namespace chrome.crashReportPrivate {
   interface ErrorInfo {

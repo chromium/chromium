@@ -6,7 +6,7 @@ accessibility_private.json
 braille_display_private.webidl
 chromeos_info_private.json
 command_line_private.json
-crash_report_private.idl
+crash_report_private.webidl
 file_system_provider.idl
 input_method_private.json
 language_settings_private.idl
