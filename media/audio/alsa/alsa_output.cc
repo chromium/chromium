@@ -262,7 +262,7 @@ void AlsaPcmOutputStream::Close() {
                           // uses the flag to verify that stream was closed.
   }
 
-  weak_factory_.InvalidateWeakPtrs();
+  weak_factory_.InvalidateWeakPtrsAndDoom();
 
   // Signal to the manager that we're closed and can be removed.
   // Should be last call in the method as it deletes "this".

@@ -85,10 +85,6 @@ DemuxerManager::~DemuxerManager() {
   }
 }
 
-void DemuxerManager::InvalidateWeakPtrs() {
-  weak_factory_.InvalidateWeakPtrs();
-}
-
 void DemuxerManager::RestartClientForHLS() {
   if (client_ && fallback_allowed_) {
     client_->RestartForHls();
@@ -314,6 +310,7 @@ void DemuxerManager::StopAndResetClient() {
     data_source_->Stop();
   }
   client_ = nullptr;
+  weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
 int64_t DemuxerManager::GetDataSourceMemoryUsage() {

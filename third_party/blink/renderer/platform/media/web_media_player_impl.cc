@@ -697,7 +697,6 @@ void WebMediaPlayerImpl::Shutdown() {
   media_log_->OnWebMediaPlayerDestroyed();
 
   demuxer_manager_->StopAndResetClient();
-  demuxer_manager_->InvalidateWeakPtrs();
 
   // Disconnect from the surface layer. We still preserve the `bridge_` until
   // after pipeline shutdown to ensure any pending frames are painted for tests.

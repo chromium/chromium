@@ -54,7 +54,7 @@ std::unique_ptr<PulseLoopbackManager> PulseLoopbackManager::Create(
 
 PulseLoopbackManager::~PulseLoopbackManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_.InvalidateWeakPtrsAndDoom();
   pulse::AutoPulseLock auto_lock(mainloop_);
   pa_operation* operation =
       pa_context_subscribe(context_, PA_SUBSCRIPTION_MASK_NULL,

@@ -95,7 +95,6 @@ class MEDIA_EXPORT DemuxerManager {
                  MediaLog* log,
                  std::unique_ptr<Demuxer> demuxer_override);
   ~DemuxerManager();
-  void InvalidateWeakPtrs();
 
   void OnPipelineError(PipelineStatus error);
   void SetLoadedUrl(GURL url);

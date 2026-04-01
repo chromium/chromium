@@ -127,7 +127,7 @@ void AudioManagerWin::ShutdownOnAudioThread() {
   // TODO(crbug.com/40066532): Remove this call when kAudioServiceOutOfProcess
   // is removed on Windows; `weak_factory_on_audio_thread_` will be guaranteed
   // to be destroyed/invalidated on the right thread then.
-  weak_factory_on_audio_thread_.InvalidateWeakPtrs();
+  weak_factory_on_audio_thread_.InvalidateWeakPtrsAndDoom();
 
   AudioManagerBase::ShutdownOnAudioThread();
 
