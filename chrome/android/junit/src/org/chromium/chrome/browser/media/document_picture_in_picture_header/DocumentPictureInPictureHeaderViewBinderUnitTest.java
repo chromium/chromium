@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.core.graphics.Insets;
 import androidx.test.core.app.ApplicationProvider;
@@ -33,8 +34,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -50,7 +49,7 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     private ViewGroup mHeaderView;
     private ImageView mBackToTabButton;
     private ImageView mSecurityIcon;
-    private UrlBar mUrlBar;
+    private TextView mUrlBar;
     private PropertyModel mModel;
 
     @Before
@@ -65,7 +64,7 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
 
         mSecurityIcon = mock(ImageView.class);
         mBackToTabButton = mock(ImageView.class);
-        mUrlBar = mock(UrlBar.class);
+        mUrlBar = mock(TextView.class);
         doReturn(mSecurityIcon)
                 .when(mHeaderView)
                 .findViewById(R.id.document_picture_in_picture_header_security_icon);
@@ -190,7 +189,7 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     public void testUrlHost() {
         String host = JUnitTestGURLs.EXAMPLE_URL.getHost();
         mModel.set(DocumentPictureInPictureHeaderProperties.URL_STRING, host);
-        verify(mUrlBar).setTextWithTruncation(host, ScrollType.NO_SCROLL, -1);
+        verify(mUrlBar).setText(host);
         verify(mUrlBar).setTooltipText(host);
     }
 

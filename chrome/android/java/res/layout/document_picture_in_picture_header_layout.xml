@@ -28,10 +28,9 @@ by DocumentPictureInPictureHeaderViewBinder.
             "@dimen/document_picture_in_picture_header_component_size"
         android:scaleType="center" />
 
-    <org.chromium.chrome.browser.omnibox.UrlBarApi26
+    <TextView
         android:id="@+id/document_picture_in_picture_header_url_bar"
         android:background="@null"
-        android:inputType="none"
         android:singleLine="true"
         android:layout_width="0dp"
         android:layout_height=
@@ -42,7 +41,11 @@ by DocumentPictureInPictureHeaderViewBinder.
             "@dimen/document_picture_in_picture_url_bar_margin"
         android:layout_weight="1"
         android:enabled="false"
-        style="@style/TextAppearance.TextSmall.Primary" />
+        android:ellipsize="end"
+        android:scrollHorizontally="false"
+        android:gravity="center_vertical"
+        android:focusable="false"
+        style="@style/TextAppearance.TextSmallThick" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/document_picture_in_picture_header_back_to_tab"

@@ -16,8 +16,6 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -131,8 +129,8 @@ public class DocumentPictureInPictureHeaderViewBinder {
     }
 
     private static void updateUrl(View view, String urlHost) {
-        UrlBar urlBar = view.findViewById(R.id.document_picture_in_picture_header_url_bar);
-        urlBar.setTextWithTruncation(urlHost, ScrollType.NO_SCROLL, /* scrollToIndex= */ -1);
+        TextView urlBar = view.findViewById(R.id.document_picture_in_picture_header_url_bar);
+        urlBar.setText(urlHost);
         urlBar.setTooltipText(urlHost);
     }
 }
