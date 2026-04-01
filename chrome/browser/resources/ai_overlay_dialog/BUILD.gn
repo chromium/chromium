@@ -6,6 +6,18 @@ import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos)
 
+action("generate_tool_definitions") {
+  script = "tools/generate_tool_definitions.py"
+  sources = [ "//chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom" ]
+  outputs = [ "$target_gen_dir/generated_tool_definitions.ts" ]
+  args = [
+    "--in-files",
+    rebase_path(sources[0], root_build_dir),
+    "--out-file",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
 build_webui("build") {
   grd_prefix = "ai_overlay_dialog_untrusted"
 
@@ -25,6 +37,7 @@ build_webui("build") {
     "logging.ts",
     "page_context_manager.ts",
     "persona.ts",
+    "tools/tool_executor.ts",
   ]
 
   ts_deps = [
@@ -34,9 +47,14 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [
+    ":generate_tool_definitions",
     "//chrome/browser/ui/webui/ai_overlay_dialog:mojo_bindings_ts__generator",
   ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom-webui.ts",
+    "$target_gen_dir/generated_tool_definitions.ts",
+  ]
 
   ts_composite = true
 

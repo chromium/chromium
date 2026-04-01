@@ -4,15 +4,17 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {PageCallbackRouter, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
+import type {PageCallbackRouter} from './ai_overlay_dialog.mojom-webui.js';
 import {ApiSession} from './api_session.js';
 import type {ApiSessionConfig, ApiSessionDelegate, Tool, ToolCall} from './api_session.js';
-import {debugLog, DebugLogTag, errorLog, log} from './logging.js';
+import {debugLog, DebugLogTag, log} from './logging.js';
 import type {PageContext} from './page_context_manager.js';
 import {PageContextManager} from './page_context_manager.js';
 import {buildSystemInstruction} from './persona.js';
 
 const FILE = 'Conversation';
+import type {AiOverlayToolsRemote} from './tools.mojom-webui.js';
+import {ToolExecutor} from './tools/tool_executor.js';
 
 /**
  * Information about how to initialize the model's personality. Corresponds to
@@ -65,7 +67,7 @@ interface UiDelegate {
  */
 export class Conversation implements ApiSessionDelegate {
   private readonly uiDelegate: UiDelegate;
-  private readonly pageHandler: PageHandlerRemote;
+  private readonly toolExecutor: ToolExecutor;
   private readonly pageContextManager: PageContextManager =
       new PageContextManager(() => this.didUpdatePageContent());
   private readonly config: ConversationConfig;
@@ -79,12 +81,12 @@ export class Conversation implements ApiSessionDelegate {
 
   constructor(
       config: ConversationConfig, uiDelegate: UiDelegate,
-      pageHandler: PageHandlerRemote, router: PageCallbackRouter,
+      toolsRemote: AiOverlayToolsRemote, router: PageCallbackRouter,
       initialPageContext?: PageContext) {
     log(FILE, `Conversation with ${config.persona.name}, config`, config);
     this.config = config;
     this.uiDelegate = uiDelegate;
-    this.pageHandler = pageHandler;
+    this.toolExecutor = new ToolExecutor(toolsRemote);
 
     if (initialPageContext) {
       this.pageContextManager.didChangePage(
@@ -176,7 +178,7 @@ export class Conversation implements ApiSessionDelegate {
    * conversation into a live state once the connection is ready.
    */
   async start() {
-    const {toolDefinitionsJson} = await this.pageHandler.getToolDefinitions();
+    const toolDefinitionsJson = this.toolExecutor.getToolDefinitions();
     this.toolDefinitions = JSON.parse(toolDefinitionsJson);
 
     await this.createNewApiSession();
@@ -188,20 +190,13 @@ export class Conversation implements ApiSessionDelegate {
 
     for (const call of functionCalls) {
       const {name, args, id} = call;
-      let result: any = {success: false};
 
       let scheduling: string|undefined = undefined;
+      const result = await this.toolExecutor.executeTool(name, args);
 
-      try {
-        const jsonArgs = JSON.stringify(args);
-        const {jsonResult} = await this.pageHandler.executeTool(name, jsonArgs);
-        result = JSON.parse(jsonResult);
-        if (result.scheduling) {
-          scheduling = result.scheduling;
-          delete result.scheduling;
-        }
-      } catch (e) {
-        errorLog(FILE, `Error executing tool ${name}:`, e);
+      if (result.scheduling) {
+        scheduling = result.scheduling;
+        delete result.scheduling;
       }
 
       responses.push({

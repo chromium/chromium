@@ -1,0 +1,63 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ai_overlay_dialog.mojom;
+
+import "url/mojom/url.mojom";
+
+struct SwitchTabResult {
+  string title;
+  url.mojom.Url url;
+  int32 tab_id;
+};
+
+// Interface for AI tools available to the web UI.
+// NOTE: This interface is parsed by `generate_tool_definitions.py` during the
+// build process to generate the tool manifest provided to the Gemini Live agent.
+// Because of this, only tools intended to be exposed to the agent should be
+// added here. The interface serves a dual purpose: defining the Mojo IPC
+// contract and acting as the source of truth for the agent's tool definitions.
+interface AiOverlayTools {
+  // Browser tools
+
+  // Open a URL.
+  OpenUrl(string url, bool new_tab) => result<bool, string>;
+
+  // Search using the default search engine.
+  PerformSearch(string query, bool new_tab) => result<bool, string>;
+
+  // Switch to another open tab by fuzzy matching name or URL.
+  SwitchTab(string query) => result<SwitchTabResult, string>;
+
+  // Close the current browser tab.
+  CloseCurrentTab() => result<bool, string>;
+
+  // Go back to the previous page in history.
+  GoBack() => result<bool, string>;
+
+  // Go forward to the next page in history.
+  GoForward() => result<bool, string>;
+
+  // Refresh the current page.
+  ReloadPage() => result<bool, string>;
+
+  // Page tools
+
+  // Highlight and scroll to specific text on the page.
+  FindAndHighlight(string query) => result<bool, string>;
+
+  // Scroll the viewport in a specific direction.
+  Scroll(string direction, double magnitude) => result<bool, string>;
+
+  // Media tools
+
+  // Resume video playback.
+  PlayVideo() => result<bool, string>;
+
+  // Pause video playback.
+  PauseVideo() => result<bool, string>;
+
+  // Jump the video to a specific timecode (e.g. '1:45').
+  SeekToTimestamp(string timecode) => result<bool, string>;
+};

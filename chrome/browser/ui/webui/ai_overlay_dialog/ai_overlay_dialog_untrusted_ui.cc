@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -93,13 +94,16 @@ WEB_UI_CONTROLLER_TYPE_IMPL(AiOverlayDialogUntrustedUI)
 
 void AiOverlayDialogUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver,
-    mojo::PendingRemote<ai_overlay_dialog::mojom::Page> remote) {
+    mojo::PendingRemote<ai_overlay_dialog::mojom::Page> remote,
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> tools) {
   BrowserWindowInterface* bwi =
       webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
   CHECK(bwi);
 
   page_handler_ = std::make_unique<AiOverlayDialogPageHandler>(
       std::move(receiver), std::move(remote), bwi);
+
+  tools_ = std::make_unique<AiOverlayTools>(std::move(tools), bwi);
 
   page_context_monitor_ =
       std::make_unique<PageContextMonitor>(*bwi, *page_handler_);

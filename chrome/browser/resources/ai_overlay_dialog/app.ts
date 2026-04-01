@@ -18,6 +18,7 @@ import {Conversation, State} from './conversation.js';
 import type {ApiConfig, ConversationConfig, Persona} from './conversation.js';
 import {errorLog, log} from './logging.js';
 import type {PageContext} from './page_context_manager.js';
+import {AiOverlayToolsRemote} from './tools.mojom-webui.js';
 
 const FILE = 'App';
 
@@ -103,6 +104,7 @@ export class AppElement extends CrLitElement {
   protected accessor listeningBlobUrl: string = '';
 
   private pageHandler: PageHandlerRemote;
+  private toolsRemote: AiOverlayToolsRemote;
   private pageCallbackRouter: PageCallbackRouter;
   private conversation: Conversation|null = null;
   private blobCapturer: BlobAudioCapturer|null = null;
@@ -122,6 +124,7 @@ export class AppElement extends CrLitElement {
     // Setup Mojo connection
     this.pageCallbackRouter = new PageCallbackRouter();
     this.pageHandler = new PageHandlerRemote();
+    this.toolsRemote = new AiOverlayToolsRemote();
 
     // Start listening for page context updates immediately to ensure we catch
     // any initial updates before the Conversation is initialized.
@@ -148,7 +151,8 @@ export class AppElement extends CrLitElement {
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.pageHandler.$.bindNewPipeAndPassReceiver(),
-        this.pageCallbackRouter.$.bindNewPipeAndPassRemote());
+        this.pageCallbackRouter.$.bindNewPipeAndPassRemote(),
+        this.toolsRemote.$.bindNewPipeAndPassReceiver());
   }
 
   override connectedCallback() {
@@ -423,7 +427,7 @@ export class AppElement extends CrLitElement {
               this.onConversationStateChanged(state, oldState),
           onResponse: (audioData) => this.onAudioOutput(audioData),
         },
-        this.pageHandler, this.pageCallbackRouter, this.initialPageContext);
+        this.toolsRemote, this.pageCallbackRouter, this.initialPageContext);
 
     // The conversation should only ever be created once.
     assert(this.unregisterPageContextListeners);
