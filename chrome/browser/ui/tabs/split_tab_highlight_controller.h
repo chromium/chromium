@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 
 class BrowserWindowInterface;
-class BrowserView;
 
 namespace content {
 class WebContents;
@@ -32,13 +31,18 @@ class TabInterface;
 
 namespace split_tabs {
 
-class SplitTabHighlightDelegate;
-
 // Coordinates when active tab in a split is highlighted.
 class SplitTabHighlightController : public OmniboxTabHelper::Observer,
                                     public ChipController::Observer {
  public:
-  explicit SplitTabHighlightController(BrowserView* browser_view);
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void SetHighlightActiveContentsView(bool is_highlighted) = 0;
+  };
+
+  explicit SplitTabHighlightController(BrowserWindowInterface* browser,
+                                       Delegate* delegate);
   ~SplitTabHighlightController() override;
 
   bool ShouldHighlight();
@@ -67,6 +71,9 @@ class SplitTabHighlightController : public OmniboxTabHelper::Observer,
   void OnElementHidden(ui::TrackedElement* tracked_element);
   void UpdateHighlight();
 
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  raw_ptr<Delegate> split_tab_highlight_delegate_;
+
   bool is_permission_prompt_showing_ = false;
   bool is_omnibox_popup_showing_ = false;
   base::flat_map<ui::ElementIdentifier, bool> tracked_bubble_visibility_;
@@ -77,8 +84,6 @@ class SplitTabHighlightController : public OmniboxTabHelper::Observer,
       omnibox_tab_helper_observation_{this};
   base::ScopedObservation<ChipController, ChipController::Observer>
       chip_controller_observation_{this};
-  std::unique_ptr<SplitTabHighlightDelegate> split_tab_highlight_delegate_;
-  raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };
 
 }  // namespace split_tabs

@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
-#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_util.h"
@@ -142,8 +141,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
 
   std::vector<ContentsContainerView*> contents_container_views =
       BrowserView::GetBrowserViewForBrowser(browser())
-          ->multi_contents_view()
-          ->contents_container_views();
+          ->GetContentsContainerViews();
   ASSERT_EQ(contents_container_views.size(), 2U);
   EXPECT_FALSE(
       contents_container_views[0]->contents_outline_view()->is_highlighted());

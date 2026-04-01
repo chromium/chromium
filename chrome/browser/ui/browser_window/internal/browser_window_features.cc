@@ -111,6 +111,7 @@
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_stub.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view_controller.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
@@ -632,7 +633,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     if (browser_view) {
       split_tab_highlight_controller_ =
           std::make_unique<split_tabs::SplitTabHighlightController>(
-              browser_view);
+              browser_view->browser(), browser_view->multi_contents_view());
     }
 
     if (base::FeatureList::IsEnabled(
