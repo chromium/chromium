@@ -22,8 +22,10 @@ import '../simple_confirmation_dialog.js';
 import './autofill_ai_add_or_edit_dialog.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
+
 // </if>
 
+import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -34,8 +36,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 
+import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import type {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -219,6 +221,7 @@ export class SettingsAutofillAiEntriesListElement extends
       'updateOptInStatus_(' +
           'prefs.autofill.autofill_ai.opt_in_status.value, ' +
           'prefs.autofill.profile_enabled.value, ' +
+          `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value, ` +
           'allowEditingPref.*)',
     ];
   }
@@ -498,20 +501,26 @@ export class SettingsAutofillAiEntriesListElement extends
       return;
     }
     const addressPref = this.getPref('autofill.profile_enabled');
+    const autofillAiPref = this.getPref<ModelExecutionEnterprisePolicyValue>(
+        AiEnterpriseFeaturePrefName.AUTOFILL_AI);
     const meetsAddressPrefRequirement =
         this.autofillAddOtherDatatypesPrefIsEnabled_ || addressPref.value;
+    const meetsAiPrefRequirement =
+        autofillAiPref.value !== ModelExecutionEnterprisePolicyValue.DISABLE;
 
     // If Autofill AI is available by default, it means that the pref only
     // controls server model calls and MQLS logging. Therefore not whether the
     // user can use Autofill AI.
     if (this.autofillAiAvailableByDefault_) {
       this.allowEditing_ = this.isEditingAllowedByPref_ &&
-          this.canEnableOrDisableAutofillAi_ && meetsAddressPrefRequirement;
+          this.canEnableOrDisableAutofillAi_ && meetsAddressPrefRequirement &&
+          meetsAiPrefRequirement;
       return;
     }
     const optedIn = await this.entityDataManager_.getOptInStatus();
     this.allowEditing_ = !this.ineligibleUser && optedIn &&
-        this.isEditingAllowedByPref_ && meetsAddressPrefRequirement;
+        this.isEditingAllowedByPref_ && meetsAddressPrefRequirement &&
+        meetsAiPrefRequirement;
   }
 
   // Refreshes the entity types list when the sync status changes.

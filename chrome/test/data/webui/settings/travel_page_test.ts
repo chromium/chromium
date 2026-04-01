@@ -4,9 +4,9 @@
 
 import 'chrome://settings/settings.js';
 
-import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
+import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsTravelPageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -297,5 +297,61 @@ suite('TravelPage', function() {
 
         assertFalse(!!extensionControlledIndicator);
         assertFalse(page.$.optInToggle.checked);
+      });
+
+  test(
+      'Policy controlled icon is shown when Autofill AI is ' +
+          'controlled by policy',
+      async function() {
+        loadTimeData.overrideValues({
+          userEligibleForAutofillAi: true,
+          AutofillAddOtherDatatypesPrefIsEnabled: false,
+          autofillAiAvailableByDefault: true,
+          canEnableOrDisableAutofillAi: true,
+          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+        });
+
+        settingsPrefs.set(
+            'prefs.autofill.autofill_ai.travel_entities_enabled.value', true);
+        settingsPrefs.set(`prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}`, {
+          value: ModelExecutionEnterprisePolicyValue.DISABLE,
+          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        });
+
+        const page = await setupPage();
+        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+            'cr-policy-pref-indicator');
+
+        assertTrue(!!policyIndicator);
+        assertFalse(page.$.optInToggle.checked);
+      });
+
+  test(
+      'Policy controlled icon is not shown when Autofill AI is ' +
+          'allowed by policy',
+      async function() {
+        loadTimeData.overrideValues({
+          userEligibleForAutofillAi: true,
+          AutofillAddOtherDatatypesPrefIsEnabled: false,
+          autofillAiAvailableByDefault: true,
+          canEnableOrDisableAutofillAi: true,
+          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+        });
+
+        settingsPrefs.set(
+            'prefs.autofill.autofill_ai.travel_entities_enabled.value', true);
+        settingsPrefs.set(`prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}`, {
+          value: ModelExecutionEnterprisePolicyValue.ALLOW,
+          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        });
+
+        const page = await setupPage();
+        const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
+            'cr-policy-pref-indicator');
+
+        assertFalse(!!policyIndicator);
+        assertTrue(page.$.optInToggle.checked);
       });
 });

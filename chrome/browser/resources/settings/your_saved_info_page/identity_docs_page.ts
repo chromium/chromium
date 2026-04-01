@@ -21,6 +21,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import type {EntityDataManagerProxy} from '../autofill_page/entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
@@ -105,11 +106,12 @@ export class SettingsIdentityDocsPageElement extends
        */
       identityDocsOptedIn_: {
         type: Object,
-        computed:
-            'computeIdentityDocsOptedIn_(enhancedAutofillEligibleUser_, ' +
-            'enhancedAutofillOptedIn_, ' +
-            'prefs.autofill.autofill_ai.identity_entities_enabled, ' +
-            'prefs.autofill.profile_enabled.value, prefsInitialized_)',
+        computed: `computeIdentityDocsOptedIn_(enhancedAutofillEligibleUser_,
+              enhancedAutofillOptedIn_,
+              prefs.autofill.autofill_ai.identity_entities_enabled,
+              prefs.autofill.profile_enabled.value,
+              prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI},
+              prefsInitialized_)`,
       },
 
       /**
@@ -226,19 +228,45 @@ export class SettingsIdentityDocsPageElement extends
     }
 
     if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
-      const addressAutofillEnabled =
-          this.getPref<boolean>('autofill.profile_enabled');
-
-      if (addressAutofillEnabled.enforcement ===
-              chrome.settingsPrivate.Enforcement.ENFORCED &&
-          !addressAutofillEnabled.value) {
-        fakePref.enforcement = addressAutofillEnabled.enforcement;
-        fakePref.controlledBy = addressAutofillEnabled.controlledBy;
-        fakePref.value = addressAutofillEnabled.value;
+      const addressPolicyIsActive =
+          this.checkAddressPolicyAndModifyPrefIfNecessary_(fakePref);
+      if (!addressPolicyIsActive) {
+        const _ = this.checkAutofillAiPolicyAndModifyPrefIfNecessary_(fakePref);
       }
     }
 
     return fakePref;
+  }
+
+  private checkAddressPolicyAndModifyPrefIfNecessary_(
+      pref: chrome.settingsPrivate.PrefObject<boolean>): boolean {
+    const addressAutofillEnabled =
+        this.getPref<boolean>('autofill.profile_enabled');
+
+    if (addressAutofillEnabled.enforcement ===
+            chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !addressAutofillEnabled.value) {
+      pref.enforcement = addressAutofillEnabled.enforcement;
+      pref.controlledBy = addressAutofillEnabled.controlledBy;
+      pref.value = addressAutofillEnabled.value;
+      return true;
+    }
+    return false;
+  }
+
+  private checkAutofillAiPolicyAndModifyPrefIfNecessary_(
+      pref: chrome.settingsPrivate.PrefObject<boolean>): boolean {
+    const autofillAiPolicy = this.getPref<ModelExecutionEnterprisePolicyValue>(
+        AiEnterpriseFeaturePrefName.AUTOFILL_AI);
+
+    if (autofillAiPolicy.value ===
+        ModelExecutionEnterprisePolicyValue.DISABLE) {
+      pref.enforcement = autofillAiPolicy.enforcement;
+      pref.controlledBy = autofillAiPolicy.controlledBy;
+      pref.value = false;
+      return true;
+    }
+    return false;
   }
 
   private onOptInToggleChange_() {
