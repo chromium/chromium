@@ -50,6 +50,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.function.Supplier;
@@ -165,7 +166,7 @@ public class SignInPreference extends Preference
         }
 
         if (isSignedIn(mProfile)) {
-            setupSignedIn(assumeNonNull(getAccountInfo(mProfile)).getEmail());
+            setupSignedIn(assumeNonNull(getAccountInfo(mProfile)).getId());
         } else {
             setupGenericPromo();
         }
@@ -265,10 +266,10 @@ public class SignInPreference extends Preference
         mWasGenericSigninPromoDisplayed = true;
     }
 
-    private void setupSignedIn(String accountName) {
-        DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(accountName);
+    private void setupSignedIn(CoreAccountId accountId) {
+        DisplayableProfileData profileData = mProfileDataCache.getById(accountId);
         final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress();
-        setSummary(canShowEmailAddress ? accountName : "");
+        setSummary(canShowEmailAddress ? profileData.getAccountEmail() : "");
         setTitle(
                 SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
