@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -512,13 +513,12 @@ public class IncognitoTabSwitcherPaneUnitTest {
                 R.drawable.new_tab_icon,
                 shadowOf(buttonData.resolveIcon(mContext)).getCreatedFromResId());
         if (!enabled) {
-            assertFalse(buttonData.canPress());
+            assertNull(buttonData.getOnPressRunnable());
         } else {
-            assertTrue(buttonData.canPress());
+            assertNotNull(buttonData.getOnPressRunnable());
             reset(mNewTabButtonClickListener);
-            View mockView = mock(View.class);
-            buttonData.onPress(mockView);
-            verify(mNewTabButtonClickListener).onClick(mockView);
+            buttonData.getOnPressRunnable().run();
+            verify(mNewTabButtonClickListener).onClick(isNull());
         }
     }
 

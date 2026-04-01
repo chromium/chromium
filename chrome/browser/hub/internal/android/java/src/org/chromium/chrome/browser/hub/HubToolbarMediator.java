@@ -304,8 +304,8 @@ public class HubToolbarMediator {
 
     private FullButtonData wrapButtonData(
             @PaneId int paneId, DisplayButtonData referenceButtonData) {
-        Callback<View> onPress =
-                view -> {
+        Runnable onPress =
+                () -> {
                     if (mIgnoreTabLayoutSelection) {
                         // When we rebuild the tab data, the selected tab layout will change, and
                         // our Runnables will be invoked for the current tab. This isn't a real
@@ -321,7 +321,7 @@ public class HubToolbarMediator {
                     RecordHistogram.recordEnumeratedHistogram(
                             "Android.Hub.PaneFocused.PaneSwitcher", paneId, PaneId.COUNT);
                 };
-        return new DelegateButtonData.Builder(referenceButtonData).setOnPress(onPress).build();
+        return new DelegateButtonData(referenceButtonData, onPress);
     }
 
     private void onFocusedPaneChange(Pane focusedPane) {

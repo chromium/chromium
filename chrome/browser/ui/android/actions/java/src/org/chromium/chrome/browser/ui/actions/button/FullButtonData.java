@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.ui.actions.button;
 
-import android.view.View;
-
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -14,49 +11,23 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface FullButtonData extends DisplayButtonData {
     /**
-     * Returns the {@link Callback<View>} that should be invoked when the button is pressed. The
-     * button will be enabled as long as a {@link Callback<View>} is provided (see {@link
-     * #canPress()}).
+     * Returns the {@link Runnable} that should be invoked when the button is pressed. If this
+     * returns null the button will be disabled.
      */
-    default @Nullable Callback<View> getOnPress() {
-        return null;
-    }
+    @Nullable Runnable getOnPressRunnable();
 
     /**
-     * Returns the {@link Callback<View>} that should be invoked when the button is long-pressed. No
-     * long-press action will be performed unless a {@link Callback<View>} is provided.
+     * Returns the {@link Runnable} that should be invoked when the button is long-pressed. If this
+     * returns null no long-press action will be performed.
      */
-    default @Nullable Callback<View> getOnLongPress() {
-        return null;
-    }
-
-    /** Helper to determine whether the button is clickable. True if there is a Callback. */
-    default boolean canPress() {
-        return getOnPress() != null;
-    }
-
-    /** Dispatcher for press events. */
-    default void onPress(View view) {
-        Callback<View> onPressCallback = getOnPress();
-        if (onPressCallback != null) {
-            onPressCallback.onResult(view);
-        }
-    }
-
-    /** Dispatcher for long-press events. */
-    default void onLongPress(View view) {
-        Callback<View> onLongPressCallback = getOnLongPress();
-        if (onLongPressCallback != null) {
-            onLongPressCallback.onResult(view);
-        }
-    }
+    @Nullable Runnable getOnLongPressRunnable();
 
     /**
      * Compares this button data with another for equality based on display-relevant properties.
      *
      * <p>This method exists because UI frameworks need to determine if button data has changed to
-     * decide whether to update the display, but {@link Callback<View>} instances are not comparable
-     * and not relevant to visual appearance.
+     * decide whether to update the display, but {@link Runnable} instances are not comparable and
+     * not relevant to visual appearance.
      *
      * <p>Implementations should make a best effort comparison. ResourceButtonData and
      * DrawableButtonData objects might reference the same visual content but may still report

@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubActionButtonProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubActionButtonProperties.ACTION_BUTTON_VISIBLE;
@@ -27,6 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
@@ -37,7 +39,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.actions.button.DelegateButtonData;
@@ -76,7 +77,7 @@ public class HubActionButtonViewUnitTest {
 
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    private final CallbackHelper mOnButtonHelper = new CallbackHelper();
+    @Mock Runnable mOnButton;
 
     private Activity mActivity;
     private FrameLayout mActionButtonContainer;
@@ -119,9 +120,7 @@ public class HubActionButtonViewUnitTest {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
                         R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add_24dp);
-        return new DelegateButtonData.Builder(displayButtonData)
-                .setOnPress(view -> mOnButtonHelper.notifyCalled())
-                .build();
+        return new DelegateButtonData(displayButtonData, mOnButton);
     }
 
     @Test
@@ -147,17 +146,17 @@ public class HubActionButtonViewUnitTest {
     public void testActionButtonCallback() {
         // Initially no button data is set, clicking should have no effect
         mActionButton.callOnClick();
-        assertEquals(0, mOnButtonHelper.getCallCount());
+        verifyNoInteractions(mOnButton);
 
         // Set button data, clicking should trigger the callback
         FullButtonData fullButtonData = makeTestButtonData();
         mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
         mActionButton.callOnClick();
-        assertEquals(1, mOnButtonHelper.getCallCount());
+        verify(mOnButton, times(1)).run();
 
         // Click again should trigger the callback again
         mActionButton.callOnClick();
-        assertEquals(2, mOnButtonHelper.getCallCount());
+        verify(mOnButton, times(2)).run();
     }
 
     @Test

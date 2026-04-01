@@ -165,13 +165,14 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         onDrawableStateChanged();
 
         mNewTabButtonDataSupplier.set(
-                new DelegateButtonData.Builder(
-                                new ResourceButtonData(
-                                        R.string.button_new_tab,
-                                        R.string.button_new_tab,
-                                        R.drawable.new_tab_icon))
-                        .setOnPress(newTabButtonClickListener::onClick)
-                        .build());
+                new DelegateButtonData(
+                        new ResourceButtonData(
+                                R.string.button_new_tab,
+                                R.string.button_new_tab,
+                                R.drawable.new_tab_icon),
+                        () -> {
+                            newTabButtonClickListener.onClick(null);
+                        }));
 
         profileProviderSupplier.onAvailable(this::onProfileProviderAvailable);
         mIsVisibleSupplier.addSyncObserverAndPostIfNonNull(mVisibilityObserver);

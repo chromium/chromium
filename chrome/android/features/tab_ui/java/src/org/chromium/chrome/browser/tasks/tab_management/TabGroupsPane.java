@@ -93,13 +93,12 @@ public class TabGroupsPane extends PaneBase {
                         mTabGroupModelFilterSupplier::get,
                         TabGroupCreationDialogManager::new);
         mActionButtonSupplier.set(
-                new DelegateButtonData.Builder(
-                                new ResourceButtonData(
-                                        R.string.button_new_tab_group,
-                                        R.string.button_new_tab_group,
-                                        R.drawable.new_tab_icon))
-                        .setOnPress(view -> flow.newTabGroupFlow())
-                        .build());
+                new DelegateButtonData(
+                        new ResourceButtonData(
+                                R.string.button_new_tab_group,
+                                R.string.button_new_tab_group,
+                                R.drawable.new_tab_icon),
+                        flow::newTabGroupFlow));
         mReferenceButtonDataSupplier.set(
                 new ResourceButtonData(
                         R.string.accessibility_tab_groups,

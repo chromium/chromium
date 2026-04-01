@@ -6,83 +6,48 @@ package org.chromium.chrome.browser.ui.actions.button;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * Holds a {@link Callback<View>} for handling on press events, and delegates everything else to a
- * {@link DisplayButtonData}.
+ * Holds a {@link Runnable} for handling on press, and delegates everything else to a {@link
+ * DisplayButtonData}.
  */
 @NullMarked
 public class DelegateButtonData implements ActionButtonData {
     private final DisplayButtonData mDelegateButtonData;
-    private final @Nullable Callback<View> mOnPress;
-    private final @Nullable Callback<View> mOnLongPress;
+    private final @Nullable Runnable mOnPress;
+    private final @Nullable Runnable mOnLongPress;
     private boolean mIsTransparent;
     private boolean mIsToggled;
 
-    /** Builder class for {@link DelegateButtonData}. */
-    public static class Builder {
-        private final DisplayButtonData mDelegateButtonData;
-        private @Nullable Callback<View> mOnPress;
-        private @Nullable Callback<View> mOnLongPress;
-        private boolean mIsTransparent;
-        private boolean mIsToggled;
-
-        /**
-         * Creates a builder for a {@link DelegateButtonData}.
-         *
-         * @param delegateButtonData The {@link DisplayButtonData} representing the button visuals.
-         */
-        public Builder(DisplayButtonData delegateButtonData) {
-            mDelegateButtonData = delegateButtonData;
-        }
-
-        /** Sets the {@link Callback<View>} to invoke when the button is pressed. */
-        public Builder setOnPress(@Nullable Callback<View> onPress) {
-            mOnPress = onPress;
-            return this;
-        }
-
-        /** Sets the {@link Callback<View>} to invoke when the button is long-pressed. */
-        public Builder setOnLongPress(@Nullable Callback<View> onLongPress) {
-            mOnLongPress = onLongPress;
-            return this;
-        }
-
-        /** Sets whether the button should be transparent. */
-        public Builder setIsTransparent(boolean isTransparent) {
-            mIsTransparent = isTransparent;
-            return this;
-        }
-
-        /** Sets whether the button should be in a toggled state. */
-        public Builder setIsToggled(boolean isToggled) {
-            mIsToggled = isToggled;
-            return this;
-        }
-
-        /** Builds the {@link DelegateButtonData}. */
-        public DelegateButtonData build() {
-            return new DelegateButtonData(
-                    mDelegateButtonData, mOnPress, mOnLongPress, mIsTransparent, mIsToggled);
-        }
+    /**
+     * Stores parameters until resolution time. Never invokes {@link Runnable} itself.
+     *
+     * @param delegateButtonData The {@link DisplayButtonData} representing the button visuals.
+     * @param onPress The runnable to invoke when the button is pressed. A null value will disable
+     *     the button.
+     */
+    public DelegateButtonData(DisplayButtonData delegateButtonData, @Nullable Runnable onPress) {
+        this(delegateButtonData, onPress, null);
     }
 
-    private DelegateButtonData(
+    /**
+     * Stores parameters until resolution time. Never invokes {@link Runnable}s itself.
+     *
+     * @param delegateButtonData The {@link DisplayButtonData} representing the button visuals.
+     * @param onPress The runnable to invoke when the button is pressed. A null value will disable
+     *     the button.
+     * @param onLongPress The runnable to invoke when the button is long-pressed.
+     */
+    public DelegateButtonData(
             DisplayButtonData delegateButtonData,
-            @Nullable Callback<View> onPress,
-            @Nullable Callback<View> onLongPress,
-            boolean isTransparent,
-            boolean isToggled) {
+            @Nullable Runnable onPress,
+            @Nullable Runnable onLongPress) {
         mDelegateButtonData = delegateButtonData;
         mOnPress = onPress;
         mOnLongPress = onLongPress;
-        mIsTransparent = isTransparent;
-        mIsToggled = isToggled;
     }
 
     /**
@@ -129,12 +94,12 @@ public class DelegateButtonData implements ActionButtonData {
     }
 
     @Override
-    public @Nullable Callback<View> getOnPress() {
+    public @Nullable Runnable getOnPressRunnable() {
         return mOnPress;
     }
 
     @Override
-    public @Nullable Callback<View> getOnLongPress() {
+    public @Nullable Runnable getOnLongPressRunnable() {
         return mOnLongPress;
     }
 
