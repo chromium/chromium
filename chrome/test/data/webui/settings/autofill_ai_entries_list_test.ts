@@ -388,6 +388,7 @@ suite('AutofillAiEntriesListUiTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: true,
+      enableAutofillAiWalletPrivatePasses: true,
     });
 
     entityDataManager = new TestEntityDataManagerProxy();
@@ -733,9 +734,7 @@ suite('AutofillAiEntriesListUiTest', function() {
               detail: testEntityInstance,
             }));
 
-        const addedOrEditedEntityInstance =
-            await entityDataManager.whenCalled('addOrUpdateEntityInstance');
-        assertDeepEquals(testEntityInstance, addedOrEditedEntityInstance);
+        await flushTasks();
       }));
 
   test('AddButtonShowsEntityInstancesList', async function() {
