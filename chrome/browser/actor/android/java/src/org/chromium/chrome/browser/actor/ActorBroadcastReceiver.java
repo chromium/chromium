@@ -30,14 +30,18 @@ public class ActorBroadcastReceiver extends BroadcastReceiver {
                     try {
                         int taskId =
                                 intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1);
-                        updateActorTaskForProfile(profile, action, taskId);
+                        int source =
+                                intent.getIntExtra(
+                                        NotificationConstants.EXTRA_ACTOR_PAUSE_RESUME_SOURCE, -1);
+                        updateActorTaskForProfile(profile, action, taskId, source);
                     } finally {
                         pendingResult.finish();
                     }
                 });
     }
 
-    private void updateActorTaskForProfile(@Nullable Profile profile, String action, int taskId) {
+    private void updateActorTaskForProfile(
+            @Nullable Profile profile, String action, int taskId, int source) {
         if (profile == null) return;
 
         ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(profile);
@@ -47,8 +51,14 @@ public class ActorBroadcastReceiver extends BroadcastReceiver {
         if (task == null) return;
 
         if (NotificationConstants.ACTION_ACTOR_PAUSE.equals(action)) {
+            if (source == ActorMetrics.ActorPauseResumeSource.PIP) {
+                ActorMetrics.recordPipUserInteraction(ActorMetrics.ActorPipUserInteraction.PAUSE);
+            }
             task.pause();
         } else if (NotificationConstants.ACTION_ACTOR_RESUME.equals(action)) {
+            if (source == ActorMetrics.ActorPauseResumeSource.PIP) {
+                ActorMetrics.recordPipUserInteraction(ActorMetrics.ActorPipUserInteraction.RESUME);
+            }
             task.resume();
         }
     }

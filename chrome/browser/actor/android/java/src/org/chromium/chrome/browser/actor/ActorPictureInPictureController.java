@@ -193,6 +193,7 @@ public class ActorPictureInPictureController
                         mInActorPiP = false;
                         hideOverlay();
                         mActivity.moveTaskToBack(true);
+                        ActorMetrics.recordPipStatus(ActorMetrics.ActorPipStatus.EXITED);
                     }
                 };
         mHandler.postDelayed(mExitPipRunnable, PIP_EXIT_DELAY_MS);
@@ -288,6 +289,7 @@ public class ActorPictureInPictureController
             @NonNull PictureInPictureDelegate.Event event, @Nullable Configuration newConfig) {
         if (event == PictureInPictureDelegate.Event.ENTERED) {
             mInActorPiP = true;
+            ActorMetrics.recordPipStatus(ActorMetrics.ActorPipStatus.ENTERED);
             showOverlay();
             checkAndExitPipIfFinished();
         } else if (event == PictureInPictureDelegate.Event.EXITED) {
@@ -304,6 +306,7 @@ public class ActorPictureInPictureController
         if (!mInActorPiP) return;
 
         mInActorPiP = false;
+        ActorMetrics.recordPipStatus(ActorMetrics.ActorPipStatus.EXITED);
         maybeSelectActingTabOnExpand();
         hideOverlay();
         updatePipState();
@@ -311,6 +314,7 @@ public class ActorPictureInPictureController
     }
 
     private void maybeSelectActingTabOnExpand() {
+        ActorMetrics.recordPipUserInteraction(ActorMetrics.ActorPipUserInteraction.EXPAND);
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector == null) return;
 
@@ -349,6 +353,9 @@ public class ActorPictureInPictureController
         }
 
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(
+                NotificationConstants.EXTRA_ACTOR_PAUSE_RESUME_SOURCE,
+                ActorMetrics.ActorPauseResumeSource.PIP);
         return intent;
     }
 

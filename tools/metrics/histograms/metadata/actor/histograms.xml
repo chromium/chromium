@@ -577,6 +577,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Pip.Status" enum="ActorPipStatus"
+    expires_after="2027-03-31">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded when chrome enters or exits Picture-in-Picture mode based on the
+    actor task state.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Pip.UserInteractions" enum="ActorPipUserInteraction"
+    expires_after="2027-03-31">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded when the user interacts with the Pause, Resume, or Expand actions
+    on the Picture-in-Picture window.
+  </summary>
+</histogram>
+
 <histogram name="Actor.RendererPageStability.Outcome"
     enum="PageStabilityOutcome" expires_after="2026-08-11">
   <owner>linnan@google.com</owner>
