@@ -23,6 +23,7 @@ public abstract class ScrollTracker {
 
     public void onUnbind() {
         reportAndReset();
+        mPostedReportFunction = null;
     }
 
     public void trackScroll(int dx, int dy) {

@@ -716,10 +716,13 @@ public class FeedSurfaceCoordinator
     @Override
     @SuppressWarnings("NullAway")
     public void destroy() {
-        // 1. Untracks first to stop global interactions immediately.
+        // Untracks first to stop global interactions immediately.
         FeedSurfaceTracker.getInstance().untrackSurface(this);
 
-        // 2. Stop animations and UI listeners.
+        // Removes observers that capture 'this' or 'mRootView'.
+        mTabStripHeightSupplier.removeObserver(mTabStripHeightChangeCallback);
+
+        // Stops animations and UI listeners.
         mRecyclerView.setItemAnimator(null);
         if (mItemDecoration != null) {
             mRecyclerView.removeItemDecoration(mItemDecoration);
@@ -740,7 +743,7 @@ public class FeedSurfaceCoordinator
             mSwipeRefreshLayout = null;
         }
 
-        // 3. Stop logic and observers.
+        // Stops logic and observers.
         stopBubbleTriggering(); // Already calls stopScrollTracking().
 
         if (mFeedSurfaceLifecycleManager != null) {
@@ -748,21 +751,21 @@ public class FeedSurfaceCoordinator
             mFeedSurfaceLifecycleManager = null;
         }
 
-        // 4. Destroy Mediator (unbinds streams).
+        // Destroys Mediator (unbinds streams).
         if (mMediator != null) {
             mMediator.destroy();
             mMediator = null;
         }
 
-        // 5. Unbind Renderer and clean up UI hierarchy.
+        // Unbinds Renderer and clean up UI hierarchy.
         if (mHybridListRenderer != null) {
             mHybridListRenderer.unbind();
             mHybridListRenderer = null;
         }
-        mRootView.removeAllViews();
-        mTabStripHeightSupplier.removeObserver(mTabStripHeightChangeCallback);
 
-        // 6. Final cleanup of remaining components.
+        mRootView.removeAllViews();
+
+        // Final cleanups of remaining components.
         if (mEdgePadAdjuster != null) {
             mEdgePadAdjuster.destroy();
         }

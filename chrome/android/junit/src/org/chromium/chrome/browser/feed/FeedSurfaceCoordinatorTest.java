@@ -566,6 +566,73 @@ public class FeedSurfaceCoordinatorTest {
                 mCoordinator.getNtpCustomizationButtonForTesting());
     }
 
+    @Test
+    public void testDestroy() {
+        mCoordinator.onSurfaceOpened();
+        mCoordinator.setBackgroundImageCoordinatorForTesting(mBackgroundImageCoordinator);
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(any());
+
+        // Observer is added in FeedSurfaceCoordinator constructor.
+        assertEquals(1, mTabStripHeightSupplier.getObserverCount());
+        assertNotNull(mRecyclerView.getItemAnimator());
+
+        mCoordinator.destroy();
+
+        verify(mMediatorSpy).destroy();
+        verify(mRenderer).unbind();
+        verify(mBackgroundImageCoordinator).destroy();
+        verify(mFeedActionDelegate).destroy();
+        verify(mEdgeToEdgeController).unregisterAdjuster(any());
+        assertFalse(FeedSurfaceTracker.getInstance().mCoordinators.contains(mCoordinator));
+        assertEquals(0, mTabStripHeightSupplier.getObserverCount());
+        assertNull(mRecyclerView.getItemAnimator());
+        assertEquals(0, mCoordinator.getRootViewForTesting().getChildCount());
+
+        mCoordinator = null;
+    }
+
+    @Test
+    public void testDestroy_WithSwipeRefreshLayout() {
+        mCoordinator.destroy();
+
+        FeedSwipeRefreshLayout swipeRefreshLayout = mock(FeedSwipeRefreshLayout.class);
+        when(swipeRefreshLayout.isRefreshing()).thenReturn(true);
+        mCoordinator =
+                new FeedSurfaceCoordinator(
+                        mActivity,
+                        mSnackbarManager,
+                        mWindowAndroid,
+                        mSnapHelper,
+                        /* ntpHeader= */ null,
+                        /* toolbarHeight= */ 10,
+                        false,
+                        new TestSurfaceDelegate(),
+                        mProfileMock,
+                        mBottomSheetController,
+                        mShareDelegateSupplier,
+                        mScrollableContainerDelegate,
+                        NewTabPageLaunchOrigin.UNKNOWN,
+                        mPrivacyPreferencesManager,
+                        () -> null,
+                        SURFACE_CREATION_TIME_NS,
+                        swipeRefreshLayout,
+                        /* overScrollDisabled= */ false,
+                        /* viewportView= */ null,
+                        () -> mFeedActionDelegate,
+                        mTabStripHeightSupplier,
+                        mEdgeToEdgeSupplier,
+                        mModuleRegistry);
+
+        mCoordinator.destroy();
+
+        verify(swipeRefreshLayout).setRefreshing(false);
+        verify(swipeRefreshLayout).removeOnRefreshListener(mCoordinator);
+        verify(swipeRefreshLayout).disableSwipe();
+
+        mCoordinator = null;
+    }
+
     private boolean hasStreamBound() {
         if (mCoordinator.getMediatorForTesting().getCurrentStreamForTesting() == null) {
             return false;

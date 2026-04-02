@@ -777,6 +777,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//chrome/browser/xsurface_provider:java",
+      "//third_party/android_swipe_refresh:android_swipe_refresh_java",
     ]
   }
 
