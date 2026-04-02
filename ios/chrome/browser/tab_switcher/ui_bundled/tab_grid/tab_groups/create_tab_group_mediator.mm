@@ -18,15 +18,16 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_creation_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
@@ -35,8 +36,10 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "url/gurl.h"
 
 @interface CreateTabGroupMediator () <WebStateListObserving>
 @end
@@ -227,15 +230,21 @@
     if (_createNewTabForGroup) {
       CHECK(_identifiers.empty());
       // Insert a new tab before creating the group to prevent empty groups.
-      id<SceneCommands> dispatcher =
-          HandlerForProtocol(_browser->GetCommandDispatcher(), SceneCommands);
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithIncognito:_browser->GetProfile()->IsOffTheRecord()];
-      [dispatcher openURLInNewTab:command];
+      web::NavigationManager::WebLoadParams loadParams =
+          web_navigation_util::CreateWebLoadParams(GURL(kChromeUINewTabURL),
+                                                   ui::PAGE_TRANSITION_TYPED,
+                                                   /*post_data=*/nullptr);
+      TabInsertion::Params insertionParams;
+      insertionParams.should_show_start_surface = false;
+      insertionParams.in_background = true;
+      insertionParams.should_skip_new_tab_animation = true;
+      insertionParams.instant_load = true;
+      TabInsertionBrowserAgent* insertionAgent =
+          TabInsertionBrowserAgent::FromBrowser(_browser);
+      web::WebState* newWebState =
+          insertionAgent->InsertWebState(loadParams, insertionParams);
 
-      web::WebState* activeWebState = _webStateList->GetActiveWebState();
-      CHECK(activeWebState);
-      _identifiers.insert(activeWebState->GetUniqueIdentifier());
+      _identifiers.insert(newWebState->GetUniqueIdentifier());
       CHECK(!_identifiers.empty());
     }
     std::set<int> tabIndexes;
