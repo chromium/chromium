@@ -630,7 +630,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   NSNumber* fileSize =
       [[nsURL resourceValuesForKeys:@[ NSURLFileSizeKey ]
                               error:&error] objectForKey:NSURLFileSizeKey];
-  if (fileSize && [fileSize unsignedLongLongValue] > kMaxPDFFileSize) {
+  if (fileSize && [fileSize unsignedLongLongValue] > kMaxFileAttachmentSize) {
     [self.delegate showSnackbarForItemUploadDidFail];
     return;
   }
