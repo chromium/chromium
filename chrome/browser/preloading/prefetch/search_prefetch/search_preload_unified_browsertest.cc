@@ -1979,8 +1979,16 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
 // Edge case: when the prerendering navigation is still reading from the cache,
 // the loader would not be deleted until finishing reading.
+//  TODO(crbug.com/498955649): Flaky on Android device Pixel Tablet
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ServingToPrerenderingUntilCompletion \
+  DISABLED_ServingToPrerenderingUntilCompletion
+#else
+#define MAYBE_ServingToPrerenderingUntilCompletion \
+  ServingToPrerenderingUntilCompletion
+#endif
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       ServingToPrerenderingUntilCompletion) {
+                       MAYBE_ServingToPrerenderingUntilCompletion) {
   base::HistogramTester histogram_tester;
   set_service_deferral_type(
       SearchPreloadTestResponseDeferralType::kDeferChunkedResponseBody);
