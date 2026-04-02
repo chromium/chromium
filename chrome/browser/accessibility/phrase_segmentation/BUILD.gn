@@ -1,0 +1,50 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("phrase_segmentation") {
+  public = [
+    "dependency_parser_model_loader.h",
+    "dependency_parser_model_loader_factory.h",
+  ]
+
+  sources = [
+    "dependency_parser_model_loader.cc",
+    "dependency_parser_model_loader_factory.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core:prediction",
+    "//ui/accessibility",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "dependency_parser_model_loader_browsertest.cc" ]
+
+  deps = [
+    ":phrase_segmentation",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/metrics:content",
+    "//components/optimization_guide/core:prediction",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//ui/accessibility",
+  ]
+}
