@@ -4,6 +4,8 @@
 
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 
+#include "base/no_destructor.h"
+
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/history_aware_site_engagement_service.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -30,7 +32,8 @@ SiteEngagementService* SiteEngagementServiceFactory::GetForProfileIfExists(
 
 // static
 SiteEngagementServiceFactory* SiteEngagementServiceFactory::GetInstance() {
-  return base::Singleton<SiteEngagementServiceFactory>::get();
+  static base::NoDestructor<SiteEngagementServiceFactory> instance;
+  return instance.get();
 }
 
 SiteEngagementServiceFactory::SiteEngagementServiceFactory()
@@ -51,9 +54,7 @@ SiteEngagementServiceFactory::SiteEngagementServiceFactory()
   SiteEngagementService::SetServiceProvider(this);
 }
 
-SiteEngagementServiceFactory::~SiteEngagementServiceFactory() {
-  SiteEngagementService::ClearServiceProvider(this);
-}
+SiteEngagementServiceFactory::~SiteEngagementServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 SiteEngagementServiceFactory::BuildServiceInstanceForBrowserContext(
