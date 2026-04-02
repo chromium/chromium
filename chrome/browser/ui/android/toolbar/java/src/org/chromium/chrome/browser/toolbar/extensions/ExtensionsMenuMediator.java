@@ -143,11 +143,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
      */
     @Override
     public void onModelChanged() {
-        // TODO(crbug.com/473213114): Implement data pull for site permissions page.
-        // This will need to consider the event source (e.g., page navigation vs. action update)
-        // to fetch and update the UI correctly, as their effects differ on the site permissions
-        // page and they will need to have different JNI observers.
-        if (isMainPageVisible()) {
+        if (getCurrentPage() == ExtensionsMenuProperties.Page.MAIN) {
             int optionalSection = mMenuBridge.getOptionalSection();
             mMenuPropertyModel.set(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE, optionalSection);
 
@@ -163,12 +159,21 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             }
 
             updateMenuEntries();
-            return;
         }
+
+        // TODO(crbug.com/473213114): Implement data pull for site permissions page.
+        // This will need to consider the event source (e.g., page navigation vs. action update)
+        // to fetch and update the UI correctly, as their effects differ on the site permissions
+        // page and they will need to have different JNI observers.
     }
 
     @Override
     public void onActionAdded(int actionIndex) {
+        // A new toolbar action only affects the main page.
+        if (getCurrentPage() != ExtensionsMenuProperties.Page.MAIN) {
+            return;
+        }
+
         ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
         mActionModels.add(actionIndex, createMenuItem(entry));
 
@@ -177,52 +182,95 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
 
     @Override
     public void onActionIconUpdated(int actionIndex) {
-        PropertyModel model = mActionModels.get(actionIndex).model;
-        if (model == null) {
+        if (getCurrentPage() == ExtensionsMenuProperties.Page.MAIN) {
+            PropertyModel model = mActionModels.get(actionIndex).model;
+            if (model == null) {
+                return;
+            }
+
+            Bitmap icon = mMenuBridge.getActionIcon(actionIndex);
+            model.set(ExtensionsMenuItemProperties.ICON, icon);
             return;
         }
 
-        Bitmap icon = mMenuBridge.getActionIcon(actionIndex);
-        model.set(ExtensionsMenuItemProperties.ICON, icon);
+        // TODO(crbug.com/473213114): Update site permissions page if it belongs to the extension
+        // updated.
     }
 
     @Override
     public void onActionRemoved(int actionIndex) {
-        assert actionIndex >= 0 && actionIndex < mActionModels.size();
-        mActionModels.removeAt(actionIndex);
+        if (getCurrentPage() == ExtensionsMenuProperties.Page.MAIN) {
+            assert actionIndex >= 0 && actionIndex < mActionModels.size();
+            mActionModels.removeAt(actionIndex);
 
-        updateZeroState();
+            updateZeroState();
+            return;
+        }
+
+        // TODO(crbug.com/473213114):  Navigate back to the main page if the site permissions page
+        // belongs to the extension removed. Otherwise, do nothing.
+
     }
 
     @Override
     public void onActionUpdated(int newIndex) {
-        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(newIndex);
+        if (getCurrentPage() == ExtensionsMenuProperties.Page.MAIN) {
+            ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(newIndex);
 
-        // Find the old index for the model corresponding to the updated action.
-        int oldIndex = -1;
-        for (int i = 0; i < mActionModels.size(); i++) {
-            String modelId =
-                    mActionModels.get(i).model.get(ExtensionsMenuItemProperties.EXTENSION_ID);
-            if (modelId.equals(entry.id)) {
-                oldIndex = i;
-                break;
+            // Find the old index for the model corresponding to the updated action.
+            int oldIndex = -1;
+            for (int i = 0; i < mActionModels.size(); i++) {
+                String modelId =
+                        mActionModels.get(i).model.get(ExtensionsMenuItemProperties.EXTENSION_ID);
+                if (modelId.equals(entry.id)) {
+                    oldIndex = i;
+                    break;
+                }
             }
+            assert oldIndex != -1
+                    : "Action model with ID " + entry.id + " should exist in mActionModels.";
+
+            // Update the menu item model.
+            ListItem item = mActionModels.get(oldIndex);
+            updateMenuItem(item.model, entry);
+
+            // Update position if the index changed.
+            if (oldIndex != newIndex) {
+                mActionModels.removeAt(oldIndex);
+                mActionModels.add(newIndex, item);
+            }
+
+            // An action update can change the state of the site settings toggle.
+            updateSiteSettingsToggle();
+            return;
         }
-        assert oldIndex != -1
-                : "Action model with ID " + entry.id + " should exist in mActionModels.";
 
-        // Update the menu item model.
-        ListItem item = mActionModels.get(oldIndex);
-        updateMenuItem(item.model, entry);
+        // TODO(crbug.com/473213114): Update site permissions page if it belongs to the extension
+        // updated.
+    }
 
-        // Update position if the index changed.
-        if (oldIndex != newIndex) {
-            mActionModels.removeAt(oldIndex);
-            mActionModels.add(newIndex, item);
-        }
+    /** Called when a host access request has been added. */
+    @Override
+    public void onHostAccessRequestAdded(String extensionId) {
+        updateHostAccessRequests();
+    }
 
-        // An action update can change the state of the site settings toggle.
-        updateSiteSettingsToggle();
+    /** Called when a host access request has been updated. */
+    @Override
+    public void onHostAccessRequestUpdated(String extensionId) {
+        updateHostAccessRequests();
+    }
+
+    /** Called when a host access request has been removed. */
+    @Override
+    public void onHostAccessRequestRemoved(String extensionId) {
+        updateHostAccessRequests();
+    }
+
+    /** Called when all host access requests have been cleared. */
+    @Override
+    public void onHostAccessRequestsCleared() {
+        updateHostAccessRequests();
     }
 
     /**
@@ -268,10 +316,9 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         return new ListItem(0, model);
     }
 
-    /** Returns whether the main page is currently visible in the menu. */
-    private boolean isMainPageVisible() {
-        return mMenuPropertyModel.get(ExtensionsMenuProperties.CURRENT_PAGE)
-                == ExtensionsMenuProperties.Page.MAIN;
+    /** Returns the current page being displayed in the extensions menu. */
+    private @ExtensionsMenuProperties.Page int getCurrentPage() {
+        return mMenuPropertyModel.get(ExtensionsMenuProperties.CURRENT_PAGE);
     }
 
     /**
@@ -297,6 +344,11 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
      * section is currently visible to the user.
      */
     private void updateHostAccessRequests() {
+        // Site access requests only affect the main page.
+        if (getCurrentPage() != ExtensionsMenuProperties.Page.MAIN) {
+            return;
+        }
+
         int currentSection = mMenuPropertyModel.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE);
         if (currentSection == ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS) {
             mMenuPropertyModel.set(
@@ -359,30 +411,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             mMenuPropertyModel.set(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_VISIBLE, true);
             updateSiteSettingsToggle();
         }
-    }
-
-    /** Called when a host access request has been added. */
-    @Override
-    public void onHostAccessRequestAdded(String extensionId) {
-        updateHostAccessRequests();
-    }
-
-    /** Called when a host access request has been updated. */
-    @Override
-    public void onHostAccessRequestUpdated(String extensionId) {
-        updateHostAccessRequests();
-    }
-
-    /** Called when a host access request has been removed. */
-    @Override
-    public void onHostAccessRequestRemoved(String extensionId) {
-        updateHostAccessRequests();
-    }
-
-    /** Called when all host access requests have been cleared. */
-    @Override
-    public void onHostAccessRequestsCleared() {
-        updateHostAccessRequests();
     }
 
     /** Updates the site settings toggle. */
