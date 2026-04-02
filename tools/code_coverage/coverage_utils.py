@@ -282,9 +282,8 @@ class CoverageReportPostProcessor(object):
     # Path to the main HTML index file.
     self.html_index_path = GetHtmlIndexPath(self.output_dir)
 
-    self.path_map = None
+    self.path_map = []
     if path_equivalence:
-
       def _PreparePath(path):
         path = os.path.normpath(path)
         if not path.endswith(os.sep):
@@ -292,8 +291,12 @@ class CoverageReportPostProcessor(object):
           path += os.sep
         return path
 
-      self.path_map = [_PreparePath(p) for p in path_equivalence.split(',')]
-      assert len(self.path_map) == 2, 'Path equivalence argument is incorrect.'
+      if isinstance(path_equivalence, str):
+        path_equivalence = [path_equivalence]
+      for pe in path_equivalence:
+        parts = [_PreparePath(p) for p in pe.split(',')]
+        assert len(parts) == 2, 'Path equivalence argument is incorrect.'
+        self.path_map.append(parts)
 
   def _ExtractComponentToDirectoriesMapping(self, component_mappings):
     """Initializes a mapping from components to directories."""
@@ -316,9 +319,10 @@ class CoverageReportPostProcessor(object):
 
   def _MapToLocal(self, path):
     """Maps a path from the coverage data to a local path."""
-    if not self.path_map:
-      return path
-    return path.replace(self.path_map[0], self.path_map[1], 1)
+    for mapping in self.path_map:
+      if path.startswith(mapping[0]):
+        return path.replace(mapping[0], mapping[1], 1)
+    return path
 
   def CalculatePerDirectoryCoverageSummary(self, per_file_coverage_summary):
     """Calculates per directory coverage summary."""
@@ -477,7 +481,8 @@ class CoverageReportPostProcessor(object):
 
     per_file_coverage_summary = {}
     for file_coverage_data in files_coverage_data:
-      file_path = os.path.normpath(file_coverage_data['filename'])
+      file_path = self._MapToLocal(
+          os.path.normpath(file_coverage_data['filename']))
       assert file_path.startswith(self.src_root_dir), (
           'File path "%s" in coverage summary is outside source checkout.' %
           file_path)

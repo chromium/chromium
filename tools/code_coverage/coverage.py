@@ -213,7 +213,7 @@ def _IsIOS():
 
 def _GeneratePerFileLineByLineCoverageInFormat(binary_paths, profdata_file_path,
                                                filters, ignore_filename_regex,
-                                               output_format):
+                                               output_format, path_equivalence):
   """Generates per file line-by-line coverage in html or text using
   'llvm-cov show'.
 
@@ -228,6 +228,7 @@ def _GeneratePerFileLineByLineCoverageInFormat(binary_paths, profdata_file_path,
     ignore_filename_regex: A regular expression for skipping source code files
                            with certain file paths.
     output_format: The output format of generated report files.
+    path_equivalence: A list of <from>,<to> path mappings.
   """
   # llvm-cov show [options] -instr-profile PROFILE BIN [-object BIN,...]
   # [[-object BIN]] [SOURCES]
@@ -247,6 +248,9 @@ def _GeneratePerFileLineByLineCoverageInFormat(binary_paths, profdata_file_path,
   _AddArchArgumentForIOSIfNeeded(subprocess_cmd, len(binary_paths))
   if coverage_utils.GetHostPlatform() in ['linux', 'mac']:
     subprocess_cmd.extend(['-Xdemangler', 'c++filt', '-Xdemangler', '-n'])
+  if path_equivalence:
+    subprocess_cmd.extend(
+        ['-path-equivalence=' + mapping for mapping in path_equivalence])
   subprocess_cmd.extend(filters)
   if ignore_filename_regex:
     subprocess_cmd.append('-ignore-filename-regex=%s' % ignore_filename_regex)
@@ -257,7 +261,8 @@ def _GeneratePerFileLineByLineCoverageInFormat(binary_paths, profdata_file_path,
 
 
 def _GeneratePerFileLineByLineCoverageInLcov(binary_paths, profdata_file_path,
-                                             filters, ignore_filename_regex):
+                                             filters, ignore_filename_regex,
+                                             path_equivalence):
   """Generates per file line-by-line coverage using "llvm-cov export".
 
   Args:
@@ -266,6 +271,7 @@ def _GeneratePerFileLineByLineCoverageInLcov(binary_paths, profdata_file_path,
     filters: A list of directories and files to get coverage for.
     ignore_filename_regex: A regular expression for skipping source code files
                            with certain file paths.
+    path_equivalence: A list of <from>,<to> path mappings.
   """
   logging.debug('Generating per file line by line coverage reports using '
                 '"llvm-cov export" command.')
@@ -279,6 +285,9 @@ def _GeneratePerFileLineByLineCoverageInLcov(binary_paths, profdata_file_path,
   subprocess_cmd.extend(
       ['-object=' + binary_path for binary_path in binary_paths[1:]])
   _AddArchArgumentForIOSIfNeeded(subprocess_cmd, len(binary_paths))
+  if path_equivalence:
+    subprocess_cmd.extend(
+        ['-path-equivalence=' + mapping for mapping in path_equivalence])
   subprocess_cmd.extend(filters)
   if ignore_filename_regex:
     subprocess_cmd.append('-ignore-filename-regex=%s' % ignore_filename_regex)
@@ -672,7 +681,7 @@ def _CreateTargetProfDataFileFromProfRawFiles(target, profraw_file_paths):
 
 
 def _GeneratePerFileCoverageSummary(binary_paths, profdata_file_path, filters,
-                                    ignore_filename_regex):
+                                    ignore_filename_regex, path_equivalence):
   """Generates per file coverage summary using "llvm-cov export" command."""
   # llvm-cov export [options] -instr-profile PROFILE BIN [-object BIN,...]
   # [[-object BIN]] [SOURCES].
@@ -691,6 +700,9 @@ def _GeneratePerFileCoverageSummary(binary_paths, profdata_file_path, filters,
   subprocess_cmd.extend(
       ['-object=' + binary_path for binary_path in binary_paths[1:]])
   _AddArchArgumentForIOSIfNeeded(subprocess_cmd, len(binary_paths))
+  if path_equivalence:
+    subprocess_cmd.extend(
+        ['-path-equivalence=' + mapping for mapping in path_equivalence])
   subprocess_cmd.extend(filters)
   if ignore_filename_regex:
     subprocess_cmd.append('-ignore-filename-regex=%s' % ignore_filename_regex)
@@ -938,18 +950,19 @@ def _GenerateCoverageReport(args, binary_paths, profdata_file_path,
                'depending on size of target!).' % (args.format))
   per_file_summary_data = _GeneratePerFileCoverageSummary(
       binary_paths, profdata_file_path, absolute_filter_paths,
-      args.ignore_filename_regex)
+      args.ignore_filename_regex, args.path_equivalence)
 
   if args.format == 'lcov':
     _GeneratePerFileLineByLineCoverageInLcov(binary_paths, profdata_file_path,
                                              absolute_filter_paths,
-                                             args.ignore_filename_regex)
+                                             args.ignore_filename_regex,
+                                             args.path_equivalence)
     return
 
   _GeneratePerFileLineByLineCoverageInFormat(binary_paths, profdata_file_path,
                                              absolute_filter_paths,
                                              args.ignore_filename_regex,
-                                             args.format)
+                                             args.format, args.path_equivalence)
   component_mappings = None
   if not args.no_component_view:
     component_mappings = json.load(urlopen(COMPONENT_MAPPING_URL))
@@ -961,7 +974,8 @@ def _GenerateCoverageReport(args, binary_paths, profdata_file_path,
       per_file_summary_data,
       no_component_view=args.no_component_view,
       no_file_view=args.no_file_view,
-      component_mappings=component_mappings)
+      component_mappings=component_mappings,
+      path_equivalence=args.path_equivalence)
 
   if args.format == 'html':
     processor.PrepareHtmlReport()
@@ -1048,6 +1062,21 @@ def _ParseCommandArguments():
       required=False,
       help='Directories or files to get code coverage for, and all files under '
       'the directories are included recursively.')
+
+  arg_parser.add_argument(
+      '-a',
+      '--additional-objects',
+      action='append',
+      required=False,
+      help='Additional object files to include in the coverage report. '
+      'These are passed to llvm-cov as -object flags.')
+
+  arg_parser.add_argument(
+      '--path-equivalence',
+      type=str,
+      action='append',
+      help='Map coverage data paths to local source file paths. '
+      'Passed to llvm-cov as -path-equivalence flags.')
 
   arg_parser.add_argument(
       '-i',
@@ -1220,6 +1249,14 @@ def Main():
   elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
     binary_paths.extend(
         coverage_utils.GetSharedLibraries(binary_paths, BUILD_DIR, otool_path))
+
+  if args.additional_objects:
+    for obj_path in args.additional_objects:
+      if os.path.exists(obj_path):
+        if obj_path not in binary_paths:
+          binary_paths.append(obj_path)
+      else:
+        logging.warning('Additional object "%s" not found, skipping.', obj_path)
 
   # Skip generating coverage summary for possible offline processing
   if args.no_report:
