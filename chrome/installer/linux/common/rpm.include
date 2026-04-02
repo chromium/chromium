@@ -9,20 +9,7 @@ install_rpm_key() {
   # Make sure all the most recent signing subkeys are installed.
   NEED_KEYS=0
 
-  SUB_KEY_LIST=(
-    # 2017 signing subkey
-    "6494C6D6997C215E"
-    # 2019 signing subkey
-    "78BD65473CB3BD13"
-    # 2021 signing subkey
-    "4EB27DB2A3B88B8B"
-    # 2023 signing subkey
-    "E88979FB9B30ACF2"
-    # 2024 signing subkey
-    "32EE5355A6BC6E42"
-  )
-
-  for SUB_KEY in "${SUB_KEY_LIST[@]}"; do
+  for SUB_KEY in $PGP_SUBKEYS; do
     rpm -q ${KEY_PACKAGE} --qf '%{Pubkeys:armor}\n' | \
       gpg --with-colons - 2>/dev/null | \
       grep -q "$SUB_KEY"

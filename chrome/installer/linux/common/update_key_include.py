@@ -29,6 +29,8 @@ KEYDATA
 )
 
 PGP_KEY_CHECKSUM="{checksum}"
+
+PGP_SUBKEYS="{subkeys}"
 """
 
 KEY_GNI_TEMPLATE = """\
@@ -118,6 +120,31 @@ def main():
             list_cmd, env=env, check=True, capture_output=True)
         key_info = result.stdout.decode("utf-8")
 
+        with tempfile.TemporaryDirectory() as tmpdir2:
+            gnupg_home2 = os.path.join(tmpdir2, "gnupg")
+            os.makedirs(gnupg_home2)
+            env2 = os.environ.copy()
+            env2["GNUPGHOME"] = gnupg_home2
+
+            subprocess.run(
+                ["gpg", "--import"],
+                env=env2,
+                input=new_key_armored.encode("utf-8"),
+                check=True,
+                capture_output=True,
+            )
+
+            list_cmd2 = ["gpg", "--with-colons", "--list-keys", KEY_FINGERPRINT]
+            result = subprocess.run(
+                list_cmd2, env=env2, check=True, capture_output=True)
+            key_info_colons = result.stdout.decode("utf-8")
+
+    subkeys = []
+    for line in key_info_colons.splitlines():
+        parts = line.split(":")
+        if parts[0] == "sub":
+            subkeys.append(parts[4])
+
     # Extract data and checksum from armored key
     lines = new_key_armored.splitlines()
     data_lines = []
@@ -152,6 +179,7 @@ def main():
         checksum=checksum,
         key_info=new_comments,
         key_data=new_data,
+        subkeys=" ".join(subkeys),
     )
 
     with open(key_include_path, "w") as f:
