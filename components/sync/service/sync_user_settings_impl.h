@@ -66,8 +66,7 @@ class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
   // SyncUserSettings implementation.
   bool IsInitialSyncFeatureSetupComplete() const override;
 #if !BUILDFLAG(IS_CHROMEOS)
-  void SetInitialSyncFeatureSetupComplete(
-      SyncFirstSetupCompleteSource source) override;
+  void SetInitialSyncFeatureSetupComplete() override;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   bool IsSyncEverythingEnabled() const override;
   // TODO(b/321217859): On Android, temporarily remove kPasswords from the

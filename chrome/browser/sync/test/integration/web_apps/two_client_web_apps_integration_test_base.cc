@@ -183,9 +183,7 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
                 user_settings->SetSelectedTypes(
                     /*sync_everything=*/false,
                     /*types=*/{syncer::UserSelectableType::kApps});
-                user_settings->SetInitialSyncFeatureSetupComplete(
-                    syncer::SyncFirstSetupCompleteSource::
-                        ADVANCED_FLOW_CONFIRM);
+                user_settings->SetInitialSyncFeatureSetupComplete();
 #endif  // BUILDFLAG(IS_CHROMEOS)
               })));
     } else {

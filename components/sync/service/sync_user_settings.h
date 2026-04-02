@@ -56,8 +56,7 @@ class SyncUserSettings {
   virtual bool IsInitialSyncFeatureSetupComplete() const = 0;
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  virtual void SetInitialSyncFeatureSetupComplete(
-      SyncFirstSetupCompleteSource source) = 0;
+  virtual void SetInitialSyncFeatureSetupComplete() = 0;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Getting selected types, for both Sync-the-feature and Sync-the-transport

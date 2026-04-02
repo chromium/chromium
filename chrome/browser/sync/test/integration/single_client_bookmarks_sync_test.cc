@@ -2546,9 +2546,7 @@ class SingleClientBookmarksThrottlingSyncTest
 #if BUILDFLAG(IS_CHROMEOS)
                     user_settings->SetSelectedOsTypes(false, {});
 #else   // BUILDFLAG(IS_CHROMEOS)
-                    user_settings->SetInitialSyncFeatureSetupComplete(
-                        syncer::SyncFirstSetupCompleteSource::
-                            ADVANCED_FLOW_CONFIRM);
+                    user_settings->SetInitialSyncFeatureSetupComplete();
 #endif  // BUILDFLAG(IS_CHROMEOS)
                   })));
     } else {

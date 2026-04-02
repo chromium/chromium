@@ -962,8 +962,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSecondaryAccountSyncTest,
   // complete.
   secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
 #if !BUILDFLAG(IS_CHROMEOS)
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Wait for Sync to get reconfigured into feature mode.
@@ -1042,8 +1041,7 @@ IN_PROC_BROWSER_TEST_P(
             GetSyncService(0)->GetTransportState());
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Wait for Sync to get reconfigured into feature mode.

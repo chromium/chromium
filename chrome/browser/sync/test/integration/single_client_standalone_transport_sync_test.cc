@@ -580,8 +580,7 @@ IN_PROC_BROWSER_TEST_F(SyncSetupIncompleteMigrationSyncTest,
   ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(base::DoNothing()));
   ASSERT_TRUE(GetSyncService(0)->HasSyncConsent());
 
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
   ASSERT_TRUE(GetSyncService(0)
                   ->GetUserSettings()
                   ->IsInitialSyncFeatureSetupComplete());

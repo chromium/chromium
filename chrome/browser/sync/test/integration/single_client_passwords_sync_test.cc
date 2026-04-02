@@ -57,9 +57,6 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 #if !BUILDFLAG(IS_CHROMEOS)
-const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
-    syncer::SyncFirstSetupCompleteSource::BASIC_FLOW;
-
 MATCHER_P2(HasPasswordValue, fake_server_, password_value, "") {
   sync_pb::PasswordSpecificsData decrypted;
   syncer::CryptographerImpl::FromSingleKeyForTesting(
@@ -503,8 +500,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   secondary_account_helper::GrantSyncConsent(
       GetProfile(0),
       GetClient(0)->GetEmailForAccount(SyncTestAccount::kDefaultAccount));
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      kSetSourceFromTest);
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
 

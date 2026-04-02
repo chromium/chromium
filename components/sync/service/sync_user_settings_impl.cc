@@ -76,8 +76,7 @@ bool SyncUserSettingsImpl::IsInitialSyncFeatureSetupComplete() const {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-void SyncUserSettingsImpl::SetInitialSyncFeatureSetupComplete(
-    SyncFirstSetupCompleteSource source) {
+void SyncUserSettingsImpl::SetInitialSyncFeatureSetupComplete() {
   if (IsInitialSyncFeatureSetupComplete()) {
     return;
   }

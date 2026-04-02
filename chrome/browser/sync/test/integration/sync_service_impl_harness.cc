@@ -334,8 +334,7 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   return SetupSyncWithCustomSettingsNoWaitForCompletion(
       base::BindLambdaForTesting([](syncer::SyncUserSettings* user_settings) {
 #if !BUILDFLAG(IS_CHROMEOS)
-        user_settings->SetInitialSyncFeatureSetupComplete(
-            syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+        user_settings->SetInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
       }),
       account);
@@ -395,8 +394,7 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
 
 void SyncServiceImplHarness::FinishSyncSetup() {
 #if !BUILDFLAG(IS_CHROMEOS)
-  service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   sync_blocker_.reset();
 }

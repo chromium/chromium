@@ -48,12 +48,9 @@ bool TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() const {
   return initial_sync_feature_setup_complete_;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete(
-    SyncFirstSetupCompleteSource source) {
-  SetInitialSyncFeatureSetupComplete();
+void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete() {
+  initial_sync_feature_setup_complete_ = true;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool TestSyncUserSettings::IsSyncEverythingEnabled() const {
   return sync_everything_enabled_;
@@ -269,10 +266,6 @@ void TestSyncUserSettings::SetRegisteredSelectableTypes(
     UserSelectableTypeSet types) {
   registered_selectable_types_ = types;
   selected_types_ = Intersection(selected_types_, types);
-}
-
-void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete() {
-  initial_sync_feature_setup_complete_ = true;
 }
 
 void TestSyncUserSettings::ClearInitialSyncFeatureSetupComplete() {

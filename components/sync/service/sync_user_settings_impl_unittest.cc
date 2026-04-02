@@ -739,8 +739,7 @@ TEST_F(SyncUserSettingsImplTest, SetInitialSyncFeatureSetupComplete) {
   ASSERT_FALSE(sync_user_settings->IsInitialSyncFeatureSetupComplete());
 
   EXPECT_CALL(delegate_, OnInitialSyncFeatureSetupCompleted());
-  sync_user_settings->SetInitialSyncFeatureSetupComplete(
-      SyncFirstSetupCompleteSource::BASIC_FLOW);
+  sync_user_settings->SetInitialSyncFeatureSetupComplete();
 
   EXPECT_TRUE(sync_user_settings->IsInitialSyncFeatureSetupComplete());
 }

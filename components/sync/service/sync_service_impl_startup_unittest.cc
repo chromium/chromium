@@ -244,8 +244,7 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
 
   // Marking first setup complete will let SyncServiceImpl reconfigure the
   // DataTypeManager in full Sync-the-feature mode.
-  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
 
   // This should have fully enabled sync.
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
@@ -525,8 +524,7 @@ TEST_F(SyncServiceImplStartupTest, HonorsExistingDatatypePrefs) {
 
   CreateSyncService();
   SignInWithSyncConsent();
-  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
 
   EXPECT_EQ(UserSelectableTypeSet({UserSelectableType::kBookmarks}),
             sync_service()->GetUserSettings()->GetSelectedTypes());
@@ -691,8 +689,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // configuring the data types. Just marking the initial setup as complete
   // isn't enough though, because setup is still considered in progress (we
   // haven't released the setup-in-progress handle).
-  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
   EXPECT_EQ(SyncService::TransportState::PENDING_DESIRED_CONFIGURATION,
             sync_service()->GetTransportState());
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
@@ -815,8 +812,7 @@ TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
   // Sign-in quickly, before the usual delay of a deferred startup. This can
   // happen during FRE.
   SignInWithSyncConsent();
-  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
   FastForwardUntilNoTasksRemain();
 
   // This should not be recorded as a deferred startup.
