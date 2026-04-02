@@ -193,8 +193,18 @@ void BnplManager::OnUserDecisionToUseBnpl(
     if (HasSeenAmountExtractionAiTerms()) {
       // On user decision to use BNPL, if the user has seen the AI terms,
       // server-side amount extraction call should be made directly.
-      browser_autofill_manager_->GetAmountExtractionManager()
-          .TriggerCheckoutAmountExtractionWithAi();
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnablePayNowPayLaterTabs)) {
+        // Do not trigger amount extraction if the card number field is not
+        // empty. Instead, continue to show disabled issuers.
+        if (is_card_number_field_empty_) {
+          browser_autofill_manager_->GetAmountExtractionManager()
+              .TriggerCheckoutAmountExtractionWithAi();
+        }
+      } else {
+        browser_autofill_manager_->GetAmountExtractionManager()
+            .TriggerCheckoutAmountExtractionWithAi();
+      }
     } else {
       // On user decision to use BNPL, if the user has not seen the AI
       // terms, record the user has seen the AI terms after the dialog has
@@ -480,10 +490,75 @@ const std::vector<Suggestion>& BnplManager::GetCachedSuggestions() const {
   return cached_suggestions_;
 }
 
+std::vector<Suggestion> BnplManager::GetBnplSuggestions(
+    bool is_card_number_field_empty) {
+  is_card_number_field_empty_ = is_card_number_field_empty;
+
+  // Both `cached_bnpl_suggestions` and `enforced_order` will always be
+  // populated if `cached_suggestions_` is non-empty (i.e. if the autofill popup
+  // is already open). `cached_bnpl_suggestions` will be used if
+  // `is_card_number_field_empty` is true, otherwise `enforced_order` will be
+  // used to generate new disabled BNPL suggestions while keeping the same
+  // issuer order.
+  std::vector<Suggestion> cached_bnpl_suggestions;
+  std::vector<BnplIssuer> enforced_order;
+  cached_bnpl_suggestions.reserve(GetCachedSuggestions().size());
+  enforced_order.reserve(GetCachedSuggestions().size());
+  for (const Suggestion& s : GetCachedSuggestions()) {
+    if (s.type == SuggestionType::kBnplEntry) {
+      if (const auto* payload =
+              std::get_if<Suggestion::BnplIssuer>(&s.payload)) {
+        enforced_order.push_back(payload->value());
+        cached_bnpl_suggestions.push_back(s);
+      }
+    } else if (s.type == SuggestionType::kLoadingThrobber) {
+      cached_bnpl_suggestions.push_back(s);
+    }
+  }
+
+  if (!is_card_number_field_empty) {
+    // Cancel any ongoing requests, such as amount extraction, in case the
+    // user started a flow and then populated the card number field during
+    // the flow.
+    CancelOngoingRequests();
+  }
+
+  std::vector<Suggestion> suggestions;
+  if (is_card_number_field_empty && !cached_bnpl_suggestions.empty()) {
+    // Prefer cached suggestions if available. This should occur only if the
+    // field was interacted with again while the autofill suggestions popup
+    // is already open.
+    suggestions.append_range(cached_bnpl_suggestions);
+  } else {
+    // Generate fresh BNPL suggestions. If we are already showing issuer
+    // suggestions, i.e. `enforced_order` is non-empty, ensure we keep the same
+    // order to avoid reshuffling the issuers.
+    const PaymentsDataManager& payments_data_manager =
+        browser_autofill_manager_->client()
+            .GetPersonalDataManager()
+            .payments_data_manager();
+    if (is_card_number_field_empty &&
+        payments::ShouldStartPayLaterWithLoadingSpinner(
+            payments_data_manager)) {
+      suggestions.push_back(autofill::GetLoadingSuggestionForPayLaterTab(
+          payments_data_manager.GetBnplIssuers().size()));
+    } else {
+      suggestions.append_range(autofill::GetSuggestionsForBnpl(
+          payments::GetSortedBnplIssuerContext(
+              browser_autofill_manager_->client(),
+              /*checkout_amount=*/std::nullopt,
+              /*amount_extraction_error=*/std::nullopt,
+              std::move(enforced_order)),
+          browser_autofill_manager_->client().GetAppLocale(),
+          is_card_number_field_empty));
+    }
+  }
+  return suggestions;
+}
+
 void BnplManager::OnSuggestionsHidden(AutofillManager& manager,
                                       SuggestionHidingReason reason) {
   if (reason != SuggestionHidingReason::kHiddenByCaller &&
-      ongoing_flow_state_ &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
     Reset();
@@ -547,6 +622,7 @@ void BnplManager::Reset() {
   user_has_seen_bnpl_ai_terms_before_.reset();
   ongoing_flow_state_.reset();
   cached_suggestions_.clear();
+  is_card_number_field_empty_ = false;
 }
 
 void BnplManager::OnVcnDetailsFetched(

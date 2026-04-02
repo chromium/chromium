@@ -1177,7 +1177,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
   return GetCreditCardFooterSuggestions(
       client, should_show_pay_later_tab_suggestions,
       should_append_bnpl_suggestion, should_show_scan_credit_card,
-      is_autofilled, with_gpay_logo, amount_extraction_status);
+      is_autofilled, with_gpay_logo, amount_extraction_status,
+      /*bnpl_manager=*/nullptr);
 }
 
 std::u16string GetBnplPriceLowerBoundForTest(
@@ -1398,7 +1399,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
     bool should_show_scan_credit_card,
     bool is_autofilled,
     bool with_gpay_logo,
-    const payments::AmountExtractionStatus& amount_extraction_status) {
+    const payments::AmountExtractionStatus& amount_extraction_status,
+    payments::BnplManager* bnpl_manager) {
   std::vector<Suggestion> footer_suggestions;
 
   // TODO(crbug.com/444684996): Add another check to not show BNPL chip anymore
@@ -1418,7 +1420,20 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
   }
 
   if (should_show_pay_later_tab_suggestions) {
-    footer_suggestions.push_back(CreateBnplFootnoteSuggestion());
+    std::optional<Suggestion> cached_footnote;
+    if (bnpl_manager) {
+      for (const Suggestion& s : bnpl_manager->GetCachedSuggestions()) {
+        if (s.type == SuggestionType::kBnplFootnote) {
+          cached_footnote = s;
+          break;
+        }
+      }
+    }
+    if (cached_footnote) {
+      footer_suggestions.push_back(*cached_footnote);
+    } else {
+      footer_suggestions.push_back(CreateBnplFootnoteSuggestion());
+    }
   }
 
   if (should_show_scan_credit_card) {

@@ -94,11 +94,14 @@ struct BnplTosModel {
 // Return all BNPL Issuer contexts including eligibility in order of:
 // eligible + linked, eligible + unlinked, uneligible + linked,
 // uneligible + unlinked.
+// If `enforced_order` is provided and non-empty, the BNPL issuer contexts
+// will be ordered according to the issuers in `enforced_order`.
 std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
     const AutofillClient& client,
     std::optional<int64_t> checkout_amount,
     std::optional<AiAmountExtractionResult::Error> amount_extraction_error =
-        std::nullopt);
+        std::nullopt,
+    std::vector<BnplIssuer> enforced_order = {});
 
 // Returns the appropriate suggestion icon based on the issuer.
 Suggestion::Icon GetBnplSuggestionIcon(BnplIssuer::IssuerId issuer_id);

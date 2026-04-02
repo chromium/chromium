@@ -114,6 +114,16 @@ class BnplManager : public AutofillManager::Observer {
   // are no cached suggestions present.
   const std::vector<Suggestion>& GetCachedSuggestions() const;
 
+  // Returns suggestions for the Pay Later tab. This may be cached suggestions
+  // or newly generated suggestions depending on if `cached_suggestions_` is
+  // empty. This will also store `is_card_number_field_empty` for later use, and
+  // cancel any ongoing requests if its false.
+  std::vector<Suggestion> GetBnplSuggestions(bool is_card_number_field_empty);
+
+  // Cancels in-progress requests to `PaymentsNetworkInterface` and invalidates
+  // `BnplManager` weak pointers from the factory.
+  virtual void CancelOngoingRequests();
+
   // AutofillManager::Observer:
   void OnSuggestionsHidden(AutofillManager& manager,
                            SuggestionHidingReason reason) override;
@@ -185,10 +195,6 @@ class BnplManager : public AutofillManager::Observer {
   // callback contains the result of the call as well as the VCN details.
   void OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult result,
                            const BnplFetchVcnResponseDetails& response_details);
-
-  // Cancels in-progress requests to `PaymentsNetworkInterface` and invalidates
-  // `BnplManager` weak pointers from the factory.
-  void CancelOngoingRequests();
 
   // Cancels in-progress requests to `PaymentsNetworkInterface` and resets the
   // BNPL flow state. Also invalidates `BnplManager` weak pointers from the
@@ -377,6 +383,18 @@ class BnplManager : public AutofillManager::Observer {
   // flow completion (which includes when the user manually closes the
   // suggestion popup).
   std::vector<Suggestion> cached_suggestions_;
+
+  // Whether the card number field is empty in the current form. Set when
+  // suggestions are generated. This is only used when
+  // `kAutofillEnablePayNowPayLaterTabs` is enabled.
+  // Note: Occasionally when the user inputs in the card number field and
+  // triggers a popup refresh, `OnSuggestionsHidden()` is triggered and calls
+  // `Reset()`, but `GetBnplSuggestions()` is not immediately triggered to
+  // update the suggestions, so safely default to false.
+  // TODO(crbug.com/477689220): Look into defaulting to true and setting to
+  // false if `AutofillManager::OnAfterTextFieldValueChanged()` is observed for
+  // a CC field to be more robust.
+  bool is_card_number_field_empty_ = false;
 
   // Observes the AutofillManager so the BnplManager will be notified when
   // autofill suggestions are hidden.

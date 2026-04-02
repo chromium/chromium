@@ -56,6 +56,8 @@ class MockBnplManager : public payments::BnplManager {
   MOCK_METHOD(void, OnIssuerAccepted, (BnplIssuer), (override));
 
   MOCK_METHOD(void, OnUserDecisionToUseSavedCards, (), (override));
+
+  MOCK_METHOD(void, CancelOngoingRequests, (), (override));
 };
 
 }  // namespace autofill

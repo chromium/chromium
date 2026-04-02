@@ -92,19 +92,24 @@ bool BnplTosModel::operator==(const BnplTosModel&) const = default;
 std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
     const AutofillClient& client,
     std::optional<int64_t> checkout_amount,
-    std::optional<AiAmountExtractionResult::Error> amount_extraction_error) {
+    std::optional<AiAmountExtractionResult::Error> amount_extraction_error,
+    std::vector<BnplIssuer> enforced_order) {
   AutofillOptimizationGuideDecider* autofill_optimization_guide =
       client.GetAutofillOptimizationGuideDecider();
   const GURL& merchant_url =
       client.GetLastCommittedPrimaryMainFrameOrigin().GetURL();
 
+  const std::vector<BnplIssuer>& issuers =
+      enforced_order.empty() ? client.GetPaymentsAutofillClient()
+                                   ->GetPaymentsDataManager()
+                                   .GetBnplIssuers()
+                             : enforced_order;
+
   // Check BNPL issuer eligibility for the current page and save the
   // eligibility with the corresponding issuer to the vector of
   // `BnplIssuerContext`.
   std::vector<BnplIssuerContext> result = base::ToVector(
-      client.GetPaymentsAutofillClient()
-          ->GetPaymentsDataManager()
-          .GetBnplIssuers(),
+      issuers,
       [&autofill_optimization_guide, &merchant_url, checkout_amount,
        amount_extraction_error](const BnplIssuer& issuer) -> BnplIssuerContext {
         // For MVP, BNPL will only target US users and support USD.
@@ -166,30 +171,31 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
         return {issuer, eligibility};
       });
 
-  // Shuffle `result` before sorting so that the order of two
-  // equivalently-sorted elements are randomized. This is to ensure there is no
-  // implicit preference towards any issuers.
-  base::RandomShuffle(result.begin(), result.end());
+  if (enforced_order.empty()) {
+    // Shuffle `result` before sorting so that the order of two
+    // equivalently-sorted elements are randomized. This is to ensure there is
+    // no implicit preference towards any issuers.
+    base::RandomShuffle(result.begin(), result.end());
 
-  // Sort the `BnplIssuerContext` vector so that it follows below rules:
-  // 1. Eligible issuers should be in front of uneligible ones in a sorted
-  //    vector.
-  // 2. Linked issuers must go before unlinked ones if they have the same
-  //    eligibility.
-  // Note: If one issuer has a payment instrument and the other doesn't,
-  //    then one is linked and the other is unlinked.
-  std::ranges::stable_sort(
-      result, [](const BnplIssuerContext& rhs, const BnplIssuerContext& lhs) {
-        // Lambda comparator which returns true if `rhs` should be in front of
-        // `lhs`.
-        // Note: Boolean value `false` is less than boolean value `true`.
-        return std::forward_as_tuple(
-                   rhs.IsEligible(),
-                   rhs.issuer.payment_instrument().has_value()) >
-               std::forward_as_tuple(
-                   lhs.IsEligible(),
-                   lhs.issuer.payment_instrument().has_value());
-      });
+    // Sort the `BnplIssuerContext` vector so that it follows below rules:
+    // 1. Eligible issuers should be in front of uneligible ones in a sorted
+    //    vector.
+    // 2. Linked issuers must go before unlinked ones if they have the same
+    //    eligibility.
+    // Note: If one issuer has a payment instrument and the other doesn't,
+    //    then one is linked and the other is unlinked.
+    std::ranges::stable_sort(result, [](const BnplIssuerContext& rhs,
+                                        const BnplIssuerContext& lhs) {
+      // Lambda comparator which returns true if `rhs` should be in front of
+      // `lhs`.
+      // Note: Boolean value `false` is less than boolean value `true`.
+      return std::forward_as_tuple(
+                 rhs.IsEligible(),
+                 rhs.issuer.payment_instrument().has_value()) >
+             std::forward_as_tuple(lhs.IsEligible(),
+                                   lhs.issuer.payment_instrument().has_value());
+    });
+  }
 
   return result;
 }

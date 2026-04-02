@@ -27,6 +27,10 @@
 
 namespace autofill {
 
+namespace payments {
+class BnplManager;
+}  // namespace payments
+
 class AutofillClient;
 class AutofillOfferData;
 class BrowserAutofillManager;
@@ -173,6 +177,9 @@ bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
 // `seen_unsupported_currency_for_page_load` indicates whether the AI amount
 // extraction has seen an unsupported currency. If true, the returned BNPL
 // suggestion is deactivated for the remainder of this page load.
+// `bnpl_manager` will be used to check if there is a cached BNPL footer
+// suggestion. If there is, it will be reused instead of generating a new BNPL
+// footer suggestion.
 std::vector<Suggestion> GetCreditCardFooterSuggestions(
     const AutofillClient& client,
     bool should_show_pay_later_tab_suggestions,
@@ -180,7 +187,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
     bool should_show_scan_credit_card,
     bool is_autofilled,
     bool with_gpay_logo,
-    const payments::AmountExtractionStatus& amount_extraction_status);
+    const payments::AmountExtractionStatus& amount_extraction_status,
+    payments::BnplManager* bnpl_manager);
 
 // Creates a suggestion for the given `credit_card`. `virtual_card_option`
 // suggests whether the suggestion is a virtual card option.

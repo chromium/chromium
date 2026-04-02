@@ -137,7 +137,8 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
     bool is_card_number_field_empty,
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         suggestion_data,
-    const payments::AmountExtractionStatus& amount_extraction_status) {
+    const payments::AmountExtractionStatus& amount_extraction_status,
+    payments::BnplManager* bnpl_manager) {
   std::vector<Suggestion> suggestions;
 
   std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
@@ -185,21 +186,10 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
       !base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs);
 
-  if (should_show_pay_later_tab_suggestions) {
+  if (should_show_pay_later_tab_suggestions && bnpl_manager) {
     summary.with_pay_later_tab_suggestion = true;
-    const PaymentsDataManager& payments_data_manager =
-        client.GetPersonalDataManager().payments_data_manager();
-    if (is_card_number_field_empty &&
-        payments::ShouldStartPayLaterWithLoadingSpinner(
-            payments_data_manager)) {
-      suggestions.push_back(GetLoadingSuggestionForPayLaterTab(
-          payments_data_manager.GetBnplIssuers().size()));
-    } else {
-      suggestions.append_range(GetSuggestionsForBnpl(
-          payments::GetSortedBnplIssuerContext(
-              client, /*checkout_amount=*/std::nullopt),
-          client.GetAppLocale(), is_card_number_field_empty));
-    }
+    suggestions.append_range(
+        bnpl_manager->GetBnplSuggestions(is_card_number_field_empty));
   }
 
   std::ranges::move(
@@ -210,7 +200,7 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
           // `AutofillField::field_modifiers_` after launching
           // `kAutofillFixIsAutofilled`.
           trigger_field.is_autofilled_according_to_renderer(),
-          display_gpay_logo, amount_extraction_status),
+          display_gpay_logo, amount_extraction_status, bnpl_manager),
       std::back_inserter(suggestions));
 
   return suggestions;
@@ -311,7 +301,8 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
                         // `AutofillField::field_modifiers_` after launching
                         // `kAutofillFixIsAutofilled`.
                         trigger_field.is_autofilled_according_to_renderer(),
-                        /*with_gpay_logo=*/true, amount_extraction_status),
+                        /*with_gpay_logo=*/true, amount_extraction_status,
+                        /*bnpl_manager=*/nullptr),
                     std::back_inserter(suggestions));
 
   return suggestions;
@@ -575,8 +566,6 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
     amount_extraction_status.seen_unsupported_currency_for_page_load =
         amount_extraction_manager_->SeenUnsupportedCurrencyForPageLoad();
   }
-  // TODO(crbug.com/477689220): Use `bnpl_manager_` to check if there is already
-  // an ongoing flow for BNPL.
   const std::vector<SuggestionData>* entries = base::FindOrNull(
       all_suggestion_data, SuggestionDataSource::kSaveAndFillPromo);
   if (entries) {
@@ -594,7 +583,8 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
                      // `AutofillField::field_modifiers_` after launching
                      // `kAutofillFixIsAutofilled`.
                      trigger_field.is_autofilled_according_to_renderer(),
-                     display_gpay_logo, amount_extraction_status));
+                     display_gpay_logo, amount_extraction_status,
+                     /*bnpl_manager=*/nullptr));
   } else if (all_suggestion_data.contains(
                  SuggestionDataSource::kVirtualStandaloneCvc)) {
     // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's
@@ -632,7 +622,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         ShouldShowScanCreditCard(*form_structure, *trigger_autofill_field,
                                  client),
         summary_, is_card_number_field_empty, all_suggestion_data,
-        amount_extraction_status);
+        amount_extraction_status, bnpl_manager_);
   }
 
   bool is_virtual_card_standalone_cvc_field =

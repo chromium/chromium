@@ -517,6 +517,26 @@ TEST_F(BnplUtilTest,
       BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant);
 }
 
+TEST_F(BnplUtilTest, GetSortedBnplIssuerContext_MaintainsEnforcedOrder) {
+  BnplIssuer issuer_affirm =
+      test::GetTestLinkedBnplIssuer(IssuerId::kBnplAffirm);
+  BnplIssuer issuer_zip = test::GetTestLinkedBnplIssuer(IssuerId::kBnplZip);
+  BnplIssuer issuer_klarna =
+      test::GetTestLinkedBnplIssuer(IssuerId::kBnplKlarna);
+
+  std::vector<BnplIssuer> enforced_order = {issuer_zip, issuer_affirm,
+                                            issuer_klarna};
+
+  std::vector<BnplIssuerContext> contexts = GetSortedBnplIssuerContext(
+      autofill_client(), /*checkout_amount=*/std::nullopt,
+      /*amount_extraction_error=*/std::nullopt, enforced_order);
+
+  ASSERT_EQ(contexts.size(), 3U);
+  EXPECT_EQ(contexts[0].issuer.issuer_id(), IssuerId::kBnplZip);
+  EXPECT_EQ(contexts[1].issuer.issuer_id(), IssuerId::kBnplAffirm);
+  EXPECT_EQ(contexts[2].issuer.issuer_id(), IssuerId::kBnplKlarna);
+}
+
 // Verify that if the triggering field is CVC, the BNPL option should not be
 // appended.
 TEST_F(BnplUtilTest, ShouldShowBnplSuggestions_IsCvcField) {
