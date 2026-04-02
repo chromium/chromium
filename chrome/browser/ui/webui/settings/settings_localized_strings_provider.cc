@@ -856,6 +856,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_REMOVE_ACTOR_LOGIN_DIALOG_TITLE},
       {"glicRemoveActorLoginDialogDescription",
        IDS_SETTINGS_GLIC_REMOVE_ACTOR_LOGIN_DIALOG_DESCRIPTION},
+      {"glicLoginPermissionsRemoveError",
+       IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_REMOVE_ERROR},
       {"glicActivityButton", IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON},
       {"glicActivityButtonSublabel",
        IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL},
