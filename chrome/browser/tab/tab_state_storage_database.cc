@@ -509,7 +509,9 @@ int TabStateStorageDatabase::CountTabsForWindow(std::string_view window_tag,
   count.BindString(0, window_tag);
   count.BindInt(1, static_cast<int>(is_off_the_record));
   count.BindInt(2, static_cast<int>(TabStorageType::kTab));
-  DCHECK(count.Step());
+  if (!count.Step()) {
+    return 0;
+  }
   return count.ColumnInt(0);
 }
 
