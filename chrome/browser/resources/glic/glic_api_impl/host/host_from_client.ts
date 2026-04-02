@@ -12,7 +12,7 @@ import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import type {CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, SkillSource as SkillSourceMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
 import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, ConversationInfo, CreateSkillRequest, DraggableArea, FormFillingResponse, GetPinCandidatesOptions, Journal, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillsWebClientEvent, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
-import {CaptureScreenshotErrorReason, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
+import {CaptureScreenshotErrorReason, ClientCapabilities, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import {ResponseExtras} from '../post_message_transport.js';
@@ -66,11 +66,20 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     }
   }
 
-  async glicBrowserWebClientCreated(_request: void, extras: ResponseExtras):
+  async glicBrowserWebClientCreated(
+      request: {clientCapabilities: ClientCapabilities[]},
+      extras: ResponseExtras):
       Promise<{initialState: WebClientInitialStatePrivate}> {
     if (this.receiver) {
       throw new Error('web client already created');
     }
+    // Note: Ideally we would avoid computing favicons in c++ entirely, but that
+    // change is more difficult as some parts of the system can be shared by
+    // multiple clients. Instead, we just avoid sending favicons from the WebUI,
+    // which avoids most of the cost.
+    conversionSettings.omitFaviconInTabData =
+        request.clientCapabilities.includes(
+            ClientCapabilities.IGNORES_TAB_DATA_FAVICONS);
     this.host.detailedWebClientState =
         DetailedWebClientState.WEB_CLIENT_NOT_INITIALIZED;
 

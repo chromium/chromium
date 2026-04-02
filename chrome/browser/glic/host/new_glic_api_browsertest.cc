@@ -214,6 +214,14 @@ IN_PROC_BROWSER_TEST_P(MAYBE_NewGlicApiTest, testFaviconIsRemoved) {
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(MAYBE_NewGlicApiTest,
+                       testFaviconIsOmittedWithClientCapabilities) {
+  ASSERT_TRUE(OpenGlicForActiveTab());
+  GetOnlyGlicInstance()->sharing_manager().PinTabs(
+      {GetTabListInterface()->GetActiveTab()->GetHandle()});
+  ExecuteJsTest();
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

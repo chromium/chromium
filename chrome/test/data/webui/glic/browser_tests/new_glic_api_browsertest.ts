@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Observable, TabData} from '/glic/glic_api/glic_api.js';
+import {ClientCapabilities} from '/glic/glic_api/glic_api.js';
+import type {GlicWebClient, Observable, TabData} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, mapObservable, observeSequence, testMain} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertUndefined, mapObservable, observeSequence, testMain} from './browser_test_base.js';
 
 class ApiTests extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -157,9 +158,29 @@ class FaviconTest extends ApiTests {
   }
 }
 
+class FaviconOmittedTest extends FaviconTest {
+  override createWebClient() {
+    const client = super.createWebClient();
+    (client as GlicWebClient).getClientCapabilities = () => {
+      return new Set([ClientCapabilities.IGNORES_TAB_DATA_FAVICONS]);
+    };
+    return client;
+  }
+
+  async testFaviconIsOmittedWithClientCapabilities() {
+    assertDefined(this.host.getPinnedTabs);
+    const tabs = await observeSequence(this.host.getPinnedTabs!())
+                     .waitFor((tabs) => tabs.length === 1);
+    const tab = tabs[0]!;
+
+    assertUndefined(tab.favicon);
+  }
+}
+
 const TEST_FIXTURES = [
   ApiTests,
   FaviconTest,
+  FaviconOmittedTest,
 ];
 
 testMain(TEST_FIXTURES);

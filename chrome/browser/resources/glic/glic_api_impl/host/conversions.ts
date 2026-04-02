@@ -32,7 +32,9 @@ import {ImageAlphaType, ImageColorType} from './../request_types.js';
 
 export const conversionSettings = {
   platform: undefined as Platform | undefined,
+  omitFaviconInTabData: false as boolean,
 };
+
 
 export function idToClient(windowId: number): string;
 export function idToClient(windowId: number|null): string|undefined;
@@ -204,7 +206,7 @@ export function tabDataToClient(
   }
 
   let favicon: RgbaImage|undefined = undefined;
-  if (tabData.favicon) {
+  if (tabData.favicon && !conversionSettings.omitFaviconInTabData) {
     favicon = bitmapN32ToRGBAImage(tabData.favicon);
     if (favicon) {
       extras.addTransfer(favicon.dataRGBA);
