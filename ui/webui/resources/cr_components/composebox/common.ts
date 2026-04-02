@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -214,4 +215,23 @@ export function hasAllowedInputs(
 export function getLoadTimeBoolean(id: string, defaultValue: boolean): boolean {
   return loadTimeData.valueExists(id) ? loadTimeData.getBoolean(id) :
                                         defaultValue;
+}
+
+export function isContextUploadStatusTerminal(status: ContextUploadStatus):
+    boolean {
+  switch (status) {
+    case ContextUploadStatus.kUploadSuccessful:
+    case ContextUploadStatus.kUploadFailed:
+    case ContextUploadStatus.kValidationFailed:
+    case ContextUploadStatus.kUploadExpired:
+    case ContextUploadStatus.kUploadReplaced:
+      return true;
+    case ContextUploadStatus.kNotUploaded:
+    case ContextUploadStatus.kProcessing:
+    case ContextUploadStatus.kUploadStarted:
+    case ContextUploadStatus.kProcessingSuggestSignalsReady:
+      return false;
+    default:
+      assertNotReachedCase(status, 'Unknown enum value');
+  }
 }

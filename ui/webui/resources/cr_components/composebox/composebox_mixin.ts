@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import type {I18nMixinLitInterface} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFileValidationError, getLoadTimeBoolean, ProcessFilesError, recordEnumerationValue} from './common.js';
-import type {ComposeboxFile, ComposeboxState} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordEnumerationValue} from './common.js';
+import type {ComposeboxState} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
-import {InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
-import type {InputState} from './composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
+import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -465,6 +467,258 @@ export const ComposeboxEmbedderMixin =
                   this.composeboxSource,
               enumValue, ComposeboxFileValidationError.MAX_VALUE + 1);
         }
+
+        async addFileContext(files: File[]) {
+          const composeboxFiles: Map<UnguessableToken, ComposeboxFile> =
+              new Map();
+          for (const file of files) {
+            const fileBuffer = await file.arrayBuffer();
+            const bigBuffer: BigBuffer = {
+              bytes: Array.from(new Uint8Array(fileBuffer)),
+            };
+            let token: UnguessableToken;
+            try {
+              token = await this.getSearchboxHandler().addFileContext(
+                  {
+                    fileName: file.name,
+                    imageDataUrl: null,
+                    mimeType: file.type,
+                    isDeletable: true,
+                    selectionTime: new Date(),
+                  },
+                  bigBuffer);
+            } catch (e) {
+              const err = e as ContextUploadErrorType;
+              if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
+                this.errorMessage =
+                    this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
+              }
+              continue;
+            }
+
+            const attachment = ComposeboxFile.createFromFile(
+                token, file, ContextUploadStatus.kNotUploaded, {
+                  dataUrl: null,
+                  objectUrl: file.type.includes('image') ?
+                      URL.createObjectURL(file) :
+                      null,
+                  iconName: null,
+                  supportsUnimodal: true,
+                });
+            composeboxFiles.set(token, attachment);
+            const announcer = getAnnouncerInstance();
+            announcer.announce(this.i18n('composeboxFileUploadStartedText'));
+          }
+          this.files =
+              new Map([...this.files.entries(), ...composeboxFiles.entries()]);
+          this.recordFileValidationMetric(ComposeboxFileValidationError.NONE);
+          this.focusInput();
+        }
+
+        addFileContextFromBrowser(
+            uuid: UnguessableToken, fileInfo: SelectedFileInfo) {
+          const attachment: ComposeboxFile = {
+            uuid: uuid,
+            name: fileInfo.fileName,
+            dataUrl: fileInfo.imageDataUrl ?? null,
+            objectUrl: null,
+            type: fileInfo.mimeType || (fileInfo.imageDataUrl ? 'image' : ''),
+            inputType: fileInfo.imageDataUrl ? InputType.kLensImage :
+                                               InputType.kLensFile,
+            status: fileInfo.imageDataUrl ?
+                ContextUploadStatus.kUploadSuccessful :
+                ContextUploadStatus.kNotUploaded,
+            url: null,
+            tabId: null,
+            isDeletable: fileInfo.isDeletable,
+            iconName: null,
+            supportsUnimodal: true,
+          };
+
+          this.onFileContextAdded(attachment);
+        }
+
+        processFiles(files: FileList|null) {
+          if (!files || files.length === 0) {
+            return;
+          }
+          if (this.inputState?.activeTool === ToolMode.kDeepSearch) {
+            this.handleProcessFilesError(
+                ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED);
+            return;
+          }
+
+          const filesToUpload: File[] = [];
+          let errorToDisplay = ProcessFilesError.NONE;
+
+          const counts = new Map<InputType, number>();
+          counts.set(InputType.kLensImage, 0);
+          counts.set(InputType.kLensFile, 0);
+          counts.set(InputType.kBrowserTab, 0);
+
+          for (const file of this.files.values()) {
+            const type = this.getInputType(file.type);
+            counts.set(type, (counts.get(type) || 0) + 1);
+          }
+
+          let totalCount = this.files.size;
+
+          let maxTotal = this.maxFileCount;
+          if (this.inputState && this.inputState.maxTotalInputs > 0) {
+            maxTotal = this.inputState.maxTotalInputs;
+          }
+
+          if (totalCount + files.length > maxTotal) {
+            errorToDisplay =
+                Math.max(errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
+          }
+
+          for (const file of files) {
+            const inputType = this.getInputType(file.type);
+            if (this.inputState?.activeTool !== ToolMode.kUnspecified) {
+              const disabledTypes = this.inputState?.disabledInputTypes || [];
+              if (disabledTypes.includes(inputType)) {
+                errorToDisplay =
+                    Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
+                continue;
+              }
+            }
+
+            if (file.size === 0 || file.size > this.maxFileSize) {
+              const sizeError = file.size === 0 ?
+                  ProcessFilesError.FILE_EMPTY :
+                  ProcessFilesError.FILE_TOO_LARGE;
+              errorToDisplay = Math.max(errorToDisplay, sizeError);
+              continue;
+            }
+
+            if (!this.isFileAllowed(file.type)) {
+              errorToDisplay =
+                  Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
+              continue;
+            }
+
+            let maxType = maxTotal;
+            if (this.inputState &&
+                this.inputState.maxInputsByType[inputType] !== undefined) {
+              maxType = this.inputState.maxInputsByType[inputType];
+            }
+
+            const currentTypeCount = counts.get(inputType) || 0;
+
+            if (totalCount < maxTotal && currentTypeCount < maxType) {
+              filesToUpload.push(file);
+              totalCount++;
+              counts.set(inputType, currentTypeCount + 1);
+            } else {
+              if (currentTypeCount >= maxType) {
+                switch (inputType) {
+                  case InputType.kLensImage:
+                    errorToDisplay = Math.max(
+                        errorToDisplay, ProcessFilesError.MAX_IMAGES_EXCEEDED);
+                    break;
+                  case InputType.kLensFile:
+                    errorToDisplay = Math.max(
+                        errorToDisplay, ProcessFilesError.MAX_PDFS_EXCEEDED);
+                    break;
+                  default:
+                    errorToDisplay = Math.max(
+                        errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
+                }
+              } else {
+                errorToDisplay = Math.max(
+                    errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
+              }
+            }
+          }
+
+          if (filesToUpload.length > 0) {
+            this.addFileContext(filesToUpload);
+          }
+
+          this.handleProcessFilesError(errorToDisplay);
+        }
+
+        updateFileStatus(
+            token: UnguessableToken, status: ContextUploadStatus,
+            errorType: ContextUploadErrorType|
+            null): {file: ComposeboxFile|null, errorMessage: string|null} {
+          let errorMessage = null;
+          let file = this.files.get(token) ?? null;
+          if (file) {
+            if (isContextUploadStatusTerminal(status) &&
+                status !== ContextUploadStatus.kUploadSuccessful) {
+              this.files.delete(token);
+
+              if (file.tabId) {
+                this.addedTabsIds =
+                    new Map([...this.addedTabsIds.entries()].filter(
+                        ([id, _]) => id !== file!.tabId));
+              }
+              switch (status) {
+                case ContextUploadStatus.kValidationFailed:
+                  if (errorType) {
+                    errorMessage = this.i18n(
+                        FILE_VALIDATION_ERRORS_MAP.get(errorType) ??
+                        'composeboxFileUploadValidationFailed');
+                  } else {
+                    errorMessage =
+                        this.i18n('composeboxFileUploadValidationFailed');
+                  }
+                  break;
+                case ContextUploadStatus.kUploadFailed:
+                  errorMessage = this.i18n('composeboxFileUploadFailed');
+                  break;
+                case ContextUploadStatus.kUploadExpired:
+                  errorMessage = this.i18n('composeboxFileUploadExpired');
+                  break;
+                case ContextUploadStatus.kUploadReplaced:
+                  // Update `composebox.ts` with the status since
+                  // this should not return an error message for this
+                  // 'non-uploaded' terminal file state, meaning
+                  // its file status is still needed for understanding state
+                  // when returned and back in the context of the function
+                  // caller.
+                  file = {...file, status: status};
+                  break;
+                default:
+                  break;
+              }
+              this.closeMenu();
+            } else {
+              file = {...file, status: status};
+              this.files.set(token, file);
+            }
+            this.files = new Map([...this.files]);
+          } else {
+            // File is unknown but its status is known. Show this if
+            // ghost/unknown files in frontend are allowed to be in
+            // carousel.
+            if (this.shouldShowGhostFiles) {
+              file = {
+                uuid: token,
+                name: '',
+                objectUrl: null,
+                dataUrl: null,
+                type: '',
+                inputType: InputType.kLensFile,
+                // Override this since first upload status is this or
+                // processing. Need this or processing in order to show tab
+                // spinner.
+                status: ContextUploadStatus.kUploadStarted,
+                url: null,
+                tabId: null,
+                isDeletable: true,
+                iconName: null,
+                supportsUnimodal: true,
+              };
+              // Update pending uploads in 'composebox.ts' to disable
+              // submit button.
+              this.onFileContextAdded(file);
+            }
+          }
+          return {file, errorMessage};
+        }
       }
 
       return ComposeboxEmbedderMixin;
@@ -562,4 +816,12 @@ export interface ComposeboxEmbedderMixinInterface extends
   computeSubmitEnabled(): boolean;
   hasValidQuery(): boolean;
   recordFileValidationMetric(enumValue: ComposeboxFileValidationError): void;
+  addFileContext(files: File[]): Promise<void>;
+  addFileContextFromBrowser(uuid: UnguessableToken, fileInfo: SelectedFileInfo):
+      void;
+  processFiles(files: FileList|null): void;
+  updateFileStatus(
+      token: UnguessableToken, status: ContextUploadStatus,
+      errorType: ContextUploadErrorType|
+      null): {file: ComposeboxFile|null, errorMessage: string|null};
 }

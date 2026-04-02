@@ -698,7 +698,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         };
         mockSearchboxPageHandler.setResultFor(
             ADD_FILE_CONTEXT_FN, Promise.resolve({token: FAKE_TOKEN_STRING}));
-        composebox.addFileContextFromBrowser_(FAKE_TOKEN_STRING, fileInfo);
+        composebox.addFileContextFromBrowser(FAKE_TOKEN_STRING, fileInfo);
 
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING,

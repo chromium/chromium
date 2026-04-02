@@ -27,13 +27,12 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -43,7 +42,7 @@ import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ComposeboxEmbedderMixin} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
-import {ContextUploadStatus, InputType, ToolMode} from './composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
@@ -56,23 +55,6 @@ export enum VoiceSearchAction {
   QUERY_SUBMITTED = 1,
 }
 
-export function isTerminalState(status: ContextUploadStatus): boolean {
-  switch (status) {
-    case ContextUploadStatus.kUploadSuccessful:
-    case ContextUploadStatus.kUploadFailed:
-    case ContextUploadStatus.kValidationFailed:
-    case ContextUploadStatus.kUploadExpired:
-    case ContextUploadStatus.kUploadReplaced:
-      return true;
-    case ContextUploadStatus.kNotUploaded:
-    case ContextUploadStatus.kProcessing:
-    case ContextUploadStatus.kUploadStarted:
-    case ContextUploadStatus.kProcessingSuggestSignalsReady:
-      return false;
-    default:
-      assertNotReachedCase(status, 'Unknown enum value');
-  }
-}
 
 export enum SubmitButtonIconType {
   FORWARD = 'forward',
@@ -317,7 +299,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.searchboxCallbackRouter_.onTabStripChanged.addListener(
           this.refreshTabSuggestions_.bind(this)),
       this.searchboxCallbackRouter_.addFileContext.addListener(
-          this.addFileContextFromBrowser_.bind(this)),
+          this.addFileContextFromBrowser.bind(this)),
       this.searchboxCallbackRouter_.updateAutoSuggestedTabContext.addListener(
           this.updateAutoSuggestedTabContext_.bind(this)),
       this.searchboxCallbackRouter_.onInputStateChanged.addListener(
@@ -498,7 +480,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   addDroppedFiles(files: FileList|null) {
-    this.processFiles_(files);
+    this.processFiles(files);
     recordContextAdditionMethod(
         ComposeboxContextAddedMethod.DRAG_AND_DROP, this.composeboxSource);
   }
@@ -592,7 +574,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
           dataTransfer.items.add(file.file);
         }
       }
-      this.processFiles_(dataTransfer.files);
+      this.processFiles(dataTransfer.files);
     }
     if (mode !== ToolMode.kUnspecified) {
       this.handleToolClick_(mode);
@@ -787,78 +769,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected onFileChange_(e: CustomEvent<{files: FileList}>) {
-    this.processFiles_(e.detail.files);
+    this.processFiles(e.detail.files);
     recordContextAdditionMethod(
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource);
   }
 
-  // Start file upload flow from frontend. This contrasts with
-  // `onFileContextAdded_`, which is for the file upload flow that is started
-  // from the backend.
-  private async addFileContext_(files: File[]) {
-    const composeboxFiles: Map<UnguessableToken, ComposeboxFile> = new Map();
-    for (const file of files) {
-      const fileBuffer = await file.arrayBuffer();
-      const bigBuffer:
-          BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
-      let token: UnguessableToken;
-      try {
-        token = await this.searchboxHandler_.addFileContext(
-            {
-              fileName: file.name,
-              imageDataUrl: null,
-              mimeType: file.type,
-              isDeletable: true,
-              selectionTime: new Date(),
-            },
-            bigBuffer);
-      } catch (e) {
-        const err = e as ContextUploadErrorType;
-        if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
-          this.errorMessage = this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
-        }
-        continue;
-      }
 
-      const attachment = ComposeboxFile.createFromFile(
-          token, file, ContextUploadStatus.kNotUploaded, {
-            dataUrl: null,
-            objectUrl: file.type.includes('image') ? URL.createObjectURL(file) :
-                                                     null,
-            iconName: null,
-            supportsUnimodal: true,
-          });
-      composeboxFiles.set(token, attachment);
-      const announcer = getAnnouncerInstance();
-      announcer.announce(this.i18n('composeboxFileUploadStartedText'));
-    }
-    this.files =
-        new Map([...this.files.entries(), ...composeboxFiles.entries()]);
-    this.recordFileValidationMetric(ComposeboxFileValidationError.NONE);
-    this.focusInput();
-  }
-
-  protected addFileContextFromBrowser_(
-      uuid: UnguessableToken, fileInfo: SelectedFileInfo) {
-    const attachment: ComposeboxFile = {
-      uuid: uuid,
-      name: fileInfo.fileName,
-      dataUrl: fileInfo.imageDataUrl ?? null,
-      objectUrl: null,
-      type: fileInfo.mimeType || (fileInfo.imageDataUrl ? 'image' : ''),
-      inputType: fileInfo.imageDataUrl ? InputType.kLensImage :
-                                         InputType.kLensFile,
-      status: fileInfo.imageDataUrl ? ContextUploadStatus.kUploadSuccessful :
-                                      ContextUploadStatus.kNotUploaded,
-      url: null,
-      tabId: null,
-      isDeletable: fileInfo.isDeletable,
-      iconName: null,
-      supportsUnimodal: true,
-    };
-
-    this.onFileContextAdded(attachment);
-  }
 
   injectInput(
       title: string, thumbnail: string, fileToken: UnguessableToken,
@@ -1029,7 +945,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     if (fileList.length > 0) {
       event.preventDefault();
-      this.processFiles_(fileList);
+      this.processFiles(fileList);
       recordContextAdditionMethod(
           ComposeboxContextAddedMethod.COPY_PASTE, this.composeboxSource);
     }
@@ -1605,7 +1521,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // Else, `file` below is updated to its most recent state,
     // and `errorMessage` is null.
     const {file, errorMessage} =
-        this.updateFileStatus_(token, status, errorType);
+        this.updateFileStatus(token, status, errorType);
     if (errorMessage) {  // `file` value is definitely stale.
       this.errorMessage = errorMessage;
       this.pendingUploads.delete(token);
@@ -1709,175 +1625,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.shouldShowVoiceSearch_();
   }
 
-  private updateFileStatus_(
-      token: UnguessableToken, status: ContextUploadStatus,
-      errorType: ContextUploadErrorType|null) {
-    let errorMessage = null;
-    let file = this.files.get(token);
-    if (file) {
-      if (isTerminalState(status) &&
-          status !== ContextUploadStatus.kUploadSuccessful) {
-        this.files.delete(token);
-
-        if (file.tabId) {
-          this.addedTabsIds = new Map([...this.addedTabsIds.entries()].filter(
-              ([id, _]) => id !== file!.tabId));
-        }
-        switch (status) {
-          case ContextUploadStatus.kValidationFailed:
-            if (errorType) {
-              errorMessage = this.i18n(
-                  FILE_VALIDATION_ERRORS_MAP.get(errorType) ??
-                  'composeboxFileUploadValidationFailed');
-            } else {
-              errorMessage = this.i18n('composeboxFileUploadValidationFailed');
-            }
-            break;
-          case ContextUploadStatus.kUploadFailed:
-            errorMessage = this.i18n('composeboxFileUploadFailed');
-            break;
-          case ContextUploadStatus.kUploadExpired:
-            errorMessage = this.i18n('composeboxFileUploadExpired');
-            break;
-          case ContextUploadStatus.kUploadReplaced:
-            // Update `composebox.ts` with the status since
-            // this should not return an error message for this
-            // 'non-uploaded' terminal file state, meaning
-            // its file status is still needed for understanding state
-            // when returned and back in the context of the function caller.
-            file = {...file, status: status};
-            break;
-          default:
-            break;
-        }
-        this.closeMenu();
-      } else {
-        file = {...file, status: status};
-        this.files.set(token, file);
-      }
-      this.files = new Map([...this.files]);
-    } else {
-      // File is unknown but its status is known. Show this if
-      // ghost/unknown files in frontend are allowed to be in
-      // carousel.
-      if (this.shouldShowGhostFiles) {
-        file = {
-          uuid: token,
-          name: '',
-          objectUrl: null,
-          dataUrl: null,
-          type: '',
-          inputType: InputType.kLensFile,
-          // Override this since first upload status is this or processing.
-          // Need this or processing in order to show tab spinner.
-          status: ContextUploadStatus.kUploadStarted,
-          url: null,
-          tabId: null,
-          isDeletable: true,
-          iconName: null,
-          supportsUnimodal: true,
-        };
-        // Update pending uploads in 'composebox.ts' to disable
-        // submit button.
-        this.onFileContextAdded(file);
-      }
-    }
-    return {file, errorMessage};
-  }
-
-  private processFiles_(files: FileList|null) {
-    if (!files || files.length === 0) {
-      return;
-    }
-    if (this.inputState?.activeTool === ToolMode.kDeepSearch) {
-      this.handleProcessFilesError(ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED);
-      return;
-    }
-
-    const filesToUpload: File[] = [];
-    let errorToDisplay = ProcessFilesError.NONE;
-
-    const counts = new Map<InputType, number>();
-    counts.set(InputType.kLensImage, 0);
-    counts.set(InputType.kLensFile, 0);
-    counts.set(InputType.kBrowserTab, 0);
-
-    for (const file of this.files.values()) {
-      const type = this.getInputType(file.type);
-      counts.set(type, (counts.get(type) || 0) + 1);
-    }
-
-    let totalCount = this.files.size;
-
-    let maxTotal = this.maxFileCount;
-    if (this.inputState && this.inputState.maxTotalInputs > 0) {
-      maxTotal = this.inputState.maxTotalInputs;
-    }
-
-    if (totalCount + files.length > maxTotal) {
-      errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
-    }
-
-    for (const file of files) {
-      const inputType = this.getInputType(file.type);
-      if (this.inputState?.activeTool !== ToolMode.kUnspecified) {
-        const disabledTypes = this.inputState?.disabledInputTypes || [];
-        if (disabledTypes.includes(inputType)) {
-          errorToDisplay =
-              Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
-          continue;
-        }
-      }
-
-      if (file.size === 0 || file.size > this.maxFileSize) {
-        const sizeError = file.size === 0 ? ProcessFilesError.FILE_EMPTY :
-                                            ProcessFilesError.FILE_TOO_LARGE;
-        errorToDisplay = Math.max(errorToDisplay, sizeError);
-        continue;
-      }
-
-      if (!this.isFileAllowed(file.type)) {
-        errorToDisplay =
-            Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
-        continue;
-      }
-
-      let maxType = maxTotal;
-      if (this.inputState &&
-          this.inputState.maxInputsByType[inputType] !== undefined) {
-        maxType = this.inputState.maxInputsByType[inputType];
-      }
-
-      const currentTypeCount = counts.get(inputType) || 0;
-
-      if (totalCount < maxTotal && currentTypeCount < maxType) {
-        filesToUpload.push(file);
-        totalCount++;
-        counts.set(inputType, currentTypeCount + 1);
-      } else {
-        if (currentTypeCount >= maxType) {
-          switch (inputType) {
-            case InputType.kLensImage:
-              errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_IMAGES_EXCEEDED);
-              break;
-            case InputType.kLensFile:
-              errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_PDFS_EXCEEDED);
-              break;
-            default:
-              errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
-          }
-        } else {
-          errorToDisplay = Math.max(errorToDisplay, ProcessFilesError.MAX_FILES_EXCEEDED);
-        }
-      }
-    }
-
-    if (filesToUpload.length > 0) {
-      this.addFileContext_(filesToUpload);
-    }
-
-    this.handleProcessFilesError(errorToDisplay);
-  }
 
   private addFileFromAttachment_(fileAttachment: FileAttachment) {
     if (!this.isFileAllowed(fileAttachment.mimeType)) {
