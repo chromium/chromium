@@ -2099,9 +2099,13 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
   }
 
   bool copy_succeeded = false;
+  scoped_refptr<CanvasResource> resource;
   if (resource_provider->IsAccelerated()) {
     copy_succeeded = CopyRenderingResultsFromDrawingBufferAccelerated(
         resource_provider, source_buffer);
+    if (copy_succeeded) {
+      resource = resource_provider->ProduceCanvasResource();
+    }
   } else {
     // As the resource provider is not accelerated, we don't need an accelerated
     // image.
@@ -2110,8 +2114,11 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
             kBackBuffer, viz::SharedImageFormat::N32Format(),
             kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin);
     if (image && image->PaintImageForCurrentFrame()) {
-      DrawImageToCanvas(image.get(), resource_provider->GetCanvasDeprecated(),
-                        gfx::Rect(resource_provider->Size()));
+      gfx::Rect dest_rect(resource_provider->Size());
+      resource = resource_provider->DoExternalDrawAndProduceResource(
+          [&image, dest_rect](cc::PaintCanvas& canvas) {
+            DrawImageToCanvas(image.get(), canvas, dest_rect);
+          });
       copy_succeeded = true;
     }
   }
@@ -2123,7 +2130,7 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
   // We successfully painted the contents to the resource provider.
   must_paint_to_canvas_ = false;
   resource_provider_has_content_for_frame_push_ = true;
-  return resource_provider->ProduceCanvasResource();
+  return resource;
 }
 
 bool WebGLRenderingContextBase::
