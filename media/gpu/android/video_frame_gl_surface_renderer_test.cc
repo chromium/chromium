@@ -310,7 +310,7 @@ TEST_F(VideoFrameGLSurfaceRendererTest, RenderSharedImageVideoFrame) {
 
   auto si_video_frame = VideoFrame::WrapSharedImage(
       PIXEL_FORMAT_XBGR, client_shared_image, sync_token, base::DoNothing(),
-      kSurfaceSize, gfx::Rect(kSurfaceSize), kSurfaceSize, base::TimeDelta());
+      gfx::Rect(kSurfaceSize), kSurfaceSize, base::TimeDelta());
   ASSERT_TRUE(si_video_frame);
 
   RenderAndVerifyFrame(si_video_frame, expected_frame);

@@ -234,7 +234,6 @@ class VideoResourceUpdaterTest : public testing::Test {
         format, shared_image, kMailboxSyncToken,
         base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
                        base::Unretained(this)),
-        size,                // coded_size
         gfx::Rect(size),     // visible_rect
         size,                // natural_size
         base::TimeDelta());  // timestamp

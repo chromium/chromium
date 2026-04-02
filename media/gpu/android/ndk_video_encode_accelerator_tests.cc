@@ -401,10 +401,9 @@ class NdkVideoEncoderAcceleratorTest
         base::MakeRefCounted<gpu::SharedImageInterfaceHolder>(test_ssi.get()),
         gfx::EMPTY_BUFFER);
 
-    return VideoFrame::WrapSharedImage(software_frame->format(),
-                                       client_shared_image, sync_token,
-                                       base::DoNothing(), size, gfx::Rect(size),
-                                       size, software_frame->timestamp());
+    return VideoFrame::WrapSharedImage(
+        software_frame->format(), client_shared_image, sync_token,
+        base::DoNothing(), gfx::Rect(size), size, software_frame->timestamp());
   }
 
   VideoEncodeAccelerator::Config GetDefaultConfig() {

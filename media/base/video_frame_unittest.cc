@@ -675,7 +675,6 @@ TEST(VideoFrame, WrapSharedImageUnsetReleaseSyncToken) {
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
         PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
         base::BindOnce(&TextureCallback, &called_sync_token),
-        si_size,             // coded_size
         gfx::Rect(si_size),  // visible_rect
         si_size,             // natural_size
         base::TimeDelta());  // timestamp
@@ -718,7 +717,6 @@ TEST(VideoFrame, WrapSharedImageSetReleaseSyncToken) {
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
         PIXEL_FORMAT_I420, shared_image, sync_token,
         base::BindOnce(&TextureCallback, &called_sync_token),
-        si_size,             // coded_size
         gfx::Rect(si_size),  // visible_rect
         si_size,             // natural_size
         base::TimeDelta());  // timestamp

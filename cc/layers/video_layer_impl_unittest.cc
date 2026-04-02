@@ -390,10 +390,9 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
       gpu::ClientSharedImage::CreateForTesting(metadata);
 
   scoped_refptr<media::VideoFrame> video_frame =
-      media::VideoFrame::WrapSharedImage(media::PIXEL_FORMAT_I420, shared_image,
-                                         gpu::SyncToken(), base::DoNothing(),
-                                         si_size, gfx::Rect(si_size), si_size,
-                                         base::TimeDelta());
+      media::VideoFrame::WrapSharedImage(
+          media::PIXEL_FORMAT_I420, shared_image, gpu::SyncToken(),
+          base::DoNothing(), gfx::Rect(si_size), si_size, base::TimeDelta());
   ASSERT_TRUE(video_frame);
   video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;
@@ -437,10 +436,9 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
       gpu::ClientSharedImage::CreateForTesting(metadata);
 
   scoped_refptr<media::VideoFrame> video_frame =
-      media::VideoFrame::WrapSharedImage(media::PIXEL_FORMAT_ARGB, shared_image,
-                                         gpu::SyncToken(), base::DoNothing(),
-                                         si_size, gfx::Rect(si_size), si_size,
-                                         base::TimeDelta());
+      media::VideoFrame::WrapSharedImage(
+          media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
+          base::DoNothing(), gfx::Rect(si_size), si_size, base::TimeDelta());
   ASSERT_TRUE(video_frame);
   video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;
