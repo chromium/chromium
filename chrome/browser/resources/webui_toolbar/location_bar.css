@@ -37,7 +37,7 @@
   width: 400px;
 }
 
-:host:hover {
+:host(:hover) {
   background-color: var(--color-location-bar-background-hovered);
 }
 
