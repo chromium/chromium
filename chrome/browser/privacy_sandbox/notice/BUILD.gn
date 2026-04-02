@@ -24,6 +24,7 @@ source_set("core") {
     "notice_storage.cc",
   ]
   public = [
+    "deprecated_notices.h",
     "notice_model.h",
     "notice_storage.h",
   ]
@@ -52,7 +53,9 @@ source_set("interfaces") {
 
 source_set("catalog") {
   sources = [ "notice_catalog.cc" ]
-  public = [ "notice_catalog.h" ]
+  public = [
+    "notice_catalog.h",
+  ]
   deps = [
     ":core",
     ":notice_definitions",

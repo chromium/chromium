@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "chrome/browser/privacy_sandbox/notice/deprecated_notices.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -158,6 +159,17 @@ void NoticeCatalogImpl::Populate() {
        {{kMeasurementNotice, kClankCustomTab},
         &kMeasurementNoticeModalClankCCTFeature}},
       {measurement});
+
+  // Validate against the deprecated notices list.
+  for (Notice* notice : notice_ptrs_) {
+    for (const auto& dead_notice : kDeprecatedNotices) {
+      CHECK(notice->notice_id() != dead_notice.notice_id)
+          << "NoticeId reused from deprecated notices!";
+      CHECK(notice->GetStorageName() != dead_notice.storage_name)
+          << "Storage name reused from deprecated notices: "
+          << dead_notice.storage_name;
+    }
+  }
 }
 
 }  // namespace privacy_sandbox

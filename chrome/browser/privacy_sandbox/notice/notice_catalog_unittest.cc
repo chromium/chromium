@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/privacy_sandbox/notice/deprecated_notices.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -218,6 +219,19 @@ TEST_F(PrivacySandboxNoticeCatalogTest, GetNotice_ReturnsNullptrWhenNotExists) {
                            SurfaceType::kDesktopNewTab};
 
   EXPECT_EQ(catalog_->GetNotice(not_found_id), nullptr);
+}
+
+// Active notices must not be in the deprecated notices list.
+TEST_F(PrivacySandboxNoticeCatalogTest, ActiveNoticesNotInDeprecatedNotices) {
+  EXPECT_THAT(catalog_->GetNotices(), Not(IsEmpty()));
+
+  for (Notice* notice : catalog_->GetNotices()) {
+    ASSERT_NE(notice, nullptr);
+    for (const auto& dead_notice : kDeprecatedNotices) {
+      EXPECT_NE(notice->notice_id(), dead_notice.notice_id);
+      EXPECT_NE(notice->GetStorageName(), dead_notice.storage_name);
+    }
+  }
 }
 
 class PrivacySandboxNoticeCatalogPopulateAllNoticesTest
