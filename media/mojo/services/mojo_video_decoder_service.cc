@@ -159,7 +159,7 @@ MojoVideoDecoderService::~MojoVideoDecoderService() {
 
   // Destruct the VideoDecoder here so its destruction duration is included by
   // the histogram timer below.
-  weak_factory_.InvalidateWeakPtrs();
+  weak_factory_.InvalidateWeakPtrsAndDoom();
   decoder_.reset();
 
   mojo_media_client_ = nullptr;

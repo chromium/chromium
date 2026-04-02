@@ -977,8 +977,8 @@ void FFmpegDemuxer::Stop() {
   // thread. We don't need to wait for any outstanding tasks since they will all
   // fail to return after invalidating WeakPtrs.
   stopped_ = true;
-  weak_factory_.InvalidateWeakPtrs();
-  cancel_pending_seek_factory_.InvalidateWeakPtrs();
+  weak_factory_.InvalidateWeakPtrsAndDoom();
+  cancel_pending_seek_factory_.InvalidateWeakPtrsAndDoom();
 }
 
 void FFmpegDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {}

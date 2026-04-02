@@ -122,7 +122,7 @@ RendererImpl::~RendererImpl() {
   // RendererImpl is being destroyed, so invalidate weak pointers right away to
   // avoid getting callbacks which might try to access fields that has been
   // destroyed, e.g. audio_renderer_/video_renderer_ below (crbug.com/668963).
-  weak_factory_.InvalidateWeakPtrs();
+  weak_factory_.InvalidateWeakPtrsAndDoom();
 
   // Tear down in opposite order of construction as |video_renderer_| can still
   // need |time_source_| (which can be |audio_renderer_|) to be alive.

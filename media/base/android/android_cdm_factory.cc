@@ -36,7 +36,7 @@ AndroidCdmFactory::AndroidCdmFactory(CreateFetcherCB create_fetcher_cb,
       create_storage_cb_(std::move(create_storage_cb)) {}
 
 AndroidCdmFactory::~AndroidCdmFactory() {
-  weak_factory_.InvalidateWeakPtrs();
+  weak_factory_.InvalidateWeakPtrsAndDoom();
   for (auto& pending_creation : pending_creations_) {
     CdmCreatedCB cdm_created_cb = std::move(pending_creation.second.second);
     std::move(cdm_created_cb)

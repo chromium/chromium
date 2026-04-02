@@ -6,10 +6,10 @@
 
 namespace media {
 
-AndroidOverlay::AndroidOverlay() {}
+AndroidOverlay::AndroidOverlay() = default;
 AndroidOverlay::~AndroidOverlay() {
   // Don't permit any other callbacks once we start sending deletion cbs.
-  weak_factory_.InvalidateWeakPtrs();
+  weak_factory_.InvalidateWeakPtrsAndDoom();
   for (auto& cb : deletion_cbs_)
     std::move(cb).Run(this);
 }

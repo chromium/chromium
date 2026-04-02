@@ -30,9 +30,7 @@ FakeVideoEncodeAccelerator::FakeVideoEncodeAccelerator(
       client_(nullptr),
       next_frame_is_first_frame_(true) {}
 
-FakeVideoEncodeAccelerator::~FakeVideoEncodeAccelerator() {
-  weak_this_factory_.InvalidateWeakPtrs();
-}
+FakeVideoEncodeAccelerator::~FakeVideoEncodeAccelerator() = default;
 
 VideoEncodeAccelerator::SupportedProfiles
 FakeVideoEncodeAccelerator::GetSupportedProfiles() {

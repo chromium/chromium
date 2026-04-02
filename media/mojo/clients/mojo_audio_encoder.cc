@@ -157,7 +157,7 @@ void MojoAudioEncoder::OnConnectionError() {
   DCHECK(!remote_encoder_.is_connected());
   CallAndReleaseAllPendingCallbacks(
       EncoderStatus::Codes::kEncoderMojoConnectionError);
-  weak_factory_.InvalidateWeakPtrs();
+  weak_factory_.InvalidateWeakPtrsAndDoom();
   remote_encoder_.reset();
 }
 
