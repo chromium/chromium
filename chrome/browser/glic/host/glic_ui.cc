@@ -92,7 +92,7 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
 
   void PrepareForClient(
       mojom::GlicPreloadHandler::PrepareForClientCallback callback) override {
-    TRACE_EVENT_INSTANT("browser",
+    TRACE_EVENT_INSTANT("glic",
                         "GlicPreloadHandler::PrepareForClient - Request",
                         perfetto::Flow::FromPointer(this));
 
@@ -102,7 +102,7 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
            mojom::PrepareForClientResult result) {
           if (origin_this) {
             TRACE_EVENT_INSTANT(
-                "browser", "GlicPreloadHandler::PrepareForClient - Response",
+                "glic", "GlicPreloadHandler::PrepareForClient - Response",
                 perfetto::TerminatingFlow::FromPointer(origin_this.get()));
           }
           std::move(callback).Run(std::move(result));
