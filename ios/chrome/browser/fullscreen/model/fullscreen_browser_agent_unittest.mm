@@ -229,9 +229,9 @@ TEST_F(FullscreenBrowserAgentTest, DisabledCounter) {
   FullscreenBrowserAgent* agent =
       FullscreenBrowserAgent::FromBrowser(browser_.get());
   EXPECT_EQ(0u, agent->disabled_count());
-  agent->IncrementDisabledCounter(PassKey());
+  agent->IncrementDisabledCounter(PassKey(), true);
   EXPECT_EQ(1u, agent->disabled_count());
-  agent->IncrementDisabledCounter(PassKey());
+  agent->IncrementDisabledCounter(PassKey(), false);
   EXPECT_EQ(2u, agent->disabled_count());
   agent->DecrementDisabledCounter(PassKey());
   EXPECT_EQ(1u, agent->disabled_count());

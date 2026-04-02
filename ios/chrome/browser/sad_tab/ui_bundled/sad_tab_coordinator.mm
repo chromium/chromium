@@ -7,15 +7,17 @@
 #import "base/metrics/histogram_macros.h"
 #import "components/ui_metrics/sadtab_metrics_types.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/chrome_coordinator+fullscreen_disabling.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
@@ -31,6 +33,7 @@
 
 @implementation SadTabCoordinator {
   SadTabViewController* _viewController;
+  std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
   // Bridge to observe the web state list from Objective-C.
   TabsDependencyInstallerBridge _dependencyInstallerBridge;
 }
@@ -60,8 +63,18 @@
                               ui_metrics::SadTabEvent::DISPLAYED,
                               ui_metrics::SadTabEvent::MAX_SAD_TAB_EVENT);
   }
-  // Creates a fullscreen disabler.
-  [self didStartFullscreenDisablingUI];
+
+  if (IsFullscreenRefactoringEnabled()) {
+    id<FullscreenCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), FullscreenCommands);
+    _fullscreenDisabler =
+        std::make_unique<ScopedFullscreenDisabler>(handler, /*animated=*/false);
+  } else {
+    FullscreenController* controller =
+        FullscreenController::FromBrowser(self.browser);
+    _fullscreenDisabler =
+        std::make_unique<ScopedFullscreenDisabler>(controller);
+  }
 
   _viewController = [[SadTabViewController alloc] init];
   _viewController.delegate = self;
@@ -84,7 +97,7 @@
     return;
   }
 
-  [self didStopFullscreenDisablingUI];
+  _fullscreenDisabler = nullptr;
 
   [_viewController willMoveToParentViewController:nil];
   [_viewController.view removeFromSuperview];

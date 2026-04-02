@@ -17,6 +17,7 @@ class HostContentSettingsMap;
 @class LayoutGuideCenter;
 class OverlayPresenter;
 @protocol BWGCommands;
+@protocol FullscreenCommands;
 @protocol PageActionMenuEntryPointCommands;
 @protocol PopupMenuCommands;
 @protocol TabStripCommands;
@@ -58,6 +59,9 @@ class DeviceSwitcherResultDispatcher;
 // Command handler for dispatching page action menu entry point commands.
 @property(nonatomic, weak) id<PageActionMenuEntryPointCommands>
     pageActionMenuEntryPointHandler;
+
+// Command handler for dispatching Fullscreen commands.
+@property(nonatomic, weak) id<FullscreenCommands> fullscreenHandler;
 
 // Command handler for dispatching Gemini commands.
 @property(nonatomic, weak) id<BWGCommands> geminiHandler;

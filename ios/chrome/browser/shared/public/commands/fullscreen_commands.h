@@ -17,7 +17,7 @@
 - (void)exitFullscreenWithAnimation:(BOOL)animated;
 
 // Disables fullscreen. Increments the disabled counter.
-- (void)disableFullscreen;
+- (void)disableFullscreenAnimated:(BOOL)animated;
 
 // Re-enables fullscreen. Decrements the disabled counter.
 - (void)reenableFullscreen;

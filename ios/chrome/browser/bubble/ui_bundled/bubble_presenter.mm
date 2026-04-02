@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
@@ -106,7 +107,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   // The fullscreen controller and disabler to block fullscreen momentarily for
   // some bubbles while they present.
   raw_ptr<FullscreenController> _fullscreenController;
-  std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
+  std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
+  std::unique_ptr<AnimatedScopedFullscreenDisabler>
+      _legacyAnimatedFullscreenDisabler;
 
   // List of existing bubble view presenters.
   BubbleViewControllerPresenter* _bottomToolbarTipBubblePresenter;
@@ -1319,14 +1322,21 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
 // Stops the animated fullscreen disabler.
 - (void)stopAnimatedFullscreenDisabler {
-  _animatedFullscreenDisabler = nullptr;
+  _fullscreenDisabler = nullptr;
+  _legacyAnimatedFullscreenDisabler = nullptr;
 }
 
 // Creates and starts the animated fullscreen disabler.
 - (void)startAnimatedFullscreenDisabler {
-  _animatedFullscreenDisabler =
-      std::make_unique<AnimatedScopedFullscreenDisabler>(_fullscreenController);
-  _animatedFullscreenDisabler->StartAnimation();
+  if (IsFullscreenRefactoringEnabled()) {
+    _fullscreenDisabler =
+        std::make_unique<ScopedFullscreenDisabler>(self.fullscreenHandler);
+  } else {
+    _legacyAnimatedFullscreenDisabler =
+        std::make_unique<AnimatedScopedFullscreenDisabler>(
+            _fullscreenController);
+    _legacyAnimatedFullscreenDisabler->StartAnimation();
+  }
 }
 
 - (void)featureDismissed:(const base::Feature&)feature {

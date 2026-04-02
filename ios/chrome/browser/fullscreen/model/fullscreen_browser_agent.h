@@ -62,7 +62,7 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // Increments the disabled counter. If the counter becomes 1, it exits
   // fullscreen mode.
-  void IncrementDisabledCounter(PassKey);
+  void IncrementDisabledCounter(PassKey, bool animated);
 
   // Decrements the disabled counter.
   void DecrementDisabledCounter(PassKey);

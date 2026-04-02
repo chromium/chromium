@@ -11,6 +11,7 @@
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_accessibility_util.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_presentation_state.h"
 #import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_coordinator+subclassing.h"
@@ -23,6 +24,8 @@
 #import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_transition_driver.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
@@ -33,7 +36,9 @@
                                   InfobarModalPositioner> {
   // The AnimatedFullscreenDisable disables fullscreen by displaying the
   // Toolbar/s when an Infobar banner is presented.
-  std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
+  std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
+  std::unique_ptr<AnimatedScopedFullscreenDisabler>
+      _legacyAnimatedFullscreenDisabler;
 }
 
 // The transition delegate used by the Coordinator to present the InfobarBanner.
@@ -74,7 +79,7 @@
 - (void)stop {
   // Cancel any scheduled automatic dismissal block.
   _autoDismissBannerTimer.Stop();
-  _animatedFullscreenDisabler = nullptr;
+  _fullscreenDisabler = nullptr;
 }
 
 - (void)presentInfobarBannerAnimated:(BOOL)animated
@@ -91,10 +96,16 @@
   }
 
   // Make sure to display the Toolbar/s before presenting the Banner.
-  _animatedFullscreenDisabler =
-      std::make_unique<AnimatedScopedFullscreenDisabler>(
-          FullscreenController::FromBrowser(self.browser));
-  _animatedFullscreenDisabler->StartAnimation();
+  if (IsFullscreenRefactoringEnabled()) {
+    id<FullscreenCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), FullscreenCommands);
+    _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(handler);
+  } else {
+    _legacyAnimatedFullscreenDisabler =
+        std::make_unique<AnimatedScopedFullscreenDisabler>(
+            FullscreenController::FromBrowser(self.browser));
+    _legacyAnimatedFullscreenDisabler->StartAnimation();
+  }
 
   [self.bannerViewController
       setModalPresentationStyle:UIModalPresentationCustom];
@@ -182,7 +193,7 @@
   [self configureAccessibilityForBannerInViewController:self.baseViewController
                                              presenting:NO];
   self.bannerTransitionDriver = nil;
-  _animatedFullscreenDisabler = nullptr;
+  _fullscreenDisabler = nullptr;
   [self infobarWasDismissed];
 }
 

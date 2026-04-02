@@ -12,6 +12,7 @@
 
 @protocol CardSwipeViewDelegate;
 class FullscreenController;
+@protocol FullscreenCommands;
 @class LayoutGuideCenter;
 @protocol SideSwipeInteracting;
 @protocol SideSwipeMutator;
@@ -60,6 +61,9 @@ class WebStateList;
 
 // The card swipe delegate.
 @property(nonatomic, weak) id<CardSwipeViewDelegate> cardSwipeViewDelegate;
+
+// Handler for the fullscreen commands.
+@property(nonatomic, weak) id<FullscreenCommands> fullscreenHandler;
 
 /// Fullscreen controller used for collapsing the view above the keyboard.
 @property(nonatomic, assign) FullscreenController* fullscreenController;

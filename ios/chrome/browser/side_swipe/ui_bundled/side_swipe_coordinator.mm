@@ -15,8 +15,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/card_swipe_view_delegate.h"
@@ -54,6 +56,10 @@
                       webStateList:webStateList
               snapshotBrowserAgent:SnapshotBrowserAgent::FromBrowser(browser)];
 
+  if (IsFullscreenRefactoringEnabled()) {
+    _sideSwipeUIController.fullscreenHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), FullscreenCommands);
+  }
   _sideSwipeUIController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
   _sideSwipeUIController.toolbarInteractionHandler =

@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -70,6 +71,10 @@
   _presenter.delegate = self.bubblePresenterDelegate;
   _presenter.geminiHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
+  if (IsFullscreenRefactoringEnabled()) {
+    _presenter.fullscreenHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), FullscreenCommands);
+  }
 
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self

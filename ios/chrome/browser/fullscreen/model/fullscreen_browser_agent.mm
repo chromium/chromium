@@ -101,10 +101,11 @@ void FullscreenBrowserAgent::NotifyObserversOfUpdatedState() {
   }
 }
 
-void FullscreenBrowserAgent::IncrementDisabledCounter(PassKey pass_key) {
+void FullscreenBrowserAgent::IncrementDisabledCounter(PassKey pass_key,
+                                                      bool animated) {
   disabled_count_++;
   if (disabled_count_ == 1) {
-    ExitFullscreen(pass_key, /*animated=*/true);
+    ExitFullscreen(pass_key, animated);
   }
 }
 

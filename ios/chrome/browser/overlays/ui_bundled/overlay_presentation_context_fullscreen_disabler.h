@@ -15,6 +15,7 @@
 
 class Browser;
 class AnimatedScopedFullscreenDisabler;
+class ScopedFullscreenDisabler;
 
 // A helper object that disables fullscreen while overlays are displayed.
 class OverlayContainerFullscreenDisabler {
@@ -44,8 +45,9 @@ class OverlayContainerFullscreenDisabler {
     void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
 
     raw_ptr<Browser> browser_ = nullptr;
-    // The animated disabler.
-    std::unique_ptr<AnimatedScopedFullscreenDisabler> disabler_;
+    // The disabler.
+    std::unique_ptr<ScopedFullscreenDisabler> disabler_;
+    std::unique_ptr<AnimatedScopedFullscreenDisabler> legacy_disabler_;
     base::ScopedObservation<OverlayPresenter, OverlayPresenterObserver>
         scoped_observation_{this};
   };

@@ -14,6 +14,8 @@ class FullscreenController;
 // A helper object that increments FullscreenController's disabled counter for
 // its entire lifetime after calling StartAnimation(). Any UI updates resulting
 // from the incremented disable counter will be animated.
+// TODO(crbug.com/490126971): Remove/clean up this class once
+// IsFullscreenRefactoringEnabled is fully enabled.
 class AnimatedScopedFullscreenDisabler : public FullscreenControllerObserver {
  public:
   explicit AnimatedScopedFullscreenDisabler(FullscreenController* controller);

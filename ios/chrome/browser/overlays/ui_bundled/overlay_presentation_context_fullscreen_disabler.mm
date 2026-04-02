@@ -7,7 +7,11 @@
 #import "base/check.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 #pragma mark - OverlayContainerFullscreenDisabler
 
@@ -38,15 +42,22 @@ void OverlayContainerFullscreenDisabler::FullscreenDisabler::WillShowOverlay(
     OverlayPresenter* presenter,
     OverlayRequest* request,
     bool initial_presentation) {
-  disabler_ = std::make_unique<AnimatedScopedFullscreenDisabler>(
-      FullscreenController::FromBrowser(browser_));
-  disabler_->StartAnimation();
+  if (IsFullscreenRefactoringEnabled()) {
+    id<FullscreenCommands> handler = HandlerForProtocol(
+        browser_->GetCommandDispatcher(), FullscreenCommands);
+    disabler_ = std::make_unique<ScopedFullscreenDisabler>(handler);
+  } else {
+    legacy_disabler_ = std::make_unique<AnimatedScopedFullscreenDisabler>(
+        FullscreenController::FromBrowser(browser_));
+    legacy_disabler_->StartAnimation();
+  }
 }
 
 void OverlayContainerFullscreenDisabler::FullscreenDisabler::DidHideOverlay(
     OverlayPresenter* presenter,
     OverlayRequest* request) {
   disabler_ = nullptr;
+  legacy_disabler_ = nullptr;
 }
 
 void OverlayContainerFullscreenDisabler::FullscreenDisabler::
@@ -54,4 +65,5 @@ void OverlayContainerFullscreenDisabler::FullscreenDisabler::
   DCHECK(scoped_observation_.IsObservingSource(presenter));
   scoped_observation_.Reset();
   disabler_ = nullptr;
+  legacy_disabler_ = nullptr;
 }

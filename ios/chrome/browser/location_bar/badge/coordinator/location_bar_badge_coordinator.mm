@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator_delegate.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
@@ -47,7 +49,9 @@
   std::unique_ptr<FullscreenUIUpdater> _locationBarBadgeFullscreenUIUpdater;
   // The AnimatedFullscreenDisabler to disable fullscreen momentarily as the
   // large entrypoint is shown.
-  std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
+  std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
+  std::unique_ptr<AnimatedScopedFullscreenDisabler>
+      _legacyAnimatedFullscreenDisabler;
   // Command dispatcher.
   CommandDispatcher* _dispatcher;
   // Pref service.
@@ -99,7 +103,7 @@
   [_mediator disconnect];
   _mediator = nil;
   _locationBarBadgeFullscreenUIUpdater = nullptr;
-  _animatedFullscreenDisabler = nullptr;
+  _fullscreenDisabler = nullptr;
 }
 
 - (void)addIncognitoBadgeViewController:
@@ -131,14 +135,21 @@
 }
 
 - (void)enableFullscreen {
-  _animatedFullscreenDisabler = nullptr;
+  _fullscreenDisabler = nullptr;
+  _legacyAnimatedFullscreenDisabler = nullptr;
 }
 
 - (void)disableFullscreen {
-  _animatedFullscreenDisabler =
-      std::make_unique<AnimatedScopedFullscreenDisabler>(
-          FullscreenController::FromBrowser(self.browser));
-  _animatedFullscreenDisabler->StartAnimation();
+  if (IsFullscreenRefactoringEnabled()) {
+    id<FullscreenCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), FullscreenCommands);
+    _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(handler);
+  } else {
+    _legacyAnimatedFullscreenDisabler =
+        std::make_unique<AnimatedScopedFullscreenDisabler>(
+            FullscreenController::FromBrowser(self.browser));
+    _legacyAnimatedFullscreenDisabler->StartAnimation();
+  }
 }
 
 - (BOOL)isBottomOmniboxActive {

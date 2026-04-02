@@ -12,10 +12,19 @@ ScopedFullscreenDisabler::ScopedFullscreenDisabler(
   controller_->IncrementDisabledCounter();
 }
 
+ScopedFullscreenDisabler::ScopedFullscreenDisabler(
+    id<FullscreenCommands> handler,
+    bool animated)
+    : handler_(handler) {
+  DCHECK(handler_);
+  [handler_ disableFullscreenAnimated:animated];
+}
+
 ScopedFullscreenDisabler::~ScopedFullscreenDisabler() {
   if (controller_) {
     controller_->DecrementDisabledCounter();
   }
+  [handler_ reenableFullscreen];
 }
 
 void ScopedFullscreenDisabler::FullscreenControllerWillShutDown(

@@ -1310,6 +1310,16 @@ const char kChromeAppStoreUrl[] =
   _urlLoadingNotifierBrowserAgent =
       UrlLoadingNotifierBrowserAgent::FromBrowser(browser);
 
+  // The FullscreenCoordinator needs to be started before child coordinators so
+  // that the FullscreenCommands dispatcher is correctly registered in time for
+  // them to use it (e.g., BubblePresenterCoordinator and SideSwipeCoordinator).
+  if (IsFullscreenRefactoringEnabled()) {
+    _fullscreenCoordinator = [[FullscreenCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:browser];
+    [_fullscreenCoordinator start];
+  }
+
   _bubblePresenterCoordinator =
       [[BubblePresenterCoordinator alloc] initWithBrowser:browser];
   _bubblePresenterCoordinator.bubblePresenterDelegate = self;
@@ -1481,6 +1491,9 @@ const char kChromeAppStoreUrl[] =
   [_sideSwipeCoordinator stop];
   _sideSwipeCoordinator = nil;
 
+  [_fullscreenCoordinator stop];
+  _fullscreenCoordinator = nil;
+
   [_toolbarCoordinator stop];
   _toolbarCoordinator = nil;
   _omniboxCommandsHandler = nil;
@@ -1539,13 +1552,6 @@ const char kChromeAppStoreUrl[] =
   // Dispatcher should be instantiated so that it can be passed to child
   // coordinators.
   DCHECK(self.dispatcher);
-
-  if (IsFullscreenRefactoringEnabled()) {
-    _fullscreenCoordinator = [[FullscreenCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser];
-    [_fullscreenCoordinator start];
-  }
 
   self.ARQuickLookCoordinator = [[ARQuickLookCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -1858,8 +1864,6 @@ const char kChromeAppStoreUrl[] =
   [self dismissDockingPromo];
   [self hideWelcomeBackPromo];
   [self hideComposeboxImmediately:YES completion:nil];
-  [_fullscreenCoordinator stop];
-  _fullscreenCoordinator = nil;
 }
 
 // Starts independent mediators owned by this coordinator.

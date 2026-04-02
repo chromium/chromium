@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/types/pass_key.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observing.h"
@@ -62,6 +63,7 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   std::unique_ptr<WebViewProxyTabHelperObserverBridge> _webViewProxyObserver;
   std::unique_ptr<OmniboxPositionBrowserAgentObserverBridge>
       _omniboxPositionObserver;
+  std::unique_ptr<ScopedFullscreenDisabler> _voiceOverDisabler;
   CGFloat _lastContentOffset;
   BOOL _isBottomOmnibox;
 
@@ -270,8 +272,8 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   _browserAgent->ExitFullscreen(PassKey(), animated);
 }
 
-- (void)disableFullscreen {
-  _browserAgent->IncrementDisabledCounter(PassKey());
+- (void)disableFullscreenAnimated:(BOOL)animated {
+  _browserAgent->IncrementDisabledCounter(PassKey(), animated);
 }
 
 - (void)reenableFullscreen {
@@ -281,8 +283,9 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
 #pragma mark - System Notifications
 
 - (void)voiceOverStatusDidChange {
-  // TODO(crbug.com/493903024): Toggle fullscreen disabled with
-  // ScopedFullscreenDisabler.
+  _voiceOverDisabler = UIAccessibilityIsVoiceOverRunning()
+                           ? std::make_unique<ScopedFullscreenDisabler>(self)
+                           : nullptr;
 }
 
 - (void)applicationDidEnterBackground {

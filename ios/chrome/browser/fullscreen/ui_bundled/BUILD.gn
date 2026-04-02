@@ -22,21 +22,8 @@ source_set("ui_bundled") {
     "//base",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common",
-  ]
-}
-
-source_set("coordinators") {
-  sources = [
-    "chrome_coordinator+fullscreen_disabling.h",
-    "chrome_coordinator+fullscreen_disabling.mm",
-  ]
-
-  deps = [
-    ":ui_bundled",
-    "//base",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/browser",
   ]
 }
 

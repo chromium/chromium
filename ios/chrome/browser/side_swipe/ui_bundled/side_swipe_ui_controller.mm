@@ -7,6 +7,7 @@
 #import "base/ios/block_types.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -68,10 +69,8 @@ const CGFloat kIpadTabSwipeDistance = 100;
   // The disabler that prevents the toolbar from being scrolled away when the
   // side swipe gesture is being recognized.
   std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
-
-  // The animated disabler displays the toolbar when a side swipe navigation
-  // gesture is being recognized.
-  std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
+  std::unique_ptr<AnimatedScopedFullscreenDisabler>
+      _legacyAnimatedFullscreenDisabler;
 
   // The webStateList owned by the current browser.
   raw_ptr<WebStateList> _webStateList;
@@ -502,10 +501,15 @@ const CGFloat kIpadTabSwipeDistance = 100;
 - (void)handleSwipeToNavigate:(SideSwipeGestureRecognizer*)gesture {
   if (gesture.state == UIGestureRecognizerStateBegan) {
     // Make sure the Toolbar is visible by disabling Fullscreen.
-    _animatedFullscreenDisabler =
-        std::make_unique<AnimatedScopedFullscreenDisabler>(
-            self.fullscreenController);
-    _animatedFullscreenDisabler->StartAnimation();
+    if (IsFullscreenRefactoringEnabled()) {
+      _fullscreenDisabler =
+          std::make_unique<ScopedFullscreenDisabler>(self.fullscreenHandler);
+    } else {
+      _legacyAnimatedFullscreenDisabler =
+          std::make_unique<AnimatedScopedFullscreenDisabler>(
+              self.fullscreenController);
+      _legacyAnimatedFullscreenDisabler->StartAnimation();
+    }
 
     _inSwipe = YES;
     [_sideSwipeUIControllerDelegate
@@ -553,7 +557,8 @@ const CGFloat kIpadTabSwipeDistance = 100;
              gesture.state == UIGestureRecognizerStateFailed) {
     // Enable fullscreen functionality after the Toolbar has been shown, and
     // the gesture is over.
-    _animatedFullscreenDisabler = nullptr;
+    _fullscreenDisabler = nullptr;
+    _legacyAnimatedFullscreenDisabler = nullptr;
   }
 
   __weak SideSwipeUIController* weakSelf = self;
@@ -635,8 +640,13 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
   if (gesture.state == UIGestureRecognizerStateBegan) {
     // Disable fullscreen while the side swipe gesture is occurring.
-    _fullscreenDisabler =
-        std::make_unique<ScopedFullscreenDisabler>(self.fullscreenController);
+    if (IsFullscreenRefactoringEnabled()) {
+      _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(
+          self.fullscreenHandler, /*animated=*/false);
+    } else {
+      _fullscreenDisabler =
+          std::make_unique<ScopedFullscreenDisabler>(self.fullscreenController);
+    }
     __weak SideSwipeUIController* weakSelf = self;
     [self.tabsDelegate updateActiveTabSnapshot:^() {
       [weakSelf handleiPadSnapshotOnTabSwipe];
