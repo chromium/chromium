@@ -1863,6 +1863,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ServiceWorker.StaticRouter.{Resource}.ValidResponse"
+    enum="Boolean" expires_after="2027-03-26">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records whether a response from the ServiceWorker Static Routing API with
+    source: 'cache' is valid according to the Fetch spec (4.4 HTTP fetch, Step
+    3.5.6). If it's invalid, it is a security risk and should be blocked.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.Storage.DeleteAndStartOverResult"
     enum="ServiceWorkerDeleteAndStartOverResult" expires_after="2024-08-04">
   <owner>yyanagisawa@chromium.org</owner>

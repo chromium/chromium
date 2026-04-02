@@ -3107,6 +3107,7 @@ test("content_unittests") {
     "../common/service_worker/race_network_request_simple_buffer_manager_unittest.cc",
     "../common/service_worker/race_network_request_url_loader_client_unittest.cc",
     "../common/service_worker/race_network_request_write_buffer_manager_unittest.cc",
+    "../common/service_worker/service_worker_resource_loader_unittest.cc",
     "../common/service_worker/service_worker_router_evaluator_unittest.cc",
     "../common/url_utils_unittest.cc",
     "../common/web_ui_loading_util_unittest.cc",

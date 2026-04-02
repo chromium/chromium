@@ -917,6 +917,17 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
         cache_matcher_->cache_lookup_start();
     response_head_->service_worker_router_info->cache_lookup_time =
         cache_matcher_->cache_lookup_duration();
+
+    // Block invalid responses from the static router.
+    if (response_head_->service_worker_router_info->matched_source_type ==
+        network::mojom::ServiceWorkerRouterSourceType::kCache) {
+      if (!IsValidStaticRouterResponse(resource_request_, response) &&
+          base::FeatureList::IsEnabled(
+              features::kServiceWorkerStaticRouterOpaqueCheck)) {
+        CommitCompleted(net::ERR_FAILED, "Invalid response from static router");
+        return;
+      }
+    }
   }
 
   // Record the timing of when the fetch event is dispatched on the worker

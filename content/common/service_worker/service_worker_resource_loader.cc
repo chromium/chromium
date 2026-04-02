@@ -6,13 +6,77 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/common/content_features.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
+
+// static
+bool ServiceWorkerResourceLoader::IsValidServiceWorkerResponse(
+    network::mojom::RequestMode request_mode,
+    network::mojom::RedirectMode redirect_mode,
+    const blink::mojom::FetchAPIResponsePtr& response) {
+  // This validation follows the Fetch spec.
+  // 4.4 HTTP fetch, Step 3.5.6.
+  // If one of the following is true
+  // - response’s type is "error"
+  // - request’s mode is "same-origin" and response’s type is "cors"
+  // - request’s mode is not "no-cors" and response’s type is "opaque"
+  // - request’s redirect mode is not "manual" and response’s type is
+  //   "opaqueredirect"
+  // - request’s redirect mode is not "follow" and response’s URL list has more
+  //   than one item
+  // then return a network error.
+  // Note: Existing validation functions do not fully follow the spec.
+  if (!response) {
+    return true;
+  }
+
+  if (response->response_type == network::mojom::FetchResponseType::kError) {
+    return false;
+  }
+  if (request_mode == network::mojom::RequestMode::kSameOrigin &&
+      response->response_type == network::mojom::FetchResponseType::kCors) {
+    return false;
+  }
+  if (request_mode != network::mojom::RequestMode::kNoCors &&
+      response->response_type == network::mojom::FetchResponseType::kOpaque) {
+    return false;
+  }
+  if (redirect_mode != network::mojom::RedirectMode::kManual &&
+      response->response_type ==
+          network::mojom::FetchResponseType::kOpaqueRedirect) {
+    return false;
+  }
+  if (redirect_mode != network::mojom::RedirectMode::kFollow &&
+      response->url_list.size() > 1) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ServiceWorkerResourceLoader::IsValidStaticRouterResponse(
+    const network::ResourceRequest& resource_request,
+    const blink::mojom::FetchAPIResponsePtr& response) {
+  bool is_valid = IsValidServiceWorkerResponse(
+      resource_request.mode, resource_request.redirect_mode, response);
+  base::UmaHistogramBoolean(
+      base::StrCat({"ServiceWorker.StaticRouter.",
+                    IsMainResourceLoader() ? "MainResource" : "Subresource",
+                    ".ValidResponse"}),
+      is_valid);
+  return is_valid;
+}
+
 ServiceWorkerResourceLoader::ServiceWorkerResourceLoader() = default;
 ServiceWorkerResourceLoader::~ServiceWorkerResourceLoader() = default;
 

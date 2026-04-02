@@ -36,6 +36,7 @@
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -1521,6 +1522,19 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
   // EagerResponse should be used only if `in_related_fetch_event` is set.
   CHECK(result.value()->is_response());
   auto& response = result.value()->get_response();
+
+  // Block invalid responses from the static router.
+  if (response_head_->service_worker_router_info &&
+      response_head_->service_worker_router_info->matched_source_type ==
+          network::mojom::ServiceWorkerRouterSourceType::kCache) {
+    if (!IsValidStaticRouterResponse(resource_request_, response) &&
+        base::FeatureList::IsEnabled(
+            features::kServiceWorkerStaticRouterOpaqueCheck)) {
+      CommitCompleted(net::ERR_FAILED, "Invalid response from static router");
+      return;
+    }
+  }
+
   if (response->parsed_headers) {
     // We intend to reset the parsed header. Or, invalid parsed headers
     // should be set.

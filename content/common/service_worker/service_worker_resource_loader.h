@@ -9,9 +9,19 @@
 
 #include "base/check_op.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-forward.h"
+
+namespace net {
+struct RedirectInfo;
+}  // namespace net
+
+namespace network {
+struct ResourceRequest;
+}  // namespace network
 
 namespace content {
 // A common interface in between:
@@ -69,6 +79,19 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
     kNavigationPreload,
     kAutoPreload,
   };
+
+  // Static helper to validate the response from the Service Worker according
+  // to the Fetch spec (4.4 HTTP fetch, Step 3.5.6).
+  static bool IsValidServiceWorkerResponse(
+      network::mojom::RequestMode request_mode,
+      network::mojom::RedirectMode redirect_mode,
+      const blink::mojom::FetchAPIResponsePtr& response);
+
+  // Validates the response from the static router's cache source and records
+  // the result to UMA. Returns true if the response is valid.
+  bool IsValidStaticRouterResponse(
+      const network::ResourceRequest& resource_request,
+      const blink::mojom::FetchAPIResponsePtr& response);
 
   ServiceWorkerResourceLoader();
   virtual ~ServiceWorkerResourceLoader();
