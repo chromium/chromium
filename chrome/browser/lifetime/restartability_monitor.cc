@@ -8,6 +8,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -49,7 +50,7 @@ uint32_t RestartabilityState::GetRestartabilityStateFactor() const {
 RestartabilityState RestartabilityMonitor::ComputeCurrentState() {
   RestartabilityState state;
 
-  if (GlobalBrowserCollection::GetInstance()->GetSize() == 0) {
+  if (chrome::GetTotalBrowserCount() == 0) {
     state.total_browser_count_is_zero = true;
   }
 
