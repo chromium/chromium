@@ -36,9 +36,10 @@ void ScreenshotCapturedBubbleController::ShowBubble(
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteImage(*captured_image.ToSkBitmap());
 
-  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
-  browser->window()->ShowScreenshotCapturedBubble(&GetWebContents(),
-                                                  captured_image);
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(&GetWebContents());
+  browser->GetBrowserForMigrationOnly()->window()->ShowScreenshotCapturedBubble(
+      &GetWebContents(), captured_image);
 }
 
 void ScreenshotCapturedBubbleController::HideBubble() {

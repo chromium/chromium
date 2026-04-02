@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -169,7 +170,8 @@ bool AutofillAiImportDataControllerImpl::IsWalletableEntity() const {
 }
 
 void AutofillAiImportDataControllerImpl::OnGoToWalletLinkClicked() {
-  if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
+  if (BrowserWindowInterface* browser =
+          chrome::FindBrowserWithTab(web_contents())) {
     reopen_bubble_when_web_contents_becomes_visible_ = true;
     ShowSingletonTab(browser, GURL(chrome::kWalletPassesPageURL));
   }
@@ -224,16 +226,18 @@ AutofillAiImportDataControllerImpl::GetPageActionIconType() {
 
 void AutofillAiImportDataControllerImpl::DoShowBubble() {
   auto get_bubble = [this]() -> AutofillBubbleBase& {
-    Browser* browser = chrome::FindBrowserWithTab(web_contents());
+    BrowserWindowInterface* browser =
+        chrome::FindBrowserWithTab(web_contents());
+    auto* bubble_handler = browser->GetBrowserForMigrationOnly()
+                               ->window()
+                               ->GetAutofillBubbleHandler();
     if (IsSaveUpdatePrompt()) {
-      return *browser->window()
-          ->GetAutofillBubbleHandler()
-          ->ShowSaveAutofillAiDataBubble(web_contents(), this);
+      return *bubble_handler->ShowSaveAutofillAiDataBubble(web_contents(),
+                                                           this);
     }
     if (IsLocalSaveNotification()) {
-      return *browser->window()
-                  ->GetAutofillBubbleHandler()
-                  ->ShowAutofillAiLocalSaveNotification(web_contents(), this);
+      return *bubble_handler->ShowAutofillAiLocalSaveNotification(
+          web_contents(), this);
     }
     NOTREACHED();
   };

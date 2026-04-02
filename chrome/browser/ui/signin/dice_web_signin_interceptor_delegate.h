@@ -16,6 +16,7 @@ class WebContents;
 }
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 struct CoreAccountId;
 
@@ -64,7 +65,8 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 
-  static bool IsSigninInterceptionSupportedInternal(const Browser& Browser);
+  static bool IsSigninInterceptionSupportedInternal(
+      const BrowserWindowInterface& browser);
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_

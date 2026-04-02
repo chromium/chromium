@@ -232,8 +232,9 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  SetBubbleView(*browser->window()
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  SetBubbleView(*browser->GetBrowserForMigrationOnly()
+                     ->window()
                      ->GetAutofillBubbleHandler()
                      ->ShowOfferNotificationBubble(web_contents(), this,
                                                    is_user_gesture_));

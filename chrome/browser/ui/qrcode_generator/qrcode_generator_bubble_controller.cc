@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/common/pref_names.h"
@@ -71,14 +72,17 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
-  if (!browser || !browser->window()) {
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(&GetWebContents());
+  if (!browser || !browser->GetWindow()) {
     return;
   }
 
   bubble_shown_ = true;
-  qrcode_generator_bubble_ = browser->window()->ShowQRCodeGeneratorBubble(
-      &GetWebContents(), url, show_back_button);
+  qrcode_generator_bubble_ =
+      browser->GetBrowserForMigrationOnly()
+          ->window()
+          ->ShowQRCodeGeneratorBubble(&GetWebContents(), url, show_back_button);
 
   // Start listening for policy pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();

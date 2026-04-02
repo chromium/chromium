@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -819,14 +820,16 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
-    SetBubbleView(*browser->window()
+    SetBubbleView(*browser->GetBrowserForMigrationOnly()
+                       ->window()
                        ->GetAutofillBubbleHandler()
                        ->ShowSaveCardConfirmationBubble(web_contents(), this));
   } else {
     SetBubbleView(
-        *browser->window()
+        *browser->GetBrowserForMigrationOnly()
+             ->window()
              ->GetAutofillBubbleHandler()
              ->ShowSaveCreditCardBubble(web_contents(), this,
                                         is_triggered_by_user_gesture_));

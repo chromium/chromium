@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
@@ -65,9 +66,11 @@ void SharingHubBubbleControllerDesktopImpl::ShowBubble(
     attempt.preview_image = preview_image;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
 
-  sharing_hub_bubble_view_ = browser->window()->ShowSharingHubBubble(attempt);
+  sharing_hub_bubble_view_ =
+      browser->GetBrowserForMigrationOnly()->window()->ShowSharingHubBubble(
+          attempt);
 
   share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 }
@@ -108,7 +111,8 @@ SharingHubBubbleControllerDesktopImpl::GetWeakPtr() {
 
 void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
     const SharingHubAction& action) {
-  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(&GetWebContents());
   // Can be null in tests.
   if (!browser) {
     return;
@@ -128,7 +132,7 @@ void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
   } else if (action.command_id == IDC_ROUTE_MEDIA) {
     media_router::MediaRouterDialogController* dialog_controller =
         media_router::MediaRouterDialogController::GetOrCreateForWebContents(
-            browser->tab_strip_model()->GetActiveWebContents());
+            browser->GetTabStripModel()->GetActiveWebContents());
     if (!dialog_controller) {
       return;
     }

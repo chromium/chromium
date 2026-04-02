@@ -21,6 +21,7 @@ source_set("impl") {
     ":feature_first_run",
     "//chrome/app/theme:theme_resources_grit",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//components/autofill/core/browser",
     "//components/constrained_window",

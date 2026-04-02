@@ -7,6 +7,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/feature_first_run/feature_first_run_helper.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -39,7 +40,7 @@ const gfx::VectorIcon& kGoogleGLogoIcon =
 void OnLearnMoreClicked(content::WebContents* web_contents) {
   autofill::LogOptInFunnelEvent(
       autofill::AutofillAiOptInFunnelEvents::kFFRLearnMoreButtonClicked);
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
 }
 

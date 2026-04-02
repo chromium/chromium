@@ -378,18 +378,20 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
 
   if (enrollment_status_ == EnrollmentStatus::kCompleted) {
     SetBubbleView(
-        *browser->window()
+        *browser->GetBrowserForMigrationOnly()
+             ->window()
              ->GetAutofillBubbleHandler()
              ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
   } else {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
 
-    SetBubbleView(*browser->window()
+    SetBubbleView(*browser->GetBrowserForMigrationOnly()
+                       ->window()
                        ->GetAutofillBubbleHandler()
                        ->ShowVirtualCardEnrollBubble(web_contents(), this,
                                                      user_gesture_reprompt));

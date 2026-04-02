@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/webauthn/context_menu_helper.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -517,7 +518,8 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
     AutofillManager& manager) {
   // The cast is safe since the context menu is only available on Desktop.
   auto& client = static_cast<ContentAutofillClient&>(manager.client());
-  Browser* browser = chrome::FindBrowserWithTab(&client.GetWebContents());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(&client.GetWebContents());
   chrome::ShowFeedbackPage(
       browser, feedback::kFeedbackSourceAutofillContextMenu,
       /*description_template=*/std::string(),

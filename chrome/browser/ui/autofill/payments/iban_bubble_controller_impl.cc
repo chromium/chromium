@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/common/webui_url_constants.h"
@@ -150,8 +151,9 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
                        CreateForSaveIbanFailure(hit_max_strikes);
 
   // Show upload confirmation bubble.
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
-      chrome::FindBrowserWithTab(web_contents())
+      browser->GetBrowserForMigrationOnly()
           ->window()
           ->GetAutofillBubbleHandler();
   SetBubbleView(*autofill_bubble_handler->ShowSaveIbanConfirmationBubble(
@@ -488,9 +490,11 @@ IbanBubbleControllerImpl::GetPageActionTooltipText() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void IbanBubbleControllerImpl::DoShowBubble() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
-      browser->window()->GetAutofillBubbleHandler();
+      browser->GetBrowserForMigrationOnly()
+          ->window()
+          ->GetAutofillBubbleHandler();
   SetBubbleView(*autofill_bubble_handler->ShowIbanBubble(
       web_contents(), this,
       /*is_user_gesture=*/is_reshow_, current_bubble_type_));

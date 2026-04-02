@@ -418,8 +418,9 @@ void FilledCardInformationBubbleControllerImpl::DoShowBubble() {
   // clicks the icon during the delay.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  SetBubbleView(*browser->window()
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  SetBubbleView(*browser->GetBrowserForMigrationOnly()
+                     ->window()
                      ->GetAutofillBubbleHandler()
                      ->ShowFilledCardInformationBubble(web_contents(), this,
                                                        is_user_gesture_));

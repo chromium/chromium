@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
@@ -21,7 +23,7 @@ bool ShowPageInfoDialog(content::WebContents* web_contents,
     return false;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return false;
   }
@@ -37,7 +39,8 @@ bool ShowPageInfoDialog(content::WebContents* web_contents,
           ? std::move(GetPageInfoDialogCreatedCallbackForTesting())
           : base::DoNothing();
 
-  ShowPageInfoDialogImpl(browser, web_contents, entry->GetVirtualURL(), anchor,
+  ShowPageInfoDialogImpl(browser->GetBrowserForMigrationOnly(), web_contents,
+                         entry->GetVirtualURL(), anchor,
                          std::move(initialized_callback),
                          std::move(closing_callback), type);
   return true;

@@ -404,7 +404,8 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
       base::OnceClosure promo_not_shown_callback =
           controller->GetShowConfirmationForCardSuccessfullySavedCallback();
 
-      Browser* browser = chrome::FindBrowserWithTab(web_contents());
+      BrowserWindowInterface* browser =
+          chrome::FindBrowserWithTab(web_contents());
 
       if (!browser) {
         std::move(promo_not_shown_callback).Run();
@@ -412,7 +413,8 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
       }
 
       ios_promos_utils::MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
-          browser, std::move(promo_will_show_callback),
+          browser->GetBrowserForMigrationOnly(),
+          std::move(promo_will_show_callback),
           std::move(promo_not_shown_callback));
 
       return;

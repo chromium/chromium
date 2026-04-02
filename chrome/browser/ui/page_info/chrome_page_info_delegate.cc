@@ -63,6 +63,7 @@
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -207,8 +208,8 @@ content::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
 
 #if !BUILDFLAG(IS_ANDROID)
 void ChromePageInfoDelegate::FocusWebContents() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  browser->ActivateContents(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
+  browser->GetBrowserForMigrationOnly()->ActivateContents(web_contents_);
 }
 
 std::optional<std::u16string> ChromePageInfoDelegate::GetRwsOwner(
@@ -292,24 +293,24 @@ void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowSiteSettings(browser, site_url);
 }
 
 void ChromePageInfoDelegate::ShowCookiesSettings() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
 }
 
 void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByRwsOwner(
     const std::u16string& rws_owner) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowAllSitesSettingsFilteredByRwsOwner(browser,
                                                  base::UTF16ToUTF8(rws_owner));
 }
 
 void ChromePageInfoDelegate::ShowSyncSettings() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
 }
 

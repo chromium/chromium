@@ -11,6 +11,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -79,7 +80,7 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   // The browser will be null if the web contents are rendered in devtools or
   // if the renderer crashes.
   if (!browser) {
@@ -87,7 +88,8 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
   }
 
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(browser->profile());
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          browser->GetProfile());
   if (!search_engine_choice_dialog_service ||
       !search_engine_choice_dialog_service->IsUrlSuitableForDialog(
           navigation_controller.GetLastCommittedEntry()->GetURL())) {
@@ -95,18 +97,19 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
   }
 
   regional_capabilities::SearchEngineChoiceScreenConditions conditions =
-      search_engine_choice_dialog_service->ComputeDialogConditions(*browser);
+      search_engine_choice_dialog_service->ComputeDialogConditions(
+          *browser->GetBrowserForMigrationOnly());
 
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-          browser->profile());
+          browser->GetProfile());
   search_engine_choice_service->RecordTriggeringEligibility(conditions);
 
   if (!regional_capabilities::IsEligible(conditions)) {
     return;
   }
 
-  SearchEngineChoiceDialog::Show(*browser);
+  SearchEngineChoiceDialog::Show(*browser->GetBrowserForMigrationOnly());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineChoiceTabHelper);

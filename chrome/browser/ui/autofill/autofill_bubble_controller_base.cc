@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
@@ -101,8 +102,10 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
   // Legacy path for unmigrated page actions or when migration disabled by
   // feature flag.
   if (!action_id.has_value() || !IsPageActionMigrated(*icon_type)) {
-    if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
-      browser->window()->UpdatePageActionIcon(*icon_type);
+    if (BrowserWindowInterface* browser =
+            chrome::FindBrowserWithTab(web_contents())) {
+      browser->GetBrowserForMigrationOnly()->window()->UpdatePageActionIcon(
+          *icon_type);
     }
     return;
   }

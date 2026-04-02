@@ -22,6 +22,7 @@
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -59,7 +60,8 @@ constexpr int kInterceptionBubbleBaseHeight = 500;
 constexpr int kInterceptionBubbleWidth = 290;
 constexpr int kInterceptionChromeSigninBubbleWidth = 320;
 
-AvatarToolbarButton* GetAvatarToolbarButton(const Browser& browser) {
+AvatarToolbarButton* GetAvatarToolbarButton(
+    const BrowserWindowInterface& browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(&browser);
   // WebUI Browser does not use BrowserView.
   // TODO(webium): make a framework-agnostic way to get the avatar button.
@@ -484,7 +486,7 @@ void DiceWebSigninInterceptionBubbleView::ApplyAvatarButtonEffects() {
 
 // static
 bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupportedInternal(
-    const Browser& browser) {
+    const BrowserWindowInterface& browser) {
   // Some browsers, such as web apps, don't have an avatar toolbar button to
   // anchor the bubble. Even if a web app has an avatar toolbar button, we
   // still don't support signin interception.

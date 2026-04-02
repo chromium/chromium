@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service_factory.h"
@@ -163,9 +164,9 @@ const password_manager::InteractionsStats* FindStatsByUsername(
   return it == stats.end() ? nullptr : &*it;
 }
 
-void MaybeShowPasswordManagerShortcutIPH(Browser* browser) {
+void MaybeShowPasswordManagerShortcutIPH(BrowserWindowInterface* browser) {
   // Don't show IPH if shortcut can't be created.
-  if (!web_app::AreWebAppsEnabled(browser->profile())) {
+  if (!web_app::AreWebAppsEnabled(browser->GetProfile())) {
     return;
   }
   BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
@@ -454,11 +455,11 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
   }
   // There nothing to do if this controller is not attached to currently active
   // tab.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
   }
-  if (browser->tab_strip_model()->GetActiveWebContents() != web_contents()) {
+  if (browser->GetTabStripModel()->GetActiveWebContents() != web_contents()) {
     return;
   }
 
@@ -1028,9 +1029,10 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   // The icon is to be updated after the bubble (either "Save password" or "Sign
   // in to Chrome") is closed.
   bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   // Do not trigger the IPH if the sign in promo will be shown.
-  if (browser && !signin::ShouldShowPasswordSignInPromo(*browser->profile())) {
+  if (browser &&
+      !signin::ShouldShowPasswordSignInPromo(*browser->GetProfile())) {
     // Only one of these promos will be able to show. Try the more specific one
     // first.
     BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
@@ -1184,7 +1186,7 @@ void ManagePasswordsUIController::AuthenticateUserWithMessage(
 }
 
 void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
   }
@@ -1199,7 +1201,8 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
     }
   } else {
     ios_promos_utils::VerifyIOSPromoEligibility(
-        desktop_to_mobile_promos::PromoType::kPassword, browser);
+        desktop_to_mobile_promos::PromoType::kPassword,
+        browser->GetBrowserForMigrationOnly());
   }
 }
 
@@ -1208,7 +1211,7 @@ void ManagePasswordsUIController::RelaunchChrome() {
 }
 
 void ManagePasswordsUIController::NavigateToPasswordChangeSettings() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   ShowSingletonTabOverwritingNTP(browser,
                                  GURL(chrome::kChromeUiPasswordChangeUrl),
                                  NavigateParams::IGNORE_AND_NAVIGATE);
@@ -1242,7 +1245,7 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     ClearPopUpFlagForBubble();
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
   }
@@ -1263,10 +1266,10 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     actions::ActionItem* passwords_action_item =
         actions::ActionManager::Get().FindAction(
             kActionShowPasswordsBubbleOrPage,
-            browser->browser_actions()->root_action_item());
+            browser->GetActions()->root_action_item());
     UpdatePasswordIconAndBubbleState(controller, passwords_action_item);
   } else {
-    browser->window()->UpdatePageActionIcon(
+    browser->GetBrowserForMigrationOnly()->window()->UpdatePageActionIcon(
         PageActionIconType::kManagePasswords);
   }
 }
@@ -1423,7 +1426,7 @@ base::TimeDelta ManagePasswordsUIController::GetTimeoutForSaveFallback() {
 void ManagePasswordsUIController::ShowBubbleWithoutUserInteraction() {
   CHECK(IsAutomaticallyOpeningBubble() ||
         bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS);
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   // Can be zero in the tests.
   if (!browser) {
     return;
