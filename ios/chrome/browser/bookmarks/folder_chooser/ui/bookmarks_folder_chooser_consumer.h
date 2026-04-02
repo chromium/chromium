@@ -35,10 +35,9 @@ struct QueryFields;
 
 @end
 
-// TODO(crbug.com/40252439): Refactor all the methods in this protocol after the
-// view controller has been refactored. View controller should not know about
-// BookmarkNode.
-// Data source protocol to get data on demand.
+// TODO(crbug.com/498389665): Refactor all the methods in this protocol after
+// the view controller has been refactored. View controller should not know
+// about BookmarkNode. Data source protocol to get data on demand.
 @protocol BookmarksFolderChooserDataSource <NSObject>
 
 // Data source from account bookmark model. Clients should call
