@@ -45,12 +45,13 @@ import java.util.function.Supplier;
 @NullMarked
 public class GlicToolbarButtonController extends BaseButtonDataProvider
         implements ActorKeyedService.Observer {
-    @IntDef({ButtonState.DEFAULT, ButtonState.WORKING, ButtonState.NEEDS_REVIEW})
+    @IntDef({ButtonState.DEFAULT, ButtonState.WORKING, ButtonState.NEEDS_REVIEW, ButtonState.DONE})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ButtonState {
         int DEFAULT = 0;
         int WORKING = 1;
         int NEEDS_REVIEW = 2;
+        int DONE = 3;
     }
 
     private final Runnable mToggleGlicCallback;
@@ -58,8 +59,9 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private @Nullable Profile mCurrentProfile;
     private @Nullable ActorKeyedService mCurrentActorService;
     private final ButtonSpec mDefaultSpec;
-    private final ButtonSpec mReviewSpec;
     private final ButtonSpec mWorkingSpec;
+    private final ButtonSpec mReviewSpec;
+    private final ButtonSpec mDoneSpec;
 
     private @ButtonState int mButtonState = ButtonState.DEFAULT;
 
@@ -89,22 +91,39 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         mToggleGlicCallback = toggleGlicCallback;
         mTrackerSupplier = trackerSupplier;
         mDefaultSpec = mButtonData.getButtonSpec();
-        mReviewSpec = createReviewSpec();
         mWorkingSpec = createWorkingSpec(context);
+        mReviewSpec = createReviewSpec(context);
+        mDoneSpec = createDoneSpec(context);
     }
 
-    private ButtonSpec createReviewSpec() {
+    private ButtonSpec createReviewSpec(Context context) {
+        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp);
         return new ButtonSpec(
-                mDefaultSpec.getDrawable(),
+                drawable,
                 this,
                 mDefaultSpec.getOnLongClickListener(),
                 mDefaultSpec.getContentDescription(),
-                mDefaultSpec.getSupportsTinting(),
+                /* supportsTinting= */ true,
                 mDefaultSpec.getIphCommandBuilder(),
                 mDefaultSpec.getButtonVariant(),
                 R.string.glic_button_status_review,
                 mDefaultSpec.getHoverTooltipTextId(),
-                mDefaultSpec.hasErrorBadge());
+                /* hasErrorBadge= */ false);
+    }
+
+    private ButtonSpec createDoneSpec(Context context) {
+        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp);
+        return new ButtonSpec(
+                drawable,
+                this,
+                mDefaultSpec.getOnLongClickListener(),
+                mDefaultSpec.getContentDescription(),
+                /* supportsTinting= */ true,
+                mDefaultSpec.getIphCommandBuilder(),
+                mDefaultSpec.getButtonVariant(),
+                R.string.glic_button_status_done,
+                mDefaultSpec.getHoverTooltipTextId(),
+                /* hasErrorBadge= */ false);
     }
 
     private ButtonSpec createWorkingSpec(Context context) {
@@ -196,6 +215,9 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
             case ButtonState.WORKING:
                 desiredSpec = mWorkingSpec;
                 break;
+            case ButtonState.DONE:
+                desiredSpec = mDoneSpec;
+                break;
             case ButtonState.DEFAULT:
             default:
                 desiredSpec = mDefaultSpec;
@@ -217,9 +239,11 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                 @ActorTaskState int state = task.getState();
                 switch (state) {
                     case ActorTaskState.WAITING_ON_USER:
-                    case ActorTaskState.FINISHED:
                     case ActorTaskState.FAILED:
                         mButtonState = ButtonState.NEEDS_REVIEW;
+                        break;
+                    case ActorTaskState.FINISHED:
+                        mButtonState = ButtonState.DONE;
                         break;
                     case ActorTaskState.ACTING:
                     case ActorTaskState.REFLECTING:

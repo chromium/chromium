@@ -79,6 +79,9 @@
   <message name="IDS_GLIC_BUTTON_STATUS_REVIEW" desc="Label on the Gemini entry point button when Gemini requires user attention." formatter_data="android_java">
     Review
   </message>
+  <message name="IDS_GLIC_BUTTON_STATUS_DONE" desc="Label on the Gemini entry point button when Gemini has completed a task." formatter_data="android_java">
+    Done
+  </message>
 
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_WORKING_ON_TASK" desc="Notification title when the actor is actively working on a task." formatter_data="android_java">
    Working on your task
