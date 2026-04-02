@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/media-capabilities/#dictdef-keysystemtrackconfiguration
+// https://www.w3.org/TR/media-capabilities/#keysystemtrackconfiguration
 
 dictionary KeySystemTrackConfiguration {
   DOMString robustness = "";
+  [RuntimeEnabled=KeySystemTrackConfigurationEncryptionScheme] DOMString? encryptionScheme;
 };

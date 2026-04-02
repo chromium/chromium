@@ -1258,9 +1258,15 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
     audio_capability->setContentType(configuration->audio()->contentType());
     // If config.keySystemConfiguration.audio is present, set the robustness
     // attribute to config.keySystemConfiguration.audio.robustness.
-    if (key_system_config->hasAudio())
+    if (key_system_config->hasAudio()) {
       audio_capability->setRobustness(key_system_config->audio()->robustness());
-
+      if (RuntimeEnabledFeatures::
+              KeySystemTrackConfigurationEncryptionSchemeEnabled() &&
+          key_system_config->audio()->hasEncryptionScheme()) {
+        audio_capability->setEncryptionScheme(
+            key_system_config->audio()->encryptionScheme());
+      }
+    }
     eme_config->setAudioCapabilities(
         HeapVector<Member<MediaKeySystemMediaCapability>>(1, audio_capability));
   }
@@ -1275,9 +1281,15 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
     video_capability->setContentType(configuration->video()->contentType());
     // If config.keySystemConfiguration.video is present, set the robustness
     // attribute to config.keySystemConfiguration.video.robustness.
-    if (key_system_config->hasVideo())
+    if (key_system_config->hasVideo()) {
       video_capability->setRobustness(key_system_config->video()->robustness());
-
+      if (RuntimeEnabledFeatures::
+              KeySystemTrackConfigurationEncryptionSchemeEnabled() &&
+          key_system_config->video()->hasEncryptionScheme()) {
+        video_capability->setEncryptionScheme(
+            key_system_config->video()->encryptionScheme());
+      }
+    }
     eme_config->setVideoCapabilities(
         HeapVector<Member<MediaKeySystemMediaCapability>>(1, video_capability));
   }

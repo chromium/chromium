@@ -101,6 +101,8 @@ message MediaConfigProto {
     message KeySystemTrackConfig {
       // The robustness level associated with a given track.
       optional string robustness = 1;
+      // The encryption scheme associated with a given track.
+      optional string encryption_scheme = 2;
     }
     // Track-specific key system details.
     optional KeySystemTrackConfig key_system_audio_config = 8;
