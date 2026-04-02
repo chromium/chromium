@@ -9971,6 +9971,28 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesTest) {
   }
 }
 
+TEST_F(NetworkContextTest, RevokeNetworkForNoncesResponseUrlTest) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  const GURL kResponseUrl = GURL("https://example.com/page.html");
+
+  {
+    base::test::TestFuture<void> revoked;
+    std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
+    auto revoked_nonce_pattern = CreateNonceAndAllowlistedPatterns(nonce);
+    revoked_nonce_pattern->allowlists.response_url = kResponseUrl;
+    nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+    network_context->RevokeNetworkForNonces(
+        std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
+    EXPECT_TRUE(revoked.Wait());
+    EXPECT_EQ(
+        kResponseUrl,
+        network_context->GetNetworkRestrictionResponseUrlForTesting(nonce));
+  }
+}
+
 TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   net::test_server::EmbeddedTestServer test_server(
       net::test_server::EmbeddedTestServer::TYPE_HTTPS);

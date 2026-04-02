@@ -80,6 +80,7 @@
 #include "services/network/url_request_context_owner.h"
 #include "services/network/web_bundle/web_bundle_manager.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/reporting/reporting_cache_observer.h"
@@ -676,6 +677,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   bool AllURLLoaderFactoriesAreBoundToNetworkForTesting(
       net::handles::NetworkHandle bound_network) const;
 
+  GURL GetNetworkRestrictionResponseUrlForTesting(
+      const base::UnguessableToken& nonce) const;
+
   // Maintains Trust Tokens protocol state
   // (https://github.com/WICG/trust-token-api). Used by URLLoader to check
   // preconditions before annotating requests with protocol-related headers
@@ -1105,6 +1109,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     std::optional<std::string> report_only_reporting_endpoint;
     ConnectionAllowlist::RedirectBehavior report_only_redirect_behavior =
         ConnectionAllowlist::RedirectBehavior::kBlock;
+    GURL response_url;
   };
   std::map<base::UnguessableToken, NetworkRestriction>
       network_revocation_nonces_;

@@ -4,6 +4,8 @@
 
 module network.mojom;
 
+import "url/mojom/url.mojom";
+
 // `Connection-Allowlist` headers govern the set of connections which can be
 // established from a given context. The design is in flux, and the
 // implementation here should be considered a flag-guarded prototype as
@@ -55,6 +57,7 @@ struct ConnectionAllowlist {
 
 // The set of allowlists associated with a given response.
 struct ConnectionAllowlists {
+  url.mojom.Url response_url;
   ConnectionAllowlist? enforced;
   ConnectionAllowlist? report_only;
 };

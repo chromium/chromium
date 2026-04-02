@@ -60,7 +60,8 @@ bool StructTraits<network::mojom::ConnectionAllowlistsDataView,
                   network::ConnectionAllowlists>::
     Read(network::mojom::ConnectionAllowlistsDataView data,
          network::ConnectionAllowlists* out) {
-  if (!data.ReadEnforced(&out->enforced) ||
+  if (!data.ReadResponseUrl(&out->response_url) ||
+      !data.ReadEnforced(&out->enforced) ||
       !data.ReadReportOnly(&out->report_only)) {
     return false;
   }

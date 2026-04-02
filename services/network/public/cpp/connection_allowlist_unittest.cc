@@ -44,6 +44,7 @@ TEST_F(ConnectionAllowlistParserTest, NoHeaders) {
   auto headers = GetHeaders(nullptr, nullptr);
   ConnectionAllowlists result =
       ParseConnectionAllowlistsFromHeaders(*headers, url());
+  EXPECT_EQ(url(), result.response_url);
   EXPECT_FALSE(result.enforced);
   EXPECT_FALSE(result.report_only);
 }
@@ -52,6 +53,7 @@ TEST_F(ConnectionAllowlistParserTest, EmptyHeaders) {
   auto headers = GetHeaders("", "");
   ConnectionAllowlists result =
       ParseConnectionAllowlistsFromHeaders(*headers, url());
+  EXPECT_EQ(url(), result.response_url);
   EXPECT_FALSE(result.enforced);
   EXPECT_FALSE(result.report_only);
 }

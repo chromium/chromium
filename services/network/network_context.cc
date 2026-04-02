@@ -3602,6 +3602,7 @@ void NetworkContext::RevokeNetworkForNonces(
     // important, as an empty `entry->allowlists.enforced->allowlist` represents
     // complete network revocation.
     NetworkRestriction& restriction = network_revocation_nonces_[nonce];
+    restriction.response_url = entry->allowlists.response_url;
 
     parse_allowlist(entry->allowlists.enforced,
                     restriction.enforced_reporting_endpoint,
@@ -3810,6 +3811,15 @@ void NetworkContext::InitializePrefetchURLLoaderFactory() {
       prefetch_url_loader_factory_remote_.BindNewPipeAndPassReceiver();
   CreateURLLoaderFactory(std::move(pending_receiver),
                          CreateURLLoaderFactoryParamsForPrefetch());
+}
+
+GURL NetworkContext::GetNetworkRestrictionResponseUrlForTesting(
+    const base::UnguessableToken& nonce) const {
+  auto it = network_revocation_nonces_.find(nonce);
+  if (it == network_revocation_nonces_.end()) {
+    return GURL();
+  }
+  return it->second.response_url;
 }
 
 }  // namespace network

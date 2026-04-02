@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/mojom/connection_allowlist.mojom-shared.h"
+#include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
 
@@ -69,6 +70,11 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_CONNECTION_ALLOWLIST)
     StructTraits<network::mojom::ConnectionAllowlistsDataView,
                  network::ConnectionAllowlists> {
+  static const GURL& response_url(
+      const network::ConnectionAllowlists& allowlists) {
+    return allowlists.response_url;
+  }
+
   static const std::optional<network::ConnectionAllowlist>& enforced(
       const network::ConnectionAllowlists& allowlists) {
     return allowlists.enforced;

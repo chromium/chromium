@@ -122,6 +122,7 @@ ConnectionAllowlists ParseConnectionAllowlistsFromHeaders(
     const net::HttpResponseHeaders& headers,
     const GURL& response_url) {
   ConnectionAllowlists result;
+  result.response_url = response_url;
 
   auto enforced_header = headers.GetNormalizedHeader("Connection-Allowlist");
   if (enforced_header) {
