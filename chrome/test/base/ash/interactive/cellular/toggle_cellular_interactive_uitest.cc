@@ -41,9 +41,8 @@ IN_PROC_BROWSER_TEST_F(ToggleCellularUiTest,
 
   // Use a poller because the toggle gets set on a small delay, and we want to
   // avoid race conditions when checking the state.
-  using ToggleObserver =
-      views::test::PollingViewPropertyObserver<bool, views::ToggleButton>;
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ToggleObserver, kToggleButtonState);
+  DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(
+      views::ToggleButton, GetIsOn, kToggleButtonState);
 
   // Run the following steps with the OS Settings context set as the default.
   RunTestSequence(
@@ -61,8 +60,7 @@ IN_PROC_BROWSER_TEST_F(ToggleCellularUiTest,
 
       WaitForShow(ash::kNetworkDetailedViewMobileDataToggleElementId),
       PollViewProperty(kToggleButtonState,
-                       ash::kNetworkDetailedViewMobileDataToggleElementId,
-                       &views::ToggleButton::GetIsOn),
+                       ash::kNetworkDetailedViewMobileDataToggleElementId),
       WaitForState(kMobileDataPoweredState, true),
       WaitForState(kToggleButtonState, true),
 

@@ -58,10 +58,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPEPCVisibleEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDoneVisibleEvent);
 
-using ChipTextObserver =
-    views::test::PollingViewPropertyObserver<std::u16string,
-                                             views::LabelButton>;
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChipTextObserver, kChipTextState);
 using UkmEntry = ukm::builders::Permissions_EmbeddedPromptAction;
 
 constexpr int kMinWindowHeight = 400;
@@ -156,11 +152,12 @@ class EmbeddedPermissionPromptInteractiveTest
 
 
   auto WaitForChipText(int id_string) {
+    DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(
+        views::LabelButton, GetText, kChipTextState);
     return InAnyContext(
         WaitForShow(PermissionChipView::kIndicatorChipElementId),
         PollViewProperty(kChipTextState,
-                         PermissionChipView::kIndicatorChipElementId,
-                         &PermissionChipView::GetText),
+                         PermissionChipView::kIndicatorChipElementId),
         WaitForState(kChipTextState, l10n_util::GetStringUTF16(id_string)),
         StopObservingState(kChipTextState));
   }

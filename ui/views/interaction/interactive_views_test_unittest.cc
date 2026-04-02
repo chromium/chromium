@@ -228,13 +228,12 @@ TEST_F(InteractiveViewsTestTest, PollView) {
 }
 
 TEST_F(InteractiveViewsTestTest, PollViewProperty) {
-  using Observer = PollingViewPropertyObserver<std::u16string, LabelButton>;
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(Observer, kButtonTextState);
+  DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(LabelButton, GetText,
+                                                      kButtonTextState);
   DoPost(base::BindLambdaForTesting(
       [this]() { button1_->SetText(kButton2Caption); }));
-  RunTestSequence(
-      PollViewProperty(kButtonTextState, kButton1Id, &LabelButton::GetText),
-      WaitForState(kButtonTextState, kButton2Caption));
+  RunTestSequence(PollViewProperty(kButtonTextState, kButton1Id),
+                  WaitForState(kButtonTextState, kButton2Caption));
 }
 
 TEST_F(InteractiveViewsTestTest, WaitForViewPropertyFails) {

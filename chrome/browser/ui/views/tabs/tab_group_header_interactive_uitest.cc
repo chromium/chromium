@@ -71,10 +71,9 @@ class TabGroupHeaderInteractiveUiTest
 #else
 #define MAYBE_Collapse Collapse
 #endif
-using TabGroupCollapsedObserver =
-    views::test::PollingViewPropertyObserver<bool, TabGroupHeader>;
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(TabGroupCollapsedObserver,
-                                    kTabGroupCollapsedState);
+DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(TabGroupHeader,
+                                                    is_collapsed_for_testing,
+                                                    kTabGroupCollapsedState);
 IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, MAYBE_Collapse) {
   CreateTabGroup({CreateTab()});
 
@@ -82,8 +81,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, MAYBE_Collapse) {
 
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId,
-                       &TabGroupHeader::is_collapsed_for_testing),
+      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId),
       MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action),
       WaitForState(kTabGroupCollapsedState, true));
 }
@@ -106,8 +104,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, AttentionIndicator) {
 
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId,
-                       &TabGroupHeader::is_collapsed_for_testing),
+      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId),
       // Click the group to collapse it.
       MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action), Do([&]() {
         // Set the attention indicator to true.
@@ -131,8 +128,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, DragCollapsedGroup) {
 
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId,
-                       &TabGroupHeader::is_collapsed_for_testing),
+      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId),
       // Collapse the group
       MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(ui_controls::LEFT),
       WaitForState(kTabGroupCollapsedState, true), FinishTabstripAnimations(),

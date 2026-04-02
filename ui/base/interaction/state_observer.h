@@ -152,4 +152,9 @@ using StateIdentifier = TypedIdentifier<UntypedStateIdentifier, T>;
       __FILE__, __LINE__, ::ui::test::UntypedStateIdentifier, ObserverType, \
       Name)
 
+// Use this when calling from another macro.
+#define DEFINE_MACRO_STATE_IDENTIFIER_VALUE(File, Line, ObserverType, Name) \
+  DEFINE_MACRO_LOCAL_TYPED_IDENTIFIER_VALUE(                                \
+      File, Line, ::ui::test::UntypedStateIdentifier, ObserverType, Name)
+
 #endif  // UI_BASE_INTERACTION_STATE_OBSERVER_H_

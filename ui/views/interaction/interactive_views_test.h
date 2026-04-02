@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -259,25 +260,59 @@ class InteractiveViewsTestApi : virtual public ui::test::InteractiveTestApi {
       base::TimeDelta polling_interval = ui::test::PollingStateObserver<
           std::optional<T>>::kDefaultPollingInterval);
 
-  // Creates a state observer with `id` which polls `property` on the view in
-  // the current context with `view_id`. If the view is not present, the state
-  // value will be set to `std::nullopt` (the actual state value is of type
-  // `std::optional<T>`).
-  //
-  // The element, if present, must resolve to a View of the correct type, or the
-  // test will fail.
+  // Adds a state observer for the View type, property, and value type specified
+  // by `id`. Use `DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER()` to
+  // create that specification.
   //
   // See `PollState()` and `PollElement()` for usage details and caveats.
   // Specifically be aware that polling may miss a transient state; prefer to
-  // send a custom event or use `WaitForViewPropertyCallback()` if possible.
-  template <typename R, typename V, typename T = std::remove_cvref_t<R>>
+  // send a custom event or use `WaitForViewProperty[Callback]()` if possible.
+  template <typename R, typename V, typename T>
     requires internal::IsView<V>
   [[nodiscard]] StepBuilder PollViewProperty(
+      internal::PollingViewPropertyStateIdentifier<T, V, R> id,
+      ui::ElementIdentifier view_id,
+      base::TimeDelta polling_interval = ui::test::PollingStateObserver<
+          std::optional<T>>::kDefaultPollingInterval) {
+    return PollViewPropertyImpl(id.identifier, view_id, id.property,
+                                polling_interval);
+  }
+
+  // Implementation for PollViewProperty. Use PollViewProperty instead unless
+  // you absolutely must have the flexibility of specifying the individual
+  // arguments.
+  template <typename R, typename V, typename T = std::remove_cvref_t<R>>
+    requires internal::IsView<V>
+  [[nodiscard]] StepBuilder PollViewPropertyImpl(
       ui::test::StateIdentifier<PollingViewPropertyObserver<T, V>> id,
       ui::ElementIdentifier view_id,
       R (V::*property)() const,
       base::TimeDelta polling_interval = ui::test::PollingStateObserver<
           std::optional<T>>::kDefaultPollingInterval);
+
+  using InteractiveTestApi::WaitForState;
+
+  // Convenience method for using polling view property state identifiers to
+  // wait for a state. See `InteractiveTestApi::WaitForState()`.
+  template <typename R, typename V, typename T, typename M>
+    requires internal::IsView<V>
+  [[nodiscard]] MultiStep WaitForState(
+      internal::PollingViewPropertyStateIdentifier<T, V, R> id,
+      M&& matcher) {
+    return InteractiveTestApi::WaitForState(id.identifier,
+                                            std::forward<M>(matcher));
+  }
+
+  using InteractiveTestApi::StopObservingState;
+
+  // Convenience method for stopping polling a view property. See
+  // `InteractiveTestApi::StopObservingState()`.
+  template <typename R, typename V, typename T>
+    requires internal::IsView<V>
+  [[nodiscard]] StepBuilder StopObservingState(
+      internal::PollingViewPropertyStateIdentifier<T, V, R> id) {
+    return InteractiveTestApi::StopObservingState(id.identifier);
+  }
 
   // Scrolls `view` into the visible viewport if it is currently scrolled
   // outside its container. The view must be otherwise present and visible.
@@ -758,7 +793,8 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollView(
 
 template <typename R, typename V, typename T>
   requires internal::IsView<V>
-ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollViewProperty(
+ui::InteractionSequence::StepBuilder
+InteractiveViewsTestApi::PollViewPropertyImpl(
     ui::test::StateIdentifier<PollingViewPropertyObserver<T, V>> id,
     ui::ElementIdentifier view_id,
     R (V::*property)() const,
@@ -787,4 +823,5 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollViewProperty(
 }
 
 }  // namespace views::test
+
 #endif  // UI_VIEWS_INTERACTION_INTERACTIVE_VIEWS_TEST_H_

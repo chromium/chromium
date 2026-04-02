@@ -37,10 +37,16 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
 
+// Use a poller because the toggle gets set on a small delay, and we want to
+// avoid race conditions when checking the state.
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
+                                    kWifiPoweredState);
+DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(views::ToggleButton,
+                                                    GetIsOn,
+                                                    kToggleButtonState);
+
 class WifiInteractiveUiTest : public InteractiveAshTest {
  protected:
-  // Use a poller because the toggle gets set on a small delay, and we want to
-  // avoid race conditions when checking the state.
   using ToggleObserver =
       views::test::PollingViewPropertyObserver<bool, views::ToggleButton>;
 
@@ -74,14 +80,9 @@ class WifiInteractiveUiTest : public InteractiveAshTest {
     return wifi_service_info_.service_name();
   }
 
-  auto VerifyWifiState(
-      bool enabled,
-      const ui::test::StateIdentifier<ShillDevicePowerStateObserver>&
-          wifi_power_state_identifier,
-      const ui::test::StateIdentifier<ToggleObserver>&
-          toggle_button_state_identifier) {
-    auto steps = Steps(WaitForState(wifi_power_state_identifier, enabled),
-                       WaitForState(toggle_button_state_identifier, enabled));
+  auto VerifyWifiState(bool enabled) {
+    auto steps = Steps(WaitForState(kWifiPoweredState, enabled),
+                       WaitForState(kToggleButtonState, enabled));
 
     if (enabled) {
       AddStep(steps, WaitForShow(kNetworkDetailedViewWifiNetworkListElementId));
@@ -161,9 +162,6 @@ class WifiInteractiveUiTest : public InteractiveAshTest {
 
 IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
                        ToggleAndCheckOsSettingsWiFiPageElements) {
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
-                                      kWifiPoweredState);
-
   ConfigureWifi(/*connected=*/true);
 
   // Set this delay so the WiFi scanning progress bar shows.
@@ -231,9 +229,6 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
                        ToggleAndCheckQuickSettingsElements) {
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
-                                      kWifiPoweredState);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ToggleObserver, kToggleButtonState);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(NetworkNameObserver, kNetworkInListState);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ToggleAccessibilityCheckedStateObserver,
                                       kToggleAccessibilityCheckedState);
@@ -250,8 +245,7 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
                    std::make_unique<ShillDevicePowerStateObserver>(
                        ShillManagerClient::Get(), NetworkTypePattern::WiFi())),
       PollViewProperty(kToggleButtonState,
-                       kNetworkDetailedViewWifiToggleElementId,
-                       &views::ToggleButton::GetIsOn),
+                       kNetworkDetailedViewWifiToggleElementId),
       PollNetworkInList(WifiServiceName(), kNetworkInListState),
       PollToggleAccessibilityCheckedState(kToggleAccessibilityCheckedState),
 
@@ -264,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
           "expected enabled state"),
 
       WaitForShow(kNetworkDetailedViewWifiToggleElementId),
-      VerifyWifiState(/*enabled=*/true, kWifiPoweredState, kToggleButtonState),
+      VerifyWifiState(/*enabled=*/true),
       WaitForState(kToggleAccessibilityCheckedState,
                    ax::mojom::CheckedState::kTrue),
 
@@ -279,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
 
       Log("Wait for WiFi to have the expected disabled state"),
 
-      VerifyWifiState(/*enabled=*/false, kWifiPoweredState, kToggleButtonState),
+      VerifyWifiState(/*enabled=*/false),
       WaitForState(kToggleAccessibilityCheckedState,
                    ax::mojom::CheckedState::kFalse),
 
@@ -290,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
 
       Log("Wait for WiFi to have the expected enabled state"),
 
-      VerifyWifiState(/*enabled=*/true, kWifiPoweredState, kToggleButtonState),
+      VerifyWifiState(/*enabled=*/true),
       WaitForState(kToggleAccessibilityCheckedState,
                    ax::mojom::CheckedState::kTrue),
 
@@ -362,8 +356,6 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, ConnectFromSettingsSubpage) {
 }
 
 IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest, ToggleWifiFromInternetPage) {
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
-                                      kWifiPoweredState);
   // Ensure the OS Settings app is installed.
   InstallSystemApps();
 

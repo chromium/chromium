@@ -119,9 +119,10 @@ struct NtpPromoUiTestParams {
   }
 };
 
-using ObserverType =
-    views::test::PollingViewPropertyObserver<std::u16string, OmniboxViewViews>;
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, kLocationBarTextValue);
+DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(OmniboxViewViews,
+                                                    GetText,
+                                                    kLocationBarTextValue);
+
 MATCHER_P(OptionalStringContains, text, "Optional string contains") {
   return arg.has_value() && arg.value().find(text) != std::u16string::npos;
 }
@@ -365,8 +366,7 @@ IN_PROC_BROWSER_TEST_F(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
       // Since bots cannot navigate to actual pages, we can't use
       // WaitForWebContentsNavigation() or the like. Instead, verify that the
       // browser *tries* to navigate to the account login page.
-      PollViewProperty(kLocationBarTextValue, kOmniboxElementId,
-                       &OmniboxViewViews::GetText),
+      PollViewProperty(kLocationBarTextValue, kOmniboxElementId),
       // Click the promo button; this should navigate the current page.
       ClickPromo(),
       // Note that the URL here may not match what users see, due to redirects.
