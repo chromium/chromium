@@ -756,16 +756,24 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   if (AXPlatform::GetInstance().IsUiaProviderEnabled()) {
     if (std::optional<PROPERTYID> uia_property =
             MojoEventToUIAProperty(event_type);
-        uia_property.has_value() &&
-        HasEventListenerForProperty(*uia_property)) {
-      // For this event, we're not concerned with the old value.
-      base::win::ScopedVariant old_value;
-      ::VariantInit(old_value.Receive());
-      base::win::ScopedVariant new_value;
-      ::VariantInit(new_value.Receive());
-      GetPropertyValueImpl(*uia_property, new_value.Receive());
-      ::UiaRaiseAutomationPropertyChangedEvent(this, *uia_property, old_value,
-                                               new_value);
+        uia_property.has_value()) {
+      // For kValueChanged on range-value nodes (e.g. sliders), fire the
+      // range-specific UIA property to match what BrowserAccessibilityManager
+      // fires for the auto-generated RANGE_VALUE_CHANGED event.
+      if (event_type == ax::mojom::Event::kValueChanged &&
+          GetData().IsRangeValueSupported()) {
+        uia_property = UIA_RangeValueValuePropertyId;
+      }
+      if (HasEventListenerForProperty(*uia_property)) {
+        // For this event, we're not concerned with the old value.
+        base::win::ScopedVariant old_value;
+        ::VariantInit(old_value.Receive());
+        base::win::ScopedVariant new_value;
+        ::VariantInit(new_value.Receive());
+        GetPropertyValueImpl(*uia_property, new_value.Receive());
+        ::UiaRaiseAutomationPropertyChangedEvent(this, *uia_property,
+                                                 old_value, new_value);
+      }
     }
 
     if (std::optional<EVENTID> uia_event = MojoEventToUIAEvent(event_type);
@@ -8105,6 +8113,10 @@ std::optional<DWORD> AXPlatformNodeWin::MojoEventToMSAAEvent(
     case ax::mojom::Event::kSelectionRemove:
       return EVENT_OBJECT_SELECTIONREMOVE;
     case ax::mojom::Event::kTextChanged:
+      // TODO(crbug.com/40672441): This mapping is incorrect for text fields
+      // where kTextChanged fires on value changes — the accessible name
+      // doesn't change, only the value does. Fixed with ViewsAX enabled,
+      // where the BAM path fires the correct events instead.
       return EVENT_OBJECT_NAMECHANGE;
     case ax::mojom::Event::kTextSelectionChanged:
       return IA2_EVENT_TEXT_CARET_MOVED;
