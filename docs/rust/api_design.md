@@ -15,6 +15,7 @@ These design principles are undergoing constant development; expect more to be
 added in the future. Existing guidelines should change only rarely.
 
 ## Core Design Goals
+
 The first of these goals is the most important; beyond that, these goals are not
 ordered.
 
@@ -36,6 +37,7 @@ is a bad design.
    [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/)
 
 ## (Un)Safety
+
 1. APIs should not require users to use `unsafe` code if at all possible.
     1. This includes `unsafe` functions, as well as those that require `unsafe`
        in order to use the result (e.g. by returning a raw pointer).
@@ -45,5 +47,26 @@ is a bad design.
 1. If we provide an `unsafe` API, we should try to provide an equivalent safe
    API and encourage its use when possible.
 1. _Internal_ use of `unsafe` is acceptable, so long it is encapsulated and
-   not exposed to the
-   user, and there isn’t an easy safe alternative.
+   not exposed to the user, and there isn’t an easy safe alternative.
+
+## C/C++ Interop via FFI
+
+Chromium has three options available for interoperation with C and C++:
+
+1. Bindgen: Automatically generates bindings for C code. Supported by the Rust
+   maintainers.
+1. Cxx: Generates user-specified bindings to C++ code. A
+   [third-party crate](https://cxx.rs/) with minimal new feature development.
+1. Crubit: Automatically generates bindings for C++ code. Supported by the Crubit
+   team at Google. In active development and not yet fully supported in Chromium.
+
+For more information, see [ffi.md](/docs/rust/ffi.md). In the long run, we
+prefer Crubit, but since it's not yet fully supported we use Cxx for now.
+Therefore, these guidelines aim to minimize the migration cost from Cxx to
+Crubit in the future.
+
+1. For C bindings, use bindgen.
+1. For C++ bindings, use Crubit if possible, and Cxx otherwise.
+1. Wrap FFI functions in safe, idiomatic Rust APIs.
+1. When using Cxx, keep APIs minimal, to minimize the surface area of a future
+   migration to Crubit.
