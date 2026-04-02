@@ -44,6 +44,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/consent_auditor/consent_auditor.h"
+#include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -60,9 +62,11 @@ using autofill::EntityInstance;
 using ::base::test::RunOnceCallback;
 using ::testing::Bool;
 using ::testing::Combine;
+using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Pointee;
 using ::testing::Return;
+using ::testing::SaveArg;
 using ::testing::TestParamInfo;
 using ::testing::WithParamInterface;
 
@@ -227,6 +231,10 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
               GetDeviceAuthenticator,
               (std::string),
               (const, override));
+  MOCK_METHOD(consent_auditor::ConsentAuditor*,
+              GetConsentAuditor,
+              (),
+              (override));
 };
 
 class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
@@ -357,9 +365,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest, RemoveVirtualCard) {
           std::move(mock_multiple_request_payments_network_interface));
   EXPECT_CALL(*mock_multiple_request_payments_network_interface_,
               UpdateVirtualCardEnrollment(testing::_, testing::_))
-      .WillOnce(
-          testing::DoAll(testing::SaveArg<0>(&details),
-                         Return(autofill::payments::RequestId("11223344"))));
+      .WillOnce(DoAll(SaveArg<0>(&details),
+                      Return(autofill::payments::RequestId("11223344"))));
   // Required for adding the server card.
   payments_data_manager().SetSyncingForTest(
       /*is_syncing_for_test=*/true);
@@ -603,7 +610,12 @@ IN_PROC_BROWSER_TEST_F(
 class AutofillPrivateApiSavePrivatePassToWalletTest
     : public AutofillPrivateApiBrowserTest {
  public:
-  AutofillPrivateApiSavePrivatePassToWalletTest() = default;
+  AutofillPrivateApiSavePrivatePassToWalletTest() {
+    feature_list_.InitWithFeatures(
+        {autofill::features::kAutofillAiWalletPrivatePasses,
+         wallet::features::kWalletApiPrivatePassesConsent},
+        {});
+  }
 
   void SetUpOnMainThread() override {
     AutofillPrivateApiBrowserTest::SetUpOnMainThread();
@@ -625,6 +637,8 @@ class AutofillPrivateApiSavePrivatePassToWalletTest
         syncer::UserSelectableType::kPayments, true);
     ON_CALL(mock_sync_service_, GetActiveDataTypes())
         .WillByDefault(Return(syncer::DataTypeSet{syncer::AUTOFILL_VALUABLE}));
+    ON_CALL(*autofill_client(), GetConsentAuditor)
+        .WillByDefault(Return(&consent_auditor_));
   }
 
   autofill::MockWalletPassAccessManager& wallet_manager() {
@@ -632,10 +646,14 @@ class AutofillPrivateApiSavePrivatePassToWalletTest
         *autofill_client()->GetWalletPassAccessManager());
   }
 
+  consent_auditor::FakeConsentAuditor& consent_auditor() {
+    return consent_auditor_;
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      autofill::features::kAutofillAiWalletPrivatePasses};
+  base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<MockSyncService> mock_sync_service_;
+  testing::NiceMock<consent_auditor::FakeConsentAuditor> consent_auditor_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
@@ -653,9 +671,16 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
   std::string json_args;
   base::JSONWriter::Write(args, &json_args);
 
+  // Expect that consent is logged and that the correct session ID if forward
+  // to the Wallet API.
+  consent_auditor::ConsentAuditor::SessionId session_id_consent;
+  consent_auditor::ConsentAuditor::SessionId session_id_api;
+  EXPECT_CALL(consent_auditor(), RecordWalletPrivatePassConsent)
+      .WillOnce(SaveArg<1>(&session_id_consent));
   EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
-      .WillOnce(RunOnceCallback<2>(
-          autofill::test::MaskEntityInstance(entity_instance)));
+      .WillOnce(DoAll(SaveArg<1>(&session_id_api),
+                      RunOnceCallback<2>(autofill::test::MaskEntityInstance(
+                          entity_instance))));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateAddOrUpdateEntityInstanceFunction>();
@@ -669,6 +694,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiSavePrivatePassToWalletTest,
       autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
   autofill::EntityDataChangedWaiter(entity_data_manager).Wait();
 
+  EXPECT_EQ(session_id_consent, session_id_api);
   base::optional_ref<const EntityInstance> saved_entity =
       entity_data_manager->GetEntityInstance(entity_instance.guid());
   ASSERT_TRUE(saved_entity.has_value());

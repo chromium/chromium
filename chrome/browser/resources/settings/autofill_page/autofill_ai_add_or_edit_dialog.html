@@ -266,7 +266,14 @@
       </div>
 
       <span hidden="[[shouldShowSpinner_(saveInProgress_)]]">
+        <!--
+          When saving a Wallet private pass a consent is recorded that
+          includes the title of the confirmation button. Ensure that the correct
+          string ID is referenced in the backend code.
+        -->
+        <!-- LINT.IfChange -->
         $i18n{save}
+        <!-- LINT.ThenChange(//chrome/browser/extensions/api/autofill_private/autofill_private_api.cc) -->
       </span>
     </cr-button>
   </div>

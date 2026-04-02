@@ -1199,12 +1199,18 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
           autofill_client()->GetWalletPassAccessManager()) {
     // When WalletApiPrivatePassesConsent is disabled,
     // `SaveWalletEntityInstance()` doesn't require a valid `session_id`.
-    // TODO(crbug.com/489354073): Log consent by calling
-    // `RecordWalletPrivatePassConsent()` using the strings that are displayed
-    // in the UI. Sadly, the string IDs will need to be hardcoded here,
-    // since only the strings themselves are available in TypeScript code.
+    consent_auditor::ConsentAuditor::SessionId session_id;
+    if (base::FeatureList::IsEnabled(
+            wallet::features::kWalletApiPrivatePassesConsent)) {
+      // Sadly, the string IDs are hardcoded here, because the TypeScript code
+      // only has access to the strings themselves, not their IDs.
+      session_id = RecordWalletPrivatePassConsent(
+          /*consent_string_id=*/
+          IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_SETTINGS_SUBTITLE,
+          /*clicked_button_string_id=*/IDS_SAVE, *autofill_client());
+    }
     pass_manager->SaveWalletEntityInstance(
-        entity_instance, consent_auditor::ConsentAuditor::GenerateSessionId(),
+        entity_instance, session_id,
         base::BindOnce(&AutofillPrivateAddOrUpdateEntityInstanceFunction::
                            OnSavePrivatePassToWalletFinished,
                        base::RetainedRef(this), entity_instance));

@@ -452,6 +452,10 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         this.getRequiredIndicator_(attributeInstance);
   }
 
+  // When saving a Wallet private pass a consent is recorded that includes the
+  // notice string. Ensure that the correct string ID is referenced in the
+  // backend code.
+  // LINT.IfChange
   private computeFooterText_(): string {
     if (!this.entityInstance || this.entityInstance.guid || !this.userEmail_ ||
         !this.entityInstance?.type.supportsWalletStorage) {
@@ -474,6 +478,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         'saveInfoToWalletAccountNotice', this.i18n('googleWalletTitle'),
         this.userEmail_);
   }
+  // LINT.ThenChange(//chrome/browser/extensions/api/autofill_private/autofill_private_api.cc)
 
   private isExistingYearOutOfBounds_(
       attributeInstance: AttributeInstance, years: string[]): boolean {
