@@ -311,6 +311,9 @@ CGFloat const kChromeLogoHeight = 22;
     trailingImageConfiguration.image =
         MakeSymbolMulticolor(CustomSymbolWithPointSize(
             kGPayPillIconSymbol, kGoogleWalletLogoHeight));
+    trailingImageConfiguration.accessibilityTraits = UIAccessibilityTraitImage;
+    trailingImageConfiguration.accessibilityLabel =
+        l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME);
 
     configuration.trailingConfiguration = trailingImageConfiguration;
   }
