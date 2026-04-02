@@ -138,7 +138,7 @@ void PinStorageCryptohome::IsSupported(BoolCallback result) {
 
 // static
 std::optional<Key> PinStorageCryptohome::TransformPinKey(
-    const PinSaltStorage* pin_salt_storage,
+    const PinSaltStorage& pin_salt_storage,
     const AccountId& account_id,
     const Key& key) {
   Key result = key;
@@ -148,7 +148,7 @@ std::optional<Key> PinStorageCryptohome::TransformPinKey(
   if (key.GetKeyType() != Key::KEY_TYPE_PASSWORD_PLAIN)
     return std::nullopt;
 
-  const std::string salt = pin_salt_storage->GetSalt(account_id);
+  const std::string salt = pin_salt_storage.GetSalt(account_id);
   if (salt.empty())
     return std::nullopt;
 
@@ -157,7 +157,11 @@ std::optional<Key> PinStorageCryptohome::TransformPinKey(
 }
 
 PinStorageCryptohome::PinStorageCryptohome()
-    : pin_salt_storage_(std::make_unique<PinSaltStorage>()),
+    : PinStorageCryptohome(std::make_unique<PinSaltStorageImpl>()) {}
+
+PinStorageCryptohome::PinStorageCryptohome(
+    std::unique_ptr<PinSaltStorage> pin_salt_storage)
+    : pin_salt_storage_(std::move(pin_salt_storage)),
       auth_factor_editor_(UserDataAuthClient::Get()),
       auth_performer_(UserDataAuthClient::Get()) {
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
@@ -301,11 +305,6 @@ void PinStorageCryptohome::TryAuthenticate(
   auth_performer_.StartAuthSession(
       std::move(user_context), ephemeral /*ephemeral*/,
       AuthSessionIntent::kVerifyOnly, std::move(on_start_auth_session));
-}
-
-void PinStorageCryptohome::SetPinSaltStorageForTesting(
-    std::unique_ptr<PinSaltStorage> pin_salt_storage) {
-  pin_salt_storage_ = std::move(pin_salt_storage);
 }
 
 void PinStorageCryptohome::OnAuthFactorsEdit(

@@ -40,11 +40,14 @@ class PinStorageCryptohome {
   // Transforms `key` for usage in PIN. Returns nullopt if the key could not be
   // transformed.
   static std::optional<Key> TransformPinKey(
-      const PinSaltStorage* pin_salt_storage,
+      const PinSaltStorage& pin_salt_storage,
       const AccountId& account_id,
       const Key& key);
 
   PinStorageCryptohome();
+  // Allow injecting fake storage for testing.
+  explicit PinStorageCryptohome(
+      std::unique_ptr<PinSaltStorage> pin_salt_storage);
 
   PinStorageCryptohome(const PinStorageCryptohome&) = delete;
   PinStorageCryptohome& operator=(const PinStorageCryptohome&) = delete;
@@ -68,9 +71,6 @@ class PinStorageCryptohome {
                        Purpose purpose,
                        AuthOperationCallback callback);
 
-  void SetPinSaltStorageForTesting(
-      std::unique_ptr<PinSaltStorage> pin_salt_storage);
-
  private:
   void OnSystemSaltObtained(const std::string& system_salt);
 
@@ -88,7 +88,7 @@ class PinStorageCryptohome {
 
   bool salt_obtained_ = false;
   std::vector<base::OnceClosure> system_salt_callbacks_;
-  std::unique_ptr<PinSaltStorage> pin_salt_storage_;
+  const std::unique_ptr<PinSaltStorage> pin_salt_storage_;
   AuthFactorEditor auth_factor_editor_;
   AuthPerformer auth_performer_;
 

@@ -69,8 +69,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     user_context_->SetIsUsingPin(true);
     user_context_->SetAuthFactorsConfiguration(AuthFactorsConfiguration());
 
-    storage_ = std::make_unique<PinStorageCryptohome>();
-    storage_->SetPinSaltStorageForTesting(
+    storage_ = std::make_unique<PinStorageCryptohome>(
         std::make_unique<FakePinSaltStorage>());
   }
 

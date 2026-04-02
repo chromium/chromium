@@ -14,11 +14,11 @@
 namespace ash {
 namespace quick_unlock {
 
-PinSaltStorage::PinSaltStorage() = default;
-PinSaltStorage::~PinSaltStorage() = default;
+PinSaltStorageImpl::PinSaltStorageImpl() = default;
+PinSaltStorageImpl::~PinSaltStorageImpl() = default;
 
 // Read the salt from local state.
-std::string PinSaltStorage::GetSalt(const AccountId& account_id) const {
+std::string PinSaltStorageImpl::GetSalt(const AccountId& account_id) const {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   if (const std::string* salt =
           known_user.FindStringPath(account_id, prefs::kQuickUnlockPinSalt)) {
@@ -28,8 +28,8 @@ std::string PinSaltStorage::GetSalt(const AccountId& account_id) const {
 }
 
 // Write the salt to local state.
-void PinSaltStorage::WriteSalt(const AccountId& account_id,
-                               const std::string& salt) {
+void PinSaltStorageImpl::WriteSalt(const AccountId& account_id,
+                                   const std::string& salt) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetStringPref(account_id, prefs::kQuickUnlockPinSalt, salt);
 }

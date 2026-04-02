@@ -370,8 +370,7 @@ ExistingUserController::ExistingUserController(
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       cros_settings_(CrosSettings::Get()),
-      network_state_helper_(new login::NetworkStateHelper),
-      pin_salt_storage_(std::make_unique<quick_unlock::PinSaltStorage>()) {
+      network_state_helper_(new login::NetworkStateHelper) {
   CHECK(shared_url_loader_factory_);
   HttpAuthDialog::AddObserver(this);
 
@@ -594,9 +593,11 @@ void ExistingUserController::PerformLogin(
       !new_user_context.GetChallengeResponseKeys().empty();
 
   if (new_user_context.IsUsingPin()) {
+    const quick_unlock::PinSaltStorageImpl pin_salt_storage;
+
     std::optional<Key> key =
         quick_unlock::PinStorageCryptohome::TransformPinKey(
-            pin_salt_storage_.get(), new_user_context.GetAccountId(),
+            pin_salt_storage, new_user_context.GetAccountId(),
             *new_user_context.GetKey());
     if (key) {
       new_user_context.SetKey(*key);

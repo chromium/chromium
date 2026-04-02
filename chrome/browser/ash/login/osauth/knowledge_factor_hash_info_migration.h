@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/osauth/auth_factor_migration.h"
-#include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
@@ -62,7 +61,6 @@ class KnowledgeFactorHashInfoMigration : public AuthFactorMigration {
 
   bool was_skipped_ = false;
   std::unique_ptr<AuthFactorEditor> editor_;
-  std::unique_ptr<quick_unlock::PinSaltStorage> pin_salt_storage_;
   // Must be the last member.
   base::WeakPtrFactory<KnowledgeFactorHashInfoMigration> weak_factory_{this};
 };
