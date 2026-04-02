@@ -22,10 +22,6 @@ class FullscreenController;
 // Sets up observation of the given fullscreen controller.
 - (void)setUpFullscreenObservation:(FullscreenController*)fullscreenController;
 
-// Whether to anchor to the bottom of the view (YES) or the top (NO).
-// Defaults to NO.
-@property(nonatomic, assign) BOOL anchorToBottom;
-
 // The available detents for the container. Can't be empty.
 @property(nonatomic, assign) std::vector<AssistantContainerDetent> detents;
 

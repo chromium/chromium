@@ -756,8 +756,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
   NSLayoutYAxisAnchor* bottomAnchor = nil;
   if (self.anchorView) {
-    bottomAnchor = self.anchorToBottom ? self.anchorView.bottomAnchor
-                                       : self.anchorView.topAnchor;
+    bottomAnchor = self.anchorView.topAnchor;
   }
 
   if (!bottomAnchor) {
