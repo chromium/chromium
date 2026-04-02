@@ -10290,11 +10290,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_VERTICAL_TABS_TUTORIAL_STEP_END" desc="The body for the celebratory end step of the vertical tabs IPH tutorial. The string in quotation marks should match the translation for IDS_SWITCH_TO_HORIZONTAL_TAB.">
             You can move your tabs back to the top by right-clicking any tab and selecting “Show Tabs Horizontally”
           </message>
-          <message name="IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER" desc="In Title Case: The button in context menu that enables expand on hover behavior." translateable="false">
+          <message name="IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER" desc="In Title Case: The button in context menu that enables expand on hover behavior.">
             Turn on Auto Expanding Tabs
           </message>
-          <message name="IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER" desc="In Title Case: The button in context menu that disables expand on hover behavior." translateable="false">
+          <message name="IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER" desc="In Title Case: The button in context menu that disables expand on hover behavior.">
             Turn off Auto Expanding Tabs
+          </message>
+          <message name="IDS_VERTICAL_TABS_COLLAPSE_BUTTON_TOGGLE_EXPAND_ON_HOVER" desc="In Title Case: The right click context menu opened by the collapse button that toggles expand on hover behavior.">
+            Expand Collapsed Tabs by Hovering
           </message>
         </then>
         <else>
@@ -10322,11 +10325,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_VERTICAL_TABS_TUTORIAL_STEP_END" desc="The body for the celebratory end step of the vertical tabs IPH tutorial. The string in quotation marks should match the translation for IDS_SWITCH_TO_HORIZONTAL_TAB.">
             You can move your tabs back to the top by right-clicking any tab and selecting “Show tabs horizontally”
           </message>
-          <message name="IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER" desc="The button in context menu that enables expand on hover behavior." translateable="false">
+          <message name="IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER" desc="The button in context menu that enables expand on hover behavior.">
             Turn on auto expanding tabs
           </message>
-          <message name="IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER" desc="The button in context menu that disables expand on hover behavior." translateable="false">
+          <message name="IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER" desc="The button in context menu that disables expand on hover behavior.">
             Turn off auto expanding tabs
+          </message>
+          <message name="IDS_VERTICAL_TABS_COLLAPSE_BUTTON_TOGGLE_EXPAND_ON_HOVER" desc="The right click context menu opened by the collapse button that toggles expand on hover behavior.">
+            Expand collapsed tabs by hovering
           </message>
         </else>
       </if>

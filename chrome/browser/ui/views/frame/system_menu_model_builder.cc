@@ -125,7 +125,8 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
         model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                    IDS_SWITCH_TO_HORIZONTAL_TAB);
 
-        if (tabs::IsVerticalTabsExpandOnHoverFeatureEnabled()) {
+        if (tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
+            controller->ShouldDisplayVerticalTabs()) {
           model->AddItemWithStringId(
               IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
               controller->IsExpandOnHoverEnabled()

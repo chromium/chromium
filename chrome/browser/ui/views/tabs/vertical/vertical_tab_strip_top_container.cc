@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -15,11 +17,14 @@
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -43,6 +48,7 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
   collapse_button_ = AddChildButtonFor(kActionToggleCollapseVertical);
+  collapse_button_->set_context_menu_controller(this);
   collapse_button_->SetProperty(views::kElementIdentifierKey,
                                 kVerticalTabStripCollapseButtonElementId);
 
@@ -290,6 +296,55 @@ bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
   }
 
   return true;
+}
+
+void VerticalTabStripTopContainer::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
+  if (tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
+      source == collapse_button_) {
+    // Reset the menu runner to avoid issues when the collapse button is
+    // clicked multiple times.
+    context_menu_runner_.reset();
+
+    context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+    context_menu_model_->AddCheckItem(
+        IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
+        l10n_util::GetStringUTF16(
+            IDS_VERTICAL_TABS_COLLAPSE_BUTTON_TOGGLE_EXPAND_ON_HOVER));
+
+    int32_t menu_runner_flags =
+        views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
+
+    context_menu_runner_ = std::make_unique<views::MenuRunner>(
+        context_menu_model_.get(), menu_runner_flags);
+
+    context_menu_runner_->RunMenuAt(
+        source->GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
+        views::MenuAnchorPosition::kTopLeft, source_type);
+  }
+}
+
+bool VerticalTabStripTopContainer::IsCommandIdChecked(int command_id) const {
+  if (command_id == IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER) {
+    return state_controller_->IsExpandOnHoverEnabled();
+  }
+  return false;
+}
+
+bool VerticalTabStripTopContainer::IsCommandIdEnabled(int command_id) const {
+  if (command_id == IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER) {
+    return true;
+  }
+  return false;
+}
+
+void VerticalTabStripTopContainer::ExecuteCommand(int command_id,
+                                                  int event_flags) {
+  if (command_id == IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER) {
+    chrome::ExecuteCommand(browser_, command_id);
+  }
 }
 
 void VerticalTabStripTopContainer::SetToolbarHeightForLayout(

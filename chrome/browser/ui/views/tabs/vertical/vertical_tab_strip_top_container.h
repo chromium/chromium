@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_
 
+#include "ui/menus/simple_menu_model.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
@@ -24,12 +26,15 @@ class VerticalTabStripStateController;
 namespace views {
 class ActionViewController;
 class LabelButton;
+class MenuRunner;
 }  // namespace views
 
 // Top container of the vertical tab strip, manages the collapse and tab search
 // buttons, accounting for space that might be needed for caption buttons.
 class VerticalTabStripTopContainer : public views::View,
-                                     public views::LayoutDelegate {
+                                     public views::LayoutDelegate,
+                                     public views::ContextMenuController,
+                                     public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(VerticalTabStripTopContainer, views::View)
 
  public:
@@ -56,6 +61,17 @@ class VerticalTabStripTopContainer : public views::View,
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
+
+  // ui::SimpleMenuModel::Delegate:
+  bool IsCommandIdChecked(int command_id) const override;
+  bool IsCommandIdEnabled(int command_id) const override;
+  void ExecuteCommand(int command_id, int event_flags) override;
+
   // These methods provide the toolbar height and exclusion width, before the
   // layout of this view, for use in calculating positioning of child views. If
   // an exclusion width is provided, nothing can be rendered within the
@@ -81,6 +97,9 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<views::LabelButton> unfocus_button_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
+
+  std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   // This represents the toolbar (element containing toolbar buttons, omnibox,
   // app menu, etc) height.
