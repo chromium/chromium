@@ -243,6 +243,13 @@ AutofillClient::GetDeviceAuthenticator() const {
   return GetDeviceAuthenticator("");
 }
 
+bool AutofillClient::SupportsDeviceReauth() const {
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
+      GetDeviceAuthenticator();
+  return authenticator &&
+         authenticator->CanAuthenticateWithBiometricOrScreenLock();
+}
+
 void AutofillClient::ShowPlusAddressEmailOverrideNotification(
     const std::string& original_email,
     EmailOverrideUndoCallback email_override_undo_callback) {}

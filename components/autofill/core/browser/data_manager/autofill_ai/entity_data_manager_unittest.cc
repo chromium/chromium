@@ -340,6 +340,27 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, GetEntityInstance) {
             std::nullopt);
 }
 
+// Tests that when the re-auth becomes unavailable, Wallet private passes are
+// removed.
+TEST_F(EntityDataManagerTest_InitiallyEmpty, ValidateEntityReauthRequirements) {
+  EntityInstance local_private_pass = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance wallet_private_pass =
+      test::MaskEntityInstance(test::GetDriversLicenseEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet}));
+  EntityInstance public_pass = test::GetVehicleEntityInstance();
+  entity_data_manager().AddOrUpdateEntityInstance(local_private_pass);
+  entity_data_manager().AddOrUpdateEntityInstance(wallet_private_pass);
+  entity_data_manager().AddOrUpdateEntityInstance(public_pass);
+  ASSERT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(local_private_pass, wallet_private_pass,
+                                   public_pass));
+  entity_data_manager().SetReauthAvailability(false);
+  helper().WaitUntilIdle();
+  ASSERT_THAT(GetEntityInstances(),
+              UnorderedElementsAre(local_private_pass, public_pass));
+}
+
 class EntityDataManagerTest_InitiallyPopulated
     : public EntityDataManagerTestBase {
  public:

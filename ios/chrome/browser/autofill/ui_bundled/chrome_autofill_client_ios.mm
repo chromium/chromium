@@ -23,6 +23,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/autofill_server_prediction.h"
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
@@ -140,6 +141,17 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
                 base::SysNSStringToUTF8(identity.userEmail));
       }
     }
+  }
+
+  // Notify the EntityDataManager about the availability of device re-auth.
+  // This information is injected through the client because the Android device
+  // authenticator is tied to UI. As a result, the data manager has no
+  // cross-platform way to derive this information.
+  if (EntityDataManager* edm =
+          base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)
+              ? GetEntityDataManager()
+              : nullptr) {
+    edm->SetReauthAvailability(SupportsDeviceReauth());
   }
 }
 

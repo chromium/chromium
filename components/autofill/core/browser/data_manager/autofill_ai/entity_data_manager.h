@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_ENTITY_DATA_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_ENTITY_DATA_MANAGER_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
@@ -172,6 +174,10 @@ class EntityDataManager
     observers_.RemoveObserver(observer);
   }
 
+  // Updates the re-auth availability and `EnforceEntityReauthRequirements()` if
+  // the availability has changed.
+  void SetReauthAvailability(bool reauth_available);
+
   const GeoIpCountryCode& GetVariationCountryCode() const;
 
   base::WeakPtr<EntityDataManager> GetWeakPtr() {
@@ -184,9 +190,22 @@ class EntityDataManager
   base::optional_ref<EntityInstance> GetMutableEntityInstance(
       const EntityInstance::EntityId& guid);
 
+  // Wallet private passes are not supported on devices without re-auth.
+  // Depending on the `reauth_availability_`, this function might remove them
+  // to avoid that they surface during filling or in settings.
+  // Unfortunately, the passes might get redownloaded in the future, in which
+  // case they are dropped again.
+  // Dropping passes happens at a data manager level (rather than a sync bridge
+  // level) because the device's re-auth state can change.
+  void EnforceEntityReauthRequirements();
+
   // Becomes true after the response of the initial LoadEntitiesFromDatabase()
   // and remains true from then on.
   bool database_loaded_ = false;
+
+  // Indicates whether the device support biometric or lockscreen re-auth.
+  // Nullopt means that the availability of re-auth is unknown.
+  std::optional<bool> reauth_availability_;
 
   // Non-null except perhaps in TestEntityDataManager, which overrides all
   // functions that access it.
