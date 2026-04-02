@@ -41,6 +41,7 @@ import {getNonOccludedClipPath} from './utils/clip_path.js';
 declare global {
   interface HTMLElementEventMap {
     'loadstart': chrome.webviewTag.LoadStartEvent;
+    'loadredirect': chrome.webviewTag.LoadRedirectEvent;
     'loadabort': chrome.webviewTag.LoadAbortEvent;
     'loadcommit': chrome.webviewTag.LoadCommitEvent;
     'newwindow': chrome.webviewTag.NewWindowEvent;
@@ -311,8 +312,14 @@ export class ContextualTasksAppElement extends CrLitElement {
   // Tracks the basic mode state before a navigation occurs. This is used to
   // restore the basic mode state after the navigation, to ensure that if
   // already in basic mode, the user is returned to basic mode.
-
   private pendingBasicMode_: boolean|null = null;
+  // Tracks the last thread frame load start event. Is null if the thread frame
+  // is not currently loading. This is used to track if the thread frame
+  // actually loaded or if the load was aborted. Without this, we can't
+  // distinguish between the two cases, since load start will always be called
+  // even if the load is aborted and the frame therefore never changes.
+  private lastThreadFrameLoadStartEvent_: chrome.webviewTag.LoadStartEvent|
+      null = null;
 
   private get composebox_(): ContextualTasksComposeboxElement|null {
     // <if expr="not is_android">
@@ -490,11 +497,13 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.$.threadFrame.addEventListener(
         'loadstart', this.onThreadFrameLoadStart.bind(this));
     this.$.threadFrame.addEventListener(
+        'loadredirect', this.onThreadFrameLoadRedirect.bind(this));
+    this.$.threadFrame.addEventListener(
+        'loadabort', this.onThreadFrameLoadAbort.bind(this));
+    this.$.threadFrame.addEventListener(
         'loadcommit', this.onThreadFrameLoadCommit.bind(this));
     this.$.threadFrame.addEventListener(
         'contentload', this.onThreadFrameContentLoad.bind(this));
-    this.$.threadFrame.addEventListener(
-        'loadabort', this.onThreadFrameLoadAbort.bind(this));
 
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
@@ -669,7 +678,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.composebox_?.style.setProperty(variable, `${value}px`);
   }
 
-  private async onThreadFrameLoadStart(ev: chrome.webviewTag.LoadStartEvent) {
+  private onThreadFrameLoadStart(ev: chrome.webviewTag.LoadStartEvent) {
     // If is from inner iframe and not from main webview URL:
     if (!ev.isTopLevel) {
       return;
@@ -684,6 +693,75 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     this.isLoadError_ = !window.navigator.onLine;
 
+    // Stash the last thread frame load start event. This will be used once the
+    // navigation is determined to have aborted or not.
+    this.lastThreadFrameLoadStartEvent_ = ev;
+  }
+
+  private onThreadFrameLoadRedirect(ev: chrome.webviewTag.LoadRedirectEvent) {
+    // If is from inner iframe and not from main webview URL:
+    if (!ev.isTopLevel) {
+      return;
+    }
+
+    this.maybeOnThreadFrameTopLevelNavigation(ev.oldUrl);
+  }
+
+  private onThreadFrameLoadCommit(ev: chrome.webviewTag.LoadCommitEvent) {
+    // If is from inner iframe and not from main webview URL:
+    if (!ev.isTopLevel) {
+      return;
+    }
+    this.updateBasicModeAfterNavigation();
+    this.maybeOnThreadFrameTopLevelNavigation(ev.url);
+  }
+
+  private onThreadFrameContentLoad() {
+    this.isFrameLoading = false;
+    this.isLoadingZeroStateFromResults_ = false;
+    this.setIsGhostLoaderVisible(false);
+    this.updateBasicModeAfterNavigation();
+  }
+
+  private async onThreadFrameLoadAbort(e: chrome.webviewTag.LoadAbortEvent) {
+    this.isFrameLoading = false;
+    this.isLoadingZeroStateFromResults_ = false;
+    this.setIsGhostLoaderVisible(false);
+
+    // The navigation aborted, so reset the last thread frame load start event,
+    // since the frame is no longer loading. Without this, every
+    // onThreadFrameLoadStart event will be treated as a navigation even when
+    // the navigation has aborted.
+    this.lastThreadFrameLoadStartEvent_ = null;
+
+    // Navigations delegated to external applications fire a load abort event.
+    // Check if the embedded page is showing an error document.
+    if (e.isTopLevel) {
+      const {isErrorDocument} =
+          await this.browserProxy_.handler.isEmbeddedPageErrorDocument();
+      if (isErrorDocument) {
+        // TODO(crbug.com/489713572): Potentially query autocomplete when the
+        // error is resolved and the page reloads
+        this.isLoadError_ = true;
+      }
+    }
+    this.updateBasicModeAfterNavigation();
+  }
+
+  private maybeOnThreadFrameTopLevelNavigation(navigationUrl: string) {
+    // Since the navigation has redirected/committed instead of aborted, threat
+    // this as a top level navigation. Reset the last thread frame load start
+    // event to prevent calling onThreadFrameTopLevelNavigation again.
+    if (this.lastThreadFrameLoadStartEvent_ &&
+        this.lastThreadFrameLoadStartEvent_.url === navigationUrl) {
+      const event = this.lastThreadFrameLoadStartEvent_;
+      this.lastThreadFrameLoadStartEvent_ = null;
+      this.onThreadFrameTopLevelNavigation(event);
+    }
+  }
+
+  private async onThreadFrameTopLevelNavigation(
+      ev: chrome.webviewTag.LoadStartEvent) {
     // Reset the composebox bounds and the occluders since the embedded page is
     // reloading.
     this.forcedComposeboxBounds_ = null;
@@ -742,40 +820,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (this.onLoadStartFinishedCallbackForTesting_) {
       this.onLoadStartFinishedCallbackForTesting_();
     }
-  }
-
-  private onThreadFrameLoadCommit(ev: chrome.webviewTag.LoadCommitEvent) {
-    // If is from inner iframe and not from main webview URL:
-    if (!ev.isTopLevel) {
-      return;
-    }
-    this.updateBasicModeAfterNavigation();
-  }
-
-  private onThreadFrameContentLoad() {
-    this.isFrameLoading = false;
-    this.isLoadingZeroStateFromResults_ = false;
-    this.setIsGhostLoaderVisible(false);
-    this.updateBasicModeAfterNavigation();
-  }
-
-  private async onThreadFrameLoadAbort(e: chrome.webviewTag.LoadAbortEvent) {
-    this.isFrameLoading = false;
-    this.isLoadingZeroStateFromResults_ = false;
-    this.setIsGhostLoaderVisible(false);
-
-    // Navigations delegated to external applications fire a load abort event.
-    // Check if the embedded page is showing an error document.
-    if (e.isTopLevel) {
-      const {isErrorDocument} =
-          await this.browserProxy_.handler.isEmbeddedPageErrorDocument();
-      if (isErrorDocument) {
-        // TODO(crbug.com/489713572): Potentially query autocomplete when the
-        // error is resolved and the page reloads
-        this.isLoadError_ = true;
-    }
-  }
-    this.updateBasicModeAfterNavigation();
   }
 
   /* Adjust composebox based on server notifications. Negatives are used if
@@ -1210,6 +1254,10 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   onThreadFrameLoadStartForTesting(event: chrome.webviewTag.LoadStartEvent) {
     this.onThreadFrameLoadStart(event);
+  }
+
+  onThreadFrameLoadCommitForTesting(event: chrome.webviewTag.LoadCommitEvent) {
+    this.onThreadFrameLoadCommit(event);
   }
 
   onThreadFrameContentLoadForTesting() {

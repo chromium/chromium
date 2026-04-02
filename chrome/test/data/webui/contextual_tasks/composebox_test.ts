@@ -1410,7 +1410,14 @@ suite('ContextualTasksComposeboxTest', () => {
     const loadStartEventNoRc = new Event('loadstart');
     Object.assign(
         loadStartEventNoRc, {url: 'http://example.com', isTopLevel: true});
-    contextualTasksApp.$.threadFrame.dispatchEvent(loadStartEventNoRc);
+    contextualTasksApp.onThreadFrameLoadStartForTesting(
+        loadStartEventNoRc as chrome.webviewTag.LoadStartEvent);
+
+    const loadCommitEventNoRc = new Event('loadcommit');
+    Object.assign(
+        loadCommitEventNoRc, {url: 'http://example.com', isTopLevel: true});
+    contextualTasksApp.onThreadFrameLoadCommitForTesting(
+        loadCommitEventNoRc as chrome.webviewTag.LoadCommitEvent);
     await microtasksFinished();
     await contextualTasksApp.updateComplete;
     await contextualTasksApp.$.composebox.updateComplete;
@@ -1435,7 +1442,14 @@ suite('ContextualTasksComposeboxTest', () => {
     Object.assign(
         loadStartEventWithRc,
         {url: 'http://example.com?rc=1', isTopLevel: true});
-    contextualTasksApp.$.threadFrame.dispatchEvent(loadStartEventWithRc);
+    contextualTasksApp.onThreadFrameLoadStartForTesting(
+        loadStartEventWithRc as chrome.webviewTag.LoadStartEvent);
+
+    const loadCommitEventWithRc = new Event('loadcommit');
+    Object.assign(
+        loadCommitEventWithRc, {url: 'http://example.com?rc=1', isTopLevel: true});
+    contextualTasksApp.onThreadFrameLoadCommitForTesting(
+        loadCommitEventWithRc as chrome.webviewTag.LoadCommitEvent);
     await microtasksFinished();
     await contextualTasksApp.updateComplete;
     await contextualTasksApp.$.composebox.updateComplete;

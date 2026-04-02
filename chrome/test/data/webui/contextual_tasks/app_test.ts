@@ -617,6 +617,12 @@ suite('ContextualTasksAppTest', function() {
         loadStartEvent, {url: 'http://example.com', isTopLevel: true});
     appElement.onThreadFrameLoadStartForTesting(
         loadStartEvent as chrome.webviewTag.LoadStartEvent);
+
+    const loadCommitEvent = new Event('loadcommit');
+    Object.assign(
+        loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+    appElement.onThreadFrameLoadCommitForTesting(
+        loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
     await microtasksFinished();
 
     // Should be in basic mode now because the app is navigating from an AI
@@ -688,6 +694,12 @@ suite('ContextualTasksAppTest', function() {
         loadStartEvent, {url: 'http://example.com', isTopLevel: true});
     appElement.onThreadFrameLoadStartForTesting(
         loadStartEvent as chrome.webviewTag.LoadStartEvent);
+
+    const loadCommitEvent = new Event('loadcommit');
+    Object.assign(
+        loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+    appElement.onThreadFrameLoadCommitForTesting(
+        loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
     await microtasksFinished();
 
     // Should be in basic mode now because the app is navigating from an AI
@@ -847,6 +859,12 @@ suite('ContextualTasksAppTest', function() {
             loadStartEvent, {url: 'http://example.com', isTopLevel: true});
         appElement.onThreadFrameLoadStartForTesting(
             loadStartEvent as chrome.webviewTag.LoadStartEvent);
+
+        const loadCommitEvent = new Event('loadcommit');
+        Object.assign(
+            loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+        appElement.onThreadFrameLoadCommitForTesting(
+            loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
         await microtasksFinished();
 
         // Should still be in basic mode during navigation.
@@ -1048,15 +1066,15 @@ suite('ContextualTasksAppTest', function() {
     const webview = appElement.shadowRoot.querySelector<HTMLElement>('webview');
     assertTrue(!!webview);
 
+    // Wait for the load handler to finish to avoid a race condition
+    // between the post message setting the forcedComposeboxBounds_ and the
+    // load commit handler resetting it.
+    await promise;
+
     // Simulate loadcommit to set up the target origin in PostMessageHandler.
     const loadCommitEvent = new Event('loadcommit');
     Object.assign(loadCommitEvent, {isTopLevel: true, url: fixtureUrl});
     webview.dispatchEvent(loadCommitEvent);
-
-    // Wait for the loadstart handler to finish to avoid a race condition
-    // between the post message setting the forcedComposeboxBounds_ and the
-    // loadstart handler resetting it.
-    await promise;
     const composebox = appElement.shadowRoot.querySelector<HTMLElement>(
         'contextual-tasks-composebox');
     assertTrue(!!composebox);
@@ -1144,6 +1162,13 @@ suite('ContextualTasksAppTest', function() {
     appElement.onThreadFrameLoadStartForTesting(
         event as chrome.webviewTag.LoadStartEvent);
 
+    const loadCommitEvent = new Event('loadcommit');
+    Object.assign(
+        loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+    appElement.onThreadFrameLoadCommitForTesting(
+        loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
+    await microtasksFinished();
+
     // Verify isFrameLoading is true.
     // Casting to any to access private property.
     assertTrue(
@@ -1178,11 +1203,6 @@ suite('ContextualTasksAppTest', function() {
     Object.assign(event, {url: 'http://example.com', isTopLevel: true});
     appElement.onThreadFrameLoadStartForTesting(
         event as chrome.webviewTag.LoadStartEvent);
-
-    // Verify isFrameLoading is true.
-    assertTrue(
-        appElement.getIsFrameLoadingForTesting(),
-        'isFrameLoading should be true');
 
     // Simulate load abort.
     const loadAbortEvent = new CustomEvent('loadabort') as any;
@@ -1233,6 +1253,52 @@ suite('ContextualTasksAppTest', function() {
         assertTrue(
             appElement.isLoadErrorForTesting,
             'isLoadError_ should be true if it was an error document');
+      });
+
+  test(
+      'does not reset forced composebox bounds if navigation aborts',
+      async () => {
+        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+        BrowserProxyImpl.setInstance(proxy);
+
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
+
+        await removeThreadFrameToPreventRaceConditions();
+
+        // Set some initial forced bounds.
+        const initialBounds = {
+          top: 10, left: 20, width: 100, height: 200, right: 120, bottom: 210,
+        };
+        appElement.setForcedComposeboxBoundsForTesting(initialBounds);
+
+        // Wait for any composebox height updates to process.
+        await microtasksFinished();
+        const boundsBeforeNav = appElement.getForcedComposeboxBoundsForTesting();
+
+        // Simulate navigation start.
+        const loadStartEvent = new Event('loadstart');
+        Object.assign(
+            loadStartEvent, {url: 'http://example.com', isTopLevel: true});
+        appElement.onThreadFrameLoadStartForTesting(
+            loadStartEvent as chrome.webviewTag.LoadStartEvent);
+        await microtasksFinished();
+
+        // Bounds should not be reset yet.
+        assertDeepEquals(boundsBeforeNav, appElement.getForcedComposeboxBoundsForTesting());
+
+        // Simulate load abort.
+        const loadAbortEvent = new CustomEvent('loadabort') as any;
+        loadAbortEvent.isTopLevel = true;
+        loadAbortEvent.url = 'http://example.com';
+        loadAbortEvent.reason = 'ERR_CONNECTION_RESET';
+
+        const promise = appElement.onThreadFrameLoadAbortForTesting(loadAbortEvent);
+        await promise;
+
+        // Bounds should still be present.
+        assertDeepEquals(boundsBeforeNav, appElement.getForcedComposeboxBoundsForTesting()!);
       });
 
   test(
@@ -1301,6 +1367,12 @@ suite('ContextualTasksAppTest', function() {
             loadStartEvent, {url: 'http://example.com', isTopLevel: true});
         appElement.onThreadFrameLoadStartForTesting(
             loadStartEvent as chrome.webviewTag.LoadStartEvent);
+
+        const loadCommitEvent = new Event('loadcommit');
+        Object.assign(
+            loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+        appElement.onThreadFrameLoadCommitForTesting(
+            loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
         await microtasksFinished();
 
         // Should be in basic mode now because the app is navigating from an AI
@@ -1391,6 +1463,12 @@ suite('ContextualTasksAppTest', function() {
             loadStartEvent, {url: 'http://example.com', isTopLevel: true});
         appElement.onThreadFrameLoadStartForTesting(
             loadStartEvent as chrome.webviewTag.LoadStartEvent);
+
+        const loadCommitEvent = new Event('loadcommit');
+        Object.assign(
+            loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+        appElement.onThreadFrameLoadCommitForTesting(
+            loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
         await microtasksFinished();
 
         // Should be in basic mode now because the app is navigating from an AI

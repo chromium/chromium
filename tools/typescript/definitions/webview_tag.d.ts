@@ -173,6 +173,12 @@ declare global {
         readonly reason: string;
       }
 
+      export interface LoadRedirectEvent extends Event {
+        readonly oldUrl: string;
+        readonly newUrl: string;
+        readonly isTopLevel: boolean;
+      }
+
       export interface ExitEvent extends Event {
         readonly processId: number;
         readonly reason: ExitReason;

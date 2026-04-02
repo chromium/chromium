@@ -140,6 +140,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
     await microtasksFinished();
+
+    // mockTimer.install() is NOT called here because many tests use real
+    // setTimeout via microtasksFinished(). Tests that need it should call it
+    // themselves after setup is done.
   });
 
   teardown(() => {
@@ -291,8 +295,13 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
       friendlyZeroStateGaiaName: 'Test Name',
     });
 
+    // Re-create the app to ensure it picks up the new loadTimeData values.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     contextualTasksApp = document.createElement('contextual-tasks-app');
+    await customElements.whenDefined('contextual-tasks-app');
     document.body.appendChild(contextualTasksApp);
+    await contextualTasksApp.updateComplete;
+    await microtasksFinished();
 
     // Set initial state to true so we can transition to false then back to
     // true.
@@ -363,7 +372,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     // Mock startExpandAnimation since it is called to trigger the glow
     // animation.
-    composebox.startExpandAnimation = () => Promise.resolve();
+    contextualTasksApp.$.composebox.startExpandAnimation =
+        () => Promise.resolve();
 
     testProxy.handler.setIsZeroState(true);
     // Transition back to zero state via mock.
@@ -372,14 +382,22 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await testProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
+    let resolveNavigation: () => void;
+    const navigationFinished = new Promise<void>(r => resolveNavigation = r);
+    contextualTasksApp.setOnLoadStartFinishedCallbackForTesting(
+        resolveNavigation!);
+
     const event = new Event('loadstart');
     Object.assign(event, {url: 'http://example.com', isTopLevel: true});
     contextualTasksApp.onThreadFrameLoadStartForTesting(
         event as chrome.webviewTag.LoadStartEvent);
-    await composebox.updateComplete;
-    await contextualTasksApp.updateComplete;
-    await microtasksFinished();
 
+    const commitEvent = new Event('loadcommit');
+    Object.assign(commitEvent, {url: 'http://example.com', isTopLevel: true});
+    contextualTasksApp.onThreadFrameLoadCommitForTesting(
+        commitEvent as chrome.webviewTag.LoadCommitEvent);
+
+    await navigationFinished;
     await animationsStarted;
 
     // Verify animations were played.
@@ -396,6 +414,17 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
       composeboxShowTypedSuggestWithContext: false,
       enableNativeZeroStateSuggestions: true,
     });
+
+    // Re-create the app to ensure it picks up the new loadTimeData values.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    contextualTasksApp = document.createElement('contextual-tasks-app');
+    await customElements.whenDefined('contextual-tasks-app');
+    document.body.appendChild(contextualTasksApp);
+    await contextualTasksApp.updateComplete;
+    await microtasksFinished();
+
+    disableAnimationsRecursively(contextualTasksApp);
+    composebox = contextualTasksApp.$.composebox.$.composebox;
 
     testProxy.handler.setIsShownInTab(true);
 
@@ -466,17 +495,26 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         'Suggestions should be hidden via CSS when dropdown is hidden');
   });
 
-  test('TooltipImpressionTimerResetsOnHide', () => {
-    mockTimer.install();
-    const composeboxElement = contextualTasksApp.$.composebox;
-    const tooltip = contextualTasksApp.$.onboardingTooltip;
-
+  test('TooltipImpressionTimerResetsOnHide', async () => {
     loadTimeData.overrideValues({
       showOnboardingTooltip: true,
       isOnboardingTooltipDismissCountBelowCap: true,
       composeboxShowOnboardingTooltipSessionImpressionCap: 10,
       composeboxShowOnboardingTooltipImpressionDelay: 3000,
     });
+
+    // Re-create the app to ensure it picks up the new loadTimeData values.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    contextualTasksApp = document.createElement('contextual-tasks-app');
+    await customElements.whenDefined('contextual-tasks-app');
+    document.body.appendChild(contextualTasksApp);
+    await contextualTasksApp.updateComplete;
+    await microtasksFinished();
+
+    mockTimer.install();
+
+    const composeboxElement = contextualTasksApp.$.composebox;
+    const tooltip = contextualTasksApp.$.onboardingTooltip;
     contextualTasksApp.numberOfTimesTooltipShownForTesting = 0;
     contextualTasksApp.userDismissedTooltipForTesting = false;
 
