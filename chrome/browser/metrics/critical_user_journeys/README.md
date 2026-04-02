@@ -45,6 +45,11 @@ The CUJ framework automatically generates and logs several UMA histograms for ea
 *   **Description:** Logs the `metric_id` of each step as the user successfully reaches it.
 *   **Usage:** This histogram provides a "funnel" view of the journey, allowing developers to see how many users progress through each stage of the task.
 
+### `{JourneyName}.StepAborted`
+*   **Type:** Sparse Histogram
+*   **Description:** Logs the `metric_id` of the last reached step when a journey is aborted or times out.
+*   **Usage:** This is critical for identifying exactly *where* users are dropping off or encountering friction in the journey.
+
 ### `{JourneyName}.Result`
 *   **Type:** Enumerated Histogram (`CriticalUserJourneyResult` enum)
 *   **Description:** Logs the final outcome of the journey session.
@@ -52,11 +57,6 @@ The CUJ framework automatically generates and logs several UMA histograms for ea
     *   `kCompleted` (0): The user successfully reached the final step of the journey.
     *   `kAborted` (1): The journey was terminated before completion (e.g., the user closed the relevant UI or navigated away).
     *   `kTimeout` (2): The journey exceeded its defined `time_out_duration` at a particular step.
-
-### `{JourneyName}.StepAborted`
-*   **Type:** Sparse Histogram
-*   **Description:** Logs the `metric_id` of the last reached step when a journey is aborted or times out.
-*   **Usage:** This is critical for identifying exactly *where* users are dropping off or encountering friction in the journey.
 
 ## Best Practices
 
@@ -67,7 +67,7 @@ The CUJ framework is specifically designed for tracking **UI-driven sequences** 
     *   The user task involves a sequence of specific UI interactions (e.g., opening a menu, then selecting a specific sub-item, then interacting with the resulting dialog).
     *   The task has a clear "happy path" and defined success/failure states.
     *   You need to measure the success rate and identifying specific drop-off points in a multi-step process.
-    *   The journey relies on the state, visibility, or activation of specific UI components identified by `ui::ElementIdentifier`.
+    *   Each step in the journey can be identified by an `ui::ElementIdentifier` tied to some action (pressed, activated, shown / hidden, custom events).
 *   **Use Simple Action Logging (UMA/UserActions) when:**
     *   You only need to track a single, discrete user action (e.g., "User clicked the 'Settings' button").
     *   The events are independent and can occur in any order without a shared task context.
@@ -77,7 +77,9 @@ The CUJ framework is specifically designed for tracking **UI-driven sequences** 
 To maintain high-quality data signals, journeys should be focused on a single, well-defined user task. Overly complex journeys with excessive branching (`AddAnyOf`) can become difficult to analyze and may lead to "noisy" metrics. If a journey feels too large, consider whether it can be decomposed into smaller, more focused sub-journeys.
 
 ### UI Element Persistence and Visibility
-A common pitfall is defining a journey step for an element that may be destroyed or hidden before the `ui::InteractionSequence` can observe it. Ensure that the elements you are tracking are persistent enough for the sequence to transition through them. If an interaction causes a UI element to be replaced (e.g., navigating to a new page), ensure the journey definition correctly accounts for the lifecycle of those elements.
+A common pitfall is defining a journey step for an element that may be destroyed or hidden before the `ui::InteractionSequence` can observe it.
+
+Ensure that the elements you are tracking are persistent enough for the sequence to transition through them. If an interaction causes a UI element to be replaced (e.g., navigating to a new page), ensure the journey can account for this by updating the step to use an element that will become present in the replaced step or by listening for a custom event that you emit that is not tied to a UI element (i.e. a download starts / finishes, page transition, etc).
 
 ## Troubleshooting
 
@@ -95,27 +97,16 @@ A journey will transition to the `kAborted` state if the underlying `ui::Interac
 Common scenarios leading to aborted journeys:
 *   **Element Destruction:** If a UI component (e.g., a dialog or menu) that contains a tracked `ui::ElementIdentifier` is closed or destroyed while the journey is in progress, the sequence will abort.
 *   **Navigation Events:** Navigating away from a page or closing a tab that is part of the journey's context will cause any active sessions associated with that context to terminate.
-*   **Focus Requirements:** Some `ui::InteractionSequence` steps may require an element to have focus or be the active window. If the user shifts focus to another part of the UI, the sequence might abort.
-*   **Race Conditions:** If a journey step expects an element to be visible *immediately* after a previous interaction, but there is a slight delay in the UI rendering, the sequence may fail to find the element and abort. Ensure that the journey definition accounts for potential asynchronous UI updates.
+*   **Focus Requirements:** Some `ui::InteractionSequence` steps may point to an element that is in a bubble which auto-dismisses on loss of focus / when it is no longer the active window causing the journey to abort early.
 
 ## Step-by-Step Implementation Guide
 
 Follow these steps to instrument a new Critical User Journey in Chromium.
 
 ### 1. Define UI Element Identifiers
-The CUJ framework relies on `ui::ElementIdentifier` to track UI elements. If your feature's UI components don't already have identifiers, define them in a relevant header file (e.g., `chrome/browser/ui/views/your_feature/your_feature_view.h`).
+The CUJ framework relies on `ui::ElementIdentifier` to track UI elements. If your feature's UI components don't already have identifiers, define them in your controller or feature class using `DECLARE/DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE()` or in [chrome/browser/ui/browser_element_identifiers.h](/chrome/browser/ui/browser_element_identifiers.h) if it is a top level UI element.
 
-```cpp
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kYourFeatureMainButtonId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kYourFeatureDialogId);
-```
-
-And in the corresponding implementation file:
-
-```cpp
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kYourFeatureMainButtonId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kYourFeatureDialogId);
-```
+See [ui/base/interaction/element_identifier.h](/ui/base/interaction/element_identifier.h) for more information.
 
 Ensure these identifiers are assigned to the actual UI views using `views::View::SetProperty(views::kElementIdentifierKey, kYourFeatureMainButtonId)`.
 
@@ -133,11 +124,11 @@ std::unique_ptr<metrics::CriticalUserJourney> CreateMyFeatureJourney() {
 ```
 
 ### 3. Register the Journey
-Register your journey with the `CriticalUserJourneyService` during its initialization. You'll likely need to modify the registration logic in the service to include your new journey definition.
+Register your journey via `CriticalUserJourneyRegistry::AddJourneys`. Doing so allows all external dependencies to bubble into a single location.
 
 ```cpp
-void CriticalUserJourneyService::RegisterJourneys() {
-  registry_->Register(CreateMyFeatureJourney());
+void CriticalUserJourneyRegistry::AddJourneys() {
+  AddJourney(CreateMyFeatureJourney());
   // ... other registrations
 }
 ```
@@ -145,40 +136,49 @@ void CriticalUserJourneyService::RegisterJourneys() {
 ### 4. Trigger the Journey
 A journey starts when its first defined step is observed by the framework. Ensure that the initial `ui::ElementIdentifier` or event is correctly triggered by user interaction. The `CriticalUserJourneyService` automatically listens for these starting triggers once the journey is registered.
 
-### 5. Register Histograms in XML
-Finally, you must register the generated histograms in `tools/metrics/histograms/metadata/critical_user_journeys/histograms.xml`. Use the `<variant>` tag to efficiently define the metrics for your journey.
+### 5. Register Enums / Histograms in XML
+You must define the steps in `tools/metrics/histograms/metadata/critical_user_journeys/enums.xml` in order to have proper labels when viewing the metrics.
+
+```xml
+<enum name="MyFeatureJourneySteps">
+  <int value="1" label="Press the first button"/>
+  <int value="2" label="Click a different button"/>
+  <int value="3" label="Wait for dialog to show"/>
+</enum>
+```
+
+Finally, you must register the generated histograms in `tools/metrics/histograms/metadata/critical_user_journeys/histograms.xml`.
+
+```xml
+<histogram name="CriticalUserJourney.MyFeatureJourney.{StepAction}" enums="MyFeatureJourneySteps" expires_after="2026-03-31">
+  <owner>your-ldap@chromium.org</owner>
+  <summary>
+    The steps reached in the {JourneyName} critical user journey.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
+```
+
+And then add your journey to the results metric to track the final outcomes of the journeys. Use the `<variant>` tag to efficiently define the metrics for your journey.
 
 ```xml
 <histogram name="CriticalUserJourney.{JourneyName}.Result" enum="CriticalUserJourneyResult" expires_after="2026-03-31">
   <owner>your-ldap@chromium.org</owner>
   <summary>
-    The final result of the {JourneyName} critical user journey.
+    Records the final outcome (Completed, Aborted, or Timed out) of the
+    {JourneyName} critical user journey.
   </summary>
   <token key="JourneyName">
-    <variant name="MyFeatureJourney"/>
-  </token>
-</histogram>
-
-<histogram name="CriticalUserJourney.{JourneyName}.StepReached" units="steps" expires_after="2026-03-31">
-  <owner>your-ldap@chromium.org</owner>
-  <summary>
-    The steps reached in the {JourneyName} critical user journey.
-  </summary>
-  <token key="JourneyName">
-    <variant name="MyFeatureJourney"/>
-  </token>
-</histogram>
-
-<histogram name="CriticalUserJourney.{JourneyName}.StepAborted" units="steps" expires_after="2026-03-31">
-  <owner>your-ldap@chromium.org</owner>
-  <summary>
-    The last reached step in the {JourneyName} critical user journey when it is aborted or times out.
-  </summary>
-  <token key="JourneyName">
-    <variant name="MyFeatureJourney"/>
+    <variant name="OtherFeatureJourney"/>
+    <variant name="AnotherFeatureJourney"/>
+    <variant name="MyFeatureJourney"/> <!-- Add it here! -->
   </token>
 </histogram>
 ```
+
+Please consider using `IfThisThenThat Lint` to keep your journey and enum in sync! Doing so prevents misleading information in the metrics during metric analysis.
+
+See [documentation](https://www.chromium.org/chromium-os/developer-library/guides/development/keep-files-in-sync/) for more details.
 
 ## Examples
 
