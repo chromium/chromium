@@ -5,39 +5,56 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.createNewChromeTabbedActivity;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE;
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
+
+import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Holder;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.HeadlessTabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -47,8 +64,8 @@ import java.io.File;
 /**
  * Integration tests for {@link PersistentStoreCleaner} via {@link TabModelOrchestrator} clearState.
  */
+@DoNotBatch(reason = "This testsuite creates and destroys activities.")
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 @EnableFeatures({
     ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE,
     ChromeFeatureList.SCHEDULE_WINDOW_CLEANING
@@ -67,6 +84,12 @@ public class PersistentStoreCleanerTest {
     private Profile mProfile;
     private TabStateStorageService mService;
     private StorageLoadedData mLoadedData;
+
+    @Before
+    public void setUp() {
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_ONLY_SHADOW);
+    }
 
     @After
     public void tearDown() {
@@ -142,14 +165,113 @@ public class PersistentStoreCleanerTest {
         assertTrue(nonExistingTabFile.exists());
 
         runOnUiThreadBlocking(
-                () ->
-                        PersistentStoreCleaner.scheduleCleanUnusedData(
-                                getProfile(), tabContentManager));
+                () -> PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, tabContentManager));
         CriteriaHelper.pollInstrumentationThread(() -> !nonExistingTabFile.exists());
 
         // Retrieve the cached thumbnail for the existing tab to ensure it wasn't deleted.
         existingTabFile = TabContentManager.getTabThumbnailFileJpeg(existingTabId);
         assertTrue(existingTabFile.exists());
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void cleanUnusedWindowsRemovesUnusedWindowData() throws Exception {
+        startActivityAndInitialize();
+        CriteriaHelper.pollUiThread(
+                () -> TabWindowManagerSingleton.getInstance().isAllTabStateInitialized());
+
+        TabWindowManager tabWindowManager =
+                runOnUiThreadBlocking(TabWindowManagerSingleton::getInstance);
+
+        // Create a fake directory for a non-existing window.
+        int activeWindowId =
+                tabWindowManager.getWindowIdForSelector(
+                        mActivityTestRule.getActivity().getTabModelSelector());
+        assertNotEquals(activeWindowId, INVALID_WINDOW_ID);
+
+        File baseStateDir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
+        File activeMetadataFile = new File(baseStateDir, "tab_state" + activeWindowId);
+        CriteriaHelper.pollInstrumentationThread(activeMetadataFile::exists);
+
+        TabContentManager tabContentManager =
+                runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().getTabContentManager());
+
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        CallbackHelper initHelper = new CallbackHelper();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        ChromeTabbedActivity unusedActivity = createNewChromeTabbedActivity(activity);
+        TabModelSelector unusedTabModelSelector = unusedActivity.getTabModelSelector();
+        runOnUiThreadBlocking(
+                () ->
+                        TabModelUtils.runOnTabStateInitialized(
+                                initHelper::notifyCalled, unusedTabModelSelector));
+        initHelper.waitForOnly();
+
+        runOnUiThreadBlocking(
+                () -> {
+                    unusedTabModelSelector
+                            .getModel(/* incognito= */ false)
+                            .getTabCreator()
+                            .launchUrl("about:blank", TabLaunchType.FROM_CHROME_UI);
+                });
+        int unusedWindowId = tabWindowManager.getWindowIdForSelector(unusedTabModelSelector);
+
+        File unusedMetadataFile = new File(baseStateDir, "tab_state" + unusedWindowId);
+        CriteriaHelper.pollInstrumentationThread(unusedMetadataFile::exists);
+
+        CallbackHelper beforeCleanHelper = new CallbackHelper();
+        Holder<Integer> beforeCountHolder = new Holder<>(null);
+        runOnUiThreadBlocking(
+                () ->
+                        mService.countTabsForWindow(
+                                String.valueOf(unusedWindowId),
+                                /* isOffTheRecord= */ false,
+                                count -> {
+                                    beforeCountHolder.onResult(count);
+                                    beforeCleanHelper.notifyCalled();
+                                }));
+        beforeCleanHelper.waitForOnly();
+        assertEquals(Integer.valueOf(2), beforeCountHolder.get());
+
+        unusedActivity.finishAndRemoveTask();
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ApplicationStatus.getStateForActivity(unusedActivity)
+                                == ActivityState.DESTROYED);
+
+        // After an activity is destroyed, the selector should become headless.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        tabWindowManager.getTabModelSelectorById(unusedWindowId)
+                                instanceof HeadlessTabModelSelectorImpl);
+        TabModelSelector headlessSelector =
+                tabWindowManager.getTabModelSelectorById(unusedWindowId);
+
+        // Force headless to shutdown to simulate orphaned data.
+        runOnUiThreadBlocking(() -> tabWindowManager.shutdownIfHeadless(unusedWindowId));
+        CriteriaHelper.pollUiThread(
+                () -> !tabWindowManager.getAllTabModelSelectors().contains(headlessSelector));
+        assertTrue(tabWindowManager.isAllTabStateInitialized());
+
+        runOnUiThreadBlocking(
+                () -> PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, tabContentManager));
+
+        CriteriaHelper.pollUiThread(() -> !unusedMetadataFile.exists());
+
+        CallbackHelper afterCleanHelper = new CallbackHelper();
+        Holder<Integer> afterCountHolder = new Holder<>(null);
+        runOnUiThreadBlocking(
+                () ->
+                        mService.countTabsForWindow(
+                                String.valueOf(unusedWindowId),
+                                /* isOffTheRecord= */ false,
+                                count -> {
+                                    afterCountHolder.onResult(count);
+                                    afterCleanHelper.notifyCalled();
+                                }));
+        afterCleanHelper.waitForOnly();
+        assertEquals(Integer.valueOf(0), afterCountHolder.get());
     }
 
     @Test
@@ -243,13 +365,5 @@ public class PersistentStoreCleanerTest {
         mLoadedData = holder.get();
         assertNotNull(mLoadedData);
         return mLoadedData;
-    }
-
-    private Profile getProfile() {
-        return mActivityTestRule
-                .getActivity()
-                .getProfileProviderSupplier()
-                .get()
-                .getOriginalProfile();
     }
 }
