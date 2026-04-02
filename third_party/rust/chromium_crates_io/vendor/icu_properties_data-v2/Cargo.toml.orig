@@ -5,11 +5,12 @@
 [package]
 name = "icu_properties_data"
 description = "Data for the icu_properties crate"
+categories.workspace = true
+keywords = ["data", "unicode"]
 license = "Unicode-3.0"
-version = "2.1.2"
+version.workspace = true
 
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 include.workspace = true
@@ -17,7 +18,7 @@ repository.workspace = true
 rust-version.workspace = true
 
 [package.metadata.sources]
-cldr = { tagged = "48.0.0" }
+cldr = { tagged = "48.2.0" }
 icuexport = { tagged = "release-78.1rc" }
 segmenter_lstm = { tagged = "v0.1.0" }
 

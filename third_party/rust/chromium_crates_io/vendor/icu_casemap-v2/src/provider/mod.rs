@@ -124,7 +124,7 @@ impl<'de> serde::Deserialize<'de> for CaseMap<'de> {
 }
 
 impl CaseMap<'_> {
-    /// Creates a new CaseMap using data exported by the
+    /// Creates a new [`CaseMap`] using data exported by the
     // `icuexportdata` tool in ICU4C. Validates that the data is
     // consistent.
     #[cfg(feature = "datagen")]
@@ -159,8 +159,8 @@ impl CaseMap<'_> {
         Ok(result)
     }
 
-    /// Given an existing CaseMapper, validates that the data is
-    /// consistent. A CaseMapper created by the ICU transformer has
+    /// Given an existing [`CaseMap`], validates that the data is
+    /// consistent. A [`CaseMap`] created by the ICU transformer has
     /// already been validated. Calling this function is only
     /// necessary if you are concerned about data corruption after
     /// deserializing.

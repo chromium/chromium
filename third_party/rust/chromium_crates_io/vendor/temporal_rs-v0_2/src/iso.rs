@@ -506,10 +506,12 @@ impl IsoDate {
 
 impl IsoDate {
     /// Creates `[[ISOYear]]`, `[[isoMonth]]`, `[[isoDay]]` fields from `ICU4X`'s `Date<Iso>` struct.
-    pub(crate) fn to_icu4x(self) -> IcuDate<Iso> {
-        let d = IcuDate::try_new_iso(self.year, self.month, self.day);
-        debug_assert!(d.is_ok(), "ICU4X ISODate conversion must not fail");
-        d.unwrap_or_else(|_| IcuDate::from_rata_die(icu_calendar::types::RataDie::new(0), Iso))
+    pub(crate) fn to_icu4x_iso(self) -> IcuDate<Iso> {
+        IcuDate::from_rata_die(self.to_rd(), Iso)
+    }
+
+    pub(crate) fn to_rd(self) -> icu_calendar::types::RataDie {
+        calendrical_calculations::gregorian::fixed_from_gregorian(self.year, self.month, self.day)
     }
 
     pub(crate) fn from_icu4x(date: <Iso as IcuCalendar>::DateInner) -> Self {
@@ -1066,9 +1068,9 @@ mod tests {
     #[test]
     fn icu4x_max_conversion_test() {
         // Test that the max ISO date does not panic on conversion
-        let _ = IsoDate::new_unchecked(275_760, 9, 13).to_icu4x();
+        let _ = IsoDate::new_unchecked(275_760, 9, 13).to_icu4x_iso();
         // Test that the min ISO date does not panic on conversion
-        let _ = IsoDate::new_unchecked(-271_821, 4, 20).to_icu4x();
+        let _ = IsoDate::new_unchecked(-271_821, 4, 20).to_icu4x_iso();
     }
 
     #[test]

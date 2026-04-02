@@ -49,7 +49,11 @@ uint8_t temporal_rs_PlainMonthDay_day(const PlainMonthDay* self);
 
 const Calendar* temporal_rs_PlainMonthDay_calendar(const PlainMonthDay* self);
 
+uint8_t temporal_rs_PlainMonthDay_month(const PlainMonthDay* self);
+
 void temporal_rs_PlainMonthDay_month_code(const PlainMonthDay* self, DiplomatWrite* write);
+
+int32_t temporal_rs_PlainMonthDay_reference_year(const PlainMonthDay* self);
 
 typedef struct temporal_rs_PlainMonthDay_to_plain_date_result {union {PlainDate* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_to_plain_date_result;
 temporal_rs_PlainMonthDay_to_plain_date_result temporal_rs_PlainMonthDay_to_plain_date(const PlainMonthDay* self, PartialDate_option year);

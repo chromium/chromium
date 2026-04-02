@@ -104,8 +104,22 @@
 #![allow(clippy::exhaustive_structs)]
 #![allow(clippy::exhaustive_enums)]
 
+#[cfg(any(feature = "datagen", feature = "serde"))]
+#[cfg(feature = "unstable")]
+use alloc::boxed::Box;
+#[cfg(feature = "datagen")]
+#[cfg(feature = "unstable")]
+use alloc::vec::Vec;
+#[cfg(feature = "unstable")]
+use icu_pattern::{Pattern, PatternBackend, SinglePlaceholder};
+#[cfg(feature = "unstable")]
+use icu_plurals::provider::PluralElementsPackedULE;
 use icu_provider::prelude::*;
+#[cfg(feature = "unstable")]
+use zerovec::ule::vartuple::VarTupleULE;
 use zerovec::VarZeroCow;
+#[cfg(feature = "unstable")]
+use zerovec::VarZeroVec;
 
 #[cfg(feature = "compiled_data")]
 #[derive(Debug)]
@@ -127,6 +141,10 @@ const _: () = {
         pub use icu_locale as locale;
     }
     make_provider!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_decimal_compact_long_v1!(Baked);
+    #[cfg(feature = "unstable")]
+    impl_decimal_compact_short_v1!(Baked);
     impl_decimal_symbols_v1!(Baked);
     impl_decimal_digits_v1!(Baked);
 };
@@ -139,7 +157,7 @@ icu_provider::data_marker!(
 );
 
 icu_provider::data_marker!(
-    /// The digits for a given numbering system. This data ought to be stored in the `und` locale with an auxiliary key
+    /// The digits for a given numbering system. This data ought to be stored in the `und` locale with a marker attribute
     /// set to the numbering system code.
     DecimalDigitsV1,
     "decimal/digits/v1",
@@ -150,6 +168,17 @@ icu_provider::data_marker!(
 
 #[cfg(feature = "datagen")]
 /// The latest minimum set of markers required by this component.
+#[cfg(feature = "unstable")]
+pub const MARKERS: &[DataMarkerInfo] = &[
+    DecimalSymbolsV1::INFO,
+    DecimalDigitsV1::INFO,
+    DecimalCompactLongV1::INFO,
+    DecimalCompactShortV1::INFO,
+];
+
+#[cfg(feature = "datagen")]
+/// The latest minimum set of markers required by this component.
+#[cfg(not(feature = "unstable"))]
 pub const MARKERS: &[DataMarkerInfo] = &[DecimalSymbolsV1::INFO, DecimalDigitsV1::INFO];
 
 /// A collection of settings expressing where to put grouping separators in a decimal number.
@@ -240,7 +269,7 @@ impl DecimalSymbolStrsBuilder<'_> {
     }
 }
 
-/// Symbols and metadata required for formatting a [`Decimal`](crate::Decimal).
+/// Symbols and metadata required for formatting a [`Decimal`](crate::input::Decimal).
 ///
 /// <div class="stab unstable">
 /// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
@@ -267,33 +296,11 @@ icu_provider::data_struct!(
     #[cfg(feature = "datagen")]
 );
 
-impl DecimalSymbols<'_> {
-    /// Return (prefix, suffix) for the minus sign
-    pub fn minus_sign_affixes(&self) -> (&str, &str) {
-        (
-            self.strings.minus_sign_prefix(),
-            self.strings.minus_sign_suffix(),
-        )
-    }
-    /// Return (prefix, suffix) for the minus sign
-    pub fn plus_sign_affixes(&self) -> (&str, &str) {
-        (
-            self.strings.plus_sign_prefix(),
-            self.strings.plus_sign_suffix(),
-        )
-    }
-    /// Return thhe decimal separator
-    pub fn decimal_separator(&self) -> &str {
-        self.strings.decimal_separator()
-    }
-    /// Return thhe decimal separator
-    pub fn grouping_separator(&self) -> &str {
-        self.strings.grouping_separator()
-    }
+impl<'a> core::ops::Deref for DecimalSymbols<'a> {
+    type Target = VarZeroCow<'a, DecimalSymbolsStrs>;
 
-    /// Return the numbering system
-    pub fn numsys(&self) -> &str {
-        self.strings.numsys()
+    fn deref(&self) -> &Self::Target {
+        &self.strings
     }
 }
 
@@ -318,5 +325,233 @@ impl DecimalSymbols<'static> {
                 min_grouping: 1,
             },
         }
+    }
+}
+
+#[cfg(feature = "unstable")]
+icu_provider::data_marker!(
+    /// `DecimalCompactLongV1`
+    DecimalCompactLongV1,
+    CompactPatterns<'static, SinglePlaceholder>,
+);
+#[cfg(feature = "unstable")]
+icu_provider::data_marker!(
+    /// `DecimalCompactShortV1`
+    DecimalCompactShortV1,
+    CompactPatterns<'static, SinglePlaceholder>,
+);
+
+/// Compact pattern data struct.
+///
+/// As in CLDR, this is a mapping from type (a power of ten, corresponding to
+/// the magnitude of the number being formatted) to a plural pattern.
+///
+/// If all plural patterns are compatible across consecutive types, the
+/// larger types are omitted, thus given
+/// > (3, other) ↦ 0K, (4, other) ↦ 00K, (5, other) ↦ 000K
+///
+/// only
+/// > (3, other) ↦ 0K
+///
+/// is stored.
+///
+/// Finally, the pattern indicating noncompact notation for the first few powers
+/// of ten might be omitted; that is, there is an implicit (0, other) ↦ 0.
+///
+/// The plural patterns are stored with the 4-bit metadata representing the exponent
+/// shift (number of zeros in the pattern minus 1).
+#[derive(Debug, Clone, PartialEq, yoke::Yokeable, zerofrom::ZeroFrom)]
+#[cfg_attr(feature = "datagen", derive(databake::Bake))]
+#[cfg_attr(feature = "datagen", databake(path = icu_decimal::provider))]
+#[cfg(feature = "unstable")]
+pub struct CompactPatterns<'a, P: PatternBackend>(
+    pub VarZeroVec<'a, VarTupleULE<u8, PluralElementsPackedULE<Pattern<P>>>>,
+);
+
+#[cfg(feature = "datagen")]
+#[cfg(feature = "unstable")]
+impl<'data, P: PatternBackend> serde::Serialize for CompactPatterns<'data, P>
+where
+    Pattern<P>: serde::Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.serialize(serializer)
+    }
+}
+
+#[cfg(feature = "serde")]
+#[cfg(feature = "unstable")]
+impl<'de, 'data, P: PatternBackend> serde::Deserialize<'de> for CompactPatterns<'data, P>
+where
+    'de: 'data,
+    Box<Pattern<P>>: serde::Deserialize<'de>,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        VarZeroVec::<VarTupleULE<u8, PluralElementsPackedULE<Pattern<P>>>>::deserialize(
+            deserializer,
+        )
+        .map(Self)
+    }
+}
+
+#[cfg(feature = "unstable")]
+impl<P: PatternBackend> icu_provider::ule::MaybeAsVarULE for CompactPatterns<'_, P> {
+    type EncodedStruct = [()];
+}
+
+#[cfg(feature = "datagen")]
+#[cfg(feature = "unstable")]
+impl<P: PatternBackend> icu_provider::ule::MaybeEncodeAsVarULE for CompactPatterns<'_, P> {
+    type EncodeableStruct<'b>
+        = &'b [()]
+    where
+        Self: 'b;
+    fn maybe_as_encodeable<'b>(&'b self) -> Option<Self::EncodeableStruct<'b>> {
+        None
+    }
+}
+
+#[cfg(feature = "datagen")]
+#[cfg(feature = "unstable")]
+impl<P: PatternBackend> CompactPatterns<'static, P> {
+    /// Creates a new [`CompactPatterns`] from a map of patterns.
+    /// The values contains an additional `u8` that contains the
+    /// magnitude of the pattern, which can be different from the
+    /// magnitude key (e.g. for the maginute 5 there might be a
+    /// magnitude 3 pattern).
+    #[allow(clippy::type_complexity)]
+    pub fn new(
+        patterns: alloc::collections::BTreeMap<
+            u8,
+            (u8, icu_plurals::PluralElements<Box<Pattern<P>>>),
+        >,
+        zero_magnitude: Option<&icu_plurals::PluralElements<&Pattern<P>>>,
+    ) -> Result<Self, DataError> {
+        use icu_plurals::provider::FourBitMetadata;
+        use icu_plurals::PluralElements;
+        use zerovec::ule::encode_varule_to_box;
+        use zerovec::ule::vartuple::VarTuple;
+        use zerovec::vecs::VarZeroVecOwned;
+
+        if !patterns
+            .values()
+            .zip(patterns.values().skip(1))
+            .all(|(low, high)| low.0 <= high.0)
+        {
+            Err(
+                DataError::custom("Compact exponents should be nondecreasing").with_debug_context(
+                    &patterns
+                        .values()
+                        .map(|(exponent, _)| exponent)
+                        .collect::<Vec<_>>(),
+                ),
+            )?;
+        }
+
+        let mut deduplicated_patterns: Vec<(
+            u8,
+            PluralElements<(FourBitMetadata, Box<Pattern<P>>)>,
+        )> = Vec::new();
+
+        // Deduplicate sequences of types that have the same plural map, keeping the lowest type.
+        for (log10_type, (exponent, map)) in patterns
+            .into_iter()
+            // Skip leading 0 patterns
+            .skip_while(|(_, (_, pattern))| Some(&pattern.as_ref().map(|p| &**p)) == zero_magnitude)
+        {
+            if let Some(prev) = deduplicated_patterns.last() {
+                // The higher pattern can never be exactly one of the low pattern, so we can ignore that value
+                if prev
+                    .1
+                    .as_ref()
+                    .with_explicit_one_value(None)
+                    .map(|(_, p)| p)
+                    == map.as_ref()
+                {
+                    continue;
+                }
+            }
+
+            // Store the exponent as a difference from the log10_type, i.e. the number of zeros
+            // in the pattern, minus 1. No pattern should have more than 16 zeros.
+            let Some(metadata) = FourBitMetadata::try_from_byte(log10_type - exponent) else {
+                return Err(DataError::custom("Pattern has too many zeros")
+                    .with_debug_context(&(log10_type - exponent)));
+            };
+
+            deduplicated_patterns.push((log10_type, map.map(|p| (metadata, p))))
+        }
+
+        #[allow(clippy::unwrap_used)] // keyed by u8, so it cannot exceed usize/2
+        Ok(Self(
+            VarZeroVecOwned::try_from_elements(
+                &deduplicated_patterns
+                    .into_iter()
+                    .map(|(log10_type, plural_map)| {
+                        encode_varule_to_box(&VarTuple {
+                            sized: log10_type,
+                            variable: plural_map,
+                        })
+                    })
+                    .collect::<Vec<Box<VarTupleULE<u8, PluralElementsPackedULE<Pattern<P>>>>>>(),
+            )
+            .unwrap()
+            .into(),
+        ))
+    }
+}
+
+pub(crate) fn load_with_fallback<'a, M: DataMarker>(
+    provider: &(impl DataProvider<M> + ?Sized),
+    ids: impl Iterator<Item = DataIdentifierBorrowed<'a>>,
+) -> Result<DataResponse<M>, DataError> {
+    let mut ids = ids.peekable();
+
+    while let Some(id) = ids.next() {
+        if ids.peek().is_some() {
+            if let Some(r) = provider
+                .load(DataRequest {
+                    id,
+                    metadata: {
+                        let mut m = DataRequestMetadata::default();
+                        m.silent = true;
+                        m
+                    },
+                })
+                .allow_identifier_not_found()?
+            {
+                return Ok(r);
+            }
+        } else {
+            return provider.load(DataRequest {
+                id,
+                metadata: DataRequestMetadata::default(),
+            });
+        }
+    }
+
+    Err(DataErrorKind::InvalidRequest.into_error())
+}
+
+impl crate::DecimalFormatterPreferences {
+    pub(crate) fn nu_id<'a>(
+        &'a self,
+        locale: &'a DataLocale,
+    ) -> Option<DataIdentifierBorrowed<'a>> {
+        self.numbering_system
+            .as_ref()
+            .map(|s| s.as_str())
+            .map(|nu| {
+                DataIdentifierBorrowed::for_marker_attributes_and_locale(
+                    DataMarkerAttributes::from_str_or_panic(nu),
+                    locale,
+                )
+            })
     }
 }

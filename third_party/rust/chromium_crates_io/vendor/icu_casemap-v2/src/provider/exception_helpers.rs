@@ -137,7 +137,7 @@ impl SlotPresence {
 /// The bitflags on an exception header.
 ///
 /// Format from icu4c, documented in casepropsbuilder.cpp, shifted 8 bits since ICU4C has this packed
-/// alongside a SlotPresence
+/// alongside a [`SlotPresence`]
 ///
 /// ```text
 ///            0  Double-width slots. If set, then each optional slot is stored as two

@@ -2,7 +2,7 @@
   {
     "rule": "n = 1",
     "input": {
-      "n": 1
+      "i": 1
     },
     "output": true
   },
@@ -14,7 +14,6 @@
   {
     "rule": "n % 10 = 0 or n % 10 = 5..9 or n % 100 = 11..14",
     "input": {
-      "n": 5,
       "i": 5
     },
     "output": true
@@ -32,14 +31,14 @@
   {
     "rule": "n != 10 and f = 0 and t = 0 and v = 0 and w = 0",
     "input": {
-      "n": 10
+      "i": 10
     },
     "output": false
   },
   {
     "rule": " @integer 1, 2, … @decimal 1.3~1.5",
     "input": {
-      "n": 1
+      "i": 1
     },
     "output": true
   },

@@ -22,8 +22,10 @@ applications directly. Instead, it is meant as a building block for a full imple
 
 The `properties` module provides the non-recursive canonical decomposition operation on a per `char` basis and
 the canonical compositon operation given two `char`s. It also provides access to the Canonical Combining Class
-property. These operations are primarily meant for [HarfBuzz](https://harfbuzz.github.io/) via the
-[`icu_harfbuzz`](https://docs.rs/icu_harfbuzz/latest/icu_harfbuzz/) crate.
+property. These operations are primarily meant for [HarfBuzz](https://harfbuzz.github.io/), the types
+[`CanonicalComposition`](properties::CanonicalComposition), [`CanonicalDecomposition`](properties::CanonicalDecomposition),
+and [`CanonicalCombiningClassMap`](properties::CanonicalCombiningClassMap) implement the [`harfbuzz_traits`] if
+the `harfbuzz_traits` Cargo feature is enabled.
 
 Notably, this normalizer does _not_ provide the normalization “quick check” that can result in “maybe” in
 addition to “yes” and “no”. The normalization checks provided by this crate always give a definitive

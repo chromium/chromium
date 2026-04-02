@@ -5,9 +5,10 @@
 [package]
 name = "icu_normalizer"
 description = "API for normalizing text into Unicode Normalization Forms"
+categories.workspace = true
+keywords = ["unicode", "normalization", "text-processing"]
 
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 include.workspace = true
@@ -19,7 +20,11 @@ license.workspace = true
 [package.metadata.docs.rs]
 all-features = true
 
+[package.metadata.cargo-all-features]
+max_combination_size = 3
+
 [dependencies]
+harfbuzz-traits = { workspace = true, optional = true }
 icu_collections = { workspace = true }
 icu_properties = { workspace = true, optional = true }
 icu_provider = { workspace = true }
@@ -51,13 +56,13 @@ serde = ["dep:serde", "icu_collections/serde", "zerovec/serde", "icu_properties?
 # n.b. "icu_properties" + "icu_properties?/datagen" is equivalent to "icu_properties/datagen", however
 # we specify this explicitly since "optional_dep/feature" is a footgun that leads to us often accidentally enabling features
 datagen = ["serde", "dep:databake", "icu_properties", "icu_collections/databake", "zerovec/databake", "icu_properties?/datagen", "icu_provider/export"]
-experimental = []
 compiled_data = ["dep:icu_normalizer_data", "icu_properties?/compiled_data", "icu_provider/baked"]
 icu_properties = ["dep:icu_properties"]
 # For dealing with UTF16 strings
 utf16_iter = ["dep:utf16_iter", "dep:write16"]
 # For dealing with potentially ill-formed UTF8 strings
 utf8_iter = ["dep:utf8_iter"]
+harfbuzz_traits = ["dep:harfbuzz-traits"]
 
 # added by accident
 write16 = []
@@ -67,6 +72,5 @@ name = "bench"
 harness = false
 required-features = ["utf16_iter", "utf8_iter"]
 
-# Lint to avoid complaining about icu4x_unstable_fast_trie_only for now
-[lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(icu4x_unstable_fast_trie_only)'] }
+[lints]
+workspace = true

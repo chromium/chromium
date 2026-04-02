@@ -2,14 +2,16 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-use crate::cal::abstract_gregorian::{impl_with_abstract_gregorian, GregorianYears};
+use crate::cal::abstract_gregorian::{
+    impl_with_abstract_gregorian, AbstractGregorian, GregorianYears,
+};
 use crate::cal::gregorian::CeBce;
 use crate::calendar_arithmetic::ArithmeticDate;
 use crate::error::{DateError, UnknownEraError};
-use crate::provider::{CalendarJapaneseExtendedV1, CalendarJapaneseModernV1, EraStartDate};
+use crate::provider::{CalendarJapaneseModernV1, EraStartDate, PackedEra};
 use crate::{types, AsCalendar, Date};
 use icu_provider::prelude::*;
-use tinystr::tinystr;
+use tinystr::{tinystr, TinyAsciiStr};
 
 /// The [Japanese Calendar] (with modern eras only)
 ///
@@ -18,10 +20,7 @@ use tinystr::tinystr;
 /// is uses Japanese eras instead of the Common Era.
 ///
 /// This implementation extends proleptically for dates before the calendar's creation
-/// in 6 Meiji (1873 CE).
-/// The Meiji era is used proleptically back to and including 1868-10-23, Gregorian eras are used before that.
-///
-/// For a variant that uses approximations of historical Japanese eras proleptically, check out [`JapaneseExtended`].
+/// in 6 Meiji (1873 CE). Gregorian eras are used before that.
 ///
 /// This corresponds to the `"japanese"` [CLDR calendar](https://unicode.org/reports/tr35/#UnicodeCalendarIdentifier).
 ///
@@ -37,41 +36,10 @@ use tinystr::tinystr;
 ///
 /// These eras are loaded from data, requiring a data provider capable of providing [`CalendarJapaneseModernV1`]
 /// data.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Copy)]
 pub struct Japanese {
-    eras: DataPayload<CalendarJapaneseModernV1>,
+    post_reiwa_era: Option<PackedEra>,
 }
-
-/// The [Japanese Calendar] (with historical eras)
-///
-/// The [Japanese Calendar] is a variant of the [`Gregorian`](crate::cal::Gregorian) calendar
-/// created by the Japanese government. It is identical to the Gregorian calendar except that
-/// is uses Japanese eras instead of the Common Era.
-///
-/// This implementation extends proleptically for dates before the calendar's creation
-/// in 6 Meiji (1873 CE).
-/// This implementation uses approximations of earlier Japanese eras proleptically and uses the Gregorian eras for
-/// even earlier dates that don't have an approximate Japanese era.
-///
-/// For a variant whose Japanese eras start with Meiji, check out [`Japanese`].
-///
-/// This corresponds to the `"japanext"` [CLDR calendar](https://unicode.org/reports/tr35/#UnicodeCalendarIdentifier).
-///
-/// [Japanese calendar]: https://en.wikipedia.org/wiki/Japanese_calendar
-///
-/// # Era codes
-///
-/// This calendar supports a large number of era codes. It supports the five eras since its introduction
-/// (`meiji`, `taisho`, `showa`, `heisei`, `reiwa`). Proleptic eras are represented
-/// with their names converted to lowercase ASCII and followed by their start year. E.g. the *Ten'ō*
-/// era (781 - 782 CE) has the code `teno-781`. The  Gregorian `bce` (alias `bc`), and `ce` (alias `ad`)
-/// are used for dates before the first known era era.
-///
-///
-/// These eras are loaded from data, requiring a data provider capable of providing [`CalendarJapaneseExtendedV1`]
-/// data.
-#[derive(Clone, Debug, Default)]
-pub struct JapaneseExtended(Japanese);
 
 impl Japanese {
     /// Creates a new [`Japanese`] using only modern eras (post-meiji) from compiled data.
@@ -81,10 +49,11 @@ impl Japanese {
     /// [📚 Help choosing a constructor](icu_provider::constructors)
     #[cfg(feature = "compiled_data")]
     pub const fn new() -> Self {
-        Self {
-            eras: DataPayload::from_static_ref(
-                crate::provider::Baked::SINGLETON_CALENDAR_JAPANESE_MODERN_V1,
-            ),
+        const {
+            Self {
+                post_reiwa_era: crate::provider::Baked::SINGLETON_CALENDAR_JAPANESE_MODERN_V1
+                    .last_after_reiwa(),
+            }
         }
     }
 
@@ -101,71 +70,68 @@ impl Japanese {
         provider: &D,
     ) -> Result<Self, DataError> {
         Ok(Self {
-            eras: provider.load(Default::default())?.payload,
+            post_reiwa_era: provider
+                .load(Default::default())?
+                .payload
+                .get()
+                .last_after_reiwa(),
         })
     }
 }
 
-impl JapaneseExtended {
-    /// Creates a new [`Japanese`] from using all eras (including pre-meiji) from compiled data.
-    ///
-    /// ✨ *Enabled with the `compiled_data` Cargo feature.*
-    ///
-    /// [📚 Help choosing a constructor](icu_provider::constructors)
-    #[cfg(feature = "compiled_data")]
-    pub const fn new() -> Self {
-        Self(Japanese {
-            eras: DataPayload::from_static_ref(
-                crate::provider::Baked::SINGLETON_CALENDAR_JAPANESE_EXTENDED_V1,
+impl Japanese {
+    fn eras(self) -> impl Iterator<Item = (EraStartDate, TinyAsciiStr<8>, u8)> {
+        self.post_reiwa_era.map(|p| p.unpack()).into_iter().chain([
+            (
+                EraStartDate {
+                    year: 2019,
+                    month: 5,
+                    day: 1,
+                },
+                tinystr!(8, "reiwa"),
+                6,
             ),
-        })
-    }
-
-    icu_provider::gen_buffer_data_constructors!(() -> error: DataError,
-        functions: [
-            new: skip,
-            try_new_with_buffer_provider,
-            try_new_unstable,
-            Self,
-    ]);
-
-    #[doc = icu_provider::gen_buffer_unstable_docs!(UNSTABLE, Self::new)]
-    pub fn try_new_unstable<D: DataProvider<CalendarJapaneseExtendedV1> + ?Sized>(
-        provider: &D,
-    ) -> Result<Self, DataError> {
-        Ok(Self(Japanese {
-            eras: provider.load(Default::default())?.payload.cast(),
-        }))
+            (
+                EraStartDate {
+                    year: 1989,
+                    month: 1,
+                    day: 8,
+                },
+                tinystr!(8, "heisei"),
+                5,
+            ),
+            (
+                EraStartDate {
+                    year: 1926,
+                    month: 12,
+                    day: 25,
+                },
+                tinystr!(8, "showa"),
+                4,
+            ),
+            (
+                EraStartDate {
+                    year: 1912,
+                    month: 7,
+                    day: 30,
+                },
+                tinystr!(8, "taisho"),
+                3,
+            ),
+            (
+                EraStartDate {
+                    year: 1868,
+                    month: 10,
+                    day: 23,
+                },
+                tinystr!(8, "meiji"),
+                2,
+            ),
+        ])
     }
 }
 
-const MEIJI_START: EraStartDate = EraStartDate {
-    year: 1868,
-    month: 10,
-    day: 23,
-};
-const TAISHO_START: EraStartDate = EraStartDate {
-    year: 1912,
-    month: 7,
-    day: 30,
-};
-const SHOWA_START: EraStartDate = EraStartDate {
-    year: 1926,
-    month: 12,
-    day: 25,
-};
-const HEISEI_START: EraStartDate = EraStartDate {
-    year: 1989,
-    month: 1,
-    day: 8,
-};
-const REIWA_START: EraStartDate = EraStartDate {
-    year: 2019,
-    month: 5,
-    day: 1,
-};
-
-impl GregorianYears for &'_ Japanese {
+impl GregorianYears for Japanese {
     fn extended_from_era_year(
         &self,
         era: Option<&[u8]>,
@@ -174,140 +140,59 @@ impl GregorianYears for &'_ Japanese {
         if let Ok(g) = CeBce.extended_from_era_year(era, year) {
             return Ok(g);
         }
-        let Some(era) = era else {
-            // unreachable, handled by CeBce
-            return Err(UnknownEraError);
-        };
 
-        // Avoid linear search by trying well known eras
-        if era == b"reiwa" {
-            return Ok(year - 1 + REIWA_START.year);
-        } else if era == b"heisei" {
-            return Ok(year - 1 + HEISEI_START.year);
-        } else if era == b"showa" {
-            return Ok(year - 1 + SHOWA_START.year);
-        } else if era == b"taisho" {
-            return Ok(year - 1 + TAISHO_START.year);
-        } else if era == b"meiji" {
-            return Ok(year - 1 + MEIJI_START.year);
-        }
-
-        let data = &self.eras.get().dates_to_eras;
-
-        // Try to avoid linear search by binary searching for the year suffix
-        if let Some(start_year) = era
-            .split(|x| *x == b'-')
-            .nth(1)
-            .and_then(|y| core::str::from_utf8(y).ok()?.parse::<i32>().ok())
-        {
-            if let Ok(index) = data.binary_search_by(|(d, _)| d.year.cmp(&start_year)) {
-                // There is a slight chance we hit the case where there are two eras in the same year
-                // There are a couple of rare cases of this, but it's not worth writing a range-based binary search
-                // to catch them since this is an optimization
-                #[expect(clippy::unwrap_used)] // binary search
-                if data.get(index).unwrap().1.as_bytes() == era {
-                    return Ok(start_year + year - 1);
-                }
-            }
-        }
-
-        // Avoidance didn't work. Let's find the era manually, searching back from the present
-        let era_start = data
-            .iter()
-            .rev()
-            .find_map(|(s, e)| (e.as_bytes() == era).then_some(s))
+        let (start, ..) = self
+            .eras()
+            .find(|(_, name, _)| era == Some(name.as_bytes()))
             .ok_or(UnknownEraError)?;
-        Ok(era_start.year + year - 1)
+
+        Ok(year - 1 + start.year)
     }
 
     fn era_year_from_extended(&self, year: i32, month: u8, day: u8) -> types::EraYear {
         let date: EraStartDate = EraStartDate { year, month, day };
 
-        let (start, era) = if date >= MEIJI_START
-            && self
-                .eras
-                .get()
-                .dates_to_eras
-                .last()
-                .is_some_and(|(_, e)| e == tinystr!(16, "reiwa"))
-        {
-            // We optimize for the five "modern" post-Meiji eras, which are stored in a smaller
-            // array and also hardcoded. The hardcoded version is not used if data indicates the
-            // presence of newer eras.
-            if date >= REIWA_START {
-                (REIWA_START, tinystr!(16, "reiwa"))
-            } else if date >= HEISEI_START {
-                (HEISEI_START, tinystr!(16, "heisei"))
-            } else if date >= SHOWA_START {
-                (SHOWA_START, tinystr!(16, "showa"))
-            } else if date >= TAISHO_START {
-                (TAISHO_START, tinystr!(16, "taisho"))
-            } else {
-                // Special case: Meiji 1 to 5 are treated as CE.
-                //
-                // This calendar was adopted in Meiji 6 (1873), but Meiji started
-                // on 1868-10-23, so for Meiji 1 - 5 the lunisolar calendar was still
-                // in use. In order to not produce incorrect pre-Meiji 6
-                // dates, we force the Gregorian calendar there.
-                //
-                // https://tc39.es/proposal-intl-era-monthcode/#table-calendar-types
-                // https://github.com/tc39/proposal-intl-era-monthcode/issues/86
-                if year < 1873 {
-                    return CeBce.era_year_from_extended(year, month, day);
-                }
-
-                (MEIJI_START, tinystr!(16, "meiji"))
+        let ret = if let Some((start, code, idx)) = self.eras().find(|&(start, ..)| date >= start) {
+            types::EraYear {
+                era: code.resize(),
+                era_index: Some(idx),
+                year: year - start.year + 1,
+                extended_year: year,
+                ambiguity: types::YearAmbiguity::CenturyRequired,
             }
         } else {
-            let data = &self.eras.get().dates_to_eras;
-            #[allow(clippy::unwrap_used)] // binary search
-            match data.binary_search_by(|(d, _)| d.cmp(&date)) {
-                Err(0) => {
-                    return CeBce.era_year_from_extended(year, month, day);
-                }
-                Ok(index) => data.get(index).unwrap(),
-                Err(index) => data.get(index - 1).unwrap(),
-            }
+            CeBce.era_year_from_extended(year, month, day)
         };
 
-        types::EraYear {
-            era,
-            era_index: None,
-            year: year - start.year + 1,
-            extended_year: year,
-            ambiguity: types::YearAmbiguity::CenturyRequired,
+        // Special case: Meiji 1 to 5 are treated as CE.
+        //
+        // This calendar was adopted in Meiji 6 (1873), but Meiji started
+        // on 1868-10-23, so for Meiji 1 - 5 the lunisolar calendar was still
+        // in use. In order to not produce incorrect pre-Meiji 6
+        // dates, we force the Gregorian calendar there.
+        //
+        // https://tc39.es/proposal-intl-era-monthcode/#table-calendar-types
+        // https://github.com/tc39/proposal-intl-era-monthcode/issues/86
+        if ret.era == "meiji" && ret.year < 6 {
+            return CeBce.era_year_from_extended(year, month, day);
         }
+
+        ret
     }
 
     fn debug_name(&self) -> &'static str {
-        if self.eras.get().dates_to_eras.len() > 10 {
-            "Japanese (historical era data)"
-        } else {
-            "Japanese"
-        }
+        "Japanese"
     }
 
     fn calendar_algorithm(&self) -> Option<crate::preferences::CalendarAlgorithm> {
-        if self.eras.get().dates_to_eras.len() > 10 {
-            None
-        } else {
-            Some(crate::preferences::CalendarAlgorithm::Japanese)
-        }
+        Some(crate::preferences::CalendarAlgorithm::Japanese)
     }
 }
 
-impl_with_abstract_gregorian!(Japanese, JapaneseDateInner, Japanese, this, this);
-
-impl_with_abstract_gregorian!(
-    JapaneseExtended,
-    JapaneseExtendedDateInner,
-    Japanese,
-    this,
-    &this.0
-);
+impl_with_abstract_gregorian!(Japanese, JapaneseDateInner, Japanese, this, *this);
 
 impl Date<Japanese> {
-    /// Construct a new Japanese Date.
+    /// Construct a new Japanese [`Date`].
     ///
     /// Years are specified in the era provided, and must be in range for Japanese
     /// eras (e.g. dates past April 30 Heisei 31 must be in Reiwa; "Jun 5 Heisei 31" and "Jan 1 Heisei 32"
@@ -315,19 +200,18 @@ impl Date<Japanese> {
     ///
     /// However, dates may always be specified in "bce" or "ce" and they will be adjusted as necessary.
     ///
+    /// This function accepts years in the range `-9999..=9999`, where the Gregorian year
+    /// is also in the range `-9999..=9999`.
+    ///
     /// ```rust
     /// use icu::calendar::cal::Japanese;
     /// use icu::calendar::{Date, Ref};
     /// use tinystr::tinystr;
     ///
-    /// let japanese_calendar = Japanese::new();
-    /// // for easy sharing
-    /// let japanese_calendar = Ref(&japanese_calendar);
-    ///
     /// let era = "heisei";
     ///
     /// let date =
-    ///     Date::try_new_japanese_with_calendar(era, 14, 1, 2, japanese_calendar)
+    ///     Date::try_new_japanese_with_calendar(era, 14, 1, 2, Japanese::new())
     ///         .expect("Constructing a date should succeed");
     ///
     /// assert_eq!(date.era_year().era, era);
@@ -342,7 +226,7 @@ impl Date<Japanese> {
     ///     10,
     ///     1,
     ///     2,
-    ///     japanese_calendar,
+    ///     Japanese::new(),
     /// );
     /// assert!(fake_date.is_err());
     /// ```
@@ -353,82 +237,55 @@ impl Date<Japanese> {
         day: u8,
         japanese_calendar: A,
     ) -> Result<Date<A>, DateError> {
-        let extended = japanese_calendar
-            .as_calendar()
-            .extended_from_era_year(Some(era.as_bytes()), year)?;
-        Ok(Date::from_raw(
-            JapaneseDateInner(ArithmeticDate::new_gregorian::<&Japanese>(
-                extended, month, day,
-            )?),
-            japanese_calendar,
-        ))
+        ArithmeticDate::from_era_year_month_day(
+            era,
+            year,
+            month,
+            day,
+            &AbstractGregorian(*japanese_calendar.as_calendar()),
+        )
+        .map(ArithmeticDate::cast)
+        .map(JapaneseDateInner)
+        .map(|i| Date::from_raw(i, japanese_calendar))
     }
 }
 
-impl Date<JapaneseExtended> {
-    /// Construct a new Japanese Date with all eras.
-    ///
-    /// Years are specified in the era provided, and must be in range for Japanese
-    /// eras (e.g. dates past April 30 Heisei 31 must be in Reiwa; "Jun 5 Heisei 31" and "Jan 1 Heisei 32"
-    /// will not be adjusted to being in Reiwa 1 and 2 respectively)
-    ///
-    /// However, dates may always be specified in "bce" or "ce" and they will be adjusted as necessary.
-    ///
-    /// ```rust
-    /// use icu::calendar::cal::JapaneseExtended;
-    /// use icu::calendar::{Date, Ref};
-    /// use tinystr::tinystr;
-    ///
-    /// let japanext_calendar = JapaneseExtended::new();
-    /// // for easy sharing
-    /// let japanext_calendar = Ref(&japanext_calendar);
-    ///
-    /// let era = "kansei-1789";
-    ///
-    /// let date = Date::try_new_japanese_extended_with_calendar(
-    ///     era,
-    ///     7,
-    ///     1,
-    ///     2,
-    ///     japanext_calendar,
-    /// )
-    /// .expect("Constructing a date should succeed");
-    ///
-    /// assert_eq!(date.era_year().era, era);
-    /// assert_eq!(date.era_year().year, 7);
-    /// assert_eq!(date.month().ordinal, 1);
-    /// assert_eq!(date.day_of_month().0, 2);
-    /// ```
-    pub fn try_new_japanese_extended_with_calendar<A: AsCalendar<Calendar = JapaneseExtended>>(
+impl Date<Japanese> {
+    /// Use [`Self::try_new_japanese_with_calendar`]
+    #[deprecated(since = "2.2.0", note = "use `try_new_japanese_with_calendar`")]
+    pub fn try_new_japanese_extended_with_calendar<A: AsCalendar<Calendar = Japanese>>(
         era: &str,
         year: i32,
         month: u8,
         day: u8,
-        japanext_calendar: A,
+        japanese_calendar: A,
     ) -> Result<Date<A>, DateError> {
-        let extended = (&japanext_calendar.as_calendar().0)
-            .extended_from_era_year(Some(era.as_bytes()), year)?;
-        Ok(Date::from_raw(
-            JapaneseExtendedDateInner(ArithmeticDate::new_gregorian::<&Japanese>(
-                extended, month, day,
-            )?),
-            japanext_calendar,
-        ))
+        Self::try_new_japanese_with_calendar(era, year, month, day, japanese_calendar)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Ref;
 
-    fn single_test_roundtrip(calendar: Ref<Japanese>, era: &str, year: i32, month: u8, day: u8) {
-        let date = Date::try_new_japanese_with_calendar(era, year, month, day, calendar)
+    const CALENDAR: Japanese = Japanese {
+        post_reiwa_era: Some(PackedEra::pack(
+            EraStartDate {
+                year: 2086,
+                month: 11,
+                day: 1,
+            },
+            tinystr!(8, "fuzu"),
+            8,
+        )),
+    };
+
+    fn single_test_roundtrip(era: &str, year: i32, month: u8, day: u8) {
+        let date = Date::try_new_japanese_with_calendar(era, year, month, day, CALENDAR)
             .unwrap_or_else(|e| {
                 panic!("Failed to construct date with {era:?}, {year}, {month}, {day}: {e:?}")
             });
-        let iso = date.to_iso();
-        let reconstructed = Date::new_from_iso(iso, calendar);
+        let reconstructed = Date::from_rata_die(date.to_rata_die(), CALENDAR);
         assert_eq!(
             date, reconstructed,
             "Failed to roundtrip with {era:?}, {year}, {month}, {day}"
@@ -439,28 +296,8 @@ mod tests {
         assert_eq!(reconstructed.era_year().year, year);
     }
 
-    fn single_test_roundtrip_ext(
-        calendar: Ref<JapaneseExtended>,
-        era: &str,
-        year: i32,
-        month: u8,
-        day: u8,
-    ) {
-        let date = Date::try_new_japanese_extended_with_calendar(era, year, month, day, calendar)
-            .unwrap_or_else(|e| {
-                panic!("Failed to construct date with {era:?}, {year}, {month}, {day}: {e:?}")
-            });
-        let iso = date.to_iso();
-        let reconstructed = Date::new_from_iso(iso, calendar);
-        assert_eq!(
-            date, reconstructed,
-            "Failed to roundtrip with {era:?}, {year}, {month}, {day}"
-        )
-    }
-
-    // test that out-of-range era values roundtrip to other eras
+    // test that out-of-range era values convert to other eras
     fn single_test_era_range_roundtrip(
-        calendar: Ref<Japanese>,
         era: &str,
         year: i32,
         month: u8,
@@ -468,126 +305,79 @@ mod tests {
         era2: &str,
         year2: i32,
     ) {
-        let expected = Date::try_new_japanese_with_calendar(era2, year2, month, day, calendar)
+        let expected = Date::try_new_japanese_with_calendar(era2, year2, month, day, CALENDAR)
             .unwrap_or_else(|e| {
                 panic!(
                     "Failed to construct expectation date with {era2:?}, {year2}, {month}, {day}: {e:?}"
                 )
             });
 
-        let date = Date::try_new_japanese_with_calendar(era, year, month, day, calendar)
+        let date = Date::try_new_japanese_with_calendar(era, year, month, day, CALENDAR)
             .unwrap_or_else(|e| {
                 panic!("Failed to construct date with {era:?}, {year}, {month}, {day}: {e:?}")
             });
-        let iso = date.to_iso();
-        let reconstructed = Date::new_from_iso(iso, calendar);
         assert_eq!(
-            expected, reconstructed,
-            "Failed to roundtrip with {era:?}, {year}, {month}, {day} == {era2:?}, {year}"
-        )
-    }
-    fn single_test_era_range_roundtrip_ext(
-        calendar: Ref<JapaneseExtended>,
-        era: &str,
-        year: i32,
-        month: u8,
-        day: u8,
-        era2: &str,
-        year2: i32,
-    ) {
-        let expected = Date::try_new_japanese_extended_with_calendar(era2, year2, month, day, calendar)
-            .unwrap_or_else(|e| {
-                panic!(
-                    "Failed to construct expectation date with {era2:?}, {year2}, {month}, {day}: {e:?}"
-                )
-            });
-
-        let date = Date::try_new_japanese_extended_with_calendar(era, year, month, day, calendar)
-            .unwrap_or_else(|e| {
-                panic!("Failed to construct date with {era:?}, {year}, {month}, {day}: {e:?}")
-            });
-        let iso = date.to_iso();
-        let reconstructed = Date::new_from_iso(iso, calendar);
-        assert_eq!(
-            expected, reconstructed,
-            "Failed to roundtrip with {era:?}, {year}, {month}, {day} == {era2:?}, {year}"
-        )
-    }
-
-    fn single_test_error(
-        calendar: Ref<Japanese>,
-        era: &str,
-        year: i32,
-        month: u8,
-        day: u8,
-        error: DateError,
-    ) {
-        let date = Date::try_new_japanese_with_calendar(era, year, month, day, calendar);
-        assert_eq!(
-            date,
-            Err(error),
-            "Construction with {era:?}, {year}, {month}, {day} did not return {error:?}"
+            expected, date,
+            "Failed to convert with {era:?}, {year}, {month}, {day}"
         )
     }
 
     #[test]
     fn test_japanese() {
-        let calendar = Japanese::new();
-        let calendar_ext = JapaneseExtended::new();
-        let calendar = Ref(&calendar);
-        let calendar_ext = Ref(&calendar_ext);
-
-        single_test_roundtrip(calendar, "heisei", 12, 3, 1);
-        single_test_roundtrip(calendar, "taisho", 3, 3, 1);
+        single_test_roundtrip("heisei", 12, 3, 1);
+        single_test_roundtrip("taisho", 3, 3, 1);
         // Heisei did not start until later in the year
-        single_test_era_range_roundtrip(calendar, "heisei", 1, 1, 1, "showa", 64);
-
-        single_test_roundtrip_ext(calendar_ext, "heisei", 12, 3, 1);
-        single_test_roundtrip_ext(calendar_ext, "taisho", 3, 3, 1);
-        single_test_era_range_roundtrip_ext(calendar_ext, "heisei", 1, 1, 1, "showa", 64);
-
-        single_test_roundtrip_ext(calendar_ext, "hakuho-672", 4, 3, 1);
-        single_test_error(calendar, "hakuho-672", 4, 3, 1, DateError::UnknownEra);
+        single_test_era_range_roundtrip("heisei", 1, 1, 1, "showa", 64);
 
         // handle bce/ce
-        single_test_roundtrip(calendar, "bce", 100, 3, 1);
-        single_test_roundtrip(calendar, "bce", 1, 3, 1);
-        single_test_roundtrip(calendar, "ce", 1, 3, 1);
-        single_test_roundtrip(calendar, "ce", 100, 3, 1);
-        single_test_roundtrip_ext(calendar_ext, "ce", 100, 3, 1);
-        single_test_roundtrip(calendar, "ce", 1000, 3, 1);
-        single_test_era_range_roundtrip(calendar, "ce", 0, 3, 1, "bce", 1);
-        single_test_era_range_roundtrip(calendar, "bce", -1, 3, 1, "ce", 2);
+        single_test_roundtrip("bce", 100, 3, 1);
+        single_test_roundtrip("bce", 1, 3, 1);
+        single_test_roundtrip("ce", 1, 3, 1);
+        single_test_roundtrip("ce", 100, 3, 1);
+        single_test_roundtrip("ce", 1000, 3, 1);
+        single_test_era_range_roundtrip("ce", 0, 3, 1, "bce", 1);
+        single_test_era_range_roundtrip("bce", -1, 3, 1, "ce", 2);
+
+        // check post-reiwa
+        single_test_roundtrip("reiwa", 68, 10, 31);
+        single_test_era_range_roundtrip("fuzu", 1, 10, 31, "reiwa", 68);
+        single_test_roundtrip("fuzu", 1, 11, 1);
 
         // handle the cases where bce/ce get adjusted to different eras
-        // single_test_gregorian_roundtrip(calendar, "ce", 2021, 3, 1, "reiwa", 3);
-        single_test_era_range_roundtrip_ext(calendar_ext, "ce", 1000, 3, 1, "choho-999", 2);
-        single_test_era_range_roundtrip_ext(calendar_ext, "ce", 749, 5, 10, "tenpyokampo-749", 1);
-        single_test_era_range_roundtrip_ext(calendar_ext, "bce", 10, 3, 1, "bce", 10);
-        single_test_era_range_roundtrip_ext(calendar_ext, "ce", -1, 3, 1, "bce", 2);
+        // single_test_gregorian_roundtrip("ce", 2021, 3, 1, "reiwa", 3);
+        single_test_era_range_roundtrip("ce", 2024, 3, 1, "reiwa", 6);
+    }
 
-        // There were multiple eras in this year
-        // This one is from Apr 14 to July 2
-        single_test_roundtrip_ext(calendar_ext, "tenpyokampo-749", 1, 4, 20);
-        single_test_roundtrip_ext(calendar_ext, "tenpyokampo-749", 1, 4, 14);
-        single_test_roundtrip_ext(calendar_ext, "tenpyokampo-749", 1, 7, 1);
-        single_test_era_range_roundtrip_ext(
-            calendar_ext,
-            "tenpyokampo-749",
-            1,
-            7,
-            5,
-            "tenpyoshoho-749",
-            1,
-        );
-        single_test_era_range_roundtrip_ext(
-            calendar_ext,
-            "tenpyokampo-749",
-            1,
-            4,
-            13,
-            "tenpyoshoho-749",
-            1,
-        );
+    #[test]
+    /// Pre-Meiji 6 dates are treated as CE, make sure that works right
+    fn test_meiji_6_switchover() {
+        // Pre-meiji 6 dates specified as CE
+        single_test_roundtrip("ce", 1868, 1, 1);
+        single_test_roundtrip("ce", 1868, 10, 1);
+        single_test_roundtrip("ce", 1868, 10, 23);
+        single_test_roundtrip("ce", 1868, 10, 24);
+        single_test_roundtrip("ce", 1868, 11, 1);
+        single_test_roundtrip("ce", 1869, 1, 1);
+        single_test_roundtrip("ce", 1871, 1, 1);
+
+        // Pre-meiji 6 dates specified as Meiji
+        single_test_era_range_roundtrip("meiji", 1, 1, 1, "ce", 1868);
+        single_test_era_range_roundtrip("meiji", 1, 10, 1, "ce", 1868);
+        single_test_era_range_roundtrip("meiji", 1, 10, 23, "ce", 1868);
+        single_test_era_range_roundtrip("meiji", 1, 10, 24, "ce", 1868);
+        single_test_era_range_roundtrip("meiji", 1, 11, 1, "ce", 1868);
+        single_test_era_range_roundtrip("meiji", 1, 11, 1, "ce", 1868);
+        single_test_era_range_roundtrip("meiji", 2, 1, 1, "ce", 1869);
+        single_test_era_range_roundtrip("meiji", 5, 1, 1, "ce", 1872);
+
+        // Post-Meiji 6 dates specified as Meiji
+        single_test_roundtrip("meiji", 6, 1, 1);
+        single_test_roundtrip("meiji", 6, 5, 1);
+        single_test_roundtrip("meiji", 7, 1, 1);
+
+        // Post-Meiji 6 dates specified as CE
+        single_test_era_range_roundtrip("ce", 1873, 1, 1, "meiji", 6);
+        single_test_era_range_roundtrip("ce", 1873, 5, 1, "meiji", 6);
+        single_test_era_range_roundtrip("ce", 1874, 1, 1, "meiji", 7);
     }
 }

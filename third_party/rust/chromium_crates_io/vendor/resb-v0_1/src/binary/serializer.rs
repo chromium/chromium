@@ -19,8 +19,8 @@ use super::{
 
 const DATA_FORMAT: &[u8; 4] = b"ResB";
 const DATA_VERSION: &[u8; 4] = &[1, 4, 0, 0];
-const PADDED_HEADER_SIZE: usize = (core::mem::size_of::<BinHeader>() + 15) & !0xf;
-const REPR_INFO_SIZE: usize = core::mem::size_of::<BinReprInfo>();
+const PADDED_HEADER_SIZE: usize = (size_of::<BinHeader>() + 15) & !0xf;
+const REPR_INFO_SIZE: usize = size_of::<BinReprInfo>();
 
 /// The value of the magic word appearing in the header.
 ///
@@ -90,8 +90,8 @@ enum BinResourceTypeData<'a> {
     _Alias,
 }
 
-impl std::fmt::Display for BinResourceTypeData<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for BinResourceTypeData<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // Provide a user-friendly string for the resource type in order to
         // create helpful error messages.
         write!(
@@ -243,7 +243,7 @@ impl Serializer {
 
         // The root descriptor is considered to be at offset `0`, so include it
         // in the determination of the offset of the end of the index.
-        let index_end = (1 + index_field_count) * std::mem::size_of::<u32>() as u32;
+        let index_end = (1 + index_field_count) * size_of::<u32>() as u32;
 
         // Build the key block.
         let mut key_position_map = HashMap::new();
@@ -292,9 +292,9 @@ impl Serializer {
             repr_info,
         };
 
-        let root_descriptor = root.descriptor.ok_or(BinarySerializerError::unexpected(
-            "root descriptor was never populated",
-        ))?;
+        let root_descriptor = root.descriptor.ok_or_else(|| {
+            BinarySerializerError::unexpected("root descriptor was never populated")
+        })?;
         let bundle_struct = BinResBundle {
             header,
             root_descriptor,
@@ -510,12 +510,9 @@ impl Serializer {
                 // need to borrow as mutable, but we can safely unwrap.
                 #[expect(clippy::unwrap_used)]
                 let containing_string = data.borrow().containing_string.unwrap();
-                let containing_data =
-                    strings
-                        .get(containing_string)
-                        .ok_or(BinarySerializerError::unexpected(
-                            "containing string not present in string map",
-                        ))?;
+                let containing_data = strings.get(containing_string).ok_or_else(|| {
+                    BinarySerializerError::unexpected("containing string not present in string map")
+                })?;
 
                 // Update the offset of the suffix from a relative position in
                 // the containing string to an absolute position in the 16-bit
@@ -792,12 +789,9 @@ impl Serializer {
                 data.append(&mut (map.len() as u16).to_ne_bytes().to_vec());
 
                 for key in map.keys() {
-                    let position =
-                        key_position_map
-                            .get(key)
-                            .ok_or(BinarySerializerError::unexpected(
-                                "key not present in position map",
-                            ))?;
+                    let position = key_position_map.get(key).ok_or_else(|| {
+                        BinarySerializerError::unexpected("key not present in position map")
+                    })?;
                     data.append(&mut (*position as u16).to_ne_bytes().to_vec());
                 }
 
@@ -818,7 +812,7 @@ impl Serializer {
                 // Pad before the start of the binary data such that the number
                 // of bytes in the body is divisible by 16.
                 let offset = block_start_position as usize + data.len();
-                let aligned = (offset + std::mem::size_of::<u32>()) % 16;
+                let aligned = (offset + size_of::<u32>()) % 16;
                 if aligned != 0 {
                     data.resize(data.len() + (16 - aligned), 0xaa);
                 }
@@ -859,14 +853,14 @@ impl Serializer {
 
         // Pad the resource body to end at a 32-bit boundary.
         let position = block_start_position as usize + data.len();
-        let u32_size = std::mem::size_of::<u32>();
+        let u32_size = size_of::<u32>();
         if position % u32_size != 0 {
             data.resize(data.len() + (u32_size - position % u32_size), 0xaa);
         }
 
-        resource.descriptor.ok_or(BinarySerializerError::unexpected(
-            "resource descriptor has not been populated",
-        ))
+        resource.descriptor.ok_or_else(|| {
+            BinarySerializerError::unexpected("resource descriptor has not been populated")
+        })
     }
 
     /// Generates a vector of bytes representing the 32-bit resource block.
@@ -917,9 +911,9 @@ fn get_total_string_size(string: &str) -> Result<usize, BinarySerializerError> {
 
 /// Gets the size of the length marker of a UTF-16 string in 16-bit characters.
 ///
-/// Strings of no more than 40 characters are terminated with a 16-bit U+0000
+/// Strings of no more than 40 characters are terminated with a 16-bit `U+0000`
 /// character, while longer strings are marked with one to three UTF-16 low
-/// surrogates to indicate length.`
+/// surrogates to indicate length.
 ///
 /// For more details, see [`ResourceReprType::StringV2`].
 fn get_string_length_marker_size(string: &str) -> Result<usize, BinarySerializerError> {
@@ -1135,8 +1129,7 @@ impl TryFrom<BinIndex> for Vec<u8> {
     type Error = BinarySerializerError;
 
     fn try_from(value: BinIndex) -> Result<Self, Self::Error> {
-        let mut bytes =
-            Vec::with_capacity(value.field_count as usize * core::mem::size_of::<u32>());
+        let mut bytes = Vec::with_capacity(value.field_count as usize * size_of::<u32>());
 
         // Format version 1.0 did not include an index and so no bytes should be
         // written.
@@ -1149,23 +1142,17 @@ impl TryFrom<BinIndex> for Vec<u8> {
         }
 
         if value.field_count >= 6 {
-            let bundle_attributes =
-                value
-                    .bundle_attributes
-                    .ok_or(BinarySerializerError::unexpected(
-                        "no bundle attributes field provided",
-                    ))?;
+            let bundle_attributes = value.bundle_attributes.ok_or_else(|| {
+                BinarySerializerError::unexpected("no bundle attributes field provided")
+            })?;
 
             bytes.extend_from_slice(&bundle_attributes.to_ne_bytes());
         }
 
         if value.field_count >= 7 {
-            let data_16_bit_end =
-                value
-                    .data_16_bit_end
-                    .ok_or(BinarySerializerError::unexpected(
-                        "no 16-bit data end offset provided",
-                    ))?;
+            let data_16_bit_end = value.data_16_bit_end.ok_or_else(|| {
+                BinarySerializerError::unexpected("no 16-bit data end offset provided")
+            })?;
 
             bytes.extend_from_slice(&data_16_bit_end.to_ne_bytes());
         }
@@ -1173,9 +1160,7 @@ impl TryFrom<BinIndex> for Vec<u8> {
         if value.field_count >= 8 {
             let pool_checksum = value
                 .pool_checksum
-                .ok_or(BinarySerializerError::unexpected(
-                    "no pool checksum provided",
-                ))?;
+                .ok_or_else(|| BinarySerializerError::unexpected("no pool checksum provided"))?;
 
             bytes.extend_from_slice(&pool_checksum.to_ne_bytes());
         }

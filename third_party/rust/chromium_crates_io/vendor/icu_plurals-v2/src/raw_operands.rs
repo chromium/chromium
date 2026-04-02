@@ -2,22 +2,22 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-//! 🚧 \[Experimental\] Data Structures and conversions for directly constructing the plural rule
+//! 🚧 \[Unstable\] Data Structures and conversions for directly constructing the plural rule
 //! operands of a number
 //!
 //! <div class="stab unstable">
-//! 🚧 This code is experimental; it may change at any time, in breaking or non-breaking ways,
+//! 🚧 This code is unstable; it may change at any time, in breaking or non-breaking ways,
 //! including in SemVer minor releases. Use with caution.
 //! <a href="https://github.com/unicode-org/icu4x/issues/1091">#1091</a>
 //! </div>
 
 use crate::PluralOperands;
 
-/// 🚧 \[Experimental\] A struct for low-level users who want to construct a [`PluralOperands`]
+/// 🚧 \[Unstable\] A struct for low-level users who want to construct a [`PluralOperands`]
 /// directly based on the LDML Plural Operand definitions.
 ///
 /// This may be useful
-/// for people with experimental rules parsing.
+/// for people with unstable rules parsing.
 ///
 /// This struct is not intended for supported API use, and it is subject to breaking
 /// changes (ex: a new Plural Operand needs to be supported).
@@ -27,12 +27,12 @@ use crate::PluralOperands;
 /// See [`PluralOperands`] for details.
 ///
 /// <div class="stab unstable">
-/// 🚧 This code is experimental; it may change at any time, in breaking or non-breaking ways,
+/// 🚧 This code is unstable; it may change at any time, in breaking or non-breaking ways,
 /// including in SemVer minor releases. Use with caution.
 /// <a href="https://github.com/unicode-org/icu4x/issues/1091">#1091</a>
 /// </div>
-#[cfg(feature = "experimental")]
-#[allow(clippy::exhaustive_structs)] // experimental
+#[cfg(feature = "unstable")]
+#[allow(clippy::exhaustive_structs)] // unstable
 #[derive(Debug)]
 pub struct RawPluralOperands {
     /// Integer value of input

@@ -112,7 +112,7 @@ impl Subtag {
     }
 
     #[doc(hidden)]
-    pub fn from_tinystr_unvalidated(input: tinystr::TinyAsciiStr<8>) -> Self {
+    pub const fn from_tinystr_unvalidated(input: tinystr::TinyAsciiStr<8>) -> Self {
         Self(input)
     }
 

@@ -5,8 +5,10 @@
 //! Code for the [`MultiNamedPlaceholder`] pattern backend.
 
 #[cfg(feature = "alloc")]
-use alloc::{borrow::Cow, boxed::Box, collections::BTreeMap, str::FromStr, string::String};
+use alloc::{borrow::Cow, boxed::Box, collections::BTreeMap, string::String};
 use core::fmt;
+#[cfg(feature = "alloc")]
+use core::str::FromStr;
 #[cfg(feature = "litemap")]
 use litemap::LiteMap;
 use writeable::Writeable;
@@ -162,7 +164,7 @@ where
 /// The literals and placeholders are stored in context. A placeholder is encoded as a name length
 /// in octal code points followed by the placeholder name.
 ///
-/// For example, consider the pattern: "Hello, {user} and {someone_else}!"
+/// For example, consider the pattern: `Hello, {user} and {someone_else}!`
 ///
 /// The encoding for this would be:
 ///

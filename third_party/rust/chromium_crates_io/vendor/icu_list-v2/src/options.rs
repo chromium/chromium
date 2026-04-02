@@ -4,7 +4,7 @@
 
 //! Options used by types in this crate
 
-/// A list of options set by the developer to adjust the behavior of the ListFormatter.
+/// A list of options set by the developer to adjust the behavior of the [`ListFormatter`](super::ListFormatter).
 ///
 /// # Examples
 /// ```

@@ -139,9 +139,9 @@ fn bench_lang(name: &str, data: &str, c: &mut Criterion) {
     }
 }
 
-static EL: &str = include_str!("./data/TestRandomWordsUDHR_el.txt");
+static EL: &str = include_str!("./data/Carroll-11-el.txt");
 static EN: &str = "The ICU4X normalizer is an implementation of Unicode Normalization Forms. ";
-static FR: &str = include_str!("./data/TestRandomWordsUDHR_fr.txt");
+static FR: &str = include_str!("./data/Carroll-11-fr.txt");
 static VI: &str = include_str!("./data/wotw.txt");
 static ZH: &str = "單父人呂公善沛令，辟仇，從之客，因家焉。沛中豪傑吏聞令有重客，皆往賀。";
 // zh text from https://www.gutenberg.org/cache/epub/23841/pg23841.txt

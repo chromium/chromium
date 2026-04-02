@@ -225,7 +225,7 @@ impl From<LiteMap<Key, Value>> for Fields {
 
 /// ✨ *Enabled with the `alloc` Cargo feature.*
 #[cfg(feature = "alloc")]
-impl core::iter::FromIterator<(Key, Value)> for Fields {
+impl FromIterator<(Key, Value)> for Fields {
     fn from_iter<I: IntoIterator<Item = (Key, Value)>>(iter: I) -> Self {
         LiteMap::from_iter(iter).into()
     }

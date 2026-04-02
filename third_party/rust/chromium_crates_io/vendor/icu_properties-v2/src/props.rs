@@ -70,6 +70,7 @@ macro_rules! create_const_array {
 
 
         impl From<$enum_ty> for u16  {
+            #[allow(trivial_numeric_casts)]
             fn from(other: $enum_ty) -> Self {
                 other.0 as u16
             }
@@ -133,7 +134,7 @@ macro_rules! make_enumerated_property {
     };
 }
 
-/// Enumerated property Bidi_Class
+/// Enumerated property `Bidi_Class`
 ///
 /// These are the categories required by the Unicode Bidirectional Algorithm.
 /// For the property values, see [Bidirectional Class Values](https://unicode.org/reports/tr44/#Bidi_Class_Values).
@@ -233,15 +234,82 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
+/// Enumerated property `Numeric_Type`.
+///
+/// See Section 4.6, Numeric Value in The Unicode Standard for the summary of
+/// each property value.
+///
+/// # Example
+///
+/// ```
+/// use icu::properties::{props::NumericType, CodePointMapData};
+///
+/// assert_eq!(
+///     CodePointMapData::<NumericType>::new().get('0'),
+///     NumericType::Decimal,
+/// ); // U+0030
+/// assert_eq!(
+///     CodePointMapData::<NumericType>::new().get('½'),
+///     NumericType::Numeric,
+/// ); // U+00BD
+/// ```
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[allow(clippy::exhaustive_structs)] // newtype
+#[repr(transparent)]
+pub struct NumericType(pub(crate) u8);
+
+impl NumericType {
+    /// Returns an ICU4C `UNumericType` value.
+    pub const fn to_icu4c_value(self) -> u8 {
+        self.0
+    }
+    /// Constructor from an ICU4C `UNumericType` value.
+    pub const fn from_icu4c_value(value: u8) -> Self {
+        Self(value)
+    }
+}
+
+create_const_array! {
+#[allow(non_upper_case_globals)]
+impl NumericType {
+    /// Characters without numeric value
+    pub const None: NumericType = NumericType(0);
+    /// (`De`) Characters of positional decimal systems
+    ///
+    /// These are coextensive with [`GeneralCategory::DecimalNumber`].
+    pub const Decimal: NumericType = NumericType(1);
+    /// (`Di`) Variants of positional or sequences thereof.
+    ///
+    /// The distinction between [`NumericType::Digit`] and [`NumericType::Numeric`]
+    /// has not proven to be useful, so no further characters will be added to
+    /// this type.
+    pub const Digit: NumericType = NumericType(2);
+    /// (`Nu`) Other characters with numeric value
+    pub const Numeric: NumericType = NumericType(3);
+}
+#[test]
+fn numeric_type_consts();
+}
+
+make_enumerated_property! {
+    name: "Numeric_Type";
+    short_name: "nt";
+    ident: NumericType;
+    data_marker: crate::provider::PropertyEnumNumericTypeV1;
+    singleton: SINGLETON_PROPERTY_ENUM_NUMERIC_TYPE_V1;
+    ule_ty: u8;
+}
+
 // This exists to encapsulate GeneralCategoryULE so that it can exist in the provider module rather than props
 pub(crate) mod gc {
-    /// Enumerated property General_Category.
+    /// Enumerated property `General_Category`.
     ///
-    /// General_Category specifies the most general classification of a code point, usually
+    /// `General_Category` specifies the most general classification of a code point, usually
     /// determined based on the primary characteristic of the assigned character. For example, is the
     /// character a letter, a mark, a number, punctuation, or a symbol, and if so, of what type?
     ///
-    /// GeneralCategory only supports specific subcategories (eg `UppercaseLetter`).
+    /// `GeneralCategory` only supports specific subcategories (eg `UppercaseLetter`).
     /// It does not support grouped categories (eg `Letter`). For grouped categories, use [`GeneralCategoryGroup`](
     /// crate::props::GeneralCategoryGroup).
     ///
@@ -412,7 +480,7 @@ make_enumerated_property! {
     singleton: SINGLETON_PROPERTY_ENUM_GENERAL_CATEGORY_V1;
 }
 
-/// Groupings of multiple General_Category property values.
+/// Groupings of multiple `General_Category` property values.
 ///
 /// Instances of `GeneralCategoryGroup` represent the defined multi-category
 /// values that are useful for users in certain contexts, such as regex. In
@@ -449,7 +517,7 @@ impl GeneralCategoryGroup {
     pub const ModifierLetter: GeneralCategoryGroup = GCG(1 << (GC::ModifierLetter as u32));
     /// (`Lo`) Other letters, including syllables and ideographs
     pub const OtherLetter: GeneralCategoryGroup = GCG(1 << (GC::OtherLetter as u32));
-    /// (`LC`) The union of UppercaseLetter, LowercaseLetter, and TitlecaseLetter
+    /// (`LC`) The union of `UppercaseLetter`, `LowercaseLetter`, and `TitlecaseLetter`
     pub const CasedLetter: GeneralCategoryGroup = GCG((1 << (GC::UppercaseLetter as u32))
         | (1 << (GC::LowercaseLetter as u32))
         | (1 << (GC::TitlecaseLetter as u32)));
@@ -597,7 +665,7 @@ impl GeneralCategoryGroup {
         0 != (1 << (val as u32)) & self.0
     }
 
-    /// Produce a GeneralCategoryGroup that is the inverse of this one
+    /// Produce a `GeneralCategoryGroup` that is the inverse of this one
     ///
     /// # Example
     ///
@@ -620,7 +688,7 @@ impl GeneralCategoryGroup {
         GeneralCategoryGroup(!self.0 & Self::ALL)
     }
 
-    /// Return the group representing all GeneralCategory values
+    /// Return the group representing all `GeneralCategory` values
     ///
     /// # Example
     ///
@@ -714,15 +782,15 @@ impl From<GeneralCategoryGroup> for u32 {
 
 /// Enumerated property Script.
 ///
-/// This is used with both the Script and Script_Extensions Unicode properties.
+/// This is used with both the Script and `Script_Extensions` Unicode properties.
 /// Each character is assigned a single Script, but characters that are used in
-/// a particular subset of scripts will be in more than one Script_Extensions set.
-/// For example, DEVANAGARI DIGIT NINE has Script=Devanagari, but is also in the
-/// Script_Extensions set for Dogra, Kaithi, and Mahajani. If you are trying to
+/// a particular subset of scripts will be in more than one `Script_Extensions` set.
+/// For example, `DEVANAGARI DIGIT NINE` has `Script=Devanagari`, but is also in the
+/// `Script_Extensions` set for Dogra, Kaithi, and Mahajani. If you are trying to
 /// determine whether a code point belongs to a certain script, you should use
 /// [`ScriptWithExtensionsBorrowed::has_script`].
 ///
-/// For more information, see UAX #24: <http://www.unicode.org/reports/tr24/>.
+/// For more information, see UAX #24: <https://www.unicode.org/reports/tr24/>.
 /// See `UScriptCode` in ICU4C.
 ///
 /// # Example
@@ -974,7 +1042,7 @@ make_enumerated_property! {
     ule_ty: <u16 as zerovec::ule::AsULE>::ULE;
 }
 
-/// Enumerated property Hangul_Syllable_Type
+/// Enumerated property `Hangul_Syllable_Type`
 ///
 /// The Unicode standard provides both precomposed Hangul syllables and conjoining Jamo to compose
 /// arbitrary Hangul syllables. This property provides that ontology of Hangul code points.
@@ -1042,7 +1110,7 @@ make_enumerated_property! {
 
 }
 
-/// Enumerated property East_Asian_Width.
+/// Enumerated property `East_Asian_Width`.
 ///
 /// See "Definition" in UAX #11 for the summary of each property value:
 /// <https://www.unicode.org/reports/tr11/#Definitions>
@@ -1102,7 +1170,7 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-/// Enumerated property Line_Break.
+/// Enumerated property `Line_Break`.
 ///
 /// See "Line Breaking Properties" in UAX #14 for the summary of each property
 /// value: <https://www.unicode.org/reports/tr14/#Properties>
@@ -1213,7 +1281,7 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-/// Enumerated property Grapheme_Cluster_Break.
+/// Enumerated property `Grapheme_Cluster_Break`.
 ///
 /// See "Default Grapheme Cluster Boundary Specification" in UAX #29 for the
 /// summary of each property value:
@@ -1292,7 +1360,7 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-/// Enumerated property Word_Break.
+/// Enumerated property `Word_Break`.
 ///
 /// See "Default Word Boundary Specification" in UAX #29 for the summary of
 /// each property value:
@@ -1376,7 +1444,7 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-/// Enumerated property Sentence_Break.
+/// Enumerated property `Sentence_Break`.
 ///
 /// See "Default Sentence Boundary Specification" in UAX #29 for the summary of
 /// each property value:
@@ -1448,15 +1516,15 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-/// Property Canonical_Combining_Class.
+/// Property `Canonical_Combining_Class`.
 /// See UAX #15:
 /// <https://www.unicode.org/reports/tr15/>.
 ///
 /// See `icu::normalizer::properties::CanonicalCombiningClassMap` for the API
-/// to look up the Canonical_Combining_Class property by scalar value.
+/// to look up the `Canonical_Combining_Class` property by scalar value.
 ///
 /// **Note:** See `icu::normalizer::CanonicalCombiningClassMap` for the preferred API
-/// to look up the Canonical_Combining_Class property by scalar value.
+/// to look up the `Canonical_Combining_Class` property by scalar value.
 ///
 /// # Example
 ///
@@ -1571,7 +1639,7 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-/// Property Indic_Conjunct_Break.
+/// Property `Indic_Conjunct_Break`.
 /// See UAX #44:
 /// <https://www.unicode.org/reports/tr44/#Indic_Conjunct_Break>.
 ///
@@ -1636,7 +1704,7 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-/// Property Indic_Syllabic_Category.
+/// Property `Indic_Syllabic_Category`.
 /// See UAX #44:
 /// <https://www.unicode.org/reports/tr44/#Indic_Syllabic_Category>.
 ///
@@ -1726,7 +1794,165 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-/// Enumerated property Joining_Type.
+/// Enumerated property `Joining_Group`.
+///
+/// See Section 9.2, Arabic Joining Groups in The Unicode Standard for the summary of
+/// each property value.
+///
+/// ```
+/// use icu::properties::{props::JoiningGroup, CodePointMapData};
+///
+/// assert_eq!(
+///     CodePointMapData::<JoiningGroup>::new().get('ع'),
+///     JoiningGroup::Ain,
+/// ); // U+0639: Arabic Letter Ain
+/// assert_eq!(
+///     CodePointMapData::<JoiningGroup>::new().get('ظ'),
+///     JoiningGroup::Tah,
+/// ); // U+0638: Arabic Letter Zah
+/// ```
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[allow(clippy::exhaustive_structs)] // newtype
+#[repr(transparent)]
+pub struct JoiningGroup(pub(crate) u8);
+
+impl JoiningGroup {
+    /// Returns an ICU4C `UJoiningType` value.
+    pub const fn to_icu4c_value(self) -> u8 {
+        self.0
+    }
+    /// Constructor from an ICU4C `UJoiningType` value.
+    pub const fn from_icu4c_value(value: u8) -> Self {
+        Self(value)
+    }
+}
+
+create_const_array! {
+#[allow(missing_docs)] // These constants don't need individual documentation.
+#[allow(non_upper_case_globals)]
+impl JoiningGroup {
+    pub const NoJoiningGroup: JoiningGroup = JoiningGroup(0);
+    pub const Ain: JoiningGroup = JoiningGroup(1);
+    pub const Alaph: JoiningGroup = JoiningGroup(2);
+    pub const Alef: JoiningGroup = JoiningGroup(3);
+    pub const Beh: JoiningGroup = JoiningGroup(4);
+    pub const Beth: JoiningGroup = JoiningGroup(5);
+    pub const Dal: JoiningGroup = JoiningGroup(6);
+    pub const DalathRish: JoiningGroup = JoiningGroup(7);
+    pub const E: JoiningGroup = JoiningGroup(8);
+    pub const Feh: JoiningGroup = JoiningGroup(9);
+    pub const FinalSemkath: JoiningGroup = JoiningGroup(10);
+    pub const Gaf: JoiningGroup = JoiningGroup(11);
+    pub const Gamal: JoiningGroup = JoiningGroup(12);
+    pub const Hah: JoiningGroup = JoiningGroup(13);
+    pub const TehMarbutaGoal: JoiningGroup = JoiningGroup(14);
+    pub const He: JoiningGroup = JoiningGroup(15);
+    pub const Heh: JoiningGroup = JoiningGroup(16);
+    pub const HehGoal: JoiningGroup = JoiningGroup(17);
+    pub const Heth: JoiningGroup = JoiningGroup(18);
+    pub const Kaf: JoiningGroup = JoiningGroup(19);
+    pub const Kaph: JoiningGroup = JoiningGroup(20);
+    pub const KnottedHeh: JoiningGroup = JoiningGroup(21);
+    pub const Lam: JoiningGroup = JoiningGroup(22);
+    pub const Lamadh: JoiningGroup = JoiningGroup(23);
+    pub const Meem: JoiningGroup = JoiningGroup(24);
+    pub const Mim: JoiningGroup = JoiningGroup(25);
+    pub const Noon: JoiningGroup = JoiningGroup(26);
+    pub const Nun: JoiningGroup = JoiningGroup(27);
+    pub const Pe: JoiningGroup = JoiningGroup(28);
+    pub const Qaf: JoiningGroup = JoiningGroup(29);
+    pub const Qaph: JoiningGroup = JoiningGroup(30);
+    pub const Reh: JoiningGroup = JoiningGroup(31);
+    pub const ReversedPe: JoiningGroup = JoiningGroup(32);
+    pub const Sad: JoiningGroup = JoiningGroup(33);
+    pub const Sadhe: JoiningGroup = JoiningGroup(34);
+    pub const Seen: JoiningGroup = JoiningGroup(35);
+    pub const Semkath: JoiningGroup = JoiningGroup(36);
+    pub const Shin: JoiningGroup = JoiningGroup(37);
+    pub const SwashKaf: JoiningGroup = JoiningGroup(38);
+    pub const SyriacWaw: JoiningGroup = JoiningGroup(39);
+    pub const Tah: JoiningGroup = JoiningGroup(40);
+    pub const Taw: JoiningGroup = JoiningGroup(41);
+    pub const TehMarbuta: JoiningGroup = JoiningGroup(42);
+    pub const Teth: JoiningGroup = JoiningGroup(43);
+    pub const Waw: JoiningGroup = JoiningGroup(44);
+    pub const Yeh: JoiningGroup = JoiningGroup(45);
+    pub const YehBarree: JoiningGroup = JoiningGroup(46);
+    pub const YehWithTail: JoiningGroup = JoiningGroup(47);
+    pub const Yudh: JoiningGroup = JoiningGroup(48);
+    pub const YudhHe: JoiningGroup = JoiningGroup(49);
+    pub const Zain: JoiningGroup = JoiningGroup(50);
+    pub const Fe: JoiningGroup = JoiningGroup(51);
+    pub const Khaph: JoiningGroup = JoiningGroup(52);
+    pub const Zhain: JoiningGroup = JoiningGroup(53);
+    pub const BurushaskiYehBarree: JoiningGroup = JoiningGroup(54);
+    pub const FarsiYeh: JoiningGroup = JoiningGroup(55);
+    pub const Nya: JoiningGroup = JoiningGroup(56);
+    pub const RohingyaYeh: JoiningGroup = JoiningGroup(57);
+    pub const ManichaeanAleph: JoiningGroup = JoiningGroup(58);
+    pub const ManichaeanAyin: JoiningGroup = JoiningGroup(59);
+    pub const ManichaeanBeth: JoiningGroup = JoiningGroup(60);
+    pub const ManichaeanDaleth: JoiningGroup = JoiningGroup(61);
+    pub const ManichaeanDhamedh: JoiningGroup = JoiningGroup(62);
+    pub const ManichaeanFive: JoiningGroup = JoiningGroup(63);
+    pub const ManichaeanGimel: JoiningGroup = JoiningGroup(64);
+    pub const ManichaeanHeth: JoiningGroup = JoiningGroup(65);
+    pub const ManichaeanHundred: JoiningGroup = JoiningGroup(66);
+    pub const ManichaeanKaph: JoiningGroup = JoiningGroup(67);
+    pub const ManichaeanLamedh: JoiningGroup = JoiningGroup(68);
+    pub const ManichaeanMem: JoiningGroup = JoiningGroup(69);
+    pub const ManichaeanNun: JoiningGroup = JoiningGroup(70);
+    pub const ManichaeanOne: JoiningGroup = JoiningGroup(71);
+    pub const ManichaeanPe: JoiningGroup = JoiningGroup(72);
+    pub const ManichaeanQoph: JoiningGroup = JoiningGroup(73);
+    pub const ManichaeanResh: JoiningGroup = JoiningGroup(74);
+    pub const ManichaeanSadhe: JoiningGroup = JoiningGroup(75);
+    pub const ManichaeanSamekh: JoiningGroup = JoiningGroup(76);
+    pub const ManichaeanTaw: JoiningGroup = JoiningGroup(77);
+    pub const ManichaeanTen: JoiningGroup = JoiningGroup(78);
+    pub const ManichaeanTeth: JoiningGroup = JoiningGroup(79);
+    pub const ManichaeanThamedh: JoiningGroup = JoiningGroup(80);
+    pub const ManichaeanTwenty: JoiningGroup = JoiningGroup(81);
+    pub const ManichaeanWaw: JoiningGroup = JoiningGroup(82);
+    pub const ManichaeanYodh: JoiningGroup = JoiningGroup(83);
+    pub const ManichaeanZayin: JoiningGroup = JoiningGroup(84);
+    pub const StraightWaw: JoiningGroup = JoiningGroup(85);
+    pub const AfricanFeh: JoiningGroup = JoiningGroup(86);
+    pub const AfricanNoon: JoiningGroup = JoiningGroup(87);
+    pub const AfricanQaf: JoiningGroup = JoiningGroup(88);
+    pub const MalayalamBha: JoiningGroup = JoiningGroup(89);
+    pub const MalayalamJa: JoiningGroup = JoiningGroup(90);
+    pub const MalayalamLla: JoiningGroup = JoiningGroup(91);
+    pub const MalayalamLlla: JoiningGroup = JoiningGroup(92);
+    pub const MalayalamNga: JoiningGroup = JoiningGroup(93);
+    pub const MalayalamNna: JoiningGroup = JoiningGroup(94);
+    pub const MalayalamNnna: JoiningGroup = JoiningGroup(95);
+    pub const MalayalamNya: JoiningGroup = JoiningGroup(96);
+    pub const MalayalamRa: JoiningGroup = JoiningGroup(97);
+    pub const MalayalamSsa: JoiningGroup = JoiningGroup(98);
+    pub const MalayalamTta: JoiningGroup = JoiningGroup(99);
+    pub const HanifiRohingyaKinnaYa: JoiningGroup = JoiningGroup(100);
+    pub const HanifiRohingyaPa: JoiningGroup = JoiningGroup(101);
+    pub const ThinYeh: JoiningGroup = JoiningGroup(102);
+    pub const VerticalTail: JoiningGroup = JoiningGroup(103);
+    pub const KashmiriYeh: JoiningGroup = JoiningGroup(104);
+    pub const ThinNoon: JoiningGroup = JoiningGroup(105);
+}
+#[test]
+fn joining_group_consts();
+}
+
+make_enumerated_property! {
+    name: "Joining_Group";
+    short_name: "jg";
+    ident: JoiningGroup;
+    data_marker: crate::provider::PropertyEnumJoiningGroupV1;
+    singleton: SINGLETON_PROPERTY_ENUM_JOINING_GROUP_V1;
+    ule_ty: u8;
+}
+
+/// Enumerated property `Joining_Type`.
 ///
 /// See Section 9.2, Arabic Cursive Joining in The Unicode Standard for the summary of
 /// each property value.
@@ -1786,7 +2012,7 @@ make_enumerated_property! {
     ule_ty: u8;
 }
 
-/// Property Vertical_Orientation
+/// Property `Vertical_Orientation`
 ///
 /// See UTR #50:
 /// <https://www.unicode.org/reports/tr50/#vo>
@@ -2550,7 +2776,7 @@ make_binary_property! {
     ident: IdCompatMathContinue;
     data_marker: crate::provider::PropertyBinaryIdCompatMathContinueV1;
     singleton: SINGLETON_PROPERTY_BINARY_ID_COMPAT_MATH_CONTINUE_V1;
-    /// ID_Compat_Math_Continue Property
+    /// `ID_Compat_Math_Continue` Property
 }
 
 make_binary_property! {
@@ -2559,7 +2785,7 @@ make_binary_property! {
     ident: IdCompatMathStart;
     data_marker: crate::provider::PropertyBinaryIdCompatMathStartV1;
     singleton: SINGLETON_PROPERTY_BINARY_ID_COMPAT_MATH_START_V1;
-    /// ID_Compat_Math_Start Property
+    /// `ID_Compat_Math_Start` Property
 }
 
 make_binary_property! {
@@ -2694,7 +2920,7 @@ make_binary_property! {
     ident: IdsUnaryOperator;
     data_marker: crate::provider::PropertyBinaryIdsUnaryOperatorV1;
     singleton: SINGLETON_PROPERTY_BINARY_IDS_UNARY_OPERATOR_V1;
-    /// IDS_Unary_Operator Property
+    /// `IDS_Unary_Operator` Property
 }
 
 make_binary_property! {
@@ -2793,7 +3019,7 @@ make_binary_property! {
     ident: ModifierCombiningMark;
     data_marker: crate::provider::PropertyBinaryModifierCombiningMarkV1;
     singleton: SINGLETON_PROPERTY_BINARY_MODIFIER_COMBINING_MARK_V1;
-    /// Modifier_Combining_Mark Property
+    /// `Modifier_Combining_Mark` Property
 }
 
 make_binary_property! {
@@ -3401,6 +3627,14 @@ mod test_enumerated_property_completeness {
         check_enum(
             crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_BIDI_CLASS_V1,
             BidiClass::ALL_VALUES,
+        );
+    }
+
+    #[test]
+    fn test_nt() {
+        check_enum(
+            crate::provider::Baked::SINGLETON_PROPERTY_NAME_PARSE_NUMERIC_TYPE_V1,
+            NumericType::ALL_VALUES,
         );
     }
 

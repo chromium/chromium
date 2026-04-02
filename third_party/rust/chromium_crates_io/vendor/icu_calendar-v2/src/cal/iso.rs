@@ -2,10 +2,12 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-use crate::cal::abstract_gregorian::{impl_with_abstract_gregorian, GregorianYears};
+use crate::cal::abstract_gregorian::{
+    impl_with_abstract_gregorian, AbstractGregorian, GregorianYears,
+};
 use crate::calendar_arithmetic::ArithmeticDate;
 use crate::error::UnknownEraError;
-use crate::{types, Date, DateError, RangeError};
+use crate::{types, Date, RangeError};
 use tinystr::tinystr;
 
 /// The [ISO-8601 Calendar](https://en.wikipedia.org/wiki/ISO_8601#Dates)
@@ -22,7 +24,7 @@ use tinystr::tinystr;
 #[allow(clippy::exhaustive_structs)] // this type is stable
 pub struct Iso;
 
-impl_with_abstract_gregorian!(crate::cal::Iso, IsoDateInner, IsoEra, _x, IsoEra);
+impl_with_abstract_gregorian!(Iso, IsoDateInner, IsoEra, _x, IsoEra);
 
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(crate) struct IsoEra;
@@ -55,7 +57,10 @@ impl GregorianYears for IsoEra {
 }
 
 impl Date<Iso> {
-    /// Construct a new ISO date from integers.
+    /// Construct a new ISO [`Date`].
+    ///
+    /// Years are arithmetic, meaning there is a year 0 preceded by negative years, with a
+    /// valid range of `-9999..=9999`.
     ///
     /// ```rust
     /// use icu::calendar::Date;
@@ -68,7 +73,8 @@ impl Date<Iso> {
     /// assert_eq!(date_iso.day_of_month().0, 2);
     /// ```
     pub fn try_new_iso(year: i32, month: u8, day: u8) -> Result<Date<Iso>, RangeError> {
-        ArithmeticDate::new_gregorian::<IsoEra>(year, month, day)
+        ArithmeticDate::from_year_month_day(year, month, day, &AbstractGregorian(IsoEra))
+            .map(ArithmeticDate::cast)
             .map(IsoDateInner)
             .map(|i| Date::from_raw(i, Iso))
     }
@@ -84,8 +90,10 @@ impl Iso {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::types::{DateDuration, RataDie, Weekday};
-    use crate::Calendar;
+    use crate::{
+        calendar_arithmetic::{CONSTRUCTOR_YEAR_RANGE, VALID_RD_RANGE},
+        types::{DateDuration, RataDie, Weekday},
+    };
 
     #[test]
     fn iso_overflow() {
@@ -95,169 +103,117 @@ mod test {
             month: u8,
             day: u8,
             rd: RataDie,
-            saturating: bool,
+            invalid_ymd: bool,
+            clamping_rd: bool,
         }
-        // Calculates the max possible year representable using i32::MAX as the RD
-        let max_year = Iso.from_rata_die(RataDie::new(i32::MAX as i64)).0.year;
-
-        // Calculates the minimum possible year representable using i32::MIN as the RD
-        // *Cannot be tested yet due to hard coded date not being available yet (see line 436)
-        let min_year = -5879610;
-
         let cases = [
+            // Clamping RD
             TestCase {
-                // Earliest date that can be represented before causing a minimum overflow
-                year: min_year,
-                month: 6,
-                day: 22,
-                rd: RataDie::new(i32::MIN as i64),
-                saturating: false,
-            },
-            TestCase {
-                year: min_year,
-                month: 6,
-                day: 23,
-                rd: RataDie::new(i32::MIN as i64 + 1),
-                saturating: false,
-            },
-            TestCase {
-                year: min_year,
-                month: 6,
-                day: 21,
-                rd: RataDie::new(i32::MIN as i64 - 1),
-                saturating: false,
-            },
-            TestCase {
-                year: min_year,
-                month: 12,
-                day: 31,
-                rd: RataDie::new(-2147483456),
-                saturating: false,
-            },
-            TestCase {
-                year: min_year + 1,
+                year: -999999,
                 month: 1,
                 day: 1,
-                rd: RataDie::new(-2147483455),
-                saturating: false,
+                rd: *VALID_RD_RANGE.start() - 100000,
+                invalid_ymd: true,
+                clamping_rd: true,
             },
+            // Lowest allowed RD
             TestCase {
-                year: max_year,
-                month: 6,
-                day: 11,
-                rd: RataDie::new(i32::MAX as i64 - 30),
-                saturating: false,
-            },
-            TestCase {
-                year: max_year,
-                month: 7,
-                day: 9,
-                rd: RataDie::new(i32::MAX as i64 - 2),
-                saturating: false,
-            },
-            TestCase {
-                year: max_year,
-                month: 7,
-                day: 10,
-                rd: RataDie::new(i32::MAX as i64 - 1),
-                saturating: false,
-            },
-            TestCase {
-                // Latest date that can be represented before causing a maximum overflow
-                year: max_year,
-                month: 7,
-                day: 11,
-                rd: RataDie::new(i32::MAX as i64),
-                saturating: false,
-            },
-            TestCase {
-                year: max_year,
-                month: 7,
-                day: 12,
-                rd: RataDie::new(i32::MAX as i64 + 1),
-                saturating: false,
-            },
-            TestCase {
-                year: i32::MIN,
-                month: 1,
-                day: 2,
-                rd: RataDie::new(-784352296669),
-                saturating: false,
-            },
-            TestCase {
-                year: i32::MIN,
+                year: -999999,
                 month: 1,
                 day: 1,
-                rd: RataDie::new(-784352296670),
-                saturating: false,
+                rd: *VALID_RD_RANGE.start(),
+                invalid_ymd: true,
+                clamping_rd: false,
             },
+            // Lowest allowed YMD
             TestCase {
-                year: i32::MIN,
+                year: *CONSTRUCTOR_YEAR_RANGE.start(),
                 month: 1,
                 day: 1,
-                rd: RataDie::new(-784352296671),
-                saturating: true,
+                rd: RataDie::new(-3652424),
+                invalid_ymd: false,
+                clamping_rd: false,
             },
+            // Highest allowed YMD
             TestCase {
-                year: i32::MAX,
-                month: 12,
-                day: 30,
-                rd: RataDie::new(784352295938),
-                saturating: false,
-            },
-            TestCase {
-                year: i32::MAX,
+                year: *CONSTRUCTOR_YEAR_RANGE.end(),
                 month: 12,
                 day: 31,
-                rd: RataDie::new(784352295939),
-                saturating: false,
+                rd: RataDie::new(3652059),
+                invalid_ymd: false,
+                clamping_rd: false,
             },
+            // Highest allowed RD
             TestCase {
-                year: i32::MAX,
+                year: 999999,
                 month: 12,
                 day: 31,
-                rd: RataDie::new(784352295940),
-                saturating: true,
+                rd: *VALID_RD_RANGE.end(),
+                invalid_ymd: true,
+                clamping_rd: false,
+            },
+            // Clamping RD
+            TestCase {
+                year: 999999,
+                month: 12,
+                day: 31,
+                rd: *VALID_RD_RANGE.end() + 100000,
+                invalid_ymd: true,
+                clamping_rd: true,
             },
         ];
 
         for case in cases {
-            let date = Date::try_new_iso(case.year, case.month, case.day).unwrap();
-            if !case.saturating {
-                assert_eq!(date.to_rata_die(), case.rd, "{case:?}");
+            let date_from_rd = Date::from_rata_die(case.rd, Iso);
+            let date_from_ymd = Date::try_new_iso(case.year, case.month, case.day);
+
+            if !case.clamping_rd {
+                assert_eq!(date_from_rd.to_rata_die(), case.rd, "{:?}", case);
+            } else {
+                assert_ne!(date_from_rd.to_rata_die(), case.rd, "{:?}", case);
             }
-            assert_eq!(Date::from_rata_die(case.rd, Iso), date, "{case:?}");
+
+            if !case.invalid_ymd {
+                assert_eq!(date_from_ymd.unwrap().to_rata_die(), case.rd, "{case:?}");
+            } else {
+                assert_eq!(
+                    date_from_ymd,
+                    Err(RangeError {
+                        field: "year",
+                        value: case.year,
+                        min: *CONSTRUCTOR_YEAR_RANGE.start(),
+                        max: *CONSTRUCTOR_YEAR_RANGE.end()
+                    }),
+                    "{case:?}"
+                )
+            }
+            assert_eq!(
+                (
+                    date_from_rd.era_year().year,
+                    date_from_rd.month().number(),
+                    date_from_rd.day_of_month().0
+                ),
+                (case.year, case.month, case.day),
+                "{case:?}"
+            );
         }
     }
 
-    // Calculates the minimum possible year representable using a large negative fixed date
     #[test]
-    fn min_year() {
-        assert_eq!(
-            Date::from_rata_die(RataDie::big_negative(), Iso)
-                .year()
-                .era()
-                .unwrap()
-                .year,
-            i32::MIN
-        );
-    }
-
-    #[test]
-    fn test_day_of_week() {
+    fn test_weekday() {
         // June 23, 2021 is a Wednesday
         assert_eq!(
-            Date::try_new_iso(2021, 6, 23).unwrap().day_of_week(),
+            Date::try_new_iso(2021, 6, 23).unwrap().weekday(),
             Weekday::Wednesday,
         );
         // Feb 2, 1983 was a Wednesday
         assert_eq!(
-            Date::try_new_iso(1983, 2, 2).unwrap().day_of_week(),
+            Date::try_new_iso(1983, 2, 2).unwrap().weekday(),
             Weekday::Wednesday,
         );
         // Jan 21, 2021 was a Tuesday
         assert_eq!(
-            Date::try_new_iso(2020, 1, 21).unwrap().day_of_week(),
+            Date::try_new_iso(2020, 1, 21).unwrap().weekday(),
             Weekday::Tuesday,
         );
     }

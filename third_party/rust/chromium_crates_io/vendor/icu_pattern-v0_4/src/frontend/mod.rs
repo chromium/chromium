@@ -10,14 +10,15 @@ pub(crate) mod serde;
 mod zerovec;
 
 use crate::common::*;
-#[cfg(feature = "alloc")]
 use crate::Error;
 #[cfg(feature = "alloc")]
 use crate::Parser;
 #[cfg(feature = "alloc")]
 use crate::ParserOptions;
 #[cfg(feature = "alloc")]
-use alloc::{borrow::ToOwned, boxed::Box, str::FromStr, string::String};
+use alloc::{borrow::ToOwned, boxed::Box, string::String};
+#[cfg(feature = "alloc")]
+use core::str::FromStr;
 use core::{convert::Infallible, fmt, marker::PhantomData};
 use writeable::{adapters::TryWriteableInfallibleAsWriteable, PartsWrite, TryWriteable, Writeable};
 
@@ -77,7 +78,7 @@ impl<B: PatternBackend> PartialEq for Pattern<B> {
     }
 }
 
-impl<B: PatternBackend> core::fmt::Debug for Pattern<B> {
+impl<B: PatternBackend> fmt::Debug for Pattern<B> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Pattern")
             .field("_backend", &self._backend)
@@ -144,13 +145,19 @@ impl<B: PatternBackend> Pattern<B> {
     #[cfg(feature = "alloc")]
     pub(crate) const fn from_boxed_store_unchecked(store: Box<B::Store>) -> Box<Self> {
         // Safety: Pattern is repr(transparent) over B::Store
-        unsafe { core::mem::transmute(store) }
+        unsafe { core::mem::transmute::<Box<B::Store>, Box<Self>>(store) }
     }
 
     #[doc(hidden)] // databake
     pub const fn from_ref_store_unchecked(store: &B::Store) -> &Self {
         // Safety: Pattern is repr(transparent) over B::Store
         unsafe { &*(store as *const B::Store as *const Self) }
+    }
+
+    #[doc(hidden)] // B::Store is doc(hidden)
+    pub fn from_ref_store(store: &B::Store) -> Result<&Self, Error> {
+        B::validate_store(store)?;
+        Ok(Self::from_ref_store_unchecked(store))
     }
 }
 

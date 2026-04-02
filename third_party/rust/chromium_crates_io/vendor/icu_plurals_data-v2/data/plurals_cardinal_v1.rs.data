@@ -18,9 +18,9 @@
 #[macro_export]
 macro_rules! __impl_plurals_cardinal_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         impl $provider {
             const DATA_PLURALS_CARDINAL_V1: icu_provider::baked::zerotrie::Data<icu::plurals::provider::PluralsCardinalV1> = {
                 const TRIE: icu_provider::baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider::baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1vabcdefghiklmnoprstuvxz\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\x01\x01\x01\x01\x01\x01\x14-CQfx\x86\x9E\xAB\xC7\xD6\xE7\xF4\xFA\x10\x1BI[mpr\xC6fkmrsz\x01\x02\x03\x04\x07\x80\x81\x82\x83\x82t\x84\x80\xC7eghlnrs\x01\x02\x04\x06\x07\n\x85\x80o\x81o\x86\x82\x87x\x80\x88\xC6aehsvy\x01\x03\x05\x08\t\x89b\x8Ar\x80\x8Bw\x81\x86\x8C\xC4aeos\x01\x02\x04\x8D\x84i\x82b\x8E\xC7elnostu\x01\x02\x03\x04\x05\x06\x80\x80\x84\x80\x8F\x84\x80\xC5aiory\x01\x04\x05\x07\x82\x84l\x8A\x80\x90\0\x84\xC4adlu\x02\x04\x05\x90\x01\x90\x02\x84\x82\xC7aeirsuy\x01\x03\x04\x05\x07\x08\x80\x90\x03\x82\x88b\x8E\x80\x90\x04\xC4aest\x01\x02\x04\x84\x84\x90\x05\x89\xC7aknosuy\x01\x02\x03\x0B\x0C\r\x80\x80\x82k\x82-Latn\x82\x80\x80\x80\xC4bitv\x01\x03\x05\x80j\x84\x90\x06\x90\x07\xC5klnrt\x02\x03\x04\x05\x90\x08\x80\x80\x80\x90\t\xC4elos\x01\x02\x03\x80\x84\x80o\x81\xC2mr\x01\x80\x80\xC5aclst\x01\x03\x05\x06\x81m\x82\x90\n\x80\x90\x0B-PT\x89\xC3mou\x01\x03\x80\x90\x0C\x90\r\xCDacdikloqrtvwy\x03\x06\x07\t\n\x0C\r\x0E\x0F\x10\x11\x12t\x90\x0E\x84n\x89\x80\x90\x0F\x8B\x90\x10\x80\x80\x88\x80\x84\x84r\x80\xC6aeiknr\x01\x02\x03\x04\x05\x80\x80\x81\x80\x80\x80\xC5gknrz\x01\x03\x06\x07\x80\x90\rd\x90\x11\x84\x80ec\x89h\x80u\x82" };
@@ -28,7 +28,7 @@ macro_rules! __impl_plurals_cardinal_v1 {
                 unsafe { icu_provider::baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
             };
         }
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         impl icu_provider::DataProvider<icu::plurals::provider::PluralsCardinalV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::plurals::provider::PluralsCardinalV1>, icu_provider::DataError> {
                 let mut metadata = icu_provider::DataResponseMetadata::default();
@@ -54,7 +54,7 @@ macro_rules! __impl_plurals_cardinal_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_plurals_cardinal_v1!($provider);
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         impl icu_provider::IterableDataProvider<icu::plurals::provider::PluralsCardinalV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok(icu_provider::baked::DataStore::iter(&Self::DATA_PLURALS_CARDINAL_V1).collect())

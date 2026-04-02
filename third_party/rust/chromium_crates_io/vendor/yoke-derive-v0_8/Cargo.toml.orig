@@ -5,9 +5,9 @@
 [package]
 name = "yoke-derive"
 description = "Custom derive for the yoke crate"
-version = "0.8.1"
+version = "0.8.2"
 categories = ["data-structures", "memory-management", "caching", "no-std"]
-keywords = ["zerocopy", "serialization", "lifetime", "borrow", "self-referential"]
+keywords = ["macros", "derive", "zero-copy", "serialization", "self-referential"]
 authors = ["Manish Goregaokar <manishsmail@gmail.com>"]
 
 edition.workspace = true
@@ -29,4 +29,7 @@ synstructure = { workspace = true }
 
 [dev-dependencies]
 yoke = { path = "..", features = ["derive"] }
-zerovec = { path = "../../../utils/zerovec", features = ["yoke"] }
+zerovec = { path = "../../../utils/zerovec", features = ["yoke", "alloc"] }
+
+[lints]
+workspace = true

@@ -78,6 +78,8 @@ public:
 
   inline std::optional<int32_t> era_year() const;
 
+  inline uint8_t reference_day() const;
+
   inline const temporal_rs::Calendar& calendar() const;
 
   inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainYearMonth>, temporal_rs::TemporalError> add(const temporal_rs::Duration& duration, temporal_rs::ArithmeticOverflow overflow) const;

@@ -139,12 +139,16 @@ impl Value {
     ///
     /// let mut v = Value::default();
     /// v.push_subtag(subtag!("foo"));
+    /// // The `true` subtag is ignored
+    /// v.push_subtag(subtag!("true"));
     /// v.push_subtag(subtag!("bar"));
     /// assert_eq!(v, "foo-bar");
     /// ```
     #[cfg(feature = "alloc")]
     pub fn push_subtag(&mut self, subtag: Subtag) {
-        self.0.push(subtag);
+        if subtag != TRUE_VALUE {
+            self.0.push(subtag);
+        }
     }
 
     /// Returns the number of subtags in the [`Value`].

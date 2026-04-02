@@ -2,13 +2,15 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-use fixed_decimal::{CompactDecimal, Decimal};
+use fixed_decimal::{CompactDecimal, Decimal, UnsignedDecimal};
 
-/// A full plural operands representation of a number. See [CLDR Plural Rules](http://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules) for complete operands description.
+const LIMIT_18_DIGITS: u64 = 1_000_000_000_000_000_000;
+
+/// A full plural operands representation of a number. See [CLDR Plural Rules](https://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules) for complete operands description.
 ///
-/// Plural operands in compliance with [CLDR Plural Rules](http://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules).
+/// Plural operands in compliance with [CLDR Plural Rules](https://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules).
 ///
-/// See [full operands description](http://unicode.org/reports/tr35/tr35-numbers.html#Operands).
+/// See [full operands description](https://unicode.org/reports/tr35/tr35-numbers.html#Operands).
 ///
 /// # Data Types
 ///
@@ -199,6 +201,7 @@ macro_rules! impl_integer_type {
     ($ty:ident) => {
         impl From<$ty> for PluralOperands {
             #[inline]
+            #[allow(trivial_numeric_casts)]
             fn from(input: $ty) -> Self {
                 Self {
                     i: input as u64,
@@ -230,28 +233,53 @@ macro_rules! impl_signed_integer_type {
     };
 }
 
-impl_integer_type!(u8 u16 u32 u64 u128 usize);
+impl_integer_type!(u8 u16 u32 u64 usize);
 impl_signed_integer_type!(i8 i16 i32 i64 i128 isize);
 
+impl From<u128> for PluralOperands {
+    #[inline]
+    fn from(input: u128) -> Self {
+        let i = if input < LIMIT_18_DIGITS as u128 {
+            input as u64
+        } else {
+            // Add LIMIT_18_DIGITS so that is_exactly_one and is_exactly_zero
+            // do not return true for large magnitude numbers like 1e18+1.
+            (input % LIMIT_18_DIGITS as u128) as u64 + LIMIT_18_DIGITS
+        };
+        Self {
+            i,
+            v: 0,
+            w: 0,
+            f: 0,
+            t: 0,
+            c: 0,
+        }
+    }
+}
+
 impl PluralOperands {
-    fn from_significand_and_exponent(dec: &Decimal, exp: u8) -> PluralOperands {
+    fn from_significand_and_exponent(dec: &UnsignedDecimal, exp: u8) -> PluralOperands {
         let exp_i16 = i16::from(exp);
 
-        let mag_range = dec.absolute.magnitude_range();
-        let mag_high = core::cmp::min(17, *mag_range.end() + exp_i16);
-        let mag_low = core::cmp::max(-18, *mag_range.start() + exp_i16);
+        let mag_range = dec.magnitude_range();
+        let mag_high = (*mag_range.end() + exp_i16).clamp(0, 17);
+        let mag_low = (*mag_range.start() + exp_i16).clamp(-18, 0);
 
         let mut i: u64 = 0;
         for magnitude in (0..=mag_high).rev() {
             i *= 10;
-            i += dec.absolute.digit_at(magnitude - exp_i16) as u64;
+            i += dec.digit_at(magnitude - exp_i16) as u64;
+        }
+
+        if *mag_range.end() + exp_i16 > 17 {
+            i += LIMIT_18_DIGITS;
         }
 
         let mut f: u64 = 0;
         let mut t: u64 = 0;
         let mut w: usize = 0;
         for magnitude in (mag_low..=-1).rev() {
-            let digit = dec.absolute.digit_at(magnitude - exp_i16) as u64;
+            let digit = dec.digit_at(magnitude - exp_i16) as u64;
             f *= 10;
             f += digit;
             if digit != 0 {
@@ -299,7 +327,13 @@ impl From<&Decimal> for PluralOperands {
     /// Converts a [`fixed_decimal::Decimal`] to [`PluralOperands`]. Retains at most 18
     /// digits each from the integer and fraction parts.
     fn from(dec: &Decimal) -> Self {
-        Self::from_significand_and_exponent(dec, 0)
+        (&dec.absolute).into()
+    }
+}
+
+impl From<&UnsignedDecimal> for PluralOperands {
+    fn from(value: &UnsignedDecimal) -> Self {
+        Self::from_significand_and_exponent(value, 0)
     }
 }
 
@@ -350,6 +384,72 @@ impl From<&CompactDecimal> for PluralOperands {
     /// assert_eq!(rules.category_for(&compact_decimal), PluralCategory::Many);
     /// ```
     fn from(compact: &CompactDecimal) -> Self {
-        Self::from_significand_and_exponent(compact.significand(), compact.exponent())
+        Self::from_significand_and_exponent(&compact.significand().absolute, compact.exponent())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use core::str::FromStr;
+    use fixed_decimal::Decimal;
+
+    #[test]
+    fn test_u128_overflow() {
+        let limit_18 = LIMIT_18_DIGITS;
+
+        // Small u128
+        let val_small: u128 = 123;
+        let ops = PluralOperands::from(val_small);
+        assert_eq!(ops.i, 123);
+        assert_eq!(ops.v, 0);
+
+        // u128::MAX should end in 5.
+        let val_max = u128::MAX;
+        let ops = PluralOperands::from(val_max);
+
+        assert!(ops.i >= limit_18, "i should be offset by LIMIT_18_DIGITS");
+        assert_eq!(ops.i % 10, 5, "Mod 10 Check");
+        assert_eq!(ops.i % 100, 55, "Mod 100 Check");
+
+        // Just above limit
+        let val_limit = limit_18 as u128;
+        let ops = PluralOperands::from(val_limit);
+        // limit % limit + limit = 0 + limit
+        assert_eq!(ops.i, limit_18);
+
+        let val_limit_plus_1 = val_limit + 1;
+        let ops = PluralOperands::from(val_limit_plus_1);
+        assert_eq!(ops.i, limit_18 + 1);
+    }
+
+    #[test]
+    fn test_fixed_decimal_overflow() {
+        let limit_18 = LIMIT_18_DIGITS;
+
+        // Huge FixedDecimal
+        let mut s = "1".to_string();
+        for _ in 0..29 {
+            s.push('0');
+        }
+        s.push('7');
+
+        let dec = Decimal::from_str(&s).unwrap();
+        let ops = PluralOperands::from(&dec);
+
+        assert!(ops.i >= limit_18, "i should be offset");
+        assert_eq!(ops.i % 10, 7, "Mod 10 check");
+        assert_eq!(ops.i, limit_18 + 7);
+    }
+
+    #[test]
+    fn test_i128_overflow() {
+        let limit_18 = LIMIT_18_DIGITS;
+
+        let val = i128::MIN;
+        let ops = PluralOperands::from(val);
+
+        assert!(ops.i >= limit_18);
+        assert_eq!(ops.i % 10, 8);
     }
 }

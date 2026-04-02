@@ -164,7 +164,7 @@ impl DoublePlaceholderInfo {
             .and_then(|x| char::try_from(x).ok())
             .ok_or(Error::InvalidPattern)
     }
-    /// Creates a PlaceholderInfo for an empty Place0
+    /// Creates a [`DoublePlaceholderInfo`] for an empty `Place0`
     pub fn no_place0() -> Self {
         Self {
             key: DoublePlaceholderKey::Place0,

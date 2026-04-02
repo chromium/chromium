@@ -112,7 +112,7 @@ impl Private {
         Err(ParseError::InvalidExtension)
     }
 
-    /// A constructor which takes a pre-sorted list of [`Subtag`].
+    /// A constructor which takes a list of [`Subtag`]s.
     ///
     /// ✨ *Enabled with the `alloc` Cargo feature.*
     ///

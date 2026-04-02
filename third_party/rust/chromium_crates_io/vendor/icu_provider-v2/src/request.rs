@@ -331,6 +331,7 @@ impl DataMarkerAttributes {
     ///
     /// Panics if the string contains characters other than `[a-zA-Z0-9_\-]`.
     pub const fn from_str_or_panic(s: &str) -> &Self {
+        #[allow(clippy::panic)] // documented
         let Ok(r) = Self::try_from_str(s) else {
             panic!("Invalid marker attribute syntax")
         };

@@ -5,7 +5,7 @@
 //! This module contains scaffolding for baked providers, typically generated using
 //! databake.
 //!
-//! It can be glob-imported, and includes the icu_provider prelude.
+//! It can be glob-imported, and includes the [`icu_provider`](crate) prelude.
 //!
 //! This needs the `"baked"` feature to be enabled.
 

@@ -120,6 +120,10 @@ pub mod ffi {
             self.0.era_year()
         }
 
+        pub fn reference_day(&self) -> u8 {
+            self.0.reference_day()
+        }
+
         pub fn calendar<'a>(&'a self) -> &'a Calendar {
             Calendar::transparent_convert(self.0.calendar())
         }
@@ -187,7 +191,7 @@ pub mod ffi {
             if let Ok(ms) = i64::try_from(ms) {
                 Ok(ms)
             } else {
-                Err(TemporalError::assert("Found an out-of-range MonthDay"))
+                Err(TemporalError::assert("Found an out-of-range YearMonth"))
             }
         }
 

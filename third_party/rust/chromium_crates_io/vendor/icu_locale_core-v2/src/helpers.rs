@@ -289,13 +289,13 @@ macro_rules! impl_tinystr_subtag {
         #[cfg(feature = "zerovec")]
         unsafe impl zerovec::ule::ULE for $name {
             fn validate_bytes(bytes: &[u8]) -> Result<(), zerovec::ule::UleError> {
-                let it = bytes.chunks_exact(core::mem::size_of::<Self>());
+                let it = bytes.chunks_exact(size_of::<Self>());
                 if !it.remainder().is_empty() {
                     return Err(zerovec::ule::UleError::length::<Self>(bytes.len()));
                 }
                 for v in it {
                     // The following can be removed once `array_chunks` is stabilized.
-                    let mut a = [0; core::mem::size_of::<Self>()];
+                    let mut a = [0; size_of::<Self>()];
                     a.copy_from_slice(v);
                     if Self::try_from_raw(a).is_err() {
                         return Err(zerovec::ule::UleError::parse::<Self>());

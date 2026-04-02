@@ -331,7 +331,8 @@ visibility = [
 extra_kv = { allow_unsafe = true }
 
 [crate.icu_calendar.extra_kv]
-allow_unsafe = false
+# Simple ascii-only construction
+allow_unsafe = true
 
 [crate.icu_calendar_data]
 extra_input_roots = ['../data']

@@ -67,6 +67,8 @@ namespace capi {
     typedef struct temporal_rs_PlainYearMonth_era_year_result {union {int32_t ok; }; bool is_ok;} temporal_rs_PlainYearMonth_era_year_result;
     temporal_rs_PlainYearMonth_era_year_result temporal_rs_PlainYearMonth_era_year(const temporal_rs::capi::PlainYearMonth* self);
 
+    uint8_t temporal_rs_PlainYearMonth_reference_day(const temporal_rs::capi::PlainYearMonth* self);
+
     const temporal_rs::capi::Calendar* temporal_rs_PlainYearMonth_calendar(const temporal_rs::capi::PlainYearMonth* self);
 
     typedef struct temporal_rs_PlainYearMonth_add_result {union {temporal_rs::capi::PlainYearMonth* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_add_result;
@@ -205,6 +207,11 @@ inline void temporal_rs::PlainYearMonth::era_write(W& writeable) const {
 inline std::optional<int32_t> temporal_rs::PlainYearMonth::era_year() const {
     auto result = temporal_rs::capi::temporal_rs_PlainYearMonth_era_year(this->AsFFI());
     return result.is_ok ? std::optional<int32_t>(result.ok) : std::nullopt;
+}
+
+inline uint8_t temporal_rs::PlainYearMonth::reference_day() const {
+    auto result = temporal_rs::capi::temporal_rs_PlainYearMonth_reference_day(this->AsFFI());
+    return result;
 }
 
 inline const temporal_rs::Calendar& temporal_rs::PlainYearMonth::calendar() const {

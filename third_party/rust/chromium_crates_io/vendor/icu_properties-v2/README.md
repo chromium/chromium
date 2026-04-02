@@ -46,6 +46,12 @@ assert_eq!(CodePointMapData::<Script>::new().get('🎃'), Script::Common); // U+
 assert_eq!(CodePointMapData::<Script>::new().get('木'), Script::Han); // U+6728
 ```
 
+## Harfbuzz
+
+The `harfbuzz_traits` Cargo feature can be used to add implementations of the [`harfbuzz_traits`] to
+`CodePointMap<GeneralCategory>`, `CodePointMap<BidiMirroringGlyph>`, and to enable the
+[`script::HarfbuzzScriptData`] type.
+
 [`ICU4X`]: ../icu/index.html
 [Unicode Properties]: https://unicode-org.github.io/icu/userguide/strings/properties.html
 

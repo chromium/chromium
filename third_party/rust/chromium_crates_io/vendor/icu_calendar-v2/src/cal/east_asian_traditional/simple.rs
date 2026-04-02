@@ -2,16 +2,18 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-use super::EastAsianTraditionalYearData;
+use crate::cal::east_asian_traditional_internal::PackedEastAsianTraditionalYearData;
+
+use super::EastAsianTraditionalYear;
 use calendrical_calculations::{gregorian::DAYS_IN_400_YEAR_CYCLE, rata_die::RataDie};
 
 macro_rules! day_fraction_to_ms {
     ($n:tt $(/ $d:tt)+) => {{
-        Milliseconds((MILLISECONDS_IN_EPHEMERIS_DAY as i128 * $n as i128 $( / $d as i128)+) as i64)
+        Milliseconds((MILLISECONDS_IN_EPHEMERIS_DAY as i128 * $n $( / $d)+) as i64)
     }};
     ($n:tt $(/ $d:tt)+, exact) => {{
         let d = day_fraction_to_ms!($n $(/ $d)+);
-        assert!((d.0 as i128 $(* $d as i128)+) % MILLISECONDS_IN_EPHEMERIS_DAY as i128 == 0, "inexact");
+        assert!((d.0 as i128 $(* $d)+) % MILLISECONDS_IN_EPHEMERIS_DAY as i128 == 0, "inexact");
         d
     }};
 }
@@ -23,16 +25,16 @@ pub(super) const BEIJING_UTC_OFFSET: Milliseconds = day_fraction_to_ms!(1397 / 1
 
 /// The mean year length according to the Gregorian solar cycle.
 const MEAN_GREGORIAN_YEAR_LENGTH: Milliseconds =
-    day_fraction_to_ms!(DAYS_IN_400_YEAR_CYCLE / 400, exact);
+    day_fraction_to_ms!((DAYS_IN_400_YEAR_CYCLE as i128) / 400, exact);
 
 /// The mean solar term length according to the Gregorian solar cycle
 const MEAN_GREGORIAN_SOLAR_TERM_LENGTH: Milliseconds =
-    day_fraction_to_ms!(DAYS_IN_400_YEAR_CYCLE / 400 / 12, exact);
+    day_fraction_to_ms!((DAYS_IN_400_YEAR_CYCLE as i128) / 400 / 12, exact);
 
 /// The mean synodic length on Jan 1 2000 according to the [Astronomical Almanac (1992)].
 ///
 /// [Astronomical Almanac (1992)]: https://archive.org/details/131123ExplanatorySupplementAstronomicalAlmanac/page/n302/mode/1up
-const MEAN_SYNODIC_MONTH_LENGTH: Milliseconds = day_fraction_to_ms!(295305888531 / 10000000000i64);
+const MEAN_SYNODIC_MONTH_LENGTH: Milliseconds = day_fraction_to_ms!(295305888531 / 10000000000);
 
 /// Number of milliseconds in a day.
 const MILLISECONDS_IN_EPHEMERIS_DAY: i64 = 24 * 60 * 60 * 1000;
@@ -70,17 +72,14 @@ impl core::ops::Add<Milliseconds> for LocalMoment {
     }
 }
 
-impl super::EastAsianTraditionalYearData {
+impl EastAsianTraditionalYear {
     /// A fast approximation for the Chinese calendar, inspired by the _píngqì_ (平氣) rule
     /// used in the Ming dynasty.
     ///
     /// Stays anchored in the Gregorian calendar, even as the Gregorian calendar drifts
     /// from the seasons in the distant future and distant past.
-    pub(super) fn simple(
-        utc_offset: Milliseconds,
-        related_iso: i32,
-    ) -> EastAsianTraditionalYearData {
-        /// calculates the largest moment such that moment = base_moment + n * duration lands on rata_die (< rata_die + 1)
+    pub(super) fn simple(utc_offset: Milliseconds, related_iso: i32) -> EastAsianTraditionalYear {
+        /// calculates the largest moment such that `moment = base_moment + n * duration` lands on `rata_die` (< `rata_die + 1`)
         fn periodic_duration_on_or_before(
             rata_die: RataDie,
             base_moment: LocalMoment,
@@ -142,7 +141,7 @@ impl super::EastAsianTraditionalYearData {
 
         debug_assert_eq!(solar_term, 0);
 
-        let start_day = new_moon.rata_die;
+        let new_year = new_moon.rata_die;
         let mut month_lengths = [false; 13];
         let mut leap_month = None;
 
@@ -167,21 +166,29 @@ impl super::EastAsianTraditionalYearData {
 
         debug_assert_eq!(solar_term, 12);
 
-        EastAsianTraditionalYearData::new(related_iso, start_day, month_lengths, leap_month)
+        EastAsianTraditionalYear {
+            packed: PackedEastAsianTraditionalYearData::new(
+                related_iso,
+                month_lengths,
+                leap_month,
+                new_year,
+            ),
+            related_iso,
+        }
     }
 }
 
 #[test]
 fn bounds() {
-    EastAsianTraditionalYearData::simple(UTC_PLUS_9, 292_277_025);
+    EastAsianTraditionalYear::simple(UTC_PLUS_9, 292_277_025);
     assert!(
-        std::panic::catch_unwind(|| EastAsianTraditionalYearData::simple(UTC_PLUS_9, 292_277_026))
+        std::panic::catch_unwind(|| EastAsianTraditionalYear::simple(UTC_PLUS_9, 292_277_026))
             .is_err()
     );
 
-    EastAsianTraditionalYearData::simple(BEIJING_UTC_OFFSET, -292_275_024);
+    EastAsianTraditionalYear::simple(BEIJING_UTC_OFFSET, -292_275_024);
     assert!(
-        std::panic::catch_unwind(|| EastAsianTraditionalYearData::simple(
+        std::panic::catch_unwind(|| EastAsianTraditionalYear::simple(
             BEIJING_UTC_OFFSET,
             -292_275_025
         ))

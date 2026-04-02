@@ -14,6 +14,7 @@ use super::data::MappingKind;
 use super::exception_helpers::{ExceptionBits, ExceptionSlot, SlotPresence};
 use crate::set::ClosureSink;
 use alloc::borrow::Cow;
+use alloc::string::String;
 use core::fmt;
 #[cfg(any(feature = "serde", feature = "datagen"))]
 use core::ops::Range;
@@ -26,7 +27,7 @@ const SURROGATES_LEN: u32 = 0xDFFF - SURROGATES_START + 1;
 
 /// This represents case mapping exceptions that can't be represented as a delta applied to
 /// the original code point. The codepoint
-/// trie in CaseMapper stores indices into this VarZeroVec.
+/// trie in [`CaseMap`](super::CaseMap) stores indices into this [`VarZeroVec`].
 ///
 /// <div class="stab unstable">
 /// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
@@ -46,14 +47,14 @@ pub struct CaseMapExceptions<'data> {
 impl CaseMapExceptions<'_> {
     /// Obtain the exception at index `idx`. Will
     /// return a default value if not present (GIGO behavior),
-    /// as these indices should come from a paired CaseMapData object
+    /// as these indices should come from a paired [`CaseMap`](super::CaseMap) object
     ///
     /// Will also panic in debug mode
     pub fn get(&self, idx: u16) -> &ExceptionULE {
         let exception = self.exceptions.get(idx.into());
         debug_assert!(exception.is_some());
 
-        exception.unwrap_or(ExceptionULE::empty_exception())
+        exception.unwrap_or(ExceptionULE::EMPTY_EXCEPTION)
     }
 
     #[cfg(any(feature = "serde", feature = "datagen"))]
@@ -110,29 +111,28 @@ pub struct Exception<'a> {
     pub slot_presence: SlotPresence,
     /// Format : `[char slots] [optional closure length] [ closure slot ] [ full mappings data ]`
     ///
-    /// For each set SlotPresence bit, except for the two stringy slots (Closure/FullMapping),
+    /// For each set [`SlotPresence`] bit, except for the two stringy slots (Closure/FullMapping),
     /// this will have one entry in the string, packed together.
     ///
-    /// Note that the simple_case delta is stored as a u32 normalized to a `char`, where u32s
-    /// which are from or beyond the surrogate range 0xD800-0xDFFF are stored as chars
-    /// starting from 0xE000. The sign is stored in bits.negative_delta.
+    /// Note that the `simple_case` delta is stored as a [`u32`] normalized to a `char`, where [`u32`]s
+    /// which are from or beyond the surrogate range `0xD800-0xDFFF` are stored as chars
+    /// starting from `0xE000`. The sign is stored in `bits.negative_delta`.
     ///
     /// If both Closure/FullMapping are present, the next char will be the length of the closure slot,
     /// bisecting the rest of the data.
     /// If only one is present, the rest of the data represents that slot.
     ///
     /// The closure slot simply represents one string. The full-mappings slot represents four strings,
-    /// packed in a way similar to VarZeroVec, in the following format:
+    /// packed in a way similar to [`VarZeroVec`], in the following format:
     /// `i1 i2 i3 [ str0 ] [ str1 ] [ str2 ] [ str3 ]`
     ///
     /// where `i1 i2 i3` are the indices of the relevant mappings string. The strings are stored in
-    /// the order corresponding to the MappingKind enum.
+    /// the order corresponding to the `MappingKind` enum.
     pub data: Cow<'a, str>,
 }
 
 impl ExceptionULE {
-    #[inline]
-    fn empty_exception() -> &'static Self {
+    const EMPTY_EXCEPTION: &Self = {
         static EMPTY_BYTES: &[u8] = &[0, 0];
         // Safety:
         // ExceptionULE is a packed DST with `(u8, u8, unsized)` fields. All bit patterns are valid for the two u8s
@@ -142,7 +142,8 @@ impl ExceptionULE {
             let slice: *const [u8] = ptr::slice_from_raw_parts(EMPTY_BYTES.as_ptr(), 0);
             &*(slice as *const Self)
         }
-    }
+    };
+
     pub(crate) fn has_slot(&self, slot: ExceptionSlot) -> bool {
         self.slot_presence.has_slot(slot)
     }
@@ -169,7 +170,7 @@ impl ExceptionULE {
     ///
     /// Normalizes the delta from char-format to u32 format
     ///
-    /// Does *not* handle the sign of the delta; see self.bits.negative_delta
+    /// Does *not* handle the sign of the delta; see `self.bits.negative_delta`
     fn get_simple_case_delta(&self) -> Option<u32> {
         let delta_ch = self.get_char_slot(ExceptionSlot::Delta)?;
         let mut delta = u32::from(delta_ch);
@@ -211,8 +212,8 @@ impl ExceptionULE {
         Some(chars.as_str())
     }
 
-    /// Returns a single stringy slot, either ExceptionSlot::Closure
-    /// or ExceptionSlot::FullMappings.
+    /// Returns a single stringy slot, either [`ExceptionSlot::Closure`]
+    /// or [`ExceptionSlot::FullMappings`].
     fn get_stringy_slot(&self, slot: ExceptionSlot) -> Option<&str> {
         debug_assert!(slot == ExceptionSlot::Closure || slot == ExceptionSlot::FullMappings);
         let other_slot = if slot == ExceptionSlot::Closure {
@@ -251,14 +252,14 @@ impl ExceptionULE {
         self.get_stringy_slot(ExceptionSlot::Closure)
     }
 
-    /// Get all the slot data for the FullMappings slot
+    /// Get all the slot data for the [`FullMappings`] slot
     ///
     /// This needs to be further segmented into four based on length metadata
     fn get_fullmappings_slot_data(&self) -> Option<&str> {
         self.get_stringy_slot(ExceptionSlot::FullMappings)
     }
 
-    /// Get a specific FullMappings slot value
+    /// Get a specific [`FullMappings`] slot value
     pub(crate) fn get_fullmappings_slot_for_kind(&self, kind: MappingKind) -> Option<&str> {
         let data = self.get_fullmappings_slot_data()?;
 
@@ -436,11 +437,11 @@ pub struct DecodedException<'a> {
     pub uppercase: Option<char>,
     /// Titlecase mapping
     pub titlecase: Option<char>,
-    /// The simple casefold delta. Its sign is stored in bits.negative_delta
+    /// The simple casefold delta. Its sign is stored in `bits.negative_delta`
     pub simple_case_delta: Option<u32>,
     /// Closure mappings
     pub closure: Option<Cow<'a, str>>,
-    /// The four full-mappings strings, indexed by MappingKind u8 value
+    /// The four full-mappings strings, indexed by `MappingKind` `u8` value
     pub full: Option<[Cow<'a, str>; 4]>,
 }
 
@@ -449,7 +450,7 @@ impl DecodedException<'_> {
     pub fn encode(&self) -> Exception<'static> {
         let bits = self.bits;
         let mut slot_presence = SlotPresence(0);
-        let mut data = alloc::string::String::new();
+        let mut data = String::new();
         if let Some(lowercase) = self.lowercase {
             slot_presence.add_slot(ExceptionSlot::Lower);
             data.push(lowercase)

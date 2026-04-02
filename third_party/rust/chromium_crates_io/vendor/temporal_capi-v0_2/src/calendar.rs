@@ -29,7 +29,7 @@ pub mod ffi {
 
     impl AnyCalendarKind {
         pub fn get_for_str(s: &DiplomatStr) -> Option<Self> {
-            let value = icu_locale::extensions::unicode::Value::try_from_utf8(s).ok()?;
+            let value = icu_locale_core::extensions::unicode::Value::try_from_utf8(s).ok()?;
             let algorithm = CalendarAlgorithm::try_from(&value).ok()?;
             match icu_calendar::AnyCalendarKind::try_from(algorithm) {
                 // islamic-rgsa / simulated-mecca is supported by ICU4X but not Temporal

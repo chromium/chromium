@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.83"
+rust-version = "1.86"
 name = "icu_list"
-version = "2.1.1"
+version = "2.2.0"
 authors = ["The ICU4X Project Developers"]
 build = false
 autolib = false
@@ -24,7 +24,18 @@ autobenches = false
 description = "ECMA-402 ListFormatter"
 homepage = "https://icu4x.unicode.org"
 readme = "README.md"
-categories = ["internationalization"]
+keywords = [
+    "unicode",
+    "formatting",
+    "internationalization",
+    "sequence",
+]
+categories = [
+    "internationalization",
+    "localization",
+    "no-std",
+    "embedded",
+]
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
@@ -78,17 +89,17 @@ optional = true
 default-features = false
 
 [dependencies.icu_list_data]
-version = "~2.1.1"
+version = "~2.2.0"
 optional = true
 default-features = false
 
 [dependencies.icu_locale]
-version = "~2.1.1"
+version = "~2.2.0"
 optional = true
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.1.1"
+version = "2.2.0"
 default-features = false
 
 [dependencies.regex-automata]
@@ -103,11 +114,11 @@ optional = true
 default-features = false
 
 [dependencies.writeable]
-version = "0.6.0"
+version = "0.6.1"
 default-features = false
 
 [dependencies.zerovec]
-version = "0.11.3"
+version = "0.11.6"
 features = ["alloc"]
 default-features = false
 
@@ -121,3 +132,52 @@ version = "1.2.0"
 
 [dev-dependencies.serde_json]
 version = "1.0.45"
+
+[lints.clippy]
+alloc-instead-of-core = "warn"
+branches-sharing-code = "warn"
+collection_is_never_read = "warn"
+crosspointer_transmute = "warn"
+dbg_macro = "warn"
+debug_assert_with_mut_call = "warn"
+doc_markdown = "warn"
+exhaustive_enums = "deny"
+exhaustive_structs = "deny"
+fn_to_numeric_cast_any = "warn"
+infinite_loop = "warn"
+large_stack_arrays = "warn"
+mismatching_type_param_order = "warn"
+missing_fields_in_debug = "warn"
+missing_transmute_annotations = "warn"
+negative_feature_names = "warn"
+or-fun-call = "warn"
+same_functions_in_if_condition = "warn"
+todo = "warn"
+transmute_bytes_to_str = "warn"
+transmute_int_to_bool = "warn"
+transmute_int_to_non_zero = "warn"
+transmute_ptr_to_ptr = "warn"
+transmute_ptr_to_ref = "warn"
+transmute_undefined_repr = "warn"
+transmutes_expressible_as_ptr_casts = "warn"
+trivially_copy_pass_by_ref = "deny"
+unnecessary-wraps = "warn"
+useless_transmute = "warn"
+wildcard_dependencies = "warn"
+
+[lints.rust]
+missing_debug_implementations = "deny"
+trivial_numeric_casts = "deny"
+unused_lifetimes = "warn"
+unused_macro_rules = "warn"
+unused_qualifications = "warn"
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+priority = 0
+check-cfg = [
+    "cfg(icu4c_enable_renaming)",
+    "cfg(needs_alloc_error_handler)",
+    "cfg(icu4x_run_size_tests)",
+    "cfg(icu4x_unstable_fast_trie_only)",
+]

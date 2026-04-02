@@ -5,16 +5,16 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct DateFixture(pub Vec<Test>);
+struct DateFixture(Vec<Test>);
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Test {
-    pub year: i32,
-    pub month: u8,
-    pub day: u8,
-    pub hour: u8,
-    pub minute: u8,
-    pub second: u8,
+struct Test {
+    year: i32,
+    month: u8,
+    day: u8,
+    hour: u8,
+    minute: u8,
+    second: u8,
 }
 
 use criterion::{
@@ -48,7 +48,7 @@ fn bench_date<A: AsCalendar>(date: &mut Date<A>) {
     let _ = black_box(date.day_of_month());
 
     // Conversion to ISO.
-    let _ = black_box(date.to_iso());
+    let _ = black_box(date.to_calendar(icu::calendar::cal::Iso));
 }
 
 fn bench_calendar<C: Clone + Calendar>(
@@ -67,7 +67,7 @@ fn bench_calendar<C: Clone + Calendar>(
 
                 // Conversion from ISO
                 let date_iso = Date::try_new_iso(fx.year, fx.month, fx.day).unwrap();
-                let mut converted_date_calendar = Date::new_from_iso(date_iso, calendar.clone());
+                let mut converted_date_calendar = date_iso.to_calendar(calendar.clone());
 
                 bench_date(&mut instantiated_date_calendar);
                 bench_date(&mut converted_date_calendar);
@@ -152,10 +152,7 @@ fn date_benches(c: &mut Criterion) {
         "calendar/chinese_cached",
         &fxs,
         icu::calendar::cal::ChineseTraditional::new(),
-        |y, m, d, c| {
-            Date::try_new_from_codes(None, y, types::MonthCode::new_normal(m).unwrap(), d, c)
-                .unwrap()
-        },
+        |y, m, d, _| Date::try_new_chinese_traditional(y, types::Month::new(m), d).unwrap(),
     );
 
     bench_calendar(
@@ -163,10 +160,7 @@ fn date_benches(c: &mut Criterion) {
         "calendar/dangi_cached",
         &fxs,
         icu::calendar::cal::KoreanTraditional::new(),
-        |y, m, d, c| {
-            Date::try_new_from_codes(None, y, types::MonthCode::new_normal(m).unwrap(), d, c)
-                .unwrap()
-        },
+        |y, m, d, _| Date::try_new_korean_traditional(y, types::Month::new(m), d).unwrap(),
     );
 
     bench_calendar(
@@ -174,10 +168,7 @@ fn date_benches(c: &mut Criterion) {
         "calendar/hebrew",
         &fxs,
         icu::calendar::cal::Hebrew,
-        |y, m, d, c| {
-            Date::try_new_from_codes(None, y, types::MonthCode::new_normal(m).unwrap(), d, c)
-                .unwrap()
-        },
+        |y, m, d, _c| Date::try_new_hebrew_v2(y, types::Month::new(m), d).unwrap(),
     );
 
     bench_calendar(
@@ -218,6 +209,7 @@ fn date_benches(c: &mut Criterion) {
         |y, m, d, c| Date::try_new_hijri_with_calendar(y, m, d, c).unwrap(),
     );
 
+    #[allow(deprecated)]
     bench_calendar(
         &mut group,
         "calendar/islamic/observational",

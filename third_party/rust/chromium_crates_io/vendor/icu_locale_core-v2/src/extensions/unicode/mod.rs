@@ -187,7 +187,7 @@ impl Unicode {
 
     #[cfg(feature = "alloc")]
     pub(crate) fn try_from_iter(iter: &mut SubtagIterator) -> Result<Self, ParseError> {
-        let attributes = Attributes::try_from_iter(iter)?;
+        let attributes = Attributes::from_iter(iter);
         let keywords = Keywords::try_from_iter(iter)?;
 
         // Ensure we've defined at least one attribute or keyword

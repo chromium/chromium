@@ -77,7 +77,7 @@ fn test() {
 
     struct ExitEarlyTest;
 
-    impl writeable::Writeable for ExitEarlyTest {
+    impl Writeable for ExitEarlyTest {
         fn write_to<W: core::fmt::Write + ?Sized>(&self, sink: &mut W) -> core::fmt::Result {
             sink.write_str("12")?;
             unreachable!()

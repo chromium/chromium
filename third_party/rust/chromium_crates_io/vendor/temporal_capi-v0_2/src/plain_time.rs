@@ -108,7 +108,7 @@ pub mod ffi {
             if let Ok(ms) = i64::try_from(ms) {
                 Ok(ms)
             } else {
-                Err(TemporalError::assert("Found an out-of-range MonthDay"))
+                Err(TemporalError::assert("Found an out-of-range Time"))
             }
         }
 

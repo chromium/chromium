@@ -49,7 +49,6 @@ serde_json = "1.0.149"
 skrifa = "0.41.0"
 small_ctor = "0.1"
 static_assertions = "1"
-utf8_iter = "1.0.4" # temporary until the ICU4X update
 xml = "1.2.0"
 
 [dependencies.bytemuck]
@@ -69,31 +68,31 @@ version = "1"
 artifact = "bin"
 
 [dependencies.icu_casemap]
-version = "2.1.1"
+version = "2.2.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_experimental]
-version = "0.4.0"
+version = "0.5.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_locale_core]
-version = "2.1.1"
+version = "2.2.0"
 default-features = false
 
 [dependencies.icu_normalizer]
-version = "2.1.1"
+version = "2.2.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_properties]
-version = "2.1.1"
+version = "2.2.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_provider]
-version = "2.1.1"
+version = "2.2.0"
 default-features = false
 
 [dependencies.image]
@@ -156,11 +155,11 @@ version = "2"
 features = ["full"]
 
 [dependencies.temporal_capi]
-version = "0.2"
+version = "0.2.3"
 features = ["zoneinfo64"]
 
 [dependencies.temporal_rs]
-version = "0.2"
+version = "0.2.3"
 default-features = false
 # This is necessary to enable a spec-compliance quirk
 features = ["float64_representable_durations"]

@@ -200,13 +200,13 @@ impl<'data> SpecialCasePattern<'data> {
 pub struct ListJoinerPattern<'data> {
     /// The pattern string without the placeholders
     pub(crate) string: VarZeroCow<'data, str>,
-    /// The index of the first placeholder. Always <= index_1.
+    /// The index of the first placeholder. Always `<= index_1`.
     // Always 0 for CLDR data, so we don't need to serialize it.
     // In-memory we have free space for it as index_1 doesn't
     // fill a word.
     #[cfg_attr(feature = "datagen", serde(skip))]
     pub(crate) index_0: u8,
-    /// The index of the second placeholder. Always < string.len().
+    /// The index of the second placeholder. Always `< string.len()`.
     pub(crate) index_1: u8,
 }
 

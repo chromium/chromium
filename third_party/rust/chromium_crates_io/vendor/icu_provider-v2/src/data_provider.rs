@@ -5,6 +5,9 @@
 use core::marker::PhantomData;
 use yoke::Yokeable;
 
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
+
 use crate::prelude::*;
 
 /// A data provider that loads data for a specific [`DataMarkerInfo`].
@@ -31,7 +34,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
-impl<M, P> DataProvider<M> for alloc::boxed::Box<P>
+impl<M, P> DataProvider<M> for Box<P>
 where
     M: DataMarker,
     P: DataProvider<M> + ?Sized,
@@ -92,7 +95,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
-impl<M, P> DryDataProvider<M> for alloc::boxed::Box<P>
+impl<M, P> DryDataProvider<M> for Box<P>
 where
     M: DataMarker,
     P: DryDataProvider<M> + ?Sized,
@@ -174,7 +177,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
-impl<M, P> DynamicDataProvider<M> for alloc::boxed::Box<P>
+impl<M, P> DynamicDataProvider<M> for Box<P>
 where
     M: DynamicDataMarker,
     P: DynamicDataProvider<M> + ?Sized,
@@ -255,7 +258,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
-impl<M, P> DynamicDryDataProvider<M> for alloc::boxed::Box<P>
+impl<M, P> DynamicDryDataProvider<M> for Box<P>
 where
     M: DynamicDataMarker,
     P: DynamicDryDataProvider<M> + ?Sized,
@@ -319,7 +322,7 @@ pub trait IterableDynamicDataProvider<M: DynamicDataMarker>: DynamicDataProvider
 }
 
 #[cfg(feature = "alloc")]
-impl<M, P> IterableDynamicDataProvider<M> for alloc::boxed::Box<P>
+impl<M, P> IterableDynamicDataProvider<M> for Box<P>
 where
     M: DynamicDataMarker,
     P: IterableDynamicDataProvider<M> + ?Sized,
@@ -369,7 +372,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
-impl<M, P> BoundDataProvider<M> for alloc::boxed::Box<P>
+impl<M, P> BoundDataProvider<M> for Box<P>
 where
     M: DynamicDataMarker,
     P: BoundDataProvider<M> + ?Sized,
@@ -470,7 +473,7 @@ mod test {
     // This tests DataProvider borrow semantics with a dummy data provider based on a
     // JSON string. It also exercises most of the data provider code paths.
 
-    /// A data struct serialization-compatible with HelloWorld used for testing mismatched types
+    /// A data struct serialization-compatible with [`HelloWorld`] used for testing mismatched types
     #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, yoke::Yokeable)]
     pub struct HelloAlt {
         message: String,
@@ -485,8 +488,8 @@ mod test {
         pub hello_alt: HelloAlt,
     }
 
-    /// A DataProvider that owns its data, returning an Rc-variant DataPayload.
-    /// Supports only key::HELLO_WORLD_V1. Uses `impl_dynamic_data_provider!()`.
+    /// A [`DataProvider`] that owns its data, returning an Rc-variant [`DataPayload`].
+    /// Supports only [`HelloWorldV1`]. Uses `impl_dynamic_data_provider!()`.
     #[derive(Debug)]
     struct DataWarehouse {
         hello_v1: HelloWorld<'static>,
@@ -502,7 +505,7 @@ mod test {
         }
     }
 
-    /// A DataProvider that supports both key::HELLO_WORLD_V1 and HELLO_ALT.
+    /// A [`DataProvider`] that supports both [`HelloWorldV1`] and [`HelloAltV1`].
     #[derive(Debug)]
     struct DataProvider2 {
         data: DataWarehouse,

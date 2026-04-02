@@ -5,9 +5,10 @@
 [package]
 name = "icu_provider"
 description = "Trait and struct definitions for the ICU data provider"
+categories.workspace = true
+keywords = ["data-loading", "data"]
 
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 include.workspace = true
@@ -88,3 +89,6 @@ bench = false  # This option is required for Benchmark CI
 [[bench]]
 name = "data_locale_bench"
 harness = false
+
+[lints]
+workspace = true

@@ -59,7 +59,7 @@ const _: () = {
     make_provider!(Baked);
     impl_plurals_cardinal_v1!(Baked);
     impl_plurals_ordinal_v1!(Baked);
-    #[cfg(feature = "experimental")]
+    #[cfg(feature = "unstable")]
     impl_plurals_ranges_v1!(Baked);
 };
 
@@ -77,7 +77,7 @@ icu_provider::data_marker!(
     PluralRulesData<'static>,
 );
 
-#[cfg(feature = "experimental")]
+#[cfg(feature = "unstable")]
 icu_provider::data_marker!(
     /// Data for plural range formatting
     PluralsRangesV1,
@@ -90,7 +90,7 @@ icu_provider::data_marker!(
 pub const MARKERS: &[DataMarkerInfo] = &[
     PluralsCardinalV1::INFO,
     PluralsOrdinalV1::INFO,
-    #[cfg(feature = "experimental")]
+    #[cfg(feature = "unstable")]
     PluralsRangesV1::INFO,
 ];
 
@@ -131,10 +131,10 @@ icu_provider::data_struct!(
     #[cfg(feature = "datagen")]
 );
 
-#[cfg(feature = "experimental")]
+#[cfg(feature = "unstable")]
 pub use ranges::*;
 
-#[cfg(feature = "experimental")]
+#[cfg(feature = "unstable")]
 mod ranges {
     use super::*;
     use zerovec::ZeroMap;
@@ -250,8 +250,8 @@ mod ranges {
 
             struct PrettyPrinter(RawPluralCategory, RawPluralCategory);
 
-            impl core::fmt::Display for PrettyPrinter {
-                fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+            impl fmt::Display for PrettyPrinter {
+                fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
                     f.write_str(self.0.as_str())?;
                     f.write_str("--")?;
                     f.write_str(self.1.as_str())
@@ -283,7 +283,7 @@ mod ranges {
             impl Visitor<'_> for HumanReadableVisitor {
                 type Value = UnvalidatedPluralRange;
 
-                fn expecting(&self, formatter: &mut alloc::fmt::Formatter) -> alloc::fmt::Result {
+                fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
                     write!(
                         formatter,
                         "a plural range of the form <PluralCategory>-<PluralCategory>",
@@ -464,7 +464,7 @@ where
 
     unsafe fn from_bytes_unchecked(bytes: &[u8]) -> &Self {
         // Safety: the bytes are valid by trait invariant, and we are transparent over bytes
-        core::mem::transmute(bytes)
+        &*(bytes as *const [u8] as *const Self)
     }
 }
 
@@ -479,7 +479,7 @@ where
     /// The bytes must be valid according to [`PluralElementsPackedULE::validate_bytes`].
     pub const unsafe fn from_bytes_unchecked(bytes: &[u8]) -> &Self {
         // Safety: the bytes are valid by trait invariant, and we are transparent over bytes
-        core::mem::transmute(bytes)
+        &*(bytes as *const [u8] as *const Self)
     }
 
     /// Returns a tuple with:
@@ -637,7 +637,7 @@ pub struct FourBitMetadata(u8);
 impl FourBitMetadata {
     /// Creates a [`FourBitMetadata`] if the given value fits in 4 bits.
     pub fn try_from_byte(byte: u8) -> Option<Self> {
-        if byte < 0x80 {
+        if byte <= 0x0F {
             Some(Self(byte))
         } else {
             None
@@ -645,12 +645,12 @@ impl FourBitMetadata {
     }
 
     /// Creates a [`FourBitMetadata`] with a zero value.
-    pub fn zero() -> Self {
+    pub const fn zero() -> Self {
         Self(0)
     }
 
     /// Gets the value out of a [`FourBitMetadata`].
-    pub fn get(self) -> u8 {
+    pub const fn get(self) -> u8 {
         self.0
     }
 }
@@ -700,7 +700,7 @@ impl From<PluralCategoryAndMetadata> for PluralCategoryAndMetadataPackedULE {
 // 5. All other methods are be left with their default impl.
 // 6. The represented enums implement Eq by byte equality.
 unsafe impl ULE for PluralCategoryAndMetadataPackedULE {
-    fn validate_bytes(bytes: &[u8]) -> Result<(), zerovec::ule::UleError> {
+    fn validate_bytes(bytes: &[u8]) -> Result<(), UleError> {
         bytes
             .iter()
             .all(|byte| {

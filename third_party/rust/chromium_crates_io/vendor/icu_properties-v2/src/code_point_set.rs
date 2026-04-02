@@ -40,6 +40,15 @@ impl CodePointSetData {
         CodePointSetDataBorrowed::new::<P>()
     }
 
+    #[cfg(feature = "serde")]
+    #[doc = icu_provider::gen_buffer_unstable_docs!(BUFFER, Self::new)]
+    pub fn try_new_with_buffer_provider<P: BinaryProperty>(
+        provider: &(impl BufferProvider + ?Sized),
+    ) -> Result<CodePointSetData, DataError> {
+        use icu_provider::buf::AsDeserializingBufferProvider;
+        Self::try_new_unstable::<P>(&provider.as_deserializing())
+    }
+
     #[doc = icu_provider::gen_buffer_unstable_docs!(UNSTABLE, Self::new)]
     pub fn try_new_unstable<P: BinaryProperty>(
         provider: &(impl DataProvider<P::DataMarker> + ?Sized),
@@ -245,9 +254,9 @@ pub trait BinaryProperty: crate::private::Sealed + Sized {
 mod tests {
     #[test]
     fn test_general_category() {
-        use icu::properties::props::GeneralCategory;
-        use icu::properties::props::GeneralCategoryGroup;
-        use icu::properties::CodePointMapData;
+        use crate::props::GeneralCategory;
+        use crate::props::GeneralCategoryGroup;
+        use crate::CodePointMapData;
 
         let digits_data = CodePointMapData::<GeneralCategory>::new()
             .get_set_for_value_group(GeneralCategoryGroup::Number);
@@ -262,8 +271,8 @@ mod tests {
 
     #[test]
     fn test_script() {
-        use icu::properties::props::Script;
-        use icu::properties::CodePointMapData;
+        use crate::props::Script;
+        use crate::CodePointMapData;
 
         let thai_data = CodePointMapData::<Script>::new().get_set_for_value(Script::Thai);
         let thai = thai_data.as_borrowed();
@@ -277,8 +286,8 @@ mod tests {
 
     #[test]
     fn test_gc_groupings() {
-        use icu::properties::props::{GeneralCategory, GeneralCategoryGroup};
-        use icu::properties::CodePointMapData;
+        use crate::props::{GeneralCategory, GeneralCategoryGroup};
+        use crate::CodePointMapData;
         use icu_collections::codepointinvlist::CodePointInversionListBuilder;
 
         let test_group = |category: GeneralCategoryGroup, subcategories: &[GeneralCategory]| {
@@ -374,8 +383,8 @@ mod tests {
 
     #[test]
     fn test_gc_surrogate() {
-        use icu::properties::props::GeneralCategory;
-        use icu::properties::CodePointMapData;
+        use crate::props::GeneralCategory;
+        use crate::CodePointMapData;
 
         let surrogates_data = CodePointMapData::<GeneralCategory>::new()
             .get_set_for_value(GeneralCategory::Surrogate);

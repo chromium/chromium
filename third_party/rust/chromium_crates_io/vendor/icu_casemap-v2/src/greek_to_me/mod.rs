@@ -43,11 +43,11 @@ pub(crate) fn get_data(ch: char) -> Option<GreekPrecomposedLetterData> {
 /// Bit 7 is the discriminant. if 0, it is a vowel, else, it is a consonant.
 /// If the whole thing is a zero then it is assumed to be an empty entry.
 ///
-/// In the vowel case, the next three bits are the next three elements of GreekDiacritics,
+/// In the vowel case, the next three bits are the next three elements of [`GreekDiacritics`],
 /// in order (accented, dialytika, ypogegrammeni), and the four bits after that identify
-/// a GreekVowel value.
+/// a [`GreekVowel`] value.
 ///
-/// In the consonant case, the remaining seven bits identify a GreekConsonant value.
+/// In the consonant case, the remaining seven bits identify a consonant value.
 #[derive(Debug, Clone, Copy)]
 pub struct PackedGreekPrecomposedLetterData(pub u8);
 
@@ -240,10 +240,10 @@ macro_rules! diacritics {
 ///
 /// Groupings supported:
 ///
-/// - ACCENTS
-/// - BREATHING_AND_LENGTH
-/// - DIALYTIKA, DIALYTIKA_TONOS, and DIALITYKA_ALL
-/// - YPOGEGRAMMENI
+/// - `ACCENTS`
+/// - `BREATHING_AND_LENGTH`
+/// - `DIALYTIKA`, `DIALYTIKA_TONOS`, and `DIALITYKA_ALL`
+/// - `YPOGEGRAMMENI`
 ///
 /// This is a macro to make it easy to keep the lists of accents in sync.
 pub use crate::diacritics;

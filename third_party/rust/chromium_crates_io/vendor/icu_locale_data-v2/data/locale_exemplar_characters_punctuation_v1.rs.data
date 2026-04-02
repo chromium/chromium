@@ -18,9 +18,9 @@
 #[macro_export]
 macro_rules! __impl_locale_exemplar_characters_punctuation_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         impl $provider {
             const DATA_LOCALE_EXEMPLAR_CHARACTERS_PUNCTUATION_V1: icu_provider::baked::zerotrie::Data<icu::locale::provider::LocaleExemplarCharactersPunctuationV1> = {
                 const TRIE: icu_provider::baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider::baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1yabcdefghijklmnopqrstuvxyz\0\0\0\0\0\0\0\0\0\0\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x02\x119Paz\x99\xA8\xC9\xE3\xE68Pp\x88\x98\xB5\xB7\xC3\x127KX`t\xC5fmrsz\x01\x02\x03\x06\x80\x81\x82\x83t\x84\x80\xC9aeghlnrsu\x08\t\x0C\x0E\x10\x11\x13\x14\x85l-Latn\x86\x87\x88c\x89o\x80o\x8A\x8Bx\x80\x8Ca\x85\xC6aehsvy\x01\x03\x05\x08\n\x84b\x8Dr\x80\x8Ew\x8F\x90\0\x80\xC4aeos\x02\x03\x06\x90\x01\x85i\x90\x02b\x90\x03\xC7elnostu\x02\x04\x05\x07\x08\n\x90\x04\x90\x05\x80\x90\x06\x84\x90\x07\x80\xC6afiory\x02\t\x0E\x10\x12\x90\x08-Adlm\x90\t\x90\nl\x90\x0B\x90\x01\x90\x0C\x80\xC4adlu\x03\x05\x06\x80a\x80\x90\r\x84\x80\xC8aeirstuy\x02\x04\x06\x08\x0B\r\x0F\x90\x0E\x90\x0F\x90\x10\x90\x11b\x90\x03\x90\x12\x90\x13\x90\x14\xC7adegist\x01\x02\x04\x06\x08\n\x80\x80\x90\x15\x90\x16\x90\x17\x90\x18\x90\x19a\x90\x1A\xCBaegkmnosuxy\x02\x05\x07\x10\x12\x13\x1E%&;\x90\x1Ba\x90\x1Cp\x80\x90\0-Arab\x90\x1D\x90\x1E\x80\x90\x1Fk\x80-Latn\x90 \x80-Deva\x80\x80v\x80-\xC3DOT\x04\x08eva\x80rya\x80elu\x80\x85\xC6bimotv\x01\x04\x07\x08\n\x85j\x90\x0Co\x90!\x80\x90\"\x90#\xC8aklnrsty\x03\x05\x06\t\x0B\x0C\x0Ei\x90$\x90%\x80\x80i\x80\x90&\x80\x90'\x90(\xC5deloq\x06\x08\t\x0Bs\x85-NL\x80\x90)\x80\x90*o\x90+\xC3cmr\x07\t\x90,-ES\x90-\x90.\x83\xC6aclmst\x02\x04\x06\t\x0B\x90/m\x80\x900s\x90!\x901\x80-PT\x902u\x80\xC3aou\x03\x05j\x903\x904\x85\xD0acdhikloqrtuvwyz\x05\t\x11\x14\x15\x16\x18\x19\x1B$%&'),\x90$h\x905\x906n\x80\x907-Deva\x80n\x90(\x80\x8E\x908\x80\x909\x90:-Latn\x90;\x80\x80\x80\x90<r\x90=l\x900\xCAaeghknorty\x01\x03\x05\x07\t\n\x0B\x0C\x0E\x80\x90>\x90?\x90@\x90A\x80\x80\x80\x90Bv\x90 \xC5gknrz\x02\x04\x07\t\x90C\x90Dd\x90E\x90F\x80\xC3eim\x03\x04c\x90G\x80w\x90H\xC2hn\x01\x80r\x90I\xC3oru\x02\x04\x90Jl\x84e\x90K-Hans\x90L\xC2ah\x01\x80\x90M-Hant\x90K" };
@@ -687,7 +687,7 @@ macro_rules! __impl_locale_exemplar_characters_punctuation_v1 {
                 unsafe { icu_provider::baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
             };
         }
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         impl icu_provider::DataProvider<icu::locale::provider::LocaleExemplarCharactersPunctuationV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::locale::provider::LocaleExemplarCharactersPunctuationV1>, icu_provider::DataError> {
                 let mut metadata = icu_provider::DataResponseMetadata::default();
@@ -713,7 +713,7 @@ macro_rules! __impl_locale_exemplar_characters_punctuation_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_locale_exemplar_characters_punctuation_v1!($provider);
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         impl icu_provider::IterableDataProvider<icu::locale::provider::LocaleExemplarCharactersPunctuationV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok(icu_provider::baked::DataStore::iter(&Self::DATA_LOCALE_EXEMPLAR_CHARACTERS_PUNCTUATION_V1).collect())

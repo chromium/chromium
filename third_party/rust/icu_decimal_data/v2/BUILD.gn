@@ -15,6 +15,8 @@ cargo_crate("lib") {
   crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/lib.rs"
   sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/lib.rs" ]
   inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/decimal_compact_long_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/decimal_compact_short_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/decimal_digits_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/decimal_symbols_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/mod.rs",
@@ -26,7 +28,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "icu_decimal_data"
   cargo_pkg_description = "Data for the icu_decimal crate"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.1.1"
+  cargo_pkg_version = "2.2.0"
 
   allow_unsafe = false
 

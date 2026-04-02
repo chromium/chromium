@@ -10,18 +10,15 @@ use core::{fmt::Debug, marker::PhantomData, str::FromStr};
 pub use error::ParserError;
 pub use token::ParsedPatternItem;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Default)]
 enum ParserState {
+    #[default]
     Default,
     Placeholder,
     QuotedLiteral,
-    Apostrophe { quoted: bool },
-}
-
-impl Default for ParserState {
-    fn default() -> Self {
-        Self::Default
-    }
+    Apostrophe {
+        quoted: bool,
+    },
 }
 
 macro_rules! handle_literal {

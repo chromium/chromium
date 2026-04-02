@@ -125,7 +125,7 @@ impl<CM: AsRef<CaseMapper>> CaseMapCloser<CM> {
         }
     }
 
-    /// Construct this object to wrap an existing CaseMapper (or a reference to one), loading additional data as needed.
+    /// Construct this object to wrap an existing [`CaseMapper`] (or a reference to one), loading additional data as needed.
     #[doc = icu_provider::gen_buffer_unstable_docs!(UNSTABLE, Self::new_with_mapper)]
     pub fn try_new_with_mapper_unstable<P>(provider: &P, casemapper: CM) -> Result<Self, DataError>
     where

@@ -16,7 +16,7 @@ cargo_crate("lib") {
       "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/lib.rs"
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/branch_meta.rs",
-    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/bytestr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/dense.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/konst/builder.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/konst/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/konst/store.rs",
@@ -25,10 +25,12 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/nonconst/builder.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/nonconst/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/nonconst/store.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/builder/slice_indices.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/byte_phf/builder.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/byte_phf/cached_owned.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/byte_phf/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/cursor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/dense.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/error.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/helpers.rs",
     "//third_party/rust/chromium_crates_io/vendor/zerotrie-v0_2/src/lib.rs",
@@ -47,7 +49,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A data structure that efficiently maps strings to integers"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.2.3"
+  cargo_pkg_version = "0.2.4"
 
   allow_unsafe = true
 

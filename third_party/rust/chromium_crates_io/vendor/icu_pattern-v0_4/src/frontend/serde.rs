@@ -70,15 +70,14 @@ where
     }
 }
 
-#[cfg(feature = "serde")]
-impl<'de, B: PatternBackend> serde::Deserialize<'de> for PatternString<B>
+impl<'de, B: PatternBackend> Deserialize<'de> for PatternString<B>
 where
-    B::PlaceholderKeyCow<'de>: core::str::FromStr,
-    <B::PlaceholderKeyCow<'de> as core::str::FromStr>::Err: core::fmt::Debug,
+    B::PlaceholderKeyCow<'de>: FromStr,
+    <B::PlaceholderKeyCow<'de> as FromStr>::Err: fmt::Debug,
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: serde::Deserializer<'de>,
+        D: Deserializer<'de>,
     {
         let pattern_str = String::deserialize(deserializer)?;
         let pattern = Pattern::<B>::try_from_str(&pattern_str, Default::default())

@@ -5,10 +5,11 @@
 [package]
 name = "zerotrie"
 description = "A data structure that efficiently maps strings to integers"
-version = "0.2.3"
+version = "0.2.4"
+categories.workspace = true
+keywords = ["zero-copy", "serialization", "memory-efficiency", "trie"]
 
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 include.workspace = true
@@ -19,6 +20,9 @@ rust-version = "1.82"
 [package.metadata.docs.rs]
 all-features = true
 
+[package.metadata.cargo-all-features]
+max_combination_size = 3
+
 [dependencies]
 databake = { workspace = true, features = ["derive"], optional = true }
 displaydoc = { workspace = true }
@@ -28,17 +32,37 @@ yoke = { workspace = true, features = ["derive"], optional = true }
 zerofrom = { workspace = true, optional = true }
 zerovec = { workspace = true, optional = true }
 
+[dev-dependencies]
+bincode = { workspace = true }
+icu_benchmark_macros = { path = "../../tools/benchmark/macros" }
+litemap = { path = "../../utils/litemap" }
+postcard = { workspace = true, features = ["alloc"] }
+itertools = { workspace = true }
+rand = { workspace = true }
+rand_pcg = { workspace = true }
+rmp-serde = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+zerovec = { path = "../../utils/zerovec", features = ["serde", "hashmap"] }
+icu_locale_core = { workspace = true, features = ["alloc"]  }
+writeable = { path = "../../utils/writeable" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+criterion = { workspace = true }
+
 [lib]
 bench = false  # This option is required for Benchmark CI
 
 [features]
 default = []
-alloc = []
+alloc = ["zerovec?/alloc"]
 databake = ["dep:databake", "zerovec?/databake"]
+dense = ["dep:zerovec"]
 litemap = ["dep:litemap", "alloc"]
 serde = ["dep:serde_core", "dep:litemap", "alloc", "litemap/serde", "zerovec?/serde"]
 yoke = ["dep:yoke"]
 zerofrom = ["dep:zerofrom"]
+zerovec = ["dep:zerovec"]
 
 [[bench]]
 name = "overview"
@@ -54,5 +78,12 @@ name = "builder_test"
 required-features = ["alloc", "litemap"]
 
 [[test]]
+name = "dense_test"
+required-features = ["alloc", "dense"]
+
+[[test]]
 name = "locale_aux_test"
 required-features = ["alloc", "litemap"]
+
+[lints]
+workspace = true

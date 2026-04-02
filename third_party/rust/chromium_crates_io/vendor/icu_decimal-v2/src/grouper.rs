@@ -157,7 +157,7 @@ fn test_grouper() {
                 dec.multiply_pow10((i as i16) + 3);
                 dec
             };
-            let symbols = crate::provider::DecimalSymbols {
+            let symbols = DecimalSymbols {
                 grouping_sizes: cas.sizes,
                 ..DecimalSymbols::new_en_for_testing()
             };
@@ -166,9 +166,8 @@ fn test_grouper() {
             impl DataProvider<DecimalSymbolsV1> for Provider {
                 fn load(
                     &self,
-                    _req: icu_provider::DataRequest,
-                ) -> Result<icu_provider::DataResponse<DecimalSymbolsV1>, icu_provider::DataError>
-                {
+                    _req: DataRequest,
+                ) -> Result<DataResponse<DecimalSymbolsV1>, DataError> {
                     Ok(DataResponse {
                         metadata: Default::default(),
                         payload: DataPayload::from_owned(
@@ -184,9 +183,8 @@ fn test_grouper() {
             impl DataProvider<DecimalDigitsV1> for Provider {
                 fn load(
                     &self,
-                    _req: icu_provider::DataRequest,
-                ) -> Result<icu_provider::DataResponse<DecimalDigitsV1>, icu_provider::DataError>
-                {
+                    _req: DataRequest,
+                ) -> Result<DataResponse<DecimalDigitsV1>, DataError> {
                     Ok(DataResponse {
                         metadata: Default::default(),
                         payload: DataPayload::from_owned(self.1),

@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.83.0"
+rust-version = "1.86.0"
 name = "timezone_provider"
-version = "0.2.0"
+version = "0.2.3"
 authors = ["boa-dev"]
 build = false
 include = [
@@ -122,7 +122,7 @@ features = [
 ]
 
 [dependencies.zoneinfo64]
-version = "0.2.0"
+version = "0.3.0"
 optional = true
 
 [dependencies.zoneinfo_rs]

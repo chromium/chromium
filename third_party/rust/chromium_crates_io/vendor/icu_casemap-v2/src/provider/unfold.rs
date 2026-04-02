@@ -35,7 +35,7 @@ icu_provider::data_struct!(
 );
 
 impl CaseMapUnfold<'_> {
-    /// Creates a new CaseMapUnfold using data exported by the `icuexportdata` tool in ICU4C.
+    /// Creates a new [`CaseMapUnfold`] using data exported by the `icuexportdata` tool in ICU4C.
     ///
     /// Unfold data is exported by ICU as an array of 16-bit values, representing a short
     /// header followed by a two-column key/value table. The header indicates:

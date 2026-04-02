@@ -64,6 +64,8 @@ void temporal_rs_PlainYearMonth_era(const PlainYearMonth* self, DiplomatWrite* w
 typedef struct temporal_rs_PlainYearMonth_era_year_result {union {int32_t ok; }; bool is_ok;} temporal_rs_PlainYearMonth_era_year_result;
 temporal_rs_PlainYearMonth_era_year_result temporal_rs_PlainYearMonth_era_year(const PlainYearMonth* self);
 
+uint8_t temporal_rs_PlainYearMonth_reference_day(const PlainYearMonth* self);
+
 const Calendar* temporal_rs_PlainYearMonth_calendar(const PlainYearMonth* self);
 
 typedef struct temporal_rs_PlainYearMonth_add_result {union {PlainYearMonth* ok; TemporalError err;}; bool is_ok;} temporal_rs_PlainYearMonth_add_result;

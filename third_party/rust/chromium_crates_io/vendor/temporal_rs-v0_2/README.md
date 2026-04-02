@@ -234,7 +234,7 @@ extensions to the format.
 
 ## More information
 
-[`Temporal`][proposal] is the Stage 3 proposal for ECMAScript that
+[`Temporal`][proposal] is the Stage 4 proposal for ECMAScript that
 provides new JS objects and functions for working with dates and
 times that fully supports time zones and non-gregorian calendars.
 

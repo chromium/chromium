@@ -1,3 +1,33 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## What's Changed in v0.2.3
+* Update zoneinfo64 and Diplomat by @Manishearth in [#713](https://github.com/boa-dev/temporal/pull/713)
+* Update icu_calendar to fix `with()` regression by @Manishearth in [#716](https://github.com/boa-dev/temporal/pull/716)
+
+**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.2.2...v0.2.3
+
+## What's Changed in v0.2.2
+* Update ICU4X to 2.2 by @Manishearth in [#705](https://github.com/boa-dev/temporal/pull/705)
+
+**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.2.1...v0.2.2
+
+## What's Changed in v0.2.1
+* Pin icu_calendar to v2.1 by @jedel1043 in [#704](https://github.com/boa-dev/temporal/pull/704)
+* Remove unwrap in PYM::epoch_ns_for_utc by @Manishearth in [#701](https://github.com/boa-dev/temporal/pull/701)
+* Fix bug with rounding with zoned RelativeTo and increment by @Manishearth in [#696](https://github.com/boa-dev/temporal/pull/696)
+* Add epoch_ns_for_utc to all Plain APIs by @Manishearth in [#700](https://github.com/boa-dev/temporal/pull/700)
+* Ensure offsets do not have more than 9 digits while parsing by @Manishearth in [#698](https://github.com/boa-dev/temporal/pull/698)
+* Do not overly range check when constructing Temporal PlainMonthDay by @Manishearth in [#695](https://github.com/boa-dev/temporal/pull/695)
+* Replace icu_locale with icu_locale_core by @Manishearth in [#694](https://github.com/boa-dev/temporal/pull/694)
+* docs: temporal is stage four by @ghostdevv in [#692](https://github.com/boa-dev/temporal/pull/692)
+* Expose fields needed for structured clone by @lucacasonato in [#686](https://github.com/boa-dev/temporal/pull/686)
+
+## New Contributors
+* @ghostdevv made their first contribution in [#692](https://github.com/boa-dev/temporal/pull/692)
+* @lucacasonato made their first contribution in [#686](https://github.com/boa-dev/temporal/pull/686)
+
 ## What's Changed in v0.2.0
 * Fix incorrect decimal digits bug by @nekevss in [#679](https://github.com/boa-dev/temporal/pull/679)
 * Update the documentation by @nekevss in [#680](https://github.com/boa-dev/temporal/pull/680)
@@ -33,10 +63,6 @@
 * @catamorphism made their first contribution in [#647](https://github.com/boa-dev/temporal/pull/647)
 
 **Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.1.2...v0.2.0
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
 
 ## What's Changed in v0.1.2
 * Publish 0.1.2 by @Manishearth in [#625](https://github.com/boa-dev/temporal/pull/625)

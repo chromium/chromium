@@ -54,7 +54,7 @@ pub enum SinglePlaceholderKey {
 }
 
 impl FromStr for SinglePlaceholderKey {
-    type Err = core::convert::Infallible;
+    type Err = Infallible;
     fn from_str(_: &str) -> Result<Self, Self::Err> {
         Ok(Self::Singleton)
     }

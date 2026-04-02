@@ -13,7 +13,7 @@ use zerovec::{ule::AsULE, ZeroVec};
 /// A builder for [`CodePointInversionList`].
 ///
 /// Provides exposure to builder functions and conversion to [`CodePointInversionList`]
-#[derive(Default)]
+#[derive(Default, Clone, Debug)]
 pub struct CodePointInversionListBuilder {
     // A sorted list of even length, with values <= char::MAX + 1
     intervals: Vec<u32>,

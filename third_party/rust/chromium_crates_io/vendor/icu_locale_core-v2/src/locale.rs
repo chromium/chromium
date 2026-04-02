@@ -26,7 +26,7 @@ use core::str::FromStr;
 /// multiple possible orderings. Depending on your use case, two orderings are available:
 ///
 /// 1. A string ordering, suitable for stable serialization: [`Locale::strict_cmp`]
-/// 2. A struct ordering, suitable for use with a BTreeSet: [`Locale::total_cmp`]
+/// 2. A struct ordering, suitable for use with a `BTreeSet`: [`Locale::total_cmp`]
 ///
 /// See issue: <https://github.com/unicode-org/icu4x/issues/1215>
 ///
@@ -110,24 +110,24 @@ pub struct Locale {
 // Expected sizes are based on a 64-bit architecture
 #[cfg(target_pointer_width = "64")]
 fn test_sizes() {
-    assert_eq!(core::mem::size_of::<subtags::Language>(), 3);
-    assert_eq!(core::mem::size_of::<subtags::Script>(), 4);
-    assert_eq!(core::mem::size_of::<subtags::Region>(), 3);
-    assert_eq!(core::mem::size_of::<subtags::Variant>(), 8);
-    assert_eq!(core::mem::size_of::<subtags::Variants>(), 16);
-    assert_eq!(core::mem::size_of::<LanguageIdentifier>(), 32);
+    assert_eq!(size_of::<subtags::Language>(), 3);
+    assert_eq!(size_of::<subtags::Script>(), 4);
+    assert_eq!(size_of::<subtags::Region>(), 3);
+    assert_eq!(size_of::<subtags::Variant>(), 8);
+    assert_eq!(size_of::<subtags::Variants>(), 16);
+    assert_eq!(size_of::<LanguageIdentifier>(), 32);
 
-    assert_eq!(core::mem::size_of::<extensions::transform::Transform>(), 56);
-    assert_eq!(core::mem::size_of::<Option<LanguageIdentifier>>(), 32);
-    assert_eq!(core::mem::size_of::<extensions::transform::Fields>(), 24);
+    assert_eq!(size_of::<extensions::transform::Transform>(), 56);
+    assert_eq!(size_of::<Option<LanguageIdentifier>>(), 32);
+    assert_eq!(size_of::<extensions::transform::Fields>(), 24);
 
-    assert_eq!(core::mem::size_of::<extensions::unicode::Attributes>(), 16);
-    assert_eq!(core::mem::size_of::<extensions::unicode::Keywords>(), 24);
-    assert_eq!(core::mem::size_of::<Vec<extensions::other::Other>>(), 24);
-    assert_eq!(core::mem::size_of::<extensions::private::Private>(), 16);
-    assert_eq!(core::mem::size_of::<extensions::Extensions>(), 136);
+    assert_eq!(size_of::<extensions::unicode::Attributes>(), 16);
+    assert_eq!(size_of::<extensions::unicode::Keywords>(), 24);
+    assert_eq!(size_of::<Vec<extensions::other::Other>>(), 24);
+    assert_eq!(size_of::<extensions::private::Private>(), 16);
+    assert_eq!(size_of::<extensions::Extensions>(), 136);
 
-    assert_eq!(core::mem::size_of::<Locale>(), 168);
+    assert_eq!(size_of::<Locale>(), 168);
 }
 
 impl Locale {

@@ -216,7 +216,7 @@ fn test_against_calendrical_calculations() {
     for (i, &data) in DATA.iter().enumerate() {
         assert_eq!(
             data,
-            super::EastAsianTraditionalYearData::calendrical_calculations::<Dangi>(
+            super::EastAsianTraditionalYear::calendrical_calculations::<Dangi>(
                 STARTING_YEAR + i as i32
             )
             .packed

@@ -16,6 +16,7 @@ cargo_crate("lib") {
       "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/lib.rs"
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/lifetimes.rs",
     "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/visitor.rs",
   ]
   inputs = []
@@ -26,7 +27,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "yoke-derive"
   cargo_pkg_description = "Custom derive for the yoke crate"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.8.1"
+  cargo_pkg_version = "0.8.2"
 
   allow_unsafe = false
 

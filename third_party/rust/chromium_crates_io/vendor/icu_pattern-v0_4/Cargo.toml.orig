@@ -5,7 +5,8 @@
 [package]
 name = "icu_pattern"
 description = "ICU pattern utilities"
-version = "0.4.1"
+version = "0.4.2"
+keywords = ["unicode", "patterns", "formatting"]
 
 authors.workspace = true
 edition.workspace = true
@@ -14,11 +15,15 @@ license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 
+
 [package.metadata.workspaces]
 independent = true
 
 [package.metadata.docs.rs]
 all-features = true
+
+[package.metadata.cargo-all-features]
+max_combination_size = 3
 
 [dependencies]
 either = { workspace = true }
@@ -31,6 +36,14 @@ serde = { workspace = true, features = ["derive"], optional = true }
 yoke = { workspace = true, features = ["derive"], optional = true }
 zerovec = { workspace = true, optional = true }
 
+[dev-dependencies]
+litemap = { workspace = true, features = ["alloc"] }
+zerofrom = { workspace = true, features = ["alloc"] }
+zerovec = { workspace = true, features = ["databake", "serde"] }
+rmp-serde = { workspace = true }
+serde_json = { workspace = true }
+postcard = { workspace = true, features = ["use-std"] }
+
 [features]
 default = []
 alloc = ["serde?/alloc", "writeable/alloc", "zerovec?/alloc"]
@@ -39,3 +52,6 @@ litemap = ["dep:litemap"]
 serde = ["alloc", "dep:serde"]
 yoke = ["dep:yoke"]
 zerovec = ["dep:zerovec", "alloc"]
+
+[lints]
+workspace = true

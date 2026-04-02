@@ -62,7 +62,7 @@ enum_keyword!(
 enum_keyword!(
     /// Collation parameter key for numeric handling.
     ///
-    /// If set to on, any sequence of Decimal Digits (General_Category = Nd in the UAX44) is sorted at a primary level with
+    /// If set to on, any sequence of Decimal Digits (`General_Category = Nd` in the UAX44) is sorted at a primary level with
     /// its numeric value. For example, "1" < "2" < "10". The computed primary weights are all at the start of the digit
     /// reordering group.
     [Default]

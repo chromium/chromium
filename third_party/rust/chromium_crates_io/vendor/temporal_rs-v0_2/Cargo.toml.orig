@@ -11,8 +11,8 @@ members = [
 
 [workspace.package]
 edition = "2021"
-version = "0.2.0"
-rust-version = "1.83.0"
+version = "0.2.3"
+rust-version = "1.86.0"
 authors = ["boa-dev"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/boa-dev/temporal"
@@ -29,8 +29,8 @@ exclude = [
 
 [workspace.dependencies]
 # Self
-temporal_rs = { version = "0.2.0", path = ".", default-features = false }
-timezone_provider = { version = "0.2.0", path = "./provider", default-features = false }
+temporal_rs = { version = "0.2.3", path = ".", default-features = false }
+timezone_provider = { version = "0.2.3", path = "./provider", default-features = false }
 zoneinfo_rs = { version = "0.1.0", path = "./zoneinfo", default-features = false }
 
 # Dependencies
@@ -45,19 +45,19 @@ web-time = "1.1.0"
 
 # ICU4X
 tinystr = "0.8.0"
-icu_calendar = { version = "2.1.0", default-features = false, features = ["unstable"] }
-icu_locale = "2.1.0"
+icu_calendar = { version = "2.2.1", default-features = false }
+icu_locale_core = "2.1.0"
 zerovec = "0.11.0"
 databake = "0.2.0"
 zerotrie = "0.2.0"
 writeable = "0.6.0"
-zoneinfo64 = "0.2.0"
+zoneinfo64 = "0.3.0"
 ixdtf = "0.6.4"
 
 # Diplomat
-diplomat-tool = { version = "0.14.0", default-features = false }
-diplomat-runtime = { version = "0.14.0", default-features = false }
-diplomat = { version = "0.14.0", default-features = false }
+diplomat-tool = { version = "0.15.0", default-features = false }
+diplomat-runtime = { version = "0.15.0", default-features = false }
+diplomat = { version = "0.15.0", default-features = false }
 
 
 [package]
@@ -78,7 +78,7 @@ exclude.workspace = true
 
 core_maths = "0.1.1"
 icu_calendar = { workspace = true, features = ["compiled_data"] }
-icu_locale.workspace = true
+icu_locale_core.workspace = true
 ixdtf = { workspace = true, features = ["duration"] }
 num-traits.workspace = true
 tinystr.workspace = true
@@ -93,6 +93,7 @@ timezone_provider = { workspace = true }
 # System time feature
 web-time = { workspace = true, optional = true }
 iana-time-zone = { workspace = true, optional = true }
+calendrical_calculations = "0.2.4"
 
 [features]
 default = ["sys-local"]

@@ -4,8 +4,7 @@ use core::fmt;
 use ixdtf::ParseError;
 use timezone_provider::TimeZoneProviderError;
 
-use icu_calendar::cal::AnyCalendarDifferenceError;
-use icu_calendar::error::{DateError, DateFromFieldsError, RangeError};
+use icu_calendar::error::{DateAddError, DateFromFieldsError};
 
 /// `TemporalError`'s error type.
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
@@ -150,12 +149,6 @@ impl fmt::Display for TemporalError {
     }
 }
 
-impl From<DateError> for TemporalError {
-    fn from(error: DateError) -> Self {
-        TemporalError::range().with_enum(ErrorMessage::Icu4xDate(error))
-    }
-}
-
 impl From<DateFromFieldsError> for TemporalError {
     fn from(error: DateFromFieldsError) -> Self {
         let kind = if error == DateFromFieldsError::NotEnoughFields {
@@ -167,9 +160,9 @@ impl From<DateFromFieldsError> for TemporalError {
     }
 }
 
-impl From<AnyCalendarDifferenceError> for TemporalError {
-    fn from(error: AnyCalendarDifferenceError) -> Self {
-        TemporalError::range().with_enum(ErrorMessage::Icu4xUntil(error))
+impl From<DateAddError> for TemporalError {
+    fn from(error: DateAddError) -> Self {
+        TemporalError::range().with_enum(ErrorMessage::Icu4xDateAdd(error))
     }
 }
 
@@ -227,9 +220,8 @@ pub(crate) enum ErrorMessage {
     None,
     String(&'static str),
     Ixdtf(ParseError),
-    Icu4xDate(DateError),
     Icu4xDateFromFields(DateFromFieldsError),
-    Icu4xUntil(AnyCalendarDifferenceError),
+    Icu4xDateAdd(DateAddError),
 }
 
 impl ErrorMessage {
@@ -276,27 +268,21 @@ impl ErrorMessage {
             Self::None => "",
             Self::String(s) => s,
             Self::Ixdtf(s) => ixdtf_error_to_static_string(s),
-            Self::Icu4xDate(DateError::Range { field, .. })
-            | Self::Icu4xDateFromFields(DateFromFieldsError::Range(RangeError { field, .. })) => {
-                match field {
-                    "year" => "Year out of range.",
-                    "month" => "Month out of range.",
-                    "day" => "Day out of range.",
-                    _ => "Field out of range.",
-                }
+
+            Self::Icu4xDateFromFields(DateFromFieldsError::InvalidEra) => "Unknown era.",
+            Self::Icu4xDateFromFields(DateFromFieldsError::InvalidDay { .. })
+            | Self::Icu4xDateAdd(DateAddError::InvalidDay { .. }) => "Day out of range",
+            Self::Icu4xDateFromFields(DateFromFieldsError::InvalidOrdinalMonth { .. }) => {
+                "Month out of range"
             }
-            Self::Icu4xDate(DateError::UnknownEra)
-            | Self::Icu4xDateFromFields(DateFromFieldsError::UnknownEra) => "Unknown era.",
-            Self::Icu4xDate(DateError::UnknownMonthCode(..)) => "Unknown month code.",
             Self::Icu4xDateFromFields(DateFromFieldsError::MonthCodeInvalidSyntax) => {
                 "Invalid month code."
             }
-            Self::Icu4xDateFromFields(DateFromFieldsError::MonthCodeNotInCalendar) => {
+            Self::Icu4xDateFromFields(DateFromFieldsError::MonthNotInCalendar) => {
                 "Month code not in calendar."
             }
-            Self::Icu4xDateFromFields(DateFromFieldsError::MonthCodeNotInYear) => {
-                "Month code not in year."
-            }
+            Self::Icu4xDateFromFields(DateFromFieldsError::MonthNotInYear)
+            | Self::Icu4xDateAdd(DateAddError::MonthNotInYear) => "Month code not in year.",
             Self::Icu4xDateFromFields(DateFromFieldsError::InconsistentYear) => {
                 "Inconsistent year."
             }
@@ -306,12 +292,8 @@ impl ErrorMessage {
             Self::Icu4xDateFromFields(DateFromFieldsError::NotEnoughFields) => {
                 "Insufficient fields."
             }
-            Self::Icu4xDate(_) => "Date error.",
-            Self::Icu4xDateFromFields(_) => "Date error.",
-            Self::Icu4xUntil(AnyCalendarDifferenceError::MismatchedCalendars) => {
-                "Mismatched calendars."
-            }
-            Self::Icu4xUntil(_) => "Arithmetic error.",
+            Self::Icu4xDateAdd(DateAddError::Overflow) => "Overflow during addition.",
+            Self::Icu4xDateFromFields(_) | Self::Icu4xDateAdd(_) => "Date error.",
         }
     }
 }

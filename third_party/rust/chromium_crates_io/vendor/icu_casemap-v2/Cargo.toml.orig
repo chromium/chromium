@@ -5,9 +5,10 @@
 [package]
 name = "icu_casemap"
 description = "Unicode case mapping and folding algorithms"
+categories.workspace = true
+keywords = ["unicode", "casing", "case-folding", "text-processing"]
 
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 include.workspace = true
@@ -64,3 +65,6 @@ required-features = ["compiled_data", "datagen"] # datagen bound can be removed 
 name = "casemap"
 harness = false
 required-features = ["compiled_data"]
+
+[lints]
+workspace = true

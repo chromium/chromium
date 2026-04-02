@@ -5,9 +5,10 @@
 [package]
 name = "icu_locale_core"
 description = "API for managing Unicode Language and Locale Identifiers"
+categories.workspace = true
+keywords = ["unicode", "language-tags", "bcp47"]
 
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 include.workspace = true
@@ -28,6 +29,20 @@ writeable = { workspace = true }
 databake = { workspace = true, features = ["derive"], optional = true }
 serde = { workspace = true, optional = true }
 zerovec = { workspace = true, optional = true }
+
+[dev-dependencies]
+iai = { workspace = true }
+icu = { path = "../../components/icu", default-features = false }
+icu_provider = { path = "../../provider/core" }
+litemap = { workspace = true, features = ["testing"] }
+postcard = { workspace = true, features = ["use-std"] }
+potential_utf = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+criterion = { workspace = true }
 
 [features]
 databake = ["dep:databake", "alloc"]
@@ -53,3 +68,10 @@ harness = false
 [[bench]]
 name = "iai_langid"
 harness = false
+
+[package.metadata.cargo-semver-checks.lints]
+workspace = true
+
+
+[lints]
+workspace = true

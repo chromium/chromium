@@ -5,10 +5,11 @@
 [package]
 name = "icu_list"
 description = "ECMA-402 ListFormatter"
+categories.workspace = true
+keywords = ["unicode", "formatting", "internationalization", "sequence"]
 
 license.workspace = true
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 repository.workspace = true
@@ -44,3 +45,6 @@ serde_human = ["serde", "regex-automata/dfa-build", "regex-automata/syntax", "al
 datagen = ["serde", "dep:databake", "regex-automata/dfa-build", "regex-automata/syntax", "zerovec/databake", "alloc", "serde_human", "icu_provider/export"]
 compiled_data = ["dep:icu_list_data", "dep:icu_locale", "icu_locale?/compiled_data", "icu_provider/baked"]
 alloc = ["zerovec/alloc", "icu_provider/alloc", "serde?/alloc"]
+
+[lints]
+workspace = true

@@ -48,7 +48,7 @@ pub struct LocalePluralRulesFixture {
 
 impl LocalePluralRulesFixture {
     #[allow(dead_code)]
-    pub fn get(&self, category: &PluralCategory) -> Option<&String> {
+    pub fn get(&self, category: PluralCategory) -> Option<&String> {
         match category {
             PluralCategory::Zero => self.zero.as_ref(),
             PluralCategory::One => self.one.as_ref(),

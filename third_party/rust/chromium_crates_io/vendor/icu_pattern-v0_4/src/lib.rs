@@ -2,6 +2,19 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
+// https://github.com/unicode-org/icu4x/blob/main/documents/process/boilerplate.md#library-annotations
+#![cfg_attr(not(any(test, doc)), no_std)]
+#![cfg_attr(
+    not(test),
+    deny(
+        clippy::indexing_slicing,
+        clippy::unwrap_used,
+        clippy::expect_used,
+        clippy::panic,
+    )
+)]
+// #![warn(missing_docs)]
+
 //! `icu_pattern` is a utility crate of the [`ICU4X`] project.
 //!
 //! It includes a [`Pattern`] type which supports patterns with various storage backends.
@@ -29,22 +42,6 @@
 //!
 //! [`ICU4X`]: ../icu/index.html
 //! [`FromStr`]: core::str::FromStr
-
-// https://github.com/unicode-org/icu4x/blob/main/documents/process/boilerplate.md#library-annotations
-#![cfg_attr(not(any(test, doc)), no_std)]
-#![cfg_attr(
-    not(test),
-    deny(
-        clippy::indexing_slicing,
-        clippy::unwrap_used,
-        clippy::expect_used,
-        clippy::panic,
-        clippy::exhaustive_structs,
-        clippy::exhaustive_enums,
-        clippy::trivially_copy_pass_by_ref,
-        missing_debug_implementations,
-    )
-)]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -111,6 +108,31 @@ mod private {
 /// assert_writeable_eq!(pattern.interpolate(["Alice"]), "Hello, Alice!");
 /// ```
 pub type SinglePlaceholderPattern = Pattern<SinglePlaceholder>;
+
+impl SinglePlaceholderPattern {
+    /// An instance of [`SinglePlaceholderPattern`] that has a single placeholder and adds no
+    /// prefix or suffix.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use icu_pattern::SinglePlaceholderPattern;
+    /// use writeable::assert_writeable_eq;
+    ///
+    /// assert_eq!(
+    ///     SinglePlaceholderPattern::PASS_THROUGH,
+    ///     &*SinglePlaceholderPattern::try_from_str("{0}", Default::default())
+    ///         .unwrap()
+    /// );
+    ///
+    /// assert_writeable_eq!(
+    ///     SinglePlaceholderPattern::PASS_THROUGH.interpolate(["hello, world!"]),
+    ///     "hello, world!"
+    /// );
+    /// ```
+    pub const PASS_THROUGH: &'static SinglePlaceholderPattern =
+        SinglePlaceholderPattern::from_ref_store_unchecked("\x01");
+}
 
 /// # Examples
 ///

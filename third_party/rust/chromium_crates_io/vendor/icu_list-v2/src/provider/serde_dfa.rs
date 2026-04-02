@@ -6,7 +6,7 @@ use icu_provider::prelude::*;
 use regex_automata::dfa::sparse::DFA;
 use zerovec::VarZeroCow;
 
-/// A serde-compatible version of [regex_automata::dfa::sparse::DFA].
+/// A serde-compatible version of [`regex_automata::dfa::sparse::DFA`].
 ///
 /// This does not implement
 /// [`serde::Deserialize`] directly, as binary deserialization is not supported in big-endian
@@ -127,7 +127,7 @@ impl<'data> SerdeDFA<'data> {
     ///
     /// # Safety
     ///
-    /// `dfa_bytes` has to be a valid DFA (regex_automata::dfa::sparse::DFA::from_bytes(dfa_bytes).is_ok())
+    /// `dfa_bytes` has to be a valid DFA (`regex_automata::dfa::sparse::DFA::from_bytes(dfa_bytes).is_ok()`)
     pub const unsafe fn from_dfa_bytes_unchecked(dfa_bytes: &'data [u8]) -> Self {
         Self {
             // SAFETY: safe for VarZeroCow<[u8]>
@@ -139,7 +139,7 @@ impl<'data> SerdeDFA<'data> {
 
     /// Creates a `SerdeDFA` from a regex.
     #[cfg(any(feature = "datagen", feature = "serde_human",))]
-    pub fn new(pattern: alloc::borrow::Cow<'data, str>) -> Result<Self, icu_provider::DataError> {
+    pub fn new(pattern: alloc::borrow::Cow<'data, str>) -> Result<Self, DataError> {
         use regex_automata::dfa::dense::{Builder, Config};
 
         let Some(anchored_pattern) = pattern.strip_prefix('^') else {
@@ -158,13 +158,13 @@ impl<'data> SerdeDFA<'data> {
             )
             .build(anchored_pattern)
             .map_err(|e| {
-                icu_provider::DataError::custom("Cannot build DFA")
+                DataError::custom("Cannot build DFA")
                     .with_display_context(anchored_pattern)
                     .with_debug_context(&e)
             })?
             .to_sparse()
             .map_err(|e| {
-                icu_provider::DataError::custom("Cannot sparsify DFA")
+                DataError::custom("Cannot sparsify DFA")
                     .with_display_context(anchored_pattern)
                     .with_debug_context(&e)
             })?;

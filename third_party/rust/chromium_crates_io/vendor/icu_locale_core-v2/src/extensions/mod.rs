@@ -195,6 +195,7 @@ impl Extensions {
     }
 
     #[expect(clippy::type_complexity)]
+    #[cfg_attr(not(feature = "alloc"), expect(clippy::needless_borrow))]
     pub(crate) fn as_tuple(
         &self,
     ) -> (
@@ -208,8 +209,8 @@ impl Extensions {
             )>,
             &transform::Fields,
         ),
-        &private::Private,
-        &[other::Other],
+        &Private,
+        &[Other],
     ) {
         (
             self.unicode.as_tuple(),

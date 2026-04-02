@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.83"
+rust-version = "1.86"
 name = "icu_normalizer_data"
-version = "2.1.1"
+version = "2.2.0"
 authors = ["The ICU4X Project Developers"]
 build = "build.rs"
 include = [
@@ -35,12 +35,21 @@ autobenches = false
 description = "Data for the icu_normalizer crate"
 homepage = "https://icu4x.unicode.org"
 readme = "README.md"
-categories = ["internationalization"]
+keywords = [
+    "data",
+    "unicode",
+]
+categories = [
+    "internationalization",
+    "localization",
+    "no-std",
+    "embedded",
+]
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
 [package.metadata.sources.cldr]
-tagged = "48.0.0"
+tagged = "48.2.0"
 
 [package.metadata.sources.icuexport]
 tagged = "release-78.1rc"

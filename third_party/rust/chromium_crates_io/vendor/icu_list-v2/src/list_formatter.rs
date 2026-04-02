@@ -4,6 +4,8 @@
 
 use crate::options::{ListFormatterOptions, ListLength};
 use crate::provider::*;
+#[cfg(feature = "alloc")]
+use alloc::string::String;
 use core::fmt::{self, Write};
 use icu_locale_core::preferences::define_preferences;
 use icu_provider::marker::ErasedMarker;
@@ -145,7 +147,7 @@ impl ListFormatter {
     pub fn format_to_string<W: Writeable, I: Iterator<Item = W> + Clone>(
         &self,
         values: I,
-    ) -> alloc::string::String {
+    ) -> String {
         self.format(values).write_to_string().into_owned()
     }
 }
@@ -263,10 +265,10 @@ impl<'a, W: Writeable + 'a, I: Iterator<Item = W> + Clone + 'a> Writeable
     }
 }
 
-impl<'a, W: Writeable + 'a, I: Iterator<Item = W> + Clone + 'a> core::fmt::Display
+impl<'a, W: Writeable + 'a, I: Iterator<Item = W> + Clone + 'a> fmt::Display
     for FormattedList<'a, W, I>
 {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.write_to(f)
     }
 }
@@ -363,7 +365,7 @@ mod tests {
     macro_rules! test {
         ($locale:literal, $type:ident, $(($input:expr, $output:literal),)+) => {
             let f = ListFormatter::$type(
-                icu::locale::locale!($locale).into(),
+                icu_locale::locale!($locale).into(),
                 Default::default(),
             ).unwrap();
             $(

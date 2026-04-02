@@ -5,9 +5,10 @@
 [package]
 name = "icu_locale"
 description = "API for Unicode Language and Locale Identifiers canonicalization"
+categories.workspace = true
+keywords = ["unicode", "language-tags", "bcp47"]
 
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 include.workspace = true
@@ -60,3 +61,6 @@ harness = false
 [[test]]
 name = "locale_canonicalizer"
 required-features = ["serde"]
+
+[lints]
+workspace = true

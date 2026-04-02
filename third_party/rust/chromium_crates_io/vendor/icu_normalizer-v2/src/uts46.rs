@@ -62,20 +62,39 @@ impl Uts46MapperBorrowed<'static> {
 }
 
 impl Uts46MapperBorrowed<'_> {
+    /// Returns `true` iff the canonical combining class of `c` is 9 (Virama).
+    ///
+    /// This method uses the UTS 46 data and does not add a dependency on NFD
+    /// data like `CanonicalCombiningClassMapBorrowed` does.
+    #[inline]
+    pub fn is_virama(&self, c: char) -> bool {
+        let trie_val = self
+            .normalizer
+            .decomposing_normalizer
+            .decompositions
+            .trie
+            .get(c);
+        if crate::trie_value_has_ccc(trie_val) {
+            (trie_val as u8) == 9
+        } else {
+            false
+        }
+    }
+
     /// Returns an iterator adaptor that turns an `Iterator` over `char`
     /// into an iterator yielding a `char` sequence that gets the following
     /// operations from the "Map" and "Normalize" steps of the "Processing"
     /// section of UTS 46 lazily applied to it:
     ///
-    /// 1. The _ignored_ characters are ignored.
-    /// 2. The _mapped_ characters are mapped.
-    /// 3. The _disallowed_ characters are replaced with U+FFFD,
+    /// 1. The `ignored` characters are ignored.
+    /// 2. The `mapped` characters are mapped.
+    /// 3. The `disallowed` characters are replaced with U+FFFD,
     ///    which itself is a disallowed character.
-    /// 4. The _deviation_ characters are treated as _mapped_ or _valid_
+    /// 4. The `deviation` characters are treated as `mapped` or `valid`
     ///    as appropriate.
-    /// 5. The _disallowed_STD3_valid_ characters are treated as allowed.
-    /// 6. The _disallowed_STD3_mapped_ characters are treated as
-    ///    _mapped_.
+    /// 5. The `disallowed_STD3_valid` characters are treated as allowed.
+    /// 6. The `disallowed_STD3_mapped` characters are treated as
+    ///    `mapped`.
     /// 7. The result is normalized to NFC.
     ///
     /// Notably:
@@ -98,15 +117,15 @@ impl Uts46MapperBorrowed<'_> {
     /// operations from the NFC check and statucs steps of the "Validity
     /// Criteria" section of UTS 46 lazily applied to it:
     ///
-    /// 1. The _ignored_ characters are treated as _disallowed_.
-    /// 2. The _mapped_ characters are mapped.
-    /// 3. The _disallowed_ characters are replaced with U+FFFD,
+    /// 1. The `ignored` characters are treated as `disallowed`.
+    /// 2. The `mapped` characters are mapped.
+    /// 3. The `disallowed` characters are replaced with U+FFFD,
     ///    which itself is a disallowed character.
-    /// 4. The _deviation_ characters are treated as _mapped_ or _valid_
+    /// 4. The `deviation` characters are treated as `mapped` or `valid`
     ///    as appropriate.
-    /// 5. The _disallowed_STD3_valid_ characters are treated as allowed.
-    /// 6. The _disallowed_STD3_mapped_ characters are treated as
-    ///    _mapped_.
+    /// 5. The `disallowed_STD3_valid` characters are treated as allowed.
+    /// 6. The `disallowed_STD3_mapped` characters are treated as
+    ///    `mapped`.
     /// 7. The result is normalized to NFC.
     ///
     /// Notably:

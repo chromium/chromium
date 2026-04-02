@@ -34,7 +34,7 @@ impl EnumeratedProperty for BidiMirroringGlyph {
 impl crate::private::Sealed for BidiMirroringGlyph {}
 
 impl AsULE for BidiMirroringGlyph {
-    type ULE = zerovec::ule::RawBytesULE<3>;
+    type ULE = RawBytesULE<3>;
 
     fn to_unaligned(self) -> Self::ULE {
         let [a, b, c, _] = TrieValue::to_u32(self).to_le_bytes();
@@ -46,7 +46,7 @@ impl AsULE for BidiMirroringGlyph {
     }
 }
 
-/// The enum represents Bidi_Paired_Bracket_Type.
+/// The enum represents `Bidi_Paired_Bracket_Type`.
 ///
 /// It does not implement [`EnumeratedProperty`], instead it can be obtained
 /// through the bitpacked [`BidiMirroringGlyph`] property.
@@ -59,11 +59,11 @@ impl AsULE for BidiMirroringGlyph {
 #[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 #[non_exhaustive]
 pub enum BidiPairedBracketType {
-    /// Represents Bidi_Paired_Bracket_Type=Open.
+    /// Represents `Bidi_Paired_Bracket_Type=Open`.
     Open,
-    /// Represents Bidi_Paired_Bracket_Type=Close.
+    /// Represents `Bidi_Paired_Bracket_Type=Close`.
     Close,
-    /// Represents Bidi_Paired_Bracket_Type=None.
+    /// Represents `Bidi_Paired_Bracket_Type=None`.
     #[default]
     None,
 }

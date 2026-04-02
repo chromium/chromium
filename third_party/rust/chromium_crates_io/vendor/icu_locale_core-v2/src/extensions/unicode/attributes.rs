@@ -71,7 +71,7 @@ impl Attributes {
     #[cfg(feature = "alloc")]
     pub fn try_from_utf8(code_units: &[u8]) -> Result<Self, ParseError> {
         let mut iter = SubtagIterator::new(code_units);
-        Self::try_from_iter(&mut iter)
+        Ok(Self::from_iter(&mut iter))
     }
 
     /// A constructor which takes a pre-sorted list of [`Attribute`] elements.
@@ -126,7 +126,7 @@ impl Attributes {
     }
 
     #[cfg(feature = "alloc")]
-    pub(crate) fn try_from_iter(iter: &mut SubtagIterator) -> Result<Self, ParseError> {
+    pub(crate) fn from_iter(iter: &mut SubtagIterator) -> Self {
         let mut attributes = ShortBoxSlice::new();
 
         while let Some(subtag) = iter.peek() {
@@ -139,7 +139,7 @@ impl Attributes {
             }
             iter.next();
         }
-        Ok(Self(attributes))
+        Self(attributes)
     }
 
     pub(crate) fn for_each_subtag_str<E, F>(&self, f: &mut F) -> Result<(), E>

@@ -24,7 +24,7 @@ num-traits.workspace = true
 temporal_rs = { workspace = true, default-features = false }
 timezone_provider = { workspace = true, default-features = false }
 icu_calendar.workspace = true
-icu_locale.workspace = true
+icu_locale_core.workspace = true
 writeable.workspace = true
 zoneinfo64 = { workspace = true, optional = true }
 

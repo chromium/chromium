@@ -14,6 +14,7 @@ cargo_crate("lib") {
   crate_type = "rlib"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_normalizer-v2/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_normalizer-v2/src/harfbuzz.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_normalizer-v2/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_normalizer-v2/src/properties.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_normalizer-v2/src/provider.rs",
@@ -28,7 +29,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "API for normalizing text into Unicode Normalization Forms"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.1.1"
+  cargo_pkg_version = "2.2.0"
 
   allow_unsafe = true
 

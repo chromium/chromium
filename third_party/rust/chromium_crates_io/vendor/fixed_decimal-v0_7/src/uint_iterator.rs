@@ -14,6 +14,7 @@ macro_rules! impl_iterator_unsigned_integer_type {
     ($utype: ident) => {
         impl Iterator for IntIterator<$utype> {
             type Item = u8;
+            #[allow(trivial_numeric_casts)]
             fn next(&mut self) -> Option<Self::Item> {
                 if self.unum == 0 {
                     None

@@ -37,10 +37,7 @@ macro_rules! include_bytes_as_u32 {
             // SAFETY: B is statically borrowed, 4-aligned, and the length is within
             // the static slice (truncated to a multiple of four).
             unsafe {
-                core::slice::from_raw_parts(
-                    B.as_ptr() as *const u32,
-                    B.len() / core::mem::size_of::<u32>(),
-                )
+                core::slice::from_raw_parts(B.as_ptr() as *const u32, B.len() / size_of::<u32>())
             }
         }
     };
@@ -340,7 +337,7 @@ impl ResDescriptor {
         // in units dependent on the resource type (16-bit values for 16-bit
         // resources, 32-bit values for 32-bit resources). Translate that into
         // bytes for consumers.
-        (self.value as usize) * core::mem::size_of::<u16>()
+        (self.value as usize) * size_of::<u16>()
     }
 
     /// Gets the offset to the described 32-bit resource in bytes.
@@ -353,7 +350,7 @@ impl ResDescriptor {
         // in units dependent on the resource type (16-bit values for 16-bit
         // resources, 32-bit values for 32-bit resources). Translate that into
         // bytes for consumers.
-        (self.value as usize) * core::mem::size_of::<u32>()
+        (self.value as usize) * size_of::<u32>()
     }
 
     /// Gets the value of the resource descriptor as a signed integer.
@@ -390,7 +387,7 @@ pub struct BinaryDeserializerError {
 
 impl BinaryDeserializerError {
     /// TODO
-    pub fn invalid_data(message: &'static str) -> Self {
+    pub const fn invalid_data(message: &'static str) -> Self {
         Self {
             kind: ErrorKind::InvalidData,
             message,
@@ -398,7 +395,7 @@ impl BinaryDeserializerError {
     }
 
     /// TODO
-    pub fn resource_type_mismatch(message: &'static str) -> Self {
+    pub const fn resource_type_mismatch(message: &'static str) -> Self {
         Self {
             kind: ErrorKind::ResourceTypeMismatch,
             message,
@@ -406,7 +403,7 @@ impl BinaryDeserializerError {
     }
 
     /// TODO
-    pub fn unsupported_format(message: &'static str) -> Self {
+    pub const fn unsupported_format(message: &'static str) -> Self {
         Self {
             kind: ErrorKind::UnsupportedFormat,
             message,
@@ -414,7 +411,7 @@ impl BinaryDeserializerError {
     }
 
     /// TODO
-    pub fn unknown(message: &'static str) -> Self {
+    pub const fn unknown(message: &'static str) -> Self {
         Self {
             kind: ErrorKind::Unknown,
             message,
@@ -470,11 +467,9 @@ fn read_u16(input: &[u8]) -> Result<(u16, &[u8]), BinaryDeserializerError> {
     // Safe to unwrap at the end of this because `try_into()` for arrays will
     // only fail if the slice is the wrong size.
     #[expect(clippy::unwrap_used)]
-    let bytes = get_subslice(input, ..core::mem::size_of::<u16>())?
-        .try_into()
-        .unwrap();
+    let bytes = get_subslice(input, ..size_of::<u16>())?.try_into().unwrap();
     let value = u16::from_ne_bytes(bytes);
 
-    let rest = get_subslice(input, core::mem::size_of::<u16>()..)?;
+    let rest = get_subslice(input, size_of::<u16>()..)?;
     Ok((value, rest))
 }

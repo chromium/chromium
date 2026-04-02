@@ -52,8 +52,6 @@ use crate::parser::{parse_language_identifier_from_iter, ParseError, ParserMode}
 #[cfg(feature = "alloc")]
 use crate::shortvec::ShortBoxSlice;
 use crate::subtags;
-#[cfg(feature = "alloc")]
-use crate::subtags::Language;
 use crate::LanguageIdentifier;
 #[cfg(feature = "alloc")]
 use litemap::LiteMap;
@@ -202,7 +200,7 @@ impl Transform {
         let mut tfields = LiteMap::new();
 
         if let Some(subtag) = iter.peek() {
-            if Language::try_from_utf8(subtag).is_ok() {
+            if subtags::Language::try_from_utf8(subtag).is_ok() {
                 tlang = Some(parse_language_identifier_from_iter(
                     iter,
                     ParserMode::Partial,

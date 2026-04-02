@@ -96,7 +96,7 @@ pub struct DataPayload<M: DynamicDataMarker>(pub(crate) DataPayloadInner<M>);
 ///
 /// # Examples
 ///
-/// Create and use DataPayloadOr:
+/// Create and use [`DataPayloadOr`]:
 ///
 /// ```
 /// use icu_locale_core::langid;
@@ -127,7 +127,6 @@ pub struct DataPayload<M: DynamicDataMarker>(pub(crate) DataPayloadInner<M>);
 /// Stack size comparison:
 ///
 /// ```
-/// use core::mem::size_of;
 /// use icu_provider::prelude::*;
 /// use icu_provider::DataPayloadOr;
 ///
@@ -182,7 +181,7 @@ pub(crate) type CartInner = SelectedRc<Box<[u8]>>;
 pub(crate) type CartInner = &'static ();
 
 // Safety: Rc, Arc, and () are CloneableCart, and our impl delegates.
-unsafe impl yoke::CloneableCart for Cart {}
+unsafe impl CloneableCart for Cart {}
 
 #[cfg(feature = "alloc")]
 impl Deref for Cart {
@@ -246,7 +245,7 @@ where
     }
 }
 
-/// Cloning a DataPayload is generally a cheap operation.
+/// Cloning a [`DataPayload`] is generally a cheap operation.
 /// See notes in the `Clone` impl for [`Yoke`].
 ///
 /// # Examples
@@ -360,7 +359,7 @@ impl<M> DataPayload<M>
 where
     M: DynamicDataMarker,
 {
-    /// Convert a fully owned (`'static`) data struct into a DataPayload.
+    /// Convert a fully owned (`'static`) data struct into a [`DataPayload`].
     ///
     /// This constructor creates `'static` payloads.
     ///
@@ -394,7 +393,7 @@ where
         Self(DataPayloadInner::StaticRef(data))
     }
 
-    /// Mutate the data contained in this DataPayload.
+    /// Mutate the data contained in this [`DataPayload`].
     ///
     /// For safety, all mutation operations must take place within a helper function that cannot
     /// borrow data from the surrounding context.
@@ -446,8 +445,8 @@ where
 
     /// Borrows the underlying data.
     ///
-    /// This function should be used like `Deref` would normally be used. For more information on
-    /// why DataPayload cannot implement `Deref`, see the `yoke` crate.
+    /// This function should be used like [`Deref`] would normally be used. For more information on
+    /// why [`DataPayload`] cannot implement [`Deref`], see the `yoke` crate.
     ///
     /// # Examples
     ///
@@ -750,7 +749,7 @@ where
         M2: DynamicDataMarker<DataStruct = M::DataStruct>,
     {
         // SAFETY: As seen in the implementation of `cast`, the struct is the same, it's just the generic that changes.
-        unsafe { core::mem::transmute(self) }
+        unsafe { &*(self as *const DataPayload<M> as *const DataPayload<M2>) }
     }
 
     /// Convert a [`DataPayload`] to one of the same type with runtime type checking.
@@ -1080,7 +1079,7 @@ where
     }
 }
 
-/// Cloning a DataResponse is generally a cheap operation.
+/// Cloning a [`DataResponse`] is generally a cheap operation.
 /// See notes in the `Clone` impl for [`Yoke`].
 ///
 /// # Examples

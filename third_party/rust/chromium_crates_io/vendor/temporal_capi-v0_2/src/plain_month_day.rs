@@ -87,14 +87,23 @@ pub mod ffi {
         pub fn day(&self) -> u8 {
             self.0.day()
         }
+
         pub fn calendar<'a>(&'a self) -> &'a Calendar {
             Calendar::transparent_convert(self.0.calendar())
+        }
+
+        pub fn month(&self) -> u8 {
+            self.0.month_code().to_month_integer()
         }
 
         pub fn month_code(&self, write: &mut DiplomatWrite) {
             let code = self.0.month_code();
             // throw away the error, this should always succeed
             let _ = write.write_str(code.as_str());
+        }
+
+        pub fn reference_year(&self) -> i32 {
+            self.0.reference_year()
         }
 
         pub fn to_plain_date(

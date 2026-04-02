@@ -5,9 +5,10 @@
 [package]
 name = "icu_plurals"
 description = "Unicode Plural Rules categorizer for numeric input"
+categories.workspace = true
+keywords = ["unicode", "plurals", "grammar"]
 
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 include.workspace = true
@@ -18,6 +19,9 @@ version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
+
+[package.metadata.cargo-all-features]
+max_combination_size = 3
 
 [dependencies]
 fixed_decimal = { workspace = true }
@@ -45,7 +49,7 @@ criterion = { workspace = true }
 default = ["compiled_data"]
 serde = ["dep:serde", "zerovec/serde", "icu_locale_core/serde", "icu_provider/serde", "dep:displaydoc"]
 datagen = ["serde", "zerovec/databake", "dep:databake", "icu_provider/export"]
-experimental = []
+unstable = []
 compiled_data = ["dep:icu_plurals_data", "dep:icu_locale", "icu_locale?/compiled_data", "icu_provider/baked"]
 
 # added by accident
@@ -74,8 +78,11 @@ required-features = ["serde"]
 
 [[test]]
 name = "operands"
-required-features = ["serde", "experimental"]
+required-features = ["serde", "unstable"]
 
 [[test]]
 name = "rules"
-required-features = ["experimental"]
+required-features = ["unstable"]
+
+[lints]
+workspace = true

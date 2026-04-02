@@ -2,8 +2,8 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-use crate::any_calendar::{AnyCalendar, IntoAnyCalendar};
-use crate::error::{DateError, DateFromFieldsError};
+use crate::calendar_arithmetic::VALID_RD_RANGE;
+use crate::error::{DateAddError, DateError, DateFromFieldsError, DateNewError};
 use crate::options::DateFromFieldsOptions;
 use crate::options::{DateAddOptions, DateDifferenceOptions};
 use crate::types::{CyclicYear, EraYear, IsoWeekOfYear};
@@ -96,12 +96,33 @@ impl<C> Deref for Ref<'_, C> {
 ///
 /// **The primary definition of this type is in the [`icu_calendar`](https://docs.rs/icu_calendar) crate. Other ICU4X crates re-export it for convenience.**
 ///
-/// This can work with wrappers around [`Calendar`] types,
-/// e.g. `Rc<C>`, via the [`AsCalendar`] trait.
+/// Options to create one of these:
 ///
-/// This can be constructed  constructed
-/// from its fields via [`Self::try_new_from_codes()`], or can be constructed with one of the
-/// `new_<calendar>_date()` per-calendar methods (and then freely converted between calendars).
+/// 1. Generically from fields via [`Self::try_from_fields()`] or [`Self::try_new()`]
+/// 2. With calendar-specific constructors, e.g. [`Self::try_new_chinese_traditional()`]
+/// 3. From a RFC 9557 string via [`Self::try_from_str()`]
+/// 4. From a [`RataDie`] via [`Self::from_rata_die()`]
+///
+/// # Date ranges
+///
+/// *Most* `Date` constructors will refuse to construct dates from `year` values outside of the range
+/// `-9999..=9999`, however since that is a per-calendar value, it is possible to escape that range
+/// by changing the era/calendar. Furthermore, this is not the case for [`Date::try_from_fields`] and
+/// date arithmetic APIs: these APIs let you construct dates outside of that range.
+///
+/// The `Date` type has a fundamental range invariant as well, and it's not possible to construct
+/// dates outside of that range, regardless of the calendar.
+/// APIs will return an `Overflow` error (e.g. `DateAddError::Overflow`) in these cases, or clamp
+/// in the case of `Date::from_rata_die()`.
+///
+/// This range is currently dates with an ISO year between `-999_999..=999_999`, but
+/// we reserve the right to change these bounds in the future.
+///
+/// Since `icu_calendar` is intended to be usable by implementors of the ECMA Temporal specification,
+/// this range will never be smaller than Temporal's validity range, which roughly maps to ISO years
+/// -271,821 to 275,760 (precisely speaking, it is ± 100,000,000 days from January 1, 1970).
+///
+/// # Examples
 ///
 /// ```rust
 /// use icu::calendar::Date;
@@ -115,19 +136,18 @@ impl<C> Deref for Ref<'_, C> {
 /// assert_eq!(date_iso.day_of_month().0, 2);
 /// ```
 pub struct Date<A: AsCalendar> {
-    pub(crate) inner: <A::Calendar as Calendar>::DateInner,
-    pub(crate) calendar: A,
+    inner: <A::Calendar as Calendar>::DateInner,
+    calendar: A,
 }
 
 impl<A: AsCalendar> Date<A> {
-    /// Construct a date from from era/month codes and fields, and some calendar representation
+    /// Construct a [`Date`] from from era, year, month, and day fields, and a calendar.
     ///
-    /// The year is `extended_year` if no era is provided.
+    /// The year is interpreted as an [`extended_year`](Date::extended_year) if no era is provided.
     ///
-    /// This function will not accept year/extended_year values that are outside of the range `[-2²⁷, 2²⁷]`,
-    /// regardless of the calendar, instead returning a [`DateError::Range`]. See [`Date::try_from_fields()`] for more
-    /// information.
+    /// This function accepts years in the range `-9999..=9999`.
     #[inline]
+    #[deprecated(since = "2.2.0", note = "use `Date::try_new`")]
     pub fn try_new_from_codes(
         era: Option<&str>,
         year: i32,
@@ -135,24 +155,58 @@ impl<A: AsCalendar> Date<A> {
         day: u8,
         calendar: A,
     ) -> Result<Self, DateError> {
+        #[allow(deprecated, reason = "internal usage")]
         let inner = calendar
             .as_calendar()
             .from_codes(era, year, month_code, day)?;
-        Ok(Date { inner, calendar })
+
+        Ok(Date::from_raw(inner, calendar))
     }
 
-    /// Construct a date from from a bag of fields.
+    /// Construct a [`Date`] from era, year, month, and day fields, and a calendar.
+    ///
+    /// This function accepts years in the range `-9999..=9999`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use icu::calendar::types::{Month, YearInput};
+    /// use icu::calendar::Date;
+    /// use icu::calendar::Iso;
+    ///
+    /// // Example: creation of ISO date from integers.
+    /// let date_iso = Date::try_new(1970.into(), Month::new(1), 2, Iso)
+    ///     .expect("Failed to initialize ISO Date instance.");
+    ///
+    /// // Shorthand using From impls:
+    /// assert_eq!(
+    ///     date_iso,
+    ///     Date::try_new(1970.into(), 1.into(), 2, Iso).unwrap()
+    /// );
+    ///
+    /// assert_eq!(date_iso.era_year().year, 1970);
+    /// assert_eq!(date_iso.month().ordinal, 1);
+    /// assert_eq!(date_iso.day_of_month().0, 2);
+    /// ```
+    #[inline]
+    pub fn try_new(
+        year: types::YearInput,
+        month: types::Month,
+        day: u8,
+        calendar: A,
+    ) -> Result<Self, DateNewError> {
+        let inner = calendar.as_calendar().new_date(year, month, day)?;
+        Ok(Date::from_raw(inner, calendar))
+    }
+
+    /// Construct a [`Date`] from from a bag of fields and a calendar.
     ///
     /// This function allows specifying the year as either extended year or era + era year,
     /// and the month as either ordinal or month code. It can constrain out-of-bounds values
     /// and fill in missing fields. See [`DateFromFieldsOptions`] for more information.
     ///
-    /// This function will not accept year/extended_year values that are outside of the range `[-2²⁷, 2²⁷]`,
-    /// regardless of the calendar, instead returning a [`DateFromFieldsError::Range`]. This allows us to to keep
-    /// all operations on [`Date`]s infallible by staying clear of integer limits.
-    /// Currently, calendar-specific `Date::try_new_calendarname()` constructors
-    /// do not do this, and it is possible to obtain such extreme dates via calendar conversion or arithmetic,
-    /// though [we may change that behavior in the future](https://github.com/unicode-org/icu4x/issues/7076).
+    /// This API will not construct dates outside of the fundamental range described on the [`Date`] type
+    /// instead returning [`DateFromFieldsError::Overflow`].
     ///
     /// # Examples
     ///
@@ -174,16 +228,6 @@ impl<A: AsCalendar> Date<A> {
     /// ```
     ///
     /// See [`DateFromFieldsError`] for examples of error conditions.
-    ///
-    /// <div class="stab unstable">
-    /// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
-    /// including in SemVer minor releases. Do not use this type unless you are prepared for things to occasionally break.
-    ///
-    /// Graduation tracking issue: [issue #7161](https://github.com/unicode-org/icu4x/issues/7161).
-    /// </div>
-    ///
-    /// ✨ *Enabled with the `unstable` Cargo feature.*
-    #[cfg(feature = "unstable")]
     #[inline]
     pub fn try_from_fields(
         fields: types::DateFields,
@@ -191,90 +235,148 @@ impl<A: AsCalendar> Date<A> {
         calendar: A,
     ) -> Result<Self, DateFromFieldsError> {
         let inner = calendar.as_calendar().from_fields(fields, options)?;
-        Ok(Date { inner, calendar })
+        Ok(Date::from_raw(inner, calendar))
     }
 
-    /// Construct a date from a [`RataDie`] and some calendar representation
+    /// Construct a date from a [`RataDie`] and a calendar.
+    ///
+    /// This method is guaranteed to round trip with [`Date::to_rata_die`].
+    ///
+    /// For other values, This API will not construct dates outside of the fundamental range
+    /// described on the [`Date`] type instead clamping the result:
+    ///
+    /// ```rust
+    /// use icu::calendar::{types::RataDie, Date, Gregorian};
+    ///
+    /// let rd = RataDie::new(1_000_000_000);
+    /// assert_ne!(Date::from_rata_die(rd, Gregorian).to_rata_die(), rd);
+    /// ```
     #[inline]
     pub fn from_rata_die(rd: RataDie, calendar: A) -> Self {
-        Date {
-            inner: calendar.as_calendar().from_rata_die(rd),
-            calendar,
-        }
+        let rd = rd.clamp(*VALID_RD_RANGE.start(), *VALID_RD_RANGE.end());
+        Date::from_raw(calendar.as_calendar().from_rata_die(rd), calendar)
     }
 
     /// Convert the date to a [`RataDie`]
+    ///
+    /// This method is guaranteed to round trip with [`Date::from_rata_die`].
     #[inline]
     pub fn to_rata_die(&self) -> RataDie {
         self.calendar.as_calendar().to_rata_die(self.inner())
     }
 
-    /// Construct a date from an ISO date and some calendar representation
+    /// Construct a [`Date`] from an ISO date and a calendar.
     #[inline]
+    #[deprecated(since = "2.2.0", note = "use `iso.to_calendar(calendar)`")]
     pub fn new_from_iso(iso: Date<Iso>, calendar: A) -> Self {
         iso.to_calendar(calendar)
     }
 
-    /// Convert the Date to an ISO Date
+    /// Convert the [`Date`] to an ISO Date
     #[inline]
+    #[deprecated(since = "2.2.0", note = "use `date.to_calendar(Iso)`")]
     pub fn to_iso(&self) -> Date<Iso> {
         self.to_calendar(Iso)
     }
 
-    /// Convert the Date to a date in a different calendar
+    /// Convert the [`Date`] to a different calendar
     #[inline]
     pub fn to_calendar<A2: AsCalendar>(&self, calendar: A2) -> Date<A2> {
         let c1 = self.calendar.as_calendar();
         let c2 = calendar.as_calendar();
         let inner = if c1.has_cheap_iso_conversion() && c2.has_cheap_iso_conversion() {
+            // no-op
             c2.from_iso(c1.to_iso(self.inner()))
         } else {
+            // `from_rata_die` precondition is satified by `to_rata_die`
             c2.from_rata_die(c1.to_rata_die(self.inner()))
         };
-        Date { inner, calendar }
+        Date::from_raw(inner, calendar)
     }
 
-    /// The number of months in the year of this date
+    /// The day-of-month of this date.
     #[inline]
-    pub fn months_in_year(&self) -> u8 {
-        self.calendar.as_calendar().months_in_year(self.inner())
+    pub fn day_of_month(&self) -> types::DayOfMonth {
+        self.calendar.as_calendar().day_of_month(&self.inner)
     }
 
-    /// The number of days in the year of this date
+    /// The day-of-year of this date.
     #[inline]
-    pub fn days_in_year(&self) -> u16 {
-        self.calendar.as_calendar().days_in_year(self.inner())
+    pub fn day_of_year(&self) -> types::DayOfYear {
+        self.calendar.as_calendar().day_of_year(&self.inner)
     }
 
-    /// The number of days in the month of this date
+    /// The weekday of this date.
+    #[inline]
+    pub fn weekday(&self) -> types::Weekday {
+        self.to_rata_die().into()
+    }
+
+    /// The weekday of this date.
+    ///
+    /// This is *not* the day of the week, an ordinal number that is locale
+    /// dependent.
+    #[deprecated(since = "2.2.0", note = "use `Date::weekday`")]
+    pub fn day_of_week(&self) -> types::Weekday {
+        self.to_rata_die().into()
+    }
+
+    /// The month of this date.
+    #[inline]
+    pub fn month(&self) -> types::MonthInfo {
+        self.calendar.as_calendar().month(&self.inner)
+    }
+
+    /// The year of this date.
+    ///
+    /// This returns an enum, see [`Date::era_year()`] and [`Date::cyclic_year()`] which are available
+    /// for concrete calendar types and return concrete types.
+    #[inline]
+    pub fn year(&self) -> types::YearInfo {
+        self.calendar.as_calendar().year_info(&self.inner).into()
+    }
+
+    /// Use [`YearInfo::extended_year`](types::YearInfo::extended_year)
+    #[inline]
+    #[deprecated(since = "2.2.0", note = "use `date.year().extended_year()`")]
+    pub fn extended_year(&self) -> i32 {
+        self.year().extended_year()
+    }
+
+    /// Whether this date is in a leap year.
+    #[inline]
+    pub fn is_in_leap_year(&self) -> bool {
+        self.calendar.as_calendar().is_in_leap_year(&self.inner)
+    }
+
+    /// The number of days in the month of this date.
     #[inline]
     pub fn days_in_month(&self) -> u8 {
         self.calendar.as_calendar().days_in_month(self.inner())
     }
 
-    /// The day of the week for this date
+    /// The number of days in the year of this date.
     #[inline]
-    pub fn day_of_week(&self) -> types::Weekday {
-        self.to_rata_die().into()
+    pub fn days_in_year(&self) -> u16 {
+        self.calendar.as_calendar().days_in_year(self.inner())
     }
 
-    /// Add a `duration` to this date, mutating it
+    /// The number of months in the year of this date.
+    #[inline]
+    pub fn months_in_year(&self) -> u8 {
+        self.calendar.as_calendar().months_in_year(self.inner())
+    }
+
+    /// Add a `duration` to this [`Date`], mutating it.
     ///
-    /// <div class="stab unstable">
-    /// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
-    /// including in SemVer minor releases. Do not use this type unless you are prepared for things to occasionally break.
-    ///
-    /// Graduation tracking issue: [issue #3964](https://github.com/unicode-org/icu4x/issues/3964).
-    /// </div>
-    ///
-    /// ✨ *Enabled with the `unstable` Cargo feature.*
-    #[cfg(feature = "unstable")]
+    /// This API will not construct dates outside of the fundamental range described on the [`Date`] type,
+    /// instead returning [`DateAddError::Overflow`].
     #[inline]
     pub fn try_add_with_options(
         &mut self,
         duration: types::DateDuration,
         options: DateAddOptions,
-    ) -> Result<(), DateError> {
+    ) -> Result<(), DateAddError> {
         let inner = self
             .calendar
             .as_calendar()
@@ -283,33 +385,32 @@ impl<A: AsCalendar> Date<A> {
         Ok(())
     }
 
-    /// Add a `duration` to this date, returning the new one
+    /// Add a `duration` to this [`Date`].
     ///
-    /// <div class="stab unstable">
-    /// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
-    /// including in SemVer minor releases. Do not use this type unless you are prepared for things to occasionally break.
-    ///
-    /// Graduation tracking issue: [issue #3964](https://github.com/unicode-org/icu4x/issues/3964).
-    /// </div>
-    ///
-    /// ✨ *Enabled with the `unstable` Cargo feature.*
-    #[cfg(feature = "unstable")]
+    /// This API will not construct dates outside of the fundamental range described on the [`Date`] type,
+    /// instead returning [`DateAddError::Overflow`].
     #[inline]
     pub fn try_added_with_options(
         mut self,
         duration: types::DateDuration,
         options: DateAddOptions,
-    ) -> Result<Self, DateError> {
+    ) -> Result<Self, DateAddError> {
         self.try_add_with_options(duration, options)?;
         Ok(self)
     }
 
-    /// Calculating the duration between `other - self`
+    /// Calculating the duration between `other - self`, counting from `self`
     ///
     /// Although this returns a [`Result`], with most fixed calendars, this operation can't fail.
     /// In such cases, the error type is [`Infallible`], and the inner value can be safely
     /// unwrapped using [`Result::into_ok()`], which is available in nightly Rust as of this
     /// writing. In stable Rust, the value can be unwrapped using [pattern matching].
+    ///
+    /// Note that `a.try_until_with_options(b, ..)` is not necessarily the same as
+    /// `-b.try_until_with_options(a, ..)`. `a.try_until_with_options(b, ..)`
+    /// computes a duration starting at `a` by adding years, months, sometimes weeks, and days in order
+    /// (based on the options) until it reaches `b`. So, `(Sep 30).until(Oct 31)` with `largest_unit = DateDurationUnit::Months`
+    /// will be a duration of 1 month and 1 day, but `(Oct 31).until(Sep 30)` will be a duration of -1 months.
     ///
     /// # Examples
     ///
@@ -327,77 +428,45 @@ impl<A: AsCalendar> Date<A> {
     /// assert_eq!(duration, DateDuration::for_days(2101));
     /// ```
     ///
+    /// Reversing the order of parameters does not necessarily produce the inverse result:
+    ///
+    /// ```
+    /// use icu::calendar::options::{DateDifferenceOptions, DateDurationUnit};
+    /// use icu::calendar::types::DateDuration;
+    /// use icu::calendar::Date;
+    ///
+    /// let d1 = Date::try_new_iso(2025, 9, 30).unwrap();
+    /// let d2 = Date::try_new_iso(2025, 10, 31).unwrap();
+    /// let mut options = DateDifferenceOptions::default();
+    /// options.largest_unit = Some(DateDurationUnit::Months);
+    ///
+    /// let Ok(duration_forward) = d1.try_until_with_options(&d2, options);
+    /// let Ok(duration_backward) = d2.try_until_with_options(&d1, options);
+    ///
+    /// assert_eq!(
+    ///     duration_forward,
+    ///     DateDuration {
+    ///         months: 1,
+    ///         days: 1,
+    ///         ..Default::default()
+    ///     }
+    /// );
+    /// assert_eq!(duration_backward, DateDuration::for_months(-1));
+    /// ```
+    ///
     /// [`Infallible`]: core::convert::Infallible
     /// [pattern matching]: https://doc.rust-lang.org/book/ch19-03-pattern-syntax.html
-    ///
-    /// <div class="stab unstable">
-    /// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
-    /// including in SemVer minor releases. Do not use this type unless you are prepared for things to occasionally break.
-    ///
-    /// Graduation tracking issue: [issue #3964](https://github.com/unicode-org/icu4x/issues/3964).
-    /// </div>
-    ///
-    /// ✨ *Enabled with the `unstable` Cargo feature.*
-    #[cfg(feature = "unstable")]
     #[inline]
     pub fn try_until_with_options<B: AsCalendar<Calendar = A::Calendar>>(
         &self,
         other: &Date<B>,
         options: DateDifferenceOptions,
-    ) -> Result<types::DateDuration, <A::Calendar as Calendar>::DifferenceError> {
-        self.calendar
+    ) -> Result<types::DateDuration, <A::Calendar as Calendar>::DateCompatibilityError> {
+        self.calendar().check_date_compatibility(other.calendar())?;
+        Ok(self
+            .calendar
             .as_calendar()
-            .until(self.inner(), other.inner(), options)
-    }
-
-    /// The calendar-specific year-info.
-    ///
-    /// This returns an enum, see [`Date::era_year()`] and [`Date::cyclic_year()`] which are available
-    /// for concrete calendar types and return concrete types.
-    #[inline]
-    pub fn year(&self) -> types::YearInfo {
-        self.calendar.as_calendar().year_info(&self.inner).into()
-    }
-
-    /// The "extended year".
-    ///
-    /// This year number can be used when you need a simple numeric representation
-    /// of the year, and can be meaningfully compared with extended years from other
-    /// eras or used in arithmetic.
-    ///
-    /// For calendars defined in Temporal, this will match the "arithmetic year"
-    /// as defined in <https://tc39.es/proposal-intl-era-monthcode/>.
-    /// This is typically anchored with year 1 as the year 1 of either the most modern or
-    /// otherwise some "major" era for the calendar.
-    ///
-    /// See [`Self::year()`] for more information about the year.
-    #[inline]
-    pub fn extended_year(&self) -> i32 {
-        self.year().extended_year()
-    }
-
-    /// Returns whether `self` is in a calendar-specific leap year
-    #[inline]
-    pub fn is_in_leap_year(&self) -> bool {
-        self.calendar.as_calendar().is_in_leap_year(&self.inner)
-    }
-
-    /// The calendar-specific month represented by `self`
-    #[inline]
-    pub fn month(&self) -> types::MonthInfo {
-        self.calendar.as_calendar().month(&self.inner)
-    }
-
-    /// The calendar-specific day-of-month represented by `self`
-    #[inline]
-    pub fn day_of_month(&self) -> types::DayOfMonth {
-        self.calendar.as_calendar().day_of_month(&self.inner)
-    }
-
-    /// The calendar-specific day-of-month represented by `self`
-    #[inline]
-    pub fn day_of_year(&self) -> types::DayOfYear {
-        self.calendar.as_calendar().day_of_year(&self.inner)
+            .until(self.inner(), other.inner(), options))
     }
 
     /// Construct a date from raw values for a given calendar. This does not check any
@@ -406,8 +475,8 @@ impl<A: AsCalendar> Date<A> {
     /// Calling this outside of calendar implementations is sound, but calendar implementations are not
     /// expected to do anything sensible with such invalid dates.
     ///
-    /// AnyCalendar *will* panic if AnyCalendar [`Date`] objects with mismatching
-    /// date and calendar types are constructed
+    /// [`AnyCalendar`](crate::AnyCalendar) *will* panic if `Date<AnyCalendar>` objects with mismatching
+    /// date and calendar types are encountered.
     #[inline]
     pub fn from_raw(inner: <A::Calendar as Calendar>::DateInner, calendar: A) -> Self {
         Self { inner, calendar }
@@ -425,6 +494,11 @@ impl<A: AsCalendar> Date<A> {
         self.calendar.as_calendar()
     }
 
+    #[inline]
+    pub(crate) fn into_calendar(self) -> A {
+        self.calendar
+    }
+
     /// Get a reference to the contained calendar wrapper
     ///
     /// (Useful in case the user wishes to e.g. clone an Rc)
@@ -435,14 +509,14 @@ impl<A: AsCalendar> Date<A> {
 }
 
 impl<A: AsCalendar<Calendar = C>, C: Calendar<Year = EraYear>> Date<A> {
-    /// Returns information about the era for calendars using eras.
+    /// The year and era of this date.
     pub fn era_year(&self) -> EraYear {
         self.calendar.as_calendar().year_info(self.inner())
     }
 }
 
 impl<A: AsCalendar<Calendar = C>, C: Calendar<Year = CyclicYear>> Date<A> {
-    /// Returns information about the year cycle, for cyclic calendars.
+    /// The cyclic year of this date.
     pub fn cyclic_year(&self) -> CyclicYear {
         self.calendar.as_calendar().year_info(self.inner())
     }
@@ -468,41 +542,32 @@ impl Date<Iso> {
     /// );
     /// ```
     pub fn week_of_year(&self) -> IsoWeekOfYear {
+        let iso_year = self.inner.0.year().to_iso_year();
+
         let week_of = WeekCalculator::ISO
             .week_of(
-                365 + calendrical_calculations::gregorian::is_leap_year(self.inner.0.year - 1)
-                    as u16,
+                365 + calendrical_calculations::gregorian::is_leap_year(iso_year - 1) as u16,
                 self.days_in_year(),
                 self.day_of_year().0,
-                self.day_of_week(),
+                self.weekday(),
             )
             .unwrap_or_else(|_| {
                 // ISO calendar has more than 14 days per year
                 debug_assert!(false);
                 WeekOf {
                     week: 1,
-                    unit: crate::week::RelativeUnit::Current,
+                    unit: RelativeUnit::Current,
                 }
             });
 
         IsoWeekOfYear {
             week_number: week_of.week,
             iso_year: match week_of.unit {
-                RelativeUnit::Current => self.inner.0.year,
-                RelativeUnit::Next => self.inner.0.year + 1,
-                RelativeUnit::Previous => self.inner.0.year - 1,
+                RelativeUnit::Current => iso_year,
+                RelativeUnit::Next => iso_year + 1,
+                RelativeUnit::Previous => iso_year - 1,
             },
         }
-    }
-}
-
-impl<C: IntoAnyCalendar> Date<C> {
-    /// Type-erase the date, converting it to a date for [`AnyCalendar`]
-    pub fn to_any(self) -> Date<AnyCalendar> {
-        Date::from_raw(
-            self.calendar.date_to_any(&self.inner),
-            self.calendar.to_any(),
-        )
     }
 }
 
@@ -543,7 +608,10 @@ where
     B: AsCalendar<Calendar = C>,
 {
     fn eq(&self, other: &Date<B>) -> bool {
-        self.inner.eq(&other.inner)
+        match self.calendar().check_date_compatibility(other.calendar()) {
+            Ok(_) => self.inner.eq(&other.inner),
+            Err(_) => false,
+        }
     }
 }
 
@@ -556,7 +624,10 @@ where
     B: AsCalendar<Calendar = C>,
 {
     fn partial_cmp(&self, other: &Date<B>) -> Option<core::cmp::Ordering> {
-        self.inner.partial_cmp(&other.inner)
+        match self.calendar().check_date_compatibility(other.calendar()) {
+            Ok(_) => self.inner.partial_cmp(&other.inner),
+            Err(_) => None,
+        }
     }
 }
 
@@ -567,7 +638,13 @@ where
     A: AsCalendar<Calendar = C>,
 {
     fn cmp(&self, other: &Self) -> core::cmp::Ordering {
-        self.inner.cmp(&other.inner)
+        match self.calendar().check_date_compatibility(other.calendar()) {
+            Ok(_) => self.inner().cmp(other.inner()),
+            Err(_) => {
+                // TODO: this is incorrect
+                self.inner().cmp(other.inner())
+            }
+        }
     }
 }
 
@@ -607,7 +684,11 @@ impl<A> Copy for Date<A> where A: AsCalendar + Copy {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::Weekday;
+    use crate::{
+        cal::{Buddhist, Hebrew},
+        types::{Month, Weekday},
+        Gregorian,
+    };
 
     #[test]
     fn test_ord() {
@@ -639,21 +720,78 @@ mod tests {
     }
 
     #[test]
-    fn test_day_of_week() {
+    fn test_weekday() {
         // June 23, 2021 is a Wednesday
         assert_eq!(
-            Date::try_new_iso(2021, 6, 23).unwrap().day_of_week(),
+            Date::try_new_iso(2021, 6, 23).unwrap().weekday(),
             Weekday::Wednesday,
         );
         // Feb 2, 1983 was a Wednesday
         assert_eq!(
-            Date::try_new_iso(1983, 2, 2).unwrap().day_of_week(),
+            Date::try_new_iso(1983, 2, 2).unwrap().weekday(),
             Weekday::Wednesday,
         );
         // Jan 21, 2021 was a Tuesday
         assert_eq!(
-            Date::try_new_iso(2020, 1, 21).unwrap().day_of_week(),
+            Date::try_new_iso(2020, 1, 21).unwrap().weekday(),
             Weekday::Tuesday,
         );
+    }
+
+    #[test]
+    fn test_to_calendar() {
+        let date = Date::try_new_gregorian(2025, 12, 9).unwrap();
+        // These conversions use the AbstractGregorian fast path
+        let date2 = date.to_calendar(Buddhist).to_calendar(Gregorian);
+        // These conversions go through RataDie
+        let date3 = date.to_calendar(Hebrew).to_calendar(Gregorian);
+        assert_eq!(date, date2);
+        assert_eq!(date2, date3);
+    }
+
+    #[test]
+    fn test_try_new() {
+        use crate::cal::Japanese;
+        use crate::types::YearInput;
+        let date = Date::try_new(2025.into(), Month::new(1), 1, Gregorian).unwrap();
+        assert_eq!(date, Date::try_new_gregorian(2025, 1, 1).unwrap());
+
+        let date2 = Date::try_new(
+            YearInput::EraYear("reiwa", 7),
+            Month::new(1),
+            1,
+            Japanese::new(),
+        )
+        .unwrap();
+        let date2_expected =
+            Date::try_new_japanese_with_calendar("reiwa", 7, 1, 1, Japanese::new()).unwrap();
+        assert_eq!(date2, date2_expected);
+    }
+    #[test]
+    fn date_add_options_default_is_constrain() {
+        use crate::cal::ChineseTraditional;
+        use crate::duration::DateDuration;
+        use crate::types::Month;
+
+        // 10 Adar I 5787
+        // 5787 is a leap year; 5788 is not
+        let mut date = Date::try_new(5787.into(), Month::leap(5), 10, Hebrew).unwrap();
+        date.try_add_with_options(DateDuration::for_years(1), DateAddOptions::default())
+            .unwrap();
+        assert_eq!(date.month().to_input(), Month::new(6));
+
+        // Leap Month 6, day 1, 2025.
+        // 2025 is a leap year; 2026 is not
+        let mut date = Date::try_new(
+            2025.into(),
+            Month::leap(6),
+            1,
+            ChineseTraditional::default(),
+        )
+        .unwrap();
+
+        date.try_add_with_options(DateDuration::for_years(1), DateAddOptions::default())
+            .unwrap();
+        assert_eq!(date.month().to_input(), Month::new(6));
     }
 }

@@ -26,21 +26,24 @@ pub use names::{
     PropertyNameLongBidiClassV1, PropertyNameLongEastAsianWidthV1,
     PropertyNameLongGeneralCategoryV1, PropertyNameLongGraphemeClusterBreakV1,
     PropertyNameLongHangulSyllableTypeV1, PropertyNameLongIndicConjunctBreakV1,
-    PropertyNameLongIndicSyllabicCategoryV1, PropertyNameLongJoiningTypeV1,
-    PropertyNameLongLineBreakV1, PropertyNameLongScriptV1, PropertyNameLongSentenceBreakV1,
+    PropertyNameLongIndicSyllabicCategoryV1, PropertyNameLongJoiningGroupV1,
+    PropertyNameLongJoiningTypeV1, PropertyNameLongLineBreakV1, PropertyNameLongNumericTypeV1,
+    PropertyNameLongScriptV1, PropertyNameLongSentenceBreakV1,
     PropertyNameLongVerticalOrientationV1, PropertyNameLongWordBreakV1,
     PropertyNameParseBidiClassV1, PropertyNameParseCanonicalCombiningClassV1,
     PropertyNameParseEastAsianWidthV1, PropertyNameParseGeneralCategoryMaskV1,
     PropertyNameParseGeneralCategoryV1, PropertyNameParseGraphemeClusterBreakV1,
     PropertyNameParseHangulSyllableTypeV1, PropertyNameParseIndicConjunctBreakV1,
-    PropertyNameParseIndicSyllabicCategoryV1, PropertyNameParseJoiningTypeV1,
-    PropertyNameParseLineBreakV1, PropertyNameParseScriptV1, PropertyNameParseSentenceBreakV1,
+    PropertyNameParseIndicSyllabicCategoryV1, PropertyNameParseJoiningGroupV1,
+    PropertyNameParseJoiningTypeV1, PropertyNameParseLineBreakV1, PropertyNameParseNumericTypeV1,
+    PropertyNameParseScriptV1, PropertyNameParseSentenceBreakV1,
     PropertyNameParseVerticalOrientationV1, PropertyNameParseWordBreakV1,
     PropertyNameShortBidiClassV1, PropertyNameShortEastAsianWidthV1,
     PropertyNameShortGeneralCategoryV1, PropertyNameShortGraphemeClusterBreakV1,
     PropertyNameShortHangulSyllableTypeV1, PropertyNameShortIndicConjunctBreakV1,
-    PropertyNameShortIndicSyllabicCategoryV1, PropertyNameShortJoiningTypeV1,
-    PropertyNameShortLineBreakV1, PropertyNameShortScriptV1, PropertyNameShortSentenceBreakV1,
+    PropertyNameShortIndicSyllabicCategoryV1, PropertyNameShortJoiningGroupV1,
+    PropertyNameShortJoiningTypeV1, PropertyNameShortLineBreakV1, PropertyNameShortNumericTypeV1,
+    PropertyNameShortScriptV1, PropertyNameShortSentenceBreakV1,
     PropertyNameShortVerticalOrientationV1, PropertyNameShortWordBreakV1,
 };
 
@@ -154,8 +157,10 @@ const _: () = {
     impl_property_enum_hangul_syllable_type_v1!(Baked);
     impl_property_enum_indic_conjunct_break_v1!(Baked);
     impl_property_enum_indic_syllabic_category_v1!(Baked);
+    impl_property_enum_joining_group_v1!(Baked);
     impl_property_enum_joining_type_v1!(Baked);
     impl_property_enum_line_break_v1!(Baked);
+    impl_property_enum_numeric_type_v1!(Baked);
     impl_property_enum_script_v1!(Baked);
     impl_property_enum_sentence_break_v1!(Baked);
     impl_property_enum_vertical_orientation_v1!(Baked);
@@ -169,8 +174,10 @@ const _: () = {
     impl_property_name_long_hangul_syllable_type_v1!(Baked);
     impl_property_name_long_indic_syllabic_category_v1!(Baked);
     impl_property_name_long_indic_conjunct_break_v1!(Baked);
+    impl_property_name_long_joining_group_v1!(Baked);
     impl_property_name_long_joining_type_v1!(Baked);
     impl_property_name_long_line_break_v1!(Baked);
+    impl_property_name_long_numeric_type_v1!(Baked);
     impl_property_name_long_script_v1!(Baked);
     impl_property_name_long_sentence_break_v1!(Baked);
     impl_property_name_long_vertical_orientation_v1!(Baked);
@@ -184,8 +191,10 @@ const _: () = {
     impl_property_name_parse_hangul_syllable_type_v1!(Baked);
     impl_property_name_parse_indic_syllabic_category_v1!(Baked);
     impl_property_name_parse_indic_conjunct_break_v1!(Baked);
+    impl_property_name_parse_joining_group_v1!(Baked);
     impl_property_name_parse_joining_type_v1!(Baked);
     impl_property_name_parse_line_break_v1!(Baked);
+    impl_property_name_parse_numeric_type_v1!(Baked);
     impl_property_name_parse_script_v1!(Baked);
     impl_property_name_parse_sentence_break_v1!(Baked);
     impl_property_name_parse_vertical_orientation_v1!(Baked);
@@ -199,8 +208,10 @@ const _: () = {
     impl_property_name_short_hangul_syllable_type_v1!(Baked);
     impl_property_name_short_indic_syllabic_category_v1!(Baked);
     impl_property_name_short_indic_conjunct_break_v1!(Baked);
+    impl_property_name_short_joining_group_v1!(Baked);
     impl_property_name_short_joining_type_v1!(Baked);
     impl_property_name_short_line_break_v1!(Baked);
+    impl_property_name_short_numeric_type_v1!(Baked);
     impl_property_name_short_script_v1!(Baked);
     impl_property_name_short_sentence_break_v1!(Baked);
     impl_property_name_short_vertical_orientation_v1!(Baked);
@@ -625,91 +636,103 @@ icu_provider::data_marker!(
 icu_provider::data_marker!(
     /// Data marker for the 'BidiClass' Unicode property
     PropertyEnumBidiClassV1,
-    PropertyCodePointMap<'static, crate::props::BidiClass>,
+    PropertyCodePointMap<'static, BidiClass>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'CanonicalCombiningClass' Unicode property
     PropertyEnumCanonicalCombiningClassV1,
-    PropertyCodePointMap<'static, crate::props::CanonicalCombiningClass>,
+    PropertyCodePointMap<'static, CanonicalCombiningClass>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'EastAsianWidth' Unicode property
     PropertyEnumEastAsianWidthV1,
-    PropertyCodePointMap<'static, crate::props::EastAsianWidth>,
+    PropertyCodePointMap<'static, EastAsianWidth>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'GeneralCategory' Unicode property
     PropertyEnumGeneralCategoryV1,
-    PropertyCodePointMap<'static, crate::props::GeneralCategory>,
+    PropertyCodePointMap<'static, GeneralCategory>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'GraphemeClusterBreak' Unicode property
     PropertyEnumGraphemeClusterBreakV1,
-    PropertyCodePointMap<'static, crate::props::GraphemeClusterBreak>,
+    PropertyCodePointMap<'static, GraphemeClusterBreak>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'HangulSyllableType' Unicode property
     PropertyEnumHangulSyllableTypeV1,
-    PropertyCodePointMap<'static, crate::props::HangulSyllableType>,
+    PropertyCodePointMap<'static, HangulSyllableType>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'IndicConjunctBreak' Unicode property
     PropertyEnumIndicConjunctBreakV1,
-    PropertyCodePointMap<'static, crate::props::IndicConjunctBreak>,
+    PropertyCodePointMap<'static, IndicConjunctBreak>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'IndicSyllabicCategory' Unicode property
     PropertyEnumIndicSyllabicCategoryV1,
-    PropertyCodePointMap<'static, crate::props::IndicSyllabicCategory>,
+    PropertyCodePointMap<'static, IndicSyllabicCategory>,
+    is_singleton = true,
+);
+icu_provider::data_marker!(
+    /// Data marker for the 'JoiningGroup' Unicode property
+    PropertyEnumJoiningGroupV1,
+    PropertyCodePointMap<'static, JoiningGroup>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'JoiningType' Unicode property
     PropertyEnumJoiningTypeV1,
-    PropertyCodePointMap<'static, crate::props::JoiningType>,
+    PropertyCodePointMap<'static, JoiningType>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'LineBreak' Unicode property
     PropertyEnumLineBreakV1,
-    PropertyCodePointMap<'static, crate::props::LineBreak>,
+    PropertyCodePointMap<'static, LineBreak>,
+    is_singleton = true,
+);
+icu_provider::data_marker!(
+    /// Data marker for the 'NumericValue' Unicode property
+    PropertyEnumNumericTypeV1,
+    PropertyCodePointMap<'static, NumericType>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'Script' Unicode property
     PropertyEnumScriptV1,
-    PropertyCodePointMap<'static, crate::props::Script>,
+    PropertyCodePointMap<'static, Script>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'SentenceBreak' Unicode property
     PropertyEnumSentenceBreakV1,
-    PropertyCodePointMap<'static, crate::props::SentenceBreak>,
+    PropertyCodePointMap<'static, SentenceBreak>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'Vertical_Orientation' Unicode property
     PropertyEnumVerticalOrientationV1,
-    PropertyCodePointMap<'static, crate::props::VerticalOrientation>,
+    PropertyCodePointMap<'static, VerticalOrientation>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'WordBreak' Unicode property
     PropertyEnumWordBreakV1,
-    PropertyCodePointMap<'static, crate::props::WordBreak>,
+    PropertyCodePointMap<'static, WordBreak>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'BidiMirroringGlyph' Unicode property
     PropertyEnumBidiMirroringGlyphV1,
-    PropertyCodePointMap<'static, crate::bidi::BidiMirroringGlyph>,
+    PropertyCodePointMap<'static, BidiMirroringGlyph>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
@@ -736,8 +759,10 @@ pub const MARKERS: &[DataMarkerInfo] = &[
     PropertyNameLongHangulSyllableTypeV1::INFO,
     PropertyNameLongIndicSyllabicCategoryV1::INFO,
     PropertyNameLongIndicConjunctBreakV1::INFO,
+    PropertyNameLongJoiningGroupV1::INFO,
     PropertyNameLongJoiningTypeV1::INFO,
     PropertyNameLongLineBreakV1::INFO,
+    PropertyNameLongNumericTypeV1::INFO,
     PropertyNameLongScriptV1::INFO,
     PropertyNameLongSentenceBreakV1::INFO,
     PropertyNameLongVerticalOrientationV1::INFO,
@@ -751,8 +776,10 @@ pub const MARKERS: &[DataMarkerInfo] = &[
     PropertyNameParseHangulSyllableTypeV1::INFO,
     PropertyNameParseIndicSyllabicCategoryV1::INFO,
     PropertyNameParseIndicConjunctBreakV1::INFO,
+    PropertyNameParseJoiningGroupV1::INFO,
     PropertyNameParseJoiningTypeV1::INFO,
     PropertyNameParseLineBreakV1::INFO,
+    PropertyNameParseNumericTypeV1::INFO,
     PropertyNameParseScriptV1::INFO,
     PropertyNameParseSentenceBreakV1::INFO,
     PropertyNameParseVerticalOrientationV1::INFO,
@@ -766,8 +793,10 @@ pub const MARKERS: &[DataMarkerInfo] = &[
     PropertyNameShortHangulSyllableTypeV1::INFO,
     PropertyNameShortIndicSyllabicCategoryV1::INFO,
     PropertyNameShortIndicConjunctBreakV1::INFO,
+    PropertyNameShortJoiningGroupV1::INFO,
     PropertyNameShortJoiningTypeV1::INFO,
     PropertyNameShortLineBreakV1::INFO,
+    PropertyNameShortNumericTypeV1::INFO,
     PropertyNameShortScriptV1::INFO,
     PropertyNameShortSentenceBreakV1::INFO,
     PropertyNameShortVerticalOrientationV1::INFO,
@@ -849,8 +878,10 @@ pub const MARKERS: &[DataMarkerInfo] = &[
     PropertyEnumHangulSyllableTypeV1::INFO,
     PropertyEnumIndicConjunctBreakV1::INFO,
     PropertyEnumIndicSyllabicCategoryV1::INFO,
+    PropertyEnumJoiningGroupV1::INFO,
     PropertyEnumJoiningTypeV1::INFO,
     PropertyEnumLineBreakV1::INFO,
+    PropertyEnumNumericTypeV1::INFO,
     PropertyEnumScriptV1::INFO,
     PropertyEnumSentenceBreakV1::INFO,
     PropertyEnumVerticalOrientationV1::INFO,
@@ -926,6 +957,7 @@ impl<'data> PropertyCodePointSet<'data> {
     }
 
     #[inline]
+    #[allow(clippy::unnecessary_wraps)] // extensibly designed
     pub(crate) fn as_code_point_inversion_list(
         &'_ self,
     ) -> Option<&'_ CodePointInversionList<'data>> {
@@ -1032,6 +1064,7 @@ impl<'data, T: TrieValue> PropertyCodePointMap<'data, T> {
     }
 
     #[inline]
+    #[allow(clippy::unnecessary_wraps)] // extensibly designed
     pub(crate) fn as_code_point_trie(&self) -> Option<&CodePointTrie<'data, T>> {
         match *self {
             Self::CodePointTrie(ref t) => Some(t),
@@ -1083,6 +1116,13 @@ impl<'data> PropertyUnicodeSet<'data> {
     }
 
     #[inline]
+    pub(crate) fn contains_utf8(&self, s: &[u8]) -> bool {
+        match *self {
+            Self::CPInversionListStrList(ref l) => l.contains_utf8(s),
+        }
+    }
+
+    #[inline]
     pub(crate) fn contains32(&self, cp: u32) -> bool {
         match *self {
             Self::CPInversionListStrList(ref l) => l.contains32(cp),
@@ -1104,6 +1144,7 @@ impl<'data> PropertyUnicodeSet<'data> {
     }
 
     #[inline]
+    #[allow(clippy::unnecessary_wraps)] // extensibly designed
     pub(crate) fn as_code_point_inversion_list_string_list(
         &'_ self,
     ) -> Option<&'_ CodePointInversionListAndStringList<'data>> {
@@ -1137,10 +1178,10 @@ impl<'data> PropertyUnicodeSet<'data> {
 pub struct ScriptWithExtensionsProperty<'data> {
     /// Note: The `ScriptWithExt` values in this array will assume a 12-bit layout. The 2
     /// higher order bits 11..10 will indicate how to deduce the Script value and
-    /// Script_Extensions value, nearly matching the representation
+    /// `Script_Extensions` value, nearly matching the representation
     /// [in ICU](https://github.com/unicode-org/icu/blob/main/icu4c/source/common/uprops.h):
     ///
-    /// | High order 2 bits value | Script                                                 | Script_Extensions                                              |
+    /// | High order 2 bits value | Script                                                 | `Script_Extensions`                                              |
     /// |-------------------------|--------------------------------------------------------|----------------------------------------------------------------|
     /// | 3                       | First value in sub-array, index given by lower 10 bits | Sub-array excluding first value, index given by lower 10 bits  |
     /// | 2                       | Script=Inherited                                       | Entire sub-array, index given by lower 10 bits                 |
@@ -1152,10 +1193,10 @@ pub struct ScriptWithExtensionsProperty<'data> {
     #[cfg_attr(feature = "serde", serde(borrow))]
     pub trie: CodePointTrie<'data, ScriptWithExt>,
 
-    /// This companion structure stores Script_Extensions values, which are
+    /// This companion structure stores `Script_Extensions` values, which are
     /// themselves arrays / vectors. This structure only stores the values for
     /// cases in which `scx(cp) != [ sc(cp) ]`. Each sub-vector is distinct. The
-    /// sub-vector represents the Script_Extensions array value for a code point,
+    /// sub-vector represents the `Script_Extensions` array value for a code point,
     /// and may also indicate Script value, as described for the `trie` field.
     #[cfg_attr(feature = "serde", serde(borrow))]
     pub extensions: VarZeroVec<'data, ZeroSlice<Script>>,

@@ -87,10 +87,12 @@ impl TryFrom<Decimal> for FixedInteger {
 
 impl FixedInteger {
     #[inline]
+    /// Parses a [`FixedInteger`]
     pub fn try_from_str(s: &str) -> Result<Self, ParseError> {
         Self::try_from_utf8(s.as_bytes())
     }
 
+    /// See [`Self::try_from_utf8`]
     pub fn try_from_utf8(code_units: &[u8]) -> Result<Self, ParseError> {
         FixedInteger::try_from(Decimal::try_from_utf8(code_units)?)
             .map_err(|LimitError| ParseError::Limit)

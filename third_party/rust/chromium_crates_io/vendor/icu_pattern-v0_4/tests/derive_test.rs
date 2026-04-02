@@ -2,6 +2,7 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
+#![allow(missing_docs)]
 #![allow(non_camel_case_types, non_snake_case)]
 
 extern crate alloc;

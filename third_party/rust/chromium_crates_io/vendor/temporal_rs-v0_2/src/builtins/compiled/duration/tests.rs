@@ -895,8 +895,8 @@ fn round_increment_regression_test() {
         ..Default::default()
     };
 
-    // let result = duration.round(options.clone(), None).unwrap();
-    // assert_eq!(result.days(), 2);
+    let result = duration.round(options, None).unwrap();
+    assert_eq!(result.days(), 2);
 
     // The result should be same with a UTC relativeTo
     let result = duration

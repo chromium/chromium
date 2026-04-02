@@ -18,23 +18,23 @@ use core::str::FromStr;
 use icu_calendar::{
     cal::{
         Buddhist, ChineseTraditional, Coptic, Ethiopian, EthiopianEraStyle, Hebrew, Hijri, Indian,
-        Japanese, JapaneseExtended, KoreanTraditional, Persian, Roc,
+        Japanese, KoreanTraditional, Persian, Roc,
     },
     AnyCalendar, AnyCalendarKind, Calendar as IcuCalendar, Iso, Ref,
 };
 use icu_calendar::{
     cal::{HijriTabularEpoch, HijriTabularLeapYears},
+    options::DateDurationUnit as IcuUnit,
     options::{
         DateAddOptions, DateDifferenceOptions, DateFromFieldsOptions, MissingFieldsStrategy,
         Overflow as IcuOverflow,
     },
     preferences::CalendarAlgorithm,
     types::DateDuration as IcuDateDuration,
-    types::DateDurationUnit as IcuUnit,
     types::DateFields,
     Gregorian,
 };
-use icu_locale::extensions::unicode::Value;
+use icu_locale_core::extensions::unicode::Value;
 use tinystr::TinyAsciiStr;
 
 use super::ZonedDateTime;
@@ -152,9 +152,12 @@ impl Calendar {
                 const { &AnyCalendar::HijriUmmAlQura(Hijri::new_umm_al_qura()) }
             }
             AnyCalendarKind::Iso => &AnyCalendar::Iso(Iso),
-            AnyCalendarKind::Japanese => const { &AnyCalendar::Japanese(Japanese::new()) },
-            AnyCalendarKind::JapaneseExtended => {
-                const { &AnyCalendar::JapaneseExtended(JapaneseExtended::new()) }
+            #[allow(
+                deprecated,
+                reason = "need to match on JapaneseExtended for exhaustiveness"
+            )]
+            AnyCalendarKind::Japanese | AnyCalendarKind::JapaneseExtended => {
+                const { &AnyCalendar::Japanese(Japanese::new()) }
             }
             AnyCalendarKind::Persian => &AnyCalendar::Persian(Persian),
             AnyCalendarKind::Roc => &AnyCalendar::Roc(Roc),
@@ -280,7 +283,7 @@ fn early_constrain_date_duration(duration: &IcuDateDuration) -> Result<(), Tempo
     if duration.weeks > WEEK_DURATION {
         return err;
     }
-    if duration.days > DAY_DURATION.into() {
+    if duration.days > DAY_DURATION {
         return err;
     }
 
@@ -410,7 +413,7 @@ impl Calendar {
                 let calendar_date = self.0.from_fields(date_fields, options)?;
 
                 fields = CalendarFields {
-                    month_code: Some(MonthCode(self.0.month(&calendar_date).standard_code.0)),
+                    month_code: Some(MonthCode(self.0.month(&calendar_date).to_input().code().0)),
                     day: Some(self.0.day_of_month(&calendar_date).0),
                     ..Default::default()
                 };
@@ -445,7 +448,7 @@ impl Calendar {
         if fields.era_year.is_some() || fields.extended_year.is_some() {
             let mut fields2 = DateFields::default();
             fields2.day = Some(self.0.day_of_month(&calendar_date).0);
-            let code = self.0.month(&calendar_date).standard_code;
+            let code = self.0.month(&calendar_date).to_input().code();
             fields2.month_code = Some(code.0.as_bytes());
 
             calendar_date = self.0.from_fields(fields2, options)?;
@@ -527,13 +530,13 @@ impl Calendar {
             years: u32::try_from(duration.years.abs()).map_err(|_| invalid)?,
             months: u32::try_from(duration.months.abs()).map_err(|_| invalid)?,
             weeks: u32::try_from(duration.weeks.abs()).map_err(|_| invalid)?,
-            days: u64::try_from(duration.days.abs()).map_err(|_| invalid)?,
+            days: u32::try_from(duration.days.abs()).map_err(|_| invalid)?,
         };
 
         early_constrain_date_duration(&duration)?;
         let mut options = DateAddOptions::default();
         options.overflow = Some(overflow.into());
-        let calendar_date = self.0.from_iso(*date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(date.to_rd());
 
         let added = self.0.add(&calendar_date, duration, options)?;
 
@@ -560,15 +563,12 @@ impl Calendar {
         }
         let mut options = DateDifferenceOptions::default();
         options.largest_unit = Some(largest_unit.try_into()?);
-        let calendar_date1 = self.0.from_iso(*one.to_icu4x().inner());
-        let calendar_date2 = self.0.from_iso(*two.to_icu4x().inner());
+        let calendar_date1 = self.0.from_rata_die(one.to_rd());
+        let calendar_date2 = self.0.from_rata_die(two.to_rd());
 
-        let added = self.0.until(&calendar_date1, &calendar_date2, options)?;
+        let added = self.0.until(&calendar_date1, &calendar_date2, options);
 
-        let days = added
-            .days
-            .try_into()
-            .map_err(|_| TemporalError::range().with_enum(ErrorMessage::DurationNotValid))?;
+        let days = added.days.into();
         let mut duration = DateDuration::new(
             added.years.into(),
             added.months.into(),
@@ -587,7 +587,7 @@ impl Calendar {
         if self.is_iso() {
             return None;
         }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0
             .year_info(&calendar_date)
             .era()
@@ -599,7 +599,7 @@ impl Calendar {
         if self.is_iso() {
             return None;
         }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0
             .year_info(&calendar_date)
             .era()
@@ -611,7 +611,7 @@ impl Calendar {
         if self.is_iso() {
             return iso_date.year;
         }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0.extended_year(&calendar_date)
     }
 
@@ -620,18 +620,14 @@ impl Calendar {
         if self.is_iso() {
             return iso_date.month;
         }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0.month(&calendar_date).ordinal
     }
 
     /// `CalendarMonthCode`
     pub fn month_code(&self, iso_date: &IsoDate) -> MonthCode {
-        if self.is_iso() {
-            let mc = iso_date.to_icu4x().month().standard_code.0;
-            return MonthCode(mc);
-        }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
-        MonthCode(self.0.month(&calendar_date).standard_code.0)
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
+        MonthCode(self.0.month(&calendar_date).to_input().code().0)
     }
 
     /// `CalendarDay`
@@ -639,28 +635,25 @@ impl Calendar {
         if self.is_iso() {
             return iso_date.day;
         }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0.day_of_month(&calendar_date).0
     }
 
     /// `CalendarDayOfWeek`
     pub fn day_of_week(&self, iso_date: &IsoDate) -> u16 {
-        iso_date.to_icu4x().day_of_week() as u16
+        iso_date.to_icu4x_iso().weekday() as u16
     }
 
     /// `CalendarDayOfYear`
     pub fn day_of_year(&self, iso_date: &IsoDate) -> u16 {
-        if self.is_iso() {
-            return iso_date.to_icu4x().day_of_year().0;
-        }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0.day_of_year(&calendar_date).0
     }
 
     /// `CalendarWeekOfYear`
     pub fn week_of_year(&self, iso_date: &IsoDate) -> Option<u8> {
         if self.is_iso() {
-            return Some(iso_date.to_icu4x().week_of_year().week_number);
+            return Some(iso_date.to_icu4x_iso().week_of_year().week_number);
         }
         // TODO: Research in ICU4X and determine best approach.
         None
@@ -669,7 +662,7 @@ impl Calendar {
     /// `CalendarYearOfWeek`
     pub fn year_of_week(&self, iso_date: &IsoDate) -> Option<i32> {
         if self.is_iso() {
-            return Some(iso_date.to_icu4x().week_of_year().iso_year);
+            return Some(iso_date.to_icu4x_iso().week_of_year().iso_year);
         }
         // TODO: Research in ICU4X and determine best approach.
         None
@@ -682,19 +675,13 @@ impl Calendar {
 
     /// `CalendarDaysInMonth`
     pub fn days_in_month(&self, iso_date: &IsoDate) -> u16 {
-        if self.is_iso() {
-            return iso_date.to_icu4x().days_in_month() as u16;
-        }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0.days_in_month(&calendar_date) as u16
     }
 
     /// `CalendarDaysInYear`
     pub fn days_in_year(&self, iso_date: &IsoDate) -> u16 {
-        if self.is_iso() {
-            return iso_date.to_icu4x().days_in_year();
-        }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0.days_in_year(&calendar_date)
     }
 
@@ -703,16 +690,13 @@ impl Calendar {
         if self.is_iso() {
             return 12;
         }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0.months_in_year(&calendar_date) as u16
     }
 
     /// `CalendarInLeapYear`
     pub fn in_leap_year(&self, iso_date: &IsoDate) -> bool {
-        if self.is_iso() {
-            return iso_date.to_icu4x().is_in_leap_year();
-        }
-        let calendar_date = self.0.from_iso(*iso_date.to_icu4x().inner());
+        let calendar_date = self.0.from_rata_die(iso_date.to_rd());
         self.0.is_in_leap_year(&calendar_date)
     }
 

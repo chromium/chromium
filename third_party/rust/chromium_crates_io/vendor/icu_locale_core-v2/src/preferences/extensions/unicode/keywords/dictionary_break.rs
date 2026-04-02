@@ -19,16 +19,17 @@ struct_keyword!(
     DictionaryBreakScriptExclusions,
     "dx",
     Vec<Script>,
-    |input: Value| {
+    |input: &Value| {
         input
-            .into_iter()
+            .as_subtags_slice()
+            .iter()
             .map(|s| {
                 Script::from_str(s.as_str()).map_err(|_| PreferencesParseError::InvalidKeywordValue)
             })
             .collect::<Result<_, _>>()
             .map(Self)
     },
-    |input: DictionaryBreakScriptExclusions| {
-        input.0.into_iter().map(Into::into).collect()
+    |input: &DictionaryBreakScriptExclusions| {
+        input.0.iter().copied().map(Into::into).collect()
     }
 );

@@ -47,44 +47,44 @@ fn normalizer_bench_data() -> [BenchDataContent; 15] {
         &strip_headers(include_str!("./data/TestNames_Korean.txt")),
     );
     let content_random_words_ar: (&str, &str) = (
-        "TestRandomWordsUDHR_ar",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_ar.txt")),
+        "Carroll-11-ar",
+        &strip_headers(include_str!("./data/Carroll-11-ar.txt")),
     );
     let content_random_words_de: (&str, &str) = (
-        "TestRandomWordsUDHR_de",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_de.txt")),
+        "Carroll-11-de",
+        &strip_headers(include_str!("./data/Carroll-11-de.txt")),
     );
     let content_random_words_el: (&str, &str) = (
-        "TestRandomWordsUDHR_el",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_el.txt")),
+        "Carroll-11-el",
+        &strip_headers(include_str!("./data/Carroll-11-el.txt")),
     );
     let content_random_words_es: (&str, &str) = (
-        "TestRandomWordsUDHR_es",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_es.txt")),
+        "Carroll-11-es",
+        &strip_headers(include_str!("./data/Carroll-11-es.txt")),
     );
     let content_random_words_fr: (&str, &str) = (
-        "TestRandomWordsUDHR_fr",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_fr.txt")),
+        "Carroll-11-fr",
+        &strip_headers(include_str!("./data/Carroll-11-fr.txt")),
     );
     let content_random_words_he: (&str, &str) = (
-        "TestRandomWordsUDHR_he",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_he.txt")),
+        "Carroll-11-he",
+        &strip_headers(include_str!("./data/Carroll-11-he.txt")),
     );
     let content_random_words_pl: (&str, &str) = (
-        "TestRandomWordsUDHR_pl",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_pl.txt")),
+        "Carroll-11-pl",
+        &strip_headers(include_str!("./data/Carroll-11-pl.txt")),
     );
     let content_random_words_ru: (&str, &str) = (
-        "TestRandomWordsUDHR_ru",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_ru.txt")),
+        "Carroll-11-ru",
+        &strip_headers(include_str!("./data/Carroll-11-ru.txt")),
     );
     let content_random_words_th: (&str, &str) = (
-        "TestRandomWordsUDHR_th",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_th.txt")),
+        "Carroll-11-th",
+        &strip_headers(include_str!("./data/Carroll-11-th.txt")),
     );
     let content_random_words_tr: (&str, &str) = (
-        "TestRandomWordsUDHR_tr",
-        &strip_headers(include_str!("./data/TestRandomWordsUDHR_tr.txt")),
+        "Carroll-11-tr",
+        &strip_headers(include_str!("./data/Carroll-11-tr.txt")),
     );
     let content_viet: (&str, &str) = ("udhr_vie", &strip_headers(include_str!("data/wotw.txt")));
 

@@ -21,6 +21,7 @@ pub struct ScientificDecimal {
 }
 
 impl ScientificDecimal {
+    /// Creates a [`ScientificDecimal`] from parts.
     pub fn from(significand: Decimal, exponent: FixedInteger) -> Self {
         ScientificDecimal {
             significand,
@@ -75,11 +76,13 @@ impl writeable::Writeable for ScientificDecimal {
 writeable::impl_display_with_writeable!(ScientificDecimal);
 
 impl ScientificDecimal {
+    /// Parses a [`ScientificDecimal`].
     #[inline]
     pub fn try_from_str(s: &str) -> Result<Self, ParseError> {
         Self::try_from_utf8(s.as_bytes())
     }
 
+    /// See [`Self::try_from_str`]
     pub fn try_from_utf8(code_units: &[u8]) -> Result<Self, ParseError> {
         // Fixed_Decimal::try_from supports scientific notation; ensure that
         // we don’t accept something like 1e1E1.  Splitting on 'e' ensures that

@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.83"
+rust-version = "1.86"
 name = "icu_plurals"
-version = "2.1.1"
+version = "2.2.0"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -35,12 +35,25 @@ autobenches = false
 description = "Unicode Plural Rules categorizer for numeric input"
 homepage = "https://icu4x.unicode.org"
 readme = "README.md"
-categories = ["internationalization"]
+keywords = [
+    "unicode",
+    "plurals",
+    "grammar",
+]
+categories = [
+    "internationalization",
+    "localization",
+    "no-std",
+    "embedded",
+]
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
 [package.metadata.docs.rs]
 all-features = true
+
+[package.metadata.cargo-all-features]
+max_combination_size = 3
 
 [features]
 compiled_data = [
@@ -56,7 +69,6 @@ datagen = [
     "icu_provider/export",
 ]
 default = ["compiled_data"]
-experimental = []
 icu_normalizer_data = []
 serde = [
     "dep:serde",
@@ -64,6 +76,7 @@ serde = [
     "icu_provider/serde",
     "dep:displaydoc",
 ]
+unstable = []
 
 [lib]
 name = "icu_plurals"
@@ -79,7 +92,7 @@ name = "operands"
 path = "tests/operands.rs"
 required-features = [
     "serde",
-    "experimental",
+    "unstable",
 ]
 
 [[test]]
@@ -94,7 +107,7 @@ path = "tests/ranges.rs"
 [[test]]
 name = "rules"
 path = "tests/rules.rs"
-required-features = ["experimental"]
+required-features = ["unstable"]
 
 [[bench]]
 name = "operands"
@@ -125,21 +138,21 @@ optional = true
 default-features = false
 
 [dependencies.fixed_decimal]
-version = "0.7.0"
+version = "0.7.2"
 default-features = false
 
 [dependencies.icu_locale]
-version = "~2.1.1"
+version = "~2.2.0"
 optional = true
 default-features = false
 
 [dependencies.icu_plurals_data]
-version = "~2.1.1"
+version = "~2.2.0"
 optional = true
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.1.1"
+version = "2.2.0"
 features = ["alloc"]
 default-features = false
 
@@ -153,7 +166,7 @@ optional = true
 default-features = false
 
 [dependencies.zerovec]
-version = "0.11.3"
+version = "0.11.6"
 features = [
     "alloc",
     "yoke",
@@ -175,3 +188,52 @@ version = "1.0.45"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]
 version = "0.5.0"
+
+[lints.clippy]
+alloc-instead-of-core = "warn"
+branches-sharing-code = "warn"
+collection_is_never_read = "warn"
+crosspointer_transmute = "warn"
+dbg_macro = "warn"
+debug_assert_with_mut_call = "warn"
+doc_markdown = "warn"
+exhaustive_enums = "deny"
+exhaustive_structs = "deny"
+fn_to_numeric_cast_any = "warn"
+infinite_loop = "warn"
+large_stack_arrays = "warn"
+mismatching_type_param_order = "warn"
+missing_fields_in_debug = "warn"
+missing_transmute_annotations = "warn"
+negative_feature_names = "warn"
+or-fun-call = "warn"
+same_functions_in_if_condition = "warn"
+todo = "warn"
+transmute_bytes_to_str = "warn"
+transmute_int_to_bool = "warn"
+transmute_int_to_non_zero = "warn"
+transmute_ptr_to_ptr = "warn"
+transmute_ptr_to_ref = "warn"
+transmute_undefined_repr = "warn"
+transmutes_expressible_as_ptr_casts = "warn"
+trivially_copy_pass_by_ref = "deny"
+unnecessary-wraps = "warn"
+useless_transmute = "warn"
+wildcard_dependencies = "warn"
+
+[lints.rust]
+missing_debug_implementations = "deny"
+trivial_numeric_casts = "deny"
+unused_lifetimes = "warn"
+unused_macro_rules = "warn"
+unused_qualifications = "warn"
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+priority = 0
+check-cfg = [
+    "cfg(icu4c_enable_renaming)",
+    "cfg(needs_alloc_error_handler)",
+    "cfg(icu4x_run_size_tests)",
+    "cfg(icu4x_unstable_fast_trie_only)",
+]

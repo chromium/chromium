@@ -52,7 +52,11 @@ namespace capi {
 
     const temporal_rs::capi::Calendar* temporal_rs_PlainMonthDay_calendar(const temporal_rs::capi::PlainMonthDay* self);
 
+    uint8_t temporal_rs_PlainMonthDay_month(const temporal_rs::capi::PlainMonthDay* self);
+
     void temporal_rs_PlainMonthDay_month_code(const temporal_rs::capi::PlainMonthDay* self, temporal_rs::diplomat::capi::DiplomatWrite* write);
+
+    int32_t temporal_rs_PlainMonthDay_reference_year(const temporal_rs::capi::PlainMonthDay* self);
 
     typedef struct temporal_rs_PlainMonthDay_to_plain_date_result {union {temporal_rs::capi::PlainDate* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_PlainMonthDay_to_plain_date_result;
     temporal_rs_PlainMonthDay_to_plain_date_result temporal_rs_PlainMonthDay_to_plain_date(const temporal_rs::capi::PlainMonthDay* self, temporal_rs::capi::PartialDate_option year);
@@ -129,6 +133,11 @@ inline const temporal_rs::Calendar& temporal_rs::PlainMonthDay::calendar() const
     return *temporal_rs::Calendar::FromFFI(result);
 }
 
+inline uint8_t temporal_rs::PlainMonthDay::month() const {
+    auto result = temporal_rs::capi::temporal_rs_PlainMonthDay_month(this->AsFFI());
+    return result;
+}
+
 inline std::string temporal_rs::PlainMonthDay::month_code() const {
     std::string output;
     temporal_rs::diplomat::capi::DiplomatWrite write = temporal_rs::diplomat::WriteFromString(output);
@@ -141,6 +150,11 @@ inline void temporal_rs::PlainMonthDay::month_code_write(W& writeable) const {
     temporal_rs::diplomat::capi::DiplomatWrite write = temporal_rs::diplomat::WriteTrait<W>::Construct(writeable);
     temporal_rs::capi::temporal_rs_PlainMonthDay_month_code(this->AsFFI(),
         &write);
+}
+
+inline int32_t temporal_rs::PlainMonthDay::reference_year() const {
+    auto result = temporal_rs::capi::temporal_rs_PlainMonthDay_reference_year(this->AsFFI());
+    return result;
 }
 
 inline temporal_rs::diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError> temporal_rs::PlainMonthDay::to_plain_date(std::optional<temporal_rs::PartialDate> year) const {

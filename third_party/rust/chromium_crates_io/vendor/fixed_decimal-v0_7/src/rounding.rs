@@ -41,7 +41,7 @@ impl IncrementLike for NoIncrement {
 ///
 /// # Comparative table of all the rounding modes, including the signed and unsigned ones.
 ///
-/// | Value | Ceil | Expand | Floor | Trunc | HalfCeil | HalfExpand | HalfFloor | HalfTrunc | HalfEven |
+/// | Value | `Ceil` | `Expand` | `Floor` | `Trunc` | `HalfCeil` | `HalfExpand` | `HalfFloor` | `HalfTrunc` | `HalfEven` |
 /// |:-----:|:----:|:------:|:-----:|:-----:|:--------:|:----------:|:---------:|:---------:|:--------:|
 /// |  +1.8 |  +2  |   +2   |   +1  |   +1  |    +2    |     +2     |     +2    |     +2    |    +2    |
 /// |  +1.5 |   "  |    "   |   "   |   "   |     "    |      "     |     +1    |     +1    |     "    |
@@ -57,7 +57,7 @@ impl IncrementLike for NoIncrement {
 /// |  -1.8 |   "  |    "   |   "   |   "   |    -2    |      "     |     "     |     -2    |     "    |
 ///
 /// NOTE:
-///   - Ceil, Floor, HalfCeil and HalfFloor are part of the [`SignedRoundingMode`] enum.
+///   - `Ceil`, `Floor`, `HalfCeil` and `HalfFloor` are part of the [`SignedRoundingMode`] enum.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[non_exhaustive]
 pub enum UnsignedRoundingMode {

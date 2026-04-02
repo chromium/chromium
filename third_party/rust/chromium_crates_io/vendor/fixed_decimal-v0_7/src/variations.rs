@@ -52,7 +52,9 @@ pub enum SignDisplay {
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Signed<T> {
+    /// The sign
     pub sign: Sign,
+    /// The absolute value
     pub absolute: T,
 }
 

@@ -145,7 +145,7 @@ pub enum CaseMapDataKind {
     Delta(NonExceptionData, CaseType, i16),
 }
 
-/// Data that is stored in CaseMapData when it is *not* an exception
+/// Data that is stored in [`CaseMapData`] when it is *not* an exception
 ///
 /// <div class="stab unstable">
 /// 🚧 This code is considered unstable; it may change at any time, in breaking or non-breaking ways,
@@ -361,7 +361,7 @@ impl CaseMapDataULE {
 ///    would not represent a valid slice of this type: It does
 /// 4. The impl of [`ULE::validate_bytes()`] *must* return an error if the given byte slice
 ///    cannot be used in its entirety (if its length is not a multiple of `size_of::<Self>()`):
-///    it does, due to the RawBytesULE parse call
+///    it does, due to the [`RawBytesULE`] parse call
 /// 5. All other methods *must* be left with their default impl, or else implemented according to
 ///    their respective safety guidelines: They have been
 /// 6. The equality invariant is satisfied

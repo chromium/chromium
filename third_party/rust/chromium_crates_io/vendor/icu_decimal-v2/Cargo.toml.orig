@@ -5,9 +5,10 @@
 [package]
 name = "icu_decimal"
 description = "API for formatting basic decimal numbers in a locale-sensitive way"
+categories.workspace = true
+keywords = ["unicode", "formatting", "numbers"]
 
 authors.workspace = true
-categories.workspace = true
 edition.workspace = true
 homepage.workspace = true
 include.workspace = true
@@ -19,6 +20,9 @@ version.workspace = true
 [package.metadata.docs.rs]
 all-features = true
 
+[package.metadata.cargo-all-features]
+max_combination_size = 3
+
 [dependencies]
 fixed_decimal = { workspace = true }
 icu_provider = { workspace = true }
@@ -27,6 +31,9 @@ writeable = { workspace = true }
 zerovec = { workspace = true, features = ["alloc"] }
 databake = { workspace = true, features = ["derive"], optional = true}
 serde = { workspace = true, features = ["derive"], optional = true }
+icu_plurals = { workspace = true, optional = true }
+icu_pattern = { workspace = true, features = ["zerovec"], optional = true }
+displaydoc = { workspace = true }
 
 icu_decimal_data = { workspace = true, optional = true }
 icu_locale = { workspace = true, optional = true }
@@ -44,15 +51,16 @@ criterion = { workspace = true }
 
 [features]
 default = ["compiled_data"]
-serde = ["dep:serde", "icu_provider/serde", "zerovec/serde"]
-datagen = ["serde", "dep:databake", "zerovec/databake", "icu_provider/export", "alloc"]
-compiled_data = ["dep:icu_decimal_data", "dep:icu_locale", "icu_locale?/compiled_data", "icu_provider/baked"]
+serde = ["alloc", "dep:serde", "icu_provider/serde", "zerovec/serde", "icu_pattern?/serde", "icu_plurals?/serde"]
+datagen = ["serde", "dep:databake", "zerovec/databake", "icu_provider/export", "alloc", "icu_plurals?/datagen"]
+compiled_data = ["dep:icu_decimal_data", "dep:icu_locale", "icu_locale?/compiled_data", "icu_provider/baked", "icu_plurals?/compiled_data"]
 ryu = ["fixed_decimal/ryu"]
 alloc = ["serde?/alloc", "zerovec/alloc"]
-
-[lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(icu4x_run_size_tests)'] }
+unstable = ["dep:icu_pattern", "dep:icu_plurals"]
 
 [[bench]]
 name = "fixed_decimal_format"
 harness = false
+
+[lints]
+workspace = true

@@ -29,38 +29,6 @@
 /// The test is ignored by default but runs in CI. To run the test locally,
 /// run `cargo test -- --include-ignored`
 macro_rules! size_test {
-    ($ty:ty, $id:ident, pinned = $pinned:literal, beta = $beta:literal, nightly = $nightly:literal) => {
-        macro_rules! $id {
-            () => {
-                concat!(
-                    "\n\n",
-                    "📏 This item has a stack size of <b>",
-                    stringify!($pinned),
-                    " bytes</b> on the stable toolchain and <b>",
-                    stringify!($beta),
-                    " bytes</b> on beta toolchain at release date."
-                )
-            };
-        }
-        #[test]
-        #[cfg_attr(not(icu4x_run_size_tests), ignore)] // Doesn't work on arbitrary Rust versions
-        fn $id() {
-            let size = core::mem::size_of::<$ty>();
-            let success = match option_env!("CI_TOOLCHAIN") {
-                Some("nightly") => size == $nightly,
-                Some("beta") => size == $beta,
-                Some("pinned-stable") => size == $pinned,
-                // Manual invocation: match either size
-                _ => matches!(size, $pinned | $beta | $nightly),
-            };
-            assert!(
-                success,
-                "size_of {} = {}.\n** To reproduce this failure, run `cargo test -- --ignored` **",
-                stringify!($ty),
-                size,
-            );
-        }
-    };
     ($ty:ty, $id:ident, $size:literal) => {
         macro_rules! $id {
             () => {
@@ -75,7 +43,7 @@ macro_rules! size_test {
         #[test]
         #[cfg_attr(not(icu4x_run_size_tests), ignore)] // Doesn't work on arbitrary Rust versions
         fn $id() {
-            let size = core::mem::size_of::<$ty>();
+            let size = size_of::<$ty>();
             let expected = $size;
             assert_eq!(
                 size,

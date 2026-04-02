@@ -5,15 +5,15 @@
 use std::convert::Infallible;
 
 use icu_calendar::{
-    cal::{ChineseTraditional, Hebrew},
-    options::{DateAddOptions, DateDifferenceOptions, Overflow},
-    types::{DateDuration, DateDurationUnit, MonthCode},
+    cal::Hebrew,
+    options::{DateAddOptions, DateDifferenceOptions, DateDurationUnit, Overflow},
+    types::{DateDuration, Month},
     AsCalendar, Calendar, Date, Iso,
 };
 
 #[rustfmt::skip]
 #[allow(clippy::type_complexity)]
-const ISO_DATE_PAIRS: &[(&str, &str, u64, (u32, u64), (u32, u64), (u32, u32, u64))] = &[
+const ISO_DATE_PAIRS: &[(&str, &str, u32, (u32, u32), (u32, u32), (u32, u32, u32))] = &[
     //         d0,           d1, D,    (W, D),   (M, D),   (Y, M, D)
     ("2020-01-03", "2020-02-15", 43,   (6, 1),   (1, 12),  (0, 1, 12)),
     ("2020-01-31", "2020-06-30", 151,  (21, 4),  (4, 30),  (0, 4, 30)),
@@ -31,16 +31,17 @@ const ISO_DATE_PAIRS: &[(&str, &str, u64, (u32, u64), (u32, u64), (u32, u32, u64
     ("2022-03-01", "2020-02-29", 731,  (104, 3), (24, 1),  (2, 0, 1)),
 ];
 
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn check<A>(
     d0: &Date<A>,
     d1: &Date<A>,
-    exp0: &u64,
-    exp1: &(u32, u64),
-    exp2: &(u32, u64),
-    exp3: &(u32, u32, u64),
+    exp0: &u32,
+    exp1: &(u32, u32),
+    exp2: &(u32, u32),
+    exp3: &(u32, u32, u32),
 ) where
     A: AsCalendar + Copy,
-    <A as AsCalendar>::Calendar: Calendar<DifferenceError = Infallible>,
+    <A as AsCalendar>::Calendar: Calendar<DateCompatibilityError = Infallible>,
     <<A as AsCalendar>::Calendar as Calendar>::DateInner: PartialOrd,
 {
     let is_negative = d0 > d1;
@@ -128,8 +129,8 @@ fn check<A>(
     if is_negative {
         assert!(rd_diff.is_negative());
     }
-    assert_eq!(p0.days, rd_diff.unsigned_abs());
-    assert_eq!(p1.days + u64::from(p1.weeks) * 7, rd_diff.unsigned_abs());
+    assert_eq!(p0.days, rd_diff.unsigned_abs() as u32);
+    assert_eq!(p1.days + p1.weeks * 7, rd_diff.unsigned_abs() as u32);
 }
 
 #[test]
@@ -143,35 +144,23 @@ fn test_arithmetic_cases() {
 
 #[test]
 fn test_hebrew() {
-    let m06z_20 =
-        Date::try_new_from_codes(None, 5783, MonthCode::new_normal(6).unwrap(), 20, Hebrew)
-            .unwrap();
-    let m05l_15 =
-        Date::try_new_from_codes(None, 5784, MonthCode::new_leap(5).unwrap(), 15, Hebrew).unwrap();
-    let m05l_30 =
-        Date::try_new_from_codes(None, 5784, MonthCode::new_leap(5).unwrap(), 30, Hebrew).unwrap();
-    let m06a_29 =
-        Date::try_new_from_codes(None, 5784, MonthCode::new_normal(6).unwrap(), 29, Hebrew)
-            .unwrap();
-    let m07a_10 =
-        Date::try_new_from_codes(None, 5784, MonthCode::new_normal(7).unwrap(), 10, Hebrew)
-            .unwrap();
-    let m06b_15 =
-        Date::try_new_from_codes(None, 5785, MonthCode::new_normal(6).unwrap(), 15, Hebrew)
-            .unwrap();
-    let m07b_20 =
-        Date::try_new_from_codes(None, 5785, MonthCode::new_normal(7).unwrap(), 20, Hebrew)
-            .unwrap();
+    let m06z_20 = Date::try_new_hebrew_v2(5783, Month::new(6), 20).unwrap();
+    let m05l_15 = Date::try_new_hebrew_v2(5784, Month::leap(5), 15).unwrap();
+    let m05l_30 = Date::try_new_hebrew_v2(5784, Month::leap(5), 30).unwrap();
+    let m06a_29 = Date::try_new_hebrew_v2(5784, Month::new(6), 29).unwrap();
+    let m07a_10 = Date::try_new_hebrew_v2(5784, Month::new(7), 10).unwrap();
+    let m06b_15 = Date::try_new_hebrew_v2(5785, Month::new(6), 15).unwrap();
+    let m07b_20 = Date::try_new_hebrew_v2(5785, Month::new(7), 20).unwrap();
 
     #[rustfmt::skip]
     #[allow(clippy::type_complexity)]
-    let cases: &[(&Date<Hebrew>, &Date<Hebrew>, u64, (u32, u64), (u32, u64), (u32, u32, u64))] = &[
+    let cases: &[(&Date<Hebrew>, &Date<Hebrew>, u32, (u32, u32), (u32, u32), (u32, u32, u32))] = &[
         (&m06z_20, &m05l_15, 348, (49, 5), (11, 25), (0, 11, 25)),
         (&m06z_20, &m05l_30, 363, (51, 6), (12, 10), (0, 12, 10)),
         (&m06z_20, &m06a_29, 392, (56, 0), (13, 9),  (1, 0, 9)),
         (&m06z_20, &m07a_10, 402, (57, 3), (13, 19), (1, 0, 19)),
-        (&m06z_20, &m06b_15, 733, (104,5), (24, 25), (1, 11, 25)),
-        (&m06z_20, &m07b_20, 767, (109,4), (26, 0),  (2, 1, 0)),
+        (&m06z_20, &m06b_15, 733, (104, 5), (24, 25), (1, 11, 25)),
+        (&m06z_20, &m07b_20, 767, (109, 4), (26, 0),  (2, 1, 0)),
 
         (&m05l_15, &m05l_30, 15,  (2, 1),  (0, 15),  (0, 0, 15)),
         (&m05l_15, &m06a_29, 44,  (6, 2),  (1, 14),  (0, 1, 14)),
@@ -198,36 +187,42 @@ fn test_hebrew() {
 }
 
 #[test]
+fn test_gregory_leap_addition() {
+    let leap_day = Date::try_new_gregorian(2020, 2, 29).unwrap();
+    let mut options = DateAddOptions::default();
+    options.overflow = Some(Overflow::Reject);
+    let y4 = DateDuration::for_years(4);
+    let result = leap_day.try_added_with_options(y4, options).unwrap();
+    assert_eq!(result, Date::try_new_gregorian(2024, 2, 29).unwrap());
+}
+
+#[test]
 fn test_tricky_leap_months() {
     let mut add_options = DateAddOptions::default();
     add_options.overflow = Some(Overflow::Constrain);
     let mut until_options = DateDifferenceOptions::default();
     until_options.largest_unit = Some(DateDurationUnit::Years);
 
-    fn hebrew_date(year: i32, month: &str, day: u8) -> Date<Hebrew> {
-        Date::try_new_from_codes(None, year, MonthCode(month.parse().unwrap()), day, Hebrew)
-            .unwrap()
-    }
-
-    fn chinese_date(year: i32, month: Month, day: u8) -> Date<ChineseTraditional> {
-        Date::try_new_from_codes(None, year, month.code(), day, ChineseTraditional::new()).unwrap()
-    }
-
     // M06 + 1yr = M06 (common to leap)
-    let date0 = hebrew_date(5783, "M06", 20);
+    let date0 = Date::try_new_hebrew_v2(5783, Month::new(6), 20).unwrap();
     let duration0 = DateDuration::for_years(1);
     let date1 = date0
         .try_added_with_options(duration0, add_options)
         .unwrap();
-    assert_eq!(date1, hebrew_date(5784, "M06", 20));
+    assert_eq!(
+        date1,
+        Date::try_new_hebrew_v2(5784, Month::new(6), 20).unwrap()
+    );
     let duration0_actual = date0.try_until_with_options(&date1, until_options).unwrap();
     assert_eq!(duration0_actual, duration0);
 
     // M02L until M02 = 12mo
-    let cdate0 = chinese_date(2023, Month::leap(2), 1);
-    let cdate1 = chinese_date(2024, Month::new(2), 1);
+    let cdate0 = Date::try_new_chinese_traditional(2023, Month::leap(2), 1).unwrap();
+    let cdate1 = Date::try_new_chinese_traditional(2024, Month::new(2), 1).unwrap();
     let duration0a = DateDuration::for_months(12);
-    let diff0 = cdate0.try_until_with_options(&cdate1, until_options).unwrap();
+    let diff0 = cdate0
+        .try_until_with_options(&cdate1, until_options)
+        .unwrap();
     assert_eq!(diff0, duration0a);
 
     // M06 - 1mo = M05L (leap to leap)
@@ -235,7 +230,10 @@ fn test_tricky_leap_months() {
     let date2 = date1
         .try_added_with_options(duration1, add_options)
         .unwrap();
-    assert_eq!(date2, hebrew_date(5784, "M05L", 20));
+    assert_eq!(
+        date2,
+        Date::try_new_hebrew_v2(5784, Month::leap(5), 20).unwrap()
+    );
     let duration1_actual = date1.try_until_with_options(&date2, until_options).unwrap();
     assert_eq!(duration1_actual, duration1);
 
@@ -253,7 +251,10 @@ fn test_tricky_leap_months() {
     let date3 = date2
         .try_added_with_options(duration2, add_options)
         .unwrap();
-    assert_eq!(date3, hebrew_date(5785, "M07", 20));
+    assert_eq!(
+        date3,
+        Date::try_new_hebrew_v2(5785, Month::new(7), 20).unwrap()
+    );
     let duration2_actual = date2.try_until_with_options(&date3, until_options).unwrap();
     assert_eq!(duration2_actual, duration2);
 
@@ -261,7 +262,10 @@ fn test_tricky_leap_months() {
     let date4 = date1
         .try_added_with_options(duration2, add_options)
         .unwrap();
-    assert_eq!(date4, hebrew_date(5785, "M07", 20));
+    assert_eq!(
+        date4,
+        Date::try_new_hebrew_v2(5785, Month::new(7), 20).unwrap()
+    );
     let duration2_actual = date1.try_until_with_options(&date4, until_options).unwrap();
     assert_eq!(duration2_actual, duration2);
 }

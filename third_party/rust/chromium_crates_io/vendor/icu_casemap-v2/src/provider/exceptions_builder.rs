@@ -17,7 +17,7 @@ use zerovec::ule::{AsULE, ULE};
 /// for the wire format
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub struct ExceptionHeader {
-    /// The various slots that are present, masked by ExceptionSlot
+    /// The various slots that are present, masked by [`ExceptionSlot`]
     ///
     /// We still store this as a bitmask since it's more convenient to access as one
     pub slot_presence: SlotPresence,

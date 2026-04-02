@@ -18,9 +18,9 @@
 #[macro_export]
 macro_rules! __impl_plurals_ordinal_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         impl $provider {
             const DATA_PLURALS_ORDINAL_V1: icu_provider::baked::zerotrie::Data<icu::plurals::provider::PluralsOrdinalV1> = {
                 const TRIE: icu_provider::baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider::baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xD2abcefghiklmnorstuv\x06\x10\x16\x18\x1F(13CJTWZ\\ilu\xC2sz\x01\x80\x81\xC3eln\x01\x03\x82o\x83\x80\xC2ay\x01\x84\x85n\x86\xC2ir\x02l\x87\x87\xC3adu\x01\x02\x87\x88\x89\xC3iuy\x01\x02\x89\x8A\x87t\x8B\xC3ako\x01\x02\x8C\x8Dk\x8E-Latn\x8E\xC2io\x02j\x8F\x87\xC3krs\x02\x03\x90\0\x8E\x87e\x90\x01r\x90\x02o\x87\xC3cqv\x03\x05\x8Bn\x8F\x90\x03\x90\x04k\x90\x05\xC2kn\x02\x90\x06d\x90\x07\xC2ei\x02c\x8B\x87" };
@@ -28,7 +28,7 @@ macro_rules! __impl_plurals_ordinal_v1 {
                 unsafe { icu_provider::baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
             };
         }
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         impl icu_provider::DataProvider<icu::plurals::provider::PluralsOrdinalV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::plurals::provider::PluralsOrdinalV1>, icu_provider::DataError> {
                 let mut metadata = icu_provider::DataResponseMetadata::default();
@@ -54,7 +54,7 @@ macro_rules! __impl_plurals_ordinal_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_plurals_ordinal_v1!($provider);
-        #[clippy::msrv = "1.83"]
+        #[clippy::msrv = "1.86"]
         impl icu_provider::IterableDataProvider<icu::plurals::provider::PluralsOrdinalV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok(icu_provider::baked::DataStore::iter(&Self::DATA_PLURALS_ORDINAL_V1).collect())

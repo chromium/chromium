@@ -43,9 +43,9 @@ use writeable::Writeable;
 #[non_exhaustive]
 #[derive(Copy, Clone, Default, PartialEq, Eq, Hash, Debug)]
 pub enum TrailingCase {
-    /// Preserve the casing of the rest of the string ("spoNgEBoB" -> "SpoNgEBoB")
+    /// Preserve the casing of the rest of the string (`spoNgEBoB` -> `SpoNgEBoB`)
     Unchanged,
-    /// Lowercase the rest of the string ("spoNgEBoB" -> "Spongebob")
+    /// Lowercase the rest of the string (`spoNgEBoB` -> `Spongebob`)
     #[default]
     Lower,
 }
@@ -226,7 +226,7 @@ impl TitlecaseMapper<CaseMapper> {
         P: DataProvider<CaseMapV1> + DataProvider<PropertyEnumGeneralCategoryV1> + ?Sized,
     {
         let cm = CaseMapper::try_new_unstable(provider)?;
-        let gc = icu_properties::CodePointMapData::<icu_properties::props::GeneralCategory>::try_new_unstable(provider)?;
+        let gc = CodePointMapData::<GeneralCategory>::try_new_unstable(provider)?;
         Ok(Self { cm, gc })
     }
 }
@@ -263,18 +263,17 @@ impl<CM: AsRef<CaseMapper>> TitlecaseMapper<CM> {
     pub const fn new_with_mapper(casemapper: CM) -> Self {
         Self {
             cm: casemapper,
-            gc: icu_properties::CodePointMapData::<icu_properties::props::GeneralCategory>::new()
-                .static_to_owned(),
+            gc: CodePointMapData::<GeneralCategory>::new().static_to_owned(),
         }
     }
 
-    /// Construct this object to wrap an existing CaseMapper (or a reference to one), loading additional data as needed.
+    /// Construct this object to wrap an existing [`CaseMapper`] (or a reference to one), loading additional data as needed.
     #[doc = icu_provider::gen_buffer_unstable_docs!(UNSTABLE, Self::new_with_mapper)]
     pub fn try_new_with_mapper_unstable<P>(provider: &P, casemapper: CM) -> Result<Self, DataError>
     where
         P: DataProvider<CaseMapV1> + DataProvider<PropertyEnumGeneralCategoryV1> + ?Sized,
     {
-        let gc = icu_properties::CodePointMapData::<icu_properties::props::GeneralCategory>::try_new_unstable(provider)?;
+        let gc = CodePointMapData::<GeneralCategory>::try_new_unstable(provider)?;
         Ok(Self { cm: casemapper, gc })
     }
 
@@ -306,7 +305,7 @@ impl TitlecaseMapperBorrowed<'static> {
     pub const fn new() -> Self {
         Self {
             cm: CaseMapper::new(),
-            gc: icu_properties::CodePointMapData::<icu_properties::props::GeneralCategory>::new(),
+            gc: CodePointMapData::<GeneralCategory>::new(),
         }
     }
     /// Cheaply converts a [`TitlecaseMapperBorrowed<'static>`] into a [`TitlecaseMapper`].

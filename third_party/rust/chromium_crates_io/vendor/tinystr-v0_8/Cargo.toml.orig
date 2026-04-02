@@ -5,8 +5,8 @@
 [package]
 name = "tinystr"
 description = "A small ASCII-only bounded length string representation."
-version = "0.8.2"
-keywords = ["string", "str", "small", "tiny", "no_std"]
+version = "0.8.3"
+keywords = ["small-string", "ascii", "string", "str"]
 categories = ["data-structures"]
 
 authors.workspace = true
@@ -21,6 +21,9 @@ independent = true
 
 [package.metadata.docs.rs]
 all-features = true
+
+[package.metadata.cargo-all-features]
+max_combination_size = 3
 
 [dependencies]
 displaydoc = { workspace = true }
@@ -70,3 +73,6 @@ harness = false
 name = "serde"
 harness = false
 required-features = ["serde"]
+
+[lints]
+workspace = true

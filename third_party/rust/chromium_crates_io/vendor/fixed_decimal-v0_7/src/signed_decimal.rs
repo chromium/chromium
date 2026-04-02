@@ -49,16 +49,18 @@ use crate::{
 pub type Decimal = Signed<UnsignedDecimal>;
 
 impl Decimal {
+    /// Creates a [`Decimal`] from parts.
     pub fn new(sign: Sign, absolute: UnsignedDecimal) -> Self {
         Decimal { sign, absolute }
     }
 
-    #[inline]
     /// Parses a [`Decimal`].
+    #[inline]
     pub fn try_from_str(s: &str) -> Result<Self, ParseError> {
         Self::try_from_utf8(s.as_bytes())
     }
 
+    /// See [`Self::try_from_str`]
     pub fn try_from_utf8(input_str: &[u8]) -> Result<Self, ParseError> {
         // input_str: the input string
         // no_sign_str: the input string when the sign is removed from it

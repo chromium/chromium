@@ -28,7 +28,6 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/gregorian.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hebrew.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri/simulated_mecca_data.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri/ummalqura_data.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/indian.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/iso.rs",
@@ -39,17 +38,27 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/roc.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/chrono.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/date.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/duration.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/error.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/ixdtf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/jiff.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/preferences.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/arithmetic.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/continuity_test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/date_arithmetic_snapshot.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/exhaustive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/extended_year.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/extrema.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/month.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/tests/not_enough_fields.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/third_party.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/time_crate.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/types.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/week.rs",
   ]
@@ -61,9 +70,9 @@ cargo_crate("lib") {
   cargo_pkg_name = "icu_calendar"
   cargo_pkg_description = "Date APIs for Gregorian and non-Gregorian calendars"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.1.1"
+  cargo_pkg_version = "2.2.1"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
   deps = [
     "//third_party/rust/calendrical_calculations/v0_2:lib",
@@ -75,10 +84,7 @@ cargo_crate("lib") {
     "//third_party/rust/tinystr/v0_8:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]
-  features = [
-    "compiled_data",
-    "unstable",
-  ]
+  features = [ "compiled_data" ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

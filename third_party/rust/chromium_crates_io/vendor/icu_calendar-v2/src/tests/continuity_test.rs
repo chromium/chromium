@@ -4,11 +4,11 @@
 
 use crate::{types::*, *};
 
-fn check_continuity<A: AsCalendar>(mut date: Date<A>, years_to_check: usize) {
+fn check_continuity<A: AsCalendar + Clone>(mut date: Date<A>, years_to_check: usize) {
     let duration = DateDuration::for_days(1);
 
     let mut rata_die = date.to_rata_die();
-    let mut weekday = date.day_of_week();
+    let mut weekday = date.weekday();
     let mut year = date.year();
     let mut is_in_leap_year = date.is_in_leap_year();
 
@@ -16,9 +16,9 @@ fn check_continuity<A: AsCalendar>(mut date: Date<A>, years_to_check: usize) {
         let next_date = date
             .try_added_with_options(duration, Default::default())
             .unwrap();
-        let next_rata_die = next_date.to_iso().to_rata_die();
+        let next_rata_die = next_date.to_rata_die();
         assert_eq!(next_rata_die, rata_die + 1, "{next_date:?}");
-        let next_weekday = next_date.day_of_week();
+        let next_weekday = next_date.weekday();
         let next_year = next_date.year();
         let next_is_in_leap_year = next_date.is_in_leap_year();
         assert_eq!(
@@ -37,7 +37,7 @@ fn check_continuity<A: AsCalendar>(mut date: Date<A>, years_to_check: usize) {
     }
 }
 
-fn check_every_250_days<A: AsCalendar>(mut date: Date<A>, iters: usize) {
+fn check_every_250_days<C: Calendar + Copy>(mut date: Date<C>, iters: usize) {
     let duration = DateDuration::for_days(250);
 
     let mut rata_die = date.to_rata_die();
@@ -46,10 +46,9 @@ fn check_every_250_days<A: AsCalendar>(mut date: Date<A>, iters: usize) {
         let next_date = date
             .try_added_with_options(duration, Default::default())
             .unwrap();
-        let next_iso = next_date.to_iso();
-        let next_rata_die = next_iso.to_rata_die();
+        let next_rata_die = next_date.to_rata_die();
         assert_eq!(next_rata_die, rata_die + 250, "{next_date:?}");
-        let next_date_roundtrip = next_iso.to_calendar(Ref(next_date.calendar()));
+        let next_date_roundtrip = Date::from_rata_die(next_rata_die, *next_date.calendar());
         assert_eq!(next_date, next_date_roundtrip, "{next_date:?}");
         date = next_date;
         rata_die = next_rata_die;
@@ -66,18 +65,17 @@ fn test_buddhist_continuity() {
 
 #[test]
 fn test_chinese_continuity() {
-    let cal = crate::cal::ChineseTraditional::new();
-    let date = Date::try_new_from_codes(None, -10, MonthCode::new_normal(1).unwrap(), 1, cal);
+    let date = Date::try_new_chinese_traditional(-10, Month::new(1), 1);
     check_continuity(date.unwrap(), 20);
-    let date = Date::try_new_from_codes(None, -300, MonthCode::new_normal(1).unwrap(), 1, cal);
+    let date = Date::try_new_chinese_traditional(-300, Month::new(1), 1);
     check_every_250_days(date.unwrap(), 2000);
-    let date = Date::try_new_from_codes(None, -10000, MonthCode::new_normal(1).unwrap(), 1, cal);
+    let date = Date::try_new_chinese_traditional(-9999, Month::new(1), 1);
     check_every_250_days(date.unwrap(), 2000);
 
-    let date = Date::try_new_from_codes(None, 1899, MonthCode::new_normal(1).unwrap(), 1, cal);
+    let date = Date::try_new_chinese_traditional(1899, Month::new(1), 1);
     check_continuity(date.unwrap(), 20);
 
-    let date = Date::try_new_from_codes(None, 2099, MonthCode::new_normal(1).unwrap(), 1, cal);
+    let date = Date::try_new_chinese_traditional(2099, Month::new(1), 1);
     check_continuity(date.unwrap(), 20);
 }
 
@@ -91,16 +89,15 @@ fn test_coptic_continuity() {
 
 #[test]
 fn test_korean_continuity() {
-    let cal = cal::KoreanTraditional::new();
-    let date = Date::try_new_from_codes(None, -10, MonthCode::new_normal(1).unwrap(), 1, cal);
+    let date = Date::try_new_korean_traditional(-10, Month::new(1), 1);
     check_continuity(date.unwrap(), 20);
-    let date = Date::try_new_from_codes(None, -300, MonthCode::new_normal(1).unwrap(), 1, cal);
+    let date = Date::try_new_korean_traditional(-300, Month::new(1), 1);
     check_every_250_days(date.unwrap(), 2000);
 
-    let date = Date::try_new_from_codes(None, 1900, MonthCode::new_normal(1).unwrap(), 1, cal);
+    let date = Date::try_new_korean_traditional(1900, Month::new(1), 1);
     check_continuity(date.unwrap(), 20);
 
-    let date = Date::try_new_from_codes(None, 2100, MonthCode::new_normal(1).unwrap(), 1, cal);
+    let date = Date::try_new_korean_traditional(2100, Month::new(1), 1);
     check_continuity(date.unwrap(), 20);
 }
 
@@ -132,16 +129,9 @@ fn test_gregorian_continuity() {
 
 #[test]
 fn test_hebrew_continuity() {
-    let date =
-        Date::try_new_from_codes(None, -10, MonthCode::new_normal(1).unwrap(), 1, cal::Hebrew);
+    let date = Date::try_new_hebrew_v2(-10, Month::new(1), 1);
     check_continuity(date.unwrap(), 20);
-    let date = Date::try_new_from_codes(
-        None,
-        -300,
-        MonthCode::new_normal(1).unwrap(),
-        1,
-        cal::Hebrew,
-    );
+    let date = Date::try_new_hebrew_v2(-300, Month::new(1), 1);
     check_every_250_days(date.unwrap(), 2000);
 }
 
@@ -166,16 +156,19 @@ fn test_hijri_civil_continuity() {
 }
 
 #[test]
+#[allow(deprecated)]
 fn test_hijri_simulated_mecca_continuity() {
     #[cfg(feature = "logging")]
     let _ = simple_logger::SimpleLogger::new().env().init();
     let cal = cal::Hijri::new_simulated_mecca();
     let date = Date::try_new_hijri_with_calendar(-10, 1, 1, cal);
-    // This test is slow since it is doing astronomical calculations, so check only 3 years
-    check_continuity(date.unwrap(), 3);
+    check_continuity(date.unwrap(), 20);
+    let date = Date::try_new_hijri_with_calendar(1290, 1, 1, cal);
+    check_continuity(date.unwrap(), 20);
+    let date = Date::try_new_hijri_with_calendar(1590, 1, 1, cal);
+    check_continuity(date.unwrap(), 20);
     let date = Date::try_new_hijri_with_calendar(-300, 1, 1, cal);
-    // This test is slow since it is doing astronomical calculations, so check only 100 dates
-    check_every_250_days(date.unwrap(), 100);
+    check_every_250_days(date.unwrap(), 2000);
 }
 
 #[test]
@@ -215,21 +208,9 @@ fn test_iso_continuity() {
 
 #[test]
 fn test_japanese_continuity() {
-    let cal = cal::Japanese::new();
-    let cal = Ref(&cal);
-    let date = Date::try_new_japanese_with_calendar("heisei", 20, 1, 1, cal);
+    let date = Date::try_new_japanese_with_calendar("heisei", 20, 1, 1, cal::Japanese::new());
     check_continuity(date.unwrap(), 20);
-    let date = Date::try_new_japanese_with_calendar("bce", 500, 1, 1, cal);
-    check_every_250_days(date.unwrap(), 2000);
-}
-
-#[test]
-fn test_japanese_extended_continuity() {
-    let cal = cal::JapaneseExtended::new();
-    let cal = Ref(&cal);
-    let date = Date::try_new_japanese_extended_with_calendar("heisei", 20, 1, 1, cal);
-    check_continuity(date.unwrap(), 20);
-    let date = Date::try_new_japanese_extended_with_calendar("bce", 500, 1, 1, cal);
+    let date = Date::try_new_japanese_with_calendar("bce", 500, 1, 1, cal::Japanese::new());
     check_every_250_days(date.unwrap(), 2000);
 }
 

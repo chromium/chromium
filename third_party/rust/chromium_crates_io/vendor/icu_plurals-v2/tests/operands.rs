@@ -6,7 +6,7 @@ mod fixtures;
 
 use fixed_decimal::Decimal;
 use icu_plurals::PluralOperands;
-#[cfg(feature = "experimental")]
+#[cfg(feature = "unstable")]
 use icu_plurals::RawPluralOperands;
 
 #[test]
@@ -31,7 +31,7 @@ fn test_parsing_operands() {
         }
     }
 
-    #[cfg(feature = "experimental")]
+    #[cfg(feature = "unstable")]
     for test in test_set.floats {
         let t = test.clone();
         let operands: PluralOperands = t.output.into();

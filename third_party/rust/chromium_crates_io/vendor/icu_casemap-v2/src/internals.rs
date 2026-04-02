@@ -522,10 +522,10 @@ impl<'data> CaseMap<'data> {
             (_, _) => None,
         }
     }
-    /// IS_TITLE_CONTEXT is true iff the mapping is MappingKind::Title, primarily exists
+    /// `IS_TITLE_CONTEXT` is true iff the mapping is [`MappingKind::Title`], primarily exists
     /// to avoid perf impacts on other more common modes of operation
     ///
-    /// titlecase_tail_casing is only read in IS_TITLE_CONTEXT
+    /// `titlecase_tail_casing` is only read in `IS_TITLE_CONTEXT`
     pub(crate) fn full_helper_writeable<'a: 'data, const IS_TITLE_CONTEXT: bool>(
         &'data self,
         src: &'a str,
@@ -623,7 +623,7 @@ impl<'data> CaseMap<'data> {
     /// Maps the string to single code points and adds the associated case closure
     /// mappings.
     ///
-    /// (see docs on CaseMapper::add_string_case_closure_to)
+    /// (see docs on [`CaseMap::add_string_case_closure_to`])
     pub(crate) fn add_string_case_closure_to<S: ClosureSink>(
         &self,
         s: &str,
@@ -750,7 +750,7 @@ impl<'a> ContextIterator<'a> {
     }
     /// Checks if the preceding character is a capital I, allowing for non-Above combining characters in between.
     ///
-    /// If I_MUST_NOT_START_STRING is true, additionally will require that the capital I does not start the string
+    /// If `I_MUST_NOT_START_STRING` is true, additionally will require that the capital I does not start the string
     fn preceded_by_capital_i<const I_MUST_NOT_START_STRING: bool>(
         &self,
         mapping: &CaseMap,
