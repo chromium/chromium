@@ -19,7 +19,7 @@ class GURL;
 namespace translate {
 
 struct TranslateEventDetails;
-class TranslateURLFetcher;
+class TranslateUrlFetcher;
 
 // The TranslateLanguageList class is responsible for maintaining the latest
 // supporting language list.
@@ -121,7 +121,7 @@ class TranslateLanguageList {
 
   // A LanguageListFetcher instance to fetch a server providing supported
   // language list.
-  std::unique_ptr<TranslateURLFetcher> language_list_fetcher_;
+  std::unique_ptr<TranslateUrlFetcher> language_list_fetcher_;
 
   // The last-updated time when the language list is sent.
   base::Time last_updated_;

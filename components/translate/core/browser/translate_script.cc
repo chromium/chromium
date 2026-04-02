@@ -69,13 +69,12 @@ void TranslateScript::Request(RequestCallback callback, bool is_incognito) {
 
   GURL translate_script_url = GetTranslateScriptURL();
 
-  fetcher_ = std::make_unique<TranslateURLFetcher>();
 
   net::HttpRequestHeaders headers;
   headers.SetHeader(TranslateScript::kRequestHeaderName,
                     TranslateScript::kRequestHeaderValue);
+  fetcher_ = std::make_unique<TranslateURLFetcherImpl>(headers);
 
-  fetcher_->set_extra_request_header(headers);
   fetcher_->Request(translate_script_url,
                     base::BindOnce(&TranslateScript::OnScriptFetchComplete,
                                    base::Unretained(this)),
@@ -126,7 +125,7 @@ GURL TranslateScript::GetTranslateScriptURL() {
 
 void TranslateScript::OnScriptFetchComplete(bool success,
                                             const std::string& data) {
-  std::unique_ptr<const TranslateURLFetcher> delete_ptr(std::move(fetcher_));
+  std::unique_ptr<const TranslateUrlFetcher> delete_ptr(std::move(fetcher_));
 
   if (success) {
     DCHECK(data_.empty());

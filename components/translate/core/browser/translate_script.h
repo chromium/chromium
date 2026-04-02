@@ -19,7 +19,7 @@ class GURL;
 namespace translate {
 
 class TranslateScriptTest;
-class TranslateURLFetcher;
+class TranslateUrlFetcher;
 
 class TranslateScript {
  public:
@@ -83,7 +83,7 @@ class TranslateScript {
   void OnScriptFetchComplete(bool success, const std::string& data);
 
   // URL fetcher to fetch the translate script.
-  std::unique_ptr<TranslateURLFetcher> fetcher_;
+  std::unique_ptr<TranslateUrlFetcher> fetcher_;
 
   // The JS injected in the page to do the translation.
   std::string data_;

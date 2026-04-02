@@ -27,14 +27,24 @@ const int kMaxRetry = 16;
 
 }  // namespace
 
-TranslateURLFetcher::TranslateURLFetcher()
-    : state_(IDLE), retry_count_(0), max_retry_on_5xx_(0) {}
+TranslateURLFetcherImpl::TranslateURLFetcherImpl(int max_retry_on_5xx)
+    : state_(IDLE), retry_count_(0), max_retry_on_5xx_(max_retry_on_5xx) {}
 
-TranslateURLFetcher::~TranslateURLFetcher() = default;
+TranslateURLFetcherImpl::TranslateURLFetcherImpl(
+    const net::HttpRequestHeaders& extra_request_header)
+    : TranslateURLFetcherImpl(0) {
+  extra_request_header_ = extra_request_header;
+}
 
-bool TranslateURLFetcher::Request(const GURL& url,
-                                  TranslateURLFetcher::Callback callback,
-                                  bool is_incognito) {
+TranslateURLFetcherImpl::~TranslateURLFetcherImpl() = default;
+
+TranslateURLFetcherImpl::State TranslateURLFetcherImpl::state() const {
+  return state_;
+}
+
+bool TranslateURLFetcherImpl::Request(const GURL& url,
+                                      TranslateUrlFetcher::Callback callback,
+                                      bool is_incognito) {
   // This function is not supposed to be called if the previous operation is not
   // finished.
   if (state_ == REQUESTING) {
@@ -117,12 +127,12 @@ bool TranslateURLFetcher::Request(const GURL& url,
 
   simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory,
-      base::BindOnce(&TranslateURLFetcher::OnSimpleLoaderComplete,
+      base::BindOnce(&TranslateURLFetcherImpl::OnSimpleLoaderComplete,
                      base::Unretained(this)));
   return true;
 }
 
-void TranslateURLFetcher::OnSimpleLoaderComplete(
+void TranslateURLFetcherImpl::OnSimpleLoaderComplete(
     std::optional<std::string> response_body) {
   if (response_body) {
     DCHECK_EQ(net::OK, simple_loader_->NetError());

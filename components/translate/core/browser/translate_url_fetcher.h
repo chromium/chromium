@@ -18,13 +18,9 @@ class SimpleURLLoader;
 
 namespace translate {
 
-// Downloads raw Translate data such as the Translate script and the language
-// list.
-class TranslateURLFetcher {
+class TranslateUrlFetcher {
  public:
-  // Callback type for Request().
   using Callback = base::OnceCallback<void(bool, const std::string&)>;
-
   // Represents internal state if the fetch is completed successfully.
   enum State {
     IDLE,        // No fetch request was issued.
@@ -33,33 +29,37 @@ class TranslateURLFetcher {
     FAILED,      // The last fetch request was finished with a failure.
   };
 
-  TranslateURLFetcher();
-
-  TranslateURLFetcher(const TranslateURLFetcher&) = delete;
-  TranslateURLFetcher& operator=(const TranslateURLFetcher&) = delete;
-
-  ~TranslateURLFetcher();
-
-  int max_retry_on_5xx() {
-    return max_retry_on_5xx_;
-  }
-  void set_max_retry_on_5xx(int count) {
-    max_retry_on_5xx_ = count;
-  }
-
-  void set_extra_request_header(const net::HttpRequestHeaders& header) {
-    extra_request_header_.MergeFrom(header);
-  }
+  virtual ~TranslateUrlFetcher() = default;
 
   // Requests to |url|. |callback| will be invoked when the function returns
   // true, and the request is finished asynchronously.
   // Returns false if the previous request is not finished, or the request
-  // is omitted due to retry limitation. |is_incognito| is used during the fetch
-  // to determine which variations headers to add.
-  bool Request(const GURL& url, Callback callback, bool is_incognito);
+  // is omitted due to retry limitation. |is_incognito| is used during the
+  // fetch to determine which variations headers to add.
+  virtual bool Request(const GURL& url,
+                       Callback callback,
+                       bool is_incognito) = 0;
 
-  // Gets internal state.
-  State state() { return state_; }
+  // Returns the internal state.
+  virtual State state() const = 0;
+};
+
+// Downloads raw Translate data such as the Translate script and the language
+// list.
+class TranslateURLFetcherImpl : public TranslateUrlFetcher {
+ public:
+  explicit TranslateURLFetcherImpl(int max_retry_on_5xx);
+  explicit TranslateURLFetcherImpl(
+      const net::HttpRequestHeaders& extra_request_header);
+
+  TranslateURLFetcherImpl(const TranslateURLFetcherImpl&) = delete;
+  TranslateURLFetcherImpl& operator=(const TranslateURLFetcherImpl&) = delete;
+
+  ~TranslateURLFetcherImpl() override;
+
+  // TranslateUrlFetcher implementation.
+  bool Request(const GURL& url, Callback callback, bool is_incognito) override;
+  State state() const override;
 
  private:
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);
