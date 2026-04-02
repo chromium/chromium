@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prefetch/pre_prefetch_container.h"
 
 #include "base/feature_list.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
@@ -65,6 +66,9 @@ PrePrefetchContainer::PrePrefetchContainer(
 
 void PrePrefetchContainer::Start(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
+  TRACE_EVENT("loading", "PrePrefetchContainer::Start", "url",
+              prefetch_request_->key().url());
+
   CHECK(!url_loader_);
   CHECK(!url_loader_client_receiver_);
 

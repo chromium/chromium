@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_container.h"
@@ -70,6 +71,9 @@ class PrePrefetchServiceCore {
       std::unique_ptr<PrePrefetchHandle>* out_handle,
       base::ScopedClosureRunner on_done_runner) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    TRACE_EVENT("loading", "PrePrefetchServiceCore::StartPrePrefetchRequest",
+                "url", url);
 
     std::unique_ptr<const PrefetchRequest> prefetch_request = PrefetchRequest::
         CreateBrowserInitiatedWithoutWebContentsOffTheMainThread(
@@ -137,6 +141,7 @@ std::unique_ptr<PrePrefetchService> PrePrefetchService::Create(
 PrePrefetchServiceImpl::PrePrefetchServiceImpl(
     BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT("loading", "PrePrefetchServiceImpl::PrePrefetchServiceImpl");
 
   // This is the same default network context that should be used in normal
   // prefetch's `URLLoaderFactory` on the UI thread, created via
@@ -193,6 +198,8 @@ PrePrefetchServiceImpl::StartPrePrefetchRequest(
     bool should_disable_block_until_head_timeout,
     bool should_bypass_http_cache) {
   DCHECK(!BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  TRACE_EVENT("loading", "PrePrefetchServiceImpl::StartPrePrefetchRequest",
+              "url", url);
 
   std::unique_ptr<PrePrefetchHandle> handle;
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
