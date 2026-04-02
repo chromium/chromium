@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import type {I18nMixinLitInterface} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -20,9 +22,10 @@ type Constructor<T> = new (...args: any[]) => T;
 
 export const ComposeboxEmbedderMixin =
     <T extends Constructor<CrLitElement>>(superClass: T): T&
+    Constructor<I18nMixinLitInterface>&
     Constructor<ComposeboxEmbedderMixinInterface> => {
-      class ComposeboxEmbedderMixin extends superClass implements
-          ComposeboxEmbedderMixinInterface {
+      class ComposeboxEmbedderMixin extends I18nMixinLit
+      (superClass) implements ComposeboxEmbedderMixinInterface {
         static get properties() {
           return {
             addedTabsIds: {type: Object},
@@ -302,35 +305,31 @@ export const ComposeboxEmbedderMixin =
           switch (error) {
             case ProcessFilesError.MAX_FILES_EXCEEDED:
               metric = ComposeboxFileValidationError.TOO_MANY_FILES;
-              this.errorMessage =
-                  loadTimeData.getString('maxFilesReachedError');
+              this.errorMessage = this.i18n('maxFilesReachedError');
               break;
             case ProcessFilesError.MAX_IMAGES_EXCEEDED:
               metric = ComposeboxFileValidationError.TOO_MANY_FILES;
-              this.errorMessage =
-                  loadTimeData.getString('maxImagesReachedError');
+              this.errorMessage = this.i18n('maxImagesReachedError');
               break;
             case ProcessFilesError.MAX_PDFS_EXCEEDED:
               metric = ComposeboxFileValidationError.TOO_MANY_FILES;
-              this.errorMessage = loadTimeData.getString('maxPdfsReachedError');
+              this.errorMessage = this.i18n('maxPdfsReachedError');
               break;
             case ProcessFilesError.FILE_EMPTY:
               metric = ComposeboxFileValidationError.FILE_EMPTY;
-              this.errorMessage = loadTimeData.getString(
-                  'composeboxFileUploadInvalidEmptySize');
+              this.errorMessage =
+                  this.i18n('composeboxFileUploadInvalidEmptySize');
               break;
             case ProcessFilesError.FILE_TOO_LARGE:
               metric = ComposeboxFileValidationError.FILE_SIZE_TOO_LARGE;
               this.errorMessage =
-                  loadTimeData.getString('composeboxFileUploadInvalidTooLarge');
+                  this.i18n('composeboxFileUploadInvalidTooLarge');
               break;
             case ProcessFilesError.INVALID_TYPE:
-              this.errorMessage =
-                  loadTimeData.getString('composeFileTypesAllowedError');
+              this.errorMessage = this.i18n('composeFileTypesAllowedError');
               break;
             case ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED:
-              this.errorMessage =
-                  loadTimeData.getString('composeboxFileUploadNotAllowed');
+              this.errorMessage = this.i18n('composeboxFileUploadNotAllowed');
               break;
             default:
               break;
@@ -471,7 +470,8 @@ export const ComposeboxEmbedderMixin =
       return ComposeboxEmbedderMixin;
     };
 
-export interface ComposeboxEmbedderMixinInterface {
+export interface ComposeboxEmbedderMixinInterface extends
+    I18nMixinLitInterface {
   addedTabsIds: Map<number, UnguessableToken>;
   isDraggingFile: boolean;
   enableImageContextualSuggestions: boolean;

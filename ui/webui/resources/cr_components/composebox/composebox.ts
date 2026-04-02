@@ -21,7 +21,6 @@ import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_c
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -102,7 +101,7 @@ export interface ComposeboxElement {
 }
 
 export class ComposeboxElement extends ComposeboxEmbedderMixin
-(I18nMixinLit(CrLitElement)) implements DragAndDropHost {
+(CrLitElement) implements DragAndDropHost {
   static get is() {
     return 'cr-composebox';
   }
