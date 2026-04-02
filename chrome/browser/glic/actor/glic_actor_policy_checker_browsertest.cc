@@ -9,6 +9,7 @@
 #include "base/base_switches.h"
 #include "base/containers/to_value_list.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
@@ -458,11 +459,15 @@ class GlicActorPolicyCheckerBrowserTestManagedBrowser
 
 IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
                        TasksDroppedWhenActuationCapabilityIsDisabled) {
+  base::HistogramTester histogram_tester;
   UpdateGeminiActOnWebPolicy(
       glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
   EXPECT_TRUE(GetPolicyChecker().CanActOnWeb());
   EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
             GlicActorPolicyChecker::CannotActReason::kNone);
+
+  histogram_tester.ExpectBucketCount("Glic.Actor.ManagedUserActuationEnabled",
+                                     true, 1);
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
   std::unique_ptr<ToolRequest> action =
@@ -484,6 +489,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
   EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
   EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
             GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
+
+  histogram_tester.ExpectBucketCount("Glic.Actor.ManagedUserActuationEnabled",
+                                     false, 1);
 
   ExpectErrorResult(result, actor::mojom::ActionResultCode::kTaskPaused);
 }

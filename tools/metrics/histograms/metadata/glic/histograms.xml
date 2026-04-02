@@ -110,6 +110,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.Actor.ManagedUserActuationEnabled" enum="BooleanEnabled"
+    expires_after="2026-12-31">
+  <owner>rosiey@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    Records the final computed enterprise policy state for Glic actuation.
+    Emitted on every evaluation. Filter by &quot;Client Count&quot; to
+    deduplicate.
+  </summary>
+</histogram>
+
 <histogram name="Glic.AnimatedEffect.ShaderEmpty" enum="Boolean"
     expires_after="2027-02-17">
   <owner>iwells@chromium.org</owner>

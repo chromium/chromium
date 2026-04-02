@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -121,20 +122,33 @@ bool ActuationEnabledForManagedUser(Profile& profile,
       features::kGlicActorEnterprisePrefDefault.Get();
   auto* pref_service = profile.GetPrefs();
   CHECK(pref_service);
+
   auto capability_pref =
       static_cast<glic::prefs::GlicActuationOnWebPolicyState>(
           pref_service->GetInteger(glic::prefs::kGlicActuationOnWeb));
+
+  bool is_enabled = false;
+  if (default_pref ==
+      features::GlicActorEnterprisePrefDefault::kForcedDisabled) {
+    is_enabled = false;
+  } else {
+    is_enabled = capability_pref ==
+                  glic::prefs::GlicActuationOnWebPolicyState::kEnabled;
+  }
+
+  // Log the behavior
   journal.Log(GURL(), actor::TaskId(), "ActuationEnabledForManagedUser",
               actor::JournalDetailsBuilder()
                   .Add("default_pref", base::ToString(default_pref))
                   .Add("capability_pref", base::ToString(capability_pref))
+                  .Add("is_enabled", is_enabled)
                   .Build());
-  if (default_pref ==
-      features::GlicActorEnterprisePrefDefault::kForcedDisabled) {
-    return false;
-  }
-  return capability_pref ==
-         glic::prefs::GlicActuationOnWebPolicyState::kEnabled;
+
+  // Emit the UMA histogram metric
+  base::UmaHistogramBoolean("Glic.Actor.ManagedUserActuationEnabled",
+                            is_enabled);
+
+  return is_enabled;
 }
 
 bool HasUrlAllowlist(Profile& profile) {
