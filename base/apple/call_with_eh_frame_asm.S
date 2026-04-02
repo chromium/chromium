@@ -62,7 +62,16 @@ Lfunction_start:
 
   // Execute the block in the context of a C++ try{}.
 Ltry_start:
+#if defined(__PTRAUTH__)
+  // Per the Objective-C ABI for arm64e, block function pointers are signed
+  // using their storage address (x0 + 16) as the diversifier and a constant
+  // discriminator of 0.
+  // See https://clang.llvm.org/docs/PointerAuthentication.html#blocks
+  add x9, x0, #16
+  blraa x8, x9
+#else
   blr x8
+#endif
 Ltry_end:
   ldp x29, x30, [sp], #16
   ret
