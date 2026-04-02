@@ -32,4 +32,7 @@ if [ -x "$APT_CONFIG" ]; then
   rm -f "${APT_SOURCESDIR}chrome-remote-desktop.list"
 fi
 
+# Remove the package's configuration directory.
+rm -rf /etc/chrome-remote-desktop
+
 #DEBHELPER#
