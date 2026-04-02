@@ -29,6 +29,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
+#include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"  // nogncheck
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"  // nogncheck
 #include "components/performance_manager/public/features.h"  // nogncheck
@@ -793,6 +794,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           DownloadWarningHatsType::kDownloadsPageIgnore),
       DownloadWarningHatsProductSpecificData::GetStringDataFields(
           DownloadWarningHatsType::kDownloadsPageIgnore));
+
+  survey_configs.emplace_back(
+      &metrics::kHappinessTrackingSurveysForDownloadJourney,
+      metrics::kHatsSurveyTriggerDownloadJourney,
+      /*presupplied_trigger_id=*/"Y2We4jMf70ugnJ3q1cK0QFVzpBEr");
 
   // Lens overlay surveys.
   survey_configs.emplace_back(

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -17,6 +18,9 @@ CriticalUserJourneyRegistry::CriticalUserJourneyRegistry() = default;
 CriticalUserJourneyRegistry::~CriticalUserJourneyRegistry() = default;
 
 void CriticalUserJourneyRegistry::AddJourneys() {
+  HatsParams download_hats_params;
+  download_hats_params.trigger = metrics::kHatsSurveyTriggerDownloadJourney;
+
   AddJourney(
       CriticalUserJourney::Builder(&kViewDownloadedFileJourney)
           .AddStep(kDownloadEndedCustomEventId,
@@ -31,6 +35,7 @@ void CriticalUserJourneyRegistry::AddJourneys() {
           .AddStep(kDownloadBubbleOpenButtonId,
                    ui::InteractionSequence::StepType::kActivated,
                    /*metric_id=*/4)
+          .LaunchHatsSurveyOnCompletion(download_hats_params)
           .Build());
 
   AddJourney(
@@ -47,6 +52,7 @@ void CriticalUserJourneyRegistry::AddJourneys() {
           .AddStep(kDownloadedFileOpenedCustomEventId,
                    ui::InteractionSequence::StepType::kCustomEvent,
                    /*metric_id=*/4)
+          .LaunchHatsSurveyOnCompletion(download_hats_params)
           .Build());
 }
 

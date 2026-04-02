@@ -238,15 +238,38 @@ std::unique_ptr<metrics::CriticalUserJourney> CreateMultiOptionTaskJourney() {
 
 The CUJ framework supports triggering a [Happiness Tracking Survey (HaTS)](/chrome/browser/ui/hats/README.md) automatically upon the successful completion of a journey. This allows for gathering qualitative user feedback immediately after they have finished a key task.
 
-To enable HaTS integration, use the `LaunchHatsSurveyOnCompletion` method in the `CriticalUserJourney::Builder`. You must provide a `metrics::HatsParams` struct containing the required trigger and optional product-specific data.
+To enable HaTS integration, you must first define your survey feature and trigger string, register it with the HaTS service, and then use the `LaunchHatsSurveyOnCompletion` method in your journey builder.
+
+### 1. Define the Feature and Trigger String
+Define a feature flag and a trigger string for your survey. It is recommended to co-locate these with your journey definitions (e.g., in `chrome/browser/metrics/critical_user_journeys/features.h` and `.cc`).
+
+```cpp
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForMyFeature);
+extern const char kHatsSurveyTriggerMyFeature[];
+```
+
+### 2. Register the Survey Config
+You must register your survey configuration in `chrome/browser/ui/hats/survey_config.cc` within the `GetAllSurveyConfigs()` function. Due to HaTS architectural constraints, this must be hardcoded here to ensure HaTS owners can review the configuration.
+
+```cpp
+#include "chrome/browser/metrics/critical_user_journeys/features.h"
+
+// In GetAllSurveyConfigs():
+survey_configs.emplace_back(
+    &metrics::kHappinessTrackingSurveysForMyFeature,
+    metrics::kHatsSurveyTriggerMyFeature);
+```
+
+### 3. Add to the Journey Builder
+Use the `LaunchHatsSurveyOnCompletion` method in the `CriticalUserJourney::Builder`. Provide a `metrics::HatsParams` struct containing your trigger string and any optional product-specific data.
 
 ```cpp
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
+#include "chrome/browser/metrics/critical_user_journeys/features.h"
 
 std::unique_ptr<metrics::CriticalUserJourney> CreateJourneyWithHats() {
   metrics::HatsParams hats_params;
-  // The trigger string associated with your survey in the HaTS console.
-  hats_params.trigger = "your-hats-trigger-string";
+  hats_params.trigger = metrics::kHatsSurveyTriggerMyFeature;
   // Optional: Provide product-specific data to be sent with the survey response.
   hats_params.product_specific_string_data = {{"feature_version", "1.0"}};
 
