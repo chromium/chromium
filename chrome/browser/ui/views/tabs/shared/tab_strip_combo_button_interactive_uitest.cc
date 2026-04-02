@@ -47,9 +47,16 @@ class TabStripComboButtonInteractiveUiTest
 
   auto CheckFlatEdge(ui::ElementIdentifier id,
                      TabStripFlatEdgeButton::FlatEdge expected) {
-    return CheckView(id, [expected](TabStripFlatEdgeButton* button) {
-      return button->flat_edge_for_testing() == expected;
-    });
+    using Observer =
+        views::test::PollingViewObserver<TabStripFlatEdgeButton::FlatEdge,
+                                         TabStripFlatEdgeButton>;
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(Observer, kFlatEdgeState);
+    return Steps(PollView(kFlatEdgeState, id,
+                          [](const TabStripFlatEdgeButton* button) {
+                            return button->flat_edge_for_testing();
+                          }),
+                 WaitForState(kFlatEdgeState, expected),
+                 StopObservingState(kFlatEdgeState));
   }
 
   auto SetOrientation(views::LayoutOrientation orientation) {
