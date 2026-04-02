@@ -209,6 +209,13 @@ void BeginFrameSource::AsProtozeroInto(
 
 #if BUILDFLAG(IS_MAC)
 void BeginFrameSource::RecordBeginFrameSourceAccuracy(base::TimeDelta delta) {
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Viz.BeginFrameSource.Accuracy.CallbackTimeError", delta,
+        /*min=*/base::Microseconds(100),
+        /*max=*/base::Milliseconds(33), /*bucket_count=*/30);
+  }
+
   total_delta_ += delta.magnitude();
   frames_since_last_recording_++;
 

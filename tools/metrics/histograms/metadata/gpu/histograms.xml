@@ -2159,7 +2159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.BeginFrameSource.Accuracy.AverageDelta2"
-    units="microseconds" expires_after="2026-09-10">
+    units="microseconds" expires_after="2026-06-01">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -2173,6 +2173,21 @@ chromium-metrics-reviews@google.com.
     This metric is only for Mac clients with high-resolution clocks.
 
     Expired on 2025-08-24 and restarted on 2025-09-09.
+  </summary>
+</histogram>
+
+<histogram name="Viz.BeginFrameSource.Accuracy.CallbackTimeError"
+    units="microseconds" expires_after="2026-12-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>ccameron@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time delta between the expected and actual BeginFrame callback times on
+    Mac. It's recorded during the BeginFrameSource callbacks using 0.1%
+    subsampling.
+
+    This metric is only for Mac clients with high-resolution clocks.
   </summary>
 </histogram>
 
