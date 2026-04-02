@@ -60,9 +60,12 @@ std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
 class CameraRollDownloadManagerImplTest : public testing::Test {
  public:
   CameraRollDownloadManagerImplTest()
-      : profile_manager_(CreateTestingProfileManager()),
-        user_manager_(new ash::FakeChromeUserManager),
-        user_manager_owner_(base::WrapUnique(user_manager_.get())) {
+      : profile_manager_(CreateTestingProfileManager()) {
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    user_manager_ = fake_user_manager.get();
+    user_manager_owner_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+
     AccountId account_id(AccountId::FromUserEmail(kUserEmail));
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/false);
@@ -147,8 +150,8 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
-  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager user_manager_owner_;
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_owner_;
+  raw_ptr<ash::FakeChromeUserManager> user_manager_;
   raw_ptr<HoldingSpaceKeyedService> holding_space_keyed_service_;
   std::unique_ptr<holding_space::ScopedTestMountPoint> downloads_mount_;
 
