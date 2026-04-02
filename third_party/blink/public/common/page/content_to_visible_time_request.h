@@ -7,6 +7,8 @@
 
 #include <compare>
 #include <optional>
+#include <variant>
+#include <vector>
 
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -16,40 +18,54 @@ namespace blink {
 // Keeps track of parameters for recording metrics for content to visible time
 // duration for different events. Here event indicates the reason for which the
 // web contents are visible. These values are set with
-// VisibleTimeRequestTrigger::SetRecordContentToVisibleTimeRequest. Note that
-// |show_reason_tab_switching| and |show_reason_bfcache_restore| can both be
-// true at the same time.
+// VisibleTimeRequestTrigger::UpdateRequest.
 //
-// This is typemapped to the Mojo struct in
+// These are typemapped to the Mojo structs in
 // third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom
-// so that ContentToVisibleTimeReporter can use the same struct type in both
+// so that ContentToVisibleTimeReporter can use the same struct types in both
 // Blink and non-Blink code.
-struct BLINK_COMMON_EXPORT RecordContentToVisibleTimeRequest {
-  // The time at which web contents become visible.
+
+struct BLINK_COMMON_EXPORT VisibleTimeEvent {
+  struct TabSwitchReason {
+    bool destination_is_loaded = false;
+
+    friend bool operator==(const TabSwitchReason&,
+                           const TabSwitchReason&) = default;
+    friend auto operator<=>(const TabSwitchReason&,
+                            const TabSwitchReason&) = default;
+  };
+
+  struct BFCacheRestoreReason {
+    friend bool operator==(const BFCacheRestoreReason&,
+                           const BFCacheRestoreReason&) = default;
+    friend auto operator<=>(const BFCacheRestoreReason&,
+                            const BFCacheRestoreReason&) = default;
+  };
+
+  using Reason = std::variant<TabSwitchReason, BFCacheRestoreReason>;
+
   base::TimeTicks event_start_time;
-  // Indicates if the destination tab is loaded when initiating the tab switch.
-  bool destination_is_loaded = false;
-  // If |show_reason_tab_switching| is true, web contents has become visible
-  // because of tab switching.
-  bool show_reason_tab_switching = false;
-  // If |show_reason_bfcache_restore| is true, web contents has become visible
-  // because of restoring a page from bfcache.
-  bool show_reason_bfcache_restore = false;
+  Reason reason = {};
+
+  friend bool operator==(const VisibleTimeEvent&,
+                         const VisibleTimeEvent&) = default;
+  friend auto operator<=>(const VisibleTimeEvent&,
+                          const VisibleTimeEvent&) = default;
+};
+
+struct BLINK_COMMON_EXPORT RecordContentToVisibleTimeRequest {
+  std::vector<VisibleTimeEvent> events;
 
   friend bool operator==(const RecordContentToVisibleTimeRequest&,
                          const RecordContentToVisibleTimeRequest&) = default;
   friend auto operator<=>(const RecordContentToVisibleTimeRequest&,
                           const RecordContentToVisibleTimeRequest&) = default;
-};
 
-// Returns a RecordContentToVisibleTimeRequest that combines all passed
-// requests, OR'ing all flags and using the minimum start time. Any null
-// requests are ignored. The return value will only be nullopt if all arguments
-// are nullopt. This function consumes its arguments.
-BLINK_COMMON_EXPORT std::optional<RecordContentToVisibleTimeRequest>
-ConsumeAndMergeContentToVisibleTimeRequests(
-    std::optional<RecordContentToVisibleTimeRequest> request1,
-    std::optional<RecordContentToVisibleTimeRequest> request2);
+  // Moves all the events with reason TabSwitchReason to a new request and
+  // returns it (or returns nullopt if there are none). Note this may leave
+  // `events` empty.
+  std::optional<RecordContentToVisibleTimeRequest> ExtractTabSwitchEvents();
+};
 
 }  // namespace blink
 

@@ -479,6 +479,8 @@ _CONFIG = [
             'third_party/blink/common/page/content_to_visible_time_reporter.cc',
         ],
         'allowed': [
+            # Used from both Blink and non-Blink code.
+            'base::BindOnce',
             'viz::FrameTimingDetails',
         ],
     },

@@ -19,12 +19,7 @@ namespace content {
 //
 // This class holds a single RecordContentToVisibleTimeRequest that is modified
 // whenever UpdateRequest is called, and cleared whenever TakeRequest is called.
-// This means that calling UpdateRequest for multiple overlapping events without
-// calling TakeRequest in between will record metrics for all events using the
-// same timestamps instead of tracking each event separately.
-//
-// TODO(crbug.com/40203057): Stop doing that. There should be a separate start
-// time for each event.
+// Calling UpdateRequest will append an event to the current request.
 class CONTENT_EXPORT VisibleTimeRequestTrigger {
  public:
   VisibleTimeRequestTrigger();
@@ -35,11 +30,10 @@ class CONTENT_EXPORT VisibleTimeRequestTrigger {
       delete;
 
   // Set the last time a content to visible event starts to be processed for
-  // this WebContents. Will merge with the previous value if it exists (which
-  // means that several events may happen at the same time and must be
-  // individually reported). `new_request.event_start_time` marks event start
-  // time to calculate the duration later.
-  void UpdateRequest(blink::RecordContentToVisibleTimeRequest new_request);
+  // this WebContents. The new event will be added to the current request.
+  // `new_event.event_start_time` marks event start time to calculate the
+  // duration later.
+  void UpdateRequest(blink::VisibleTimeEvent new_event);
 
   // Returns the time set by UpdateRequest. If this was not preceded by a call
   // to UpdateRequest it will return nullopt. Calling this will reset

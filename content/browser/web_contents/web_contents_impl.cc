@@ -12266,11 +12266,10 @@ void WebContentsImpl::SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) {
 
 void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
                                             bool destination_is_loaded) {
-  GetVisibleTimeRequestTrigger().UpdateRequest(
-      blink::RecordContentToVisibleTimeRequest{
-          .event_start_time = start_time,
-          .destination_is_loaded = destination_is_loaded,
-          .show_reason_tab_switching = true});
+  GetVisibleTimeRequestTrigger().UpdateRequest(blink::VisibleTimeEvent{
+      .event_start_time = start_time,
+      .reason =
+          blink::VisibleTimeEvent::TabSwitchReason(destination_is_loaded)});
 }
 
 bool WebContentsImpl::IsInPreviewMode() const {

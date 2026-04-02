@@ -426,6 +426,7 @@ source_set("common_unittests_sources") {
     "origin_trials/trial_token_unittest.cc",
     "origin_trials/trial_token_validator_unittest.cc",
     "page/content_to_visible_time_reporter_unittest.cc",
+    "page/content_to_visible_time_request_unittest.cc",
     "page_state/page_state_serialization_unittest.cc",
     "peerconnection/webrtc_ip_handling_policy_unittest.cc",
     "permissions_policy/document_policy_unittest.cc",

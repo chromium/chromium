@@ -5,40 +5,30 @@
 #include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 
 #include <algorithm>
-#include <optional>
-
-#include "base/time/time.h"
-#include "base/types/optional_util.h"
+#include <iterator>
+#include <variant>
 
 namespace blink {
 
 std::optional<RecordContentToVisibleTimeRequest>
-ConsumeAndMergeContentToVisibleTimeRequests(
-    std::optional<RecordContentToVisibleTimeRequest> request1,
-    std::optional<RecordContentToVisibleTimeRequest> request2) {
-  if (!request1 && !request2) {
+RecordContentToVisibleTimeRequest::ExtractTabSwitchEvents() {
+  // Sort all events to extract to the end.
+  auto first_result = std::partition(
+      events.begin(), events.end(), [](const VisibleTimeEvent& event) {
+        return !std::holds_alternative<VisibleTimeEvent::TabSwitchReason>(
+            event.reason);
+      });
+  if (first_result == events.end()) {
     return std::nullopt;
   }
 
-  // Pick any non-null request to merge into.
-  RecordContentToVisibleTimeRequest* to = nullptr;
-  RecordContentToVisibleTimeRequest* from = nullptr;
-  if (request1) {
-    to = base::OptionalToPtr(request1);
-    from = base::OptionalToPtr(request2);
-  } else {
-    to = base::OptionalToPtr(request2);
-    from = base::OptionalToPtr(request1);
-  }
-
-  if (from) {
-    to->event_start_time =
-        std::min(to->event_start_time, from->event_start_time);
-    to->destination_is_loaded |= from->destination_is_loaded;
-    to->show_reason_tab_switching |= from->show_reason_tab_switching;
-    to->show_reason_bfcache_restore |= from->show_reason_bfcache_restore;
-  }
-  return *to;
+  // Move the extracted events to the result vector.
+  auto result = std::make_optional<RecordContentToVisibleTimeRequest>();
+  result->events.insert(result->events.end(),
+                        std::make_move_iterator(first_result),
+                        std::make_move_iterator(events.end()));
+  events.erase(first_result, events.end());
+  return result;
 }
 
 }  // namespace blink

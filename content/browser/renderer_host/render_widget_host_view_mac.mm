@@ -538,20 +538,21 @@ void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
 
   browser_compositor_->SetRenderWidgetHostIsHidden(false);
 
-  const bool renderer_should_record_presentation_time = !has_saved_frame;
-  host()->WasShown(renderer_should_record_presentation_time
-                       ? tab_switch_start_state
-                       : std::nullopt);
-
   // If the frame for the renderer is already available, then the
   // tab-switching time is the presentation time for the browser-compositor.
   // SetRenderWidgetHostIsHidden above will show the DelegatedFrameHost
   // in this state, but doesn't include the presentation time request.
   if (has_saved_frame && tab_switch_start_state) {
-    browser_compositor_->GetDelegatedFrameHost()
-        ->RequestSuccessfulPresentationTimeForNextFrame(
-            std::move(*tab_switch_start_state));
+    if (std::optional<blink::RecordContentToVisibleTimeRequest>
+            delegated_visible_time_request =
+                tab_switch_start_state->ExtractTabSwitchEvents()) {
+      browser_compositor_->GetDelegatedFrameHost()
+          ->RequestSuccessfulPresentationTimeForNextFrame(
+              std::move(*delegated_visible_time_request));
+    }
   }
+
+  host()->WasShown(std::move(tab_switch_start_state));
 }
 
 void RenderWidgetHostViewMac::
@@ -564,10 +565,16 @@ void RenderWidgetHostViewMac::
   if (browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame()) {
     // If the frame for the renderer is already available, then the
     // tab-switching time is the presentation time for the browser-compositor.
-    browser_compositor_->GetDelegatedFrameHost()
-        ->RequestSuccessfulPresentationTimeForNextFrame(
-            std::move(visible_time_request));
-  } else {
+    if (std::optional<blink::RecordContentToVisibleTimeRequest>
+            delegated_visible_time_request =
+                visible_time_request.ExtractTabSwitchEvents()) {
+      browser_compositor_->GetDelegatedFrameHost()
+          ->RequestSuccessfulPresentationTimeForNextFrame(
+              std::move(*delegated_visible_time_request));
+    }
+  }
+
+  if (!visible_time_request.events.empty()) {
     host()->RequestSuccessfulPresentationTimeForNextFrame(
         std::move(visible_time_request));
   }

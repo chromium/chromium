@@ -679,19 +679,17 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
 
   visibility_ = Visibility::VISIBLE;
 
-  bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
-
-  bool show_reason_bfcache_restore =
-      tab_switch_start_state
-          ? tab_switch_start_state->show_reason_bfcache_restore
-          : false;
-
-  // No need to check for saved frames for the case of bfcache restore.
-  if (show_reason_bfcache_restore) {
-    host()->WasShown(tab_switch_start_state);
-  } else {
-    host()->WasShown(has_saved_frame ? std::nullopt : tab_switch_start_state);
+  // If the frame for the renderer is already available, then the tab-switching
+  // time is the presentation time for the browser-compositor.
+  std::optional<blink::RecordContentToVisibleTimeRequest>
+      delegated_visible_time_request;
+  if (tab_switch_start_state && delegated_frame_host_->HasSavedFrame()) {
+    delegated_visible_time_request =
+        tab_switch_start_state->ExtractTabSwitchEvents();
   }
+
+  host()->WasShown(std::move(tab_switch_start_state));
+
   aura::Window* root = window_->GetRootWindow();
   if (root) {
     aura::client::CursorClient* cursor_client =
@@ -701,11 +699,8 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
     }
   }
 
-  // If the frame for the renderer is already available, then the
-  // tab-switching time is the presentation time for the browser-compositor.
-  delegated_frame_host_->WasShown(
-      GetLocalSurfaceId(), window_->bounds().size(),
-      has_saved_frame ? std::move(tab_switch_start_state) : std::nullopt);
+  delegated_frame_host_->WasShown(GetLocalSurfaceId(), window_->bounds().size(),
+                                  std::move(delegated_visible_time_request));
 
 #if BUILDFLAG(IS_WIN)
   UpdateLegacyWin();
@@ -763,17 +758,19 @@ void RenderWidgetHostViewAura::
   CHECK(!host_->IsHidden());
   CHECK_EQ(visibility_, Visibility::VISIBLE);
 
-  bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
-
-  // No need to check for saved frames for the case of bfcache restore.
-  if (visible_time_request.show_reason_bfcache_restore || !has_saved_frame) {
-    host()->RequestSuccessfulPresentationTimeForNextFrame(visible_time_request);
+  // If the frame for the renderer is already available, then the tab-switching
+  // time is the presentation time for the browser-compositor.
+  if (delegated_frame_host_->HasSavedFrame()) {
+    if (std::optional<blink::RecordContentToVisibleTimeRequest>
+            delegated_visible_time_request =
+                visible_time_request.ExtractTabSwitchEvents()) {
+      delegated_frame_host_->RequestSuccessfulPresentationTimeForNextFrame(
+          std::move(*delegated_visible_time_request));
+    }
   }
 
-  // If the frame for the renderer is already available, then the
-  // tab-switching time is the presentation time for the browser-compositor.
-  if (has_saved_frame) {
-    delegated_frame_host_->RequestSuccessfulPresentationTimeForNextFrame(
+  if (!visible_time_request.events.empty()) {
+    host()->RequestSuccessfulPresentationTimeForNextFrame(
         std::move(visible_time_request));
   }
 }

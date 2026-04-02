@@ -341,11 +341,9 @@ void RequestRecordTimeToVisible(RenderFrameHostImpl* rfh,
   // hidden.
   if (rfh->delegate()->GetVisibility() != Visibility::HIDDEN) {
     rfh->GetRenderWidgetHost()->GetVisibleTimeRequestTrigger().UpdateRequest(
-        blink::RecordContentToVisibleTimeRequest{
+        blink::VisibleTimeEvent{
             .event_start_time = navigation_start,
-            .destination_is_loaded = false,
-            .show_reason_tab_switching = false,
-            .show_reason_bfcache_restore = true});
+            .reason = blink::VisibleTimeEvent::BFCacheRestoreReason()});
   }
 }
 

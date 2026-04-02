@@ -5,9 +5,11 @@
 #include "ui/android/delegated_frame_host_android.h"
 
 #include <iterator>
+#include <utility>
 
 #include "base/android/android_info.h"
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -696,19 +698,23 @@ void DelegatedFrameHostAndroid::
             content_to_visible_time_request) {
   // Since we could receive multiple requests while awaiting
   // `registered_parent_compositor_` we merge them.
-  auto request = blink::ConsumeAndMergeContentToVisibleTimeRequests(
-      std::move(content_to_visible_time_request_),
-      std::move(content_to_visible_time_request));
+  if (content_to_visible_time_request_) {
+    base::Extend(content_to_visible_time_request.events,
+                 std::move(content_to_visible_time_request_->events));
+    content_to_visible_time_request_.reset();
+  }
 
   if (!registered_parent_compositor_) {
-    content_to_visible_time_request_ = std::move(request);
+    content_to_visible_time_request_ =
+        std::move(content_to_visible_time_request);
     return;
   }
 
   registered_parent_compositor_
       ->PostRequestSuccessfulPresentationTimeForNextFrame(
           content_to_visible_time_recorder_.TabWasShown(
-              /*has_saved_frames=*/true, std::move(*request)));
+              /*has_saved_frames=*/true,
+              std::move(content_to_visible_time_request)));
 }
 
 void DelegatedFrameHostAndroid::UpdateCaptureKeepAlive() {

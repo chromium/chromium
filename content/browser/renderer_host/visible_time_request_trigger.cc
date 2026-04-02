@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 namespace content {
 
@@ -14,10 +15,11 @@ VisibleTimeRequestTrigger::VisibleTimeRequestTrigger() = default;
 VisibleTimeRequestTrigger::~VisibleTimeRequestTrigger() = default;
 
 void VisibleTimeRequestTrigger::UpdateRequest(
-    blink::RecordContentToVisibleTimeRequest new_request) {
-  // If `last_request_` is null, this will return `new_request` unchanged.
-  last_request_ = blink::ConsumeAndMergeContentToVisibleTimeRequests(
-      std::move(last_request_), std::move(new_request));
+    blink::VisibleTimeEvent new_event) {
+  if (!last_request_) {
+    last_request_.emplace();
+  }
+  last_request_->events.push_back(std::move(new_event));
 }
 
 std::optional<blink::RecordContentToVisibleTimeRequest>

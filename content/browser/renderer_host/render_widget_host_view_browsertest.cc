@@ -1614,18 +1614,22 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
   // becomes visible. The default parameters request a tab switch measurement.
   void CreateVisibleTimeRequest(bool show_reason_tab_switching = true,
                                 bool show_reason_bfcache_restore = false) {
+    auto& request_trigger =
+        GetRenderWidgetHostView()->host()->GetVisibleTimeRequestTrigger();
+    if (show_reason_tab_switching) {
+      request_trigger.UpdateRequest(blink::VisibleTimeEvent{
+          .event_start_time = base::TimeTicks::Now(),
+          .reason = blink::VisibleTimeEvent::TabSwitchReason{
+              .destination_is_loaded = true,
+          }});
+    }
     if (show_reason_bfcache_restore) {
       GetRenderWidgetHostView()->OnOldViewDidNavigatePreCommit();
       GetRenderWidgetHostView()->DidEnterBackForwardCache();
+      request_trigger.UpdateRequest(blink::VisibleTimeEvent{
+          .event_start_time = base::TimeTicks::Now(),
+          .reason = blink::VisibleTimeEvent::BFCacheRestoreReason{}});
     }
-    GetRenderWidgetHostView()
-        ->host()
-        ->GetVisibleTimeRequestTrigger()
-        .UpdateRequest(blink::RecordContentToVisibleTimeRequest{
-            .event_start_time = base::TimeTicks::Now(),
-            .destination_is_loaded = true,
-            .show_reason_tab_switching = show_reason_tab_switching,
-            .show_reason_bfcache_restore = show_reason_bfcache_restore});
   }
 
   void ExpectPresentationFeedback(TabSwitchResult expected_result) {

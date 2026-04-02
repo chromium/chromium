@@ -468,6 +468,18 @@ mojom("mojom_platform") {
           mojom = "blink.mojom.RecordContentToVisibleTimeRequest"
           cpp = "::blink::RecordContentToVisibleTimeRequest"
         },
+        {
+          mojom = "blink.mojom.VisibleTimeEventReason"
+          cpp = "::blink::VisibleTimeEvent::Reason"
+        },
+        {
+          mojom = "blink.mojom.VisibleTimeTabSwitchReason"
+          cpp = "::blink::VisibleTimeEvent::TabSwitchReason"
+        },
+        {
+          mojom = "blink.mojom.VisibleTimeEvent"
+          cpp = "::blink::VisibleTimeEvent"
+        },
       ]
       traits_headers = [ "//third_party/blink/public/common/page/content_to_visible_time_request_mojom_traits.h" ]
       traits_public_deps = [ "//third_party/blink/public/common:headers" ]

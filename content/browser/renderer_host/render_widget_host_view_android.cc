@@ -3527,22 +3527,23 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
   }
 
   // Whenever the page is restored, via back-forward cache, or tab changes,
-  // record content to visible time.
-  bool show_reason_bfcache_restore =
-      visible_time_request ? visible_time_request->show_reason_bfcache_restore
-                           : false;
-  bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
-  if (show_reason_bfcache_restore) {
-    host()->WasShown(visible_time_request);
-  } else {
-    host()->WasShown(has_saved_frame ? std::nullopt : visible_time_request);
+  // record content to visible time. However if the frame for the renderer is
+  // already available, then the tab-switching time is the presentation time for
+  // the browser-compositor.
+  std::optional<blink::RecordContentToVisibleTimeRequest>
+      delegated_visible_time_request;
+  if (visible_time_request && delegated_frame_host_->HasSavedFrame()) {
+    delegated_visible_time_request =
+        visible_time_request->ExtractTabSwitchEvents();
   }
+
+  host()->WasShown(std::move(visible_time_request));
 
   if (delegated_frame_host_) {
     delegated_frame_host_->WasShown(
         local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         GetCompositorViewportPixelSize(), host()->delegate()->IsFullscreen(),
-        has_saved_frame ? std::move(visible_time_request) : std::nullopt);
+        std::move(delegated_visible_time_request));
   }
 
   if (view_.parent() && view_.GetWindowAndroid()) {
@@ -3585,16 +3586,19 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
 void RenderWidgetHostViewAndroid::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
         blink::RecordContentToVisibleTimeRequest visible_time_request) {
-  bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
-  // No need to check for saved frames for the case of bfcache restore.
-  if (visible_time_request.show_reason_bfcache_restore || !has_saved_frame) {
-    host()->RequestSuccessfulPresentationTimeForNextFrame(visible_time_request);
-  }
-
   // If the frame for the renderer is already available, then the
   // tab-switching time is the presentation time for the browser-compositor.
-  if (has_saved_frame) {
-    delegated_frame_host_->RequestSuccessfulPresentationTimeForNextFrame(
+  if (delegated_frame_host_->HasSavedFrame()) {
+    if (std::optional<blink::RecordContentToVisibleTimeRequest>
+            delegated_visible_time_request =
+                visible_time_request.ExtractTabSwitchEvents()) {
+      delegated_frame_host_->RequestSuccessfulPresentationTimeForNextFrame(
+          std::move(*delegated_visible_time_request));
+    }
+  }
+
+  if (!visible_time_request.events.empty()) {
+    host()->RequestSuccessfulPresentationTimeForNextFrame(
         std::move(visible_time_request));
   }
 }
