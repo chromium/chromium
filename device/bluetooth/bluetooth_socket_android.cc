@@ -112,20 +112,26 @@ void BluetoothSocketAndroid::DoConnect(base::OnceClosure success_callback,
 }
 
 void BluetoothSocketAndroid::Disconnect(base::OnceClosure success_callback) {
-  socket_thread_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&BluetoothSocketAndroid::DoDisconnect, this,
-                                std::move(success_callback)));
+  socket_thread_->task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&BluetoothSocketAndroid::DoDisconnect,
+                     base::Unretained(this)),
+      base::BindOnce(&BluetoothSocketAndroid::PostDisconnect,
+                     base::Unretained(this), std::move(success_callback)));
 }
 
-void BluetoothSocketAndroid::DoDisconnect(base::OnceClosure success_callback) {
+void BluetoothSocketAndroid::DoDisconnect() {
   CHECK(socket_thread_->task_runner()->RunsTasksInCurrentSequence());
 
   Java_ChromeBluetoothSocket_close(AttachCurrentThread(), j_socket_);
+}
 
+void BluetoothSocketAndroid::PostDisconnect(
+    base::OnceClosure success_callback) {
+  // Stop and destroy `receiving_thread_` on UI thread, not on Socket Thread.
   receiving_thread_->Stop();
   receiving_thread_.reset();
-
-  ui_task_runner_->PostTask(FROM_HERE, std::move(success_callback));
+  std::move(success_callback).Run();
 }
 
 void BluetoothSocketAndroid::Receive(

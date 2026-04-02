@@ -64,7 +64,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketAndroid : public BluetoothSocket {
 
   void DoConnect(base::OnceClosure success_callback,
                  ErrorCompletionCallback error_callback);
-  void DoDisconnect(base::OnceClosure success_callback);
+  void DoDisconnect();
+  void PostDisconnect(base::OnceClosure success_callback);
   void DoReceive(size_t buffer_size,
                  ReceiveCompletionCallback success_callback,
                  ReceiveErrorCompletionCallback error_callback);
