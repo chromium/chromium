@@ -11,10 +11,7 @@ build_webui("build") {
 
   static_files = [ "shopping_insights.html" ]
 
-  web_component_files = [
-    "app.ts",
-    "price_tracking_section.ts",
-  ]
+  web_component_files = [ "app.ts" ]
 
   ts_files = [
     "catalog_attributes_row.html.ts",
@@ -24,12 +21,15 @@ build_webui("build") {
     "insights_comment_row.html.ts",
     "insights_comment_row.ts",
     "price_insights_browser_proxy.ts",
+    "price_tracking_section.html.ts",
+    "price_tracking_section.ts",
   ]
 
   css_files = [
     "catalog_attributes_row.css",
     "history_graph.css",
     "insights_comment_row.css",
+    "price_tracking_section.css",
   ]
 
   mojo_files_deps =

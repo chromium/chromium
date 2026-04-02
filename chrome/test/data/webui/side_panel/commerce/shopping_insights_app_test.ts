@@ -13,7 +13,7 @@ import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {ShoppingInsightsAppElement} from 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 import {PriceInsightsBrowserProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/price_insights_browser_proxy.js';
-import type {PriceTrackingSection} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
+import type {PriceTrackingSectionElement} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -332,7 +332,7 @@ suite('ShoppingInsightsAppTest', () => {
   });
 
   [true, false].forEach((eligible) => {
-    test('PriceTrackingSectionVisibility', async () => {
+    test('PriceTrackingSectionElementVisibility', async () => {
       shoppingServiceApi.setResultFor(
           'isShoppingListEligible', Promise.resolve({eligible: eligible}));
       shoppingServiceApi.setResultFor(
@@ -356,9 +356,9 @@ suite('ShoppingInsightsAppTest', () => {
           'getPriceTrackingStatusForCurrentUrl');
       await flushTasks();
 
-      const section =
-          shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
-              '#priceTrackingSection');
+      const section = shoppingInsightsApp.shadowRoot!
+                          .querySelector<PriceTrackingSectionElement>(
+                              '#priceTrackingSection');
       assertEquals(isVisible(section), eligible);
       if (eligible) {
         assertTrue(!!section);
@@ -388,17 +388,17 @@ suite('ShoppingInsightsAppTest', () => {
 
     // Price tracking section is not visible before
     // `getPriceTrackingStatusForCurrentUrl` returns.
-    let section =
-        shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
-            '#priceTrackingSection');
+    let section = shoppingInsightsApp.shadowRoot!
+                      .querySelector<PriceTrackingSectionElement>(
+                          '#priceTrackingSection');
     assertFalse(isVisible(section));
 
     await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
     await flushTasks();
 
-    section =
-        shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
-            '#priceTrackingSection');
+    section = shoppingInsightsApp.shadowRoot!
+                  .querySelector<PriceTrackingSectionElement>(
+                      '#priceTrackingSection');
     assertTrue(isVisible(section));
   });
 });

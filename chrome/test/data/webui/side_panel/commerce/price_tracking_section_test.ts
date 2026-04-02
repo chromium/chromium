@@ -12,7 +12,7 @@ import type {PriceInsightsInfo} from 'chrome://resources/cr_components/commerce/
 import {PriceInsightsInfo_PriceBucket} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {PriceTrackingSection} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
+import type {PriceTrackingSectionElement} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -20,7 +20,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('PriceTrackingSectionTest', () => {
-  let priceTrackingSection: PriceTrackingSection;
+  let priceTrackingSection: PriceTrackingSectionElement;
   let callbackRouter: PageCallbackRouter;
   let callbackRouterRemote: PageRemote;
   const shoppingServiceApi =
@@ -214,7 +214,7 @@ suite('PriceTrackingSectionTest', () => {
     await flushTasks();
     checkPriceTrackingSectionRendering(true);
 
-    const folder = priceTrackingSection.shadowRoot!.querySelector<HTMLElement>(
+    const folder = priceTrackingSection.shadowRoot.querySelector<HTMLElement>(
         '#toggleAnnotationButton');
     assertTrue(!!folder);
     folder.click();
