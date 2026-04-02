@@ -33,7 +33,8 @@ TestHttpServer::TestHttpServer()
 TestHttpServer::~TestHttpServer() = default;
 
 bool TestHttpServer::Start() {
-  bool thread_started = thread_.StartWithOptions(
+  thread_.emplace("ServerThread");
+  bool thread_started = thread_->StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
   EXPECT_TRUE(thread_started);
   if (!thread_started)
@@ -41,7 +42,7 @@ bool TestHttpServer::Start() {
   bool success;
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-  thread_.task_runner()->PostTask(
+  thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TestHttpServer::StartOnServerThread,
                                 base::Unretained(this), &success, &event));
   event.Wait();
@@ -49,15 +50,16 @@ bool TestHttpServer::Start() {
 }
 
 void TestHttpServer::Stop() {
-  if (!thread_.IsRunning())
+  if (!thread_) {
     return;
+  }
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-  thread_.task_runner()->PostTask(
+  thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TestHttpServer::StopOnServerThread,
                                 base::Unretained(this), &event));
   event.Wait();
-  thread_.Stop();
+  thread_.reset();
 }
 
 bool TestHttpServer::WaitForConnectionsToClose() {
@@ -190,7 +192,7 @@ void TestHttpServer::StopOnServerThread(base::WaitableEvent* event) {
 }
 
 void TestHttpServer::SetDataForPath(std::string path, std::string data) {
-  if (!thread_.IsRunning()) {
+  if (!thread_->IsRunning()) {
     return;
   }
   if (!base::StartsWith(path, "/")) {
@@ -198,7 +200,7 @@ void TestHttpServer::SetDataForPath(std::string path, std::string data) {
   }
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-  thread_.task_runner()->PostTask(
+  thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TestHttpServer::SetDataForPathOnServerThread,
                                 base::Unretained(this), std::move(path),
                                 std::move(data), &event));

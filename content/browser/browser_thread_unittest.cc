@@ -99,10 +99,9 @@ class BrowserThreadTest : public testing::Test {
  protected:
   void SetUp() override {
     ui_thread_ = std::make_unique<base::Thread>(
-        BrowserThreadImpl::GetThreadName(BrowserThread::UI));
-    base::Thread::Options ui_options;
-    ui_options.delegate = std::make_unique<SequenceManagerThreadDelegate>();
-    ui_thread_->StartWithOptions(std::move(ui_options));
+        BrowserThreadImpl::GetThreadName(BrowserThread::UI),
+        std::make_unique<SequenceManagerThreadDelegate>());
+    ui_thread_->Start();
 
     io_thread_ = BrowserTaskExecutor::CreateIOThread();
     io_thread_->RegisterAsBrowserThread();

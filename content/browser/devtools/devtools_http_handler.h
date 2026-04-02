@@ -67,12 +67,11 @@ class DevToolsHttpHandler {
 
  private:
   friend class ServerWrapper;
-  friend void ServerStartedOnUI(
-      base::WeakPtr<DevToolsHttpHandler> handler,
-      base::Thread* thread,
-      ServerWrapper* server_wrapper,
-      DevToolsSocketFactory* socket_factory,
-      std::unique_ptr<net::IPEndPoint> ip_address);
+  friend void ServerStartedOnUI(base::WeakPtr<DevToolsHttpHandler> handler,
+                                std::unique_ptr<base::Thread> thread,
+                                ServerWrapper* server_wrapper,
+                                DevToolsSocketFactory* socket_factory,
+                                std::unique_ptr<net::IPEndPoint> ip_address);
 
   void OnJsonRequest(int connection_id,
                      const net::HttpServerRequestInfo& info);

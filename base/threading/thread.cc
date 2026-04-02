@@ -124,7 +124,6 @@ Thread::Options::Options(ThreadType thread_type) : thread_type(thread_type) {}
 
 Thread::Options::Options(Options&& other)
     : message_pump_type(std::move(other.message_pump_type)),
-      delegate(std::move(other.delegate)),
       message_pump_factory(std::move(other.message_pump_factory)),
       stack_size(std::move(other.stack_size)),
       thread_type(std::move(other.thread_type)),
@@ -138,7 +137,6 @@ Thread::Options& Thread::Options::operator=(Thread::Options&& other) {
   DCHECK_NE(this, &other);
 
   message_pump_type = std::move(other.message_pump_type);
-  delegate = std::move(other.delegate);
   message_pump_factory = std::move(other.message_pump_factory);
   stack_size = std::move(other.stack_size);
   thread_type = std::move(other.thread_type);
@@ -152,12 +150,23 @@ Thread::Options& Thread::Options::operator=(Thread::Options&& other) {
 
 Thread::Options::~Options() = default;
 
-Thread::Thread(const std::string& name)
-    : id_event_(WaitableEvent::ResetPolicy::MANUAL,
+Thread::Thread(const std::string& name, Restartable)
+    : Thread(std::move(name), nullptr, true) {}
+
+Thread::Thread(const std::string& name, std::unique_ptr<Delegate> delegate)
+    : Thread(std::move(name), std::move(delegate), false) {}
+
+Thread::Thread(const std::string& name,
+               std::unique_ptr<Delegate> delegate,
+               bool restartable)
+    : restartable_(restartable),
+      id_event_(WaitableEvent::ResetPolicy::MANUAL,
                 WaitableEvent::InitialState::NOT_SIGNALED),
+      delegate_(std::move(delegate)),
       name_(name),
       start_event_(WaitableEvent::ResetPolicy::MANUAL,
                    WaitableEvent::InitialState::NOT_SIGNALED) {
+  DCHECK(!delegate_ || !restartable_);
   // Only bind the sequence on Start(): the state is constant between
   // construction and Start() and it's thus valid for Start() to be called on
   // another sequence as long as every other operation is then performed on that
@@ -184,11 +193,12 @@ bool Thread::Start() {
 bool Thread::StartWithOptions(Options options) {
   DCHECK(options.IsValid());
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
-  DCHECK(!delegate_);
   DCHECK_NE(state_, State::kStopping)
       << "Can't restart a thread which wasn't fully Stop()'ed.";
   DCHECK_NE(state_, State::kRunning)
       << "Trying to start a thread that's already running.";
+  DCHECK(state_ == State::kInitial || restartable_)
+      << "Trying to restart a thread that doesn't support restarting.";
 #if BUILDFLAG(IS_WIN)
   DCHECK((com_status_ != STA) ||
          (options.message_pump_type == MessagePumpType::UI));
@@ -200,19 +210,20 @@ bool Thread::StartWithOptions(Options options) {
 
   SetThreadWasQuitProperly(false);
 
-  if (options.delegate) {
-    DCHECK(!options.message_pump_factory);
-    delegate_ = std::move(options.delegate);
-  } else if (options.message_pump_factory) {
-    delegate_ = std::make_unique<internal::SequenceManagerThreadDelegate>(
-        MessagePumpType::CUSTOM, options.message_pump_factory,
-        std::move(options.sequence_manager_settings));
-  } else {
-    delegate_ = std::make_unique<internal::SequenceManagerThreadDelegate>(
-        options.message_pump_type,
-        BindOnce([](MessagePumpType type) { return MessagePump::Create(type); },
-                 options.message_pump_type),
-        std::move(options.sequence_manager_settings));
+  DCHECK(!(delegate_ && options.message_pump_factory));
+  if (!delegate_) {
+    if (options.message_pump_factory) {
+      delegate_ = std::make_unique<internal::SequenceManagerThreadDelegate>(
+          MessagePumpType::CUSTOM, options.message_pump_factory,
+          std::move(options.sequence_manager_settings));
+    } else {
+      delegate_ = std::make_unique<internal::SequenceManagerThreadDelegate>(
+          options.message_pump_type,
+          BindOnce(
+              [](MessagePumpType type) { return MessagePump::Create(type); },
+              options.message_pump_type),
+          std::move(options.sequence_manager_settings));
+    }
   }
 
   if (options.task_observer) {

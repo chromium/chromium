@@ -89,10 +89,10 @@ TEST(ThreadHelpers, IsSingleThreadedStartAndStop) {
   ScopedProc proc_fd;
   ASSERT_TRUE(ThreadHelpers::IsSingleThreaded(proc_fd.fd()));
 
-  base::Thread thread("sandbox_tests");
   // This is testing for a race condition, so iterate.
   // Manually, this has been tested with more that 1M iterations.
   for (int i = 0; i < kRaceTestIterations; ++i) {
+    base::Thread thread("sandbox_tests");
     ASSERT_TRUE(
         ThreadHelpers::StartThreadAndWatchProcFS(proc_fd.fd(), &thread));
     ASSERT_FALSE(ThreadHelpers::IsSingleThreaded(proc_fd.fd()));
@@ -107,10 +107,9 @@ SANDBOX_TEST(ThreadHelpers, AssertSingleThreadedAfterThreadStopped) {
   ScopedProc proc_fd;
   SANDBOX_ASSERT(ThreadHelpers::IsSingleThreaded());
 
-  base::Thread thread1("sandbox_tests");
-  base::Thread thread2("sandbox_tests");
-
   for (int i = 0; i < kRaceTestIterations; ++i) {
+    base::Thread thread1("sandbox_tests");
+    base::Thread thread2("sandbox_tests");
     SANDBOX_ASSERT(
         ThreadHelpers::StartThreadAndWatchProcFS(proc_fd.fd(), &thread1));
     SANDBOX_ASSERT(

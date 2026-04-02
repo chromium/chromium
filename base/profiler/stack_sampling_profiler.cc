@@ -394,7 +394,7 @@ AtomicSequenceNumber StackSamplingProfiler::SamplingThread::CollectionContext::
     next_collection_id;
 
 StackSamplingProfiler::SamplingThread::SamplingThread()
-    : Thread("StackSamplingProfiler") {}
+    : Thread("StackSamplingProfiler", Thread::Restartable{}) {}
 
 StackSamplingProfiler::SamplingThread::~SamplingThread() = default;
 

@@ -142,20 +142,21 @@ TEST_F(CancelableTaskTrackerTest, NewTrackedTaskIdDifferentThread) {
 
   EXPECT_FALSE(is_canceled.Run());
 
-  Thread other_thread("other thread");
-  ASSERT_TRUE(other_thread.Start());
-  other_thread.task_runner()->PostTask(
+  Thread other_thread1("other thread");
+  ASSERT_TRUE(other_thread1.Start());
+  other_thread1.task_runner()->PostTask(
       FROM_HERE, is_canceled.Then(
                      BindRepeating([](bool result) { EXPECT_FALSE(result); })));
-  other_thread.Stop();
+  other_thread1.Stop();
 
   task_tracker_.TryCancel(task_id);
 
-  ASSERT_TRUE(other_thread.Start());
-  other_thread.task_runner()->PostTask(
+  Thread other_thread2("other thread2");
+  ASSERT_TRUE(other_thread2.Start());
+  other_thread2.task_runner()->PostTask(
       FROM_HERE, is_canceled.Then(
                      BindRepeating([](bool result) { EXPECT_TRUE(result); })));
-  other_thread.Stop();
+  other_thread2.Stop();
 }
 
 // With the task tracker, post a task, a task with a reply, get a new

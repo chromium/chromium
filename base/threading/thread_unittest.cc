@@ -301,6 +301,29 @@ TEST_F(ThreadTest, TransferOwnershipAndStop) {
 }
 
 TEST_F(ThreadTest, StartTwice) {
+  Thread a("StartTwice", Thread::Restartable{});
+
+  EXPECT_FALSE(a.task_runner());
+  EXPECT_FALSE(a.IsRunning());
+
+  EXPECT_TRUE(a.Start());
+  EXPECT_TRUE(a.task_runner());
+  EXPECT_TRUE(a.IsRunning());
+
+  a.Stop();
+  EXPECT_FALSE(a.task_runner());
+  EXPECT_FALSE(a.IsRunning());
+
+  EXPECT_TRUE(a.Start());
+  EXPECT_TRUE(a.task_runner());
+  EXPECT_TRUE(a.IsRunning());
+
+  a.Stop();
+  EXPECT_FALSE(a.task_runner());
+  EXPECT_FALSE(a.IsRunning());
+}
+
+TEST_F(ThreadTest, StartTwiceNonRestartable) {
   Thread a("StartTwice");
 
   EXPECT_FALSE(a.task_runner());
@@ -314,13 +337,8 @@ TEST_F(ThreadTest, StartTwice) {
   EXPECT_FALSE(a.task_runner());
   EXPECT_FALSE(a.IsRunning());
 
-  EXPECT_TRUE(a.Start());
-  EXPECT_TRUE(a.task_runner());
-  EXPECT_TRUE(a.IsRunning());
-
-  a.Stop();
-  EXPECT_FALSE(a.task_runner());
-  EXPECT_FALSE(a.IsRunning());
+  // Restarting it should not be allowed.
+  EXPECT_DCHECK_DEATH(a.Start());
 }
 
 // Intentional test-only race for otherwise untestable code, won't fix.
@@ -394,8 +412,8 @@ TEST_F(ThreadTest, ThreadId) {
 }
 
 TEST_F(ThreadTest, ThreadIdWithRestart) {
-  Thread a("ThreadIdWithRestart");
-  PlatformThreadId previous_id = kInvalidThreadId;
+  Thread a("ThreadIdWithRestart", Thread::Restartable{});
+  PlatformThreadId previous_id = base::kInvalidThreadId;
 
   for (size_t i = 0; i < 16; ++i) {
     EXPECT_TRUE(a.Start());
@@ -534,13 +552,13 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
 }  // namespace
 
 TEST_F(ThreadTest, ProvidedThreadDelegate) {
-  Thread thread("ThreadDelegate");
-  Thread::Options options;
-  options.delegate = std::make_unique<SequenceManagerThreadDelegate>();
+  auto delegate = std::make_unique<SequenceManagerThreadDelegate>();
 
-  scoped_refptr<SingleThreadTaskRunner> task_runner =
-      options.delegate->GetDefaultTaskRunner();
-  thread.StartWithOptions(std::move(options));
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      delegate->GetDefaultTaskRunner();
+
+  Thread thread("ThreadDelegate", std::move(delegate));
+  thread.Start();
 
   WaitableEvent event;
   task_runner->PostTask(FROM_HERE,

@@ -6,6 +6,7 @@
 #define SERVICES_AUDIO_STREAM_FACTORY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -167,7 +168,7 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
 #endif
   LoopbackCoordinator coordinator_;
   std::vector<std::unique_ptr<LocalMuter>> muters_;
-  RealtimeAudioThread loopback_worker_thread_;
+  std::optional<RealtimeAudioThread> loopback_worker_thread_;
   std::vector<std::unique_ptr<LoopbackStream>> loopback_streams_;
   InputStreamSet input_streams_;
   OutputStreamSet output_streams_;

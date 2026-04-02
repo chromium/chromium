@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_NET_TEST_HTTP_SERVER_H_
 #define CHROME_TEST_CHROMEDRIVER_NET_TEST_HTTP_SERVER_H_
 
+#include <optional>
 #include <set>
 
 #include "base/synchronization/lock.h"
@@ -85,7 +86,7 @@ class TestHttpServer : public net::HttpServer::Delegate {
                                     std::string data,
                                     base::WaitableEvent* event);
 
-  base::Thread thread_;
+  std::optional<base::Thread> thread_;
 
   // Access only on the server thread.
   std::unique_ptr<net::HttpServer> server_;

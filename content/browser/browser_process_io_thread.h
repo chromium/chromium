@@ -27,6 +27,8 @@ class BrowserThreadImpl;
 
 namespace content {
 
+class BrowserIOThreadDelegate;
+
 // ----------------------------------------------------------------------------
 // A BrowserProcessIOThread is a physical thread backing the IO thread.
 //
@@ -36,7 +38,8 @@ namespace content {
 class CONTENT_EXPORT BrowserProcessIOThread : public base::Thread {
  public:
   // Constructs a BrowserProcessIOThread.
-  BrowserProcessIOThread();
+  explicit BrowserProcessIOThread(
+      std::unique_ptr<BrowserIOThreadDelegate> delegate);
 
   BrowserProcessIOThread(const BrowserProcessIOThread&) = delete;
   BrowserProcessIOThread& operator=(const BrowserProcessIOThread&) = delete;

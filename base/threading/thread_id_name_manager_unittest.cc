@@ -49,7 +49,7 @@ TEST_F(ThreadIdNameManagerTest, RemoveThreads) {
 
 TEST_F(ThreadIdNameManagerTest, RestartThread) {
   base::ThreadIdNameManager* manager = base::ThreadIdNameManager::GetInstance();
-  base::Thread thread_a(kAThread);
+  base::Thread thread_a(kAThread, base::Thread::Restartable{});
 
   thread_a.StartAndWaitForTesting();
   base::PlatformThreadId a_id = thread_a.GetThreadId();

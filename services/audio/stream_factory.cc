@@ -68,14 +68,15 @@ StreamFactory::StreamFactory(
     raw_ptr<MlModelManager> ml_model_manager)
     : audio_manager_(audio_manager),
       aecdump_recording_manager_(aecdump_recording_manager),
-      ml_model_manager_(ml_model_manager),
+      ml_model_manager_(ml_model_manager)
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+      ,
       output_device_mixer_manager_(
           MaybeCreateOutputDeviceMixerManager(audio_manager)),
       loopback_reference_manager_(
-          MaybeCreateLoopbackReferenceManager(audio_manager)),
+          MaybeCreateLoopbackReferenceManager(audio_manager))
 #endif
-      loopback_worker_thread_("Loopback Worker", kReatimeThreadPeriod) {
+{
 }
 
 StreamFactory::~StreamFactory() {
@@ -246,14 +247,15 @@ void StreamFactory::CreateLoopbackStream(
   // first LoopbackStream will be created, and stopped after all LoopbackStreams
   // are gone.
   scoped_refptr<base::SequencedTaskRunner> task_runner;
-  if (loopback_worker_thread_.IsRunning()) {
-    task_runner = loopback_worker_thread_.task_runner();
+  if (loopback_worker_thread_) {
+    task_runner = loopback_worker_thread_->task_runner();
   } else {
     TRACE_EVENT_BEGIN0("audio", "Start Loopback Worker");
     base::Thread::Options options;
     options.thread_type = base::ThreadType::kRealtimeAudio;
-    if (loopback_worker_thread_.StartWithOptions(std::move(options))) {
-      task_runner = loopback_worker_thread_.task_runner();
+    loopback_worker_thread_.emplace("Loopback Worker", kReatimeThreadPeriod);
+    if (loopback_worker_thread_->StartWithOptions(std::move(options))) {
+      task_runner = loopback_worker_thread_->task_runner();
       TRACE_EVENT_END1("audio", "Start Loopback Worker", "success", true);
     } else {
       // Something about this platform or its current environment has prevented
@@ -329,7 +331,7 @@ void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
   // If all LoopbackStreams have ended, stop and join the worker thread.
   if (loopback_streams_.empty()) {
     TRACE_EVENT0("audio", "Stop Loopback Worker");
-    loopback_worker_thread_.Stop();
+    loopback_worker_thread_.reset();
   }
 }
 

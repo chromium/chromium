@@ -18,15 +18,12 @@ namespace content {
 namespace {
 
 TEST(BrowserIOThreadDelegateTest, CanPostTasksToThread) {
-  base::Thread thread("my_thread");
-
   auto delegate = std::make_unique<BrowserIOThreadDelegate>();
   auto handle = delegate->GetHandle();
   handle->OnStartupComplete();
 
-  base::Thread::Options options;
-  options.delegate = std::move(delegate);
-  thread.StartWithOptions(std::move(options));
+  base::Thread thread("my_thread", std::move(delegate));
+  thread.Start();
 
   auto runner =
       handle->GetBrowserTaskRunner(BrowserTaskQueues::QueueType::kDefault);

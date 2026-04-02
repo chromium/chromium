@@ -84,7 +84,7 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
                                      int restart_factor,
                                      bool is_test_mode,
                                      const std::string& thread_name)
-    : base::Thread(thread_name),
+    : base::Thread(thread_name, Thread::Restartable{}),
       watchdog_timeout_(timeout),
       watchdog_restart_factor_(restart_factor),
       is_test_mode_(is_test_mode) {

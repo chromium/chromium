@@ -247,19 +247,18 @@ void TerminateOnUI(std::unique_ptr<base::Thread> thread,
 }
 
 void ServerStartedOnUI(base::WeakPtr<DevToolsHttpHandler> handler,
-                       base::Thread* thread,
+                       std::unique_ptr<base::Thread> thread,
                        ServerWrapper* server_wrapper,
                        DevToolsSocketFactory* socket_factory,
                        std::unique_ptr<net::IPEndPoint> ip_address) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (handler && thread && server_wrapper) {
     handler->ServerStarted(
-        std::unique_ptr<base::Thread>(thread),
-        std::unique_ptr<ServerWrapper>(server_wrapper),
+        std::move(thread), std::unique_ptr<ServerWrapper>(server_wrapper),
         std::unique_ptr<DevToolsSocketFactory>(socket_factory),
         std::move(ip_address));
   } else {
-    TerminateOnUI(std::unique_ptr<base::Thread>(thread),
+    TerminateOnUI(std::move(thread),
                   std::unique_ptr<ServerWrapper>(server_wrapper),
                   std::unique_ptr<DevToolsSocketFactory>(socket_factory));
   }
@@ -315,7 +314,7 @@ void StartServerOnHandlerThread(
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&ServerStartedOnUI, std::move(handler), thread.release(),
+      base::BindOnce(&ServerStartedOnUI, std::move(handler), std::move(thread),
                      server_wrapper.release(), socket_factory.release(),
                      std::move(ip_address)));
 }

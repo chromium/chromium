@@ -66,7 +66,8 @@ namespace chromecast::media {
 
 class CastAudioManagerTest : public testing::Test {
  public:
-  CastAudioManagerTest() : audio_thread_("CastAudioThread") {}
+  CastAudioManagerTest()
+      : audio_thread_("CastAudioThread", base::Thread::Restartable{}) {}
 
   void SetUp() override { CreateAudioManagerForTesting(); }
 

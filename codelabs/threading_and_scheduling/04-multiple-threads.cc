@@ -106,9 +106,8 @@ int main() {
   // Create an IO thread to run alongside the main thread.
   std::unique_ptr<IOThreadDelegate> delegate =
       std::make_unique<IOThreadDelegate>();
-  base::Thread io_thread("IOThread");
+  base::Thread io_thread("IOThread", std::move(delegate));
   base::Thread::Options options;
-  options.delegate = std::move(delegate);
   if (!io_thread.StartWithOptions(std::move(options))) {
     LOG(FATAL) << "The thread failed to start!";
   }
