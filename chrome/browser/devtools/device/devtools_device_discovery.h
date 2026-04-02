@@ -144,6 +144,10 @@ class DevToolsDeviceDiscovery {
       scoped_refptr<AndroidDeviceManager::Device> device,
       scoped_refptr<RemoteBrowser> browser);
 
+  static std::string GetFrontendURLFromValue(
+      const base::DictValue& value,
+      const std::string& browser_version);
+
  private:
   class DiscoveryRequest;
 

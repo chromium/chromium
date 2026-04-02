@@ -26,6 +26,8 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
+#include "net/base/url_util.h"
+#include "url/gurl.h"
 
 using content::BrowserThread;
 using content::DevToolsAgentHost;
@@ -217,22 +219,6 @@ static std::string BuildUniqueTargetId(const std::string& serial,
                             GetStringProperty(value, "id").c_str());
 }
 
-static std::string GetFrontendURLFromValue(const base::DictValue& value,
-                                           const std::string& browser_version) {
-  std::string frontend_url = GetStringProperty(value, "devtoolsFrontendUrl");
-  size_t ws_param = frontend_url.find("?ws");
-  if (ws_param != std::string::npos) {
-    frontend_url = frontend_url.substr(0, ws_param);
-  }
-  if (base::StartsWith(frontend_url, "http:", base::CompareCase::SENSITIVE)) {
-    frontend_url = "https:" + frontend_url.substr(5);
-  }
-  if (!browser_version.empty()) {
-    frontend_url += "?remoteVersion=" + browser_version;
-  }
-  return frontend_url;
-}
-
 static std::string GetTargetPath(const base::DictValue& value) {
   std::string target_path = GetStringProperty(value, "webSocketDebuggerUrl");
 
@@ -287,7 +273,9 @@ AgentHostDelegate::AgentHostDelegate(
       target_path_(target_path),
       remote_type_(type),
       remote_id_(value ? GetStringProperty(*value, "id") : ""),
-      frontend_url_(value ? GetFrontendURLFromValue(*value, browser_version)
+      frontend_url_(value ? DevToolsDeviceDiscovery::GetFrontendURLFromValue(
+                                *value,
+                                browser_version)
                           : ""),
       title_(value ? base::UTF16ToUTF8(base::UnescapeForHTML(
                          base::UTF8ToUTF16(GetStringProperty(*value, "title"))))
@@ -671,6 +659,72 @@ void DevToolsDeviceDiscovery::SetScheduler(
     base::RepeatingCallback<void(base::OnceClosure)> scheduler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   task_scheduler_ = std::move(scheduler);
+}
+
+// static
+std::string DevToolsDeviceDiscovery::GetFrontendURLFromValue(
+    const base::DictValue& value,
+    const std::string& browser_version) {
+  const std::string* result = value.FindString("devtoolsFrontendUrl");
+  std::string frontend_url_str = result ? *result : std::string();
+  if (frontend_url_str.empty()) {
+    return std::string();
+  }
+
+  GURL frontend_url;
+  bool is_relative =
+      base::StartsWith(frontend_url_str, "/", base::CompareCase::SENSITIVE);
+  if (is_relative) {
+    frontend_url = GURL("https://dummy.test" + frontend_url_str);
+  } else {
+    frontend_url = GURL(frontend_url_str);
+  }
+
+  if (!frontend_url.is_valid()) {
+    return frontend_url_str;
+  }
+
+  // Convert http to https for absolute URLs.
+  if (!is_relative && frontend_url.SchemeIs(url::kHttpScheme)) {
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr(url::kHttpsScheme);
+    frontend_url = frontend_url.ReplaceComponents(replacements);
+  }
+
+  // Reconstruct the URL without query.
+  GURL::Replacements remove_query;
+  remove_query.ClearQuery();
+  GURL new_url = frontend_url.ReplaceComponents(remove_query);
+
+  // Filter "ws" and add others.
+  net::QueryIterator it(frontend_url);
+  while (!it.IsAtEnd()) {
+    if (it.GetKey() != "ws") {
+      new_url = net::AppendQueryParameter(new_url, it.GetKey(),
+                                          it.GetUnescapedValue());
+    }
+    it.Advance();
+  }
+
+  // Add remoteVersion.
+  if (!browser_version.empty()) {
+    new_url =
+        net::AppendQueryParameter(new_url, "remoteVersion", browser_version);
+  }
+
+  if (is_relative) {
+    std::string path_and_query(new_url.path());
+    if (new_url.has_query()) {
+      path_and_query += "?";
+      path_and_query += new_url.query();
+    }
+    if (new_url.has_ref()) {
+      path_and_query += "#";
+      path_and_query += new_url.ref();
+    }
+    return path_and_query;
+  }
+  return new_url.spec();
 }
 
 // static
