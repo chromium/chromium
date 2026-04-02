@@ -18,17 +18,25 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu.Delegate;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
@@ -47,16 +55,35 @@ import java.util.Set;
 @NullMarked
 public class TabStripContextMenuCoordinator {
     private final Context mContext;
-    private final TabStripContextMenuDelegate mDelegate;
+    private final @Nullable TabModel mTabModel;
+    private final MultiInstanceManager mMultiInstanceManager;
+    private final WindowAndroid mWindowAndroid;
+    private final SnackbarManager mSnackbarManager;
+    private final Runnable mOnNewTabClick;
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
-    /**
-     * @param context The {@link Context} to build the menu with.
-     * @param delegate The {@link TabStripContextMenuDelegate} to handle menu actions.
-     */
-    public TabStripContextMenuCoordinator(Context context, TabStripContextMenuDelegate delegate) {
-        mContext = context;
-        mDelegate = delegate;
+    public static TabStripContextMenuCoordinator createContextMenuCoordinator(
+            @Nullable TabModel tabModel,
+            MultiInstanceManager multiInstanceManager,
+            WindowAndroid windowAndroid,
+            SnackbarManager snackbarManager,
+            Runnable onNewTabClick) {
+        return new TabStripContextMenuCoordinator(
+                tabModel, multiInstanceManager, windowAndroid, snackbarManager, onNewTabClick);
+    }
+
+    private TabStripContextMenuCoordinator(
+            @Nullable TabModel tabModel,
+            MultiInstanceManager multiInstanceManager,
+            WindowAndroid windowAndroid,
+            SnackbarManager snackbarManager,
+            Runnable onNewTabClick) {
+        mTabModel = tabModel;
+        mMultiInstanceManager = multiInstanceManager;
+        mWindowAndroid = windowAndroid;
+        mContext = assumeNonNull(windowAndroid.getActivity().get());
+        mSnackbarManager = snackbarManager;
+        mOnNewTabClick = onNewTabClick;
     }
 
     /**
@@ -132,7 +159,10 @@ public class TabStripContextMenuCoordinator {
                             .build());
             // Add "Reopen closed tab/tabs/group" option.
             @RecentlyClosedEntryType
-            int recentlyClosedEntryType = mDelegate.getRecentlyClosedEntryType();
+            int recentlyClosedEntryType =
+                    (mTabModel != null)
+                            ? mTabModel.getMostRecentlyClosedEntryType()
+                            : RecentlyClosedEntryType.NONE;
             if (recentlyClosedEntryType != RecentlyClosedEntryType.NONE) {
                 int titleRes = R.string.menu_reopen_closed_tab;
                 if (recentlyClosedEntryType == RecentlyClosedEntryType.TABS) {
@@ -148,7 +178,7 @@ public class TabStripContextMenuCoordinator {
                                 .build());
             }
             // Add "Bookmark all tabs" option.
-            if (!isIncognito && mDelegate.getTabCount() > 1) {
+            if (!isIncognito && mTabModel != null && mTabModel.getCount() > 1) {
                 itemList.add(
                         new ListItemBuilder()
                                 .withTitleRes(R.string.menu_bookmark_all_tabs)
@@ -212,17 +242,29 @@ public class TabStripContextMenuCoordinator {
                 return;
             }
             if (model.get(MENU_ITEM_ID) == R.id.new_tab_menu_id) {
-                mDelegate.onNewTab();
+                mOnNewTabClick.run();
             } else if (model.get(MENU_ITEM_ID) == R.id.reopen_closed_entry) {
-                mDelegate.onReopenClosedEntry();
+                RecordUserAction.record("Android.TabStripMenu.ReopenClosedEntry");
+                if (mTabModel != null) {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Android.TabStripMenu.ReopenClosedEntry.Result", true);
+                    mTabModel.openMostRecentlyClosedEntry();
+                } else {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Android.TabStripMenu.ReopenClosedEntry.Result", false);
+                }
             } else if (model.get(MENU_ITEM_ID) == R.id.bookmark_all_tabs) {
-                mDelegate.onBookmarkAllTabs();
+                BookmarkAllTabsHandler.bookmarkAllTabs(mTabModel, mWindowAndroid, mSnackbarManager);
             } else if (model.get(MENU_ITEM_ID) == R.id.name_window) {
-                mDelegate.onNameWindow();
+                mMultiInstanceManager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
             } else if (model.get(MENU_ITEM_ID) == R.id.pin_glic) {
-                mDelegate.onPinGlic();
+                RecordUserAction.record("Android.TabStripMenu.PinGlic");
+                ChromeSharedPreferences.getInstance()
+                        .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, true);
             } else if (model.get(MENU_ITEM_ID) == R.id.unpin_glic) {
-                mDelegate.onUnpinGlic();
+                RecordUserAction.record("Android.TabStripMenu.UnpinGlic");
+                ChromeSharedPreferences.getInstance()
+                        .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, false);
             }
             assumeNonNull(mMenuWindow).dismiss();
         };
