@@ -1069,6 +1069,7 @@ public class IntentHandler {
             String lowerCaseScheme = scheme.toLowerCase(Locale.US);
             if (UrlConstants.CHROME_SCHEME.equals(lowerCaseScheme)
                     || UrlConstants.CHROME_NATIVE_SCHEME.equals(lowerCaseScheme)
+                    || UrlConstants.DEVTOOLS_SCHEME.equals(lowerCaseScheme)
                     || UrlConstants.DISTILLER_SCHEME.equals(lowerCaseScheme)
                     || ContentUrlConstants.ABOUT_SCHEME.equals(lowerCaseScheme)) {
                 // Allow certain "safe" internal URLs to be launched by external
