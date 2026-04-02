@@ -18,13 +18,12 @@ use system::mojo_types::MojoResult;
 use system::raw_trap::{HandleSignals, TriggerCondition};
 use system::trap::{InitialArmingPolicy, RearmingPolicy, Trap, TrapError, TrapEvent};
 
+// TODO(crbug.com/470438844): Replace some/all of the std::sync imports with
+// chromium sequenced equivalents once those are implemented (figure out which,
+// if any, need to be replaced).
 // TODO(crbug.com/477584253): Replace std::sync with std::nonpoison if there are
 // any non-sequenced versions remaining.
 use std::sync::{Arc, Mutex, Weak};
-
-// FOR_RELEASE: Replace some/all of the std::sync imports with chromium
-// sequenced equivalents once those are implemented (figure out which, if any,
-// need to be replaced).
 
 /// A message pipe endpoint that can send or receive messages. Whenever it
 /// receives a message, it invokes a user-provided function with the raw bytes
@@ -68,11 +67,12 @@ pub struct ResponseSender {
 /// Send a message through the underlying pipe. This function just forwards
 /// MessageEndpoint::write from the underlying endpoint.
 impl ResponseSender {
-    /// Send a message through the underlying pipe, if possible. Return true iff
-    /// the message was successfully sent.
+    /// Send a message through the underlying pipe, if possible.
+    ///
+    /// Returns true iff the message was successfully sent. This can only fail
+    /// if one or both sides of the pipe have been closed.
     pub fn try_send_response(&self, msg: RawMojoMessage) -> bool {
         if let Some(state) = self.state_weak.upgrade() {
-            // FOR_RELEASE: Handle the returned MojoResult
             return state.endpoint.write(msg).is_ok();
         }
         return false;

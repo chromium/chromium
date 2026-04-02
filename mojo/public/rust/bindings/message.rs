@@ -26,9 +26,10 @@ use system::mojo_types::UntypedHandle;
 /// mojom value (obtained from mojom_value_parser::serialize), and that the
 /// header matches the value. See message_header.rs for more information on
 /// headers.
-///
-/// FOR_RELEASE: This is kind of a crummy type, we should come up with a better
-/// API that leverages the RawMojoMessage type in the system bindings
+// TODO(crbug.com/493265340): This is kind of a crummy type, we should come up
+// with a better API that leverages the RawMojoMessage type in the system
+// bindings. As part of the process, we should catalogue the possible errors
+// that each step might return.
 pub struct MojomMessage {
     pub header: MessageHeader,
     pub payload: Vec<u8>,
@@ -38,11 +39,10 @@ pub struct MojomMessage {
 impl MojomMessage {
     /// Parse the given raw message into a structured representation.
     pub fn from_raw(msg: &RawMojoMessage) -> ParsingResult<Self> {
-        // FOR_RELEASE: Make sure any MojoErrors are handled gracefully.
         let (raw_bytes, handles) = msg.read_data().unwrap();
         let (remaining_bytes, header) = MessageHeader::deserialize(raw_bytes)?;
-        // FOR_RELEASE: Hopefully once we make our MojomMessage type better we
-        // can avoid calling to_vec here.
+        // We might be able to avoid allocating here if we had a better
+        // MojomMessage type.
         let payload = remaining_bytes.to_vec();
         Ok(MojomMessage { header, payload, handles })
     }

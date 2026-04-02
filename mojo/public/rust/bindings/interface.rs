@@ -7,18 +7,6 @@
 //! useful parts are the `Remote` and `Receiver` types in the corresponding
 //! modules.
 //!
-//! FOR_RELEASE: Split this into multiple files, but for now it's convenient
-//! to have it all together.
-//! FOR_RELEASE: Make sure all the stuff here matches the final versions
-//!
-//! FOR_RELEASE: Per several discussions in the rustmojo chat, we may want to
-//! think more about the designs for remotes, receivers, ownership and the way
-//! they relate to each other. Commonly objects want to open a receiver that
-//! lasts as long as it does, but also allow the object to operate on itself.
-//! This is naturally expressed using circular or self-referential structures,
-//! which are difficult to do in rust, so we need to consider use-cases
-//! carefully.
-//!
 //! # High-level design
 //! This module is designed to work in tandem with the Rust Mojom bindings
 //! generator. Imagine we have a Mojom file with the following interface:
@@ -39,10 +27,10 @@
 //! ```
 //!
 //! This trait is then used to instantiate a `Remote` and `Receiver` pair,
-//! which send messages of the typesd defined in the `MathService` interface:
+//! which send messages of the types defined in the `MathService` interface:
 //!
 //! ```
-//! let (p_rem: PendingRemote<dyn MathService>, p_rec: PendingReceiver<dyn MathService>) = ...;
+//! let (p_rem: PendingRemote<dyn MathService>, p_rec: PendingReceiver<dyn MathService>) = PendingRemote::new_pipe();
 //! ```
 //!
 //! Side note: the type parameters here are used to ensure you only send
@@ -88,7 +76,7 @@
 //! After implementing the trait for a state object, you must also call the
 //! `register_mojom_state_object_impls` macro, which sets up some
 //! behind-the-scenes information needed by the compiler. Invoke the macro with
-//! the declaration of the `impl` you just wrote
+//! the declaration of the `impl` you just wrote:
 //!
 //! ```
 //! // A MathService which counts the number of times you've called `Add`.
@@ -141,12 +129,14 @@
 //! // Bind a receiver to the current sequence which counts the number of times
 //! // `Add` is called.
 //! let counting_receiver: Receiver<CountingMathService> =
-//! p_rec.bind(count_state); ... // Process some messages
-//! // Undbind the receiver, getting the state object out
+//! p_rec.bind(count_state);
+//! ... // Process some messages
+//! // Unbind the receiver, getting the state object out
 //! let (p_rec, count_state) = counting_receiver.unbind();
 //! // Rebind the receiver to a different state object: now it has different behavior!
 //! let saturating_receiver: Receiver<SaturatingMathService> =
 //! p_rec.bind(SaturatingMathService {});
+//! ```
 //!
 //! Note that receivers can receive messages while they are pending, but those
 //! messages simply sit in the pipe until the receiver is bound and begins

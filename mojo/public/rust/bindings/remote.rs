@@ -31,8 +31,8 @@ chromium::import! {
 
 use std::collections::HashMap;
 use std::marker::PhantomData;
-// FOR_RELEASE: Replace some/all Arc/Mutexes with the sequenced equivalents,
-// where appropriate (maybe all of them?).
+// TODO(crbug.com/470438844): Replace some/all Arc/Mutexes with the sequenced
+// equivalents, where appropriate (maybe all of them?).
 // TODO(crbug.com/477584253): Replace std::sync with std::nonpoison once
 // it's stabilized, if any uses remain.
 use std::sync::{Arc, Mutex};
@@ -203,10 +203,7 @@ where
             message_handler,
             disconnect_handler,
         )
-        .expect("FOR_RELEASE: Figure out how to handle errors here");
-        // FOR_RELEASE: We should clear out any existing messages in the endpoint
-        // in case it's being re-used, so the new remote doesn't see responses to
-        // the previous remote's messages.
+        .expect("System ran out of resources to create new mojo objects.");
 
         Self {
             pending_responses,
@@ -220,7 +217,14 @@ where
     /// a `PendingRemote` which can be rebound later.
     ///
     /// If the remote has responses pending, they will be silently ignored.
-    pub fn unbind(self) -> PendingRemote<T> {
+    // This function is included for completeness, but is not `pub` because this
+    // is a tricky operation. We need to be careful about unbinding a remote that
+    // has responses pending, in case it gets re-bound. We need to either ensure
+    // that there are no pending responses, or that we can distinguish "old"
+    // responses from new ones. In either case, we'll defer that problem until
+    // someone has a use for this function.
+    #[allow(unused)]
+    fn unbind(self) -> PendingRemote<T> {
         PendingRemote::new(self.endpoint_watcher.into_endpoint())
     }
 
@@ -230,10 +234,8 @@ where
     //
     // This function is public because we need to call it from
     // generated code, but doc(hidden) because users shouldn't call it
-    // directly. Instead, they should call one of the interface-specific traits
-    // methods(e.g. `remote.Add(...)`, which will call this under-the-hood).
-    // FOR_RELEASE: Can this just be &self? (depends on the final interface for
-    // message pipes)
+    // directly. Instead, they should call one of the interface-specific trait
+    // methods (e.g. `remote.Add(...)`, which will call this under-the-hood).
     #[doc(hidden)]
     pub fn send_message_internal(
         &mut self,

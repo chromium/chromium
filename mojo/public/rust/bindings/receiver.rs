@@ -33,8 +33,8 @@ chromium::import! {
 }
 
 use std::marker::PhantomData;
-// FOR_RELEASE: Replace some/all Arc/Mutexes with the sequenced equivalents,
-// where appropriate (maybe all of them?).
+// TODO(crbug.com/470438844): Replace some/all Arc/Mutexes with the
+// sequenced equivalents, where appropriate (maybe all of them?).
 // TODO(crbug.com/477584253): Replace std::sync with std::nonpoison once
 // it's stabilized, if any uses remain.
 use std::sync::{Arc, Mutex, Weak};
@@ -64,11 +64,8 @@ use crate::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
 /// Note that a `PendingReceiver` can receive messages, but they will not be
 /// processed until it is bound. Once bound, the newly-created `Receiver`
 /// will immediately schedule processing of all pending messages.
-// FOR_RELEASE: Naming question (should we put in a T for
-// searchability/consistency?)
 pub struct Receiver<StateTy: MojomInterface> {
     endpoint_watcher: MessagePipeWatcher,
-    // FOR_RELEASE: Replace these with their sequenced equivalents
     state: Arc<Mutex<StateTy>>,
 }
 
@@ -228,24 +225,20 @@ where
 
         let endpoint_watcher =
             MessagePipeWatcher::new_with_runner(endpoint, runner, handler, disconnect_handler)
-                .expect("FOR_RELEASE: Figure out how to handle errors here");
+                .expect("System ran out of resources to create new mojo objects.");
 
         Self { endpoint_watcher, state }
     }
 
-    // FOR_RELEASE: Provide a mutex-y function so the holder of this `Receiver` can
-    // examine the state while it's in use? Might be risky if they can misuse the
-    // lock though.
-
     /// Unbind the remote, returning the contained state object and a
     /// `PendingRemote` which can be re-bound later.
-    // FOR_RELEASE: Figure out/document the implications for any already-posted
-    // tasks
     // This function is not `pub` because it's a dangerous operation, so we're
-    // restricting access until someone has a use-case.
+    // restricting access until someone has a use-case. It's mostly included here
+    // for completeness. Before making it usable, we need to figure out the
+    // implications of unbinding, e.g. for already-posted tasks, when we can
+    // safely unwrap Arcs, etc.
     #[allow(unused)]
     fn unbind(self) -> (PendingReceiver<StateTy::DynTy>, StateTy) {
-        // FOR_RELEASE: Figure out when it's safe to unwrap
         let state = Arc::into_inner(self.state).unwrap().into_inner().unwrap();
         let endpoint = self.endpoint_watcher.into_endpoint();
         (PendingReceiver::new(endpoint), state)
