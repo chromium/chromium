@@ -1979,7 +1979,7 @@ NavigationRequest::NavigationRequest(
     // Wait for renderer-initiated cancellation if needed. Navigation can
     // proceed as soon as the corresponding JS task in the renderer finishes
     // without calling window.stop() or other navigation cancellation triggers.
-    // That means there is no need to synchronise this signal with other
+    // That means there is no need to synchronize this signal with other
     // renderer events, so this interface doesn't have to be associated and can
     // use a prioritized task runner.
     // kNavigationNetworkResponse is used as CommitNavigation typically already
@@ -2073,7 +2073,7 @@ NavigationRequest::NavigationRequest(
     }
 
     // If this NavigationRequest is for the current pending entry, make sure
-    // that we will discard the pending entry if all of associated its requests
+    // that we will discard the pending entry if all of its associated requests
     // go away, by creating a ref to it.
     if (entry == controller->GetPendingEntry())
       pending_entry_ref_ = controller->ReferencePendingEntry();
@@ -2391,7 +2391,7 @@ NavigationRequest::~NavigationRequest() {
     }
 
     // If subframe history navigations were deferred waiting for this request,
-    // the cancelation of this request should cancel them, too.
+    // the cancellation of this request should cancel them, too.
     for (auto& throttle : subframe_history_navigation_throttles_) {
       if (throttle) {
         throttle->Cancel();
@@ -2665,7 +2665,7 @@ bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
   }
 
   // Run CommitDeferringConditions before activating the prerendered page. See
-  // the comemnt on RunCommitDeferringConditions() for details.
+  // the comment on RunCommitDeferringConditions() for details.
   //
   // The prerendered page can be destroyed while the conditions are running.
   // In that case, this request gives up activating it and instead falls back to
@@ -4009,7 +4009,7 @@ void NavigationRequest::AddOriginAgentClusterStateIfNecessary(
             AgentClusterKey::OACStatus::kOriginKeyedByHeader);
 
   // Note: we don't handle IsIsolationImplied() cases here, since those only
-  // occur when OAC-by-default is enabled, and in that case we only pro-actively
+  // occur when OAC-by-default is enabled, and in that case we only proactively
   // record explicit opt-ins and opt-outs. Implicitly isolated origins only end
   // up recorded if a future request from the same origin attempts to opt-in or
   // opt-out, which would trigger a normal global walk and record that the
@@ -4870,7 +4870,7 @@ void NavigationRequest::OnResponseStarted(
   if (is_mhtml_archive && !IsInMainFrame()) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
-        false /* skip_throttles */, std::nullopt /* error_page_contnet */,
+        false /* skip_throttles */, std::nullopt /* error_page_content */,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to
     // OnRequestFailedInternal has destroyed the NavigationRequest.
@@ -5943,7 +5943,7 @@ network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsToCommit() {
 }
 
 void NavigationRequest::MaybeAddResourceTimingEntryForCancelledNavigation() {
-  // Some navigation are cancelled even before requesting and receiving a
+  // Some navigations are cancelled even before requesting and receiving a
   // response. Those cases are not supported and the ResourceTiming is not
   // reported to the parent.
   if (!response()) {
@@ -8625,7 +8625,7 @@ void NavigationRequest::WillCommitWithoutUrlLoader() {
   throttle_registry_->RegisterNavigationThrottlesForCommitWithoutUrlLoader();
 
   // `CommitNavigation()` expects to be called once the request has reached
-  // at least `WILL_PROCESS_REPSONSE`. `WILL_COMMIT_WITHOUT_URL_LOADER` meets
+  // at least `WILL_PROCESS_RESPONSE`. `WILL_COMMIT_WITHOUT_URL_LOADER` meets
   // that requirement, and is useful to clarify which throttles we are waiting
   // for.
   SetState(WILL_COMMIT_WITHOUT_URL_LOADER);
@@ -8922,14 +8922,14 @@ bool NavigationRequest::NeedsUrlLoader() {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  bool is_mhtml_subframe_loaded_from_achive =
+  bool is_mhtml_subframe_loaded_from_archive =
       IsForMhtmlSubframe() &&
       // Unlike all other MHTML subframe URLs, data-url are loaded via the
       // URL, not from the MHTML archive. See https://crbug.com/969696.
       !common_params_->url.SchemeIs(url::kDataScheme);
 
   return IsURLHandledByNetworkStack(common_params_->url) && !IsSameDocument() &&
-         !is_mhtml_subframe_loaded_from_achive;
+         !is_mhtml_subframe_loaded_from_archive;
 }
 
 void NavigationRequest::UpdateLocalNetworkAccessRequestPolicy() {
@@ -11314,7 +11314,7 @@ void NavigationRequest::AddDeferredConsoleMessage(
 void NavigationRequest::SendDeferredConsoleMessages() {
   for (auto& message : console_messages_) {
     // TODO(crbug.com/40520047): We should have a way of sending console
-    // messaged to devtools without going through the renderer.
+    // messages to devtools without going through the renderer.
     GetRenderFrameHost()->AddMessageToConsole(message.level,
                                               std::move(message.message));
   }
@@ -11451,8 +11451,8 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
   // also take them into account. Because the CrossOriginOpenerPolicyStatus does
   // not take into account sandbox flags, it does not mandate a BrowsingInstance
   // switch when navigating between two same-origin pages where one of the pages
-  // has sandox flags that make its origin opaque. So the two pages are going to
-  // commit in the same BrowsingInstance. If we use an opaque origin here, we
+  // has sandbox flags that make its origin opaque. So the two pages are going
+  // to commit in the same BrowsingInstance. If we use an opaque origin here, we
   // would end up with a mismatch between the WebExposedIsolationInfo for the
   // navigation and that of the BrowsingInstance it is set to commit into.
   const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked();
@@ -11856,7 +11856,7 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactoryUnchecked() {
     // VerifyBeginNavigationCommonParams), but as a defense-in-depth this is
     // also asserted below.
     // History navigations are exempt from this rule because, although they can
-    // be renderer-initaited via the js history API, the renderer does not
+    // be renderer-initiated via the js history API, the renderer does not
     // choose the url being navigated to. A renderer-initiated history
     // navigation may therefore navigate back to a previous browser-initiated
     // loadDataWithBaseUrl.

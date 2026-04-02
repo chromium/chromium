@@ -1381,7 +1381,7 @@ class CONTENT_EXPORT NavigationRequest
   // URL's process (kDestinationProcess), an isolated process
   // (kIsolatedProcess), or is a post-commit error page that does not have any
   // specific process requirements and goes through the "normal navigation"
-  // path. Returns kNotErrorPage if the navigation is not anerror page
+  // path. Returns kNotErrorPage if the navigation is not an error page
   // navigation.
   ErrorPageProcess ComputeErrorPageProcess();
 
@@ -1809,7 +1809,7 @@ class CONTENT_EXPORT NavigationRequest
       bool from_begin_navigation,
       bool is_synchronous_renderer_commit,
       const FrameNavigationEntry* frame_navigation_entry,
-      NavigationEntryImpl* navitation_entry,
+      NavigationEntryImpl* navigation_entry,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
@@ -2385,7 +2385,7 @@ class CONTENT_EXPORT NavigationRequest
   // response.
   void ComputePoliciesToCommitForError();
 
-  // CHECK that tranistioning from the current state to |state| valid. This
+  // CHECK that transitioning from the current state to |state| valid. This
   // does nothing in non-debug builds.
   void CheckStateTransition(NavigationState state) const;
 
@@ -3425,7 +3425,7 @@ class CONTENT_EXPORT NavigationRequest
   // will observe all device bound session changes starting from the
   // navigation/redirection, and it will be moved to the
   // `RenderFrameHostImpl` when the navigation is committed and
-  // continues observing until the destructoin of the document.
+  // continues observing until the destruction of the document.
   // See `RenderFrameHostImpl::DeviceBoundSessionObserver`.
   std::unique_ptr<RenderFrameHostImpl::DeviceBoundSessionObserver>
       device_bound_session_observer_;
