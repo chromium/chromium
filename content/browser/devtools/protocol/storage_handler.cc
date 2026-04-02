@@ -1112,87 +1112,26 @@ void StorageHandler::OnInterestGroupAccessed(
       bid, bid_currency.CopyAsOptional(), auction_id.CopyAsOptional());
 }
 
-namespace {
-void SendGetInterestGroup(
-    std::unique_ptr<StorageHandler::GetInterestGroupDetailsCallback> callback,
-    std::optional<SingleStorageInterestGroup> storage_group) {
-  if (!storage_group) {
-    callback->sendFailure(Response::ServerError("Interest group not found"));
-    return;
-  }
-
-  base::DictValue ig_serialization =
-      SerializeInterestGroupForDevtools(storage_group.value()->interest_group);
-
-  // "joiningOrigin" is in StorageInterestGroup, not InterestGroup, so it needs
-  // to be added in separately.
-  ig_serialization.Set("joiningOrigin",
-                       storage_group.value()->joining_origin.Serialize());
-  callback->sendSuccess(
-      std::make_unique<base::DictValue>(std::move(ig_serialization)));
-}
-
-}  // namespace
-
 void StorageHandler::GetInterestGroupDetails(
     const std::string& owner_origin_string,
     const std::string& name,
     std::unique_ptr<GetInterestGroupDetailsCallback> callback) {
-  if (!storage_partition_) {
-    callback->sendFailure(Response::InternalError());
-    return;
-  }
-
-  InterestGroupManagerImpl* manager = static_cast<InterestGroupManagerImpl*>(
-      storage_partition_->GetInterestGroupManager());
-  if (!manager) {
-    callback->sendFailure(
-        Response::ServerError("Interest group storage is disabled"));
-    return;
-  }
-
-  GURL owner_origin_url(owner_origin_string);
-  if (!owner_origin_url.is_valid()) {
-    callback->sendFailure(Response::ServerError("Invalid Owner Origin"));
-    return;
-  }
-  url::Origin owner_origin = url::Origin::Create(GURL(owner_origin_string));
-  DCHECK(!owner_origin.opaque());
-
-  manager->GetInterestGroup(
-      owner_origin, name,
-      base::BindOnce(&SendGetInterestGroup, std::move(callback)));
+  // TODO(crbug.com/496189510): Remove this completely once the DevTools
+  // frontend usage is gone.
+  callback->sendSuccess(std::make_unique<base::DictValue>());
 }
 
 Response StorageHandler::SetInterestGroupTracking(bool enable) {
-  interest_group_tracking_enabled_ = enable;
-  return SetInterestGroupTrackingInternal(storage_partition_, enable);
+  // TODO(crbug.com/496189510): Remove this completely once the DevTools
+  // frontend usage is gone.
+  return Response::Success();
 }
 
 Response StorageHandler::SetInterestGroupTrackingInternal(
     StoragePartition* storage_partition,
     bool enable) {
-  if (!storage_partition) {
-    return Response::InternalError();
-  }
-
-  InterestGroupManagerImpl* manager = static_cast<InterestGroupManagerImpl*>(
-      storage_partition->GetInterestGroupManager());
-  if (!manager) {
-    return Response::ServerError("Interest group storage is disabled.");
-  }
-
-  if (enable) {
-    // Only add if we are not already registered as an observer. We only
-    // observe the interest group manager, so if we're observing anything then
-    // we are already registered.
-    if (!InterestGroupManagerImpl::InterestGroupObserver::IsInObserverList()) {
-      manager->AddInterestGroupObserver(this);
-    }
-  } else {
-    // Removal doesn't care if we are not registered.
-    manager->RemoveInterestGroupObserver(this);
-  }
+  // TODO(crbug.com/496189510): Remove this completely once the DevTools
+  // frontend usage is gone.
   return Response::Success();
 }
 
