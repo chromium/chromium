@@ -11,7 +11,6 @@
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 

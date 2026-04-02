@@ -53,6 +53,7 @@ static_library("boca") {
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//google_apis/common",
+    "//remoting/proto",
     "//services/network/public/mojom",
     "//ui/base",
     "//ui/message_center",

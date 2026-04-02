@@ -35,7 +35,6 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

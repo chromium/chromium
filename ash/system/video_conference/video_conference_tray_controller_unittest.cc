@@ -27,7 +27,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"

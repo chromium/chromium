@@ -14,7 +14,6 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"

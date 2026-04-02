@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "content/public/browser/web_contents.h"
 
 namespace video_conference {

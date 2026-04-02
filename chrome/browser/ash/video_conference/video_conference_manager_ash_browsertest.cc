@@ -16,7 +16,6 @@
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +44,7 @@ class FakeVideoConferenceManagerClient : public VideoConferenceManagerClient {
   base::UnguessableToken id_{base::UnguessableToken::Create()};
 };
 
-// Calls all crosapi::mojom::VideoConference methods directly.
+// Calls the VideoConferenceManagerAsh entry points directly.
 void VerifyVideoConferenceManagerAsh(FakeVideoConferenceManagerClient& client,
                                      VideoConferenceManagerAsh* vc_manager) {
   base::test::TestFuture<bool> future1;
