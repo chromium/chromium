@@ -1669,8 +1669,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
         summary="IsAttributionReportingAllowed"/>
     <variant name="IsAttributionReportingEverAllowed"
         summary="IsAttributionReportingEverAllowed"/>
-    <variant name="IsFencedStorageReadAllowed"
-        summary="IsFencedStorageReadAllowed"/>
     <variant name="IsFledgeBuyAllowed" summary="IsFledgeBuyAllowed"/>
     <variant name="IsFledgeJoinAllowed" summary="IsFledgeJoinAllowed"/>
     <variant name="IsFledgeLeaveAllowed" summary="IsFledgeLeaveAllowed"/>

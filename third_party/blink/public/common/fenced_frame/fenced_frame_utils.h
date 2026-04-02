@@ -63,9 +63,6 @@ inline constexpr char kAdComponentsCountForWinningBidHistogram[] =
 inline constexpr char kDisableUntrustedNetworkOutcome[] =
     "Blink.FencedFrame.DisableUntrustedNetworkOutcome";
 
-inline constexpr char kSharedStorageGetInFencedFrameOutcome[] =
-    "Blink.FencedFrame.SharedStorageGetInFencedFrameOutcome";
-
 inline constexpr char kNotifyEventOutcome[] =
     "Blink.FencedFrame.NotifyEventOutcome";
 
@@ -105,25 +102,6 @@ enum class DisableUntrustedNetworkOutcome {
   kMaxValue = kNotAllowed
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FencedFrameDisableUntrustedNetworkOutcome)
-
-// Corresponds to the "SharedStorageGetInFencedFrameOutcome" histogram
-// enumeration type in tools/metrics/histograms/metadata/blink/enums.xml.
-//
-// PLEASE DO NOT REORDER, REMOVE, OR CHANGE THE MEANING OF THESE VALUES.
-//
-// LINT.IfChange(SharedStorageGetInFencedFrameOutcome)
-enum class SharedStorageGetInFencedFrameOutcome {
-  kSuccess = 0,  // A fenced frame successfully read from shared storage.
-  kInsecureContext = 1,
-  kDisabled = 2,
-  kWithoutRevokeNetwork = 3,
-  kKeyNotFound = 4,
-  kGetError = 5,
-  kFeatureDisabled = 6,
-  kPermissionDisabled = 7,
-  kMaxValue = kPermissionDisabled
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:SharedStorageGetInFencedFrameOutcome)
 
 // Corresponds to the "FencedFrameNotifyEventOutcome" histogram enumeration type
 // in tools/metrics/histograms/metadata/blink/enums.xml.
@@ -199,8 +177,6 @@ BLINK_COMMON_EXPORT void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(
     bool is_main_frame);
 BLINK_COMMON_EXPORT void RecordDisableUntrustedNetworkOutcome(
     const DisableUntrustedNetworkOutcome outcome);
-BLINK_COMMON_EXPORT void RecordSharedStorageGetInFencedFrameOutcome(
-    const SharedStorageGetInFencedFrameOutcome outcome);
 BLINK_COMMON_EXPORT void RecordNotifyEventOutcome(
     const NotifyEventOutcome outcome);
 

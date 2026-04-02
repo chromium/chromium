@@ -45,15 +45,6 @@ void InsertAPI(
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage);
       return;
     }
-    case privacy_sandbox::FENCED_STORAGE_READ: {
-      if (base::FeatureList::IsEnabled(
-              blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
-        allowed_api_set.Put(
-            privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                kFencedStorageRead);
-      }
-      return;
-    }
     case privacy_sandbox::UNKNOWN: {
       return;
     }

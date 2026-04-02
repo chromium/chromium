@@ -5992,7 +5992,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5377" label="DOMWindowOpenPopup"/>
   <int value="5378" label="FencedFrameDisableUntrustedNetwork"/>
   <int value="5379" label="FencedFrameNotifyEvent"/>
-  <int value="5380" label="SharedStorageGetInFencedFrame"/>
+  <int value="5380" label="OBSOLETE_SharedStorageGetInFencedFrame"/>
   <int value="5381" label="OBSOLETE_Translator_MeasureInputUsage_Method"/>
   <int value="5382" label="OBSOLETE_Translator_InputQuota_AttributeGetter"/>
   <int value="5383" label="AriaNotify"/>
@@ -8488,21 +8488,6 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/core/loader/shared_dictionary_hint_type.h:SharedDictionaryHintType) -->
-
-<!-- LINT.IfChange(SharedStorageGetInFencedFrameOutcome) -->
-
-<enum name="SharedStorageGetInFencedFrameOutcome">
-  <int value="0" label="Success"/>
-  <int value="1" label="Called from an insecure context"/>
-  <int value="2" label="Fenced storage read is disabled"/>
-  <int value="3" label="Untrusted network not disabled"/>
-  <int value="4" label="Shared Storage key not found"/>
-  <int value="5" label="Error calling get()"/>
-  <int value="6" label="Unpartitioned data access feature disabled"/>
-  <int value="7" label="Unpartitioned data access permission disabled"/>
-</enum>
-
-<!-- LINT.ThenChange(//third_party/blink/public/common/fenced_frame/fenced_frame_utils.h:SharedStorageGetInFencedFrameOutcome) -->
 
 <enum name="SmsParsingStatus">
   <int value="0" label="Parsed"/>

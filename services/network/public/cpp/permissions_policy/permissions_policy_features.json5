@@ -354,12 +354,6 @@
       depends_on: ["FreezeFramesOnVisibility"],
     },
     {
-      name: "FencedUnpartitionedStorageRead",
-      permissions_policy_name: "fenced-unpartitioned-storage-read",
-      feature_default: "EnableForAll",
-      depends_on: ["FencedFramesLocalUnpartitionedDataAccess"],
-    },
-    {
       name: "FocusWithoutUserActivation",
       permissions_policy_name: "focus-without-user-activation",
       feature_default: "EnableForSelf",

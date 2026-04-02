@@ -83,11 +83,6 @@ void RecordDisableUntrustedNetworkOutcome(
   base::UmaHistogramEnumeration(kDisableUntrustedNetworkOutcome, outcome);
 }
 
-void RecordSharedStorageGetInFencedFrameOutcome(
-    const SharedStorageGetInFencedFrameOutcome outcome) {
-  base::UmaHistogramEnumeration(kSharedStorageGetInFencedFrameOutcome, outcome);
-}
-
 void RecordNotifyEventOutcome(const NotifyEventOutcome outcome) {
   base::UmaHistogramEnumeration(kNotifyEventOutcome, outcome);
 }

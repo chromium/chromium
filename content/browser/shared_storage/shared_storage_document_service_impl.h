@@ -30,9 +30,6 @@ class RenderFrameHost;
 class SharedStorageWorkletHost;
 class SharedStorageRuntimeManager;
 
-extern CONTENT_EXPORT const char kFencedStorageReadDisabledMessage[];
-extern CONTENT_EXPORT const char
-    kFencedStorageReadWithoutRevokeNetworkMessage[];
 extern CONTENT_EXPORT const char kSharedStorageDisabledMessage[];
 extern CONTENT_EXPORT const char kSharedStorageSelectURLDisabledMessage[];
 extern CONTENT_EXPORT const char kSharedStorageAddModuleDisabledMessage[];
@@ -73,8 +70,6 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
           worklet_host,
       CreateWorkletCallback callback) override;
-  void SharedStorageGet(const std::u16string& key,
-                        SharedStorageGetCallback callback) override;
   void SharedStorageUpdate(
       network::mojom::SharedStorageModifierMethodWithOptionsPtr
           method_with_options,
@@ -112,8 +107,6 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   bool IsSharedStorageAllowedForOrigin(const url::Origin& accessing_origin,
                                        std::string* out_debug_message,
                                        bool* out_block_is_site_specific);
-
-  bool IsFencedStorageReadAllowed(const url::Origin& accessing_origin);
 
   bool IsSharedStorageAddModuleAllowedForOrigin(
       const url::Origin& accessing_origin,

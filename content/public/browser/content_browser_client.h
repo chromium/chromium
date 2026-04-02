@@ -1202,14 +1202,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific);
 
-  // Allows the embedder to control if fenced storage read can happen in a given
-  // context.
-  virtual bool IsFencedStorageReadAllowed(
-      content::BrowserContext* browser_context,
-      content::RenderFrameHost* rfh,
-      const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin);
-
   // Allows the embedder to control if Private Aggregation API operations can
   // happen in a given context.
   //

@@ -149,14 +149,6 @@ SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
       ->GetSharedStorageRuntimeManager();
 }
 
-std::string GetFencedStorageReadDisabledMessage() {
-  return kFencedStorageReadDisabledMessage;
-}
-
-std::string GetFencedStorageReadWithoutRevokeNetworkMessage() {
-  return kFencedStorageReadWithoutRevokeNetworkMessage;
-}
-
 std::string GetSharedStorageDisabledMessage() {
   return kSharedStorageDisabledMessage;
 }

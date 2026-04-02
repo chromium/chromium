@@ -3252,12 +3252,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       NavigationRequest& navigation_request,
       blink::mojom::AutomaticBeaconType event_type);
 
-  // Determines if this RenderFrameHostImpl is allowed to read from Shared
-  // Storage. Only true if this RenderFrameHostImpl is in a fenced frame tree,
-  // and if its closest fenced frame root ancestor and all nested fenced frame
-  // roots have disabled untrusted network access.
-  bool CanReadFromSharedStorage();
-
   // If this RenderFrameHost is a local root (i.e., either the main frame or a
   // subframe in a different process than its parent), this returns the
   // RenderWidgetHost corresponding to this frame. Otherwise this returns null.

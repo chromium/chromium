@@ -9138,7 +9138,6 @@ interface SharedStorage
     method constructor
     method createWorklet
     method delete
-    method get
     method run
     method selectURL
     method set

@@ -14,8 +14,6 @@ namespace network {
 // turned off.
 static inline constexpr network::mojom::PermissionsPolicyFeature
     kFencedFrameAllowedFeatures[] = {
-        network::mojom::PermissionsPolicyFeature::
-            kFencedUnpartitionedStorageRead,
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         network::mojom::PermissionsPolicyFeature::kSharedStorage,
         network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl};

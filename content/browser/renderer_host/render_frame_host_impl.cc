@@ -19837,17 +19837,6 @@ bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
               kAllowedOverrideLevel);
 }
 
-bool RenderFrameHostImpl::CanReadFromSharedStorage() {
-  if (!IsNestedWithinFencedFrame()) {
-    return false;
-  }
-
-  auto properties = frame_tree_node()->GetFencedFrameProperties(
-      FencedFramePropertiesNodeSource::kFrameTreeRoot);
-  return properties.has_value() &&
-         properties->HasDisabledNetworkForCurrentAndDescendantFrameTrees();
-}
-
 std::optional<mojo::UrgentMessageScope>
 RenderFrameHostImpl::MakeUrgentMessageScopeIfNeeded() {
   // Don't prioritize navigations in RFHs that are prerendering, since that

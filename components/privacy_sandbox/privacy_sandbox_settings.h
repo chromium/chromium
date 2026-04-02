@@ -35,9 +35,8 @@ enum class PrivacySandboxAttestationsGatedAPI {
   kPrivateAggregation,
   kAttributionReporting,
   kSharedStorage,
-  kFencedStorageRead,
 
-  kMaxValue = kFencedStorageRead,
+  kMaxValue = kSharedStorage,
 };
 
 // A service which acts as a intermediary between Privacy Sandbox APIs and
@@ -240,16 +239,6 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& accessing_origin,
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) const = 0;
-
-  // Controls whether fenced storage read is allowable for `accessing_origin` in
-  // the context of `top_frame_origin`.
-  //
-  // If provided, `console_frame` is used to log errors to the console upon
-  // attestation failure.
-  virtual bool IsFencedStorageReadAllowed(
-      const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin,
-      content::RenderFrameHost* console_frame) const = 0;
 
   // Determines whether the Private Aggregation API is allowable in a particular
   // context. `top_frame_origin` is the associated top-frame origin of the

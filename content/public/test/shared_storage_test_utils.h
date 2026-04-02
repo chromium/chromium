@@ -58,10 +58,6 @@ std::string SerializeSharedStorageMethods(
 SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
     StoragePartition* storage_partition);
 
-std::string GetFencedStorageReadDisabledMessage();
-
-std::string GetFencedStorageReadWithoutRevokeNetworkMessage();
-
 std::string GetSharedStorageDisabledMessage();
 
 std::string GetSharedStorageSelectURLDisabledMessage();

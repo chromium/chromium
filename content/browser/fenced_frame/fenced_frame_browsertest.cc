@@ -6124,7 +6124,6 @@ IN_PROC_BROWSER_TEST_F(
 // 6. The in-progress child FF navigation should be aborted.
 // 7. Call `window.fence.disableUntrustedNetwork()` again for parent FF. This
 // time the nonce should be resolved and the network is considered revoked.
-// 8. Access to shared storage get is now allowed.
 //
 // Otherwise if the child FF navigation commits, the child FF will get a new
 // nonce and no longer has untrusted network disabled. Parent FF can then
@@ -6145,10 +6144,6 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* root = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* ff1 = root->GetFencedFrames().at(0)->GetInnerRoot();
   RenderFrameHostImpl* ff2 = ff1->GetFencedFrames().at(0)->GetInnerRoot();
-
-  EXPECT_TRUE(ExecJs(ff1, R"(
-    sharedStorage.set('test', 'apple');
-  )"));
 
   // Disable nested fenced frame untrusted network access.
   EXPECT_TRUE(ExecJs(ff2, R"(
@@ -6200,15 +6195,6 @@ IN_PROC_BROWSER_TEST_F(
         VerifyFencedFrameNetworkStatus(
             ff1, DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete);
         EXPECT_FALSE(EvalJs(ff1, "ff1_promise_resolved").ExtractBool());
-
-        // Shared storage get is denied.
-        EvalJsResult get_result = EvalJs(ff1, "sharedStorage.get('test');");
-        EXPECT_THAT(
-            get_result,
-            EvalJsResult::ErrorIs(testing::HasSubstr(
-                "sharedStorage.get() is not allowed in a fenced frame until "
-                "network access for it and all descendent frames has been "
-                "revoked with window.fence.disableUntrustedNetwork()")));
       }));
 
   // Embedder initiates nested fenced frame navigation.
@@ -6250,7 +6236,6 @@ IN_PROC_BROWSER_TEST_F(
   VerifyFencedFrameNetworkStatus(
       ff2,
       DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
-  EXPECT_EQ(EvalJs(ff1, "sharedStorage.get('test');"), "apple");
 }
 
 // Disable untrusted network in a fenced frame. An ongoing navigation taking

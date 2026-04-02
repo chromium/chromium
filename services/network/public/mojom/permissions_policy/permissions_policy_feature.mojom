@@ -272,11 +272,6 @@ enum PermissionsPolicyFeature {
   // See https://github.com/WICG/direct-sockets.
   kDirectSocketsPrivate = 126,
 
-  // Allow fenced frames to access unpartitioned data after giving up network
-  // access.
-  // See https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md
-  kFencedUnpartitionedStorageRead = 127,
-
   // Allow a site to issue fetchLater requests with minimal quota.
   // This is different from kDeferredFetch, which allows full quota and is
   // "self" by default. Instead, this feature defaults to "*" to allow any sites

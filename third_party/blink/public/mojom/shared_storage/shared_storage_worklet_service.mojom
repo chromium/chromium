@@ -60,6 +60,12 @@ union GetInterestGroupsResult {
   array<StorageInterestGroup> groups;
 };
 
+enum SharedStorageGetStatus {
+  kSuccess,
+  kNotFound,
+  kError,
+};
+
 // Used by the shared storage worklet environment to access the shared storage,
 // log messages, etc.
 interface SharedStorageWorkletServiceClient {

@@ -45,6 +45,7 @@
   ] Promise<any> batchUpdate(sequence<SharedStorageModifierMethod> methods, optional SharedStorageModifierMethodOptions options);
 
   [
+    Exposed=SharedStorageWorklet,
     CallWith=ScriptState,
     RaisesException,
     DeprecateAs=SharedStorageAPIAll

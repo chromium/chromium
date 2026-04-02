@@ -151,23 +151,6 @@ GetSharedStorageWorkletServiceClient(ExecutionContext* execution_context) {
       ->GetSharedStorageWorkletServiceClient();
 }
 
-bool CanGetOutsideWorklet(ScriptState* script_state) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  CHECK(execution_context->IsWindow());
-
-  LocalFrame* frame = To<LocalDOMWindow>(execution_context)->GetFrame();
-  DCHECK(frame);
-
-  if (!blink::features::IsFencedFramesEnabled()) {
-    return false;
-  }
-
-  // Calling get() is only allowed in fenced frame trees where network access
-  // has been restricted. We can't check the network access part in the
-  // renderer, so we'll defer to the browser for that.
-  return frame->IsInFencedFrameTree();
-}
-
 std::tuple<SharedStorageDataOrigin, scoped_refptr<SecurityOrigin>>
 ParseDataOrigin(const String& data_origin_value) {
   String data_origin_value_lower = data_origin_value.ToAsciiLower();
@@ -730,8 +713,7 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
                                             ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  CHECK(execution_context->IsWindow() ||
-        execution_context->IsSharedStorageWorkletGlobalScope());
+  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
     return EmptyPromise();
@@ -741,51 +723,6 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-
-  if (execution_context->IsWindow()) {
-    if (execution_context->GetSecurityOrigin()->IsOpaque()) {
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-          kOpaqueContextOriginCheckErrorMessage));
-      return promise;
-    }
-
-    if (!CanGetOutsideWorklet(script_state)) {
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-          "Cannot call get() outside of a fenced frame."));
-      return promise;
-    }
-
-    // By this point, we know we are inside a fenced frame, so log the use
-    // counter here.
-    UseCounter::Count(execution_context,
-                      WebFeature::kSharedStorageGetInFencedFrame);
-
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
-      RecordSharedStorageGetInFencedFrameOutcome(
-          SharedStorageGetInFencedFrameOutcome::kFeatureDisabled);
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-          "Cannot call get() in a fenced frame with feature "
-          "FencedFramesLocalUnpartitionedDataAccess disabled."));
-      return promise;
-    }
-
-    if (!execution_context->IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::
-                kFencedUnpartitionedStorageRead)) {
-      RecordSharedStorageGetInFencedFrameOutcome(
-          SharedStorageGetInFencedFrameOutcome::kPermissionDisabled);
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-          "Cannot call get() in a fenced frame without the "
-          "fenced-unpartitioned-storage-read Permissions Policy feature "
-          "enabled."));
-      return promise;
-    }
-  }
 
   CHECK(
       CheckSharedStoragePermissionsPolicy(*execution_context, exception_state));
@@ -797,9 +734,7 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
     return promise;
   }
 
-  std::string histogram_name = execution_context->IsWindow()
-                                   ? "Storage.SharedStorage.Document.Timing.Get"
-                                   : "Storage.SharedStorage.Worklet.Timing.Get";
+  std::string histogram_name = "Storage.SharedStorage.Worklet.Timing.Get";
   auto callback = blink::BindOnce(
       [](ScriptPromiseResolver<IDLString>* resolver,
          SharedStorage* shared_storage, base::TimeTicks start_time,
@@ -834,13 +769,8 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
       WrapPersistent(resolver), WrapPersistent(this), start_time,
       histogram_name);
 
-  if (execution_context->IsWindow()) {
-    GetSharedStorageDocumentService(execution_context)
-        ->SharedStorageGet(key, std::move(callback));
-  } else {
-    GetSharedStorageWorkletServiceClient(execution_context)
-        ->SharedStorageGet(key, std::move(callback));
-  }
+  GetSharedStorageWorkletServiceClient(execution_context)
+      ->SharedStorageGet(key, std::move(callback));
 
   return promise;
 }

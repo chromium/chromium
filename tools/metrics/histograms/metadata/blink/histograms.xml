@@ -2646,18 +2646,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.FencedFrame.SharedStorageGetInFencedFrameOutcome"
-    enum="SharedStorageGetInFencedFrameOutcome" expires_after="2026-09-12">
-  <owner>lbrady@google.com</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <summary>
-    Records the outcome from calling sharedStorage.get() in a fenced frame,
-    whether successful or not. Note that this only logs for get() calls from
-    within a fenced frame; calls outside of fenced frames (which will fail) are
-    not logged.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Fetch.RequestResourceTime2{SchemeOrPreload}"
     units="microseconds" expires_after="2026-09-20">
   <owner>cduvall@chromium.org</owner>

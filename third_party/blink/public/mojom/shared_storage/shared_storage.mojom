@@ -22,12 +22,6 @@ struct SharedStorageUrlWithMetadata {
   map<string, url.mojom.Url> reporting_metadata;
 };
 
-enum SharedStorageGetStatus {
-  kSuccess,
-  kNotFound,
-  kError,
-};
-
 enum SharedStorageWorkletCreationMethod {
   kAddModule,
   kCreateWorklet,
@@ -139,15 +133,6 @@ interface SharedStorageDocumentService {
                 pending_associated_receiver<SharedStorageWorkletHost> worklet_host)
       => (bool success,
           string error_message);
-
-  // Handle sharedStorage.get(): get the entry at `key`, or an empty string
-  // if `key` is not present. May only be called from a fenced frame with
-  // network access restricted. Returns an error if the API is disabled, or if
-  // the state of the fenced frame is invalid.
-  SharedStorageGet(network.mojom.SharedStorageKeyArgument key)
-      => (SharedStorageGetStatus status, string error_message,
-          mojo_base.mojom.String16 value);
-
   // Handle the modifier method `method_with_options`. Return an empty
   // `error_message` on success, and return an non-empty `error_message` on
   // failure.
