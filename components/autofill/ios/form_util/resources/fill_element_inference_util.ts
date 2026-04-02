@@ -319,6 +319,16 @@ export function isCheckableElement(element: any): boolean {
 }
 
 /**
+ * Returns true if `element` is a date input element.
+ *
+ * @param {Element} element An element to examine.
+ * @return Whether element is a date input element.
+ */
+export function isDateField(element: Element): boolean {
+  return element instanceof HTMLInputElement && element.type === 'date';
+}
+
+/**
  * Returns true if `element` is one of the input element types that can be
  * autofilled. {Text, Radiobutton, Checkbox}.
  *
@@ -331,6 +341,9 @@ export function isCheckableElement(element: any): boolean {
  */
 export function isAutofillableInputElement(element: Element): boolean {
   return isTextField(element) ||
+      (isDateField(element) &&
+       autofillFormFeaturesApi.getFunction(
+           'isAutofillSupportDateInputEnabled')()) ||
       (isCheckableElement(element) &&
        !autofillFormFeaturesApi.getFunction(
            'isAutofillIgnoreCheckableElementsEnabled')());

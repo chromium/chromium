@@ -231,6 +231,10 @@ const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";
 
+const char kAutofillSupportDateInputName[] = "Autofill support for date input";
+const char kAutofillSupportDateInputDescription[] =
+    "Enables form filling and saving capabilities for <input type=\"date\">.";
+
 const char kAutofillThrottleDocumentFormScanName[] =
     "Throttle Autofill Document Form Scans";
 const char kAutofillThrottleDocumentFormScanDescription[] =

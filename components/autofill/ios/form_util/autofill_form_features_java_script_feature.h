@@ -42,6 +42,9 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   // form extraction.
   void SetAutofillIgnoreCheckableElements(web::WebFrame* frame, bool enabled);
 
+  // Enables/disables support for <input type="date"> fields in `frame`.
+  void SetAutofillSupportDateInput(web::WebFrame* frame, bool enabled);
+
   // Enables/disables the renderer side behaviours in `frame` needed for
   // Autofill features to work in an isolated content world.
   void SetAutofillIsolatedContentWorld(web::WebFrame* frame, bool enabled);

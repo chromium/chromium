@@ -40,6 +40,13 @@ let autofillDisallowMoreHyphenLikeLabels: boolean = false;
 let autofillIgnoreCheckableElements: boolean = true;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_ignore_checkable_elements)
 
+// LINT.IfChange(autofill_support_date_input)
+/**
+ * If true, support for <input type="date"> fields is enabled.
+ */
+let autofillSupportDateInput: boolean = false;
+// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_support_date_input)
+
 // LINT.IfChange(autofill_correct_user_edited_bit_in_parsed_field)
 /**
 Enables correctly setting the is_user_edited_deprecated bit in the parsed form
@@ -132,6 +139,20 @@ function setAutofillIgnoreCheckableElements(enabled: boolean): void {
  */
 function isAutofillIgnoreCheckableElementsEnabled(): boolean {
   return autofillIgnoreCheckableElements;
+}
+
+/**
+ * @see autofillSupportDateInput
+ */
+function setAutofillSupportDateInput(enabled: boolean): void {
+  autofillSupportDateInput = enabled;
+}
+
+/**
+ * @see autofillSupportDateInput
+ */
+function isAutofillSupportDateInputEnabled(): boolean {
+  return autofillSupportDateInput;
 }
 
 /**
@@ -229,6 +250,10 @@ autofillFormFeatures.addFunction(
 autofillFormFeatures.addFunction(
     'isAutofillIgnoreCheckableElementsEnabled',
     isAutofillIgnoreCheckableElementsEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillSupportDateInput', setAutofillSupportDateInput);
+autofillFormFeatures.addFunction(
+    'isAutofillSupportDateInputEnabled', isAutofillSupportDateInputEnabled);
 autofillFormFeatures.addFunction(
     'setAutofillCorrectUserEditedBitInParsedField',
     setAutofillCorrectUserEditedBitInParsedField);

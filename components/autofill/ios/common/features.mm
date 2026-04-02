@@ -53,6 +53,10 @@ BASE_FEATURE(kAutofillReportFormSubmissionErrors,
 
 BASE_FEATURE(kAutofillStickyInfobarIos, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// LINT.IfChange(autofill_support_date_input)
+BASE_FEATURE(kAutofillSupportDateInput, base::FEATURE_DISABLED_BY_DEFAULT);
+// LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_support_date_input)
+
 BASE_FEATURE(kAutofillThrottleDocumentFormScanIos,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // Minimal period of time between the document form scanning batches.

@@ -79,6 +79,15 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillIgnoreCheckableElements(
       base::ListValue().Append(enabled));
 }
 
+void AutofillFormFeaturesJavaScriptFeature::SetAutofillSupportDateInput(
+    web::WebFrame* frame,
+    bool enabled) {
+  CHECK(frame);
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillSupportDateInput",
+      base::ListValue().Append(enabled));
+}
+
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillIsolatedContentWorld(
     web::WebFrame* frame,
     bool enabled) {

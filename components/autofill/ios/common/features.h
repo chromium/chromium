@@ -78,6 +78,9 @@ BASE_DECLARE_FEATURE(kAutofillReportFormSubmissionErrors);
 // timeout but will be dismissed once navigating from an explicit user gesture.
 BASE_DECLARE_FEATURE(kAutofillStickyInfobarIos);
 
+// Enables support for <input type="date"> fields in Autofill.
+BASE_DECLARE_FEATURE(kAutofillSupportDateInput);
+
 // Throttles the document form scanning done for taking recurrent snapshots of
 // the forms in the renderer by using scheduled batches. This doesn't throttle
 // single form fetching (aka filtered form fetching), e.g. getting the latest

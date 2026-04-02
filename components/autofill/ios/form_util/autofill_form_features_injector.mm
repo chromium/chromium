@@ -55,6 +55,10 @@ void SetAutofillFormFeatureFlags(WebFrame* web_frame) {
                          features::kAutofillIgnoreCheckableElements));
 
   AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillSupportDateInput(
+          web_frame, base::FeatureList::IsEnabled(kAutofillSupportDateInput));
+
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
       ->SetAutofillCorrectUserEditedBitInParsedField(
           web_frame, base::FeatureList::IsEnabled(
                          kAutofillCorrectUserEditedBitInParsedField));

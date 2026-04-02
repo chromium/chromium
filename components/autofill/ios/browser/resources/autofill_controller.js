@@ -571,7 +571,10 @@ function fillFormField(data, field) {
   }
 
   let filled = false;
-  if (isTextField(field) || inferenceUtil.isTextAreaElement(field)) {
+  if (isTextField(field) || inferenceUtil.isTextAreaElement(field) ||
+      (inferenceUtil.isDateField(field) &&
+       autofillFormFeaturesApi.getFunction(
+           'isAutofillSupportDateInputEnabled')())) {
     let sanitizedValue = data['value'];
 
     if (isTextField(field)) {

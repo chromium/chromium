@@ -15,6 +15,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
+#import "components/autofill/ios/form_util/autofill_form_features_injector.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "ios/web/public/js_messaging/content_world.h"
@@ -377,6 +378,27 @@ TEST_F(FillJsTest, GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
         GetUniqueID(@"form", web::ContentWorld::kPageContentWorld);
     EXPECT_NSEQ(page_form_id, @"0");
   }
+}
+
+// Tests sanitizeValueForInputElement TS function.
+TEST_F(FillJsTest, SanitizeValueForInputElement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillSupportDateInput);
+  AutofillFormFeaturesInjector injector(web_state(),
+                                        web::ContentWorld::kIsolatedWorld);
+  LoadHtml(@"<input id='input' type='date'/>");
+
+  id result = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('sanitizeValueForInputElement')('2023-10-31', "
+      @"document.getElementById('input'));");
+  EXPECT_NSEQ(result, @"2023-10-31");
+
+  id result_invalid = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('sanitizeValueForInputElement')('not-a-date', "
+      @"document.getElementById('input'));");
+  EXPECT_NSEQ(result_invalid, @"");
 }
 
 // Tests stringify TS function.

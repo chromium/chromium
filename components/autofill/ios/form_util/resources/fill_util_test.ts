@@ -54,6 +54,8 @@ fillApi.addFunction(
 fillApi.addFunction('isCheckableElement', inferenceUtil.isCheckableElement);
 fillApi.addFunction('isSelectElement', inferenceUtil.isSelectElement);
 fillApi.addFunction('registerAllChildFrames', registerAllChildFrames);
+fillApi.addFunction(
+    'sanitizeValueForInputElement', fillUtil.sanitizeValueForInputElement);
 fillApi.addFunction('setInputElementValue', fillUtil.setInputElementValue);
 fillApi.addFunction('setUniqueIDIfNeeded', setUniqueIDIfNeeded);
 fillApi.addFunction('shouldAutocomplete', fillUtil.shouldAutocomplete);

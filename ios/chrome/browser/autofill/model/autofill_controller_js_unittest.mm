@@ -91,6 +91,7 @@ NSString* const kHTMLForTestingElements = @"<html><body>"
     "  <input type='tel' name='phone'>"
     "  <input type='url' autocomplete='off' name='blog'>"
     "  <input type='number' name='expected number of clicks'>"
+    "  <input type='date' name='bday'>"
     "  <input type='password' autocomplete='off' name='pwd'>"
     "  <input type='checkbox' name='vehicle' value='Bike'>"
     "  <input type='checkbox' name='vehicle' value='Car'>"
@@ -1247,6 +1248,48 @@ TEST_F(AutofillControllerJsTest, IsSelectElement) {
       @"__gCrWeb.getRegisteredApi('fill_test_api')."
       @"getFunction('isSelectElement')(%@)",
       kElementsExpectingTrue);
+}
+
+TEST_F(AutofillControllerJsTest, ExtractAutofillableElements_Date) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAutofillSupportDateInput);
+
+  NSString* html = @"<html><body><form><input type='date' name='bday' "
+                   @"id='bday'></form></body></html>";
+  web::test::LoadHtml(html, web_state());
+
+  autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillSupportDateInput(WaitForMainFrame(), /*enabled=*/true);
+
+  NSString* parameter = @"window.document.getElementsByTagName('form')[0]";
+  id result = ExecuteJavaScript([NSString
+      stringWithFormat:@"var controlElements="
+                        "__gCrWeb.getRegisteredApi('autofill')."
+                        "getFunction('extractAutofillableElementsInForm')(%@);"
+                        "controlElements[0].id === 'bday'",
+                       parameter]);
+  EXPECT_NSEQ(@YES, result);
+}
+
+TEST_F(AutofillControllerJsTest, ExtractAutofillableElements_Date_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kAutofillSupportDateInput);
+
+  NSString* html = @"<html><body><form><input type='date' name='bday' "
+                   @"id='bday'></form></body></html>";
+  web::test::LoadHtml(html, web_state());
+
+  autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillSupportDateInput(WaitForMainFrame(), /*enabled=*/false);
+
+  NSString* parameter = @"window.document.getElementsByTagName('form')[0]";
+  id result = ExecuteJavaScript([NSString
+      stringWithFormat:@"var controlElements="
+                        "__gCrWeb.getRegisteredApi('autofill')."
+                        "getFunction('extractAutofillableElementsInForm')(%@);"
+                        "controlElements.length === 0",
+                       parameter]);
+  EXPECT_NSEQ(@YES, result);
 }
 
 TEST_F(AutofillControllerJsTest, IsAutofillableInputElement) {

@@ -9,6 +9,9 @@ import {setUniqueIDIfNeeded} from '//components/autofill/ios/form_util/resources
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
+const autofillFormFeaturesApi =
+    gCrWeb.getRegisteredApi('autofill_form_features');
+
 /**
  * Base class for objects that are intended to be JSON stringified.
  * This class ensures that any `toJSON` method on the prototype is nulled out
@@ -326,35 +329,42 @@ function setInputElementValueInternal(
 
 /**
  * Returns a sanitized value of proposedValue for a given input element type.
- * The logic is based on
- *
- *      String sanitizeValue(const String&) const
- *
- * in chromium/src/third_party/WebKit/Source/core/html/InputType.h
  *
  * @param proposedValue The proposed value.
  * @param element The element for which the proposedValue is to be
  *     sanitized.
  * @return The sanitized value.
  */
-function sanitizeValueForInputElement(
+export function sanitizeValueForInputElement(
     proposedValue: string|null, element: Element): string {
   if (!proposedValue) {
     return '';
   }
 
-  // Method HTMLInputElement::sanitizeValue() calls InputType::sanitizeValue()
-  // (chromium/src/third_party/WebKit/Source/core/html/InputType.cpp) for
-  // non-null proposedValue. InputType::sanitizeValue() returns the original
-  // proposedValue by default and it is overridden in classes
-  // BaseDateAndTimeInputType, ColorInputType, RangeInputType and
-  // TextFieldInputType (all are in
-  // chromium/src/third_party/WebKit/Source/core/html/). Currently only
-  // TextFieldInputType is relevant and sanitizeValue() for other types of
-  // input elements has not been implemented.
   if (isTextField(element)) {
     return sanitizeValueForTextFieldInputType(
         proposedValue, element as HTMLInputElement);
+  }
+  if (inferenceUtil.isDateField(element) &&
+      autofillFormFeaturesApi.getFunction(
+          'isAutofillSupportDateInputEnabled')()) {
+    return sanitizeValueForDateInputType(proposedValue);
+  }
+  return proposedValue;
+}
+
+/**
+ * Returns a sanitized value for a date input field.
+ *
+ * @param proposedValue The proposed value.
+ * @return The sanitized value.
+ */
+function sanitizeValueForDateInputType(proposedValue: string): string {
+  // Date picker HTML elements accept only dates in the format YYYY-MM-DD
+  // (ISO 8601) by spec.
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(proposedValue)) {
+    return '';
   }
   return proposedValue;
 }
