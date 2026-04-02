@@ -56,9 +56,8 @@ FEATURES=
 
 # GLIC specific feature flags.
 GLIC_BASIC_FEATURES=Glic,TabstripComboButton,GlicUserStatusCheck,\
-ContextualCueing,GlicKeyboardShortcutNewBadge,GlicRollout,GlicUseNonClient,\
-GlicWindowDragRegions,GlicHandleDraggingNatively,GlicZeroStateSuggestions,\
-FeatureManagementGlic
+ContextualCueing,GlicKeyboardShortcutNewBadge,GlicRollout,\
+GlicZeroStateSuggestions,FeatureManagementGlic
 
 GLIC_SIDE_PANEL_FEATURES=GlicMultiInstance,GlicDefaultTabContextSetting,\
 GlicUnifiedFreScreen,GlicDaisyChainNewTabs,GlicLiveModeOnlyGlow
