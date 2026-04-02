@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -30,7 +31,23 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_BookmarksSidePanelUI,
                         SidePanelWebUIViewT)
 END_METADATA
 
-BookmarksSidePanelCoordinator::BookmarksSidePanelCoordinator() = default;
+DEFINE_USER_DATA(BookmarksSidePanelCoordinator);
+
+// static
+BookmarksSidePanelCoordinator* BookmarksSidePanelCoordinator::From(
+    BrowserWindowInterface* browser) {
+  return browser ? BookmarksSidePanelCoordinator::Get(
+                       browser->GetUnownedUserDataHost())
+                 : nullptr;
+}
+
+BookmarksSidePanelCoordinator::BookmarksSidePanelCoordinator(
+    BrowserWindowInterface& browser_window_interface)
+    : scoped_unowned_user_data_(
+          browser_window_interface.GetUnownedUserDataHost(),
+          *this) {}
+
+BookmarksSidePanelCoordinator::~BookmarksSidePanelCoordinator() = default;
 
 void BookmarksSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {

@@ -32,9 +32,8 @@ void SidePanelHelper::PopulateGlobalEntries(
       window_registry);
 
   // Add bookmarks.
-  browser->browser_window_features()
-      ->bookmarks_side_panel_coordinator()
-      ->CreateAndRegisterEntry(window_registry);
+  BookmarksSidePanelCoordinator::From(browser)->CreateAndRegisterEntry(
+      window_registry);
 
   if (webui_browser::IsWebUIBrowserEnabled()) {
     // TODO(webium): Consider supporting additional side panels beyond reading

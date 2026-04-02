@@ -282,10 +282,6 @@ class BrowserWindowFeatures {
     return cast_browser_controller_.get();
   }
 
-  BookmarksSidePanelCoordinator* bookmarks_side_panel_coordinator() {
-    return bookmarks_side_panel_coordinator_.get();
-  }
-
   ExtensionInstalledWatcher* extension_installed_watcher() {
     return extension_installed_watcher_.get();
   }

@@ -427,7 +427,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   }
 
   bookmarks_side_panel_coordinator_ =
-      std::make_unique<BookmarksSidePanelCoordinator>();
+      GetUserDataFactory().CreateInstance<BookmarksSidePanelCoordinator>(
+          *browser, *browser);
 
   signin_view_controller_ = std::make_unique<SigninViewController>(
       browser, profile, tab_strip_model_);
