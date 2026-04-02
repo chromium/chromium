@@ -218,9 +218,8 @@
         "type": "function",
         "nocompile": true,
         "parameters": [
-          // These need to be optional because they can be null.
-          {"type": "any", "name": "expected", "optional": true},
-          {"type": "any", "name": "actual", "optional": true}
+          {"type": "any", "name": "value", "optional": true},
+          {"type": "any", "name": "other_value", "optional": true}
         ]
       },
       {
@@ -229,8 +228,8 @@
         "nocompile": true,
         "parameters": [
           // These need to be optional because they can be null.
-          {"type": "any", "name": "expected", "optional": true},
-          {"type": "any", "name": "actual", "optional": true},
+          {"type": "any", "name": "value", "optional": true},
+          {"type": "any", "name": "other_value", "optional": true},
           {
             "type": "string",
             "name": "message",
@@ -244,9 +243,8 @@
         "type": "function",
         "nocompile": true,
         "parameters": [
-          // These need to be optional because they can be null.
-          {"type": "any", "name": "expected", "optional": true},
-          {"type": "any", "name": "actual", "optional": true},
+          {"type": "any", "name": "value", "optional": true},
+          {"type": "any", "name": "other_value", "optional": true},
           {
             "type": "string",
             "name": "message",

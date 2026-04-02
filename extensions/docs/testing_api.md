@@ -120,8 +120,8 @@ chrome.test.runTests([
 
 ### Checks
 
-#### checkDeepEq(expected, actual)
-Checks if `expected` is equal to `actual`. If `expected` is an object, this will
+#### checkDeepEq(value, other_value)
+Checks if `value` is equal to `other_value`. If `value` is an object, this will
 perform a deep-equals check (i.e., verifying that two objects are equivalent by
 value, rather than have the same address) and return `true`. Otherwise returns
 `false`.
@@ -146,17 +146,16 @@ chrome.test.assertFalse(/* boolean */ condition, /* optional string */ message )
 Asserts that the given condition strictly evaluates to the boolean `true` (or
 `false`), printing out the optional error message if it is not.
 
-#### assertEq/assertNe(expected, actual, message?)
+#### assertEq/assertNe(value, other_value, message?)
 
 ```js
-chrome.test.assertEq(expected, actual, /*optional*/ message);
-chrome.test.assertNe(expected, actual, /*optional*/ message);
+chrome.test.assertEq(value, other_value, /*optional*/ message);
+chrome.test.assertNe(value, other_value, /*optional*/ message);
 ```
 
-Asserts that the provided value matches (or doesn't match) the expected value
-via `checkDeepEq(expected, actual)`. If the expected value does not match (or
-unexpectedly matches) the actual value, this will print out the expected and/or
-actual values.
+Asserts that the provided values match (or don't match)
+via `checkDeepEq(value, other_value)`. If the values do not match (or
+unexpectedly match), this will print out the compared values.
 
 #### assertNoLastError()
 Asserts that `chrome.runtime.lastError` is undefined, printing out the error

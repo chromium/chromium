@@ -468,13 +468,13 @@ apiBridge.registerCustomHook(function(api) {
     assertBool(test, false, message);
   });
 
-  apiFunctions.setHandleRequest('checkDeepEq', function(expected, actual) {
-    return checkEq(expected, actual);
+  apiFunctions.setHandleRequest('checkDeepEq', function(value, other_value) {
+    return checkEq(value, other_value);
   });
 
   apiFunctions.setHandleRequest(
-      'assertEq', function(expected, actual, message) {
-        if (chromeTest.checkDeepEq(expected, actual)) {
+      'assertEq', function(value, other_value, message) {
+        if (chromeTest.checkDeepEq(value, other_value)) {
           return;
         }
 
@@ -483,22 +483,23 @@ apiBridge.registerCustomHook(function(api) {
           errorMsg += ': ' + message;
         }
 
-        if (typeof expected == 'object' || typeof actual == 'object') {
-          errorMsg += '\nActual: ' + ($JSON.stringify(actual) || '' + actual) +
-              '\nExpected: ' + ($JSON.stringify(expected) || '' + expected);
+        if (typeof value == 'object' || typeof other_value == 'object') {
+          errorMsg += '\n' + ($JSON.stringify(value) || '' + value) +
+              ' did not deep-equal ' +
+              ($JSON.stringify(other_value) || '' + other_value);
         } else {
-          errorMsg += `\nActual: ${actual}\nExpected: ${expected}`;
-          if (typeof expected != typeof actual) {
-            errorMsg += ` (type mismatch)\nActual Type: ${
-                typeof actual}\nExpected Type:${typeof expected}`;
+          errorMsg += `\n${value} did not deep-equal ${other_value}`;
+          if (typeof value != typeof other_value) {
+            errorMsg += ` (type mismatch)\nType: ${typeof value}\nOther Type:${
+                typeof other_value}`;
           }
         }
         chromeTest.fail(errorMsg);
       });
 
   apiFunctions.setHandleRequest(
-      'assertNe', function(expected, actual, message) {
-        if (!chromeTest.checkDeepEq(expected, actual)) {
+      'assertNe', function(value, other_value, message) {
+        if (!chromeTest.checkDeepEq(value, other_value)) {
           return;
         }
 
@@ -507,8 +508,8 @@ apiBridge.registerCustomHook(function(api) {
           errorMsg += ': ' + message;
         }
 
-        errorMsg += '\nExpected unequal values, but both are ' +
-            $JSON.stringify(expected);
+        errorMsg +=
+            '\nExpected unequal values, but both are ' + $JSON.stringify(value);
         chromeTest.fail(errorMsg);
       });
 

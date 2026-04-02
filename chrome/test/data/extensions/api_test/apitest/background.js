@@ -18,13 +18,11 @@ chrome.test.runTests([
 
       chrome.test.fail = chromeTestFail;
       chrome.test.assertEq(
-        '\nAPI Test Error in testAssertEq' +
-        '\nActual: null' +
-        '\nExpected: {"test":1}' +
-        '\nAPI Test Error in testAssertEq' +
-        '\nActual: {"test":1}' +
-        '\nExpected: null',
-        messages);
+          '\nAPI Test Error in testAssertEq\n' +
+              '{"test":1} did not deep-equal null\n' +
+              'API Test Error in testAssertEq\n' +
+              'null did not deep-equal {"test":1}',
+          messages);
       chrome.test.notifyPass();
     }
 ]);

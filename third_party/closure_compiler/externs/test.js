@@ -127,29 +127,29 @@ chrome.test.assertTrue = function(test, message) {};
 chrome.test.assertFalse = function(test, message) {};
 
 /**
- * @param {*=} expected
- * @param {*=} actual
+ * @param {*=} value
+ * @param {*=} other_value
  * @see https://developer.chrome.com/extensions/test#method-checkDeepEq
  */
-chrome.test.checkDeepEq = function(expected, actual) {};
+chrome.test.checkDeepEq = function(value, other_value) {};
 
 /**
- * @param {*=} expected
- * @param {*=} actual
+ * @param {*=} value
+ * @param {*=} other_value
  * @param {string=} message A custom error message to print out with the test
  *     failure, if any.
  * @see https://developer.chrome.com/extensions/test#method-assertEq
  */
-chrome.test.assertEq = function(expected, actual, message) {};
+chrome.test.assertEq = function(value, other_value, message) {};
 
 /**
- * @param {*=} expected
- * @param {*=} actual
+ * @param {*=} value
+ * @param {*=} other_value
  * @param {string=} message A custom error message to print out with the test
  *     failure, if any.
  * @see https://developer.chrome.com/extensions/test#method-assertNe
  */
-chrome.test.assertNe = function(expected, actual, message) {};
+chrome.test.assertNe = function(value, other_value, message) {};
 
 /**
  * @see https://developer.chrome.com/extensions/test#method-assertNoLastError
