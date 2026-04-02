@@ -4664,13 +4664,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.CompletionDelay3" units="ms"
-    expires_after="2025-11-16">
+    expires_after="2026-10-01">
   <owner>horo@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     Measures the time from when a resource request completes to when the
     renderer is notified. Logged for every resource request if the request has
     never been frozen.
+
+    Warning: this histogram was expired from 2025-11-16 to 2026-04-02; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4698,13 +4701,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.RedirectDelay2" units="ms"
-    expires_after="2025-09-14">
+    expires_after="2026-10-01">
   <owner>horo@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     Measures the time from when a redirect from a resource request happens to
     when the renderer is notified. Logged for every resource request if the
     request has never been frozen.
+
+    Warning: this histogram was expired from 2025-09-14 to 2026-04-02; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4720,13 +4726,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.StartDelay2" units="ms"
-    expires_after="2026-01-18">
+    expires_after="2026-10-01">
   <owner>horo@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     Measures the time from when the renderer starts a resource request to when
     it is actually started on the network. Logged for every resource request if
     the request has never been frozen.
+
+    Warning: this histogram was expired from 2026-01-18 to 2026-04-02; data may
+    be missing.
   </summary>
 </histogram>
 
