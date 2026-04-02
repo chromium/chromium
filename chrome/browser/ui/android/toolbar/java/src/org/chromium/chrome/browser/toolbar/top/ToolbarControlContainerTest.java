@@ -713,7 +713,7 @@ public class ToolbarControlContainerTest {
 
         toolbarContainer.setVisibility(View.VISIBLE);
         doReturn(100).when(mToolbar).getTabStripHeight();
-        assertFalse(controlContainer.onInterceptTouchEvent(clickEvent));
+        assertTrue(controlContainer.onInterceptTouchEvent(clickEvent));
 
         doReturn(0).when(mToolbar).getTabStripHeight();
         controlContainer.addTouchEventObserver(mTouchEventObserver);
