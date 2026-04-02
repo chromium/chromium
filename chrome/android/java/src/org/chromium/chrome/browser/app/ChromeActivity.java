@@ -2766,6 +2766,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             if (currentTab.canGoBack()) {
                 currentTab.goBack();
                 RecordUserAction.record("MobileMenuBack");
+                TrackerFactory.getTrackerForProfile(currentTab.getProfile())
+                        .notifyEvent(EventConstants.THREE_DOT_MENU_BACK_BUTTON_CLICKED);
                 return true;
             }
             return false;

@@ -247,6 +247,9 @@ public final class EventConstants {
     public static final String TAB_SWITCHER_BUTTON_LONG_CLICKED =
             "tab_switcher_button_long_clicked";
 
+    public static final String THREE_DOT_MENU_BACK_BUTTON_CLICKED =
+            "three_dot_menu_back_button_clicked";
+
     /** The `Translate` app menu button was clicked. */
     public static final String TRANSLATE_MENU_BUTTON_CLICKED = "translate_menu_button_clicked";
 
