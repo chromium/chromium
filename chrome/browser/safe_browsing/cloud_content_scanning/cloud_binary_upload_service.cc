@@ -221,63 +221,75 @@ CloudBinaryUploadService::CloudBinaryUploadService(
 
 CloudBinaryUploadService::~CloudBinaryUploadService() = default;
 
+enterprise_connectors::ScanRequestUploadResult
+CloudBinaryUploadService::GetConsumerAuthResult(
+    const enterprise_connectors::BinaryUploadRequest& request) {
+  DCHECK(!request.IsAuthRequest());
+  const bool is_advanced_protection =
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile_)
+          ->IsUnderAdvancedProtection();
+  const bool is_enhanced_protection =
+      profile_ && IsEnhancedProtectionEnabled(*profile_->GetPrefs());
+
+  return is_advanced_protection || is_enhanced_protection
+             ? enterprise_connectors::ScanRequestUploadResult::kSuccess
+             : enterprise_connectors::ScanRequestUploadResult::kUnauthorized;
+}
+
+std::optional<enterprise_connectors::ScanRequestUploadResult>
+CloudBinaryUploadService::MaybeGetEnterpriseAuthResult(
+    const enterprise_connectors::BinaryUploadRequest& request) {
+  auto connector = request.analysis_connector();
+  std::string dm_token = request.device_token();
+  TokenAndConnector token_and_connector = {dm_token, connector};
+
+  if (dm_token.empty()) {
+    return enterprise_connectors::ScanRequestUploadResult::kUnauthorized;
+  }
+
+  if (!can_upload_enterprise_data_.contains(token_and_connector) ||
+      can_upload_enterprise_data_[token_and_connector] !=
+          enterprise_connectors::ScanRequestUploadResult::kSuccess) {
+    return std::nullopt;
+  }
+
+  return can_upload_enterprise_data_[token_and_connector];
+}
+
 void CloudBinaryUploadService::MaybeUploadForDeepScanning(
     std::unique_ptr<BinaryUploadRequest> request) {
   AssertCalledOnUIThread();
 
   if (IsConsumerScanRequest(*request)) {
-    DCHECK(!request->IsAuthRequest());
-    const bool is_advanced_protection =
-        safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-            profile_)
-            ->IsUnderAdvancedProtection();
-    const bool is_enhanced_protection =
-        profile_ && IsEnhancedProtectionEnabled(*profile_->GetPrefs());
-
-    const enterprise_connectors::ScanRequestUploadResult
-        is_deep_scan_authorized =
-            is_advanced_protection || is_enhanced_protection
-                ? enterprise_connectors::ScanRequestUploadResult::kSuccess
-                : enterprise_connectors::ScanRequestUploadResult::kUnauthorized;
-    MaybeUploadForDeepScanningCallback(
-        std::move(request),
-        /*auth_check_result=*/is_deep_scan_authorized);
+    auto consumer_auth_result = GetConsumerAuthResult(*request);
+    MaybeUploadForDeepScanningCallback(std::move(request),
+                                       consumer_auth_result);
     return;
   }
 
-  // Make copies of the connector and DM token since |request| is about to move.
-  auto connector = request->analysis_connector();
+  std::optional<enterprise_connectors::ScanRequestUploadResult>
+      enterprise_auth_result = MaybeGetEnterpriseAuthResult(*request);
+  if (enterprise_auth_result.has_value()) {
+    MaybeUploadForDeepScanningCallback(std::move(request),
+                                       enterprise_auth_result.value());
+    return;
+  }
+
+  // Get data from `request` before calling `IsAuthorized` since it is about
+  // to move.
+  GURL url = request->GetUrlWithParams();
+  bool per_profile_request = request->per_profile_request();
   std::string dm_token = request->device_token();
-  TokenAndConnector token_and_connector = {dm_token, connector};
+  auto connector = request->analysis_connector();
 
-  if (dm_token.empty()) {
-    MaybeUploadForDeepScanningCallback(
-        std::move(request),
-        /*authorized*/ enterprise_connectors::ScanRequestUploadResult::
-            kUnauthorized);
-    return;
-  }
-
-  // Validate if `token_and_connector` is authorized to upload data if this is
-  // the first time or the previous check failed.
-  if (!can_upload_enterprise_data_.contains(token_and_connector) ||
-      can_upload_enterprise_data_[token_and_connector] !=
-          enterprise_connectors::ScanRequestUploadResult::kSuccess) {
-    // Get data from `request` before calling `IsAuthorized` since it is about
-    // to move.
-    GURL url = request->GetUrlWithParams();
-    bool per_profile_request = request->per_profile_request();
-    IsAuthorized(
-        std::move(url), per_profile_request,
-        base::BindOnce(
-            &CloudBinaryUploadService::MaybeUploadForDeepScanningCallback,
-            weakptr_factory_.GetWeakPtr(), std::move(request)),
-        dm_token, connector);
-    return;
-  }
-
-  MaybeUploadForDeepScanningCallback(
-      std::move(request), can_upload_enterprise_data_[token_and_connector]);
+  // Send a new auth request to compute the result.
+  IsAuthorized(
+      std::move(url), per_profile_request,
+      base::BindOnce(
+          &CloudBinaryUploadService::MaybeUploadForDeepScanningCallback,
+          weakptr_factory_.GetWeakPtr(), std::move(request)),
+      dm_token, connector);
 }
 
 void CloudBinaryUploadService::MaybeAcknowledge(

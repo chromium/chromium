@@ -258,7 +258,7 @@ std::string BinaryUploadRequest::SetRandomRequestToken() {
 }
 
 enterprise_connectors::AnalysisConnector
-BinaryUploadRequest::analysis_connector() {
+BinaryUploadRequest::analysis_connector() const {
   return content_analysis_request_.analysis_connector();
 }
 

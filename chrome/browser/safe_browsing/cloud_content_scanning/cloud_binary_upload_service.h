@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CLOUD_BINARY_UPLOAD_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 
 #include "base/callback_list.h"
@@ -175,6 +176,13 @@ class CloudBinaryUploadService
   void MaybeUploadForDeepScanningCallback(
       std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request,
       enterprise_connectors::ScanRequestUploadResult auth_check_result);
+
+  enterprise_connectors::ScanRequestUploadResult GetConsumerAuthResult(
+      const enterprise_connectors::BinaryUploadRequest& request);
+
+  std::optional<enterprise_connectors::ScanRequestUploadResult>
+  MaybeGetEnterpriseAuthResult(
+      const enterprise_connectors::BinaryUploadRequest& request);
 
   // Callback once the response from the backend is received.
   void ValidateDataUploadRequestConnectorCallback(

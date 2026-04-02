@@ -160,7 +160,7 @@ class BinaryUploadRequest {
   std::string SetRandomRequestToken();
 
   // Methods for accessing the ContentAnalysisRequest.
-  AnalysisConnector analysis_connector();
+  AnalysisConnector analysis_connector() const;
   const std::string& device_token() const;
   const std::string& request_token() const;
   const std::string& filename() const;
