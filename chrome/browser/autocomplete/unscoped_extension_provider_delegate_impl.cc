@@ -154,8 +154,8 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
   // than the allowed limit, only show the first `kMaxSuggestionsPerExtension`
   // suggestions .
   matches->insert(matches->end(), extension_suggest_matches_.begin(),
-                  std::min(extension_suggest_matches_.end(),
-                           extension_suggest_matches_.begin() +
+                  extension_suggest_matches_.begin() +
+                      std::min(extension_suggest_matches_.size(),
                                kMaxSuggestionsPerExtension));
   // The only case where done can be be true is when all extensions have
   // returned suggestions.
