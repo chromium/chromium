@@ -387,7 +387,8 @@ TEST_F(ActorLoginPermissionServiceImplTest,
                 "chosenAccountId": "account123",
                 "idpOrigin": "https://idp.com",
                 "rpEmbedderOrigin": "https://embedder.com",
-                "rpRequesterOrigin": "https://requester.com"
+                "rpRequesterOrigin": "https://requester.com",
+                "chosenAccountEmail": "user@idp.com"
               },
               "agent": {
                 "type": "AGENT_TYPE_GEMINI_IN_CHROME"
