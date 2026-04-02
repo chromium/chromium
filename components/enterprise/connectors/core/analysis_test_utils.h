@@ -65,12 +65,28 @@ AnalysisSettings* NoSettings();
 //
 // - machine_scope: The scope of a policy flag whether it is meant to be applied
 //                  to the machine(true) or the current user(false).
+//
+// TODO(crbug.com/479863110): Refactor other tests that use this method to use
+// the new version added below and remove this.
 void SetDownloadConnectorsBlock(PrefService* prefs,
                                 std::vector<std::string> rules,
                                 bool machine_scope = true);
 
 // Clears all download protection rules.
 void ClearDownloadProtectionRules(PrefService* prefs);
+
+// Set the Analysis Connectors prefs for testing according to rules.
+//
+// - machine_scope: The scope of a policy flag whether it is meant to be applied
+//                  to the machine(true) or the current user(false).
+void SetAnalysisConnectorsPrefs(PrefService* prefs,
+                                AnalysisConnector connector,
+                                std::vector<std::string> rules,
+                                bool machine_scope);
+
+// Clears all rules for the specific analysis connector.
+void ClearAnalysisConnectorsPrefs(PrefService* prefs,
+                                  AnalysisConnector connector);
 
 }  // namespace enterprise_connectors::test
 

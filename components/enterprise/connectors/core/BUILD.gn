@@ -185,6 +185,8 @@ source_set("test_support") {
     "realtime_reporting_test_server.h",
     "reporting_test_utils.cc",
     "reporting_test_utils.h",
+    "test_connectors_service.cc",
+    "test_connectors_service.h",
     "uploader_test_utils.cc",
     "uploader_test_utils.h",
   ]
@@ -203,6 +205,7 @@ source_set("test_support") {
     "//components/policy/proto",
     "//components/policy/test_support",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//net",
     "//net:test_support",
     "//testing/gmock",
@@ -271,6 +274,7 @@ source_set("cloud_content_scanning_unittests") {
 
   sources = [
     "cloud_content_scanning/connector_data_pipe_getter_unittest.cc",
+    "cloud_content_scanning/deep_scanning_utils_unittest.cc",
     "cloud_content_scanning/file_analysis_request_base_unittest.cc",
     "cloud_content_scanning/file_opening_job_unittest.cc",
     "cloud_content_scanning/files_request_handler_base_unittest.cc",
@@ -285,6 +289,8 @@ source_set("cloud_content_scanning_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/download/public/common:test_support",
+    "//components/enterprise:test_support",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/core:test_support",
@@ -292,12 +298,14 @@ source_set("cloud_content_scanning_unittests") {
     "//components/file_access",
     "//components/file_access:test_support",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/range",
   ]
 }
 

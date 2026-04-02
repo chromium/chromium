@@ -11,14 +11,11 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/download/public/common/download_item.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/gfx/range/range.h"
-
-#if BUILDFLAG(USE_BLINK)
-#include "components/download/public/common/download_item.h"  // nogncheck
-#endif  // BUILDFLAG(USE_BLINK)
 
 namespace enterprise_connectors {
 
@@ -320,7 +317,6 @@ CreateSampleCustomRuleMessage(const std::u16string& msg,
   return custom_message;
 }
 
-#if BUILDFLAG(USE_BLINK)
 std::optional<ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage>
 GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
                               download::DownloadDangerType danger_type) {
@@ -357,7 +353,6 @@ GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
   }
   return std::nullopt;
 }
-#endif  // BUILDFLAG(USE_BLINK)
 
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
   return std::ranges::any_of(response.results(), [](const auto& result) {
