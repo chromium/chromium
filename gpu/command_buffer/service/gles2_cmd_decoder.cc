@@ -3661,8 +3661,15 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
     driver_bug_workarounds.validatePerStageMaxUniformBlocks = true;
   }
 
-  // Initialize uninitialized locals by default
+  // Initialize uninitialized locals and shared variables by default
   driver_bug_workarounds.initializeUninitializedLocals = true;
+  driver_bug_workarounds.initSharedVariables = true;
+
+  // Harden against excessive expressions and undefined behavior
+  driver_bug_workarounds.rejectWebglShadersWithLargeVariables = true;
+  driver_bug_workarounds.rejectWebglShadersWithUndefinedBehavior = true;
+  driver_bug_workarounds.limitCallStackDepth = true;
+  driver_bug_workarounds.limitExpressionComplexity = true;
 
   vertex_translator_ = shader_translator_cache()->GetTranslator(
       GL_VERTEX_SHADER, shader_spec, &resources, SH_ESSL_OUTPUT,
