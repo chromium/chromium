@@ -405,6 +405,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // from BrowserAccessibilityManagerAndroid.
   BrowserAccessibilityAndroid* GetAccessibilityFocus() const;
 
+  // Returns true if the fake android cache is enabled by checking its pointer.
+  bool HasFakeAndroidCache() const;
   void HandlePageLoaded(int32_t unique_id);
   // If |set_subtree_changed| is true, the TYPE_WINDOW_CONTENT_CHANGED event
   // will signal that this change is affecting its underlying subtree.

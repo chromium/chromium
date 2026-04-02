@@ -820,6 +820,13 @@ WebContentsAccessibilityAndroid::GetAccessibilityFocus() const {
   return GetAXFromUniqueID(id);
 }
 
+bool WebContentsAccessibilityAndroid::HasFakeAndroidCache() const {
+  if (java_fake_android_cache_ref_.is_uninitialized()) {
+    return false;
+  }
+  return true;
+}
+
 void WebContentsAccessibilityAndroid::HandleContentChanged(
     int32_t unique_id,
     bool set_subtree_changed) {

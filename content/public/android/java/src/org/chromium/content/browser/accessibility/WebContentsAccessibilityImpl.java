@@ -328,7 +328,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mHistogramRecorder = new AccessibilityHistogramRecorder();
 
         if (ContentFeatureMap.isEnabled(
-                ContentFeatures.ACCESSIBILITY_REQUEST_SCOPED_CONTENT_CHANGED_EVENTS)) {
+                        ContentFeatures.ACCESSIBILITY_REQUEST_SCOPED_CONTENT_CHANGED_EVENTS)
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             mFakeAndroidCache = new FakeAndroidCache(this, mHistogramRecorder);
         }
 
