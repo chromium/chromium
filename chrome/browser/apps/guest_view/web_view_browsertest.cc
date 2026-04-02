@@ -88,6 +88,7 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/mock_chooser_controller_view.h"
@@ -8107,7 +8108,7 @@ class ContextualTasksWebViewTest : public WebViewTest {
     scoped_feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {});
+        {performance_manager::features::kTransientKeepAlivePolicy});
   }
 
  private:
