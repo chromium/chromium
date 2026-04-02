@@ -23,6 +23,7 @@ anyhow = "1.0.98"
 arbitrary-int = "2.1.1" #TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 backtrace = "0.3.76" #TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 base64 = "0.22"
+bincode = "2.0.1" #TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 bitflags = "2"
 bytes = "1"
 chrono = "0.4.43"

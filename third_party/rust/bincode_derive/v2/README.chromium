@@ -1,0 +1,11 @@
+Name: bincode_derive
+URL: https://crates.io/crates/bincode_derive
+Version: 2.0.1
+Revision: 4673360aa638b2b907dff24538de54f258d157da
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/bincode_derive-v2/LICENSE.md
+Shipped: no
+Security Critical: no
+
+Description: Implementation of #[derive(Encode, Decode)] for bincode

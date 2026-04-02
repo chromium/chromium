@@ -1,0 +1,170 @@
+{
+  "name": "CI",
+  "on":
+    {
+      "push": { "branches": ["trunk", "v*", "ci/*"] },
+      "pull_request": { "branches": ["trunk", "v*"] },
+    },
+  "jobs":
+    {
+      "check":
+        {
+          "name": "Check",
+          "runs-on": "ubuntu-latest",
+          "strategy": { "fail-fast": false, "matrix": { "rust": [
+                      "stable",
+                      "beta",
+                      "nightly",
+                      # "1.55.0" TODO: Pick latest stable version when we release 2.0
+                    ] } },
+          "steps":
+            [
+              { "uses": "actions/checkout@v4", "name": "Checkout" },
+              {
+                "uses": "actions-rs/toolchain@v1",
+                "with":
+                  {
+                    "profile": "minimal",
+                    "toolchain": "${{ matrix.rust }}",
+                    "override": true,
+                  },
+                "name": "Install Rust ${{ matrix.rust }}",
+              },
+              {
+                "uses": "actions-rs/cargo@v1",
+                "with": { "command": "check", "args": "--all-features" },
+                "name": "Run `cargo check`",
+              },
+              {
+                "uses": "actions-rs/cargo@v1",
+                "with": { "command": "check", "args": "--examples" },
+                "name": "Check examples",
+              },
+            ],
+        },
+      "test":
+        {
+          "name": "Test",
+          "runs-on": "ubuntu-latest",
+          "strategy": { "matrix": { "rust": [
+                      "stable",
+                      # "1.55.0" TODO: Pick latest stable version when we release 2.0
+                    ] } },
+          "steps":
+            [
+              { "uses": "actions/checkout@v4", "name": "Checkout" },
+              {
+                "uses": "actions-rs/toolchain@v1",
+                "with":
+                  {
+                    "profile": "minimal",
+                    "toolchain": "${{ matrix.rust }}",
+                    "override": true,
+                  },
+                "name": "Install Rust ${{ matrix.rust }}",
+              },
+              {
+                "run": "cargo test --all --features proc-macro2",
+                "name": "Run `cargo test`",
+                "env": { "RUSTFLAGS": "-D warnings" },
+              },
+            ],
+        },
+      "test_project":
+        {
+          "name": "Test Project",
+          "runs-on": "ubuntu-latest",
+          "strategy": { "matrix": { "rust": [
+                      "stable",
+                      # "1.55.0" TODO: Pick latest stable version when we release 0.1
+                    ] } },
+          "steps":
+            [
+              { "uses": "actions/checkout@v4", "name": "Checkout" },
+              {
+                "uses": "actions-rs/toolchain@v1",
+                "with":
+                  {
+                    "profile": "minimal",
+                    "toolchain": "${{ matrix.rust }}",
+                    "override": true,
+                  },
+                "name": "Install Rust ${{ matrix.rust }}",
+              },
+              {
+                "run": "cd test && cargo run",
+                "name": "Run the test project",
+                "env": { "RUSTFLAGS": "-D warnings" },
+              },
+            ],
+        },
+      "lints":
+        {
+          "name": "Lints",
+          "runs-on": "ubuntu-latest",
+          "steps":
+            [
+              { "uses": "actions/checkout@v4", "name": "Checkout" },
+              {
+                "uses": "actions-rs/toolchain@v1",
+                "with":
+                  {
+                    "profile": "minimal",
+                    "toolchain": "stable",
+                    "override": true,
+                    "components": "rustfmt, clippy",
+                  },
+                "name": "Install Rust stable",
+              },
+              {
+                "uses": "actions-rs/cargo@v1",
+                "with": { "command": "fmt", "args": "--all -- --check" },
+                "name": "Run `cargo fmt`",
+              },
+              {
+                "uses": "actions-rs/cargo@v1",
+                "with":
+                  {
+                    "command": "clippy",
+                    "args": "--all-features -- -D warnings",
+                  },
+                "name": "Run `cargo clippy`",
+              },
+            ],
+        },
+      "coverage":
+        {
+          "name": "Code Coverage",
+          "runs-on": "ubuntu-latest",
+          "steps":
+            [
+              { "uses": "actions/checkout@v4", "name": "Checkout" },
+              {
+                "uses": "actions-rs/toolchain@v1",
+                "with":
+                  {
+                    "profile": "minimal",
+                    "toolchain": "nightly",
+                    "override": true,
+                  },
+                "name": "Install Rust nightly",
+              },
+              {
+                "name": "Run cargo-tarpaulin",
+                "uses": "actions-rs/tarpaulin@v0.1",
+                "with": { "version": "0.18.2", "args": "--all" },
+              },
+              {
+                "name": "Upload to codecov.io",
+                "uses": "codecov/codecov-action@v3",
+              },
+              {
+                "name": "Archive code coverage results",
+                "uses": "actions/upload-artifact@v3",
+                "with":
+                  { "name": "code-coverage-report", "path": "cobertura.xml" },
+              },
+            ],
+        },
+    },
+}

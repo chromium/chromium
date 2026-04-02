@@ -1,0 +1,9 @@
+[package]
+name = "unty"
+version = "0.0.4"
+edition = "2021"
+description = "Explicitly types your generics"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/bincode-org/unty"
+authors = ["Victor Koenders <bincode@trang.ar>"]
+rust-version = "1.56.1"

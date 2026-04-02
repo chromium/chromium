@@ -165,6 +165,15 @@ allow_unsafe = false
 [crate.better_any]
 extra_kv = { allow_unsafe = true }
 
+[crate.bincode]
+group = 'test'
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = false }
+
+[crate.bincode_derive]
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = false }
+
 [crate.bit-set]
 extra_kv = { allow_unsafe = true }
 
@@ -756,6 +765,10 @@ allow_unsafe = true
 [crate.unicode-width.extra_kv]
 allow_unsafe = false
 
+[crate.unty]
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = true }
+
 [crate.utf8_iter.extra_kv]
 # Crate exists to encapsulate common UTF8 decoding code
 allow_unsafe = true
@@ -764,6 +777,10 @@ allow_unsafe = true
 extra_kv = { allow_unsafe = true }
 
 [crate.version_check]
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = false }
+
+[crate.virtue]
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 

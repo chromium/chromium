@@ -1,0 +1,11 @@
+Name: virtue
+URL: https://crates.io/crates/virtue
+Version: 0.0.18
+Revision: 1ecc01325a038c4f28aa8de25caae7c6eb91c66f
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/virtue-v0_0_18/LICENSE.md
+Shipped: no
+Security Critical: no
+
+Description: A sinless derive macro helper

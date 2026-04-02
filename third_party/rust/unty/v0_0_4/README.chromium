@@ -1,0 +1,11 @@
+Name: unty
+URL: https://crates.io/crates/unty
+Version: 0.0.4
+Revision: 5455639ae05f42202a270f16bb4d79f6791d9b70
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/unty-v0_0_4/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Explicitly types your generics
