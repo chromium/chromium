@@ -662,7 +662,7 @@ void DeepScanningRequest::OnScanComplete(
     const base::FilePath& current_path,
     enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  RecordDeepScanMetrics(
+  enterprise_connectors::RecordDeepScanMetrics(
       analysis_settings_.cloud_or_local_settings.is_cloud_analysis(),
       /*access_point=*/enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
       /*duration=*/base::TimeTicks::Now() - upload_start_times_[current_path],

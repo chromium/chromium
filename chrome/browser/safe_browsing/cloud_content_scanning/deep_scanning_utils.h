@@ -30,34 +30,11 @@ enterprise_connectors::DeepScanAccessPoint AccessPointFromRequest(
     enterprise_connectors::AnalysisConnector connector,
     enterprise_connectors::ContentAnalysisRequest::Reason reason);
 
-// Helper functions to record DeepScanning UMA metrics for the duration of the
-// request split by its result and bytes/sec for successful requests.
-void RecordDeepScanMetrics(
-    bool is_cloud,
-    enterprise_connectors::DeepScanAccessPoint access_point,
-    base::TimeDelta duration,
-    int64_t total_bytes,
-    const enterprise_connectors::ScanRequestUploadResult& result,
-    const enterprise_connectors::ContentAnalysisResponse& response);
-void RecordDeepScanMetrics(
-    bool is_cloud,
-    enterprise_connectors::DeepScanAccessPoint access_point,
-    base::TimeDelta duration,
-    int64_t total_bytes,
-    const std::string& result,
-    bool success);
-
 // Helper function to make ContentAnalysisResponses for tests.
 enterprise_connectors::ContentAnalysisResponse
 SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
                                         std::optional<bool> malware_success,
                                         bool has_custom_rule_message);
-
-// Helper function to convert a enterprise_connectors::ScanRequestUploadResult
-// to a CamelCase string.
-std::string BinaryUploadServiceResultToString(
-    const enterprise_connectors::ScanRequestUploadResult& result,
-    bool success);
 
 // Helper enum and function to manipulate crash keys relevant to scanning.
 // If a key would be set to 0, it is unset.

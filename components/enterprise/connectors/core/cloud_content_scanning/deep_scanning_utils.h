@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_
 
+#include "base/time/time.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/content_analysis_info_base.h"
@@ -100,6 +101,27 @@ RequestHandlerResult CalculateRequestHandlerResult(
     const AnalysisSettings& settings,
     ScanRequestUploadResult upload_result,
     const ContentAnalysisResponse& response);
+
+// Helper function to convert a enterprise_connectors::ScanRequestUploadResult
+// to a CamelCase string.
+std::string BinaryUploadServiceResultToString(
+    const ScanRequestUploadResult& result,
+    bool success);
+
+// Helper functions to record DeepScanning UMA metrics for the duration of the
+// request split by its result and bytes/sec for successful requests.
+void RecordDeepScanMetrics(bool is_cloud,
+                           DeepScanAccessPoint access_point,
+                           base::TimeDelta duration,
+                           int64_t total_bytes,
+                           const ScanRequestUploadResult& result,
+                           const ContentAnalysisResponse& response);
+void RecordDeepScanMetrics(bool is_cloud,
+                           DeepScanAccessPoint access_point,
+                           base::TimeDelta duration,
+                           int64_t total_bytes,
+                           const std::string& result,
+                           bool success);
 
 }  // namespace enterprise_connectors
 

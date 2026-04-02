@@ -48,6 +48,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
@@ -220,7 +221,7 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
   // Don't report this upload as cancelled if the user didn't bypass the
   // warning.
   if (!warning) {
-    safe_browsing::RecordDeepScanMetrics(
+    RecordDeepScanMetrics(
         data_.settings.cloud_or_local_settings.is_cloud_analysis(),
         access_point_, base::TimeTicks::Now() - upload_start_time_, 0,
         "CancelledByUser", false);

@@ -632,10 +632,10 @@ void CloudBinaryUploadService::MaybeTrackUploadUserCancellation(
     base::TimeDelta total_duration =
         base::TimeTicks::Now() -
         user_action_data_[action_id].cancelled_time.value();
-    safe_browsing::RecordDeepScanMetrics(
-        user_action_data_[action_id].is_cloud,
-        user_action_data_[action_id].access_point, total_duration, 0,
-        "CancelledByUserCancellationTime", false);
+    RecordDeepScanMetrics(user_action_data_[action_id].is_cloud,
+                          user_action_data_[action_id].access_point,
+                          total_duration, 0, "CancelledByUserCancellationTime",
+                          false);
 
     user_action_data_.erase(action_id);
   }

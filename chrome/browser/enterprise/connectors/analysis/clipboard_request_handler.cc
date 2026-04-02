@@ -153,11 +153,11 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
   request_tokens_to_ack_final_actions_[response_.request_token()] =
       GetAckFinalAction(response_);
 
-  safe_browsing::RecordDeepScanMetrics(
-      content_analysis_info_->settings()
-          .cloud_or_local_settings.is_cloud_analysis(),
-      access_point_, base::TimeTicks::Now() - upload_start_time_, content_size_,
-      result, response_);
+  RecordDeepScanMetrics(content_analysis_info_->settings()
+                            .cloud_or_local_settings.is_cloud_analysis(),
+                        access_point_,
+                        base::TimeTicks::Now() - upload_start_time_,
+                        content_size_, result, response_);
 
   auto request_handler_result = CalculateRequestHandlerResult(
       content_analysis_info_->settings(), result, response_);

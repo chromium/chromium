@@ -345,7 +345,7 @@ void FilesRequestHandler::FileRequestCallback(
                                    : upload_start_time_;
 
   const auto& analysis_settings = content_analysis_info_->settings();
-  safe_browsing::RecordDeepScanMetrics(
+  RecordDeepScanMetrics(
       analysis_settings.cloud_or_local_settings.is_cloud_analysis(),
       access_point_, base::TimeTicks::Now() - start_timestamp,
       file_info_[index].size, upload_result, response);

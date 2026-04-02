@@ -165,11 +165,11 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
   request_tokens_to_ack_final_actions_[response_.request_token()] =
       GetAckFinalAction(response_);
 
-  safe_browsing::RecordDeepScanMetrics(
-      content_analysis_info_->settings()
-          .cloud_or_local_settings.is_cloud_analysis(),
-      DeepScanAccessPoint::PRINT, base::TimeTicks::Now() - upload_start_time_,
-      page_size_bytes_, result, response_);
+  RecordDeepScanMetrics(content_analysis_info_->settings()
+                            .cloud_or_local_settings.is_cloud_analysis(),
+                        DeepScanAccessPoint::PRINT,
+                        base::TimeTicks::Now() - upload_start_time_,
+                        page_size_bytes_, result, response_);
 
   auto request_handler_result = CalculateRequestHandlerResult(
       content_analysis_info_->settings(), result, response_);

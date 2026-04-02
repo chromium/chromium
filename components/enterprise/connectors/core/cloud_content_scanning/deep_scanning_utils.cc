@@ -5,6 +5,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -13,6 +14,9 @@
 namespace enterprise_connectors {
 
 namespace {
+
+constexpr int kMinBytesPerSecond = 1;
+constexpr int kMaxBytesPerSecond = 100 * 1024 * 1024;  // 100 MB/s
 
 std::string MaybeGetUnscannedReason(ScanRequestUploadResult result) {
   switch (result) {
@@ -373,6 +377,105 @@ RequestHandlerResult CalculateRequestHandlerResult(
     }
   }
   return result;
+}
+
+void RecordDeepScanMetrics(bool is_cloud,
+                           DeepScanAccessPoint access_point,
+                           base::TimeDelta duration,
+                           int64_t total_bytes,
+                           const ScanRequestUploadResult& result,
+                           const ContentAnalysisResponse& response) {
+  // Don't record UMA metrics for this result.
+  if (result == ScanRequestUploadResult::kUnauthorized) {
+    return;
+  }
+  bool dlp_verdict_success = true;
+  bool malware_verdict_success = true;
+  for (const auto& response_result : response.results()) {
+    if (response_result.tag() == "dlp" &&
+        response_result.status() != ContentAnalysisResponse::Result::SUCCESS) {
+      dlp_verdict_success = false;
+    }
+    if (response_result.tag() == "malware" &&
+        response_result.status() != ContentAnalysisResponse::Result::SUCCESS) {
+      malware_verdict_success = false;
+    }
+  }
+
+  bool success = dlp_verdict_success && malware_verdict_success;
+  std::string result_value = BinaryUploadServiceResultToString(result, success);
+
+  // Update |success| so non-SUCCESS results don't log the bytes/sec metric.
+  success &= (result == ScanRequestUploadResult::kSuccess);
+
+  RecordDeepScanMetrics(is_cloud, access_point, duration, total_bytes,
+                        result_value, success);
+}
+
+void RecordDeepScanMetrics(bool is_cloud,
+                           DeepScanAccessPoint access_point,
+                           base::TimeDelta duration,
+                           int64_t total_bytes,
+                           const std::string& result,
+                           bool success) {
+  // Don't record metrics if the duration is unusable.
+  if (duration.InMilliseconds() == 0) {
+    return;
+  }
+
+  const char* prefix =
+      is_cloud ? "SafeBrowsing.DeepScan." : "SafeBrowsing.LocalDeepScan.";
+
+  std::string access_point_string = DeepScanAccessPointToString(access_point);
+  if (success) {
+    base::UmaHistogramCustomCounts(
+        prefix + access_point_string + ".BytesPerSeconds",
+        (1000 * total_bytes) / duration.InMilliseconds(),
+        /*min=*/kMinBytesPerSecond,
+        /*max=*/kMaxBytesPerSecond,
+        /*buckets=*/50);
+  }
+
+  // The scanning timeout is 5 minutes, so the bucket maximum time is 30 minutes
+  // in order to be lenient and avoid having lots of data in the overflow
+  // bucket.
+  base::UmaHistogramCustomTimes(
+      prefix + access_point_string + "." + result + ".Duration", duration,
+      base::Milliseconds(1), base::Minutes(30), 50);
+  base::UmaHistogramCustomTimes(prefix + access_point_string + ".Duration",
+                                duration, base::Milliseconds(1),
+                                base::Minutes(30), 50);
+}
+
+std::string BinaryUploadServiceResultToString(
+    const ScanRequestUploadResult& result,
+    bool success) {
+  switch (result) {
+    case ScanRequestUploadResult::kSuccess:
+      if (success) {
+        return "Success";
+      } else {
+        return "FailedToGetVerdict";
+      }
+    case ScanRequestUploadResult::kUploadFailure:
+      return "UploadFailure";
+    case ScanRequestUploadResult::kTimeout:
+      return "Timeout";
+    case ScanRequestUploadResult::kFileTooLarge:
+      return "FileTooLarge";
+    case ScanRequestUploadResult::kFailedToGetToken:
+      return "FailedToGetToken";
+    case ScanRequestUploadResult::kUnknown:
+      return "Unknown";
+    case ScanRequestUploadResult::kUnauthorized:
+      return "";
+    case ScanRequestUploadResult::kFileEncrypted:
+      return "FileEncrypted";
+    case ScanRequestUploadResult::kTooManyRequests:
+      return "TooManyRequests";
+    case ScanRequestUploadResult::kIncompleteResponse:
+      return "IncompleteResponse";
+  }
 }
 
 }  // namespace enterprise_connectors

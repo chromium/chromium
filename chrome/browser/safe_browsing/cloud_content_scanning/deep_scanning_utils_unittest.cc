@@ -15,11 +15,14 @@
 #include "components/crash/core/common/crash_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
 
 namespace {
+
+using enterprise_connectors::RecordDeepScanMetrics;
 
 constexpr enterprise_connectors::ScanRequestUploadResult
     kAllBinaryUploadServiceResults[]{
@@ -80,7 +83,8 @@ class DeepScanningUtilsUMATest
   }
 
   std::string result_value(bool success) const {
-    return BinaryUploadServiceResultToString(result(), success);
+    return enterprise_connectors::BinaryUploadServiceResultToString(result(),
+                                                                    success);
   }
 
   const base::HistogramTester& histograms() const { return histograms_; }
