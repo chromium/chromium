@@ -5,11 +5,15 @@
 source_set("contextual_cueing") {
   sources = [
     "contextual_cueing_controller.h",
+    "contextual_cueing_service.h",
+    "contextual_cueing_service_factory.h",
+    "cue_target.h",
     "features.h",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/page_content_annotations/core",
   ]
 }
@@ -22,6 +26,8 @@ source_set("impl") {
 
   sources = [
     "contextual_cueing_controller.cc",
+    "contextual_cueing_service.cc",
+    "contextual_cueing_service_factory.cc",
     "features.cc",
   ]
 
@@ -31,6 +37,7 @@ source_set("impl") {
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
+    "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
   ]
@@ -39,7 +46,10 @@ source_set("impl") {
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
-    sources = [ "contextual_cueing_controller_browsertest.cc" ]
+    sources = [
+      "contextual_cueing_controller_browsertest.cc",
+      "contextual_cueing_service_browsertest.cc",
+    ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     deps = [
       ":contextual_cueing",
