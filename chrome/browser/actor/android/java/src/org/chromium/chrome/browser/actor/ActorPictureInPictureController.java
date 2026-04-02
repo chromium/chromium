@@ -337,6 +337,9 @@ public class ActorPictureInPictureController
         }
 
         if (mActorService != null) {
+            for (ActorTask task : mActorService.getActiveTasks()) {
+                mActorService.stopTask(task.getId(), StoppedReason.STOPPED_BY_USER);
+            }
             mActorService.removeObserver(this);
             mActorService = null;
         }

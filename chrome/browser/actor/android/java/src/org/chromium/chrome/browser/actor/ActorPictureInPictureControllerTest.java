@@ -198,13 +198,16 @@ public class ActorPictureInPictureControllerTest {
     }
 
     @Test
-    public void testDestroy_RemovesObserver() {
-        mController.shouldEnterPip();
+    public void testDestroy_StopsTasksAndRemovesObserver() {
+        mController.shouldEnterPip(); // Initialize service
+        ActorTask mockTask = createMockActorTask(101, "Test Title", ActorTaskState.ACTING);
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(mockTask));
 
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
         mController.destroy();
 
         verify(mMockCoordinator).destroy();
+        verify(mActorService).stopTask(101, StoppedReason.STOPPED_BY_USER);
         verify(mActorService).removeObserver(mController);
     }
 
