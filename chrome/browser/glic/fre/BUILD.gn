@@ -62,25 +62,4 @@ if (!is_android) {
       "//testing/gtest",
     ]
   }
-
-  source_set("interactive_ui_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "glic_fre_controller_interactive_uitest.cc" ]
-    deps = [
-      ":fre",
-      "//chrome/browser",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/test_support",
-      "//chrome/browser/ui:browser_element_identifiers",
-      "//chrome/test:test_support_ui",
-      "//content/test:test_support",
-      "//net:test_support",
-      "//ui/base:test_support",
-    ]
-
-    # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-  }
 }

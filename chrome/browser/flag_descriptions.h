@@ -1518,10 +1518,6 @@ inline constexpr char kGlicTrustFirstOnboardingName[] =
     "Glic Trust First Onboarding";
 inline constexpr char kGlicTrustFirstOnboardingDescription[] =
     "Enables the Trust First Onboarding experiment for Glic.";
-inline constexpr char kGlicUnifiedFreScreenName[] = "Glic Unified Fre Screen";
-inline constexpr char kGlicUnifiedFreScreenDescription[] =
-    "Moves the first-run-experience (fre) screen into the side panel.";
-
 inline constexpr char kGlicUseToolbarHeightSidePanelName[] =
     "Glic Use Toolbar Height Side Panel";
 inline constexpr char kGlicUseToolbarHeightSidePanelDescription[] =

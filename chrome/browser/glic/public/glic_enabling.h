@@ -163,9 +163,6 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // * The profile has completed the first run experience
   static bool ShouldShowSettingsPage(Profile* profile);
 
-  // Whether the FRE screen is displayed in the same window as the chat app.
-  static bool IsUnifiedFreEnabled(Profile* profile);
-
   // Whether the Trust-First Onboarding flow should be shown.
   static bool IsTrustFirstOnboardingEnabledForProfile(Profile* profile);
 

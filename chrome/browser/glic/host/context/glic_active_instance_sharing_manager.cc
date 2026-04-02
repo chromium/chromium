@@ -40,9 +40,7 @@ void GlicActiveInstanceSharingManager::OnActiveInstanceChanged(
 }
 
 void GlicActiveInstanceSharingManager::OnProfileReadyStateChanged() {
-  if (GlicEnabling::IsUnifiedFreEnabled(profile_)) {
-    UpdateDelegate();
-  }
+  UpdateDelegate();
 }
 
 void GlicActiveInstanceSharingManager::UpdateDelegate() {

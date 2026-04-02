@@ -308,8 +308,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
                     admin_blocked_redirect_patterns);
 
   source->AddString("glicFreURL", GetFreURL(profile).spec());
-  source->AddBoolean("isUnifiedFre",
-                     GlicEnabling::IsUnifiedFreEnabled(profile));
   source->AddBoolean(
       "shouldShowFre",
       !GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile) &&

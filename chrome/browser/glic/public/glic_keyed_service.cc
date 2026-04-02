@@ -327,19 +327,6 @@ void GlicKeyedService::ToggleUIInternal(
   // Show the FRE if not yet completed, and if we have a browser to use.
   if (fre_controller_->ShouldShowFreDialog()) {
     fre_controller_->MarkFreStartAttempt();
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-    if (!GlicEnabling::IsUnifiedFreEnabled(profile_)) {
-      if (!fre_controller_->CanShowFreDialog(bwi)) {
-        // If the FRE is blocked because it is already showing, we should
-        // instead dismiss it. This allows the glic button to be used to toggle
-        // the presence of the FRE.
-        fre_controller_->DismissFreIfOpenOnActiveTab(bwi);
-        return;
-      }
-      fre_controller_->ShowFreDialog(bwi, source);
-      return;
-    }
-#endif
     fre_controller_->MarkSidepanelFreShown();
   }
 

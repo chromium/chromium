@@ -639,10 +639,6 @@ bool GlicEnabling::IsChromeOSProfileEligible(const Profile* profile) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool GlicEnabling::IsUnifiedFreEnabled(Profile* profile) {
-  return IsMultiInstanceEnabled() &&
-         base::FeatureList::IsEnabled(features::kGlicUnifiedFreScreen);
-}
 
 bool GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(Profile* profile) {
   return IsMultiInstanceEnabled() && !HasConsentedForProfile(profile) &&

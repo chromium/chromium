@@ -838,8 +838,7 @@ class GlicUiUnifiedFreIntegrationTest : public GlicUiInteractiveUiTestBase {
  public:
   GlicUiUnifiedFreIntegrationTest()
       : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/true)) {
-    feature_list_.InitWithFeatures(
-        {features::kGlicUnifiedFreScreen, features::kGlicMultiInstance}, {});
+    feature_list_.InitAndEnableFeature(features::kGlicMultiInstance);
   }
   ~GlicUiUnifiedFreIntegrationTest() override = default;
 

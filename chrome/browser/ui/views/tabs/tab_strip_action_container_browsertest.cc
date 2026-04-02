@@ -280,56 +280,6 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(glic_keyed_service->IsWindowShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, PreloadFreOnNudge) {
-  // We set an artificial activity callback here because it is required for
-  // OnTriggerGlicNudgeUI to actually show the nudge.
-  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
-    GTEST_SKIP() << "Skipping for kGlicTrustFirstOnboarding";
-  }
-  if (base::FeatureList::IsEnabled(features::kGlicUnifiedFreScreen)) {
-    // This test does not work for Unified FRE. Looking at the FRE warming code,
-    // it appears that it wasn't written to work for Unified FRE.
-    // FRE prewarming should be removed anyway, so there's no reason to fix
-    // this; see b/426679298.
-    GTEST_SKIP() << "Skipping for kGlicUnifiedFreScreen";
-  }
-  auto* nudge_controller =
-      browser()->browser_window_features()->glic_nudge_controller();
-  nudge_controller->SetNudgeActivityCallbackForTesting();
-
-  auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-      browser()->GetProfile());
-  glic::SetFRECompletion(browser()->profile(),
-                         glic::prefs::FreStatus::kNotStarted);
-  EXPECT_TRUE(service->fre_controller().ShouldShowFreDialog());
-  EXPECT_FALSE(service->fre_controller().IsWarmed());
-
-  // This will enable preloading again.
-  ResetPrewarming();
-
-  base::RunLoop run_loop;
-  auto subscription = service->fre_controller().AddWebUiStateChangedCallback(
-      base::BindRepeating(
-          [](base::RunLoop* run_loop, glic::mojom::FreWebUiState new_state) {
-            if (new_state == glic::mojom::FreWebUiState::kReady) {
-              run_loop->Quit();
-            }
-          },
-          base::Unretained(&run_loop)));
-
-  nudge_controller->UpdateNudgeLabel(
-      browser()->tab_strip_model()->GetActiveWebContents(), "test",
-      /*prompt_suggestion=*/std::nullopt,
-      /*anchored_message_text=*/std::string(), /*activity=*/std::nullopt,
-      base::DoNothing());
-
-  ShowTabStripNudgeButton(GlicNudgeButton());
-
-  // Wait for the FRE to preload.
-  run_loop.Run();
-  EXPECT_TRUE(service->fre_controller().IsWarmed());
-}
-
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ShowAndHideGlicButtonWhenGlicNudgeButtonShows) {
   ShowTabStripNudgeButton(GlicNudgeButton());

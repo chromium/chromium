@@ -94,9 +94,6 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui)
 
   int reload_max_loading_time_ms = features::kGlicReloadMaxLoadingTimeMs.Get();
   source->AddInteger("reloadMaxLoadingTimeMs", reload_max_loading_time_ms);
-  source->AddBoolean("isUnifiedFre",
-                     GlicEnabling::IsUnifiedFreEnabled(
-                         Profile::FromBrowserContext(browser_context)));
   source->AddBoolean("caaGuestError", base::FeatureList::IsEnabled(
                                           features::kGlicCaaGuestError));
 }

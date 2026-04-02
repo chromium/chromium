@@ -65,11 +65,8 @@ content::StoragePartitionConfig GetGlicMainStoragePartitionConfig(
 content::StoragePartitionConfig GetGlicStoragePartitionConfig(
     content::BrowserContext* browser_context,
     bool use_for_fre) {
-  bool use_main_partition_for_fre =
-      base::FeatureList::IsEnabled(
-          features::kGlicUseMainPartitionForUnifiedFre) &&
-      GlicEnabling::IsUnifiedFreEnabled(
-          Profile::FromBrowserContext(browser_context));
+  bool use_main_partition_for_fre = base::FeatureList::IsEnabled(
+      features::kGlicUseMainPartitionForUnifiedFre);
 
   return (use_for_fre && !use_main_partition_for_fre)
              ? GetFreStoragePartitionConfig(browser_context)
