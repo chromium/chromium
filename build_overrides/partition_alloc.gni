@@ -145,3 +145,8 @@ assert_cpp20_default = true
 # Cronet disables PartitionAlloc to reduce its binary size (crbug.com/674570).
 # TODO(crbug.com/384669394): Consider enabling it instead.
 use_partition_alloc_default = !is_cronet_build
+
+# On Chromecast devices, some system libraries bypass the allocator shim and
+# call free() directly on memory not managed by PartitionAlloc. This flag
+# enables a fallback to the system __real_free() to prevent crashes.
+partition_alloc_enable_system_free_fallback_default = is_cast_android

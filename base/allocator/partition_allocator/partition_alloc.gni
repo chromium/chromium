@@ -54,6 +54,13 @@ if (!defined(partition_alloc_dcheck_always_on_default)) {
   }
 }
 
+# Enables a fallback to the system free() for unmanaged pointers.
+# For example, this is necessary on some Android systems where libraries
+# bypass the allocator shim.
+if (!defined(partition_alloc_enable_system_free_fallback_default)) {
+  partition_alloc_enable_system_free_fallback_default = false
+}
+
 # Allows embedders to optionally disable PartitionAlloc.
 if (!defined(use_partition_alloc_default)) {
   use_partition_alloc_default = true
@@ -98,6 +105,12 @@ has_memory_tagging = current_cpu == "arm64" && is_clang && !is_asan &&
 declare_args() {
   # Debug configuration.
   partition_alloc_is_debug = partition_alloc_is_debug_default
+
+  # Enables a fallback to the system free() for unmanaged pointers.
+  # For example, this is necessary on some Android systems where libraries
+  # bypass the allocator shim.
+  partition_alloc_enable_system_free_fallback =
+      partition_alloc_enable_system_free_fallback_default
 
   # Enable PA_DCHECKs in PartitionAlloc in release mode.
   partition_alloc_dcheck_always_on = partition_alloc_dcheck_always_on_default
@@ -411,6 +424,9 @@ if (!has_memory_tagging) {
 # enable_backup_ref_ptr_support is true.
 assert(enable_backup_ref_ptr_support || !use_raw_ptr_backup_ref_impl,
        "Can't use RawPtrBackupRefImpl if BRP isn't enabled at all")
+
+assert(!partition_alloc_enable_system_free_fallback || is_android,
+       "System free fallback is only supported on Android")
 
 # enable_backup_ref_ptr_slow_checks can only be used if
 # enable_backup_ref_ptr_support is true.

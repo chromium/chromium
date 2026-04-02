@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/slot_start.h"
 #include "partition_alloc/bucket_lookup.h"
+#include "partition_alloc/slot_start.h"
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #include <algorithm>
@@ -6082,7 +6082,8 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
 #endif
 }
 
-#if PA_BUILDFLAG(IS_CAST_ANDROID) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(ENABLE_SYSTEM_FREE_FALLBACK) && \
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 extern "C" {
 void* __real_malloc(size_t);
 }  // extern "C"

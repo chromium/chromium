@@ -1402,18 +1402,19 @@ PA_ALWAYS_INLINE std::pair<internal::SlotStart, internal::SlotSpanMetadata*>
 PartitionRoot::GetSlotStartAndSlotSpanFromAddress(void* object) {
   PA_DCHECK(object);
 
-  // On Android, malloc() interception is more fragile than on other
-  // platforms, as we use wrapped symbols. However, the pools allow us to
-  // quickly tell that a pointer was allocated with PartitionAlloc.
+  // On some platforms, malloc() interception is fragile. For example, on
+  // Android, malloc() interception is more fragile than on other platforms,
+  // as we use wrapped symbols. However, the pools allow us to quickly tell
+  // that a pointer was allocated with PartitionAlloc.
   //
   // This is a crash to detect imperfect symbol interception. However, we can
   // forward allocations we don't own to the system malloc() implementation in
   // these rare cases, assuming that some remain.
   //
-  // On Android Chromecast devices, this is already checked in PartitionFree()
-  // in the shim.
+  // On platforms with ENABLE_SYSTEM_FREE_FALLBACK, this is already checked in
+  // PartitionFree() in the shim.
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    (PA_BUILDFLAG(IS_ANDROID) && !PA_BUILDFLAG(IS_CAST_ANDROID))
+    !PA_BUILDFLAG(ENABLE_SYSTEM_FREE_FALLBACK)
   uintptr_t object_addr =
       internal::SlotStart::Unchecked(object).Untag().value();
   PA_CHECK(IsManagedByPartitionAlloc(object_addr));
