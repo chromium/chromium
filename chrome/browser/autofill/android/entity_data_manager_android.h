@@ -84,7 +84,8 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // TODO(crbug.com/467563385): Show saved to local fallback message if saving
   // to wallet fails or the user becomes ineligible.
   void AddOrUpdateEntityInstance(JNIEnv* env,
-                                 const jni_zero::JavaRef<jobject>& jEntity);
+                                 const jni_zero::JavaRef<jobject>& jEntity,
+                                 base::OnceClosure on_local_save_fallback);
 
   // Gets information about all entities to be displayed in the management
   // service.

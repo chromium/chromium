@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
@@ -1526,6 +1527,38 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
 
         onView(withText("Add Vehicle")).check(matches(isDisplayed()));
+
+        // Click the "Done" button and trigger the local save fallback snackbar. Verify that the
+        // snackbar is displayed.
+        onView(withText("Done")).perform(click());
+        ArgumentCaptor<Runnable> localSaveFallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(sEntityDataManager)
+                .addOrUpdateEntityInstance(any(), localSaveFallbackCaptor.capture());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> localSaveFallbackCaptor.getValue().run());
+
+        String snackbarMessage =
+                sSettingsActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string
+                                        .autofill_ai_save_or_update_entity_failed_wallet_save_dialog_title);
+        waitForSnackbar(snackbarMessage);
+    }
+
+    /** Wait for the snackbar to show on the main activity post deletion. */
+    private void waitForSnackbar(String expectedSnackbarMessage) {
+        SettingsActivity activity = sSettingsActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SnackbarManager snackbarManager = activity.getSnackbarManager();
+                    Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(true));
+                    TextView snackbarMessage = activity.findViewById(R.id.snackbar_message);
+                    Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            snackbarMessage.getText().toString(),
+                            Matchers.is(expectedSnackbarMessage));
+                });
     }
 
     @Test

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -151,7 +152,8 @@ void EntityDataManagerAndroid::RemoveEntityInstance(JNIEnv* env,
 
 void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& jEntity) {
+    const jni_zero::JavaRef<jobject>& jEntity,
+    base::OnceClosure on_local_save_fallback) {
   EntityInstanceAndroid entity_android =
       EntityInstanceAndroid::FromJavaEntityInstance(env, jEntity);
 
@@ -165,6 +167,8 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
       entity_android.ToEntityInstance(entity_data_manager_->GetEntityInstance(
           EntityInstance::EntityId(entity_android.guid)));
 
+  // TODO: crbug.com/467563385 - Run the `on_local_save_fallback` when the save
+  // to Google Wallet fails.
   AddOrUpdateEntityInstance(std::move(entity_instance), targeted_record_type);
 }
 

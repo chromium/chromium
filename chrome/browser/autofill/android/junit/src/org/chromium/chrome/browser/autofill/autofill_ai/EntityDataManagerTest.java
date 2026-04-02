@@ -85,8 +85,10 @@ public class EntityDataManagerTest {
 
     @Test
     public void testAddOrUpdateEntityInstance() {
-        mEntityDataManager.addOrUpdateEntityInstance(mEntityInstance);
-        verify(mEntityDataManagerJniMock).addOrUpdateEntityInstance(NATIVE_PTR, mEntityInstance);
+        Runnable localSaveFallback = () -> {};
+        mEntityDataManager.addOrUpdateEntityInstance(mEntityInstance, localSaveFallback);
+        verify(mEntityDataManagerJniMock)
+                .addOrUpdateEntityInstance(NATIVE_PTR, mEntityInstance, localSaveFallback);
     }
 
     @Test

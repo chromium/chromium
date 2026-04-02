@@ -51,6 +51,7 @@ public class Snackbar {
     public static final int TYPE_PERSISTENT = 2;
 
     /** UMA Identifiers of features using snackbar. See SnackbarIdentifier enum in histograms. */
+    // LINT.IfChange(SnackbarIdentifier)
     public static final int UMA_TEST_SNACKBAR = -2;
 
     public static final int UMA_UNKNOWN = -1;
@@ -140,6 +141,8 @@ public class Snackbar {
     public static final int UMA_CROSS_DEVICE_SETTING_UNDO = 83;
     public static final int UMA_CROSS_DEVICE_SETTING_REDO = 84;
     public static final int UMA_CHROME_FINDS_OPT_IN = 85;
+    public static final int UMA_AUTOFILL_AI_LOCAL_SAVE_FALLBACK = 86;
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:SnackbarIdentifier)
 
     private final @Nullable SnackbarController mController;
     private final CharSequence mText;
