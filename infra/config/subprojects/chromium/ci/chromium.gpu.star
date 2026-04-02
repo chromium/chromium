@@ -701,7 +701,6 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        run_tests_serially = True,
     ),
     targets = targets.bundle(
         targets = [

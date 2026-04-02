@@ -57,8 +57,7 @@
                 "bucket": "ci",
                 "builder": "GPU Mac arm64 Builder",
                 "project": "chromium"
-              },
-              "run_tests_serially": true
+              }
             }
           }
         ]
