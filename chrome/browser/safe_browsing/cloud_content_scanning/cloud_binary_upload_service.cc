@@ -206,14 +206,16 @@ size_t CloudBinaryUploadService::GetParallelActiveRequestsMax() {
 }
 
 CloudBinaryUploadService::CloudBinaryUploadService(Profile* profile)
-    : url_loader_factory_(profile->GetURLLoaderFactory()),
+    : ui_task_runner_(content::GetUIThreadTaskRunner({})),
+      url_loader_factory_(profile->GetURLLoaderFactory()),
       profile_(profile),
       weakptr_factory_(this) {}
 
 CloudBinaryUploadService::CloudBinaryUploadService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile)
-    : url_loader_factory_(url_loader_factory),
+    : ui_task_runner_(content::GetUIThreadTaskRunner({})),
+      url_loader_factory_(url_loader_factory),
       profile_(profile),
       weakptr_factory_(this) {}
 
@@ -221,7 +223,7 @@ CloudBinaryUploadService::~CloudBinaryUploadService() = default;
 
 void CloudBinaryUploadService::MaybeUploadForDeepScanning(
     std::unique_ptr<BinaryUploadRequest> request) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  AssertCalledOnUIThread();
 
   if (IsConsumerScanRequest(*request)) {
     DCHECK(!request->IsAuthRequest());
@@ -285,7 +287,7 @@ void CloudBinaryUploadService::MaybeAcknowledge(
 
 void CloudBinaryUploadService::MaybeCancelRequests(
     std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  AssertCalledOnUIThread();
 
   std::string action_id = cancel->get_user_action_id();
   if (user_action_data_.contains(action_id)) {
@@ -330,7 +332,7 @@ void CloudBinaryUploadService::QueueForDeepScanning(
 
 void CloudBinaryUploadService::UploadForDeepScanning(
     std::unique_ptr<BinaryUploadRequest> request) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  AssertCalledOnUIThread();
 
   BinaryUploadRequest* raw_request = request.get();
   BinaryUploadRequest::Id id = request_id_generator_.GenerateNextId();
@@ -680,7 +682,7 @@ void CloudBinaryUploadService::FinishRequest(
 }
 
 void CloudBinaryUploadService::CleanupRequest(BinaryUploadRequest* request) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  AssertCalledOnUIThread();
   BinaryUploadRequest::Id request_id = request->id();
   std::string dm_token = request->device_token();
   auto connector = request->analysis_connector();
@@ -1079,13 +1081,17 @@ GURL CloudBinaryUploadService::GetUploadUrl(bool is_consumer_scan_eligible) {
 }
 
 void CloudBinaryUploadService::PopRequestQueue() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  AssertCalledOnUIThread();
   while (active_requests_.size() < GetParallelActiveRequestsMax() &&
          !request_queue_.empty()) {
     auto request = std::move(request_queue_.front());
     request_queue_.pop_front();
     UploadForDeepScanning(std::move(request));
   }
+}
+
+void CloudBinaryUploadService::AssertCalledOnUIThread() {
+  DCHECK(ui_task_runner_ && ui_task_runner_->RunsTasksInCurrentSequence());
 }
 
 }  // namespace safe_browsing

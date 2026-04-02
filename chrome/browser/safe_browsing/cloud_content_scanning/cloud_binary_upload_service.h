@@ -11,6 +11,8 @@
 #include "base/callback_list.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -100,6 +102,8 @@ class CloudBinaryUploadService
 
   enterprise_connectors::BinaryUploadRequest* GetRequest(
       enterprise_connectors::BinaryUploadRequest::Id request_id);
+
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
  private:
   using TokenAndConnector =
@@ -224,6 +228,8 @@ class CloudBinaryUploadService
   void MaybeTrackUploadUserCancellation(const std::string& action_id);
 
   bool CheckForUserActionDone(const std::string& action_id);
+
+  void AssertCalledOnUIThread();
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
