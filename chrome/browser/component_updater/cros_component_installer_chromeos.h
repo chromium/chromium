@@ -14,6 +14,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_checker.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
@@ -227,71 +229,88 @@ class CrOSComponentInstaller : public ComponentManagerAsh {
 
   // Registers a component with a dedicated ComponentUpdateService instance.
   void Register(const ComponentConfig& config,
-                base::OnceClosure register_callback);
+                base::OnceClosure register_callback)
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Installs a component with a dedicated ComponentUpdateService instance.
   void Install(const std::string& name,
                UpdatePolicy update_policy,
                MountPolicy mount_policy,
-               LoadCallback load_callback);
+               LoadCallback load_callback)
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Calls OnDemandUpdate to install the component right after being registered.
   // |id| is the component id generated from its sha2 hash.
   void StartInstall(const std::string& name,
                     const std::string& id,
                     UpdatePolicy update_policy,
-                    update_client::Callback install_callback);
+                    update_client::Callback install_callback)
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Calls LoadInternal to load the installed component.
   void FinishInstall(const std::string& name,
                      MountPolicy mount_policy,
                      UpdatePolicy update_policy,
                      LoadCallback load_callback,
-                     update_client::Error error);
+                     update_client::Error error)
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Internal function to load a component.
-  void LoadInternal(const std::string& name, LoadCallback load_callback);
+  void LoadInternal(const std::string& name, LoadCallback load_callback)
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Calls load_callback and pass in the parameter |result| (component mount
   // point).
   void FinishLoad(LoadCallback load_callback,
                   const std::string& name,
-                  std::optional<base::FilePath> result);
+                  std::optional<base::FilePath> result)
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Calls `version_callback` and pass in the parameter `result` (component
   // version).
   void FinishGetVersion(
       base::OnceCallback<void(const base::Version&)> version_callback,
-      std::optional<std::string> result) const;
+      std::optional<std::string> result) const
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Registers component |configs| to be updated.
-  void RegisterN(const std::vector<ComponentConfig>& configs);
+  void RegisterN(const std::vector<ComponentConfig>& configs)
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Checks if the current installed component is compatible given a component
   // |name|.
-  bool IsCompatible(const std::string& name) const;
+  bool IsCompatible(const std::string& name) const
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Posts a task with the response information for |callback|.
   void DispatchLoadCallback(LoadCallback callback,
                             base::FilePath path,
-                            bool success);
+                            bool success)
+      VALID_CONTEXT_REQUIRED(thread_checker_);
   // Repeatedly calls DispatchLoadCallback with failure parameters.
-  void DispatchFailedLoads(std::vector<LoadCallback> callbacks);
+  void DispatchFailedLoads(std::vector<LoadCallback> callbacks)
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 
   // Maps from a compatible component name to its info.
-  base::flat_map<std::string, CompatibleComponentInfo> compatible_components_;
+  base::flat_map<std::string, CompatibleComponentInfo> compatible_components_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
   // A weak pointer to a Delegate for emitting D-Bus signal.
-  raw_ptr<Delegate> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(thread_checker_) = nullptr;
 
   // Table storing metadata (installs, usage, etc.).
-  std::unique_ptr<MetadataTable> metadata_table_;
+  std::unique_ptr<MetadataTable> metadata_table_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
   // The load cache stores ongoing load requests, as well as the finished
   // results.
-  std::map<std::string, LoadInfo> load_cache_;
+  std::map<std::string, LoadInfo> load_cache_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
-  const raw_ptr<ComponentUpdateService> component_updater_;
+  const raw_ptr<ComponentUpdateService> component_updater_
+      GUARDED_BY_CONTEXT(thread_checker_);
+
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<CrOSComponentInstaller> weak_factory_{this};
 };

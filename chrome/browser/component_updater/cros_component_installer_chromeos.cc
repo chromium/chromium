@@ -141,16 +141,19 @@ update_client::CrxInstaller::Result
 CrOSComponentInstallerPolicy::OnCustomInstall(
     const base::DictValue& manifest,
     const base::FilePath& install_dir) {
-  cros_component_installer_->EmitInstalledSignal(GetName());
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CrOSComponentInstaller::EmitInstalledSignal,
+                                cros_component_installer_, GetName()));
 
   return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
 }
 
 void CrOSComponentInstallerPolicy::OnCustomUninstall() {
-  cros_component_installer_->UnregisterCompatiblePath(name_);
-
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&FinishCustomUninstallOnUIThread, name_));
+      FROM_HERE,
+      base::BindOnce(&CrOSComponentInstaller::UnregisterCompatiblePath,
+                     cros_component_installer_, name_)
+          .Then(base::BindOnce(&FinishCustomUninstallOnUIThread, name_)));
 }
 
 bool CrOSComponentInstallerPolicy::VerifyInstallation(
@@ -284,11 +287,16 @@ CrOSComponentInstaller::CrOSComponentInstaller(
     std::unique_ptr<MetadataTable> metadata_table,
     ComponentUpdateService* component_updater)
     : metadata_table_(std::move(metadata_table)),
-      component_updater_(component_updater) {}
+      component_updater_(component_updater) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
 
-CrOSComponentInstaller::~CrOSComponentInstaller() = default;
+CrOSComponentInstaller::~CrOSComponentInstaller() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
 
 void CrOSComponentInstaller::SetDelegate(Delegate* delegate) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_ = delegate;
 }
 
@@ -296,6 +304,7 @@ void CrOSComponentInstaller::Load(const std::string& name,
                                   MountPolicy mount_policy,
                                   UpdatePolicy update_policy,
                                   LoadCallback load_callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsCompatible(name) || update_policy == UpdatePolicy::kForce) {
     // A compatible component is not installed, or forced update is requested.
     // Start registration and installation/update process.
@@ -312,6 +321,7 @@ void CrOSComponentInstaller::Load(const std::string& name,
 }
 
 bool CrOSComponentInstaller::Unload(const std::string& name) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DispatchFailedLoads(std::move(load_cache_[name].callbacks));
   load_cache_.erase(name);
 
@@ -329,6 +339,7 @@ bool CrOSComponentInstaller::Unload(const std::string& name) {
 void CrOSComponentInstaller::GetVersion(
     const std::string& name,
     base::OnceCallback<void(const base::Version&)> version_callback) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsCompatible(name)) {
     // `name` does not match to any component.
     std::move(version_callback).Run(base::Version());
@@ -353,6 +364,7 @@ void CrOSComponentInstaller::GetVersion(
 }
 
 void CrOSComponentInstaller::RegisterInstalled() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(GetInstalled),
       base::BindOnce(&CrOSComponentInstaller::RegisterN,
@@ -362,10 +374,12 @@ void CrOSComponentInstaller::RegisterInstalled() {
 void CrOSComponentInstaller::RegisterCompatiblePath(
     const std::string& name,
     CompatibleComponentInfo info) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   compatible_components_[name] = std::move(info);
 }
 
 void CrOSComponentInstaller::UnregisterCompatiblePath(const std::string& name) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DispatchFailedLoads(std::move(load_cache_[name].callbacks));
   load_cache_.erase(name);
   compatible_components_.erase(name);
@@ -373,12 +387,14 @@ void CrOSComponentInstaller::UnregisterCompatiblePath(const std::string& name) {
 
 base::FilePath CrOSComponentInstaller::GetCompatiblePath(
     const std::string& name) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const auto it = compatible_components_.find(name);
   return it == compatible_components_.end() ? base::FilePath()
                                             : it->second.path;
 }
 
 void CrOSComponentInstaller::EmitInstalledSignal(const std::string& component) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (delegate_) {
     delegate_->EmitInstalledSignal(component);
   }
@@ -388,11 +404,13 @@ CrOSComponentInstaller::LoadInfo::LoadInfo() = default;
 CrOSComponentInstaller::LoadInfo::~LoadInfo() = default;
 std::map<std::string, CrOSComponentInstaller::LoadInfo>&
 CrOSComponentInstaller::GetLoadCacheForTesting() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return load_cache_;
 }
 
 void CrOSComponentInstaller::RemoveLoadCacheEntry(
     const std::string& component_name) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   load_cache_.erase(component_name);
 }
 
@@ -555,7 +573,6 @@ void CrOSComponentInstaller::FinishGetVersion(
 
 void CrOSComponentInstaller::RegisterN(
     const std::vector<ComponentConfig>& configs) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (const auto& config : configs) {
     Register(config, base::OnceClosure());
   }
