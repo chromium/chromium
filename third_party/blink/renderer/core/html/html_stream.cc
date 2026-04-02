@@ -30,12 +30,13 @@ class HTMLSink : public UnderlyingSinkBase {
   explicit HTMLSink(ContainerNode& target,
                     Node* ref_node,
                     Sanitizer::Mode sanitizer_mode,
-                    FragmentParserOptions new_options)
+                    FragmentParserOptions new_options,
+                    ExceptionState& exception_state)
       : root_insertion_point(
             MakeGarbageCollected<ParserRootInsertionPoint>(target, ref_node)),
         sanitizer(SanitizerAPI::CreateStreamingSanitizer(sanitizer_mode,
                                                          new_options,
-                                                         ASSERT_NO_EXCEPTION)),
+                                                         exception_state)),
         parser_content_policy(
             new_options.run_scripts() ==
                     FragmentParserOptions::RunScripts::kRunScripts
@@ -166,7 +167,10 @@ WritableStream* HTMLStream::Create(ScriptState* script_state,
   }
 
   HTMLSink* sink = MakeGarbageCollected<HTMLSink>(
-      *target, ref_node, sanitizer_mode, *trusted_options);
+      *target, ref_node, sanitizer_mode, *trusted_options, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
 
   return WritableStream::CreateWithCountQueueingStrategy(script_state, sink, 1);
 }
