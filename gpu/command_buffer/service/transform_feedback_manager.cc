@@ -109,8 +109,8 @@ bool TransformFeedback::GetVerticesNeededForDraw(GLenum mode,
   // Transform feedback only outputs complete primitives, so we need to round
   // down to the nearest complete primitive before multiplying by the number of
   // instances.
-  base::CheckedNumeric<GLsizei> checked_vertices =
-      vertices_drawn_ + pending_vertices_drawn;
+  base::CheckedNumeric<GLsizei> checked_vertices = vertices_drawn_;
+  checked_vertices += pending_vertices_drawn;
   base::CheckedNumeric<GLsizei> checked_count = count;
   base::CheckedNumeric<GLsizei> checked_primcount = primcount;
   switch (mode) {

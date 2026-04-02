@@ -889,8 +889,9 @@ bool BufferManager::RequestBuffersAccess(
     GLsizei count,
     const char* func_name,
     const char* message_tag) {
-  DCHECK(error_state);
-  DCHECK(bindings);
+  CHECK(error_state);
+  CHECK(bindings);
+  CHECK_GE(count, 0);
 
   for (size_t ii = 0; ii < variable_sizes.size(); ++ii) {
     if (variable_sizes[ii] == 0)
