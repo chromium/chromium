@@ -8,6 +8,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/app_rating/AppRatingManager.java",
     "java/src/org/chromium/chrome/browser/ui/app_rating/AppRatingManagerFactory.java",
     "java/src/org/chromium/chrome/browser/ui/app_rating/AppRatingPromoController.java",
+    "java/src/org/chromium/chrome/browser/ui/app_rating/AppRatingPromoMetrics.java",
   ]
   deps = [
     "//base:base_java",

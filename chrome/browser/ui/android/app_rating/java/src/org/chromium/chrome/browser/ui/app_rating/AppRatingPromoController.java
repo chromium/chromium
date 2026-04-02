@@ -132,13 +132,13 @@ public class AppRatingPromoController {
         // It does not inform us if the UI was actually shown.
         // To strictly avoid spamming users, we record the attempt as a success.
         UserPrefs.get(profile).setBoolean(Pref.APP_RATING_PROMPT_SHOWN, true);
+        AppRatingPromoMetrics.recordShowAttempted();
         AppRatingManager manager = AppRatingManagerFactory.create();
         manager.requestAndShowReviewFlow(
                 activity,
                 () -> {
                     // This callback only indicates that the API flow has finished (or failed
                     // silently). It does NOT mean the user saw the dialog or provided a rating.
-                    // TODO(crbug.com/493340627): Log or update metrics
                     if (tracker != null) {
                         // Tell the tracker we're done so it releases the UI lock.
                         tracker.dismissed(FeatureConstants.APP_RATING_PROMPT_FEATURE);

@@ -557,6 +557,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AppRatingPrompt.InteractionDuration" units="ms"
+    expires_after="2026-10-01">
+  <owner>agazal@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <owner>twellington@google.com</owner>
+  <summary>
+    The duration a user spends in the Play Store In-App Review flow. Measured
+    from the moment the review UI is launched until the flow finishes, excluding
+    the initial silent API request latency. Used to proxy user engagement
+    (dismissal vs. rating vs. review). Recorded only when the Play Store API
+    returns a success status.
+  </summary>
+</histogram>
+
+<histogram name="Android.AppRatingPrompt.ShowAttempted" enum="Boolean"
+    expires_after="2026-10-01">
+  <owner>agazal@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <owner>twellington@google.com</owner>
+  <summary>
+    Records that Chrome attempted to launch the App Rating Prompt using the Play
+    Store In-App Review API. This acts as the denominator for funnel analysis,
+    ensuring we can track silent failures where the Play Store API never returns
+    a callback. Recorded immediately before invoking the Play Store API.
+  </summary>
+</histogram>
+
+<histogram name="Android.AppRatingPrompt.Status" enum="AppRatingPromptStatus"
+    expires_after="2026-10-01">
+  <owner>agazal@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <owner>twellington@google.com</owner>
+  <summary>
+    Records the outcome of attempting to show the App Rating Prompt using the
+    Play Store In-App Review API. This indicates whether the flow was
+    successfully requested or failed due to a technical error (e.g. Play Store
+    not found, internal error). Recorded on every API callback.
+  </summary>
+</histogram>
+
 <histogram name="Android.ArmCpuPart" enum="ArmCpuPart"
     expires_after="2024-07-21">
   <owner>rsesek@chromium.org</owner>

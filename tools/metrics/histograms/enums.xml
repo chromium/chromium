@@ -448,6 +448,14 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="LAUNCH_CONTAINER_NONE (v2 packaged apps)"/>
 </enum>
 
+<enum name="AppRatingPromptStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Play Store Not Found"/>
+  <int value="2" label="Invalid Request"/>
+  <int value="3" label="Internal Error"/>
+  <int value="4" label="Unknown Error"/>
+</enum>
+
 <!-- LINT.IfChange(AppStreamLaunchEntryPoint) -->
 
 <enum name="AppStreamLaunchEntryPoint">
