@@ -682,7 +682,7 @@ std::pair<String, int> SpellChecker::FindFirstMisspelling(const Position& start,
             DCHECK_GE(result->location, 0);
             spelling_location = result->location;
             misspelled_word =
-                paragraph_string.Substring(result->location, result->length);
+                paragraph_string.substr(result->location, result->length);
             DCHECK(misspelled_word.length());
             break;
           }

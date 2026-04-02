@@ -660,8 +660,8 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
       first_unit = false;
     }
     String text_for_unit =
-        mapped_text.Substring(unit.TextContentStart(),
-                              unit.TextContentEnd() - unit.TextContentStart());
+        mapped_text.substr(unit.TextContentStart(),
+                           unit.TextContentEnd() - unit.TextContentStart());
     text_for_unit.Ensure16Bit();
     buffer.append_range(text_for_unit.Span16());
     last_unit_end = unit.TextContentEnd();

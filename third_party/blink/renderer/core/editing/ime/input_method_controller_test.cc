@@ -1955,7 +1955,7 @@ static String GetMarkedText(
     Node* node,
     int marker_index) {
   DocumentMarker* marker = document_marker_controller.Markers()[marker_index];
-  return node->textContent().Substring(
+  return node->textContent().substr(
       marker->StartOffset(), marker->EndOffset() - marker->StartOffset());
 }
 
