@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">Find in page…</translation>
 <translation id="4945756290001680296">Access password settings</translation>
 <translation id="4949302115427722371">Manage settings…</translation>
-<translation id="4952050521954075618">Photos from camera roll won't sync across your devices</translation>
 <translation id="4958444002117714549">Expand list</translation>
 <translation id="496392417432935267">Opened elsewhere</translation>
 <translation id="4970724460420203313">Using Chrome with your managed account helps you keep browsing related to your organisation (including tabs, history and passwords) separate from your other browsing</translation>
@@ -1265,6 +1264,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5556459405103347317">Reload</translation>
 <translation id="555749644339804659">Checking passwords…</translation>
 <translation id="5559567453458728487">Convert measurement units found on the web</translation>
+<translation id="5560088892362098740">Expiry Date</translation>
 <translation id="556042886152191864">Button</translation>
 <translation id="5565871407246142825">Credit cards</translation>
 <translation id="5566623128829375608">Saves to your device.</translation>

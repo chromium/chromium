@@ -1768,6 +1768,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3744899669254331632">Web <ph name="SITE" /> teď nelze navštívit, protože tento web odeslal nesprávné identifikační údaje, které prohlížeč Chromium nedokáže zpracovat. Síťové chyby a útoky jsou obvykle dočasné, tato stránka pravděpodobně později bude fungovat.</translation>
 <translation id="3745599309295009257">Váš text a obsah a adresa URL stránky, na které píšete, se odešlou do Googlu a budou zkontrolovány lidmi a použity k vylepšení této funkce. Nezadávejte osobních údaje (jako jsou zdravotní nebo finanční údaje) a nepoužívejte tento nástroj na webech, které obsahují soukromé nebo citlivé údaje.</translation>
 <translation id="3748009735914587286">Kov (vysoký lesk)</translation>
+<translation id="3748647055058832337">U tohoto obchodníka není k dispozici</translation>
 <translation id="3749600200023337912">Pro tuto platbu lze použít uloženou metodu automatické platby. Pokud chcete v Chromu elektronické peněženky nebo platební aplikaci vypnout, přejděte do <ph name="BEGIN_LINK1" />nastavení plateb<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Uložit adresu do účtu?</translation>
 <translation id="3752543821772132562">Ignorováno, protože není nastavena zásada <ph name="POLICY_NAME" />.</translation>
@@ -3887,6 +3888,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7057567173736333354">Popište obrázek</translation>
 <translation id="7058163556978339998">Prohlížeč <ph name="BROWSER" /> ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Služba analýzy hesel CSV</translation>
+<translation id="7059913660448028407">Momentálně není k dispozici</translation>
 <translation id="7062344833049251424">Pokud příště chcete zaplatit rychleji, uložte si kartu a fakturační adresu do Peněženky Google</translation>
 <translation id="706295145388601875">Přidávejte a spravujte adresy v nastavení Chromu</translation>
 <translation id="7063157783216323487">Zelená 2</translation>
@@ -4167,6 +4169,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7471007961486718967">Uveďte důvod přenosu (povinné)</translation>
 <translation id="7473033553872550521">Můžete také kontaktovat vlastníka webu a navrhnout mu upgrade na HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Ne, děkuji</translation>
+<translation id="7475618719385705713">Tato stránka je blokována</translation>
 <translation id="7481312909269577407">Vpřed</translation>
 <translation id="7481603210197454575">Obálka italská</translation>
 <translation id="7482823403440483089">Vylepšené automatické vyplňování</translation>
@@ -4188,6 +4191,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7508255263130623398">Vrácené ID zařízení pro zásady je prázdné nebo neodpovídá aktuálnímu ID zařízení</translation>
 <translation id="7508577201115425418">Kancelářské a tiskové služby</translation>
 <translation id="7510269639068718544">Kočky</translation>
+<translation id="7511707705708508147">Měna není podporována</translation>
 <translation id="7511955381719512146">Síť Wi-Fi, kterou používáte, může vyžadovat, abyste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Tato zásada nemůže být nastavená na hodnotu True a být povinná. Byla proto změněna na doporučenou.</translation>
 <translation id="7514365320538308">Stáhnout</translation>
@@ -4687,6 +4691,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8282292167096638950">Smazat řidičský průkaz</translation>
 <translation id="8282409409360764263">Péče o zahradu</translation>
+<translation id="828282277746732142">Uložte si číslo IBAN do Peněženky Google</translation>
 <translation id="8282947398454257691">Znát jedinečný identifikátor vašeho zařízení</translation>
 <translation id="8284769179630993263">Spravujte Bezpečné prohlížení a další funkce v nastavení Chromu</translation>
 <translation id="828558778104922222">Fotka se kvůli neznámé chybě ztratila</translation>

@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">Hanapin sa Page…</translation>
 <translation id="4945756290001680296">I-access ang mga setting ng password</translation>
 <translation id="4949302115427722371">Pamahalaan ang mga setting…</translation>
-<translation id="4952050521954075618">Hindi magsi-sync sa iyong mga device ang mga larawan mula sa Camera Roll</translation>
 <translation id="4958444002117714549">Palawakin ang listahan</translation>
 <translation id="496392417432935267">Nakabukas sa ibang lugar</translation>
 <translation id="4970724460420203313">Nakakatulong ang paggamit ng Chrome sa iyong pinapamahalaang account na maihiwalay ang pag-browse na nauugnay sa organisasyon mo (kabilang ang mga tab, history, at password) sa iba mo pang pag-browse</translation>
@@ -1265,6 +1264,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="555749644339804659">Sinusuri ang password…</translation>
 <translation id="5559567453458728487">Mag-convert ng mga unit ng pagsukat na makikita sa web</translation>
+<translation id="5560088892362098740">Petsa ng Pag-expire</translation>
 <translation id="556042886152191864">Pindutan</translation>
 <translation id="5565871407246142825">Mga credit card</translation>
 <translation id="5566623128829375608">Sine-save sa iyong device.</translation>

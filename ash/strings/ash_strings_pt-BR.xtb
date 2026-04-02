@@ -1357,7 +1357,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Config. de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
-<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Estas são informações gerais sobre seu dispositivo e o uso dele (como o nível da bateria, a atividade de apps e do sistemas e os erros). Os dados serão usados para melhorar o Android, e algumas informações agregadas também ajudarão apps e parceiros do Google, como os desenvolvedores Android, a melhorar os apps e produtos deles.<ph name="END_PARAGRAPH1" />
+<translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Estas são informações gerais sobre seu dispositivo e o uso dele (como nível da bateria, atividade de apps e do sistema e erros). Os dados serão usados para melhorar o Android, e algumas informações agregadas também ajudarão apps e parceiros do Google, como os desenvolvedores Android, a melhorar os apps e produtos deles.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />O proprietário pode controlar esse recurso em Configurações &gt; Avançado &gt; Enviar automaticamente dados de uso e diagnóstico ao Google.<ph name="END_PARAGRAPH3" />
         <ph name="BEGIN_PARAGRAPH4" />Se a configuração Atividade Adicional na Web e de Apps estiver ativada, esses dados poderão ser salvos na sua Conta do Google. Você pode ver seus dados, excluí-los e mudar as configurações da sua conta em account.google.com.<ph name="END_PARAGRAPH4" /></translation>
@@ -1781,7 +1781,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="639644700271529076">CAPS LOCK está desativado</translation>
 <translation id="6406458002328242616">Editar timer. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
-<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />Os Serviços de localização do Google usam fontes como Wi-Fi, redes móveis e sensores para estimar a localização do seu dispositivo.<ph name="END_PARAGRAPH1" />
+<translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />Os Serviços de Localização do Google usam fontes como Wi-Fi, redes móveis e sensores para estimar a localização do seu dispositivo.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Na configuração de localização principal do dispositivo, é possível desativar esse recurso. Você também pode desativar o uso de Wi-Fi, redes móveis e sensores de local nessas configurações.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">Selecione qual versão do <ph name="VM_NAME" /> será instalada.</translation>
 <translation id="641469293210305670">Instalar atualizações e apps</translation>

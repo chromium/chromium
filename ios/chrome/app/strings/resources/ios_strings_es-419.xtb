@@ -144,7 +144,7 @@
 <translation id="1503814213414825943">Selecciona las cuentas que quieres exportar a otra app.</translation>
 <translation id="1506061864768559482">Motor de búsqueda</translation>
 <translation id="1506063256525392513">Te permite tomar fotos, subirlas y escanear códigos QR</translation>
-<translation id="1506733063065214205">Cliente de MLS de RCS</translation>
+<translation id="1506733063065214205">Cliente RCS con MLS</translation>
 <translation id="1508263560970797965">Continuar en Incógnito</translation>
 <translation id="1509486075633541495">Acceder al sitio web</translation>
 <translation id="1513858653616922153">Borrar contraseña</translation>
@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">Buscar en la página…</translation>
 <translation id="4945756290001680296">Accede a la configuración de contraseñas</translation>
 <translation id="4949302115427722371">Administrar configuración…</translation>
-<translation id="4952050521954075618">Las fotos de la galería no se sincronizarán en tus dispositivos</translation>
 <translation id="4958444002117714549">Mostrar lista</translation>
 <translation id="496392417432935267">Se abrió en otra ventana</translation>
 <translation id="4970724460420203313">Usar Chrome con tu cuenta administrada te ayuda a mantener la navegación relacionada con tu organización (incluidas las pestañas, el historial y las contraseñas) separada de la que realizas en otras plataformas</translation>
@@ -1265,6 +1264,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="555749644339804659">Verificando contraseñas…</translation>
 <translation id="5559567453458728487">Convierte las unidades de medida que se encuentran en la Web</translation>
+<translation id="5560088892362098740">Fecha de vencimiento</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5565871407246142825">Tarjetas de crédito</translation>
 <translation id="5566623128829375608">Se guardará en tu dispositivo.</translation>

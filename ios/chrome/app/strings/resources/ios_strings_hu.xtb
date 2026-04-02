@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">Keresés az oldalon…</translation>
 <translation id="4945756290001680296">Hozzáférés a jelszóbeállításokhoz</translation>
 <translation id="4949302115427722371">Beállítások kezelése…</translation>
-<translation id="4952050521954075618">A galériából származó fotók nem szinkronizálódnak az eszközei között.</translation>
 <translation id="4958444002117714549">Lista részletes nézete</translation>
 <translation id="496392417432935267">Máshol megnyitva</translation>
 <translation id="4970724460420203313">A Chrome felügyelt fiókkal való használatával segíthet elkülöníteni a szervezetéhez kapcsolódó böngészési adatokat (például a lapokat, az előzményeket és a jelszavakat) a többi böngészési adatától.</translation>
@@ -1265,6 +1264,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="555749644339804659">Jelszavak ellenőrzése…</translation>
 <translation id="5559567453458728487">Az interneten talált mértékegységek konvertálása</translation>
+<translation id="5560088892362098740">Lejárati dátum</translation>
 <translation id="556042886152191864">Gomb</translation>
 <translation id="5565871407246142825">Hitelkártyák</translation>
 <translation id="5566623128829375608">Mentve lesz az eszközére.</translation>

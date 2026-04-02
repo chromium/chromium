@@ -71,9 +71,6 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="2313870531055795960">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chromium. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="2314220608288760290">Chromium obre automàticament els enllaços d'incògnit de YouTube en el mode d'incògnit.</translation>
 <translation id="231828342043114302">Per rebre contingut personalitzat basat en els teus interessos, inicia la sessió a Chromium.</translation>
-<translation id="2326738825692478496">Algunes dades de Chromium encara no s'han desat al teu Compte de Google.
-
-Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="2334943301233020675">Les claus d'accés següents no s'han importat al gestor de contrasenyes perquè no compleixen els requisits.</translation>
 <translation id="2337722506862731008">Comparteix Chromium</translation>
 <translation id="2340423701577464731">Afegeix un element de llista de lectura a Chromium</translation>

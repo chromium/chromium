@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">Otsi lehelt …</translation>
 <translation id="4945756290001680296">Juurdepääs parooliseadetele</translation>
 <translation id="4949302115427722371">Seadete haldamine …</translation>
-<translation id="4952050521954075618">Kaamera albumi fotosid ei sünkroonita teie seadmete vahel.</translation>
 <translation id="4958444002117714549">Laienda loendit</translation>
 <translation id="496392417432935267">Seade on mujal avatud</translation>
 <translation id="4970724460420203313">Kui kasutate Chrome'i hallatud kontoga, aitab see teie organisatsiooniga seotud sirvimistegevust (sh vahelehti, ajalugu ja paroole) muust sirvimistegevusest eraldada.</translation>
@@ -1265,6 +1264,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="555749644339804659">Paroolide kontrollimine …</translation>
 <translation id="5559567453458728487">Veebist leitavate mõõtühikute teisendamine</translation>
+<translation id="5560088892362098740">Aegumiskuupäev</translation>
 <translation id="556042886152191864">Nupp</translation>
 <translation id="5565871407246142825">Krediitkaardid</translation>
 <translation id="5566623128829375608">Salvestatakse teie seadmesse.</translation>
@@ -1398,7 +1398,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="598634819525651074">Pindala</translation>
 <translation id="5988097621740394599">Näete vahelehtedel hinnalangusi.</translation>
 <translation id="5988851877894965432">Avage URL-id Chrome'is</translation>
-<translation id="599343768974649785">Selgesõnaline tekst</translation>
+<translation id="599343768974649785">Kuvatav tekst</translation>
 <translation id="6006672969046233841">Uus vaheleht</translation>
 <translation id="6011308810877101166">Otsingusoovituste täiustamine</translation>
 <translation id="6012140227487808125">Krüpteerimine …</translation>

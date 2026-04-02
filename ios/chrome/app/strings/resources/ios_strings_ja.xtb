@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">ページ内を検索…</translation>
 <translation id="4945756290001680296">パスワードの設定にアクセスします</translation>
 <translation id="4949302115427722371">設定を管理…</translation>
-<translation id="4952050521954075618">デバイス間でカメラロールの写真が同期されなくなります</translation>
 <translation id="4958444002117714549">リストを展開する</translation>
 <translation id="496392417432935267">別の場所で開かれています</translation>
 <translation id="4970724460420203313">管理対象アカウントで Chrome を使用すると、組織に関連するブラウジング（タブ、履歴、パスワードなど）を他のブラウジングと分けて管理できます</translation>
@@ -1265,6 +1264,7 @@
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="555749644339804659">パスワードを確認しています…</translation>
 <translation id="5559567453458728487">ウェブで見つかった測定単位を変換する</translation>
+<translation id="5560088892362098740">有効期限</translation>
 <translation id="556042886152191864">ボタン</translation>
 <translation id="5565871407246142825">クレジットカード</translation>
 <translation id="5566623128829375608">情報はデバイスに保存されます。</translation>

@@ -5207,6 +5207,7 @@
 <translation id="9140198744651252040">ഫിംഗർപ്രിന്റ് ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കാൻ Chrome ബ്രൗസർ ആഗ്രഹിക്കുന്നു</translation>
 <translation id="9141013498910525015">വിലാസങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="9141435142213469335">കൂടുതൽ വിവരങ്ങൾക്കൊപ്പം വിലാസം സംരക്ഷിക്കുക</translation>
+<translation id="9141510259469546089">കുറഞ്ഞ വാങ്ങൽ <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="9141672681283222114">ഇപ്പോൾ മാത്രം AR അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="9143898823728499852">നിങ്ങളുടെ <ph name="CARD_ISSUER_NAME" /> അക്കൗണ്ട്, Google Pay-യുമായി ലിങ്ക് ചെയ്‌തിരിക്കുന്നതിനാൽ നിങ്ങൾക്ക് ഈ കാർഡ് സ്വയമേവ പൂരിപ്പിക്കാനാകും</translation>
 <translation id="9144951720726881238">കാലഹരണപ്പെടല്‍‌ തീയതി:</translation>
@@ -5280,6 +5281,7 @@
 <translation id="937885410143139026">അഡ്‌മിൻ കൺസോളിലേക്ക് ഡാറ്റ അയച്ചു</translation>
 <translation id="939736085109172342">പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> എന്നതിലേക്കുള്ള നിങ്ങളുടെ ഫയൽ അപ്‌ലോഡ് <ph name="MINUTES" /> മിനിറ്റിനുള്ളിൽ ആരംഭിക്കും</translation>
+<translation id="943185096918807504">പരമാവധി വാങ്ങൽ <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="944578681290094302">ചെക്കൗട്ട് ചെയ്യുമ്പോൾ, നിങ്ങളുടെ കാർഡുകൾക്ക് ഏതൊക്കെ റിവാർഡുകളും ആനുകൂല്യങ്ങളും ലഭ്യമാണെന്ന് കാണിക്കുക. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />കാർഡ് ആനുകൂല്യങ്ങളെ കുറിച്ച് അറിയുക<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945673208656386843">ഈ ഉപകരണത്തിൽ ഈ കാർഡ് സംരക്ഷിക്കുമ്പോൾ, Chromium-ൽ നടത്തിയ വാങ്ങലുകൾക്കായി ഇത് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites-ൽ പുതിയൊരു സൈറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>

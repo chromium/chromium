@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">Auf Seite suchen…</translation>
 <translation id="4945756290001680296">Auf Passworteinstellungen zugreifen</translation>
 <translation id="4949302115427722371">Einstellungen verwalten…</translation>
-<translation id="4952050521954075618">Fotos aus den Aufnahmen werden nicht geräteübergreifend synchronisiert</translation>
 <translation id="4958444002117714549">Liste einblenden</translation>
 <translation id="496392417432935267">Woanders geöffnet</translation>
 <translation id="4970724460420203313">Wenn du Chrome mit deinem verwalteten Konto verwendest, kannst du die mit deiner Organisation verbundenen Browserdaten wie Tabs, Verlauf und Passwörter besser von deinen anderen Browserdaten trennen</translation>
@@ -1265,6 +1264,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="555749644339804659">Passwörter werden geprüft…</translation>
 <translation id="5559567453458728487">Im Web gefundene Maßeinheiten umrechnen</translation>
+<translation id="5560088892362098740">Ablaufdatum</translation>
 <translation id="556042886152191864">Button</translation>
 <translation id="5565871407246142825">Kreditkarten</translation>
 <translation id="5566623128829375608">Wird auf deinem Gerät gespeichert.</translation>

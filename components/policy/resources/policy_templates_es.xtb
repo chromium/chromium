@@ -6378,6 +6378,7 @@ Esta política admite la actualización dinámica.
 Esta política es una medida temporal y se eliminará en futuras versiones de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5212810195096589189">Especificar el permiso de la interfaz de línea de comandos para máquinas virtuales</translation>
 <translation id="5213038356678567351">Sitios web que nunca deben activar un cambio de navegador.</translation>
+<translation id="5216710229085956333">Habilitar cancelación de ruido de Krisp</translation>
 <translation id="5216815237712190041">Permite configurar en cada dispositivo la imagen de fondo de pantalla que se muestra en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. La política se define especificando la URL desde la que el dispositivo ChromeOS puede descargar la imagen de fondo de pantalla y un hash criptográfico que se utiliza para verificar la integridad de la descarga. La imagen debe tener formato JPEG y un tamaño que no supere los 16 MB. Se debe poder acceder a la URL sin autenticación. La imagen de fondo de pantalla se descargará y almacenará en caché. Se volverá a descargar si se cambia la URL o el hash.
 
       Si se establece la política de fondo de pantalla del dispositivo, el dispositivo ChromeOS descargará y utilizará la imagen de fondo en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. Una vez que el usuario inicie sesión, se aplicará la política de fondo de pantalla del usuario.
@@ -6784,6 +6785,7 @@ Varias políticas indican orígenes que afectan a las solicitudes al dispositivo
 <translation id="5479841110985196412">Habilitar el teclado virtual de accesibilidad</translation>
 <translation id="5480380613778757009">Si se inhabilita esta política o no se establece, todos los ajustes de pantalla que se hayan definido en la sesión de invitado gestionada se borrarán en cuanto finalice la sesión. Si se le asigna el valor True a esta política, las propiedades de pantalla se conservarán después de salir de la sesión de invitado gestionada.</translation>
 <translation id="548137908954174608">Habilitar Subtítulos instantáneos</translation>
+<translation id="5481873128882951841">Inhabilitar cancelación de ruido de Krisp</translation>
 <translation id="5483012943408894695">Orígenes o patrones de nombres de host en los que no se deben aplicar restricciones de orígenes no seguros</translation>
 <translation id="5483065054530244863">Permite certificados SHA-1 firmados emitidos por anclajes de veracidad locales</translation>
 <translation id="5485491014653571963">Este ajuste permite las integraciones de la aplicación Gemini.
@@ -10602,6 +10604,12 @@ Esta política no tendrá ningún efecto si se asigna el valor false a la polít
 
 De forma predeterminada, una extensión o aplicación Android no puede utilizar una clave designada para uso corporativo, lo que equivale a asignar el valor "False" a allowCorporateKeyUsage en esa extensión. Solo si se le asigna el valor "True" a allowCorporateKeyUsage en una extensión o aplicación Android, esta podrá utilizar cualquier clave de plataforma marcada para uso corporativo para firmar datos arbitrarios. Este permiso solo se debe conceder si se tiene la certeza de que la extensión o la aplicación Android garantiza un acceso seguro a la clave y la protege de posibles ataques.</translation>
 <translation id="7928412788382651939">Permitir el agrupamiento de ventanas de Vista creada con IA generativa y mejorar los modelos de IA.</translation>
+<translation id="7929417323335013269">Esta política controla la tecnología de cancelación de ruido basada en IA de Krisp en el dispositivo.
+Se integra como una biblioteca local de terceros independiente en <ph name="PRODUCT_OS_NAME" /> y solo está disponible para usuarios gestionados.
+
+Si se habilita esta política, se activará el procesamiento de audio con cancelación de ruido basada en IA de Krisp y los usuarios no podrán inhabilitarlo.
+
+Si se inhabilita esta política o no se define, se desactivará el procesamiento de audio de cancelación de ruido basada en IA de Krisp.</translation>
 <translation id="7930383470029339167">ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes es una función de Chrome diseñada para hacer que los iframes de orígenes cruzados en varios procesos y en un mismo proceso tengan un comportamiento de renderizado coherente. Para obtener más información sobre la limitación en varios procesos frente a la de un mismo proceso, consulta https://chromestatus.com/feature/5175574929080320.
 
 La finalidad de esta política de empresa es permitir que los administradores controlen si sus usuarios pueden activar o no la limitación adicional. Si se inhabilita esta política, se impedirá que se habilite la limitación. Si se habilita esta política o no se define, el usuario podrá habilitar la limitación o esta se podrá habilitar mediante variaciones de Chrome.</translation>

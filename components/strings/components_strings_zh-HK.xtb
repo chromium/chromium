@@ -1771,6 +1771,7 @@
 <translation id="3744899669254331632">您目前無法瀏覽 <ph name="SITE" />，因為該網站傳送了 Chromium 無法處理的干擾憑證。網絡錯誤及攻擊行為通常是短暫性問題，因此這個網頁稍後應可正常運作。</translation>
 <translation id="3745599309295009257">你在頁面上的文字和該頁內容與網址都會傳送給 Google、由真人審核，並用來改善此功能。因此，請勿輸入醫療或財務資料等個人資料，亦不要在含有私人或敏感資料的網站上使用此工具。</translation>
 <translation id="3748009735914587286">金屬 (高光面)</translation>
+<translation id="3748647055058832337">不適用於此商家</translation>
 <translation id="3749600200023337912">這次付款可能會使用你已儲存的自動付款方法。如要在 Chrome 中關閉電子錢包或付款應用程式，請前往<ph name="BEGIN_LINK1" />付款設定<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">要將地址儲存至帳戶嗎？</translation>
 <translation id="3752543821772132562">由於未設定 <ph name="POLICY_NAME" />，因此已忽略。</translation>
@@ -2963,7 +2964,7 @@
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5596939519753369075">2 x 3.5 吋</translation>
 <translation id="5597254438174353289">藍色 3</translation>
-<translation id="5600044805561809264">瀏覽網頁時，你可輕鬆詢問分享分頁的相關問題。</translation>
+<translation id="5600044805561809264">瀏覽網頁時，可以輕鬆就你分享的分頁提出問題。</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> 或 <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">系統不支援管理</translation>
 <translation id="5605249000617390290">進一步瞭解追蹤價格</translation>
@@ -3891,6 +3892,7 @@
 <translation id="7057567173736333354">描述圖片</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 驗證到「<ph name="ISSUER" />」已發出此網站的憑證。</translation>
 <translation id="7058774143982824355">CSV 密碼剖析器服務</translation>
+<translation id="7059913660448028407">暫時不適用</translation>
 <translation id="7062344833049251424">將付款卡和帳單地址儲存至「Google 錢包」，下次就能更快完成付款程序</translation>
 <translation id="706295145388601875">在 Chrome 設定中新增並管理地址</translation>
 <translation id="7063157783216323487">綠色 2</translation>
@@ -4172,6 +4174,7 @@
 <translation id="7471007961486718967">請提供轉移的原因 (必填)</translation>
 <translation id="7473033553872550521">你亦可聯絡網站擁有者，提議升級至 HTTPS。<ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
+<translation id="7475618719385705713">此頁面已封鎖</translation>
 <translation id="7481312909269577407">向前</translation>
 <translation id="7481603210197454575">Italian 信封</translation>
 <translation id="7482823403440483089">強化版自動填入功能</translation>
@@ -4193,6 +4196,7 @@
 <translation id="7508255263130623398">傳回的政策裝置識別碼為空白或與目前裝置識別碼不符</translation>
 <translation id="7508577201115425418">文件複印和印刷服務</translation>
 <translation id="7510269639068718544">貓</translation>
+<translation id="7511707705708508147">貨幣不受支援</translation>
 <translation id="7511955381719512146">目前使用的 Wi-Fi 可能要求您前往 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="7512685745044087310">此政策無法設定為「True」和強制使用，因此已改為建議使用。</translation>
 <translation id="7514365320538308">下載</translation>
@@ -4692,6 +4696,7 @@
 <translation id="8281886186245836920">略過</translation>
 <translation id="8282292167096638950">刪除駕駛執照</translation>
 <translation id="8282409409360764263">庭院保養</translation>
+<translation id="828282277746732142">儲存 IBAN 至「Google 錢包」</translation>
 <translation id="8282947398454257691">掌握您的專屬裝置識別碼</translation>
 <translation id="8284769179630993263">在 Chrome 設定中管理安全瀏覽等功能</translation>
 <translation id="828558778104922222">發生不明錯誤，因此遺失相片</translation>

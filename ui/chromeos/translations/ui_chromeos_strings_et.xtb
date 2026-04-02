@@ -677,7 +677,7 @@
 <translation id="6271903698064569429">Faile ei saa üles laadida, kuna kettal „<ph name="SHARED_DRIVE_NAME" />“ ei ole piisavalt salvestusruumi.</translation>
 <translation id="6279140785485544797">Teie mobiilse andmeside pakett võib olla aegunud. Abi saamiseks pöörduge operaatori poole.</translation>
 <translation id="6287852322318138013">Valige faili avamiseks rakendus</translation>
-<translation id="6295542640242147836">SIM-i lukustamine</translation>
+<translation id="6295542640242147836">SIMi lukustamine</translation>
 <translation id="6296410173147755564">Vale PUK</translation>
 <translation id="6308243004861726558">See fail on konfidentsiaalne ja sellele kehtib administraatori reegel. Kehtivad järgmised failidele juurdepääsemise ja edastamise toimingud.</translation>
 <translation id="6312403991423642364">Tundmatu võrguviga</translation>
@@ -805,7 +805,7 @@
 <translation id="7192364647705823015">horvaadi</translation>
 <translation id="7224162581405244205">islandi</translation>
 <translation id="7229570126336867161">Vajalik EVDO</translation>
-<translation id="7230898482850090046">Administraator on palunud teil seade „SIM-i lukustamine“ välja lülitada</translation>
+<translation id="7230898482850090046">Administraator on palunud teil seade „SIMi lukustamine“ välja lülitada</translation>
 <translation id="7238097264433196391">Ketta nimi</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, üksikasjad</translation>
 <translation id="7246947237293279874">FTP-puhverserver</translation>
@@ -972,7 +972,7 @@
 <translation id="8425213833346101688">Muuda</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> kausta on jagatud VM-iga <ph name="VM_NAME" /></translation>
-<translation id="8431909052837336408">Muuda SIM-kaardi PIN-koodi</translation>
+<translation id="8431909052837336408">SIMi PIN-koodi muutmine</translation>
 <translation id="8452135315243592079">SIM-kaart puudub</translation>
 <translation id="8456681095658380701">Kehtetu nimi</translation>
 <translation id="8457767749626250697">Teie SIM on lukustatud</translation>

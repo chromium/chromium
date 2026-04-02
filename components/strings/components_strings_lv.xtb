@@ -1771,6 +1771,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3744899669254331632">Pašlaik jūs nevarat apmeklēt vietni <ph name="SITE" />, jo šī vietne nosūtīja kodētus akreditācijas datus, kurus Chromium nevar apstrādāt. Tā kā tīkla kļūdas un uzbrukumi parasti ir īslaicīga problēma, iespējams, vēlāk šī lapa atkal darbosies.</translation>
 <translation id="3745599309295009257">Jūsu teksts, kā arī tās lapas saturs un vietrādis URL, kurā rakstāt tekstu, tiks nosūtīts uzņēmumam Google, to pārskatīs cilvēki, un tas tiks izmantots šīs funkcijas uzlabošanai. Neievadiet personas informāciju (piemēram, medicīniskos datus vai finanšu informāciju) un neizmantojiet šo rīku vietnēs, kas ietver privātu vai sensitīvu informāciju.</translation>
 <translation id="3748009735914587286">Metāls (augsti glancēts)</translation>
+<translation id="3748647055058832337">Nav pieejams šim tirgotājam</translation>
 <translation id="3749600200023337912">Šim maksājumam var tikt izmantots jūsu saglabātais automātiskā maksājuma veids. Lai pārlūkā Chrome izslēgtu e-makus vai maksājumu lietotni, pārejiet uz <ph name="BEGIN_LINK1" />maksājumu iestatījumiem<ph name="END_LINK1" />.</translation>
 <translation id="3752181611900535304">Vai saglabāt adresi kontā?</translation>
 <translation id="3752543821772132562">Ignorēta, jo nav iestatīta politika <ph name="POLICY_NAME" />.</translation>
@@ -3890,6 +3891,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7057567173736333354">Aprakstiet attēlu</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> apstiprināja, ka <ph name="ISSUER" /> izsniedza šīs vietnes sertifikātu.</translation>
 <translation id="7058774143982824355">CSV failā saglabātu paroļu parsētāja pakalpojums</translation>
+<translation id="7059913660448028407">Pašlaik nav pieejams</translation>
 <translation id="7062344833049251424">Lai nākamreiz veiktu maksājumu ātrāk, saglabājiet kartes datus un norēķinu adresi lietotnē Google maks.</translation>
 <translation id="706295145388601875">Chrome iestatījumos pievienojiet un pārvaldiet adreses.</translation>
 <translation id="7063157783216323487">Zaļa 2</translation>
@@ -4171,6 +4173,7 @@ Papildu informācija:
 <translation id="7471007961486718967">Norādiet pārsūtīšanas iemeslu (obligāti)</translation>
 <translation id="7473033553872550521">Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz protokolu HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nē, paldies!</translation>
+<translation id="7475618719385705713">Šī lapa ir bloķēta</translation>
 <translation id="7481312909269577407">Pārsūtīt</translation>
 <translation id="7481603210197454575">Itāļu aploksne</translation>
 <translation id="7482823403440483089">Uzlabota automātiskā aizpilde</translation>
@@ -4192,6 +4195,7 @@ Papildu informācija:
 <translation id="7508255263130623398">Atgrieztais politikas ierīces ID ir tukšs vai neatbilst pašreizējam ierīces ID.</translation>
 <translation id="7508577201115425418">Dokumentu un drukāšanas pakalpojumi</translation>
 <translation id="7510269639068718544">Kaķi</translation>
+<translation id="7511707705708508147">Valūta netiek atbalstīta</translation>
 <translation id="7511955381719512146">Iespējams, izmantotajā Wi-Fi tīklā tiks pieprasīts apmeklēt vietni <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Šai politikai nevar iestatīt vērtību “True”, un tā nevar būt obligāta, tāpēc politika tagad ir norādīta kā ieteicama.</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
@@ -4691,6 +4695,7 @@ Papildu informācija:
 <translation id="8281886186245836920">Izlaist</translation>
 <translation id="8282292167096638950">Dzēst autovadītāja apliecību</translation>
 <translation id="8282409409360764263">Pagalma kopšana</translation>
+<translation id="828282277746732142">IBAN saglabāšana lietotnē Google maks</translation>
 <translation id="8282947398454257691">uzzināt jūsu unikālo ierīces identifikatoru</translation>
 <translation id="8284769179630993263">Chrome iestatījumos pārvaldiet funkciju Droša pārlūkošana un citas opcijas.</translation>
 <translation id="828558778104922222">Nezināmas kļūdas dēļ neizdevās augšupielādēt fotoattēlu.</translation>

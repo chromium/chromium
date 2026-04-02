@@ -71,9 +71,6 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="2313870531055795960">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura.</translation>
 <translation id="2314220608288760290">Chromium apre automaticamente i link di YouTube in incognito in modalità Incognito.</translation>
 <translation id="231828342043114302">Accedi a Chromium per ricevere contenuti personalizzati in base ai tuoi interessi.</translation>
-<translation id="2326738825692478496">Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google.
-
-Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="2334943301233020675">Le seguenti passkey non sono state importate nel Gestore delle password perché non soddisfano i requisiti.</translation>
 <translation id="2337722506862731008">Condividi Chromium</translation>
 <translation id="2340423701577464731">Aggiungi l'elemento dell'elenco di lettura a Chromium</translation>

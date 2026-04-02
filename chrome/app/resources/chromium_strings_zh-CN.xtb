@@ -56,6 +56,7 @@
 <translation id="1639380494700489405">如需在不离开网页的情况下向 AI 模式询问有关标签页的问题，请登录 Chromium。登录后，您还可在自己的所有设备上同步保存的密码等信息。</translation>
 <translation id="1640672724030957280">正在下载...</translation>
 <translation id="1680687534629375545">向图片搜索功能询问此页面</translation>
+<translation id="1708414395296835197">您可随时使用 Chromium 打开您在消息、文档和其他应用内点击的链接。Chromium 还将固定到任务栏。</translation>
 <translation id="1709772298389099340">为 <ph name="BROWSER_NAME" /> 提供提升的权限。</translation>
 <translation id="1715127912119967311">为帮助改进这些功能，Chromium 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
 <translation id="1722488837206509557">这样，您就可以从可用设备中选择并在这些设备上显示内容。</translation>
@@ -437,6 +438,7 @@
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 网络登录</translation>
 <translation id="5924017743176219022">正在连接到互联网…</translation>
+<translation id="5939553720811388432">立即开始设置您的 Chromium</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5949225980829865667">如需在您的所有设备上获取此书签等内容，请登录 Chromium</translation>
 <translation id="5953657885167112863">打造您的专属 Chromium</translation>

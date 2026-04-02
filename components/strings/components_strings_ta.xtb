@@ -5206,6 +5206,7 @@
 <translation id="9140198744651252040">கடவுச்சொற்களைத் தானாக நிரப்புவதற்குக் கைரேகையைப் பயன்படுத்த Chrome பிரவுசர் விரும்புகிறது</translation>
 <translation id="9141013498910525015">முகவரிகளை நிர்வகி</translation>
 <translation id="9141435142213469335">கூடுதல் தகவலுடன் முகவரியைச் சேமித்தல்</translation>
+<translation id="9141510259469546089">குறைந்தபட்ச பர்ச்சேஸ் <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="9141672681283222114">இந்த முறை AR அனுமதிக்கப்பட்டது</translation>
 <translation id="9143898823728499852">உங்கள் <ph name="CARD_ISSUER_NAME" /> கணக்கு Google Payயுடன் இணைக்கப்பட்டுள்ளதால் இந்தக் கார்டுத் தகவலை நீங்கள் தானாக நிரப்பலாம்</translation>
 <translation id="9144951720726881238">காலாவதியாகும் தேதி:</translation>
@@ -5279,6 +5280,7 @@
 <translation id="937885410143139026">நிர்வாகிக் கன்சோலுக்குத் தரவு அனுப்பப்பட்டது</translation>
 <translation id="939736085109172342">புதிய ஃபோல்டர்</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" />க்கு உங்கள் ஃபைல் பதிவேற்றம் <ph name="MINUTES" /> நிமிடங்களில் தொடங்கும்</translation>
+<translation id="943185096918807504">அதிகபட்ச பர்ச்சேஸ் <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="944578681290094302">செக்-அவுட் செய்யும்போது உங்கள் கார்டுகளுக்கு என்னென்ன ரிவார்டுகளும் பலன்களும் உள்ளன என்பதைப் பார்க்கலாம். <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />கார்டின் பலன்கள் குறித்துத் தெரிந்துகொள்ளுங்கள்<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945673208656386843">இந்தக் கார்டு இந்தச் சாதனத்தில் சேமிக்கப்பட்டிருக்கும் போது Chromiumமில் செய்யப்படும் பர்ச்சேஸ்களில் இதைத் தானாக நிரப்பலாம்</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sitesஸில் புதிய தளத்தை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>

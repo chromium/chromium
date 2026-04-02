@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">Cerca a la pàgina…</translation>
 <translation id="4945756290001680296">Accedeix a la configuració de la contrasenya</translation>
 <translation id="4949302115427722371">Gestiona la configuració…</translation>
-<translation id="4952050521954075618">Les fotos del carret no se sincronitzaran en tots els teus dispositius</translation>
 <translation id="4958444002117714549">Desplega la llista</translation>
 <translation id="496392417432935267">S'ha obert en un altre lloc</translation>
 <translation id="4970724460420203313">Si utilitzes Chrome amb el compte gestionat, podràs mantenir la navegació relacionada amb la teva organització (incloses les pestanyes, l'historial i les contrasenyes) separada de la teva altra activitat de navegació</translation>
@@ -1265,6 +1264,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="555749644339804659">Comprovant contrasenyes…</translation>
 <translation id="5559567453458728487">Converteix les unitats de mesura que es trobin al web</translation>
+<translation id="5560088892362098740">Data de caducitat</translation>
 <translation id="556042886152191864">Botó</translation>
 <translation id="5565871407246142825">Targetes de crèdit</translation>
 <translation id="5566623128829375608">Es desa al dispositiu.</translation>

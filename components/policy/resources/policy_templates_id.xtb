@@ -6598,6 +6598,7 @@ Kebijakan ini mendukung pembaruan dinamis.
 Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang.</translation>
 <translation id="5212810195096589189">Tentukan izin CLI VM</translation>
 <translation id="5213038356678567351">Situs yang seharusnya tidak pernah memicu pengalihan browser.</translation>
+<translation id="5216710229085956333">Aktifkan peredam bising Krisp</translation>
 <translation id="5216815237712190041">Mengonfigurasi gambar wallpaper tingkat perangkat yang akan ditampilkan di layar login jika belum ada pengguna yang login ke perangkat. Kebijakan ini disetel dengan menentukan URL tempat perangkat ChromeOS dapat mendownload gambar wallpaper dan hash kriptografi yang digunakan untuk memverifikasi integritas download. Gambar harus dalam format JPEG dan ukuran filenya tidak boleh lebih dari 16 MB. URL harus dapat diakses tanpa autentikasi apa pun. Gambar wallpaper didownload dan disimpan di cache. File akan didownload ulang setiap kali URL atau hash berubah.
 
       Jika kebijakan wallpaper perangkat disetel, perangkat ChromeOS akan mendownload dan menggunakan gambar wallpaper di layar login jika belum ada pengguna yang login ke perangkat. Setelah pengguna login, kebijakan wallpaper pengguna akan diterapkan.
@@ -7020,6 +7021,7 @@ pintasan berbasis penelusuran akan bertindak sebagai default.</translation>
 <translation id="5479841110985196412">Aktifkan keyboard virtual aksesibilitas</translation>
 <translation id="5480380613778757009">Jika kebijakan ini dinonaktifkan atau tidak disetel, semua setelan tampilan yang disetel di Sesi tamu terkelola akan direset segera setelah sesi selesai. Jika kebijakan ini disetel ke Benar (True), properti tampilan akan tetap tersimpan setelah keluar dari sesi tamu terkelola.</translation>
 <translation id="548137908954174608">Aktifkan Teks Otomatis</translation>
+<translation id="5481873128882951841">Nonaktifkan peredam bising Krisp</translation>
 <translation id="5483012943408894695">Origin atau pola nama host yang semestinya tidak dikenai pembatasan untuk origin yang tidak aman</translation>
 <translation id="5483065054530244863">Mengizinkan sertifikat bertanda tangan SHA-1 yang dikeluarkan oleh trust anchor lokal</translation>
 <translation id="5485491014653571963">Setelan ini mengizinkan integrasi aplikasi Gemini.
@@ -11016,6 +11018,12 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_S
 
       Secara default, ekstensi atau aplikasi Android tidak dapat menggunakan kunci yang ditujukan untuk pemakaian dalam perusahaan, hal ini setara dengan menyetel allowCorporateKeyUsage ke Salah (False) untuk ekstensi atau aplikasi Android tersebut. Hanya jika allowCorporateKeyUsage disetel ke Benar (True) untuk suatu ekstensi atau aplikasi Android, ekstensi atau aplikasi Android tersebut dapat menggunakan kunci platform apa pun yang ditujukan untuk pemakaian dalam perusahaan, guna menandai data arbitrer. Izin ini hanya boleh diberikan jika ekstensi atau aplikasi Android dipercaya untuk mengamankan akses ke kunci dari para penyerang.</translation>
 <translation id="7928412788382651939">Izinkan pengelompokan jendela ringkasan AI Generatif dan tingkatkan kualitas model AI.</translation>
+<translation id="7929417323335013269">Kebijakan ini mengontrol teknologi peredam bising Krisp AI di perangkat.
+Fitur ini diintegrasikan sebagai library pihak ketiga lokal yang terpisah ke <ph name="PRODUCT_OS_NAME" /> dan hanya tersedia untuk pengguna terkelola.
+
+Jika kebijakan ini disetel ke Aktif, pemrosesan audio peredam bising Krisp AI akan diaktifkan dan pengguna tidak dapat menonaktifkannya.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pemrosesan audio peredam bising Krisp AI akan dinonaktifkan.</translation>
 <translation id="7930383470029339167">ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes adalah fitur Chrome yang dirancang agar iframe lintas origin dengan lintas proses dan proses yang sama memiliki perilaku rendering yang konsisten. Untuk mengetahui detail lebih lanjut tentang throttling lintas proses vs. proses yang sama, lihat https://chromestatus.com/feature/5175574929080320.
 
 Kebijakan perusahaan ini dibuat untuk memungkinkan administrator mengontrol apakah pengguna dapat mengaktifkan throttling tambahan atau tidak. Jika kebijakan disetel ke nonaktif, throttling tidak akan diaktifkan. Jika kebijakan disetel ke aktif atau tidak disetel, pengguna dapat memilih untuk menjalankan throttling, atau mungkin dapat diaktifkan melalui variasi Chrome.</translation>

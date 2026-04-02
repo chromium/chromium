@@ -149,12 +149,10 @@
 <translation id="1091767800771861448">ಸ್ಕಿಪ್‌ ಮಾಡಲು ESCAPE ಅನ್ನು ಒತ್ತಿರಿ (ಅಧಿಕೃತವಲ್ಲದ ಬಿಲ್ಡ್‌ಗಳಿಗೆ ಮಾತ್ರ).</translation>
 <translation id="1093457606523402488">ಗೋಚರಿಸುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳು:</translation>
 <translation id="1093645050124056515">ctrl + alt + ಡೌನ್ ಆ್ಯರೋ</translation>
-<translation id="1094219634413363886">ಈ ನಿರ್ವಹಿಸಲ್ಪಟ್ಟ ಸಾಧನದಲ್ಲಿ ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದರೆ ನೀವು ಅಧಿಸೂಚನೆಯೊಂದನ್ನು ಕಾಣುತ್ತೀರಿ</translation>
 <translation id="1095879482467973146">ವೆಬ್‌ನಲ್ಲಿನ Google Password Manager</translation>
 <translation id="109647177154844434">Parallels Desktop ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ Windows ಚಿತ್ರವನ್ನು ಅಳಿಸುತ್ತದೆ. ಅದರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಇದು ಒಳಗೊಂಡಿರುತ್ತದೆ. ನೀವು ಮುಂದುವರಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="1097016918605049747">ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1097658378307015415">ಸೈನ್ ಇನ್ ಮಾಡುವ ಮುನ್ನ, <ph name="NETWORK_ID" /> ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಅತಿಥಿಯಾಗಿ ಪ್ರವೇಶಿಸಿ</translation>
-<translation id="1099070179078143183">ಸ್ಕ್ಯಾಮ್ ಡಿಟೆಕ್ಷನ್‌ನಂತಹ ಫೀಚರ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, Chrome ನಿಮ್ಮ ಡೇಟಾವನ್ನು Google ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸದೆಯೇ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೇರವಾಗಿ ರನ್ ಆಗುವ AI ಮಾಡಲ್‌ಗಳನ್ನು ಬಳಸಬಹುದು. ಇದು ಆಫ್ ಆಗಿರುವಾಗ, ಈ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು. <ph name="BEGIN_LINK" />ಸಾಧನದಲ್ಲಿರುವ AI ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> ಸಾಧನದಿಂದ ಚಿತ್ರವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1100504063505580045">ಪ್ರಸ್ತುತ ಐಕಾನ್</translation>
 <translation id="1101267749138963680">ಸುರಕ್ಷತೆಗಾಗಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -3623,7 +3621,6 @@
 <translation id="3494893110166252544"><ph name="PERCENTAGE" />% - ಚಾರ್ಜಿಂಗ್ ಅನ್ನು ಹೋಲ್ಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3495496470825196617">ಚಾರ್ಜ್ ಆಗುವಾಗ ನಿಷ್ಕ್ರಿಯ ಶಕ್ತಿ</translation>
 <translation id="3495660573538963482">Google ಸಹಾಯಕ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
-<translation id="3495675993466884458">ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು, ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು <ph name="APP_ORIGIN" /> ಗೆ ಅನುಮತಿಸಿದ್ದಾರೆ</translation>
 <translation id="3496213124478423963">ಝೂಮ್ ಔಟ್</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (ಆಯ್ಕೆಮಾಡಲಾಗಿಲ್ಲ)</translation>
 <translation id="3496689104192986836">ಬ್ಯಾಟರಿಯ ಮಟ್ಟ: <ph name="PERCENTAGE" />%</translation>
@@ -4859,7 +4856,6 @@
 <translation id="4340125850502689798">ಮಾನ್ಯವಲ್ಲದ ಬಳಕೆದಾರರ ಹೆಸರು</translation>
 <translation id="4340515029017875942">"<ph name="EXTENSION_NAME" />" ಅಪ್ಲಿಕೇಶನ್ ನೊಂದಿಗೆ <ph name="ORIGIN" /> ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="4340799661701629185">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
-<translation id="4341280816303414009">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು</translation>
 <translation id="4341577178275615435">ಕೆರೆಟ್ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಲು, F7 ಶಾರ್ಟ್‌ಕಟ್ ಬಳಸಿ</translation>
 <translation id="4341905082470253054">TPM ಸ್ಥಿತಿಯನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="434198521554309404">ವೇಗ. ಸುರಕ್ಷಿತ. ಶ್ರಮರಹಿತ.</translation>
@@ -5261,7 +5257,6 @@
 <translation id="4624054169152573743">ಬಣ್ಣದ ಥೀಮ್‌</translation>
 <translation id="4625078469366263107">ಆ್ಯಪ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4625905218692741757">ಬೂದು ಡಿಫಾಲ್ಟ್ ಬಣ್ಣ</translation>
-<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini ನಿಮ್ಮ ಕಾರ್ಯವನ್ನು ವಿರಾಮಗೊಳಿಸಿದೆ. ಅದನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಹಿಂತಿರುಗಿ.</translation>
 <translation id="4627107755957573804">ಪಾಸ್‌ಕೀಗಳನ್ನು ಬಳಸುವುದಕ್ಕೆ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಖಾತೆಗಳನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಲು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="4627442949885028695">ಬೇರೆ ಸಾಧನದಿಂದ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4628762811416793313">Linux ಕಂಟೇನರ್ ಸೆಟಪ್ ಪೂರ್ಣವಾಗಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -7043,7 +7038,6 @@
 <translation id="5895335062901455404">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಉಳಿಸಲಾದ ಆದ್ಯತೆಗಳು ಮತ್ತು ಚಟುವಟಿಕೆ ಯಾವುದೇ ChromeOS Flex ಸಾಧನದಲ್ಲಿ ಸಿದ್ಧವಾಗಿರುತ್ತವೆ. ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆರಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="5895338131909306775">ಕೆಮಿಸ್ಟ್ರಿ ಲ್ಯಾಬ್</translation>
 <translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಪುಟವನ್ನು ಹುಡುಕಿ</translation>
-<translation id="5895758411979561724"><ph name="APP_ORIGIN" />, ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="5896436821193322561">ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="5899860758576822363">ChromeVox ಮಾತನಾಡುತ್ತಿರುವಾಗ ಕಡಿಮೆ ವಾಲ್ಯೂಮ್‌ನಲ್ಲಿ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="5900243355162006650">ಟೆಥರಿಂಗ್‌ ಕಾನ್ಫಿಗರೇಶನ್:</translation>

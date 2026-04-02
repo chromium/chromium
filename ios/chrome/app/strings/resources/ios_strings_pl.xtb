@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">Znajdź na stronie…</translation>
 <translation id="4945756290001680296">Otwórz ustawienia haseł</translation>
 <translation id="4949302115427722371">Zarządzaj ustawieniami…</translation>
-<translation id="4952050521954075618">Zdjęcia z rolki z aparatu nie będą synchronizowane między urządzeniami</translation>
 <translation id="4958444002117714549">Rozwiń listę</translation>
 <translation id="496392417432935267">Otwarto w innym oknie</translation>
 <translation id="4970724460420203313">Korzystanie z konta zarządzanego w Chrome pozwala oddzielić dane przeglądania związane z organizacją (w tym karty, historię i hasła) od pozostałych danych przeglądania.</translation>
@@ -1265,6 +1264,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="555749644339804659">Sprawdzam hasła…</translation>
 <translation id="5559567453458728487">Przelicz jednostki miary znalezione w internecie</translation>
+<translation id="5560088892362098740">Data ważności</translation>
 <translation id="556042886152191864">Przycisk</translation>
 <translation id="5565871407246142825">Karty kredytowe</translation>
 <translation id="5566623128829375608">Zapisuje informacje na urządzeniu.</translation>

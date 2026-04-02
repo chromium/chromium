@@ -149,12 +149,10 @@
 <translation id="1091767800771861448">건너뛰려면 Esc 키를 누르세요(비공식 빌드만 해당).</translation>
 <translation id="1093457606523402488">표시된 네트워크:</translation>
 <translation id="1093645050124056515">Ctrl + Alt + 아래쪽 화살표</translation>
-<translation id="1094219634413363886">이 관리 기기에서 녹화가 시작되면 알림이 표시됩니다.</translation>
 <translation id="1095879482467973146">웹용 Google 비밀번호 관리자</translation>
 <translation id="109647177154844434">Parallels Desktop을 제거하면 Windows 이미지가 삭제됩니다. 여기에는 애플리케이션, 설정, 데이터가 포함됩니다. 계속하시겠습니까?</translation>
 <translation id="1097016918605049747">페이지를 번역할 수 없습니다</translation>
 <translation id="1097658378307015415">로그인하기 전에 게스트로 로그인하여 <ph name="NETWORK_ID" /> 네트워크를 활성화하세요.</translation>
-<translation id="1099070179078143183">사기 탐지와 같은 기능을 지원하기 위해 Chrome은 Google 서버로 데이터를 전송하지 않고 기기에서 직접 실행되는 AI 모델을 사용할 수 있습니다. 이 기능이 사용 중지되면 이러한 기능이 작동하지 않을 수 있습니다. <ph name="BEGIN_LINK" />온디바이스 AI 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />에서 이미지가 복사됨</translation>
 <translation id="1100504063505580045">현재 아이콘</translation>
 <translation id="1101267749138963680">안전한지 확인 중...</translation>
@@ -327,6 +325,7 @@
 <translation id="1211769675100312947">내가 선별한 바로가기입니다.</translation>
 <translation id="1215411991991485844">새 백그라운드 앱을 추가함</translation>
 <translation id="1216542092748365687">지문 삭제</translation>
+<translation id="1216628023580643945">기능 이름 지정</translation>
 <translation id="1216891999012841486">업데이트 오류 수정에 관해 자세히 알아보기</translation>
 <translation id="1217114730239853757">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
 <translation id="1217117837721346030">의심스러운 파일 다운로드</translation>
@@ -440,6 +439,7 @@
 <translation id="1285815028662278915">모바일 데이터가 핫스팟을 지원하지 않을 수 있습니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1286901453440314450">신뢰할 수 없는 인증서</translation>
 <translation id="1288037062697528143">일몰 시 야간 조명이 자동으로 켜짐</translation>
+<translation id="1288235441231062220">글자 수 제한(<ph name="MAX_CHARS" />자, 영문 기준) 도달</translation>
 <translation id="1288300545283011870">음성 속성</translation>
 <translation id="1289619947962767206">이 옵션은 더 이상 지원되지 않습니다. 탭을 발표하려면 <ph name="GOOGLE_MEET" />을 사용하세요.</translation>
 <translation id="1291057703584594733">이미 할당된 동작을 선택하면 원래 작업에서 동작이 삭제됩니다.</translation>
@@ -1526,6 +1526,7 @@
 <translation id="202918510990975568">비밀번호를 입력하여 보안을 구성하고 로그인하세요.</translation>
 <translation id="2030455719695904263">트랙패드</translation>
 <translation id="2030803782168502207">기기에서 구독 삭제</translation>
+<translation id="2031487800375552010">기능을 사용하면 반복적인 작업에 프롬프트를 간편하게 재사용할 수 있습니다.</translation>
 <translation id="2031914984822377766">선호하는 <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />를 추가하세요. 번역 시 목록의 가장 위에 있는 언어가 사용됩니다.</translation>
 <translation id="2032837042715970520">OTP 필수</translation>
 <translation id="2034346955588403444">다른 Wi-Fi 네트워크 추가</translation>
@@ -1653,6 +1654,7 @@
 <translation id="2120297377148151361">활동 및 상호작용</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> 권한이 차단됨</translation>
 <translation id="2121825465123208577">크기 조정</translation>
+<translation id="2122446694240899610">내 기능은 Google 계정에 저장됩니다.</translation>
 <translation id="2123766928840368256">다른 파일 선택</translation>
 <translation id="2124930039827422115">{1,plural, =1{1명의 사용자가 별표 <ph name="AVERAGE_RATING" />개로 평가했습니다.}other{#명의 사용자가 별표 <ph name="AVERAGE_RATING" />개로 평가했습니다.}}</translation>
 <translation id="2125715366913703594">확장 프로그램 살펴보기(&amp;E)</translation>
@@ -3298,6 +3300,7 @@
 <translation id="3253448572569133955">알 수 없는 계정</translation>
 <translation id="3253746622312821295">유선 헤드폰</translation>
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> 다운로드 중, <ph name="PERCENT_REMAINING" />% 남음</translation>
+<translation id="3254506277019076812">스킬 추가</translation>
 <translation id="3254516606912442756">시간대 자동설정이 사용 중지됩니다</translation>
 <translation id="3255747772218936245">업데이트 설치</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 확장 프로그램을 허용하시겠습니까?</translation>
@@ -3629,7 +3632,6 @@
 <translation id="3494893110166252544"><ph name="PERCENTAGE" />% - 충전 일시중지</translation>
 <translation id="3495496470825196617">충전 시 전력 유휴 상태로 설정</translation>
 <translation id="3495660573538963482">Google 어시스턴트 설정</translation>
-<translation id="3495675993466884458">시스템 관리자가 <ph name="APP_ORIGIN" />의 화면 녹화를 허용했습니다.</translation>
 <translation id="3496213124478423963">축소</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" />(선택되지 않음)</translation>
 <translation id="3496689104192986836">배터리 잔량 <ph name="PERCENTAGE" />%</translation>
@@ -4862,7 +4864,6 @@
 <translation id="4340125850502689798">잘못된 사용자 이름</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />에서 '<ph name="EXTENSION_NAME" />' 앱과 통신하려고 합니다.</translation>
 <translation id="4340799661701629185">사이트에서 알림을 전송하도록 허용하지 않음</translation>
-<translation id="4341280816303414009">화면이 녹화될 수 있음</translation>
 <translation id="4341577178275615435">캐럿 브라우징을 사용 설정하거나 중지하려면 F7 단축키를 사용합니다.</translation>
 <translation id="4341905082470253054">TPM 상태 확인 중...</translation>
 <translation id="434198521554309404">빠르고 안전하며 편리한 브라우저</translation>
@@ -4932,6 +4933,7 @@
 <translation id="4385146930797718821">클립보드에 스크린샷이 복사되었습니다</translation>
 <translation id="4385905942116811558">블루투스 및 USB 기기 검색 중</translation>
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다}other{이 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다}}</translation>
+<translation id="4386435410933281983">저장할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="4386604394450371010">개요</translation>
 <translation id="4387890294700445764">유출된 비밀번호</translation>
 <translation id="4388650384344483842">8자 이상 입력하세요.</translation>
@@ -5263,7 +5265,6 @@
 <translation id="4624054169152573743">색상 테마</translation>
 <translation id="4625078469366263107">앱 사용</translation>
 <translation id="4625905218692741757">회색 기본 색상</translation>
-<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini가 작업을 일시중지했습니다. Chrome으로 돌아가서 검토하세요.</translation>
 <translation id="4627107755957573804">사이트 및 앱에서 기존 계정을 업그레이드하여 패스키를 사용하도록 허용합니다</translation>
 <translation id="4627442949885028695">다른 기기에서 계속</translation>
 <translation id="4628762811416793313">Linux 컨테이너 설정이 완료되지 않았습니다. 다시 시도해 주세요.</translation>
@@ -5827,6 +5828,7 @@
 <translation id="5018207570537526145">확장 프로그램 웹사이트 열기</translation>
 <translation id="5019487038187875030">macOS에서 가져온 인증서 보기</translation>
 <translation id="5020008942039547742">다른 기간 선택</translation>
+<translation id="5020146655450187658">오프라인 상태입니다. 인터넷 연결을 확인하여 Gemini가 자동으로 로그인할 수 있는 사이트를 관리하세요.</translation>
 <translation id="5020651427400641814">음성 로깅 사용</translation>
 <translation id="5021500396464456616">이 링크를 보낸 사용자에게 문의하세요.</translation>
 <translation id="5021750053540820849">아직 업데이트되지 않음</translation>
@@ -6249,6 +6251,7 @@
 <translation id="5313967007315987356">사이트 추가</translation>
 <translation id="5315738755890845852">불필요한 중괄호: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">저장</translation>
+<translation id="5317781812114905957">요청 사항</translation>
 <translation id="5319712128756744240">새 기기와 페어링</translation>
 <translation id="5320135788267874712">새 기기 이름</translation>
 <translation id="532247166573571973">서버 접속이 불가능할 수 있습니다. 나중에 다시 시도해 주세요.</translation>
@@ -6997,6 +7000,7 @@
 <translation id="5862109781435984885">앱 표시줄에 스타일러스 도구 표시</translation>
 <translation id="5862319196656206789">연결된 기기 설정</translation>
 <translation id="5862731021271217234">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
+<translation id="5863169562287940080">아이콘 선택</translation>
 <translation id="5863195274347579748">외부 액세서리를 사용하여 개인 정보에 액세스하거나 개인 정보를 공유할 수도 있습니다.</translation>
 <translation id="5863263400083022538">시스템 서비스</translation>
 <translation id="5863445608433396414">디버깅 기능 사용</translation>
@@ -7042,7 +7046,6 @@
 <translation id="5895335062901455404">Google 계정으로 로그인할 경우 모든 ChromeOS Flex 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요.</translation>
 <translation id="5895338131909306775">화학 실험실</translation>
 <translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 검색</translation>
-<translation id="5895758411979561724"><ph name="APP_ORIGIN" />에서 화면 녹화 중</translation>
 <translation id="5896436821193322561">허용 안함</translation>
 <translation id="5899860758576822363">ChromeVox 음성이 나올 때는 낮은 볼륨으로 재생합니다.</translation>
 <translation id="5900243355162006650">테더링 구성:</translation>
@@ -7218,6 +7221,7 @@
 <translation id="6016972670657536680">언어 및 키보드 버튼을 선택하세요. 현재 선택된 언어는 <ph name="LANGUAGE" />입니다.</translation>
 <translation id="6017318029492906697">나에 관해 저장된 정보를 사용하도록 허용하지 않음</translation>
 <translation id="6017514345406065928">녹색</translation>
+<translation id="6018241313232245125">Gemini로 개선</translation>
 <translation id="6019169947004469866">자르기</translation>
 <translation id="6019851026059441029">훌륭함 - HD</translation>
 <translation id="6020431688553761150">서버에서 승인하지 않아 이 리소스에 액세스할 수 없습니다.</translation>
@@ -7676,6 +7680,7 @@
 <translation id="6347010704471250799">알림 표시</translation>
 <translation id="634792071306410644">나를 공개하기 전에는 아무도 나와 파일을 공유할 수 없습니다</translation>
 <translation id="6348252528297699679">설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스에서 위치를 사용 중지할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="6348655410494610085">Google 계정을 사용하거나 새 계정을 만드세요.</translation>
 <translation id="6348805481186204412">오프라인 스토리지</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
 <translation id="6350821834561350243">가능한 경우 문제를 명확하게 설명하고 문제를 재현하기 위한 단계를 제공합니다.</translation>
@@ -9950,6 +9955,7 @@
 <translation id="7940265372707990269">정렬 기준: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">테더링 준비:</translation>
 <translation id="7942349550061667556">빨간색</translation>
+<translation id="794250392403348719">예: 8살 어린이가 이해할 수 있도록 이 개념을 단순화해 줘. 쉬운 표현과 아이가 이해할 수 있는 비유를 사용하고, 전체 설명은 150단어 미만으로 간결하게 작성해 줘.</translation>
 <translation id="7942846369224063421">미리 로드된 UI 렌더기</translation>
 <translation id="7943271960579497371">설치된 애플리케이션</translation>
 <translation id="7943368935008348579">PDF 다운로드</translation>
@@ -11523,6 +11529,7 @@
 <translation id="9003647077635673607">모든 웹사이트에서 허용</translation>
 <translation id="9005774573776346118">모든 기기에서 비밀번호, 북마크 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="9006511997799670136">내 조직</translation>
+<translation id="900733896273558337">기능 수정</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> 사이트가 이 링크를 앱에서 열려고 합니다.</translation>
 <translation id="9008201768610948239">무시</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> 세부정보 페이지의 뒤로 버튼</translation>

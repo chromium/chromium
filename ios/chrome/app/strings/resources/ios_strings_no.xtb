@@ -1099,7 +1099,6 @@
 <translation id="4944543191714094452">Finn på siden</translation>
 <translation id="4945756290001680296">Åpne passordinnstillingene</translation>
 <translation id="4949302115427722371">Administrer innstillinger…</translation>
-<translation id="4952050521954075618">Bilder fra kamerabildene synkroniseres ikke på enhetene dine</translation>
 <translation id="4958444002117714549">Utvid liste</translation>
 <translation id="496392417432935267">Åpnet et annet sted</translation>
 <translation id="4970724460420203313">Hvis du logger på med den administrerte kontoen din når du bruker Chrome, kan du holde nettlesingen som er knyttet til organisasjonen din (inkludert faner, logg og passord), atskilt fra annen nettlesing</translation>
@@ -1265,6 +1264,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="555749644339804659">Sjekker passord …</translation>
 <translation id="5559567453458728487">Konverter måleenheter som blir funnet på nettet</translation>
+<translation id="5560088892362098740">Utløpsdato</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5565871407246142825">Kredittkort</translation>
 <translation id="5566623128829375608">Lagres på enheten din.</translation>

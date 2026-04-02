@@ -1769,6 +1769,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3744899669254331632">Al momento non puoi visitare il sito <ph name="SITE" /> perché tale sito web ha inviato credenziali criptate che Chromium non è riuscito a elaborare. Gli attacchi e gli errori di rete in genere sono temporanei, pertanto è possibile che questa pagina funzioni più tardi.</translation>
 <translation id="3745599309295009257">Il testo, i contenuti e l'URL della pagina su cui stai scrivendo verranno inviati a Google, esaminati da persone e utilizzati per migliorare questa funzionalità. Evita di inserire informazioni personali (come dettagli medici o finanziari) o di utilizzare questo strumento su siti che contengono informazioni private o sensibili.</translation>
 <translation id="3748009735914587286">Metallo (lucido)</translation>
+<translation id="3748647055058832337">Non disponibile per questo commerciante</translation>
 <translation id="3749600200023337912">Il metodo di pagamento automatico salvato potrebbe essere utilizzato per questo pagamento. Per disattivare gli e-wallet o l'app per pagamenti in Chrome, vai alle <ph name="BEGIN_LINK1" />impostazioni di pagamento<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Salvare l'indirizzo nell'account?</translation>
 <translation id="3752543821772132562">Ignorata perché la policy <ph name="POLICY_NAME" /> non è stata configurata.</translation>
@@ -3888,6 +3889,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="7057567173736333354">Descrivi la tua immagine</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ha verificato che <ph name="ISSUER" />ha rilasciato il certificato di questo sito web.</translation>
 <translation id="7058774143982824355">Servizio parser delle password CSV</translation>
+<translation id="7059913660448028407">Non disponibile al momento</translation>
 <translation id="7062344833049251424">Per pagare più velocemente la prossima volta, salva la carta e l'indirizzo di fatturazione in Google Wallet</translation>
 <translation id="706295145388601875">Aggiungi e gestisci indirizzi nelle impostazioni di Chrome</translation>
 <translation id="7063157783216323487">Verde 2</translation>
@@ -4169,6 +4171,7 @@ Ulteriori dettagli:
 <translation id="7471007961486718967">Specifica il motivo del trasferimento (obbligatorio)</translation>
 <translation id="7473033553872550521">Puoi anche contattare il proprietario del sito e suggerire di eseguire l'upgrade a HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">No, grazie</translation>
+<translation id="7475618719385705713">Questa pagina è bloccata</translation>
 <translation id="7481312909269577407">Avanti</translation>
 <translation id="7481603210197454575">Busta Italian</translation>
 <translation id="7482823403440483089">Compilazione automatica avanzata</translation>
@@ -4190,6 +4193,7 @@ Ulteriori dettagli:
 <translation id="7508255263130623398">L'ID dispositivo della norma restituito è vuoto o non corrisponde all'ID dispositivo corrente</translation>
 <translation id="7508577201115425418">Servizi di stampa e documenti</translation>
 <translation id="7510269639068718544">Gatti</translation>
+<translation id="7511707705708508147">Valuta non supportata</translation>
 <translation id="7511955381719512146">La rete Wi-Fi in uso potrebbe richiedere la visita della pagina <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Questa policy non può essere impostata su "True" ed essere configurata come obbligatoria, pertanto è diventata consigliata.</translation>
 <translation id="7514365320538308">Scarica</translation>
@@ -4689,6 +4693,7 @@ Ulteriori dettagli:
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8282292167096638950">Elimina la patente di guida</translation>
 <translation id="8282409409360764263">Manutenzione del cortile</translation>
+<translation id="828282277746732142">Salva IBAN in Google Wallet</translation>
 <translation id="8282947398454257691">Conoscere l'identificatore univoco del dispositivo</translation>
 <translation id="8284769179630993263">Gestisci la funzionalità Navigazione sicura e altre opzioni nelle impostazioni di Chrome</translation>
 <translation id="828558778104922222">Foto persa a causa di un errore sconosciuto</translation>

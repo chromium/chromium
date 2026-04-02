@@ -6186,6 +6186,7 @@ Protected Audience API 已淘汰，因此這項政策也已在 <ph name="PRODUCT
 這項政策為臨時措施，將在日後的 <ph name="PRODUCT_NAME" /> 版本中移除。</translation>
 <translation id="5212810195096589189">指定 VM CLI 的權限</translation>
 <translation id="5213038356678567351">完全不該觸發瀏覽器切換的網站。</translation>
+<translation id="5216710229085956333">啟用 Krisp 降噪</translation>
 <translation id="5216815237712190041">設定在沒有任何使用者登入裝置時，登入畫面顯示的裝置層級桌布圖片。如要設定這項政策，請指定可供 Chrome OS 裝置下載桌布圖片的網址，以及用於驗證下載內容完整性的加密編譯雜湊值。圖片必須為 JPEG 格式，且大小不得超過 16 MB。網址必須未設定任何驗證機制，可直接存取。系統會下載並快取桌布圖片。只要網址或雜湊值有任何變更，系統就會重新下載。
 
       設定這項裝置桌布政策後，在沒有任何使用者登入裝置時，Chrome OS 裝置會下載桌布圖片並顯示在登入畫面上。只要有使用者登入裝置，系統就會改用使用者的桌布政策。
@@ -6587,6 +6588,7 @@ Protected Audience API 已淘汰，因此這項政策也已在 <ph name="PRODUCT
 <translation id="5479841110985196412">啟用無障礙虛擬鍵盤</translation>
 <translation id="5480380613778757009">如果停用或不設定這項政策，當受管理訪客工作階段結束後，系統就會立即重設在此期間配置的所有顯示設定。如果將這項政策設為 True，系統就會在受管理的訪客工作階段結束後保留顯示屬性。</translation>
 <translation id="548137908954174608">啟用即時字幕</translation>
+<translation id="5481873128882951841">停用 Krisp 降噪</translation>
 <translation id="5483012943408894695">不適用不安全來源相關限制的來源或主機名稱模式</translation>
 <translation id="5483065054530244863">允許本機信任錨點核發的 SHA-1 簽署憑證</translation>
 <translation id="5485491014653571963">你可以透過這項設定允許整合 Gemini 應用程式。
@@ -10282,6 +10284,12 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 
       根據預設，擴充功能或 Android 應用程式無法使用企業專用的金鑰 (等同於將 allowCorporateKeyUsage 設為 False)。擴充功能或 Android 應用程式只有在 allowCorporateKeyUsage 設為 True 時，才能使用企業專用的平台金鑰簽署任意資料。為了確保攻擊者無法獲得金鑰存取權，這項權限只應授予信任的擴充功能或 Android 應用程式。</translation>
 <translation id="7928412788382651939">允許使用生成式 AI 總覽視窗分組功能並協助改善 AI 模型。</translation>
+<translation id="7929417323335013269">這項政策可控管裝置上的 Krisp AI 降噪技術。
+這項功能會以獨立的本機第三方程式庫形式整合到 <ph name="PRODUCT_OS_NAME" />，僅供受管理使用者存取。
+
+如果將這項政策設為啟用，系統會開啟 Krisp AI 降噪音訊處理功能，並禁止使用者停用。
+
+如果將這項政策設為停用或不設定，系統會關閉 Krisp AI 降噪音訊處理功能。</translation>
 <translation id="7930383470029339167">ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes 是 Chrome 的功能，旨在讓不同程序和相同程序的不同來源 iframe 算繪行為保持一致。如要進一步瞭解不同程序和相同程序的節流功能，請前往 https://chromestatus.com/feature/5175574929080320。
 
 這項企業政策可讓系統管理員控管使用者是否能開啟額外的節流功能。如果將這項政策設為停用，系統將禁止啟用節流功能。如果將這項政策設為啟用或未設定，使用者就可以選擇使用節流功能，也或許可以透過其他 Chrome 版本啟用。</translation>

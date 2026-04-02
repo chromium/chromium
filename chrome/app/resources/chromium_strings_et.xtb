@@ -57,6 +57,7 @@
 <translation id="1639380494700489405">AI-režiimilt vahelehe kohta küsimiseks ilma lehelt lahkumata logige Chromiumi sisse. Lisaks saate kõigis oma seadmetes oma paroole ja muud kasutada.</translation>
 <translation id="1640672724030957280">Allalaadimine ...</translation>
 <translation id="1680687534629375545">Küsige pildiotsingult selle lehe kohta</translation>
+<translation id="1708414395296835197">Saate kasutada Chromiumi sõnumites, dokumentides ja teistes rakendustes olevatel linkidel klõpsates. See kinnitatakse ka teie tegumiribale.</translation>
 <translation id="1709772298389099340">Annab brauserile <ph name="BROWSER_NAME" /> administraatoriõigused.</translation>
 <translation id="1715127912119967311">Nende funktsioonide täiustamiseks saadab Chromium teie interaktsioonid funktsioonidega Google'ile. Ülevaatajad võivad neid andmeid lugeda, töödelda ja nende kohta märkmeid teha.</translation>
 <translation id="1722488837206509557">See võimaldab teil valida saadaolevate seadmete hulgast ja kuvada neis sisu.</translation>
@@ -438,6 +439,7 @@
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – võrku sisselogimine</translation>
 <translation id="5924017743176219022">Internetiga ühenduse loomine …</translation>
+<translation id="5939553720811388432">Seame Chromiumi teie jaoks valmis</translation>
 <translation id="5941711191222866238">Minimeeri</translation>
 <translation id="5949225980829865667">Selle järjehoidja ja muu saamiseks kõikidesse oma seadmetesse logige Chromiumi sisse</translation>
 <translation id="5953657885167112863">Muutke Chromium enda omaks</translation>

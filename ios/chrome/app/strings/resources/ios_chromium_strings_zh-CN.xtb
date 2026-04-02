@@ -71,9 +71,6 @@
 <translation id="2313870531055795960">将网址与存储在 Chromium 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="2314220608288760290">Chromium 会自动在无痕模式下打开 YouTube 无痕式链接。</translation>
 <translation id="231828342043114302">如要根据您的兴趣接收个性化内容，请登录 Chromium。</translation>
-<translation id="2326738825692478496">部分 Chromium 数据尚未保存到您的 Google 账号。
-
-请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="2334943301233020675">以下通行密钥不符合要求，因此未导入密码管理工具。</translation>
 <translation id="2337722506862731008">共享 Chromium</translation>
 <translation id="2340423701577464731">将阅读清单项添加到 Chromium</translation>

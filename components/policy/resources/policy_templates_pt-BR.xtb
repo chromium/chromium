@@ -6710,6 +6710,22 @@ Se ela não for definida, o valor padrão será 0 graus e o usuário poderá mud
 <translation id="5293285950307241933">Apagar todos os dados locais de usuário</translation>
 <translation id="5293619885162445352">Permitir que o <ph name="PEPPER_NAME" /> use o novo decodificador de vídeo.</translation>
 <translation id="529457411593078576">Ativar TOS durante a primeira execução do CCT</translation>
+<translation id="529718811410033393">Se a política for definida, é especificado o número máximo de conexões simultâneas por servidor proxy para solicitações que não são WebSocket.
+
+Para modificar o limite de solicitações WebSocket, consulte <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Se a política não for definida, será usado o valor padrão 32.
+
+Alguns web apps são conhecidos por consumir muitas conexões com GETs irresponsivos. Portanto, definir um valor inferior a 32 pode gerar interrupções na rede do navegador caso haja muitos deles com conexões pendentes abertas.
+Alguns servidores proxy não podem administrar muitas conexões simultâneas por cliente, mas isso pode ser resolvido definindo um número menor para esta política.
+
+O valor deve ser igual ou maior que 6.
+Se você definir um número abaixo desse limite, o valor 6 será usado.
+A definição de valores abaixo do padrão (32) fica sob sua responsabilidade.
+
+O valor deve ser igual ou inferior a 256 (99 para <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
+Se você definir um número acima desse limite, o valor 256 será usado (99 para <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
+Aumentar acima do padrão (32) fica sob sua responsabilidade.</translation>
 <translation id="5297873769621042075">A definição da política especifica uma lista de nomes do host ou padrões do nome do host (como
 "[*.]example.com") que não vão receber upgrade para HTTPS e não
 mostrarão um intersticial de erro se o HTTPS-First Mode estiver ativado. As organizações podem usar essa
@@ -7464,6 +7480,7 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
       Os VPD são um conjunto de dados informativos e de configuração, como números de série e peças, associados ao dispositivo.</translation>
 <translation id="5760861224093391268">Desativar a autenticação própria ao informar os indicadores de segurança do usuário</translation>
 <translation id="5762969307102447459">Desativar o preenchimento automático de endereços</translation>
+<translation id="5763723496957591166">Número máximo de conexões simultâneas por servidor proxy para solicitações WebSocket</translation>
 <translation id="5765780083710877561">Descrição:</translation>
 <translation id="5766438888216077649">Não defina a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> para links direcionados a <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5767776869128458023">Desativar páginas de erro alternativas</translation>
@@ -9983,6 +10000,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       Se esta política for deixada sem definição ou em branco, o usuário poderá configurar qualquer Conta do Google como uma conta principal do navegador no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Definir o tamanho mínimo do PIN da tela de bloqueio</translation>
+<translation id="7231449913899026849">Número máximo de conexões simultâneas por servidor proxy para solicitações que não são WebSocket</translation>
 <translation id="7234280155140786597">Nomes dos hosts de mensagens nativas proibidos (ou "*" para todos)</translation>
 <translation id="723621412149834592">Se a política for definida como <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (valor 2), por padrão, a permissão a sites para posicionamento de janelas será automaticamente negada. Isso vai limitar a capacidade dos sites de ver informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em locais específicos.
 
@@ -10450,6 +10468,22 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
 
       Se o dispositivo do usuário não for gerenciado, a disponibilidade da funcionalidade será dependente também da possibilidade de o usuário não ser proprietário do dispositivo.</translation>
 <translation id="7570291542739287032">Somente no Cloud</translation>
+<translation id="7571158727244273239">Ao definir a política, o número máximo de conexões simultâneas por servidor proxy para solicitações WebSocket é especificado.
+
+Para modificar o limite de solicitações que não são WebSocket, consulte <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Se a política não for definida, será usado o valor padrão 32.
+
+Alguns web apps são conhecidos por consumir muitas conexões com GETs irresponsivos. Portanto, definir um valor inferior a 32 pode gerar interrupções na rede do navegador caso haja muitos deles com conexões pendentes abertas.
+Alguns servidores proxy não podem administrar muitas conexões simultâneas por cliente, mas isso pode ser resolvido definindo um número menor para esta política.
+
+O valor deve ser igual ou maior que 6.
+Se você definir um número abaixo desse limite, o valor 6 será usado.
+A definição de valores abaixo do padrão (32) fica sob sua responsabilidade.
+
+O valor deve ser igual ou inferior a 256.
+Se você definir um número acima desse limite, o valor 256 será usado.
+Aumentar acima do padrão (32) fica sob sua responsabilidade.</translation>
 <translation id="7572641760104970905">Sem complexidade</translation>
 <translation id="757395965347379751">Quando esta configuração está ativada, o <ph name="PRODUCT_NAME" /> permite certificados SHA-1 assinados, desde que eles sejam validados e estejam vinculados a certificados de CA instalados localmente.
 
