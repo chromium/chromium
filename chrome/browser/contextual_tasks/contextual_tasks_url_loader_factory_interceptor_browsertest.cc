@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
-                       AuthorizationHeaderAppendedWhenAlreadyExists) {
+                       AuthorizationHeaderNotAppendedWhenAlreadyExists) {
   base::RunLoop run_loop;
   header_capture_quit_closure_ = run_loop.QuitClosure();
 
@@ -358,10 +358,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
   // Wait for the request to reach the server.
   run_loop.Run();
 
-  // Verify the header. The IdentityTestEnvironment issues tokens like
-  // "access_token_...".
-  EXPECT_THAT(captured_auth_header_,
-              testing::StartsWith("Custom foo, Bearer access_token"));
+  // Verify the header. The existing header should be preserved and NOT appended
+  // to.
+  EXPECT_EQ(captured_auth_header_, "Custom foo");
 }
 
 class
