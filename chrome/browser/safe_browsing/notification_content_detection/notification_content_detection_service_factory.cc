@@ -9,9 +9,8 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
-#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
@@ -46,13 +45,17 @@ NotificationContentDetectionServiceFactory::
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(
-      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService> NotificationContentDetectionServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
+  auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(context));
+  if (!opt_guide) {
+    return nullptr;
+  }
   if (!g_browser_process || !g_browser_process->safe_browsing_service() ||
       !g_browser_process->safe_browsing_service()->database_manager()) {
     return nullptr;
@@ -61,31 +64,23 @@ std::unique_ptr<KeyedService> NotificationContentDetectionServiceFactory::
 // The model takes up too much memory to be run on ARM devices.
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
   return nullptr;
-#else
-#if BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // The model takes up too much memory to be run on low end Android devices.
   if (base::SysInfo::IsLowEndDevice()) {
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
-  auto* holder_service =
-      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  if (!holder_service) {
-    return nullptr;
-  }
-
-  auto& opt_guide = holder_service->GetGlobalState().prediction_manager();
-  return CreateNotificationContentDetectionService(&opt_guide, context);
-#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
+  return CreateNotificationContentDetectionService(opt_guide, context);
+#else
+  return CreateNotificationContentDetectionService(opt_guide, context);
+#endif
 }
 
 std::unique_ptr<NotificationContentDetectionService>
 NotificationContentDetectionServiceFactory::
     CreateNotificationContentDetectionService(
-        optimization_guide::OptimizationGuideModelProvider* model_provider,
+        OptimizationGuideKeyedService* opt_guide,
         content::BrowserContext* context) const {
-  CHECK(model_provider);
+  CHECK(opt_guide);
   CHECK(context);
   auto database_manager =
       g_browser_process->safe_browsing_service()->database_manager();
@@ -93,7 +88,7 @@ NotificationContentDetectionServiceFactory::
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   return std::make_unique<NotificationContentDetectionService>(
-      model_provider, background_task_runner, database_manager, context);
+      opt_guide, background_task_runner, database_manager, context);
 }
 
 }  // namespace safe_browsing

@@ -8,9 +8,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
-#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -43,8 +42,7 @@ AutocompleteScoringModelServiceFactory::AutocompleteScoringModelServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(
-      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 AutocompleteScoringModelServiceFactory::
@@ -54,14 +52,11 @@ std::unique_ptr<KeyedService>
 AutocompleteScoringModelServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  auto* holder_service =
-      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
-          profile);
-  if (!holder_service) {
-    return nullptr;
-  }
-  auto& opt_guide = holder_service->GetGlobalState().prediction_manager();
-  return std::make_unique<AutocompleteScoringModelService>(&opt_guide);
+  OptimizationGuideKeyedService* optimization_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return optimization_guide ? std::make_unique<AutocompleteScoringModelService>(
+                                  optimization_guide)
+                            : nullptr;
 }
 
 bool AutocompleteScoringModelServiceFactory::

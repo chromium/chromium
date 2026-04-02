@@ -8,9 +8,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
-#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_tail_model_service.h"
@@ -41,8 +40,7 @@ OnDeviceTailModelServiceFactory::OnDeviceTailModelServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(
-      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 OnDeviceTailModelServiceFactory::~OnDeviceTailModelServiceFactory() = default;
@@ -55,12 +53,10 @@ OnDeviceTailModelServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  OptimizationGuideGlobalStateHolderKeyedService* global_state_service =
-      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
-          profile);
-  return global_state_service
-             ? std::make_unique<OnDeviceTailModelService>(
-                   &global_state_service->GetGlobalState().prediction_manager())
+  OptimizationGuideKeyedService* optimization_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return optimization_guide
+             ? std::make_unique<OnDeviceTailModelService>(optimization_guide)
              : nullptr;
 }
 
