@@ -7,8 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
@@ -36,11 +34,6 @@ class SelectionOverlayController
     : public OverlayBaseController,
       public selection::SelectionOverlayPageHandler {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnOverlayClosed() = 0;
-  };
-
   SelectionOverlayController(tabs::TabInterface* tab,
                              PrefService* pref_service);
   ~SelectionOverlayController() override;
@@ -68,11 +61,13 @@ class SelectionOverlayController
       mojo::PendingReceiver<selection::SelectionOverlayPageHandler> receiver,
       mojo::PendingRemote<selection::SelectionOverlayPage> page);
 
+  // Bind the legacy IPC endpoint. See the comment on
+  // `capture_region_observer_`.
+  void BindCaptureRegionObserver(
+      mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
+
   void Show();
   void Close();
-
-  void AddListener(Observer* observer);
-  void RemoveListener(Observer* observer);
 
   // `selection::SelectionOverlayPageHandler`:
   void DeleteRegion(const base::UnguessableToken& id) override;
@@ -144,6 +139,11 @@ class SelectionOverlayController
   mojo::Receiver<selection::SelectionOverlayPageHandler> receiver_{this};
   mojo::Remote<selection::SelectionOverlayPage> page_;
 
+  // Legacy IPC that's used to signal the WebUI any browser side errors, and
+  // used to dismiss the overlay from the WebUI.
+  // TODO(b/452032491): Remove this once the old codepath is no longer used.
+  mojo::Remote<mojom::CaptureRegionObserver> capture_region_observer_;
+
   // Stateful members. They should be added to Reset().
   bool screenshot_available_ = false;
   SkBitmap initial_rgb_screenshot_;
@@ -157,8 +157,6 @@ class SelectionOverlayController
 
   ui::ScopedUnownedUserData<SelectionOverlayController>
       scoped_unowned_user_data_;
-
-  base::ObserverList<Observer> observers_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

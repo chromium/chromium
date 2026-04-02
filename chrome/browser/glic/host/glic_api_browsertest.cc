@@ -263,6 +263,9 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
             features::kGlicWarming,
             kGlicZeroStateSuggestions,
             features::kGlicDaisyChainNewTabs,
+            // Tested in
+            // chrome/browser/glic/selection/selection_overlay_interactive_uitests.cc
+            features::kGlicRegionSelectionNew,
         });
     SetUseElementIdentifiers(false);
   }

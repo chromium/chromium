@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,11 +28,10 @@ class LensRegionSearchController;
 namespace glic {
 
 #if !BUILDFLAG(IS_ANDROID)
-class GlicRegionCaptureController
-    : public SelectionOverlayController::Observer {
+class GlicRegionCaptureController {
  public:
   GlicRegionCaptureController();
-  ~GlicRegionCaptureController() override;
+  ~GlicRegionCaptureController();
 
   void CaptureRegion(
       tabs::TabInterface* tab,
@@ -45,9 +43,6 @@ class GlicRegionCaptureController
   void SetOnCaptureRegionForTesting(base::RepeatingClosure cb) {
     on_capture_region_for_testing_ = std::move(cb);
   }
-
-  // SelectionOverlayController::Observer:
-  void OnOverlayClosed() override;
 
   // These methods are public for testing purposes.
   void OnRegionSelected(const gfx::Rect& rect);

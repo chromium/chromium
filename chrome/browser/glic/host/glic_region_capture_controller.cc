@@ -32,20 +32,7 @@ void GlicRegionCaptureController::CaptureRegion(
     tabs::TabInterface* tab,
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
   on_capture_region_for_testing_.Run();
-  // If a capture is already in progress, cancel it and notify the observer.
-  if (capture_region_observer_) {
-    capture_region_observer_->OnUpdate(
-        mojom::CaptureRegionResultPtr(),
-        mojom::CaptureRegionErrorReason::kUnknown);
-    capture_region_observer_.reset();
-  }
-  if (lens_region_search_controller_) {
-    // Invalidate weak ptrs to prevent the old controller's callbacks from
-    // running.
-    weak_factory_.InvalidateWeakPtrs();
-    lens_region_search_controller_->CloseWithReason(
-        views::Widget::ClosedReason::kUnspecified);
-  }
+
   content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
   if (!web_contents) {
     mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
@@ -53,22 +40,59 @@ void GlicRegionCaptureController::CaptureRegion(
                      mojom::CaptureRegionErrorReason::kNoFocusableTab);
     return;
   }
-  ResetMembers();
-  tab_handle_ = tab->GetHandle();
-  content_discarded_subscription_ = tab->RegisterWillDiscardContents(
-      base::BindRepeating(&GlicRegionCaptureController::HandleDiscardContents,
-                          weak_factory_.GetWeakPtr()));
-
-  capture_region_observer_.Bind(std::move(observer));
-  capture_region_observer_.set_disconnect_handler(base::BindOnce(
-      &GlicRegionCaptureController::OnCaptureRegionObserverDisconnected,
-      base::Unretained(this)));
-
   if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew)) {
-    SelectionOverlayController::FromTabWebContents(web_contents)
-        ->AddListener(this);
-    SelectionOverlayController::FromTabWebContents(web_contents)->Show();
+    auto* selection_overlay_controller =
+        SelectionOverlayController::FromTabWebContents(web_contents);
+    if (!selection_overlay_controller) {
+      mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+      // TODO(b/452032491): Ideally we should use a new CaptureRegionErrorReason
+      // to give explicit signal. Since `mojom::CaptureRegionObserver` will be
+      // deprecated and this can only happen in a compromised renderer,
+      // kUnknown with a log message is acceptable.
+      remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                       mojom::CaptureRegionErrorReason::kUnknown);
+      LOG(ERROR) << "SelectionOverlayController not found for tab "
+                 << web_contents->GetURL();
+      return;
+    }
+    if (selection_overlay_controller->state() !=
+        OverlayBaseController::State::kOff) {
+      mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+      // TODO(b/452032491): Ditto.
+      remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                       mojom::CaptureRegionErrorReason::kUnknown);
+      LOG(ERROR) << "Overlay is still showing for " << web_contents->GetURL();
+      return;
+    }
+    selection_overlay_controller->BindCaptureRegionObserver(
+        std::move(observer));
+    selection_overlay_controller->Show();
   } else {
+    // If a capture is already in progress, cancel it and notify the observer.
+    if (capture_region_observer_) {
+      capture_region_observer_->OnUpdate(
+          mojom::CaptureRegionResultPtr(),
+          mojom::CaptureRegionErrorReason::kUnknown);
+      capture_region_observer_.reset();
+    }
+    if (lens_region_search_controller_) {
+      // Invalidate weak ptrs to prevent the old controller's callbacks from
+      // running.
+      weak_factory_.InvalidateWeakPtrs();
+      lens_region_search_controller_->CloseWithReason(
+          views::Widget::ClosedReason::kUnspecified);
+    }
+    ResetMembers();
+    tab_handle_ = tab->GetHandle();
+    content_discarded_subscription_ = tab->RegisterWillDiscardContents(
+        base::BindRepeating(&GlicRegionCaptureController::HandleDiscardContents,
+                            weak_factory_.GetWeakPtr()));
+
+    capture_region_observer_.Bind(std::move(observer));
+    capture_region_observer_.set_disconnect_handler(base::BindOnce(
+        &GlicRegionCaptureController::OnCaptureRegionObserverDisconnected,
+        base::Unretained(this)));
+
     lens_region_search_controller_ =
         std::make_unique<lens::LensRegionSearchController>();
     lens_region_search_controller_->StartForRegionSelection(
@@ -82,14 +106,6 @@ void GlicRegionCaptureController::CaptureRegion(
 }
 
 void GlicRegionCaptureController::ResetMembers() {
-  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew) &&
-      tab_handle_.Get()) {
-    if (auto* web_contents = tab_handle_.Get()->GetContents()) {
-      SelectionOverlayController::FromTabWebContents(web_contents)
-          ->RemoveListener(this);
-    }
-  }
-
   lens_region_search_controller_.reset();
   capture_region_observer_.reset();
 }
@@ -103,13 +119,6 @@ void GlicRegionCaptureController::CancelCaptureRegion() {
     // GlicRegionCaptureController::OnRegionSelectionFlowClosed().
     lens_region_search_controller_->CloseWithReason(
         views::Widget::ClosedReason::kUnspecified);
-  } else if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew) &&
-             tab_handle_.Get()) {
-    if (auto* web_contents = tab_handle_.Get()->GetContents()) {
-      SelectionOverlayController::FromTabWebContents(web_contents)->Close();
-    } else {
-      ResetMembers();
-    }
   } else {
     // If there is no controller, there will be no OnRegionSelectionFlowClosed
     // callback, so we need to clean up here.
@@ -120,17 +129,12 @@ void GlicRegionCaptureController::CancelCaptureRegion() {
 void GlicRegionCaptureController::DeleteRegion(
     tabs::TabInterface* tab,
     const base::UnguessableToken& id) {
-  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew) &&
-      tab_handle_.Get() == tab) {
+  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew)) {
     if (auto* web_contents = tab->GetContents()) {
       SelectionOverlayController::FromTabWebContents(web_contents)
           ->DeleteRegion(id);
     }
   }
-}
-
-void GlicRegionCaptureController::OnOverlayClosed() {
-  ResetMembers();
 }
 
 void GlicRegionCaptureController::OnRegionSelected(const gfx::Rect& rect) {

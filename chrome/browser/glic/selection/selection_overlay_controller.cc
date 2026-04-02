@@ -173,6 +173,24 @@ void SelectionOverlayController::BindOverlay(
   InitializeOverlay();
 }
 
+void SelectionOverlayController::BindCaptureRegionObserver(
+    mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
+  if (capture_region_observer_.is_bound()) {
+    // TODO(b/452032491): This should only happen in a compromised renderer.
+    // Since `mojom::CaptureRegionObserver` will be deprecated, using
+    // kUnknown with a log message is acceptable.
+    LOG(ERROR) << "capture_region_observer_ is already bound. State "
+               << state();
+    capture_region_observer_->OnUpdate(
+        mojom::CaptureRegionResultPtr(),
+        mojom::CaptureRegionErrorReason::kUnknown);
+    capture_region_observer_.reset();
+  }
+  capture_region_observer_.Bind(std::move(observer));
+  capture_region_observer_.set_disconnect_handler(base::BindOnce(
+      &SelectionOverlayController::CloseUI, weak_factory_.GetWeakPtr()));
+}
+
 void SelectionOverlayController::Show() {
   ShowModalUI();
 }
@@ -185,18 +203,8 @@ void SelectionOverlayController::CloseUI() {
   if (state() == State::kOff) {
     return;
   }
+  Reset();
   OverlayBaseController::CloseUI();
-  for (auto& observer : observers_) {
-    observer.OnOverlayClosed();
-  }
-}
-
-void SelectionOverlayController::AddListener(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void SelectionOverlayController::RemoveListener(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 void SelectionOverlayController::RequestSyncClose(
@@ -389,6 +397,7 @@ void SelectionOverlayController::Reset() {
   encoded_.reset();
   selected_regions_.clear();
   tab_context_.reset();
+  capture_region_observer_.reset();
 }
 
 void SelectionOverlayController::RenderRegions() {
