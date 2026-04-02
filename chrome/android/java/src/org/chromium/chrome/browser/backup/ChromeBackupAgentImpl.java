@@ -205,9 +205,9 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
                 mValues = new ArrayList<>();
                 return;
             }
-            try {
-                FileInputStream instream = new FileInputStream(parceledState.getFileDescriptor());
-                ObjectInputStream in = new ObjectInputStream(instream);
+            try (FileInputStream instream =
+                            new FileInputStream(parceledState.getFileDescriptor());
+                    ObjectInputStream in = new ObjectInputStream(instream)) {
                 mNames = (ArrayList<String>) in.readObject();
                 mValues = (ArrayList<byte[]>) in.readObject();
             } catch (ClassNotFoundException e) {
@@ -229,10 +229,12 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         }
 
         public void save(ParcelFileDescriptor parceledState) throws IOException {
-            FileOutputStream outstream = new FileOutputStream(parceledState.getFileDescriptor());
-            ObjectOutputStream out = new ObjectOutputStream(outstream);
-            out.writeObject(mNames);
-            out.writeObject(mValues);
+            try (FileOutputStream outstream =
+                            new FileOutputStream(parceledState.getFileDescriptor());
+                    ObjectOutputStream out = new ObjectOutputStream(outstream)) {
+                out.writeObject(mNames);
+                out.writeObject(mValues);
+            }
         }
     }
 
