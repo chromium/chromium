@@ -70,6 +70,10 @@ inline constexpr char kTestPromoName[] = "test_promo";
 const InteractiveBrowserTestApi::DeepQuery kPathToNtp = {"ntp-app"};
 const InteractiveBrowserTestApi::DeepQuery kPathToPromo = {
     "ntp-app", "individual-promos", "#promos", "#promo"};
+const InteractiveBrowserTestApi::DeepQuery kPathToMenuButton = {
+    "ntp-app", "individual-promos", "#promos", "#promo", "#menuButton"};
+const InteractiveBrowserTestApi::DeepQuery kPathToDismissOption = {
+    "ntp-app", "individual-promos", ".dropdown-item"};
 
 constexpr char kPromoTextId[] = "#bodyText";
 constexpr char kPromoIconId[] = "#bodyIcon";
@@ -290,6 +294,24 @@ IN_PROC_BROWSER_TEST_F(NtpPromoUiTest, TestPromoEligible) {
       CheckShowMetrics(ShowNtpPromosResult::kShown));
 }
 
+IN_PROC_BROWSER_TEST_F(NtpPromoUiTest, DismissPromo) {
+  InstallTestPromo(Eligibility::kEligible);
+
+  StateChange promo_hidden;
+  promo_hidden.type = StateChange::Type::kDoesNotExist;
+  promo_hidden.where = kPathToPromo;
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPromoHiddenEvent);
+  promo_hidden.event = kPromoHiddenEvent;
+
+  RunTestSequence(InstrumentTab(kNtpElementId),
+                  NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
+                  WaitForPromoVisible(kSignInIconName),
+                  ClickElement(kNtpElementId, kPathToMenuButton),
+                  ClickElement(kNtpElementId, kPathToDismissOption),
+                  // Verify promo is gone
+                  WaitForStateChange(kNtpElementId, promo_hidden));
+}
+
 namespace {
 const InteractiveBrowserTestApi::DeepQuery kPathToModules = {"ntp-app",
                                                              "ntp-modules"};
@@ -487,7 +509,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
                               "Screenshots not captured on this platform."),
       ScreenshotWebUi(kNtpElementId, kPathToPromo,
                       /*screenshot_name=*/std::string(),
-                      /*baseline_cl=*/"6998053"));
+                      /*baseline_cl=*/"7718763"));
 }
 
 class NtpPromoDisabledUiTest : public NtpPromoUiTest {

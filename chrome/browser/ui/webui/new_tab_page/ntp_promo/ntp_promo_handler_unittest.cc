@@ -61,6 +61,9 @@ class MockController : public user_education::NtpPromoController {
               (const user_education::UserEducationContextPtr&));
   MOCK_METHOD(void, OnPromoShown, (const user_education::NtpPromoIdentifier&));
   MOCK_METHOD(void,
+              OnPromoDismissed,
+              (const user_education::NtpPromoIdentifier&));
+  MOCK_METHOD(void,
               OnPromoClicked,
               (user_education::NtpPromoIdentifier,
                const user_education::UserEducationContextPtr&));
@@ -119,6 +122,11 @@ TEST_F(NtpPromoHandlerTest, PassesOnClick) {
 TEST_F(NtpPromoHandlerTest, PassesOnPromoShown) {
   EXPECT_CALL(mock_controller(), OnPromoShown(kPromo1Id));
   handler().OnPromoShown(kPromo1Id);
+}
+
+TEST_F(NtpPromoHandlerTest, PassesOnPromoDismissed) {
+  EXPECT_CALL(mock_controller(), OnPromoDismissed(kPromo1Id));
+  handler().OnPromoDismissed(kPromo1Id);
 }
 
 TEST_F(NtpPromoHandlerTest, RespondsToRequest) {

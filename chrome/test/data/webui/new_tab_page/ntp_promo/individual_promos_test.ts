@@ -43,11 +43,11 @@ suite('IndividualPromosTest', () => {
   }
 
   function getPromoCount(): number {
-    return getContainer().childElementCount;
+    return getContainer().querySelectorAll('#promo').length;
   }
 
   function getPromoAt(index: number): HTMLElement {
-    return getContainer().children[index] as HTMLElement;
+    return getContainer().querySelectorAll<HTMLElement>('#promo')[index]!;
   }
 
   setup(() => {
@@ -107,5 +107,28 @@ suite('IndividualPromosTest', () => {
     assertEquals(1, testProxy.getHandler().getCallCount('onPromoClicked'));
     assertDeepEquals(
         [promo.id], testProxy.getHandler().getArgs('onPromoClicked'));
+  });
+
+  test('dismiss promo', async () => {
+    individualPromos.onSetPromo(promo);
+    await waitForVisibilityEvents();
+    const menuButton =
+        individualPromos.shadowRoot.querySelector<HTMLElement>('#menuButton');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    await waitForVisibilityEvents();
+
+    const actionMenu = individualPromos.$.actionMenu;
+    assertTrue(actionMenu.open);
+
+    const dismissOption =
+        actionMenu.querySelector<HTMLElement>('.dropdown-item');
+    assertTrue(!!dismissOption);
+    dismissOption.click();
+
+    assertEquals(1, testProxy.getHandler().getCallCount('onPromoDismissed'));
+    assertDeepEquals(
+        [promo.id], testProxy.getHandler().getArgs('onPromoDismissed'));
+    assertFalse(actionMenu.open);
   });
 });

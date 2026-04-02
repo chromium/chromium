@@ -84,6 +84,10 @@ void NtpPromoHandler::OnPromoClicked(const std::string& promo_id) {
   promo_controller_->OnPromoClicked(promo_id, ue_context_);
 }
 
+void NtpPromoHandler::OnPromoDismissed(const std::string& promo_id) {
+  promo_controller_->OnPromoDismissed(promo_id);
+}
+
 void NtpPromoHandler::OnPromoShown(const std::string& promo_id) {
   promo_controller_->OnPromoShown(promo_id);
 }

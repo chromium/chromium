@@ -42,6 +42,7 @@ class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
   // ntp_promo::mojom::NtpPromoHandler:
   void RequestPromos() override;
   void OnPromoClicked(const std::string& promo_id) override;
+  void OnPromoDismissed(const std::string& promo_id) override;
   void OnPromoShown(const std::string& promo_id) override;
 
  private:

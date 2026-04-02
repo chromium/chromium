@@ -8,21 +8,24 @@
 
 :host {
   /* Variable declarations. */
-  --ntp-promo-background: var(--color-sys-surface3);
+  --ntp-promo-action-icon-foreground: var(--color-sys-on-surface-subtle);
+  --ntp-promo-action-icon-image-size: 24px;
   --ntp-promo-background-hovered: var(--color-sys-state-hover-on-subtle);
+  --ntp-promo-background: var(--color-sys-surface3);
   --ntp-promo-border-radius: 12px;
   --ntp-promo-element-spacing: 16px;
   --ntp-promo-foreground: var(--color-sys-on-surface);
   --ntp-promo-icon-background: var(--color-sys-tonal-container);
-  --ntp-promo-icon-foreground: var(--color-sys-on-tonal-container);
-  --ntp-promo-action-icon-foreground: var(--color-sys-on-surface-subtle);
   --ntp-promo-icon-border-radius: 8px;
-  --ntp-promo-icon-size: 40px;
+  --ntp-promo-icon-foreground: var(--color-sys-on-tonal-container);
   --ntp-promo-icon-image-size: 20px;
+  --ntp-promo-icon-size: 40px;
+  --ntp-promo-menu-button-foreground: var(--color-sys-on-surface-subtle);
+  --ntp-promo-menu-button-image-size: 24px;
   --ntp-promo-padding: 16px;
+  --ntp-promo-spacing: 8px;
   --ntp-promo-text-line-height: 20px;
   --ntp-promo-text-width: 382px;
-  --ntp-promo-spacing: 8px;
 
   align-items: center;
   /* Display is set to block on promo loaded. */
@@ -93,20 +96,30 @@
 }
 
 #actionIcon {
-  --iron-icon-height: var(--ntp-promo-icon-image-size);
-  --iron-icon-width: var(--ntp-promo-icon-image-size);
+  --iron-icon-height: var(--ntp-promo-action-icon-image-size);
+  --iron-icon-width: var(--ntp-promo-action-icon-image-size);
 
   background-color: transparent;
   box-sizing: border-box;
   color: var(--ntp-promo-action-icon-foreground);
   display: inline-block;
   flex: none;
-  height: var(--ntp-promo-icon-image-size);
+  height: var(--ntp-promo-action-icon-image-size);
   margin: 0;
   text-align: center;
-  width: var(--ntp-promo-icon-image-size);
+  width: var(--ntp-promo-action-icon-image-size);
 }
 
 #actionIcon:dir(rtl) {
   transform: scaleX(-1);
+}
+
+#menuButton {
+  --cr-icon-button-fill-color: var(--ntp-promo-menu-button-foreground);
+  --cr-icon-button-icon-size: var(--ntp-promo-menu-button-image-size);
+
+  box-sizing: border-box;
+  display: inline-block;
+  flex: none;
+  margin: 0;
 }

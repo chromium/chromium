@@ -19646,6 +19646,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- New Tab Page browser feature promotions. -->
     <if expr="not is_android">
+      <message name="IDS_NTP_PROMO_DISMISS" desc="Text shown on the menu option to dismiss a New Tab Page promo.">
+        Don't show this promo
+      </message>
+      <message name="IDS_NTP_PROMO_MENU_TOOLTIP" desc="Tooltip for the button that opens the New Tab Page promo menu.">
+        More actions
+      </message>
+      <message name="IDS_NTP_PROMO_MENU_A11Y_LABEL" desc="Aria label for the button that opens the New Tab Page promo menu.">
+        More actions for promo
+      </message>
       <message name="IDS_NTP_EXTENSIONS_PROMO" desc="The text shown in the body of the New Tab Page extensions promotion">
         Add extensions to stay organized, simplify tasks, and enhance your browsing
       </message>

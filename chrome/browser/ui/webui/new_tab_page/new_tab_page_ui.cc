@@ -201,6 +201,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddString("undoDescription", l10n_util::GetStringFUTF16(
                                            IDS_UNDO_DESCRIPTION,
                                            undo_accelerator.GetShortcutText()));
+  source->AddString("ntpPromoDismiss",
+                    l10n_util::GetStringUTF16(IDS_NTP_PROMO_DISMISS));
+  source->AddString("ntpPromoMenu",
+                    l10n_util::GetStringUTF16(IDS_NTP_PROMO_MENU_TOOLTIP));
+  source->AddString("ntpPromoMenuA11yLabel",
+                    l10n_util::GetStringUTF16(IDS_NTP_PROMO_MENU_A11Y_LABEL));
 
   GURL google_base_url = GURL(TemplateURLServiceFactory::GetForProfile(profile)
                                   ->search_terms_data()

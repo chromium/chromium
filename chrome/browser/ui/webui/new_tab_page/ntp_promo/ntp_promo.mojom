@@ -29,6 +29,9 @@ interface NtpPromoHandler {
 
   // Called when the user clicks an action button for `promo_id`.
   OnPromoClicked(string promo_id);
+
+  // Called when the user dismisses `promo_id`.
+  OnPromoDismissed(string promo_id);
 };
 
 struct Promo {

@@ -6,10 +6,12 @@
  * @fileoverview A component for displaying a single NTP Promo.
  */
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 import './ntp_promo_icons.html.js';
 
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -20,7 +22,10 @@ import {getHtml} from './individual_promos.html.js';
 import {NtpPromoProxyImpl} from './ntp_promo_proxy.js';
 
 export interface IndividualPromosElement {
-  $: {promos: HTMLElement};
+  $: {
+    actionMenu: CrActionMenuElement,
+    promos: HTMLElement,
+  };
 }
 
 export class IndividualPromosElement extends CrLitElement {
@@ -90,6 +95,20 @@ export class IndividualPromosElement extends CrLitElement {
   protected onClick_(promoId: string) {
     assert(promoId, 'Button should not be able to display if no promoId.');
     this.handler_.onPromoClicked(promoId);
+  }
+
+  protected onMenuButtonClick_(e: Event) {
+    e.stopPropagation();
+    this.$.actionMenu.showAt(e.target as HTMLElement);
+  }
+
+  protected onPromoDismissed_(e: Event) {
+    e.stopPropagation();
+    this.$.actionMenu.close();
+    if (this.promo_) {
+      this.handler_.onPromoDismissed(this.promo_.id);
+      this.promo_ = null;
+    }
   }
 
   protected getBodyTextCssClass_(): string {

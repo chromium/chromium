@@ -17,6 +17,7 @@ export class TestNtpPromoHandler extends TestBrowserProxy implements
       'requestPromos',
       'onPromoShown',
       'onPromoClicked',
+      'onPromoDismissed',
     ]);
   }
 
@@ -30,6 +31,10 @@ export class TestNtpPromoHandler extends TestBrowserProxy implements
 
   onPromoClicked(promoId: string) {
     this.methodCalled('onPromoClicked', promoId);
+  }
+
+  onPromoDismissed(promoId: string) {
+    this.methodCalled('onPromoDismissed', promoId);
   }
 }
 
