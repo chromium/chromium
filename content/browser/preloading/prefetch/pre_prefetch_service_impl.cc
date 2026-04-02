@@ -12,6 +12,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_container.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
@@ -148,16 +149,17 @@ PrePrefetchServiceImpl::PrePrefetchServiceImpl(
     g_url_loader_factory_for_testing->Clone(
         pending_factory.InitWithNewPipeAndPassReceiver());
   } else {
-    // This corresponds to `CreatePrefetchURLLoaderFactory()` with
+    // Unlike `CreatePrefetchURLLoaderFactory()`, this does use
     // `url_loader_factory::HeaderClientOption::kDisallow` and null
-    // `url_loader_factory::ContentClientParams`.
-    // The interceptors that would be added by `ContentClientParams` will be
-    // added/executed when the PrePrefetch is consumed by a `PrefetchContainer`.
-    network::URLLoaderFactoryBuilder factory_builder;
-    pending_factory =
-        std::move(factory_builder)
-            .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
-                network_context, CreatePrefetchURLLoaderFactoryParams());
+    // `url_loader_factory::ContentClientParams`. The interceptors that would be
+    // added by `ContentClientParams` will be added/executed when the
+    // PrePrefetch is consumed by a `PrefetchContainer`.
+    pending_factory = url_loader_factory::CreatePendingRemote(
+        ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
+        url_loader_factory::TerminalParams::ForNetworkContext(
+            network_context, CreatePrefetchURLLoaderFactoryParams(),
+            url_loader_factory::HeaderClientOption::kDisallow),
+        /*content_client_params=*/std::nullopt);
   }
 
   // TODO(crbug.com/452389538): If we have UI-thread dependent variables that
