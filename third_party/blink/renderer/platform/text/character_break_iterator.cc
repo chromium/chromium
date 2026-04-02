@@ -23,6 +23,8 @@
 
 #include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 
+#include "base/check_op.h"
+
 namespace blink {
 
 unsigned NumGraphemeClusters(const StringView& string) {
@@ -72,6 +74,7 @@ void GraphemesClusterList(const StringView& text,
 
 unsigned LengthOfGraphemeCluster(const StringView& string, unsigned offset) {
   unsigned string_length = string.length();
+  CHECK_LE(offset, string_length);
 
   if (string_length - offset <= 1) {
     return string_length - offset;
