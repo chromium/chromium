@@ -7,5 +7,6 @@ include_rules = [
   "+ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h",
   "+ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h",
   "+ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h",
-  "+ios/chrome/browser/signin/model/identity_manager_factory.h"
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+  "+ios/chrome/browser/device_reauth/model",
 ]

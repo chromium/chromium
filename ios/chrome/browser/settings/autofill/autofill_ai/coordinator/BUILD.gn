@@ -14,11 +14,13 @@ source_set("coordinator") {
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/variations/service",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/error_dialog/model",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui:edit_items",
     "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
@@ -31,6 +33,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common/ui/reauthentication",
   ]
 }
 

@@ -286,10 +286,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
-  [super editButtonPressed];
-
-  if (wasEditing && !self.tableView.editing) {
-    [self.mutator saveEntityInstance];
+  if (wasEditing) {
+    [super editButtonPressed];
+    if (!self.tableView.editing) {
+      [self.mutator saveEntityInstance];
+    }
+  } else {
+    __weak __typeof(self) weakSelf = self;
+    [self.mutator
+        requestEditingWithCompletion:^(ReauthenticationResult result) {
+          if (result == ReauthenticationResult::kSuccess) {
+            [weakSelf onEditingRequestSucceeded];
+          }
+        }];
   }
 }
 
@@ -299,6 +308,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
   [self.mutator saveEntityInstance];
+}
+
+- (void)onEditingRequestSucceeded {
+  [super editButtonPressed];
 }
 
 #pragma mark -

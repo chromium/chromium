@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
@@ -44,6 +45,8 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
     consumer_ = [[FakeAutofillAIEntityEditConsumer alloc] init];
     mock_wallet_pass_manager_ = std::make_unique<
         testing::StrictMock<autofill::MockWalletPassAccessManager>>();
+
+    mockReauthModule_ = OCMProtocolMock(@protocol(ReauthenticationProtocol));
   }
 
   void TearDown() override {
@@ -58,6 +61,7 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
         initWithEntityInstance:instance
              entityDataManager:entity_data_manager_
              walletPassManager:mock_wallet_pass_manager_.get()
+                  reauthModule:mockReauthModule_
                      userEmail:nil];
     mediator_.consumer = consumer_;
   }
@@ -72,6 +76,20 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
     EXPECT_GE(consumer_.editItems.count, expected_count);
   }
 
+  // Helper method to find an item by its attribute type.
+  AutofillAIEntityEditItem* FindItem(autofill::AttributeTypeName type) {
+    for (TableViewItem* item in consumer_.editItems) {
+      if ([item isKindOfClass:[AutofillAIEntityEditItem class]]) {
+        AutofillAIEntityEditItem* edit_item =
+            base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(item);
+        if (edit_item.attributeType == type) {
+          return edit_item;
+        }
+      }
+    }
+    return nil;
+  }
+
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -80,11 +98,50 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
       mock_wallet_pass_manager_;
   FakeAutofillAIEntityEditConsumer* consumer_;
   AutofillAIEntityEditMediator* mediator_;
+  id mockReauthModule_;
 };
 
-// Tests that the mediator can format a Passport entity instance.
+// Tests that the mediator can format a Passport entity instance and handles
+// reauth.
 TEST_F(AutofillAIEntityEditMediatorTest, OpensPassport) {
-  VerifyEntity(autofill::test::GetPassportEntityInstance(), 3);
+  // Define a passport number that should be obfuscated. This is identical to
+  // the one in the default. It is re-declared here so this test is independent
+  // of the default value.
+  std::u16string passport_number = u"LR1234567";
+  NSString* passport_number_nsstring =
+      base::SysUTF16ToNSString(passport_number);
+  autofill::EntityInstance instance = autofill::test::GetPassportEntityInstance(
+      {.number = passport_number.c_str()});
+
+  CreateMediator(instance);
+
+  AutofillAIEntityEditItem* passport_number_item =
+      FindItem(autofill::AttributeTypeName::kPassportNumber);
+
+  ASSERT_TRUE(passport_number_item != nil);
+  EXPECT_NSNE(passport_number_item.textFieldValue, passport_number_nsstring);
+
+  OCMStub([mockReauthModule_ attemptReauthWithLocalizedReason:[OCMArg any]
+                                         canReusePreviousAuth:YES
+                                                      handler:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        void (^handler)(ReauthenticationResult);
+        [invocation getArgument:&handler atIndex:4];
+        handler(ReauthenticationResult::kSuccess);
+      });
+
+  __block BOOL reauth_completion_called = NO;
+  [mediator_ requestEditingWithCompletion:^(ReauthenticationResult result) {
+    EXPECT_EQ(result, ReauthenticationResult::kSuccess);
+    reauth_completion_called = YES;
+  }];
+
+  EXPECT_TRUE(reauth_completion_called);
+
+  passport_number_item = FindItem(autofill::AttributeTypeName::kPassportNumber);
+
+  ASSERT_TRUE(passport_number_item != nil);
+  EXPECT_NSEQ(passport_number_item.textFieldValue, passport_number_nsstring);
 }
 
 // Tests that the mediator can format a Driver's License entity instance.

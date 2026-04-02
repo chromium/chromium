@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "components/autofill/core/browser/filling/field_filling_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
@@ -15,6 +16,7 @@
 
 using autofill::AttributeInstance;
 using autofill::AttributeType;
+using autofill::GetObfuscatedValue;
 
 namespace {
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -25,16 +27,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @implementation AutofillAIEntityEditItemFactory {
   std::string _locale;
   NSDateFormatter* _dateFormatter;
+  BOOL _userHasAuthenticated;
 }
 
 - (instancetype)initWithLocale:(std::string)locale
-                 dateFormatter:(NSDateFormatter*)dateFormatter {
+                 dateFormatter:(NSDateFormatter*)dateFormatter
+          userHasAuthenticated:(BOOL)userHasAuthenticated {
   self = [super init];
   if (self) {
     _locale = std::move(locale);
     _dateFormatter = dateFormatter;
+    _userHasAuthenticated = userHasAuthenticated;
   }
   return self;
+}
+
+- (void)setUserHasAuthenticated:(BOOL)userHasAuthenticated {
+  _userHasAuthenticated = userHasAuthenticated;
 }
 
 - (TableViewItem*)createItemForAttribute:(const AttributeInstance&)attribute {
@@ -49,6 +58,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Private
+
+// Returns true if the attribute should be obfuscated.
+- (BOOL)shouldObfuscateAttribute:(const AttributeInstance&)attribute {
+  return attribute.type().is_obfuscated() && !_userHasAuthenticated;
+}
 
 - (AutofillAIEntityCountryItem*)createCountryItemForAttribute:
     (const AttributeInstance&)attribute {
@@ -74,6 +88,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       autofill::DisplayNameForAutofillAiAttributeType(attributeType);
   NSDate* dateValue = NSDateFromAttributeInstance(attribute);
   NSString* value = [_dateFormatter stringFromDate:dateValue];
+  if ([self shouldObfuscateAttribute:attribute]) {
+    std::u16string value_u16 = base::SysNSStringToUTF16(value);
+    value = base::SysUTF16ToNSString(
+        GetObfuscatedValue(value_u16, /*visible_suffix_length=*/4));
+  }
 
   AutofillAIEntityEditDateItem* item =
       [[AutofillAIEntityEditDateItem alloc] initWithType:ItemTypeAttribute];
@@ -91,7 +110,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* displayName =
       autofill::DisplayNameForAutofillAiAttributeType(attributeType);
   NSString* value = [self valueFromAttributeInstance:attribute];
-
   AutofillAIEntityEditItem* item =
       [[AutofillAIEntityEditItem alloc] initWithType:ItemTypeAttribute];
   item.fieldNameLabelText = displayName;
@@ -107,7 +125,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Extracts the standard string value for non-date attributes.
 - (NSString*)valueFromAttributeInstance:(const AttributeInstance&)attribute {
-  return base::SysUTF16ToNSString(
-      attribute.GetInfo(attribute.type().field_type(), _locale, std::nullopt));
+  std::u16string value_u16 =
+      attribute.GetInfo(attribute.type().field_type(), _locale, std::nullopt);
+  if ([self shouldObfuscateAttribute:attribute]) {
+    return base::SysUTF16ToNSString(
+        GetObfuscatedValue(value_u16, /*visible_suffix_length=*/4));
+  } else {
+    return base::SysUTF16ToNSString(value_u16);
+  }
 }
 @end

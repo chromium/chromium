@@ -19,7 +19,11 @@ class AttributeInstance;
 @interface AutofillAIEntityEditItemFactory : NSObject
 
 - (instancetype)initWithLocale:(std::string)locale
-                 dateFormatter:(NSDateFormatter*)dateFormatter;
+                 dateFormatter:(NSDateFormatter*)dateFormatter
+          userHasAuthenticated:(BOOL)userHasAuthenticated;
+
+// Sets whether the user has successfully authenticated.
+- (void)setUserHasAuthenticated:(BOOL)userHasAuthenticated;
 
 // Creates a TableViewItem for the given `attribute`.
 - (TableViewItem*)createItemForAttribute:

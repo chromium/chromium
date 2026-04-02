@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
@@ -128,10 +130,14 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
       IOSWalletPassAccessManagerFactory::GetForProfile(
           self.browser->GetProfile());
 
+  ReauthenticationService* reauthService =
+      ReauthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+
   _mediator = [[AutofillAIEntityEditMediator alloc]
       initWithEntityInstance:std::move(*instance)
            entityDataManager:entityDataManager
            walletPassManager:walletPassManager
+                reauthModule:reauthService->GetReauthModule()
                    userEmail:[self userEmail]];
 
   _viewController = [[AutofillAIEntityEditTableViewController alloc]

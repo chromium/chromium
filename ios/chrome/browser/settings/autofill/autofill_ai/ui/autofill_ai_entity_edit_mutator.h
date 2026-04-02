@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
 @class AutofillAIEntityEditDateItem;
 
@@ -22,6 +23,11 @@
 
 // Returns YES if `attributeTypeName` is a required field.
 - (BOOL)isFieldRequired:(autofill::AttributeTypeName)attributeTypeName;
+
+// Requests authentication before entering edit mode.
+// `completion` is called with the result of the authentication attempt.
+- (void)requestEditingWithCompletion:
+    (void (^)(ReauthenticationResult result))completion;
 
 @end
 
