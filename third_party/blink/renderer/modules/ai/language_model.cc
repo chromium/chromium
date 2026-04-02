@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -472,6 +473,14 @@ ScriptPromise<LanguageModel> LanguageModel::create(
   }
 
   LogCreateOptionMetrics(*options, "create");
+  if (options->hasTemperature()) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kLanguageModel_Create_Temperature);
+  }
+  if (options->hasTopK()) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kLanguageModel_Create_TopK);
+  }
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(execution_context);
   if (!ai_manager_remote.is_connected()) {

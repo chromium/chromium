@@ -5178,6 +5178,8 @@ enum WebFeature {
   kNoscriptMarkupWithScriptingDisabledNoBrowsingContext = 5861,
   kSingleAxisScroller = 5862,
   kV8HoleyArrayReadthrough = 5863,
+  kLanguageModel_Create_Temperature = 5864,
+  kLanguageModel_Create_TopK = 5865,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

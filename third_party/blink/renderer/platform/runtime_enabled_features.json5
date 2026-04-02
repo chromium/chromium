@@ -409,6 +409,9 @@
       // Enabled in extension contexts, and for API enhancement experiments.
       name: "AIPromptAPILegacyParams",
       public: true,
+      origin_trial_feature_name: "AIPromptAPIParams",
+      origin_trial_os: ["win", "mac", "linux", "chromeos"],
+      origin_trial_allows_third_party: true,
       implied_by: ["AIPromptAPIParams"],
     },
     {
@@ -437,6 +440,9 @@
         "ChromeOS": "experimental",
         "default": "",
       },
+      origin_trial_feature_name: "AIPromptAPIParams",
+      origin_trial_os: ["win", "mac", "linux", "chromeos"],
+      origin_trial_allows_third_party: true,
     },
     {
       // Gates access to the responseConstraint enhancement for "AIPromptAPI".
