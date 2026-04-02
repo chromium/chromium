@@ -28,12 +28,19 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#endif
 
 // Traits for base::ToString(). They need to be in the corresponding namespace
 // of the enums.
@@ -488,6 +495,51 @@ base::CallbackListSubscription
 GlicActorPolicyChecker::AddUrlListsUpdateObserverForTesting(
     base::RepeatingClosure callback) {
   return url_blocklist_manager_.AddObserver(std::move(callback));
+}
+
+void GlicActorPolicyChecker::ValidateContentSentToRenderer(
+    content::RenderFrameHost* frame,
+    const std::string& content,
+    actor::EnterprisePolicyContentChecker::ValidationCallback callback) {
+  content::WebContents* web_contents =
+      frame ? content::WebContents::FromRenderFrameHost(frame) : nullptr;
+  if (!web_contents || !profile_) {
+    std::move(callback).Run(ValidationReason::kAllowed);
+    return;
+  }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kGlicBulkDataEntrySupport)) {
+    enterprise_connectors::ContentAnalysisDelegate::Data data;
+    // TODO(crbug.com/473047343): Add support when glic is targeting an element
+    // inside a cross-origin iframe.
+    if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+            profile_, frame->GetLastCommittedURL(), &data,
+            enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY)) {
+      data.text.push_back(content);
+      enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
+          web_contents, std::move(data),
+          base::BindOnce(
+              [](actor::EnterprisePolicyContentChecker::ValidationCallback cb,
+                 const enterprise_connectors::ContentAnalysisDelegate::Data&,
+                 enterprise_connectors::ContentAnalysisDelegate::Result&
+                     result) {
+                // TODO(crbug.com/473047343): Not exposed currently, but we
+                // would want to return `kWarned` verdicts at some point.
+                bool allowed =
+                    result.text_results.empty() || result.text_results[0];
+                std::move(cb).Run(allowed ? ValidationReason::kAllowed
+                                          : ValidationReason::kBlocked);
+              },
+              std::move(callback)),
+          enterprise_connectors::DeepScanAccessPoint::PASTE);
+      return;
+    }
+  }
+#endif
+
+  std::move(callback).Run(ValidationReason::kAllowed);
 }
 
 }  // namespace glic

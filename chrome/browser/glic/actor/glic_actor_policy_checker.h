@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/enterprise_policy_content_checker.h"
 #include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/common/actor/task_id.h"
@@ -35,11 +36,13 @@ class AggregatedJournal;
 
 namespace glic {
 
-// The Glic implementation of an Actor EnterprisePolicyUrlChecker, used to
-// determine the act on web capability enabling state. This class blends various
-// signals from account, preferences, managed policies, etc. to make a
+// The Glic implementation of an Actor EnterprisePolicyUrlChecker and
+// EnterprisePolicyContentChecker, used to determine the act on web capability
+// enabling state and validate content sent to the renderer. This class blends
+// various signals from account, preferences, managed policies, etc. to make a
 // determination.
 class GlicActorPolicyChecker : public actor::EnterprisePolicyUrlChecker,
+                               public actor::EnterprisePolicyContentChecker,
                                public signin::IdentityManager::Observer,
                                public subscription_eligibility::
                                    SubscriptionEligibilityService::Observer {
@@ -95,6 +98,13 @@ class GlicActorPolicyChecker : public actor::EnterprisePolicyUrlChecker,
 
   // EnterprisePolicyUrlChecker interface
   actor::EnterprisePolicyBlockReason Evaluate(const GURL& url) const override;
+
+  // EnterprisePolicyContentChecker interface
+  void ValidateContentSentToRenderer(
+      content::RenderFrameHost* frame,
+      const std::string& content,
+      actor::EnterprisePolicyContentChecker::ValidationCallback callback)
+      override;
 
  private:
   void OnPrefOrAccountChanged();
