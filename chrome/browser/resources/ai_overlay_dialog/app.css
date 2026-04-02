@@ -21,6 +21,8 @@
   scrollbar-width: none;
   display: flex;
   flex-direction: column;
+  align-items: end;
+  gap: 4px;
 }
 
 #mock-buttons-column[hidden] {
@@ -85,9 +87,19 @@ video[hidden],
 }
 
 #transcription {
+  /* Because the flexbox resides in an auto-resized container, the sizing
+   * algorithm makes this box as small as possible. To prevent the captions from
+   * giving-way to the shrinking by wrapping, we use 'width: max-content' to set
+   * the width of this container to the maximum width without wrapping (i.e. the
+   * width if the text was all on one line), then set 'max-width' to impose a
+   * limit beyond which wrapping occurs. */
+  width: max-content;
+  max-width: 500px;
+
   margin-bottom: 20px;
-  max-width: 300px;
-  text-align: right;
+
+  /* hidden to avoid captions' box-decorations escaping the cell */
+  overflow: hidden;
 }
 
 #transcription[hidden] {
@@ -95,7 +107,6 @@ video[hidden],
 }
 
 #transcription-text {
-  display: inline;
   background-color: rgba(0, 0, 0, 0.85);
   color: white;
   padding: 4px 8px;
@@ -106,21 +117,14 @@ video[hidden],
 }
 
 .inject-audio {
-  margin: 0;
   cursor: pointer;
-  width: 150px;
-  box-sizing: border-box;
+  max-width: 240px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: bold;
-  font-size: 13px;
-  text-align: right;
   color: white;
   -webkit-text-stroke: 0.5px black;
   text-shadow: 1px 1px 1px black;
-  line-height: 1.2;
-  flex-shrink: 0;
 }
 
 .inject-audio:hover {

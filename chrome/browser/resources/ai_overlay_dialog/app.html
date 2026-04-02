@@ -1,19 +1,19 @@
 <div id="container">
-  <div id="mock-buttons-column" ?hidden="${this.mockButtons.length === 0}">
-    <!--
-      If there's no microphone present, show a button to inject a pre-canned
-      audio message to make development easier.
-    -->
-    ${this.mockButtons.map((button, index) => html`
-      <div class="inject-audio" data-index="${index}"
-          @click="${this.onInjectAudioClick}">
-        ${button.name}
-      </div>
-    `)}
+  <div id="transcription" ?hidden="${!this.transcription}">
+    <span id="transcription-text">${this.transcription}</span>
   </div>
   <div id="main-content">
-    <div id="transcription" ?hidden="${!this.transcription}">
-      <span id="transcription-text">${this.transcription}</span>
+    <div id="mock-buttons-column" ?hidden="${this.mockButtons.length === 0}">
+      <!--
+        If there's no microphone present, show a button to inject a pre-canned
+        audio message to make development easier.
+      -->
+      ${this.mockButtons.map((button, index) => html`
+        <div class="inject-audio" data-index="${index}"
+            @click="${this.onInjectAudioClick}">
+          ${button.name}
+        </div>
+      `)}
     </div>
     ${this.initializationState !== 'initialized'
     ? html`
