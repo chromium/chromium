@@ -161,18 +161,6 @@ bool ShouldUseDohFallback(net::SecureDnsMode secure_dns_mode,
   // user. We need to do this in order to test the feature before we include it
   // in a security bundle. See: crbug.com/490045356
 
-  // TODO(crbug.com/492459244): A short study that enables
-  // kForceSecureDnsDohFallback should also only include ESB users (using
-  // starts_active=false).  Checking for ESB is not possible here, however,
-  // because it is a profile pref, and only local state is available.
-  // Move this method to a context where the profile pref is available.
-
-  // Do not force DoH fallback if the fallback pref is managed.
-  if (local_state.IsManagedPreference(
-          prefs::kDnsOverHttpsAutomaticModeFallbackToDoh)) {
-    return false;
-  }
-
   // Lastly return whether the feature flag for forcing DoH fallback is enabled.
   // The feature needs to be checked last, because checking the feature
   // activates the field trial and marks the client as active in a study group.
@@ -443,13 +431,14 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
         GetDnsOverHttpsConfigSource()->GetDnsOverHttpsTemplates());
     if (ShouldUseDohFallback(secure_dns_mode, *local_state_,
                              *GetDnsOverHttpsConfigSource())) {
-      bool fallback_pref_managed = local_state_->IsManagedPreference(
-          prefs::kDnsOverHttpsAutomaticModeFallbackToDoh);
-      mode_details = fallback_pref_managed
-                         ? SecureDnsModeDetailsForHistogram::
-                               kAutomaticWithDohFallbackByEnterprisePolicy
-                         : SecureDnsModeDetailsForHistogram::
-                               kAutomaticWithDohFallbackByUser;
+      if (base::FeatureList::IsEnabled(
+              safe_browsing::kBundledSecuritySettingsSecureDnsV2)) {
+        mode_details =
+            SecureDnsModeDetailsForHistogram::kAutomaticWithDohFallbackByUser;
+      } else {
+        mode_details = SecureDnsModeDetailsForHistogram::
+            kAutomaticWithDohFallbackForExperiment;
+      }
       fallback_doh_nameservers = GetFallbackDohNameservers();
     }
   }

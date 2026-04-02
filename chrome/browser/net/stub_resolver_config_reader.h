@@ -55,12 +55,20 @@ class StubResolverConfigReader {
     // The mode is controlled by the user and is set to 'automatic with
     // fallback to well-known DoH provider'.
     kAutomaticWithDohFallbackByUser = 8,
-    // The mode is controlled via enterprise policy and is set to 'automatic
-    // with fallback to well-known DoH provider'.
-    kAutomaticWithDohFallbackByEnterprisePolicy = 9,
-    kMaxValue = kAutomaticWithDohFallbackByEnterprisePolicy,
+
+    // Deprecated since this hasn't been implemented yet: The mode is controlled
+    // via enterprise policy and is set to 'automatic with fallback to
+    // well-known DoH provider'.
+    // kAutomaticWithDohFallbackByEnterprisePolicy = 9,
+
+    // The mode was set to 'automatic with fallback to well-known DoH provider'
+    // because kAutomatic mode was in use and the UI setting for the DoH
+    // fallback upgrade functionality wasn't enabled. Used for the DoH fallback
+    // upgrade experiment.
+    kAutomaticWithDohFallbackForExperiment = 10,
+    kMaxValue = kAutomaticWithDohFallbackForExperiment,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:SecureDnsModeDetails)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SecureDnsModeDetails)
 
   static constexpr base::TimeDelta kParentalControlsCheckDelay =
       base::Seconds(2);
