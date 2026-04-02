@@ -69,7 +69,7 @@
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/performance_manager/extension_watcher.h"
 #endif
 
@@ -404,7 +404,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
       std::make_unique<performance_manager::PageLiveStateDecoratorHelper>();
   page_load_tracker_decorator_helper_ =
       std::make_unique<performance_manager::PageLoadTrackerDecoratorHelper>();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extension_watcher_ =
       std::make_unique<performance_manager::ExtensionWatcher>();
 #endif
@@ -466,7 +466,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
   g_browser_process->profile_manager()->RemoveObserver(this);
   profile_observations_.RemoveAllObservations();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extension_watcher_.reset();
 #endif
   page_load_tracker_decorator_helper_.reset();

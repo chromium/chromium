@@ -40,7 +40,7 @@ class PerformanceManagerFeatureObserverClient;
 class PerformanceManagerLifetime;
 class ScopedGlobalScenarioMemory;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class ExtensionWatcher;
 #endif
 
@@ -121,7 +121,7 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   std::unique_ptr<performance_manager::ScopedGlobalScenarioMemory>
       global_performance_scenario_memory_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   std::unique_ptr<performance_manager::ExtensionWatcher> extension_watcher_;
 #endif
 
