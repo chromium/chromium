@@ -13,6 +13,10 @@
 class BrowserWindowInterface;
 class TabsFromOtherDevicesSidePanelUI;
 
+namespace browser_sync {
+class ForeignSessionHandler;
+}  // namespace browser_sync
+
 class TabsFromOtherDevicesUIConfig
     : public DefaultTopChromeWebUIConfig<TabsFromOtherDevicesSidePanelUI> {
  public:
@@ -35,6 +39,12 @@ class TabsFromOtherDevicesSidePanelUI : public TopChromeWebUIController {
   void SetBrowserWindowInterface(
       BrowserWindowInterface* browser_window_interface);
 
+  // Instantiates the implementor of the mojom::PageHandlerFactory mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<history::mojom::ForeignSessionPageHandler>
+          pending_page_handler);
+
   BrowserWindowInterface* browser_window_interface() {
     return browser_window_interface_;
   }
@@ -45,6 +55,8 @@ class TabsFromOtherDevicesSidePanelUI : public TopChromeWebUIController {
 
  private:
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
+
+  std::unique_ptr<browser_sync::ForeignSessionHandler> foreign_session_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

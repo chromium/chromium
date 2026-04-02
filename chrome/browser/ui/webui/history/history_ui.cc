@@ -306,7 +306,8 @@ void HistoryUI::BindInterface(
                  const std::vector<const ::sessions::SessionWindow*>& windows) {
                 SessionRestore::RestoreForeignSessionWindows(
                     profile, windows.begin(), windows.end(), base::DoNothing());
-              }));
+              }),
+          /*side_panel_ui=*/nullptr);
 }
 
 void HistoryUI::BindInterface(
