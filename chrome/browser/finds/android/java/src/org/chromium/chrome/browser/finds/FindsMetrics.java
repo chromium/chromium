@@ -35,6 +35,7 @@ public class FindsMetrics {
         FindsOptInEvent.ACCEPTED_RE_OPT_IN,
         FindsOptInEvent.DECLINED,
         FindsOptInEvent.SNACKBAR_ACTION_CLICKED,
+        FindsOptInEvent.DISMISSED,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface FindsOptInEvent {
@@ -43,7 +44,8 @@ public class FindsMetrics {
         int ACCEPTED_RE_OPT_IN = 2;
         int DECLINED = 3;
         int SNACKBAR_ACTION_CLICKED = 4;
-        int NUM_ENTRIES = 5;
+        int DISMISSED = 5;
+        int NUM_ENTRIES = 6;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:ChromeFindsOptInEvent)
@@ -73,6 +75,11 @@ public class FindsMetrics {
     /** Record that the opted in snackbar action button was clicked. */
     public static void recordSnackbarActionClicked() {
         recordEvent(FindsOptInEvent.SNACKBAR_ACTION_CLICKED);
+    }
+
+    /** Record that the opt-in bottom sheet was dismissed. */
+    public static void recordOptInDismissed() {
+        recordEvent(FindsOptInEvent.DISMISSED);
     }
 
     private static void recordEvent(@FindsOptInEvent int event) {

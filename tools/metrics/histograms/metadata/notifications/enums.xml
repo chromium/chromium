@@ -54,9 +54,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Re-opt-in accepted"/>
   <int value="3" label="Declined"/>
   <int value="4" label="Snackbar action clicked"/>
+  <int value="5" label="Dismissed"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/finds/ChromeFindsMetrics.java:ChromeFindsOptInEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/finds/android/java/src/org/chromium/chrome/browser/finds/FindsMetrics.java:ChromeFindsOptInEvent) -->
 
 <!-- LINT.IfChange(FindsNotificationUserInteraction) -->
 
@@ -68,6 +69,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/finds/core/finds_metrics.h:FindsNotificationUserInteraction) -->
+
+<!-- LINT.IfChange(FindsOptInTriggerReason) -->
+
+<enum name="FindsOptInTriggerReason">
+  <int value="0" label="Theme URL Visit Count"/>
+  <int value="1" label="SRP Back Navigation Count"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/finds/core/finds_metrics.h:FindsOptInTriggerReason) -->
 
 <enum name="NotificationActionType">
   <int value="0" label="Unknown"/>

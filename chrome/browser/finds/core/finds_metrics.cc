@@ -19,4 +19,9 @@ void RecordNotificationShown() {
                             true);
 }
 
+void RecordOptInCriteriaFulfilled(FindsOptInTriggerReason reason) {
+  base::UmaHistogramEnumeration(
+      "Notifications.ChromeFinds.OptInCriteriaFulfilled.Reason", reason);
+}
+
 }  // namespace finds

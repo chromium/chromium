@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/finds/core/finds_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
@@ -117,7 +118,7 @@ class FindsService : public KeyedService, public base::SupportsUserData {
       const optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme&
           theme);
   void OnCheckAreFindsNotificationsEnabled(bool enabled);
-  void NotifyOptInCriteriaFulfilled();
+  void NotifyOptInCriteriaFulfilled(FindsOptInTriggerReason reason);
 
   raw_ptr<OptimizationGuideKeyedService> opt_guide_service_;
   raw_ptr<history::HistoryService> history_service_;

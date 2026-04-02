@@ -515,14 +515,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.ChromeFinds.OptInCriteriaFulfilled.Reason"
+    enum="FindsOptInTriggerReason" expires_after="2026-08-25">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <summary>
+    Records the reason why the opt-in criteria was fulfilled for Chrome Finds.
+    Recorded when the user reaches some trigger criteria.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.ChromeFinds.OptInEvent"
     enum="ChromeFindsOptInEvent" expires_after="2026-08-25">
   <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
   <owner>evanluo@google.com</owner>
   <summary>
-    Records everything around the opt-in flow journey for the Chrome Finds.
-    Recorded when the bottom sheet is shown, accepted (first-time vs re-opt-in),
-    declined, or when the action in the confirmation snackbar is clicked.
+    Records everything around the opt-in flow journey for Chrome Finds. Recorded
+    when the bottom sheet is shown, accepted (first-time vs re-opt-in),
+    declined, dismissed, or when the action in the confirmation snackbar is
+    clicked.
   </summary>
 </histogram>
 

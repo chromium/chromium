@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -26,6 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -40,6 +42,8 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
@@ -246,5 +250,28 @@ public class FindsOptInCoordinatorUnitTest {
         int maxWidth = screenWidthPixels - (horizontalMargin * 2);
 
         assertEquals(maxWidth, layoutParams.width);
+    }
+
+    @Test
+    public void testRecordOptInDismissed() {
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
+
+        // Simulate sheet opening.
+        doReturn(mCoordinator.getSheetContentForTesting())
+                .when(mBottomSheetController)
+                .getCurrentSheetContent();
+        observer.onSheetOpened(StateChangeReason.NONE);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FindsMetrics.OPT_IN_HISTOGRAM, FindsMetrics.FindsOptInEvent.DISMISSED);
+
+        // Simulate sheet dismissal.
+        observer.onSheetClosed(StateChangeReason.SWIPE);
+
+        watcher.assertExpected();
     }
 }

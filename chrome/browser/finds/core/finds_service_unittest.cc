@@ -92,6 +92,8 @@ TEST_F(FindsServiceTest, VerifyNotificationCooldownPref) {
   EXPECT_EQ(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
   finds::MarkNotificationShown(&prefs_);
   EXPECT_NE(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.ChromeFinds.NotificationShown", true, 1);
 }
 
 TEST_F(FindsServiceTest, VerifyThemeNotInterestedCooldownPref) {
@@ -884,6 +886,25 @@ TEST_F(FindsServiceTest, RecordThemeURLVisitedThresholdTriggersOptIn) {
       optimization_guide::proto::FindsMetadata::SHOPPING);
   EXPECT_NE(it, theme_url_visit_count().end());
   EXPECT_EQ(it->second, 0);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.ChromeFinds.OptInCriteriaFulfilled.Reason",
+      FindsOptInTriggerReason::kThemeUrlVisitCount, 1);
+
+  service_->RemoveObserver(&observer);
+}
+
+TEST_F(FindsServiceTest, SRPBackNavigationTriggersOptIn) {
+  testing::NiceMock<MockFindsServiceObserver> observer;
+  service_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnOptInCriteriaFulfilled()).Times(1);
+
+  service_->SRPBackNavigationCountForOptInReached();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Notifications.ChromeFinds.OptInCriteriaFulfilled.Reason",
+      FindsOptInTriggerReason::kSrpBackNavigationCount, 1);
 
   service_->RemoveObserver(&observer);
 }

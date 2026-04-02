@@ -55,6 +55,9 @@ public class FindsOptInCoordinator {
     private final View mAnimationView;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
             ObservableSuppliers.createNonNull(false);
+    // Tracks whether the user explicitly accepted or declined the opt-in promo, so we can correctly
+    // handle dismissals.
+    private boolean mUserInteractedWithOptIn;
 
     /**
      * @param context The Android {@link Context}.
@@ -71,6 +74,7 @@ public class FindsOptInCoordinator {
         mProfile = profile;
         mBottomSheetController = bottomSheetController;
         mSnackbarManager = snackbarManager;
+        mUserInteractedWithOptIn = false;
 
         mContentView =
                 LayoutInflater.from(mContext)
@@ -131,6 +135,9 @@ public class FindsOptInCoordinator {
                         }
                         super.onSheetClosed(reason);
                         mBackPressStateChangedSupplier.set(false);
+                        if (!mUserInteractedWithOptIn) {
+                            FindsMetrics.recordOptInDismissed();
+                        }
                     }
                 };
         mBottomSheetController.addObserver(mBottomSheetObserver);
@@ -138,6 +145,7 @@ public class FindsOptInCoordinator {
 
     @VisibleForTesting
     void onOptInAccepted() {
+        mUserInteractedWithOptIn = true;
         FindsUtils.getOptInState(
                 (state) -> {
                     if (state == FindsOptInState.FIRST_TIME) {
@@ -195,6 +203,7 @@ public class FindsOptInCoordinator {
 
     @VisibleForTesting
     void onOptInDeclined() {
+        mUserInteractedWithOptIn = true;
         // Initialize the Chrome Finds notification channel as disabled.
         new ChannelsInitializer(
                         BaseNotificationManagerProxyFactory.create(),
@@ -219,6 +228,10 @@ public class FindsOptInCoordinator {
 
     View getContentViewForTesting() {
         return mContentView;
+    }
+
+    FindsOptInBottomSheetContent getSheetContentForTesting() {
+        return mSheetContent;
     }
 
     private void onBackPressed() {

@@ -18,6 +18,7 @@
 #include "chrome/browser/finds/android/finds_service_android.h"
 #endif
 #include "chrome/browser/finds/core/finds_features.h"
+#include "chrome/browser/finds/core/finds_metrics.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_utils.h"
 #include "chrome/browser/notifications/scheduler/public/client_overview.h"
@@ -284,7 +285,7 @@ void FindsService::RecordThemeURLVisited(
   theme_url_visit_count_[theme_type]++;
   if (theme_url_visit_count_[theme_type] >=
       finds::features::kThemeUrlVisitCountForOptIn.Get()) {
-    NotifyOptInCriteriaFulfilled();
+    NotifyOptInCriteriaFulfilled(FindsOptInTriggerReason::kThemeUrlVisitCount);
 
     // Reset the count for the theme type.
     theme_url_visit_count_[theme_type] = 0;
@@ -292,7 +293,8 @@ void FindsService::RecordThemeURLVisited(
 }
 
 void FindsService::SRPBackNavigationCountForOptInReached() {
-  NotifyOptInCriteriaFulfilled();
+  NotifyOptInCriteriaFulfilled(
+      FindsOptInTriggerReason::kSrpBackNavigationCount);
 }
 
 void FindsService::MaybeRescheduleNotifications() {
@@ -477,10 +479,12 @@ void FindsService::OnCheckAreFindsNotificationsEnabled(bool enabled) {
   }
 }
 
-void FindsService::NotifyOptInCriteriaFulfilled() {
+void FindsService::NotifyOptInCriteriaFulfilled(
+    FindsOptInTriggerReason reason) {
   for (auto& observer : observers_) {
     observer.OnOptInCriteriaFulfilled();
   }
+  finds::RecordOptInCriteriaFulfilled(reason);
 }
 
 }  // namespace finds

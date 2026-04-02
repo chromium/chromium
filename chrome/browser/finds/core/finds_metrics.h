@@ -19,12 +19,24 @@ enum class FindsNotificationUserInteraction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:FindsNotificationUserInteraction)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(FindsOptInTriggerReason)
+enum class FindsOptInTriggerReason {
+  kThemeUrlVisitCount = 0,
+  kSrpBackNavigationCount = 1,
+  kMaxValue = kSrpBackNavigationCount,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:FindsOptInTriggerReason)
+
 // Record when a finds notification is shown.
 void RecordNotificationShown();
 // Record a histogram tracking the type of user interaction with a finds
 // notification.
 void RecordNotificationInteraction(
     FindsNotificationUserInteraction interaction);
+// Record when the opt-in criteria is fulfilled, capturing why.
+void RecordOptInCriteriaFulfilled(FindsOptInTriggerReason reason);
 
 }  // namespace finds
 

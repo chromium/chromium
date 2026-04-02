@@ -58,4 +58,13 @@ public class FindsMetricsUnitTest {
         FindsMetrics.recordSnackbarActionClicked();
         histogram.assertExpected();
     }
+
+    @Test
+    public void testRecordOptInDismissed() {
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FindsMetrics.OPT_IN_HISTOGRAM, FindsOptInEvent.DISMISSED);
+        FindsMetrics.recordOptInDismissed();
+        histogram.assertExpected();
+    }
 }
