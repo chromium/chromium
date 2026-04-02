@@ -164,6 +164,20 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
         EntityInstance::RecordType::kLocal,
         EntityInstance::AreAttributesReadOnly(false),
         /*frecency_override=*/""));
+
+    table.AddOrUpdateEntityInstance(EntityInstance(
+        EntityType(EntityTypeName::kShipment),
+        {create_attribute(kShipmentCarrierName, u"DHL"),
+         create_attribute(kShipmentCarrierDomain, u"www.dhl.com"),
+         create_attribute(kShipmentTrackingNumber, u"1234567"),
+         create_attribute(kShipmentDeliveryZipCode, u"80639")},
+        EntityInstance::EntityId(
+            base::Uuid::ParseLowercase("00000000-0000-4000-8000-999000000000")),
+        "My license", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
+        /*use_date=*/base::Time::FromTimeT(0),
+        EntityInstance::RecordType::kLocal,
+        EntityInstance::AreAttributesReadOnly(false),
+        /*frecency_override=*/""));
   }
 }
 

@@ -92,10 +92,10 @@ class AttributeType final {
   //   attribute:
   //   - For most AttributeTypes, there is a 1:1 relationship with a
   //     FieldType (e.g., kPassportNumber and PASSPORT_NUMBER).
-  //   - For name AttributeTypes, the relationship is n:1 (e.g., kPassportName
-  //     and kDriversLicenseName both map to NAME_FULL). That is because
-  //     name FieldType predictions are dynamically assigned to entities; see
-  //     DetermineAttributeTypes() for details.
+  //   - For name and ZIP code AttributeTypes, the relationship is n:1 (e.g.,
+  //     kPassportName and kDriversLicenseName both map to NAME_FULL). That is
+  //     because such FieldType predictions are dynamically assigned to
+  //     entities; see DetermineAttributeTypes() for details.
   //   - For metadata AttributeTypes, there is no corresponding FieldType
   //     (e.g., kFlightReservationDepartureAirport).
   // - field_subtypes() may contain, in addition to field_type(), more
@@ -299,15 +299,11 @@ constexpr std::optional<FieldType> AttributeType::field_type() const {
     case AttributeTypeName::kShipmentTrackingNumber:
       return SHIPMENT_TRACKING_NUMBER;
     case AttributeTypeName::kShipmentDeliveryZipCode:
-      return std::nullopt;
+      return ADDRESS_HOME_ZIP;
     case AttributeTypeName::kShipmentEstimatedDeliveryDate:
-      return std::nullopt;
     case AttributeTypeName::kShipmentOrderIds:
-      return std::nullopt;
     case AttributeTypeName::kShipmentOrderDates:
-      return std::nullopt;
     case AttributeTypeName::kShipmentMerchantName:
-      return std::nullopt;
     case AttributeTypeName::kShipmentProductNames:
       return std::nullopt;
 
