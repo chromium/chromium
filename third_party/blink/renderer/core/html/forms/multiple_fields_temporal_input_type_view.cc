@@ -504,7 +504,7 @@ void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
   if (picker_indicator_is_visible_ &&
       (!RuntimeEnabledFeatures::DisallowPickerForReadonlyInputsEnabled() ||
        !GetElement().IsReadOnly()) &&
-      ((event.key() == keywords::kArrowDown && event.getModifierState("Alt")) ||
+      ((event.key() == keywords::kArrowDown && event.altKey()) ||
        event.key() == "F4" || event.key() == " ")) {
     OpenPopupView();
     event.SetDefaultHandled();

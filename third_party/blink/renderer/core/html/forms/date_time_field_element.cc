@@ -113,8 +113,9 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     return;
 
   if (key == *key_mapper.LineUnder()) {
-    if (keyboard_event.getModifierState("Alt"))
+    if (keyboard_event.altKey()) {
       return;
+    }
     keyboard_event.SetDefaultHandled();
     StepDown();
     return;

@@ -220,7 +220,7 @@ void PasswordInputType::HandleKeydownEvent(KeyboardEvent& event) {
   if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
     if (should_show_reveal_button_) {
       // Alt-F8 to reveal/obscure password
-      if (event.getModifierState("Alt") && event.key() == "F8") {
+      if (event.altKey() && event.key() == "F8") {
         GetElement().SetShouldRevealPassword(
             !GetElement().ShouldRevealPassword());
         UpdatePasswordRevealButton();
