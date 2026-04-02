@@ -16,12 +16,24 @@ using ActorTaskId = base::StrongAlias<class ActorTaskIdMarker, base::Token>;
 
 // Reasons why an ActorTask was stopped.
 enum class ActorTaskStoppedReason {
-  kUnknown = 0,
-  kStoppedByUser = 1,
+  // Task was explicitly stopped by the user.
+  kStoppedByUser = 0,
+  // Task successfully completed its execution.
+  kTaskComplete = 1,
+  // The underlying model encountered an error during the task.
+  kModelError = 2,
+  // A browser failure occurred.
+  kBrowserFailure = 3,
+  // One of the tabs executing the task was detached or destroyed.
+  kTabDetached = 4,
+  // System or browser is shutting down.
+  kShutdown = 5,
+  // User started a new chat session, aborting the current task.
+  kUserStartedNewChat = 6
 };
 
-// Callback for when an action or set of actions finishes.
-using PerformActionsCallback = base::OnceCallback<void(ActorTaskStoppedReason)>;
+// Callback for when a tool or set of tools finishes.
+using ExecuteToolsCallback = base::OnceCallback<void(ActorTaskStoppedReason)>;
 
 }  // namespace actor
 

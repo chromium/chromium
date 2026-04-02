@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "actor_engine.h",
+    "actor_engine.mm",
     "actor_service.h",
     "actor_service.mm",
     "actor_service_factory.h",
@@ -35,17 +37,20 @@ source_set("unit_tests") {
   sources = [
     "actor_service_journal_unittest.mm",
     "actor_service_unittest.mm",
+    "actor_task_unittest.mm",
     "aggregated_journal_unittest.mm",
   ]
   deps = [
     ":model",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_interface",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_error",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_factory",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

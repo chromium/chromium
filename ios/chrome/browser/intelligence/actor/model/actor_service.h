@@ -29,8 +29,7 @@ class ProfileIOS;
 
 // Service responsible for handling Actor requests. The normal flow is to
 // `CreateTask` and reuse this ID for an entire Actor task (journey).
-// `PerformActions` can be called multiple times on the same task sequentially
-// as the actions complete.
+// `ExecuteTools` can be called multiple times on the same task sequentially.
 class ActorService : public KeyedService {
  public:
   explicit ActorService(ProfileIOS* profile);
@@ -43,7 +42,7 @@ class ActorService : public KeyedService {
 
   // Executes the given action.
   // TODO(crbug.com/498191921): This is legacy/deprecated. Use `CreateTask` and
-  // `PerformActions` instead. It will be cleaned up soon.
+  // `ExecuteTools` instead. It will be cleaned up soon.
   void ExecuteAction(const optimization_guide::proto::Action& action,
                      ActorTool::ActorCallback callback);
 
@@ -52,12 +51,12 @@ class ActorService : public KeyedService {
                                 id<ActorTaskUIDelegate> delegate,
                                 bool allow_incognito_web_states);
 
-  // Submits actions to an active task with a task update string (a short blurb
+  // Submits tools to an active task with a task update string (a short blurb
   // which tells the user what the Actor is currently doing in plain language).
-  void PerformActions(actor::ActorTaskId task_id,
-                      std::vector<std::unique_ptr<ActorTool>> actions,
-                      const std::string& task_update,
-                      actor::PerformActionsCallback callback);
+  void ExecuteTools(actor::ActorTaskId task_id,
+                    std::vector<std::unique_ptr<ActorTool>> tools,
+                    const std::string& task_update,
+                    actor::ExecuteToolsCallback callback);
 
   // Pauses a task.
   void PauseTask(actor::ActorTaskId task_id, bool from_actor);
@@ -77,10 +76,10 @@ class ActorService : public KeyedService {
   // The profile associated with this service instance.
   raw_ptr<ProfileIOS> profile_;
 
-  // Factory used to instantiate the appropriate tool for a given action.
+  // Actor tool factory.
   std::unique_ptr<ActorToolFactory> tool_factory_;
 
-  // Journal used for logging task actions, state transitions, and results.
+  // Journal used for logging task tools, state transitions, and results.
   std::unique_ptr<AggregatedJournal> journal_;
 
   // Map of active tasks, keyed by their task ID.

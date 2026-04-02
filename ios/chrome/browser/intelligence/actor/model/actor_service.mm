@@ -126,11 +126,10 @@ actor::ActorTaskId ActorService::CreateTask(const std::string& title,
   return task_id;
 }
 
-void ActorService::PerformActions(
-    actor::ActorTaskId task_id,
-    std::vector<std::unique_ptr<ActorTool>> actions,
-    const std::string& task_update,
-    actor::PerformActionsCallback callback) {
+void ActorService::ExecuteTools(actor::ActorTaskId task_id,
+                                std::vector<std::unique_ptr<ActorTool>> tools,
+                                const std::string& task_update,
+                                actor::ExecuteToolsCallback callback) {
   // TODO(crbug.com/496163986): Implement and test.
   std::move(callback).Run(actor::ActorTaskStoppedReason::kStoppedByUser);
 }
