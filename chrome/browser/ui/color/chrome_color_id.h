@@ -1094,6 +1094,8 @@
     E_CPONLY(kColorBorealisSplashScreenForeground) \
     /* Caption colors. */ \
     E_CPONLY(kColorCaptionForeground) \
+    E_CPONLY(kColorVerticalTabsCaptionButtonForegroundActive) \
+    E_CPONLY(kColorVerticalTabsCaptionButtonForegroundInactive) \
     /* Sharesheet colors. */ \
     E_CPONLY(kColorSharesheetTargetButtonIconShadow)
 #elif BUILDFLAG(IS_WIN)

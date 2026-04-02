@@ -22,6 +22,10 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
       (key.color_mode == ui::ColorProviderKey::ColorMode::kLight)
           ? SkColorSetRGB(0x28, 0x28, 0x28)
           : SK_ColorWHITE};
+  mixer[kColorVerticalTabsCaptionButtonForegroundActive] = {
+      kColorToolbarButtonIcon};
+  mixer[kColorVerticalTabsCaptionButtonForegroundInactive] = {
+      kColorToolbarButtonIconInactive};
   mixer[kColorSharesheetTargetButtonIconShadow] = {
       SkColorSetA(SK_ColorBLACK, 0x33)};
 }

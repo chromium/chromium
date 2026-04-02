@@ -175,6 +175,12 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
                         : ui::kColorFrameCaptionButtonUnfocused;
   }
 
+  if (browser_frame_view->GetBrowserView()->ShouldDrawVerticalTabStrip()) {
+    button_colors = mode() == MODE_ACTIVE
+                        ? kColorVerticalTabsCaptionButtonForegroundActive
+                        : kColorVerticalTabsCaptionButtonForegroundInactive;
+  }
+
   UpdateCaptionButtonColors(button_colors);
   view()->SchedulePaint();
 }
