@@ -82,7 +82,6 @@
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/tpcd/metadata/manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
@@ -144,7 +143,6 @@
 #include "components/strike_database/strike_database.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "components/tpcd/metadata/browser/manager.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
@@ -647,11 +645,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           PrivacySandboxSettingsFactory::GetForProfile(profile_);
       if (privacy_sandbox_settings) {
         privacy_sandbox_settings->OnCookiesCleared();
-      }
-
-      if (tpcd::metadata::Manager* manager =
-              tpcd::metadata::ManagerFactory::GetForProfile(profile_)) {
-        manager->ResetCohorts();
       }
 
 #if BUILDFLAG(IS_ANDROID)
