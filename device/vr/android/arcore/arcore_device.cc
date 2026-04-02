@@ -43,8 +43,7 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
                           mojom::XRSessionFeature::ANCHORS,
                           mojom::XRSessionFeature::DEPTH,
                           mojom::XRSessionFeature::IMAGE_TRACKING,
-                          mojom::XRSessionFeature::HIT_TEST,
-                          mojom::XRSessionFeature::FRONT_FACING}};
+                          mojom::XRSessionFeature::HIT_TEST}};
 
   return *kSupportedFeatures;
 }
@@ -92,6 +91,11 @@ ArCoreDevice::ArCoreDevice(
   // and shared buffers will be used.
   if (base::FeatureList::IsEnabled(features::kWebXRWebGPUBinding)) {
     device_features.emplace_back(mojom::XRSessionFeature::WEBGPU);
+  }
+
+  // Only support Front Facing mode if the WebXR incubations flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kWebXRIncubations)) {
+    device_features.emplace_back(mojom::XRSessionFeature::FRONT_FACING);
   }
 
   SetSupportedFeatures(device_features);
