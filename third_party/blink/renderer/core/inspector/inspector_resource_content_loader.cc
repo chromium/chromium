@@ -99,7 +99,8 @@ void InspectorResourceContentLoader::Start() {
     resource_request.SetMode(network::mojom::RequestMode::kSameOrigin);
     resource_request.SetRequestContext(
         mojom::blink::RequestContextType::INTERNAL);
-
+    resource_request.SetRequestorOrigin(
+        SecurityOrigin::Create(document->Url()));
     ResourceFetcher* fetcher = document->Fetcher();
 
     const DOMWrapperWorld* world =
