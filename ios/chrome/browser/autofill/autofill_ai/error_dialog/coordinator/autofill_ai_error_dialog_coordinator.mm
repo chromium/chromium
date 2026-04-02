@@ -7,12 +7,13 @@
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/location.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
-#import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator/autofill_ai_error_dialog_mediator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator/autofill_ai_error_dialog_mediator_delegate.h"
+#import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 
@@ -27,25 +28,43 @@ inline constexpr base::TimeDelta kErrorDialogPresentationRetryDelay =
 @property(nonatomic, readonly, copy) NSString* title;
 @property(nonatomic, readonly, copy) NSString* message;
 @property(nonatomic, readonly, copy) NSString* buttonLabel;
+@property(nonatomic, readonly, assign) BOOL showImmediately;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithTitle:(NSString*)title
                       message:(NSString*)message
-                  buttonLabel:(NSString*)buttonLabel NS_DESIGNATED_INITIALIZER;
+                  buttonLabel:(NSString*)buttonLabel
+              showImmediately:(BOOL)showImmediately
+                   completion:(base::OnceClosure)completion
+    NS_DESIGNATED_INITIALIZER;
+
+- (void)runCompletion;
 @end
 
-@implementation AutofillAiPendingAlert
+@implementation AutofillAiPendingAlert {
+  base::OnceClosure _completion;
+}
 
 - (instancetype)initWithTitle:(NSString*)title
                       message:(NSString*)message
-                  buttonLabel:(NSString*)buttonLabel {
+                  buttonLabel:(NSString*)buttonLabel
+              showImmediately:(BOOL)showImmediately
+                   completion:(base::OnceClosure)completion {
   self = [super init];
   if (self) {
     _title = [title copy];
     _message = [message copy];
     _buttonLabel = [buttonLabel copy];
+    _showImmediately = showImmediately;
+    _completion = std::move(completion);
   }
   return self;
+}
+
+- (void)runCompletion {
+  if (!_completion.is_null()) {
+    std::move(_completion).Run();
+  }
 }
 
 @end
@@ -112,16 +131,24 @@ inline constexpr base::TimeDelta kErrorDialogPresentationRetryDelay =
 
 - (void)showErrorDialog:(NSString*)title
                 message:(NSString*)message
-            buttonLabel:(NSString*)buttonLabel {
+            buttonLabel:(NSString*)buttonLabel
+        showImmediately:(BOOL)showImmediately
+             completion:(base::OnceClosure)completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AutofillAiPendingAlert* alert =
       [[AutofillAiPendingAlert alloc] initWithTitle:title
                                             message:message
-                                        buttonLabel:buttonLabel];
+                                        buttonLabel:buttonLabel
+                                    showImmediately:showImmediately
+                                         completion:std::move(completion)];
 
   // Use _pendingAlerts as a FIFO queue: insert at index 0 (front), process from
   // lastObject (back).
-  [_pendingAlerts insertObject:alert atIndex:0];
+  if (showImmediately) {
+    [_pendingAlerts addObject:alert];
+  } else {
+    [_pendingAlerts insertObject:alert atIndex:0];
+  }
   [self tryPresentPendingAlert];
 }
 
@@ -150,15 +177,21 @@ inline constexpr base::TimeDelta kErrorDialogPresentationRetryDelay =
     return;
   }
 
-  // If a view controller is already presented by baseViewController, schedule a
-  // retry. The alert remains at the head of the queue.
-  if (self.baseViewController.presentedViewController) {
+  // Presenter is not busy. Get the next alert to show.
+  AutofillAiPendingAlert* alertToShow = [_pendingAlerts lastObject];
+
+  UIViewController* presenter = self.baseViewController;
+  if (alertToShow.showImmediately) {
+    // Bypass the queue delay. Find the top-most view controller to present
+    // over.
+    while (presenter.presentedViewController &&
+           !presenter.presentedViewController.isBeingDismissed) {
+      presenter = presenter.presentedViewController;
+    }
+  } else if (presenter.presentedViewController) {
     [self scheduleTryPresentPendingAlert];
     return;
   }
-
-  // Presenter is not busy. Get the next alert to show.
-  AutofillAiPendingAlert* alertToShow = [_pendingAlerts lastObject];
 
   UIAlertController* alertController =
       [UIAlertController alertControllerWithTitle:alertToShow.title
@@ -171,13 +204,15 @@ inline constexpr base::TimeDelta kErrorDialogPresentationRetryDelay =
                                style:UIAlertActionStyleCancel
                              handler:^(UIAlertAction* action) {
                                [weakSelf userDismissedAlert];
+                               if (alertToShow) {
+                                 [alertToShow runCompletion];
+                               }
                              }];
   [alertController addAction:buttonAction];
   alertController.modalPresentationStyle = UIModalPresentationOverFullScreen;
   [_pendingAlerts removeLastObject];
-  [self.baseViewController presentViewController:alertController
-                                        animated:YES
-                                      completion:nil];
+
+  [presenter presentViewController:alertController animated:YES completion:nil];
   _alertController = alertController;
 }
 

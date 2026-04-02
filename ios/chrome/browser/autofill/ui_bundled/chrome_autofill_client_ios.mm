@@ -654,14 +654,14 @@ void ChromeAutofillClientIOS::CloseEntityImportBubble() {
 void ChromeAutofillClientIOS::ShowAutofillAiLocalSaveNotification() {
   autofill::AutofillAiErrorDialogContext errorContext;
   errorContext.type = autofill::AutofillAiErrorDialogType::kTypeLocalSave;
-  [commands_handler_ showAutofillAiErrorDialog:errorContext];
+  [commands_handler_ showAutofillAiErrorDialog:std::move(errorContext)];
 }
 
 void ChromeAutofillClientIOS::ShowAutofillAiSaveToWalletFailureNotification() {
   autofill::AutofillAiErrorDialogContext errorContext;
   errorContext.type =
       autofill::AutofillAiErrorDialogType::kTypeSaveToWalletFailure;
-  [commands_handler_ showAutofillAiErrorDialog:errorContext];
+  [commands_handler_ showAutofillAiErrorDialog:std::move(errorContext)];
 }
 
 void ChromeAutofillClientIOS::
@@ -669,7 +669,7 @@ void ChromeAutofillClientIOS::
   autofill::AutofillAiErrorDialogContext errorContext;
   errorContext.type =
       autofill::AutofillAiErrorDialogType::kTypeFetchFromWalletFailure;
-  [commands_handler_ showAutofillAiErrorDialog:errorContext];
+  [commands_handler_ showAutofillAiErrorDialog:std::move(errorContext)];
 }
 
 AutofillAiSaveEntityInfoBarDelegateIOS*

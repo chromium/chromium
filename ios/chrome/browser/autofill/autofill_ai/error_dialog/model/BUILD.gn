@@ -3,5 +3,9 @@
 # found in the LICENSE file.
 
 source_set("model") {
-  sources = [ "autofill_ai_error_dialog_context.h" ]
+  sources = [
+    "autofill_ai_error_dialog_context.h",
+    "autofill_ai_error_dialog_context.mm",
+  ]
+  deps = [ "//base" ]
 }

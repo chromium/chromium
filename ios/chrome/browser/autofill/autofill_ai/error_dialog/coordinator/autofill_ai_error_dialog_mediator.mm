@@ -46,5 +46,9 @@ void AutofillAiErrorDialogMediator::Show() {
       break;
   }
 
-  [delegate_ showErrorDialog:title message:message buttonLabel:buttonLabel];
+  [delegate_ showErrorDialog:title
+                     message:message
+                 buttonLabel:buttonLabel
+             showImmediately:error_context_.show_immediately
+                  completion:std::move(error_context_.on_dismissed_callback)];
 }

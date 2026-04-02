@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/functional/callback_forward.h"
+
 // Delegate protocol for the Autofill AI error dialog mediator.
 @protocol AutofillAiErrorDialogMediatorDelegate <NSObject>
 
@@ -14,7 +16,9 @@
 // configurations.
 - (void)showErrorDialog:(NSString*)title
                 message:(NSString*)message
-            buttonLabel:(NSString*)buttonLabel;
+            buttonLabel:(NSString*)buttonLabel
+        showImmediately:(BOOL)showImmediately
+             completion:(base::OnceClosure)completion;
 
 @end
 

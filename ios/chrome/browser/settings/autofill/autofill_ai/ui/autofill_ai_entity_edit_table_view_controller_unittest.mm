@@ -148,7 +148,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestDidTapCancel) {
   [view_controller loadViewIfNeeded];
 
   // Expect the delegate to close the view controller.
-  OCMExpect([mock_delegate_ didTapCloseButton:view_controller]);
+  OCMExpect([mock_delegate_ dismissViewController:view_controller]);
 
   // Trigger the cancel action.
   [view_controller didTapCancel];
@@ -208,6 +208,42 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
   EXPECT_NSEQ(footer.text, l10n_util::GetNSStringF(
                                IDS_IOS_AUTOFILL_AI_SAVED_TO_WALLET_FOOTER,
                                base::SysNSStringToUTF16(test_email)));
+}
+
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestDidFinishSavingWithLocalFallbackTrue) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  view_controller.mode = AutofillAIEntityEditMode::kCreate;
+  [view_controller loadViewIfNeeded];
+
+  // Expect the delegate to be notified of the fallback.
+  OCMExpect([mock_delegate_ showLocalSaveFallbackAlert]);
+
+  // Trigger the fallback scenario.
+  [view_controller didFinishSavingWithLocalFallback:YES];
+
+  [mock_delegate_ verify];
+}
+
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestDidFinishSavingWithLocalFallbackFalse) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  view_controller.mode = AutofillAIEntityEditMode::kCreate;
+  [view_controller loadViewIfNeeded];
+
+  // Expect the delegate to process a standard dismissal.
+  OCMExpect([mock_delegate_ dismissViewController:view_controller]);
+
+  // Trigger the successful save scenario.
+  [view_controller didFinishSavingWithLocalFallback:NO];
+
+  [mock_delegate_ verify];
 }
 
 }  // namespace

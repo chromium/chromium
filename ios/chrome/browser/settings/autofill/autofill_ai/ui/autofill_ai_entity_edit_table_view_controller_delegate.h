@@ -18,16 +18,15 @@
 - (void)didTapCountryItem:(AutofillAIEntityCountryItem*)item;
 
 // Notifies the delegate that the user tapped on the close button.
-- (void)didTapCloseButton:
+- (void)dismissViewController:
     (AutofillAIEntityEditTableViewController*)viewController;
 
 // Called when the user taps the Edit button on a Server Wallet item.
 - (void)didTapEditInWalletButton:
     (AutofillAIEntityEditTableViewController*)viewController;
 
-// Called when the save finishes but had to fall back to local storage.
-- (void)didFinishSavingToLocalAsFallback:
-    (AutofillAIEntityEditTableViewController*)viewController;
+// Called when the entity is saved locally and an alert needs to be shown.
+- (void)showLocalSaveFallbackAlert;
 
 @end
 

@@ -8,6 +8,8 @@
 #import <optional>
 #import <string>
 
+#import "base/functional/callback.h"
+
 namespace autofill {
 
 // The type of autofill ai error dialog that will be displayed.
@@ -19,17 +21,26 @@ enum class AutofillAiErrorDialogType {
 
 // The context for the autofill ai error dialog.
 struct AutofillAiErrorDialogContext {
-  AutofillAiErrorDialogContext() = default;
+  AutofillAiErrorDialogContext();
+
   AutofillAiErrorDialogContext(const AutofillAiErrorDialogContext& other) =
-      default;
-  AutofillAiErrorDialogContext(AutofillAiErrorDialogContext&& other) = default;
-  AutofillAiErrorDialogContext& operator=(const AutofillAiErrorDialogContext&) =
       delete;
-  AutofillAiErrorDialogContext& operator=(AutofillAiErrorDialogContext&&) =
-      delete;
+  AutofillAiErrorDialogContext& operator=(
+      const AutofillAiErrorDialogContext& other) = delete;
+  AutofillAiErrorDialogContext(AutofillAiErrorDialogContext&& other);
+  AutofillAiErrorDialogContext& operator=(AutofillAiErrorDialogContext&& other);
+
+  ~AutofillAiErrorDialogContext();
 
   // The type of autofill ai error dialog that will be displayed.
   AutofillAiErrorDialogType type = AutofillAiErrorDialogType::kTypeLocalSave;
+
+  // If true, the dialog bypasses the presentation queue and presents
+  // immediately over any currently presented view controller.
+  bool show_immediately = false;
+
+  // Callback executed when the user dismisses the dialog.
+  base::OnceClosure on_dismissed_callback;
 };
 
 }  // namespace autofill

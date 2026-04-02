@@ -244,9 +244,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)didFinishSavingWithLocalFallback:(BOOL)isLocalFallback {
   if (isLocalFallback) {
-    [self.delegate didFinishSavingToLocalAsFallback:self];
+    [self.delegate showLocalSaveFallbackAlert];
   } else if (self.mode == AutofillAIEntityEditMode::kCreate) {
-    [self.delegate didTapCloseButton:self];
+    [self.delegate dismissViewController:self];
   }
 }
 
@@ -260,7 +260,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Actions
 
 - (void)didTapCancel {
-  [self.delegate didTapCloseButton:self];
+  [self.delegate dismissViewController:self];
 }
 
 - (void)didTapEdit {
