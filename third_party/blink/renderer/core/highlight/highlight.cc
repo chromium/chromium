@@ -26,7 +26,7 @@ Highlight::~Highlight() = default;
 void Highlight::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlight_ranges_);
   visitor->Trace(containing_highlight_registries_);
-  EventTarget::Trace(visitor);
+  ScriptWrappable::Trace(visitor);
 }
 
 void Highlight::ScheduleRepaintsInContainingHighlightRegistries() const {
@@ -80,18 +80,6 @@ void Highlight::setPriority(const int32_t& priority) {
 
 bool Highlight::Contains(AbstractRange* range) const {
   return highlight_ranges_.Contains(range);
-}
-
-const AtomicString& Highlight::InterfaceName() const {
-  // TODO(crbug.com/1346693)
-  NOTIMPLEMENTED();
-  return g_null_atom;
-}
-
-ExecutionContext* Highlight::GetExecutionContext() const {
-  // TODO(crbug.com/1346693)
-  NOTIMPLEMENTED();
-  return nullptr;
 }
 
 void Highlight::RegisterIn(HighlightRegistry* highlight_registry) {

@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_highlight.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
-#include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -21,7 +21,8 @@ namespace blink {
 using HighlightSetIterable = ValueSyncIterable<Highlight>;
 class HighlightRegistry;
 
-class CORE_EXPORT Highlight : public EventTarget, public HighlightSetIterable {
+class CORE_EXPORT Highlight : public ScriptWrappable,
+                              public HighlightSetIterable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -45,10 +46,6 @@ class CORE_EXPORT Highlight : public EventTarget, public HighlightSetIterable {
   void setType(const V8HighlightType& type) { type_ = type; }
 
   bool Contains(AbstractRange*) const;
-
-  // EventTarget
-  const AtomicString& InterfaceName() const override;
-  ExecutionContext* GetExecutionContext() const override;
 
   // HighlightSetIterable
   class IterationSource final : public HighlightSetIterable::IterationSource {
