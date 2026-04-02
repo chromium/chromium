@@ -26,7 +26,6 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
@@ -40,7 +39,6 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private DocumentPictureInPictureHeaderDelegate mDelegate;
     @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
 
@@ -79,7 +77,6 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
                 new DocumentPictureInPictureHeaderCoordinator(
                         mView,
                         mDesktopWindowStateManager,
-                        mThemeColorProvider,
                         mActivity,
                         mDelegate,
                         /* isBackToTabShown= */ true,
@@ -87,8 +84,6 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
                         mWebContents);
 
         verify(mDesktopWindowStateManager).addObserver(any());
-        verify(mThemeColorProvider).addThemeColorObserver(any());
-        verify(mThemeColorProvider).addTintObserver(any());
         verify((WebContentsObserver.Observable) mOpenerWebContents).addObserver(any());
         verify((WebContentsObserver.Observable) mWebContents).addObserver(any());
     }
@@ -99,7 +94,6 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
                 new DocumentPictureInPictureHeaderCoordinator(
                         mView,
                         mDesktopWindowStateManager,
-                        mThemeColorProvider,
                         mActivity,
                         mDelegate,
                         /* isBackToTabShown= */ true,
@@ -108,8 +102,6 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
         mCoordinator.destroy();
 
         verify(mDesktopWindowStateManager).removeObserver(any());
-        verify(mThemeColorProvider).removeThemeColorObserver(any());
-        verify(mThemeColorProvider).removeTintObserver(any());
         verify((WebContentsObserver.Observable) mOpenerWebContents).removeObserver(any());
         verify((WebContentsObserver.Observable) mWebContents).removeObserver(any());
     }
