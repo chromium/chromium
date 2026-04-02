@@ -34,6 +34,9 @@ BASE_FEATURE(kApiOdfsConfigPrivate, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kApiGlicAccessFromGoogleWebpage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApiProxyOverrideRulesPrivate, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiRuntimeGetPlatformInfoNaClArch,

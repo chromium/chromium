@@ -24,6 +24,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiActionOpenPopup,
     &extensions_features::kApiContentSettingsClipboard,
     &extensions_features::kApiEnterpriseKioskInput,
+    &extensions_features::kApiGlicAccessFromGoogleWebpage,
     &extensions_features::kApiPermissionsHostAccessRequests,
     &extensions_features::kApiUserScriptsExecute,
     &extensions_features::kApiUserScriptsMultipleWorlds,
