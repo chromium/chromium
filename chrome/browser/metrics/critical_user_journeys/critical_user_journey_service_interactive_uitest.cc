@@ -48,12 +48,12 @@
 namespace metrics {
 
 namespace {
-constexpr char kAppMenuJourneyName[] = "AppMenuJourney";
-constexpr char kBranchingJourneyName[] = "BranchingJourney";
-constexpr char kAnyOfStartJourneyName[] = "AnyOfStartJourney";
+BASE_FEATURE(kAppMenuJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBranchingJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAnyOfStartJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 
-const std::string GetMetricJourneyPrefix(const std::string& journey) {
-  return base::StrCat({"CriticalUserJourney.", journey});
+const std::string GetMetricJourneyPrefix(const base::Feature& feature) {
+  return base::StrCat({"CriticalUserJourney.", feature.name});
 }
 
 }  // namespace
@@ -70,7 +70,7 @@ class TestCriticalUserJourneyService : public CriticalUserJourneyService {
     HatsParams params;
     params.trigger = "TestHatsTrigger";
     registry->AddJourney(
-        CriticalUserJourney::Builder(kAppMenuJourneyName)
+        CriticalUserJourney::Builder(&kAppMenuJourney)
             .AddStep(kToolbarAppMenuButtonElementId,
                      ui::InteractionSequence::StepType::kActivated, 1)
             .AddStep(kNewTabButtonElementId,
@@ -81,7 +81,7 @@ class TestCriticalUserJourneyService : public CriticalUserJourneyService {
     // Branching Journey: Click App Menu button (triggers start), then click
     // New Tab button (branch 1) or click the toolbar forward button.
     registry->AddJourney(
-        CriticalUserJourney::Builder(kBranchingJourneyName)
+        CriticalUserJourney::Builder(&kBranchingJourney)
             .AddStep(kToolbarAppMenuButtonElementId,
                      ui::InteractionSequence::StepType::kActivated, 1)
             .AddAnyOf({
@@ -95,7 +95,7 @@ class TestCriticalUserJourneyService : public CriticalUserJourneyService {
     // AnyOf Start Journey: Click New Tab button or Avatar button (triggers
     // start), then click the App Menu Button.
     registry->AddJourney(
-        CriticalUserJourney::Builder("AnyOfStartJourney")
+        CriticalUserJourney::Builder(&kAnyOfStartJourney)
             .AddAnyOf({
                 Branch(kNewTabButtonElementId,
                        ui::InteractionSequence::StepType::kActivated, 1),
@@ -146,10 +146,10 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
                        ClickAppMenuThenNewTabCompletesJourney) {
   base::HistogramTester histograms;
 
-  const std::string step_reached = base::StrCat(
-      {GetMetricJourneyPrefix(kAppMenuJourneyName), ".StepReached"});
+  const std::string step_reached =
+      base::StrCat({GetMetricJourneyPrefix(kAppMenuJourney), ".StepReached"});
   const std::string result =
-      base::StrCat({GetMetricJourneyPrefix(kAppMenuJourneyName), ".Result"});
+      base::StrCat({GetMetricJourneyPrefix(kAppMenuJourney), ".Result"});
 
   auto* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetForProfile(browser()->profile(), true));
@@ -182,10 +182,10 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
                        BranchingJourneyCompletion) {
   base::HistogramTester histograms;
 
-  const std::string step_reached = base::StrCat(
-      {GetMetricJourneyPrefix(kBranchingJourneyName), ".StepReached"});
+  const std::string step_reached =
+      base::StrCat({GetMetricJourneyPrefix(kBranchingJourney), ".StepReached"});
   const std::string result =
-      base::StrCat({GetMetricJourneyPrefix(kBranchingJourneyName), ".Result"});
+      base::StrCat({GetMetricJourneyPrefix(kBranchingJourney), ".Result"});
 
   RunTestSequence(
       // Step 1: Click App Menu (triggers start).
@@ -212,9 +212,9 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
   base::HistogramTester histograms;
 
   const std::string step_reached = base::StrCat(
-      {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".StepReached"});
+      {GetMetricJourneyPrefix(kAnyOfStartJourney), ".StepReached"});
   const std::string result =
-      base::StrCat({GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".Result"});
+      base::StrCat({GetMetricJourneyPrefix(kAnyOfStartJourney), ".Result"});
 
   RunTestSequence(
       // Step 1: Click New Tab Button (triggers start).
@@ -240,9 +240,9 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
   base::HistogramTester histograms;
 
   const std::string step_reached = base::StrCat(
-      {GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".StepReached"});
+      {GetMetricJourneyPrefix(kAnyOfStartJourney), ".StepReached"});
   const std::string result =
-      base::StrCat({GetMetricJourneyPrefix(kAnyOfStartJourneyName), ".Result"});
+      base::StrCat({GetMetricJourneyPrefix(kAnyOfStartJourney), ".Result"});
 
   RunTestSequence(
       // Step 1: Click the Avatar Button (triggers start).
@@ -270,7 +270,10 @@ class RealCriticalUserJourneyServiceInteractiveTest
 
  public:
   RealCriticalUserJourneyServiceInteractiveTest() {
-    feature_list_.InitAndEnableFeature(metrics::kCriticalUserJourneyService);
+    feature_list_.InitWithFeatures(
+        {kCriticalUserJourneyService, kViewDownloadedFileJourney,
+         kViewDownloadedFileFromAppMenuJourney},
+        {});
   }
   ~RealCriticalUserJourneyServiceInteractiveTest() override = default;
 
@@ -317,9 +320,9 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
   base::HistogramTester histograms;
 
   const std::string step_reached = base::StrCat(
-      {GetMetricJourneyPrefix("ViewDownloadedFileJourney"), ".StepReached"});
+      {GetMetricJourneyPrefix(kViewDownloadedFileJourney), ".StepReached"});
   const std::string result = base::StrCat(
-      {GetMetricJourneyPrefix("ViewDownloadedFileJourney"), ".Result"});
+      {GetMetricJourneyPrefix(kViewDownloadedFileJourney), ".Result"});
 
   RunTestSequence(
       // Trigger a real download and wait for it to complete.
@@ -366,10 +369,10 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
   base::HistogramTester histograms;
 
   const std::string step_reached = base::StrCat(
-      {GetMetricJourneyPrefix("ViewDownloadedFileFromAppMenuJourney"),
+      {GetMetricJourneyPrefix(kViewDownloadedFileFromAppMenuJourney),
        ".StepReached"});
   const std::string result = base::StrCat(
-      {GetMetricJourneyPrefix("ViewDownloadedFileFromAppMenuJourney"),
+      {GetMetricJourneyPrefix(kViewDownloadedFileFromAppMenuJourney),
        ".Result"});
 
   RunTestSequence(

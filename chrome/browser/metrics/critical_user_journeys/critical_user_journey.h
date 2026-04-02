@@ -12,8 +12,10 @@
 #include <variant>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_step.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -57,7 +59,8 @@ class CriticalUserJourney {
  public:
   class Builder {
    public:
-    explicit Builder(std::string name);
+    // Requires a base::Feature. The journey name will be `feature->name`.
+    explicit Builder(const base::Feature* feature);
     ~Builder();
 
     Builder& AddStep(
@@ -71,20 +74,25 @@ class CriticalUserJourney {
     std::unique_ptr<CriticalUserJourney> Build();
 
    private:
-    std::string name_;
+    const raw_ptr<const base::Feature> feature_;
     std::vector<std::unique_ptr<CriticalUserJourneyStep>> steps_;
     base::RepeatingClosure completion_callback_;
     std::optional<HatsParams> hats_params_;
   };
 
   CriticalUserJourney(
-      std::string name,
+      const base::Feature* feature,
       std::vector<std::unique_ptr<CriticalUserJourneyStep>> steps,
       base::RepeatingClosure completion_callback,
       std::optional<HatsParams> hats_params);
   ~CriticalUserJourney();
 
-  const std::string& name() const { return name_; }
+  // The name is automatically provided by the feature.
+  const char* name() const { return feature_->name; }
+
+  // Returns whether this specific journey's feature flag is enabled.
+  bool IsEnabled() const { return base::FeatureList::IsEnabled(*feature_); }
+
   const std::vector<std::unique_ptr<CriticalUserJourneyStep>>& steps() const {
     return steps_;
   }
@@ -94,7 +102,7 @@ class CriticalUserJourney {
   const std::optional<HatsParams>& hats_params() const { return hats_params_; }
 
  private:
-  std::string name_;
+  const raw_ptr<const base::Feature> feature_;
   std::vector<std::unique_ptr<CriticalUserJourneyStep>> steps_;
   base::RepeatingClosure completion_callback_;
   std::optional<HatsParams> hats_params_;

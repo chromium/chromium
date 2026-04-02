@@ -28,8 +28,8 @@ HatsParams::HatsParams(const HatsParams&) = default;
 HatsParams& HatsParams::operator=(const HatsParams&) = default;
 HatsParams::~HatsParams() = default;
 
-CriticalUserJourney::Builder::Builder(std::string name)
-    : name_(std::move(name)) {}
+CriticalUserJourney::Builder::Builder(const base::Feature* feature)
+    : feature_(feature) {}
 CriticalUserJourney::Builder::~Builder() = default;
 
 CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddStep(
@@ -61,7 +61,7 @@ CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddAnyOf(
   step->type = ui::InteractionSequence::StepType::kSubsequence;
   step->mode = ui::InteractionSequence::SubsequenceMode::kAtLeastOne;
   for (const auto& branch : branches) {
-    auto branch_journey = CriticalUserJourney::Builder("")
+    auto branch_journey = CriticalUserJourney::Builder(nullptr)
                               .AddStep(branch.id, branch.type, branch.metric_id)
                               .Build();
     step->branches.push_back(std::move(branch_journey));
@@ -84,17 +84,17 @@ CriticalUserJourney::Builder::LaunchHatsSurveyOnCompletion(HatsParams params) {
 }
 
 std::unique_ptr<CriticalUserJourney> CriticalUserJourney::Builder::Build() {
-  return std::make_unique<CriticalUserJourney>(
-      std::move(name_), std::move(steps_), std::move(completion_callback_),
-      std::move(hats_params_));
+  return std::make_unique<CriticalUserJourney>(feature_, std::move(steps_),
+                                               std::move(completion_callback_),
+                                               std::move(hats_params_));
 }
 
 CriticalUserJourney::CriticalUserJourney(
-    std::string name,
+    const base::Feature* feature,
     std::vector<std::unique_ptr<CriticalUserJourneyStep>> steps,
     base::RepeatingClosure completion_callback,
     std::optional<HatsParams> hats_params)
-    : name_(std::move(name)),
+    : feature_(feature),
       steps_(std::move(steps)),
       completion_callback_(std::move(completion_callback)),
       hats_params_(std::move(hats_params)) {}

@@ -26,19 +26,21 @@ The `CriticalUserJourneyRegistry` serves as the single source of truth for all j
 
 ### 3. CriticalUserJourney (The Definition)
 A `CriticalUserJourney` is a static "blueprint" for a specific user task. It is created using a `Builder` pattern and defines:
+*   **Feature Binding:** Every journey must be associated with a `base::Feature`. This provides a mandatory kill switch and ensures the journey name is consistently derived from the feature's string name.
 *   **Steps:** The sequence of UI interactions (elements, events, types) that constitute the journey.
-*   **Metadata:** The unique name used for UMA histograms and optional integration points like Happiness Tracking Surveys (HaTS).
+*   **Metadata:** Optional integration points like Happiness Tracking Surveys (HaTS).
 *   **Branching Logic:** Complex journeys can use `AddAnyOf` to handle multiple valid paths at a given step.
 
 ### 4. CriticalUserJourneySession (The Active Instance)
 While a `CriticalUserJourney` defines the *what*, a `CriticalUserJourneySession` represents the *now*. For every active user task, a session is created to:
+*   **Gated Execution:** The session only runs if the journey's associated feature flag is enabled.
 *   **Track Progress:** It encapsulates a `ui::InteractionSequence` built from the journey's blueprint.
 *   **Handle Timeouts:** It manages timers to ensure that stale or abandoned journeys do not leak resources or skew metrics.
 *   **Log Results:** Upon completion or failure, the session reports the outcome (Succeeded, Aborted, or Timed Out) back to the service for final metric recording.
 
 ## Automated Histogram Logging
 
-The CUJ framework automatically generates and logs several UMA histograms for each registered journey. These metrics are prefixed with `CriticalUserJourney.{JourneyName}.`, where `{JourneyName}` is the string identifier provided during journey registration.
+The CUJ framework automatically generates and logs several UMA histograms for each registered journey. These metrics are prefixed with `CriticalUserJourney.{JourneyName}.`, where `{JourneyName}` is the string name of the `base::Feature` associated with the journey.
 
 ### `{JourneyName}.StepReached`
 *   **Type:** Sparse Histogram
@@ -110,12 +112,25 @@ See [ui/base/interaction/element_identifier.h](/ui/base/interaction/element_iden
 
 Ensure these identifiers are assigned to the actual UI views using `views::View::SetProperty(views::kElementIdentifierKey, kYourFeatureMainButtonId)`.
 
-### 2. Create the Journey Definition
-Define your journey using the `CriticalUserJourney::Builder`. This is typically done in a static method or a dedicated factory class. The name passed to the constructor will be used as the `{JourneyName}` token for histograms.
+### 2. Define the Journey Feature Flag
+Every journey requires a dedicated `base::Feature` to serve as its identity and kill switch. Define this in `chrome/browser/metrics/critical_user_journeys/features.h`:
+
+```cpp
+BASE_DECLARE_FEATURE(kMyFeatureJourney);
+```
+
+And in `chrome/browser/metrics/critical_user_journeys/features.cc`:
+
+```cpp
+BASE_FEATURE(kMyFeatureJourney, "MyFeatureJourney", base::FEATURE_ENABLED_BY_DEFAULT);
+```
+
+### 3. Create the Journey Definition
+Define your journey using the `CriticalUserJourney::Builder`. You must pass a pointer to your journey's `base::Feature` to the constructor.
 
 ```cpp
 std::unique_ptr<metrics::CriticalUserJourney> CreateMyFeatureJourney() {
-  return metrics::CriticalUserJourney::Builder("MyFeatureJourney")
+  return metrics::CriticalUserJourney::Builder(&kMyFeatureJourney)
       .AddStep(kYourFeatureMainButtonId, ui::InteractionSequence::StepType::kActivated, 1)
       .AddStep(kYourFeatureDialogId, ui::InteractionSequence::StepType::kShown, 2)
       // Add more steps as needed...
@@ -123,8 +138,8 @@ std::unique_ptr<metrics::CriticalUserJourney> CreateMyFeatureJourney() {
 }
 ```
 
-### 3. Register the Journey
-Register your journey via `CriticalUserJourneyRegistry::AddJourneys`. Doing so allows all external dependencies to bubble into a single location.
+### 4. Register the Journey
+Register your journey via `CriticalUserJourneyRegistry::AddJourneys`. Doing so allows all external dependencies to bubble into a single location. The service will automatically skip registration if the journey's feature flag is disabled.
 
 ```cpp
 void CriticalUserJourneyRegistry::AddJourneys() {
@@ -133,10 +148,10 @@ void CriticalUserJourneyRegistry::AddJourneys() {
 }
 ```
 
-### 4. Trigger the Journey
+### 5. Trigger the Journey
 A journey starts when its first defined step is observed by the framework. Ensure that the initial `ui::ElementIdentifier` or event is correctly triggered by user interaction. The `CriticalUserJourneyService` automatically listens for these starting triggers once the journey is registered.
 
-### 5. Register Enums / Histograms in XML
+### 6. Register Enums / Histograms in XML
 You must define the steps in `tools/metrics/histograms/metadata/critical_user_journeys/enums.xml` in order to have proper labels when viewing the metrics.
 
 ```xml
@@ -183,11 +198,11 @@ See [documentation](https://www.chromium.org/chromium-os/developer-library/guide
 ## Examples
 
 ### Linear Journey
-A simple linear journey tracks a fixed sequence of user actions. This is the most common pattern and provides a straightforward "funnel" analysis of task completion.
+A simple linear journey tracks a fixed sequence of user actions.
 
 ```cpp
 std::unique_ptr<metrics::CriticalUserJourney> CreateSettingsChangeJourney() {
-  return metrics::CriticalUserJourney::Builder("SettingsChangeJourney")
+  return metrics::CriticalUserJourney::Builder(&kSettingsChangeJourneyFeature)
       // Step 1: User opens the main menu.
       .AddStep(kMainMenuButtonId, ui::InteractionSequence::StepType::kActivated, 1)
       // Step 2: User navigates to the Settings page.
@@ -201,11 +216,11 @@ std::unique_ptr<metrics::CriticalUserJourney> CreateSettingsChangeJourney() {
 ```
 
 ### Complex Journey with Branching
-The `AddAnyOf` method allows a journey to proceed if any one of several defined paths is taken. This is useful for tasks that can be completed in multiple ways or have optional steps that don't invalidate the overall journey.
+The `AddAnyOf` method allows a journey to proceed if any one of several defined paths is taken.
 
 ```cpp
 std::unique_ptr<metrics::CriticalUserJourney> CreateMultiOptionTaskJourney() {
-  return metrics::CriticalUserJourney::Builder("MultiOptionTaskJourney")
+  return metrics::CriticalUserJourney::Builder(&kMultiOptionTaskJourneyFeature)
       // Start by opening the selection interface.
       .AddStep(kOpenSelectorButtonId, ui::InteractionSequence::StepType::kActivated, 1)
       // The user can choose between two different options to proceed.
@@ -235,7 +250,7 @@ std::unique_ptr<metrics::CriticalUserJourney> CreateJourneyWithHats() {
   // Optional: Provide product-specific data to be sent with the survey response.
   hats_params.product_specific_string_data = {{"feature_version", "1.0"}};
 
-  return metrics::CriticalUserJourney::Builder("FeatureJourneyWithHats")
+  return metrics::CriticalUserJourney::Builder(&kFeatureJourneyWithHatsFeature)
       .AddStep(kFeatureStartButtonId, ui::InteractionSequence::StepType::kActivated, 1)
       .AddStep(kFeatureCompleteDialogId, ui::InteractionSequence::StepType::kShown, 2)
       .LaunchHatsSurveyOnCompletion(std::move(hats_params))

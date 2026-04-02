@@ -17,20 +17,21 @@
 
 namespace metrics {
 
+BASE_FEATURE(kTestJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
 
 TEST(CriticalUserJourneyTest, SimpleJourneyConstruction) {
-  const std::string kJourneyName = "Test Journey";
   const int kMetricId = 101;
 
   auto journey =
-      CriticalUserJourney::Builder(kJourneyName)
+      CriticalUserJourney::Builder(&kTestJourney)
           .AddStep(kTestElementId, ui::InteractionSequence::StepType::kShown,
                    kMetricId)
           .Build();
 
-  EXPECT_EQ(journey->name(), kJourneyName);
+  EXPECT_STREQ(journey->name(), kTestJourney.name);
   ASSERT_EQ(journey->steps().size(), 1u);
   EXPECT_EQ(journey->steps()[0]->id, kTestElementId);
   EXPECT_EQ(journey->steps()[0]->type,
@@ -40,7 +41,7 @@ TEST(CriticalUserJourneyTest, SimpleJourneyConstruction) {
 
 TEST(CriticalUserJourneyTest, BranchingLogic) {
   auto journey =
-      CriticalUserJourney::Builder("Parent Journey")
+      CriticalUserJourney::Builder(&kTestJourney)
           .AddAnyOf({
               Branch(kTestElementId, ui::InteractionSequence::StepType::kShown,
                      1),
@@ -63,7 +64,7 @@ TEST(CriticalUserJourneyTest, CompletionCallback) {
   bool called = false;
   auto callback = base::BindLambdaForTesting([&]() { called = true; });
 
-  auto journey = CriticalUserJourney::Builder("Test Journey")
+  auto journey = CriticalUserJourney::Builder(&kTestJourney)
                      .AddCustomCompletionCallback(callback)
                      .Build();
 

@@ -29,6 +29,12 @@ void CriticalUserJourneyService::Initialize() {
   RegisterJourneys(&registry_);
 
   for (const auto& journey : registry_.journeys()) {
+    // Kill Switch: Skip registering triggers if the journey's feature flag is
+    // disabled.
+    if (!journey->IsEnabled()) {
+      continue;
+    }
+
     if (journey->steps().empty()) {
       continue;
     }

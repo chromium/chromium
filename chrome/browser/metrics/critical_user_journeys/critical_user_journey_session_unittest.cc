@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,6 +24,7 @@
 namespace metrics {
 
 namespace {
+BASE_FEATURE(kTestJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId2);
 constexpr ui::ElementContext kTestContext =
@@ -40,7 +42,7 @@ class CriticalUserJourneySessionTest : public testing::Test {
 };
 
 TEST_F(CriticalUserJourneySessionTest, SimpleJourneyCompletion) {
-  auto journey = CriticalUserJourney::Builder("Test Journey")
+  auto journey = CriticalUserJourney::Builder(&kTestJourney)
                      .AddStep(kTestElementId1,
                               ui::InteractionSequence::StepType::kShown, 1)
                      .AddStep(kTestElementId2,
@@ -66,7 +68,7 @@ TEST_F(CriticalUserJourneySessionTest, SimpleJourneyCompletion) {
 }
 
 TEST_F(CriticalUserJourneySessionTest, JourneyAborted) {
-  auto journey = CriticalUserJourney::Builder("Test Journey")
+  auto journey = CriticalUserJourney::Builder(&kTestJourney)
                      .AddStep(kTestElementId1,
                               ui::InteractionSequence::StepType::kShown, 1)
                      .AddStep(kTestElementId2,
@@ -92,7 +94,7 @@ TEST_F(CriticalUserJourneySessionTest, JourneyAborted) {
 
 TEST_F(CriticalUserJourneySessionTest, CompletionCallbackTriggered) {
   bool journey_completed = false;
-  auto journey = CriticalUserJourney::Builder("Test Journey")
+  auto journey = CriticalUserJourney::Builder(&kTestJourney)
                      .AddStep(kTestElementId1,
                               ui::InteractionSequence::StepType::kShown, 1)
                      .AddCustomCompletionCallback(base::BindLambdaForTesting(
@@ -115,7 +117,7 @@ TEST_F(CriticalUserJourneySessionTest, CompletionCallbackTriggered) {
 
 TEST_F(CriticalUserJourneySessionTest, BranchingJourneyCompletion) {
   auto journey =
-      CriticalUserJourney::Builder("Branching Journey")
+      CriticalUserJourney::Builder(&kTestJourney)
           .AddStep(kTestElementId1, ui::InteractionSequence::StepType::kShown,
                    1)
           .AddAnyOf({
@@ -146,7 +148,7 @@ TEST_F(CriticalUserJourneySessionTest, BranchingJourneyCompletion) {
 
 TEST_F(CriticalUserJourneySessionTest, JourneyTimeout) {
   base::HistogramTester histogram_tester;
-  auto journey = CriticalUserJourney::Builder("Test Journey")
+  auto journey = CriticalUserJourney::Builder(&kTestJourney)
                      .AddStep(kTestElementId1,
                               ui::InteractionSequence::StepType::kShown, 1)
                      .AddStep(kTestElementId2,
@@ -168,7 +170,7 @@ TEST_F(CriticalUserJourneySessionTest, JourneyTimeout) {
 
   EXPECT_TRUE(done);
   histogram_tester.ExpectUniqueSample(
-      "CriticalUserJourney.Test Journey.Result",
+      "CriticalUserJourney.TestJourney.Result",
       CriticalUserJourneySession::JourneyResult::kTimeout, 1);
 }
 

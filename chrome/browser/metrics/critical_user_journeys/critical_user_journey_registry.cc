@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -17,7 +18,7 @@ CriticalUserJourneyRegistry::~CriticalUserJourneyRegistry() = default;
 
 void CriticalUserJourneyRegistry::AddJourneys() {
   AddJourney(
-      CriticalUserJourney::Builder("ViewDownloadedFileJourney")
+      CriticalUserJourney::Builder(&kViewDownloadedFileJourney)
           .AddStep(kDownloadEndedCustomEventId,
                    ui::InteractionSequence::StepType::kCustomEvent,
                    /*metric_id=*/1)
@@ -33,7 +34,7 @@ void CriticalUserJourneyRegistry::AddJourneys() {
           .Build());
 
   AddJourney(
-      CriticalUserJourney::Builder("ViewDownloadedFileFromAppMenuJourney")
+      CriticalUserJourney::Builder(&kViewDownloadedFileFromAppMenuJourney)
           .AddStep(kDownloadEndedCustomEventId,
                    ui::InteractionSequence::StepType::kCustomEvent,
                    /*metric_id=*/1)

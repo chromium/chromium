@@ -11,6 +11,10 @@ namespace metrics {
 
 BASE_DECLARE_FEATURE(kCriticalUserJourneyService);
 
+// Dedicated feature flags for each journey.
+BASE_DECLARE_FEATURE(kViewDownloadedFileJourney);
+BASE_DECLARE_FEATURE(kViewDownloadedFileFromAppMenuJourney);
+
 }  // namespace metrics
 
 #endif  // CHROME_BROWSER_METRICS_CRITICAL_USER_JOURNEYS_FEATURES_H_
