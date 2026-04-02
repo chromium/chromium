@@ -53,7 +53,7 @@ class SearchPrefetchURLLoaderInterceptor
   // Used to get the current WebContents/Profile.
   const content::FrameTreeNodeId frame_tree_node_id_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // These are sent to the Extensions Web Request API when maybe proxying the
   // prefetch URL loader.
   int64_t navigation_id_;
