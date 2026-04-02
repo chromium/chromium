@@ -1444,7 +1444,9 @@ bool FedCmAccountSelectionView::ShowPageAction(
   if (is_returning) {
     controller->SetAnchoredMessageText(kActionFederation,
                                        base::UTF8ToUTF16(accounts[0]->email));
-    controller->ShouldShowAnchoredMessageCloseIcon(kActionFederation, true);
+    controller->SetAnchoredMessageAction(
+        kActionFederation, page_actions::AnchoredMessageActionIconType::kClose,
+        /*model=*/nullptr);
     controller->OverrideText(
         kActionFederation,
         l10n_util::GetStringFUTF16(IDS_FEDERATION_SIGN_IN_TITLE, idp_name));

@@ -412,8 +412,9 @@ void TabStripActionContainer::OnTriggerAnchoredMessage(
   // The secondary label becomes the anchored message bubble text.
   controller->SetAnchoredMessageText(kActionGlicContextualCueing,
                                      base::UTF8ToUTF16(anchored_message_text));
-  controller->ShouldShowAnchoredMessageCloseIcon(kActionGlicContextualCueing,
-                                                 true);
+  controller->SetAnchoredMessageAction(
+      kActionGlicContextualCueing,
+      page_actions::AnchoredMessageActionIconType::kClose, /*model=*/nullptr);
   controller->ShowAnchoredMessage(kActionGlicContextualCueing);
 }
 

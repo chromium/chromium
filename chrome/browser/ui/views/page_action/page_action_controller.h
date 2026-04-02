@@ -205,8 +205,6 @@ class PageActionController {
   virtual void SetAnchoredMessageText(
       actions::ActionId action_id,
       const std::u16string& anchored_message_text) = 0;
-  virtual void ShouldShowAnchoredMessageCloseIcon(actions::ActionId action_id,
-                                                  bool show) = 0;
   // Sets the anchored message action icon type and menu model. If action icon
   // type is kNone or kClose, the menu model must be null, and if action icon
   // type is kMenu, the model must be non-null.
@@ -321,8 +319,6 @@ class PageActionControllerImpl : public PageActionController,
   void SetAnchoredMessageText(
       actions::ActionId action_id,
       const std::u16string& anchored_message_text) override;
-  void ShouldShowAnchoredMessageCloseIcon(actions::ActionId action_id,
-                                          bool show) override;
   void SetAnchoredMessageAction(
       actions::ActionId action_id,
       AnchoredMessageActionIconType action_icon_type,

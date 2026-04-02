@@ -347,13 +347,6 @@ void PageActionControllerImpl::ClearAnchoredMessageIcon(
                                                         std::nullopt);
 }
 
-void PageActionControllerImpl::ShouldShowAnchoredMessageCloseIcon(
-    actions::ActionId action_id,
-    bool show) {
-  FindPageActionModel(action_id).SetAnchoredMessageAction(
-      PassKey(), AnchoredMessageActionIconType::kClose, nullptr);
-}
-
 void PageActionControllerImpl::SetAnchoredMessageAction(
     actions::ActionId action_id,
     AnchoredMessageActionIconType action_icon_type,

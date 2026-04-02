@@ -63,10 +63,6 @@ class MockPageActionController : public PageActionController {
               (actions::ActionId, const std::u16string&),
               (override));
   MOCK_METHOD(void,
-              ShouldShowAnchoredMessageCloseIcon,
-              (actions::ActionId, bool),
-              (override));
-  MOCK_METHOD(void,
               SetAnchoredMessageAction,
               (actions::ActionId,
                AnchoredMessageActionIconType,
