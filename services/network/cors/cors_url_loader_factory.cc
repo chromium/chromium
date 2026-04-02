@@ -431,16 +431,18 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
   // isolation info. (All requests originating from a fenced frame have a
   // nonce specified.)
   if (isolation_info.has_value() && isolation_info->nonce().has_value() &&
-      !context_->IsNetworkForNonceAndUrlAllowed(*isolation_info->nonce(),
-                                                resource_request.url)) {
+      !context_->IsNetworkForNonceAndUrlAllowed(
+          *isolation_info->nonce(), resource_request.url,
+          isolation_info->network_anonymization_key())) {
     mojo::Remote<mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(
             URLLoaderCompletionStatus(net::ERR_NETWORK_ACCESS_REVOKED));
     return;
   }
   if (network_restrictions_id_.has_value() &&
-      !context_->IsNetworkForNonceAndUrlAllowed(*network_restrictions_id_,
-                                                resource_request.url)) {
+      !context_->IsNetworkForNonceAndUrlAllowed(
+          *network_restrictions_id_, resource_request.url,
+          isolation_info_ptr->network_anonymization_key())) {
     // TODO(crbug.com/447954811): Perhaps change to a new error code and
     // add console messages.
     mojo::Remote<mojom::URLLoaderClient>(std::move(client))

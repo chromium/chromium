@@ -127,7 +127,9 @@ void WebSocketFactory::CreateWebSocket(
     return;
   }
   if (isolation_info.nonce().has_value() &&
-      !context_->IsNetworkForNonceAndUrlAllowed(*isolation_info.nonce(), url)) {
+      !context_->IsNetworkForNonceAndUrlAllowed(
+          *isolation_info.nonce(), url,
+          isolation_info.network_anonymization_key())) {
     mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(
         std::move(handshake_client));
     handshake_client_remote->OnFailure("Network access revoked",
@@ -140,8 +142,8 @@ void WebSocketFactory::CreateWebSocket(
   // use HTTP schemes.
   if (network_restrictions_id.has_value() &&
       !context_->IsNetworkForNonceAndUrlAllowed(
-          *network_restrictions_id,
-          net::ChangeWebSocketSchemeToHttpScheme(url))) {
+          *network_restrictions_id, net::ChangeWebSocketSchemeToHttpScheme(url),
+          isolation_info.network_anonymization_key())) {
     mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(
         std::move(handshake_client));
     handshake_client_remote->OnFailure("Network access revoked",

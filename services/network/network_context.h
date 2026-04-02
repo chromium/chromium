@@ -741,15 +741,23 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // Checks whether network access for the partition nonce `nonce` and url
   // `url` is allowed. See `network_revocation_nonces_` and
-  // `network_revocation_exemptions_`.
-  bool IsNetworkForNonceAndUrlAllowed(const base::UnguessableToken& nonce,
-                                      const GURL& url,
-                                      bool is_redirect = false) const;
+  // `network_revocation_exemptions_`. If the check fails for either enforced or
+  // report-only Connection Allowlists that specify a reporting endpoint, this
+  // method will queue a violation report.
+  bool IsNetworkForNonceAndUrlAllowed(
+      const base::UnguessableToken& nonce,
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      bool is_redirect = false);
+
   // Checks whether host resolution is allowed for `host` given the network
-  // restrictions ID `nonce`.
+  // restrictions ID `nonce`. If the check fails for either enforced or
+  // report-only Connection Allowlists that specify a reporting endpoint, this
+  // method will queue a violation report.
   bool IsHostResolutionForNonceAndHostAllowed(
       const base::UnguessableToken& nonce,
-      const mojom::HostResolverHost& host) const;
+      const mojom::HostResolverHost& host,
+      const net::NetworkAnonymizationKey& network_anonymization_key);
 
  private:
   class NetworkContextHttpAuthPreferences : public net::HttpAuthPreferences {
@@ -861,6 +869,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::NetworkAnonymizationKey& network_anonymization_key,
       base::DictValue body,
       net::ReportingTargetType target_type);
+
+  void QueueConnectionAllowlistReport(const GURL& context,
+                                      const GURL& resource,
+                                      const net::NetworkAnonymizationKey& key,
+                                      const std::string& group,
+                                      bool enforced);
 
   const raw_ptr<NetworkService> network_service_;
 
@@ -1099,12 +1113,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     NetworkRestriction(NetworkRestriction&&);
     NetworkRestriction& operator=(NetworkRestriction&&);
     ~NetworkRestriction();
-    std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
+    std::optional<
+        std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>>
         enforced_allowlisted_patterns;
     std::optional<std::string> enforced_reporting_endpoint;
     ConnectionAllowlist::RedirectBehavior enforced_redirect_behavior =
         ConnectionAllowlist::RedirectBehavior::kBlock;
-    std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
+    std::optional<
+        std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>>
         report_only_allowlisted_patterns;
     std::optional<std::string> report_only_reporting_endpoint;
     ConnectionAllowlist::RedirectBehavior report_only_redirect_behavior =
