@@ -1075,16 +1075,16 @@ public class SettingsSearchCoordinator
     public void onConfigurationChanged(Configuration newConfig) {
         // mUseMultiColumnSupplier doesn't return the right, updated value immediately.
         // Observe the content view enclosing the PreferenceFragment for view tree update.
-        var contentViewObserver = mActivity.findViewById(R.id.content).getViewTreeObserver();
+        var contentView = mActivity.findViewById(R.id.content);
         var listener =
                 new OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        contentViewObserver.removeOnGlobalLayoutListener(this);
+                        contentView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         onConfigurationChangedInternal();
                     }
                 };
-        contentViewObserver.addOnGlobalLayoutListener(listener);
+        contentView.getViewTreeObserver().addOnGlobalLayoutListener(listener);
     }
 
     private void onConfigurationChangedInternal() {

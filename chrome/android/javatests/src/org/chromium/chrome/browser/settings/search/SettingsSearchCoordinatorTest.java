@@ -9,10 +9,13 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
+
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
@@ -20,10 +23,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -32,7 +34,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.base.DeviceFormFactor;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for the Search in Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -48,29 +51,74 @@ public class SettingsSearchCoordinatorTest {
         mSettingsActivityTestRule.getActivity().finish();
     }
 
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/498405883: Flaky on android-desktop.
-    public void testBasicSearch() {
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-        SettingsSearchCoordinator searchCoordinator = activity.getSearchCoordinatorForTesting();
-        assertNotNull(searchCoordinator);
+    private @Nullable SettingsActivity getSettingsActivity() {
+        for (Activity a :
+                ActivityLifecycleMonitorRegistry.getInstance()
+                        .getActivitiesInStage(Stage.RESUMED)) {
+            if (a instanceof SettingsActivity) {
+                SettingsActivity settingsActivity = (SettingsActivity) a;
+                if (!settingsActivity.isDestroyed() && !settingsActivity.isFinishing()) {
+                    return settingsActivity;
+                }
+            }
+        }
+        return null;
+    }
 
-        ThreadUtils.runOnUiThreadBlocking(
+    private @Nullable SettingsSearchCoordinator getSearchCoordinator() {
+        SettingsActivity settingsActivity = getSettingsActivity();
+        if (settingsActivity == null) return null;
+        return settingsActivity.getSearchCoordinatorForTesting();
+    }
+
+    private SettingsActivity waitForSettingsActivity() {
+        final AtomicReference<SettingsActivity> activityRef = new AtomicReference<>();
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    searchCoordinator.enterSearchState(/* isRestored= */ false);
-                    searchCoordinator.performSearch(
-                            "a", (results) -> assertFalse(results.getItems().isEmpty()));
+                    SettingsActivity activity = getSettingsActivity();
+                    if (activity == null) return false;
+                    activityRef.set(activity);
+                    return true;
                 });
+        return activityRef.get();
     }
 
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/498165874: Flaky on android-desktop.
+    public void testBasicSearch() throws Exception {
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SettingsSearchCoordinator searchCoordinator = getSearchCoordinator();
+                    if (searchCoordinator == null) return false;
+
+                    try {
+                        searchCoordinator.enterSearchState(/* isRestored= */ false);
+                        searchCoordinator.performSearch(
+                                "a",
+                                (results) -> {
+                                    assertFalse(results.getItems().isEmpty());
+                                    callbackHelper.notifyCalled();
+                                });
+                        return true;
+                    } catch (IllegalStateException e) {
+                        return false; // FragmentManager destroyed during enterSearchState
+                    }
+                });
+
+        callbackHelper.waitForCallback(0);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRecentSearchIsRestored() throws Throwable {
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity activity = waitForSettingsActivity();
         SettingsSearchCoordinator searchCoordinator = activity.getSearchCoordinatorForTesting();
         assertFalse(searchCoordinator.hasRecentSearchEntriesForTesting());
 
@@ -80,16 +128,25 @@ public class SettingsSearchCoordinatorTest {
         // Search for 'Privacy Guide'.
         int titleId = R.string.privacy_guide_pref_title;
         String query = activity.getString(titleId);
-        ThreadUtils.runOnUiThreadBlocking(
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    searchCoordinator.enterSearchState(/* isRestored= */ false);
-                    searchCoordinator.performSearch(
-                            query,
-                            (results) -> {
-                                searchCoordinator.displayResultsFragment(results);
-                                resultDisplayHelper.notifyCalled();
-                            });
+                    SettingsSearchCoordinator currentCoordinator = getSearchCoordinator();
+                    if (currentCoordinator == null) return false;
+
+                    try {
+                        currentCoordinator.enterSearchState(/* isRestored= */ false);
+                        currentCoordinator.performSearch(
+                                query,
+                                (results) -> {
+                                    currentCoordinator.displayResultsFragment(results);
+                                    resultDisplayHelper.notifyCalled();
+                                });
+                        return true;
+                    } catch (IllegalStateException e) {
+                        return false; // FragmentManager destroyed during enterSearchState
+                    }
                 });
+
         resultDisplayHelper.waitForCallback(callCount);
         onView(withText(titleId)).perform(click());
         assertTrue(searchCoordinator.hasRecentSearchEntriesForTesting());
@@ -98,7 +155,8 @@ public class SettingsSearchCoordinatorTest {
         ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
 
         // Verify that recent search is restored from disk after restarting the settings.
-        SettingsActivity activity2 = mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivity activity2 = waitForSettingsActivity();
         SettingsSearchCoordinator searchCoordinator2 = activity2.getSearchCoordinatorForTesting();
         assertTrue(searchCoordinator2.hasRecentSearchEntriesForTesting());
     }
