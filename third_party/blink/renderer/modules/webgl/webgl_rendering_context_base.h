@@ -782,9 +782,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool CopyRenderingResultsFromDrawingBufferAccelerated(
       CanvasNon2DResourceProviderSharedImage*,
       SourceDrawingBuffer);
-  bool CopyRenderingResultsFromDrawingBufferUnaccelerated(
-      CanvasNon2DResourceProviderSharedImage*,
-      SourceDrawingBuffer);
 
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }

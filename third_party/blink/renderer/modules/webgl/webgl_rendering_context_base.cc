@@ -1931,12 +1931,24 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     return nullptr;
   }
 
-  bool copy_succeeded =
-      resource_provider->IsAccelerated()
-          ? CopyRenderingResultsFromDrawingBufferAccelerated(resource_provider,
-                                                             source_buffer)
-          : CopyRenderingResultsFromDrawingBufferUnaccelerated(
-                resource_provider, source_buffer);
+  bool copy_succeeded = false;
+  if (resource_provider->IsAccelerated()) {
+    copy_succeeded = CopyRenderingResultsFromDrawingBufferAccelerated(
+        resource_provider, source_buffer);
+  } else {
+    // As the resource provider is not accelerated, we don't need an accelerated
+    // image.
+    scoped_refptr<StaticBitmapImage> image =
+        GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(
+            kBackBuffer, viz::SharedImageFormat::N32Format(),
+            kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin);
+    if (image && image->PaintImageForCurrentFrame()) {
+      DrawImageToCanvas(image.get(), resource_provider->GetCanvasDeprecated(),
+                        gfx::Rect(resource_provider->Size()));
+      copy_succeeded = true;
+    }
+  }
+
   if (!copy_succeeded) {
     return nullptr;
   }
@@ -2078,12 +2090,24 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
     return nullptr;
   }
 
-  bool copy_succeeded =
-      resource_provider->IsAccelerated()
-          ? CopyRenderingResultsFromDrawingBufferAccelerated(
-                resource_provider_.get(), source_buffer)
-          : CopyRenderingResultsFromDrawingBufferUnaccelerated(
-                resource_provider_.get(), source_buffer);
+  bool copy_succeeded = false;
+  if (resource_provider->IsAccelerated()) {
+    copy_succeeded = CopyRenderingResultsFromDrawingBufferAccelerated(
+        resource_provider, source_buffer);
+  } else {
+    // As the resource provider is not accelerated, we don't need an accelerated
+    // image.
+    scoped_refptr<StaticBitmapImage> image =
+        GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(
+            kBackBuffer, viz::SharedImageFormat::N32Format(),
+            kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin);
+    if (image && image->PaintImageForCurrentFrame()) {
+      DrawImageToCanvas(image.get(), resource_provider->GetCanvasDeprecated(),
+                        gfx::Rect(resource_provider->Size()));
+      copy_succeeded = true;
+    }
+  }
+
   if (!copy_succeeded) {
     return nullptr;
   }
@@ -2142,45 +2166,6 @@ bool WebGLRenderingContextBase::
     resource_provider->EndExternalWrite(external_sync_token.value());
   }
   return external_sync_token.has_value();
-}
-
-bool WebGLRenderingContextBase::
-    CopyRenderingResultsFromDrawingBufferUnaccelerated(
-        CanvasNon2DResourceProviderSharedImage* resource_provider,
-        SourceDrawingBuffer source_buffer) {
-  DCHECK(resource_provider);
-  DCHECK(!resource_provider->IsSingleBuffered());
-  CHECK(!resource_provider->IsAccelerated());
-
-  // Early-out if the context has been lost.
-  if (!GetDrawingBuffer()) {
-    return false;
-  }
-
-  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
-  ScopedFramebufferRestorer fbo_restorer(this);
-  // In rare situations on macOS the drawing buffer can be destroyed
-  // during the resolve process, specifically during automatic
-  // graphics switching. Guard against this.
-  // This is a no-op if already called higher up the stack from here.
-  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw()) {
-    return false;
-  }
-
-  // As the resource provider is not accelerated, we don't need an accelerated
-  // image.
-  scoped_refptr<StaticBitmapImage> image =
-      GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(
-          kBackBuffer, viz::SharedImageFormat::N32Format(), kPremul_SkAlphaType,
-          kBottomLeft_GrSurfaceOrigin);
-
-  if (!image || !image->PaintImageForCurrentFrame()) {
-    return false;
-  }
-
-  DrawImageToCanvas(image.get(), resource_provider->GetCanvasDeprecated(),
-                    gfx::Rect(resource_provider->Size()));
-  return true;
 }
 
 scoped_refptr<StaticBitmapImage>
