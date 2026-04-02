@@ -302,7 +302,7 @@ TEST_F(PushNotificationServerClientDesktopImplTest, FetchAccessTokenFailure) {
       future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+          GoogleServiceAuthError::FromServiceUnavailable(""));
   EXPECT_EQ(PushNotificationDesktopApiCallFlow::
                 PushNotificationApiCallFlowError::kAuthenticationError,
             future.Get());
