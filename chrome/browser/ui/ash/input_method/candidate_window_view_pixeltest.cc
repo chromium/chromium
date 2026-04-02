@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(CandidateWindowViewPixelBrowserTest, Render) {
                                ->GetWidget()
                                ->GetNativeView());
   CandidateWindow candidate_window;
-  views::Widget* widget = view.InitWidget();
+  std::unique_ptr<views::Widget> widget = view.InitWidget();
   const int candidate_window_size = 9;
   InitCandidateWindowWithCandidatesFilled(candidate_window_size,
                                           &candidate_window);
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(CandidateWindowViewPixelBrowserTest, Render) {
 
   widget->Show();
 
-  views::test::WidgetVisibleWaiter(widget).Wait();
+  views::test::WidgetVisibleWaiter(widget.get()).Wait();
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot("CandidateWindowView", &view));
 

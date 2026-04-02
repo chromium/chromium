@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/input_method/candidate_window_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -227,14 +228,16 @@ InfolistWindow::InfolistWindow(views::View* candidate_window,
 
 InfolistWindow::~InfolistWindow() = default;
 
-void InfolistWindow::InitWidget() {
-  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
+std::unique_ptr<views::Widget> InfolistWindow::InitWidget() {
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
+      this, views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   wm::SetWindowVisibilityAnimationType(
       widget->GetNativeView(), wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
 
   // BubbleFrameView will be initialized through CreateBubble.
   GetBubbleFrameView()->SetBubbleBorder(std::make_unique<InfolistBorder>());
   SizeToContents();
+  return base::WrapUnique(widget);
 }
 
 void InfolistWindow::Relayout(const std::vector<ui::InfolistEntry>& entries) {

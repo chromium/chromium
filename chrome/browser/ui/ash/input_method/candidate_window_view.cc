@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
@@ -239,8 +240,9 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
 
 CandidateWindowView::~CandidateWindowView() = default;
 
-views::Widget* CandidateWindowView::InitWidget() {
-  views::Widget* widget = BubbleDialogDelegateView::CreateBubble(this);
+std::unique_ptr<views::Widget> CandidateWindowView::InitWidget() {
+  views::Widget* widget = BubbleDialogDelegateView::CreateBubble(
+      this, views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   wm::SetWindowVisibilityAnimationTransition(widget->GetNativeView(),
                                              wm::ANIMATE_NONE);
@@ -248,7 +250,7 @@ views::Widget* CandidateWindowView::InitWidget() {
   GetBubbleFrameView()->SetBubbleBorder(
       std::make_unique<CandidateWindowBorder>());
   GetBubbleFrameView()->OnThemeChanged();
-  return widget;
+  return base::WrapUnique(widget);
 }
 
 void CandidateWindowView::OnThemeChanged() {

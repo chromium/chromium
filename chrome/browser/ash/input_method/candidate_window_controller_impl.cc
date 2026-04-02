@@ -26,9 +26,7 @@ CandidateWindowControllerImpl::~CandidateWindowControllerImpl() {
   IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
   if (candidate_window_view_) {
     candidate_window_view_->RemoveObserver(this);
-    candidate_window_view_->GetWidget()->RemoveObserver(this);
   }
-  CHECK(!IsInObserverList());
 }
 
 void CandidateWindowControllerImpl::InitCandidateWindowView() {
@@ -48,9 +46,18 @@ void CandidateWindowControllerImpl::InitCandidateWindowView() {
   candidate_window_view_->AddObserver(this);
   candidate_window_view_->SetCursorAndCompositionBounds(cursor_bounds_,
                                                         composition_bounds_);
-  views::Widget* widget = candidate_window_view_->InitWidget();
-  widget->AddObserver(this);
-  widget->Show();
+  candidate_window_widget_ = candidate_window_view_->InitWidget();
+  candidate_window_widget_->MakeCloseSynchronous(base::BindOnce(
+      [](CandidateWindowControllerImpl* controller,
+         views::Widget::ClosedReason reason) {
+        controller->candidate_window_view_ = nullptr;
+        controller->candidate_window_widget_.reset();
+        for (auto& observer : controller->observers_) {
+          observer.CandidateWindowClosed();
+        }
+      },
+      base::Unretained(this)));
+  candidate_window_widget_->Show();
   for (auto& observer : observers_) {
     observer.CandidateWindowOpened();
   }
@@ -155,8 +162,14 @@ void CandidateWindowControllerImpl::UpdateLookupTable(
   } else {
     infolist_window_ =
         new ui::ime::InfolistWindow(candidate_window_view_, infolist_entries);
-    infolist_window_->InitWidget();
-    infolist_window_->GetWidget()->AddObserver(this);
+    infolist_window_widget_ = infolist_window_->InitWidget();
+    infolist_window_widget_->MakeCloseSynchronous(base::BindOnce(
+        [](CandidateWindowControllerImpl* controller,
+           views::Widget::ClosedReason reason) {
+          controller->infolist_window_ = nullptr;
+          controller->infolist_window_widget_.reset();
+        },
+        base::Unretained(this)));
   }
   infolist_window_->ShowWithDelay();
 }
@@ -185,20 +198,6 @@ void CandidateWindowControllerImpl::OnCandidateCommitted(int index) {
   }
 }
 
-void CandidateWindowControllerImpl::OnWidgetClosing(views::Widget* widget) {
-  if (infolist_window_ && widget == infolist_window_->GetWidget()) {
-    widget->RemoveObserver(this);
-    infolist_window_ = nullptr;
-  } else if (candidate_window_view_ &&
-             widget == candidate_window_view_->GetWidget()) {
-    widget->RemoveObserver(this);
-    candidate_window_view_->RemoveObserver(this);
-    candidate_window_view_ = nullptr;
-    for (auto& observer : observers_) {
-      observer.CandidateWindowClosed();
-    }
-  }
-}
 
 void CandidateWindowControllerImpl::AddObserver(
     CandidateWindowController::Observer* observer) {

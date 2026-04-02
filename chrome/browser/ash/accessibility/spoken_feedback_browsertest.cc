@@ -2873,14 +2873,16 @@ class SpokenFeedbackWithCandidateWindowTest
                                  ash::kShellWindowId_MenuContainer);
 
     candidate_window_view_ = new ui::ime::CandidateWindowView(parent);
-    candidate_window_view_->InitWidget();
+    widget_ = candidate_window_view_->InitWidget();
   }
   void TearDownOnMainThread() override {
-    candidate_window_view_.ExtractAsDangling()->GetWidget()->CloseNow();
+    candidate_window_view_ = nullptr;
+    widget_.reset();
     LoggedInSpokenFeedbackTest::TearDownOnMainThread();
   }
 
   raw_ptr<ui::ime::CandidateWindowView> candidate_window_view_;
+  std::unique_ptr<views::Widget> widget_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

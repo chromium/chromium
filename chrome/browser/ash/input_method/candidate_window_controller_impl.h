@@ -35,7 +35,6 @@ namespace input_method {
 class CandidateWindowControllerImpl
     : public CandidateWindowController,
       public ui::ime::CandidateWindowView::Observer,
-      public views::WidgetObserver,
       public IMECandidateWindowHandlerInterface {
  public:
   CandidateWindowControllerImpl();
@@ -61,8 +60,6 @@ class CandidateWindowControllerImpl
   // ui::ime::CandidateWindowView::Observer implementation.
   void OnCandidateCommitted(int index) override;
 
-  // views::WidgetObserver implementation.
-  void OnWidgetClosing(views::Widget* widget) override;
 
   // IMECandidateWindowHandlerInterface implementation.
   void SetCursorAndCompositionBounds(
@@ -78,9 +75,11 @@ class CandidateWindowControllerImpl
 
   void InitCandidateWindowView();
 
+  std::unique_ptr<views::Widget> candidate_window_widget_;
   // The candidate window view.
   raw_ptr<ui::ime::CandidateWindowView> candidate_window_view_ = nullptr;
 
+  std::unique_ptr<views::Widget> infolist_window_widget_;
   // This is the outer frame of the infolist window view. Owned by the widget.
   raw_ptr<ui::ime::InfolistWindow> infolist_window_ = nullptr;
 

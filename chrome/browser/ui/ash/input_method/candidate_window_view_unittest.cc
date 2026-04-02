@@ -73,11 +73,11 @@ class CandidateWindowViewTest : public views::ViewsTestBase {
   void SetUp() override {
     views::ViewsTestBase::SetUp();
     candidate_window_view_ = new CandidateWindowView(GetContext());
-    candidate_window_view_->InitWidget();
+    widget_ = candidate_window_view_->InitWidget();
   }
 
   void TearDown() override {
-    candidate_window_view_->GetWidget()->CloseNow();
+    widget_.reset();
     views::ViewsTestBase::TearDown();
   }
 
@@ -117,7 +117,8 @@ class CandidateWindowViewTest : public views::ViewsTestBase {
 
  private:
   raw_ptr<CandidateWindowView, DanglingUntriaged>
-      candidate_window_view_;  // Owned by its Widget.
+      candidate_window_view_;  // Owned by widget_.
+  std::unique_ptr<views::Widget> widget_;
 };
 
 TEST_F(CandidateWindowViewTest, UpdateCandidatesTest_CursorVisibility) {

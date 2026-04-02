@@ -33,7 +33,7 @@ class UI_CHROMEOS_EXPORT InfolistWindow
   InfolistWindow(const InfolistWindow&) = delete;
   InfolistWindow& operator=(const InfolistWindow&) = delete;
   ~InfolistWindow() override;
-  void InitWidget();
+  std::unique_ptr<views::Widget> InitWidget();
 
   // Updates infolist contents with |entries|.
   void Relayout(const std::vector<ui::InfolistEntry>& entries);

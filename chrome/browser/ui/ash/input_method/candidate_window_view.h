@@ -38,7 +38,7 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   CandidateWindowView(const CandidateWindowView&) = delete;
   CandidateWindowView& operator=(const CandidateWindowView&) = delete;
   ~CandidateWindowView() override;
-  views::Widget* InitWidget();
+  std::unique_ptr<views::Widget> InitWidget();
 
   // views::BubbleDialogDelegateView:
   void OnThemeChanged() override;
