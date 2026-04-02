@@ -51,7 +51,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
-import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +132,6 @@ public class ExtensionsMenuCoordinatorTest {
                         mCurrentTabSupplier,
                         mTabCreator,
                         mExtensionsToolbarBridge,
-                        new PropertyModel(ExtensionsMenuProperties.ALL_KEYS),
                         mMenuButtonPinningDelegate);
 
         // Clear invocations from initialization to ensure tests start fresh.

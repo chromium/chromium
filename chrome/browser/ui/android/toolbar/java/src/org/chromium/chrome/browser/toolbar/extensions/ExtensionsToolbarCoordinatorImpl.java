@@ -56,7 +56,7 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
     private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
     private ExtensionAccessControlButtonCoordinator mExtensionAccessControlButtonCoordinator;
-    private PropertyModel mModel;
+    private PropertyModel mToolbarModel;
     private PropertyModelChangeProcessor mMenuButtonChangeProcessor;
 
     private final MenuButtonWidthConsumer mMenuButtonWidthConsumer = new MenuButtonWidthConsumer();
@@ -109,15 +109,10 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
                         rootView,
                         contextMenuPopulatorFactory,
                         selectionDropdownMenuDelegate);
-        mModel =
-                new PropertyModel.Builder(
-                                PropertyModel.concatKeys(
-                                        ExtensionsMenuProperties.ALL_KEYS,
-                                        ExtensionsToolbarProperties.ALL_KEYS))
-                        .build();
+        mToolbarModel = new PropertyModel.Builder(ExtensionsToolbarProperties.ALL_KEYS).build();
         mMenuButtonChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel,
+                        mToolbarModel,
                         mContainer.findViewById(R.id.extensions_menu_button),
                         ExtensionsMenuButtonViewBinder::bind);
 
@@ -131,12 +126,11 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
                         currentTabSupplier,
                         tabCreator,
                         mExtensionsToolbarBridge,
-                        mModel,
                         mMenuButtonPinningDelegate);
 
         mExtensionAccessControlButtonCoordinator =
                 new ExtensionAccessControlButtonCoordinator(
-                        mModel,
+                        mToolbarModel,
                         currentTabSupplier,
                         mExtensionsToolbarBridge,
                         (TextView) mContainer.findViewById(R.id.extensions_request_access_button),
@@ -176,7 +170,7 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
 
     @Override
     public void updateMenuButtonBackground(int backgroundResource) {
-        mModel.set(
+        mToolbarModel.set(
                 ExtensionsToolbarProperties.EXTENSIONS_MENU_BUTTON_DEFAULT_BACKGROUND,
                 backgroundResource);
     }
@@ -204,7 +198,7 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
 
     private void updateMenuButtonPinState() {
         if (mExtensionsMenuCoordinator.isExtensionsMenuOpen()) {
-            mModel.set(ExtensionsMenuProperties.MENU_BUTTON_PINNED, isMenuButtonPinned());
+            mExtensionsMenuCoordinator.setMenuButtonPinned(isMenuButtonPinned());
         }
 
         // Trigger layout and wait for the toolbar to provide us with width allocation.
@@ -293,7 +287,7 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
     private class RequestAccessButtonWidthConsumer implements ToolbarWidthConsumer {
         @Override
         public boolean isVisible() {
-            return mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE);
+            return mToolbarModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE);
         }
 
         private void setHasSpaceToShow(boolean hasSpaceToShow) {

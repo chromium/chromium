@@ -81,7 +81,6 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
      * @param currentTabSupplier Supplies the current {@link Tab}.
      * @param tabCreator {@link TabCreator} to handle a new tab creation.
      * @param extensionsToolbarBridge {@link ExtensionsToolbarBridge} to use.
-     * @param model The {@link PropertyModel} for the toolbar.
      * @param MenuButtonPinningDelegate The {@link MenuButtonPinningDelegate} to handle pinning the
      *     icon.
      */
@@ -94,7 +93,6 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ExtensionsToolbarBridge extensionsToolbarBridge,
-            PropertyModel model,
             MenuButtonPinningDelegate menuButtonPinningDelegate) {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;
@@ -162,7 +160,7 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         mExtensionsToolbarBridge.addObserver(this);
 
         // Create the main page property model and bind it to its view.
-        mMainPageModel = model;
+        mMainPageModel = new PropertyModel.Builder(ExtensionsMenuProperties.ALL_KEYS).build();
         setupMainPageModel();
         mMainPageChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -244,8 +242,13 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         ImageViewCompat.setImageTintList(mExtensionsMenuButton, activityFocusTintList);
     }
 
-    public void updateButtonBackground(int backgroundResource) {
-        mExtensionsMenuButton.setBackgroundResource(backgroundResource);
+    /**
+     * Updates the pinning state of the menu button in the main page model.
+     *
+     * @param pinned Whether the menu button is pinned.
+     */
+    public void setMenuButtonPinned(boolean pinned) {
+        mMainPageModel.set(ExtensionsMenuProperties.MENU_BUTTON_PINNED, pinned);
     }
 
     /** Returns whether the extensions menu is open. */
