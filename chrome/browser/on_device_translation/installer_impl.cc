@@ -18,6 +18,8 @@
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/crx_file/id_util.h"
+#include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/language_pack.h"
@@ -26,7 +28,10 @@
 #include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/on_device_translation/public/supported_languages.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -121,6 +126,37 @@ GetLanguagePackInfoFromCommandLine() {
   return packages;
 }
 
+class ProgressTracker : public on_device_model::mojom::DownloadObserver {
+ public:
+  ProgressTracker(
+      LanguagePackKey lang_pack,
+      base::RepeatingCallback<void(LanguagePackKey, int)> callback,
+      std::unique_ptr<optimization_guide::OnDeviceModelDownloadProgressManager>
+          manager)
+      : lang_pack_(lang_pack),
+        callback_(callback),
+        manager_(std::move(manager)) {
+    manager_->AddObserver(receiver_.BindNewPipeAndPassRemote());
+  }
+  ~ProgressTracker() override = default;
+
+  void OnDownloadProgressUpdate(uint64_t downloaded_bytes,
+                                uint64_t total_bytes) override {
+    int percentage = 0;
+    if (total_bytes > 0) {
+      percentage = static_cast<int>((downloaded_bytes * 100) / total_bytes);
+    }
+    callback_.Run(lang_pack_, percentage);
+  }
+
+ private:
+  const LanguagePackKey lang_pack_;
+  const base::RepeatingCallback<void(LanguagePackKey, int)> callback_;
+  std::unique_ptr<optimization_guide::OnDeviceModelDownloadProgressManager>
+      manager_;
+  mojo::Receiver<on_device_model::mojom::DownloadObserver> receiver_{this};
+};
+
 }  // namespace
 
 class OnDeviceTranslationInstallerImpl::Notifier {
@@ -148,7 +184,42 @@ class OnDeviceTranslationInstallerImpl::Notifier {
     for (Observer& observer : observers_) {
       observer.OnLanguagePackInstalled(language_pack);
     }
+    StopProgressTracking(language_pack);
   }
+
+  void OnLanguagePackProgress(LanguagePackKey language_pack, int progress) {
+    for (Observer& observer : observers_) {
+      observer.OnLanguagePackProgress(language_pack, progress);
+    }
+  }
+
+  void StartProgressTracking(LanguagePackKey language_pack,
+                             const base::flat_set<std::string>& component_ids) {
+    auto manager = std::make_unique<
+        optimization_guide::OnDeviceModelDownloadProgressManager>(
+        g_browser_process->component_updater(), component_ids,
+        /*enable_unloadable_progress*/ false);
+
+    auto tracker = std::make_unique<ProgressTracker>(
+        language_pack,
+        base::BindRepeating(
+            &OnDeviceTranslationInstallerImpl::Notifier::OnLanguagePackProgress,
+            GetWeakPtr()),
+        std::move(manager));
+
+    installations_.emplace(language_pack, std::move(tracker));
+  }
+
+  void StopProgressTracking(LanguagePackKey language_pack) {
+    auto it = installations_.find(language_pack);
+    if (it != installations_.end()) {
+      it->second.reset();
+      installations_.erase(it);
+    }
+  }
+
+  base::flat_map<LanguagePackKey, std::unique_ptr<ProgressTracker>>
+      installations_;
 
   base::WeakPtr<OnDeviceTranslationInstallerImpl::Notifier> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -272,7 +343,8 @@ void OnDeviceTranslationInstallerImpl::Init(
 
   component_updater::RegisterTranslateKitComponent(
       g_browser_process->component_updater(), g_browser_process->local_state(),
-      /*force_install=*/true,
+      /*force_install=*/
+      true,
       /*registered_callback=*/
       base::BindOnce(&component_updater::TranslateKitComponentInstallerPolicy::
                          UpdateComponentOnDemand,
@@ -292,6 +364,13 @@ void OnDeviceTranslationInstallerImpl::InstallLanguagePack(
     notifier_->OnLanguagePackInstalled(language_pack);
     return;
   }
+
+  // Calculate component IDs to track progress
+  base::flat_set<std::string> component_ids = {
+      crx_file::id_util::GenerateIdFromHash(
+          on_device_translation::GetLanguagePackComponentConfig(language_pack)
+              .public_key_sha)};
+  notifier_->StartProgressTracking(language_pack, component_ids);
 
   // Registers the TranslateKit language pack component.
   component_updater::RegisterTranslateKitLanguagePackComponent(

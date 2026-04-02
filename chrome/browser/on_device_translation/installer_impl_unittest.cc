@@ -26,16 +26,20 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,8 +85,8 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
       const OnDeviceTranslationInstallerTest&) = delete;
 
   void SetUp() override {
-    auto mock_cus =
-        std::make_unique<component_updater::MockComponentUpdateService>();
+    auto mock_cus = std::make_unique<
+        testing::NiceMock<component_updater::MockComponentUpdateService>>();
     // We capture the installer, so its lifetime is extended from the
     // `RegisterTranslateKitComponent` function.
     EXPECT_CALL(*mock_cus, RegisterComponent)
@@ -206,9 +210,13 @@ class MockObserver : public OnDeviceTranslationInstaller::Observer {
               (override));
   MOCK_METHOD(void,
               OnLanguagePackInstallationChanged,
-              (const LanguagePackKey lang_pack),
+              (const LanguagePackKey),
               (override));
   MOCK_METHOD(void, OnInstallationChanged, (), (override));
+  MOCK_METHOD(void,
+              OnLanguagePackProgress,
+              (const LanguagePackKey, int),
+              (override));
 };
 
 class FakeObserver : public OnDeviceTranslationInstaller::Observer {
@@ -413,7 +421,7 @@ TEST_F(OnDeviceTranslationInstallerTest, LanguagePackInstallationChanged) {
         LanguagePackKey::kEn_Ja);
   }
 
-  MockObserver mock_observer;
+  testing::NiceMock<MockObserver> mock_observer;
   OnDeviceTranslationInstaller::GetInstance()->AddObserver(&mock_observer);
   {
     base::RunLoop install_run_loop;
@@ -451,14 +459,13 @@ TEST_F(OnDeviceTranslationInstallerTest, MultipleInstallations) {
   OnDeviceTranslationInstaller::GetInstance()->Init(run_loop.QuitClosure());
   run_loop.Run();
 
+  FakeObserver observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
   OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
       LanguagePackKey::kEn_Ja);
   OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
       LanguagePackKey::kAr_En);
-  FakeObserver observer;
-  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
   observer.WaitForNotification(2);
-
   EXPECT_THAT(
       OnDeviceTranslationInstaller::GetInstance()->RegisteredLanguagePacks(),
       testing::UnorderedElementsAre(LanguagePackKey::kEn_Ja,
@@ -495,6 +502,77 @@ TEST_F(OnDeviceTranslationInstallerTest, RegisterAndUnInstallLanguagePack) {
   EXPECT_THAT(
       OnDeviceTranslationInstaller::GetInstance()->InstalledLanguagePacks(),
       testing::IsEmpty());
+}
+
+TEST_F(OnDeviceTranslationInstallerTest, ProgressReporting) {
+  CreateFakeInstallation(install_dir_.GetPath());
+  base::RunLoop on_demand_run_loop;
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .Times(2)  // Init and InstallLanguagePack
+      .WillOnce([&](const std::string& id,
+                    component_updater::OnDemandUpdater::Priority priority,
+                    component_updater::Callback callback) {
+        std::move(callback).Run(update_client::Error::NONE);
+      })
+      .WillOnce([&](const std::string& id,
+                    component_updater::OnDemandUpdater::Priority priority,
+                    component_updater::Callback callback) {
+        std::move(callback).Run(update_client::Error::NONE);
+        on_demand_run_loop.Quit();
+      });
+  component_updater::ComponentUpdateService::Observer* captured_observer =
+      nullptr;
+  auto* mock_cus = static_cast<
+      testing::NiceMock<component_updater::MockComponentUpdateService>*>(
+      TestingBrowserProcess::GetGlobal()->component_updater());
+  EXPECT_CALL(*mock_cus, RemoveObserver(testing::_))
+      .Times(testing::AnyNumber());
+
+  EXPECT_CALL(*mock_cus, AddObserver)
+      .WillRepeatedly(
+          [&](component_updater::ComponentUpdateService::Observer* observer) {
+            captured_observer = observer;
+          });
+
+  base::RunLoop init_loop;
+  OnDeviceTranslationInstaller::GetInstance()->Init(init_loop.QuitClosure());
+  init_loop.Run();
+
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+      LanguagePackKey::kEn_Ja);
+
+  on_demand_run_loop.Run();
+  ASSERT_TRUE(captured_observer);
+
+  component_updater::CrxUpdateItem item;
+  const auto* config =
+      kLanguagePackComponentConfigMap.at(LanguagePackKey::kEn_Ja);
+  item.id = crx_file::id_util::GenerateIdFromHash(config->public_key_sha);
+  item.state = update_client::ComponentState::kDownloading;
+  item.downloaded_bytes = 50;
+  item.total_bytes = 100;
+
+  base::RunLoop run_loop_0;
+  EXPECT_CALL(observer, OnLanguagePackProgress(LanguagePackKey::kEn_Ja, 0))
+      .WillOnce([&]() { run_loop_0.Quit(); });
+
+  captured_observer->OnEvent(item);
+
+  run_loop_0.Run();
+
+  item.downloaded_bytes = 100;
+
+  base::RunLoop run_loop_100;
+  EXPECT_CALL(observer, OnLanguagePackProgress(LanguagePackKey::kEn_Ja, 100))
+      .WillOnce([&]() { run_loop_100.Quit(); });
+
+  captured_observer->OnEvent(item);
+
+  run_loop_100.Run();
+
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
 }
 
 }  // namespace

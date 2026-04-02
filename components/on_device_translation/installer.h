@@ -41,6 +41,10 @@ class OnDeviceTranslationInstaller {
     virtual void OnLanguagePackInstallationChanged(
         const LanguagePackKey lang_pack) = 0;
     virtual void OnInstallationChanged() = 0;
+    // Called when the installation progress of a language pack changes.
+    // `progress` is an integer percentage from 0 to 100.
+    virtual void OnLanguagePackProgress(const LanguagePackKey lang_pack,
+                                        int progress) {}
   };
 
   // Returns the singleton instance that implements
