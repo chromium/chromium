@@ -462,8 +462,10 @@ class AudioWorkletThreadPriorityTest
     base::ThreadType actual_priority =
         base::PlatformThread::GetCurrentEffectiveThreadTypeForTest();
 
-    // TODO(crbug.com/1022888): The worklet thread priority is always NORMAL
-    // on OS_LINUX and OS_CHROMEOS regardless of the thread priority setting.
+    // TODO(crbug.com/40106808): On Linux/ChromeOS, sandboxed renderers cannot
+    // acquire SCHED_RR, so the thread remains in SCHED_NORMAL. However,
+    // ChromeOS applies specific optimizations (Nice -10 and uclamp boost)
+    // that are not present on standard Linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     if (expected_priority == base::ThreadType::kRealtimeAudio ||
         expected_priority == base::ThreadType::kPresentation) {

@@ -42,8 +42,10 @@ SemiRealtimeAudioWorkletThread::SemiRealtimeAudioWorkletThread(
   // Use a higher priority thread only when it is allowed by Finch.
   if (base::FeatureList::IsEnabled(
           features::kAudioWorkletThreadRealtimePriority)) {
-    // TODO(crbug.com/1022888): The worklet thread priority is always NORMAL on
-    // Linux and Chrome OS regardless of this thread priority setting.
+    // TODO(crbug.com/40106808): On Linux/ChromeOS, sandboxed renderers cannot
+    // acquire SCHED_RR, so the thread remains in SCHED_NORMAL. However,
+    // ChromeOS applies specific optimizations (Nice -10 and uclamp boost)
+    // that are not present on standard Linux.
     params.base_thread_type = base::ThreadType::kPresentation;
   } else {
     params.base_thread_type = base::ThreadType::kDefault;
