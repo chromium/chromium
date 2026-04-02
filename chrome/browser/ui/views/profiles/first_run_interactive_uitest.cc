@@ -108,12 +108,6 @@ enum class SyncButtonsFeatureConfig : int {
   kButtonsStillLoading = 4,
 };
 
-const DeepQuery& GetSearchEngineChoiceActionButtonQuery() {
-  static const base::NoDestructor<DeepQuery> kSearchEngineChoiceActionButton(
-      {"search-engine-choice-app", "#actionButton"});
-  return *kSearchEngineChoiceActionButton;
-}
-
 GURL GetHistorySyncOptinURL() {
   return GURL("chrome://history-sync-optin?launch_context=0");
 }
@@ -394,6 +388,29 @@ class FirstRunInteractiveUiBaseTest
           {"history-sync-optin-app", "#rejectButton"});
       return *kQuery;
     }
+  }
+
+  const DeepQuery& GetSearchEngineChoiceActionButtonQuery() {
+    if (UseRefreshedView()) {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"search-engine-choice-app-refresh", "#actionButton"});
+      return *kQuery;
+    }
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"search-engine-choice-app", "#actionButton"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetSearchEngineChoiceCrRadioButtonQuery() {
+    if (UseRefreshedView()) {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"search-engine-choice-app-refresh", "cr-radio-button"});
+      return *kQuery;
+    }
+
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"search-engine-choice-app", "cr-radio-button"});
+    return *kQuery;
   }
 
   // FirstRunServiceBrowserTestBase:
@@ -887,10 +904,6 @@ class FirstRunParameterizedInteractiveUiTest
   }
 
   auto CompleteSearchEngineChoiceStep() {
-    const DeepQuery first_search_engine = {"search-engine-choice-app",
-                                           "cr-radio-button"};
-    const DeepQuery searchEngineChoiceList{"search-engine-choice-app",
-                                           "#choiceList"};
     return Steps(
         WaitForWebContentsNavigation(
             kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
@@ -909,7 +922,8 @@ class FirstRunParameterizedInteractiveUiTest
         // The button should become disabled because we didn't make a choice.
         WaitForButtonDisabled(kWebContentsId,
                               GetSearchEngineChoiceActionButtonQuery()),
-        PressJsButton(kWebContentsId, first_search_engine),
+        PressJsButton(kWebContentsId,
+                      GetSearchEngineChoiceCrRadioButtonQuery()),
         WaitForButtonEnabled(kWebContentsId,
                              GetSearchEngineChoiceActionButtonQuery()),
         PressJsButton(kWebContentsId,
@@ -1383,9 +1397,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
 
   histogram_tester().ExpectUniqueSample(
       "Signin.SignIn.Completed", signin_metrics::AccessPoint::kForYouFre, 1);
-
-  const DeepQuery first_search_engine = {"search-engine-choice-app",
-                                         "cr-radio-button"};
 
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GURL history_page_url = GetHistorySyncOptinURL();

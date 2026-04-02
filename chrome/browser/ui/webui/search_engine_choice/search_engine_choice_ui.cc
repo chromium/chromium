@@ -135,9 +135,20 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
       "showGuestCheckbox",
       search_engine_choice_service->IsDsePropagationAllowedForGuest());
 
+  const bool is_first_run_desktop_refresh_enabled =
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+      switches::IsFirstRunDesktopRefreshEnabled(
+          CHECK_DEREF(regional_capabilities_service)
+              .IsInSearchEngineChoiceScreenRegion());
+#else
+      false;
+#endif
+
   webui::SetupWebUIDataSource(
       source, kSearchEngineChoiceResources,
-      IDR_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_HTML);
+      is_first_run_desktop_refresh_enabled
+          ? IDR_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_REFRESH_HTML
+          : IDR_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SearchEngineChoiceUI)

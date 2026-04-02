@@ -11,16 +11,26 @@ build_webui("build") {
     "images/arrow_downward.svg",
     "images/info_dialog_illustration.svg",
     "images/info_dialog_illustration_dark.svg",
+    "images/refresh_bg_bottom_dark.svg",
+    "images/refresh_bg_bottom_light.svg",
+    "images/refresh_bg_right_dark.svg",
+    "images/refresh_bg_right_light.svg",
     "search_engine_choice.html",
+    "search_engine_choice_refresh.html",
   ]
 
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "app_refresh.html.ts",
+    "app_refresh.ts",
     "browser_proxy.ts",
   ]
 
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "app_refresh.css",
+  ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom-webui.ts" ]
