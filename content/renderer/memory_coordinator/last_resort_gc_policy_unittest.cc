@@ -6,6 +6,7 @@
 
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -112,6 +113,36 @@ TEST_F(LastResortGCPolicyTest, Enabled_Timer) {
     EXPECT_EQ(consumer.memory_limit(), 100);
   });
   FastForwardBy(base::Seconds(1));
+}
+
+TEST_F(LastResortGCPolicyTest, Persistence) {
+  static constexpr int kTestRestoreLimitSeconds = 120;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kMemoryCoordinatorLastResortGC,
+      {{"restore_limit_seconds",
+        base::NumberToString(kTestRestoreLimitSeconds)}});
+
+  ChildMemoryCoordinator coordinator;
+  LastResortGCPolicy policy{coordinator};
+
+  policy.OnV8HeapLastResortGC();
+
+  // Create the consumer AFTER the last resort GC event.
+  base::MockMemoryConsumer consumer;
+
+  // It should immediately receive the limit that was set (0% limit) upon
+  // registration.
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
+    EXPECT_EQ(consumer.memory_limit(), 0);
+  });
+
+  base::MemoryConsumerRegistration registration(
+      "Consumer",
+      base::MemoryConsumerTraits{
+          .release_gc_references =
+              base::MemoryConsumerTraits::ReleaseGCReferences::kYes},
+      &consumer);
 }
 
 }  // namespace content

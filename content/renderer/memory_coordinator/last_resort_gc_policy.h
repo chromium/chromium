@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/common/memory_coordinator/memory_coordinator_policy_state.h"
 
 namespace content {
 
@@ -41,6 +42,7 @@ class CONTENT_EXPORT LastResortGCPolicy : public MemoryCoordinatorPolicy {
   raw_ref<ChildMemoryCoordinator> coordinator_;
 
   base::OneShotTimer restore_limit_timer_;
+  MemoryCoordinatorPolicyState state_;
 };
 
 }  // namespace content

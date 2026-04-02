@@ -10,6 +10,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/common/memory_coordinator/memory_coordinator_policy_state.h"
 
 namespace content {
 
@@ -31,6 +32,7 @@ class CONTENT_EXPORT MemoryPressureListenerPolicy
 
  private:
   base::MemoryPressureListenerRegistration registration_;
+  MemoryCoordinatorPolicyState state_;
 };
 }  // namespace content
 

@@ -45,6 +45,7 @@ class MemoryPressureListenerPolicyTest : public testing::Test {
   base::MemoryPressureListenerRegistry registry_;
   MemoryCoordinatorPolicyManager policy_manager_;
 };
+
 TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
@@ -116,6 +117,39 @@ TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
   policy_manager().RemovePolicy(&policy);
   policy_manager().OnConsumerGroupRemoved(kRemoteId, kRemoteChildId);
   policy_manager().RemoveMemoryConsumerGroupHost(kRemoteChildId);
+}
+
+TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId;  // Current process
+
+  policy_manager().AddMemoryConsumerGroupHost(kChildId, &host);
+
+  MemoryPressureListenerPolicy policy(policy_manager());
+  policy_manager().AddPolicy(&policy);
+
+  // Moderate pressure: 50% limit and release memory.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // A consumer added AFTER the pressure event should immediately receive the
+  // limit that was set.
+  const std::string kConsumerName = "consumer1";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
+                        MemoryConsumerUpdate{kConsumerId, 50, true})));
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName, {},
+                                        PROCESS_TYPE_BROWSER, kChildId);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Removing the policy should reset the limit to default (100%).
+  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
+                        MemoryConsumerUpdate{kConsumerId, 100, false})));
+  policy_manager().RemovePolicy(&policy);
+
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 }  // namespace content

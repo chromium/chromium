@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -37,7 +38,18 @@ LastResortGCPolicy* LastResortGCPolicy::Get() {
 
 LastResortGCPolicy::LastResortGCPolicy(ChildMemoryCoordinator& coordinator)
     : MemoryCoordinatorPolicy(coordinator.policy_manager()),
-      coordinator_(coordinator) {
+      coordinator_(coordinator),
+      state_(*this,
+             coordinator.policy_manager(),
+             base::BindRepeating([](uint32_t consumer_id,
+                                    std::optional<base::MemoryConsumerTraits>
+                                        traits,
+                                    ProcessType process_type,
+                                    ChildProcessId child_process_id) {
+               return traits.has_value() &&
+                      traits->release_gc_references ==
+                          base::MemoryConsumerTraits::ReleaseGCReferences::kYes;
+             })) {
   CHECK(!g_instance);
   g_instance = this;
   coordinator_->policy_manager().AddPolicy(this);
@@ -52,15 +64,7 @@ LastResortGCPolicy::~LastResortGCPolicy() {
 void LastResortGCPolicy::OnV8HeapLastResortGC() {
   // The V8 heap is full and can't free enough memory. To help the impending GC,
   // notify consumers that retain references to the v8 heap.
-  manager().UpdateConsumers(
-      this,
-      [](uint32_t consumer_id, std::optional<base::MemoryConsumerTraits> traits,
-         ProcessType process_type, ChildProcessId child_process_id) {
-        return traits.has_value() &&
-               traits->release_gc_references ==
-                   base::MemoryConsumerTraits::ReleaseGCReferences::kYes;
-      },
-      0, /*release_memory=*/true);
+  state_.SetLimit(0, /*release_memory=*/true);
 
   // Immediately restore the limit if there is no delay.
   if (kRestoreLimitSeconds.Get() == 0) {
@@ -74,15 +78,8 @@ void LastResortGCPolicy::OnV8HeapLastResortGC() {
 }
 
 void LastResortGCPolicy::OnRestoreLimitTimerFired() {
-  manager().UpdateConsumers(
-      this,
-      [](uint32_t consumer_id, std::optional<base::MemoryConsumerTraits> traits,
-         ProcessType process_type, ChildProcessId child_process_id) {
-        return traits.has_value() &&
-               traits->release_gc_references ==
-                   base::MemoryConsumerTraits::ReleaseGCReferences::kYes;
-      },
-      base::MemoryConsumer::kDefaultMemoryLimit, /*release_memory=*/false);
+  state_.SetLimit(base::MemoryConsumer::kDefaultMemoryLimit,
+                  /*release_memory=*/false);
 }
 
 }  // namespace content

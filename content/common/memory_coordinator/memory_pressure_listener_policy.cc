@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/public/common/child_process_id.h"
@@ -17,7 +18,16 @@ MemoryPressureListenerPolicy::MemoryPressureListenerPolicy(
     : MemoryCoordinatorPolicy(manager),
       registration_(
           base::MemoryPressureListenerTag::kMemoryPressureListenerPolicy,
-          this) {}
+          this),
+      state_(*this,
+             manager,
+             base::BindRepeating(
+                 [](uint32_t consumer_id,
+                    std::optional<base::MemoryConsumerTraits> traits,
+                    ProcessType process_type,
+                    ChildProcessId child_process_id) {
+                   return child_process_id.is_null();
+                 })) {}
 
 MemoryPressureListenerPolicy::~MemoryPressureListenerPolicy() = default;
 
@@ -30,13 +40,7 @@ void MemoryPressureListenerPolicy::OnMemoryPressure(
   // capping memory usage and actively freeing it.
   bool release_memory = true;
 
-  manager().UpdateConsumers(
-      this,
-      [](uint32_t consumer_id, std::optional<base::MemoryConsumerTraits> traits,
-         ProcessType process_type, ChildProcessId child_process_id) {
-        return child_process_id.is_null();
-      },
-      limit, release_memory);
+  state_.SetLimit(limit, release_memory);
 }
 
 }  // namespace content

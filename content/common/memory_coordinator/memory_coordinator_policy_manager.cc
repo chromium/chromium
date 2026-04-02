@@ -33,13 +33,21 @@ MemoryCoordinatorPolicyManager::GroupState::SetMemoryLimitForPolicy(
     int percentage) {
   CHECK_GE(percentage, 0);
 
-  // A 100% limit has no effect on the aggregate limit. We clear the policy's
-  // request to keep the map small.
+  // Get the previous requested limit for this policy.
+  auto it = requested_limits_.find(policy);
+  const int old_policy_limit = (it != requested_limits_.end())
+                                   ? it->second
+                                   : base::MemoryConsumer::kDefaultMemoryLimit;
+
+  // Early exit if it didn't change.
+  if (percentage == old_policy_limit) {
+    return std::nullopt;
+  }
+
+  // Update the map, keeping it small by removing default entries.
   if (percentage == base::MemoryConsumer::kDefaultMemoryLimit) {
-    // If the policy wasn't already registered, clearing it is a no-op.
-    if (requested_limits_.erase(policy) == 0) {
-      return std::nullopt;
-    }
+    DCHECK(it != requested_limits_.end());
+    requested_limits_.erase(it);
   } else {
     requested_limits_[policy] = percentage;
   }
