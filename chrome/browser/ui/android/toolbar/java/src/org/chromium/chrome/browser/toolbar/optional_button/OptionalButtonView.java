@@ -85,6 +85,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private @MonotonicNonNull ViewGroup mTransitionRoot;
     private @Nullable String mContentDescription;
     private @Nullable String mActionChipLabelString;
+    private @StringRes int mActionChipLabelResId = Resources.ID_NULL;
     private boolean mCurrentButtonSupportsTinting;
     private boolean mIsIncognitoBranded;
     private @Nullable ColorStateList mForegroundColorTint;
@@ -232,7 +233,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         if (buttonData != null
                 && mCurrentButtonVariant == buttonData.getButtonSpec().getButtonVariant()
                 && mCanCurrentButtonShow == canShow
-                && mIconDrawable == buttonData.getButtonSpec().getDrawable()) {
+                && mIconDrawable == buttonData.getButtonSpec().getDrawable()
+                && mActionChipLabelResId == buttonData.getButtonSpec().getActionChipLabelResId()) {
             return;
         }
 
@@ -265,14 +267,25 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         if (buttonData == null || !canShow) {
             mCurrentButtonVariant = AdaptiveToolbarButtonVariant.NONE;
             mCanCurrentButtonShow = false;
+            mActionChipLabelResId = Resources.ID_NULL;
             hide(isAnimationAllowedByParent);
             return;
         }
 
         ButtonSpec buttonSpec = buttonData.getButtonSpec();
         boolean isButtonVariantChanging = mCurrentButtonVariant != buttonSpec.getButtonVariant();
+        String newLabelString =
+                buttonSpec.getActionChipLabelResId() == Resources.ID_NULL
+                        ? null
+                        : getContext().getString(buttonSpec.getActionChipLabelResId());
+        boolean isActionChipLabelChanging =
+                (mActionChipLabelString == null
+                        ? newLabelString != null
+                        : !mActionChipLabelString.equals(newLabelString));
         // This boolean is final because it's passed to an inner class (OnGlobalLayoutListener).
-        final boolean canAnimate = isAnimationAllowedByParent && isButtonVariantChanging;
+        final boolean canAnimate =
+                isAnimationAllowedByParent
+                        && (isButtonVariantChanging || isActionChipLabelChanging);
 
         mCurrentButtonVariant = buttonSpec.getButtonVariant();
         mCanCurrentButtonShow = true;
@@ -295,6 +308,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         mNextButtonType = buttonSpec.isDynamicAction() ? ButtonType.DYNAMIC : ButtonType.STATIC;
         @StringRes int chipLabelResId = buttonSpec.getActionChipLabelResId();
+        mActionChipLabelResId = chipLabelResId;
         if (buttonSpec.getActionChipLabelResId() == Resources.ID_NULL) {
             mActionChipLabelString = null;
         } else {

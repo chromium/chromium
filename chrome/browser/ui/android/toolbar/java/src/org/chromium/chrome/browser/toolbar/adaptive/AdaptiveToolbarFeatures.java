@@ -102,6 +102,8 @@ public class AdaptiveToolbarFeatures {
      *     <li>If false, we'll show the button's IPH bubble specified on its ButtonData.
      */
     public static boolean shouldShowActionChip(@AdaptiveToolbarButtonVariant int buttonVariant) {
+        // TODO(crbug.com/485624827): Decouple action chip from dynamic action type.
+        if (buttonVariant == AdaptiveToolbarButtonVariant.GLIC) return true;
         if (!isDynamicAction(buttonVariant)) return false;
         if (sActionChipOverridesForTesting != null
                 && sActionChipOverridesForTesting.containsKey(buttonVariant)) {
@@ -110,6 +112,7 @@ public class AdaptiveToolbarFeatures {
 
         // Price tracking, price insights and reader mode launched with the action chip variant.
         switch (buttonVariant) {
+            case AdaptiveToolbarButtonVariant.GLIC:
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.READER_MODE:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
@@ -117,8 +120,6 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.TAB_GROUPING:
             case AdaptiveToolbarButtonVariant.TEST_BUTTON:
                 return true;
-            case AdaptiveToolbarButtonVariant.GLIC:
-                return false;
             default:
                 assert false : "Unknown button variant " + buttonVariant;
                 return false;

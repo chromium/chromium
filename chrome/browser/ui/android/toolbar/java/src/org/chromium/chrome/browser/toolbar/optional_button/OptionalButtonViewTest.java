@@ -581,6 +581,58 @@ public class OptionalButtonViewTest {
     }
 
     @Test
+    public void testSetIconDrawableWithAnimation_updateActionChipLabel() {
+        ButtonData actionChipButtonData1 = getDataForReaderModeActionChip();
+
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData1);
+
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        assertEquals(View.VISIBLE, mOptionalButtonView.getVisibility());
+        assertEquals(View.VISIBLE, mActionChipLabel.getVisibility());
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getString(actionChipButtonData1.getButtonSpec().getActionChipLabelResId()),
+                mActionChipLabel.getText());
+
+        Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon);
+        OnClickListener clickListener = mock(OnClickListener.class);
+        OnLongClickListener longClickListener = mock(OnLongClickListener.class);
+        String contentDescription = mActivity.getString(R.string.actionbar_share);
+        int actionChipLabelResId = R.string.adaptive_toolbar_button_preference_voice_search;
+
+        ButtonSpec buttonSpec =
+                new ButtonSpec(
+                        iconDrawable,
+                        clickListener,
+                        longClickListener,
+                        contentDescription,
+                        true,
+                        null,
+                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
+                        /* actionChipLabelResId= */ actionChipLabelResId,
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* hasErrorBadge= */ false);
+        ButtonDataImpl actionChipButtonData2 = new ButtonDataImpl();
+        actionChipButtonData2.setButtonSpec(buttonSpec);
+        actionChipButtonData2.setCanShow(true);
+        actionChipButtonData2.setEnabled(true);
+
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData2);
+
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        assertEquals(View.VISIBLE, mOptionalButtonView.getVisibility());
+        assertEquals(View.VISIBLE, mActionChipLabel.getVisibility());
+        assertEquals(
+                mActivity.getResources().getString(actionChipLabelResId),
+                mActionChipLabel.getText());
+    }
+
+    @Test
     public void testUpdateButtonWithAnimation_actionChipWithAlternativeColor() {
         ButtonData actionChipButtonData = getDataForReaderModeActionChip();
 

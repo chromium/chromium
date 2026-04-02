@@ -446,6 +446,46 @@ public class OptionalButtonCoordinatorTest {
     }
 
     @Test
+    public void testUpdateButton_actionChipResourceIdGetsKeptForGlic() {
+        AdaptiveToolbarFeatures.setIsDynamicActionForTesting(
+                AdaptiveToolbarButtonVariant.GLIC, true);
+        FeatureOverrides.overrideParam(
+                AdaptiveToolbarFeatures.CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME,
+                "action_chip",
+                true);
+
+        doReturn(true).when(mMockTracker).isInitialized();
+        doReturn(false)
+                .when(mMockTracker)
+                .shouldTriggerHelpUi(FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
+
+        Drawable iconDrawable = mock(Drawable.class);
+        OnClickListener clickListener = view -> {};
+        IphCommandBuilder mockIphCommandBuilder = mock(IphCommandBuilder.class);
+        String contentDescription = "description";
+        int actionChipResourceId = 987654;
+        boolean isEnabled = true;
+        ButtonData buttonData =
+                new ButtonDataImpl(
+                        /* canShow= */ true,
+                        iconDrawable,
+                        clickListener,
+                        contentDescription,
+                        actionChipResourceId,
+                        /* supportsTinting= */ true,
+                        mockIphCommandBuilder,
+                        /* isEnabled= */ isEnabled,
+                        AdaptiveToolbarButtonVariant.GLIC,
+                        /* tooltipTextResId= */ Resources.ID_NULL);
+
+        mOptionalButtonCoordinator.updateButton(buttonData, /* isIncognito= */ false);
+
+        verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
+        Assert.assertEquals(
+                actionChipResourceId, buttonData.getButtonSpec().getActionChipLabelResId());
+    }
+
+    @Test
     public void testUpdateButton_disableButtonWithoutChanges() {
         View mockButtonView = mock(View.class);
         when(mMockOptionalButtonView.getButtonView()).thenReturn(mockButtonView);

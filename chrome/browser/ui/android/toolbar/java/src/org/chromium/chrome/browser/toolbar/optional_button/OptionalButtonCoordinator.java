@@ -20,6 +20,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonProperties.OnBeforeWidthTransitionCallback;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -215,8 +216,14 @@ public class OptionalButtonCoordinator {
                                     buttonData.getButtonSpec().getButtonVariant());
             // And if feature engagement allows it.
             Tracker featureEngagementTracker = mFeatureEngagementTrackerSupplier.get();
+
+            // TODO(crbug.com/485624827): Add a property to ButtonSpec to always show action chip.
+            boolean isGlic =
+                    buttonData.getButtonSpec().getButtonVariant()
+                            == AdaptiveToolbarButtonVariant.GLIC;
             boolean shouldShowActionChip =
                     mAlwaysShowActionChip
+                            || isGlic
                             || (isActionChipVariant
                                     && featureEngagementTracker != null
                                     && featureEngagementTracker.isInitialized()
