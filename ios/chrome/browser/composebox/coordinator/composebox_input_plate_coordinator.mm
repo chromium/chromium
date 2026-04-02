@@ -571,6 +571,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     return;
   }
 
+  [_metricsRecorder recordImagesAttached:results.count];
+
   for (PHPickerResult* result in results) {
     [_mediator processImageItemProvider:result.itemProvider
                                 assetID:result.assetIdentifier];
@@ -584,6 +586,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   if (urls.count == 0) {
     return;
   }
+
+  [_metricsRecorder recordFilesAttached:urls.count];
 
   NSURL* selectedURL = urls.firstObject;
   if (!lens::features::IsLensSendRawFileMediaTypesEnabled()) {

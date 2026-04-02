@@ -1549,6 +1549,19 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
   [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
                             [self currentAutocompleteRequestType]];
+  [self.metricsRecorder
+      recordAttachCountAtSubmission:_items.tabsCount
+                            forType:ComposeboxInputItemType::
+                                        kComposeboxInputItemTypeTab];
+  [self.metricsRecorder
+      recordAttachCountAtSubmission:_items.imagesCount
+                            forType:ComposeboxInputItemType::
+                                        kComposeboxInputItemTypeImage];
+  // Raw file is used as the metric type is the same for raw files and PDFs.
+  [self.metricsRecorder
+      recordAttachCountAtSubmission:_items.filesCount
+                            forType:ComposeboxInputItemType::
+                                        kComposeboxInputItemTypeRawFile];
   contextual_search::ContextualSearchMetricsRecorder* recorder =
       _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
                                : nullptr;

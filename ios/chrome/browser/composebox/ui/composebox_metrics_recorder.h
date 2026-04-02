@@ -9,6 +9,8 @@
 
 #import <vector>
 
+#import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
+
 // LINT.IfChange(AiModeActivationSource)
 enum class AiModeActivationSource {
   kToolMenu = 0,
@@ -102,6 +104,16 @@ enum class ComposeboxDragAndDropType {
                                   withAttachments:(BOOL)hasAttachments
                                       requestType:
                                           (AutocompleteRequestType)requestType;
+
+// Records the number of attachments of a given type at submission.
+- (void)recordAttachCountAtSubmission:(NSUInteger)count
+                              forType:(ComposeboxInputItemType)type;
+
+// Records the number of images attached.
+- (void)recordImagesAttached:(NSUInteger)count;
+
+// Records the number of files attached.
+- (void)recordFilesAttached:(NSUInteger)count;
 
 - (void)recordVoiceSearchButtonUsed;
 - (void)recordLensSearchButtonUsed;
