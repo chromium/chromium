@@ -83,8 +83,7 @@ class ExtensionApiNewTabTest : public ExtensionApiTabTest {
 };
 
 // TODO(crbug.com/451682394): Disabled on Linux dbg due to flakiness.
-// TODO(crbug.com/471405507): Disabled on Android.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_Tabs DISABLED_Tabs
 #else
 #define MAYBE_Tabs Tabs
