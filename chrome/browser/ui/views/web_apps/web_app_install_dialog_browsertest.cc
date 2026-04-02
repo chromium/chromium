@@ -68,7 +68,7 @@ class TestWebAppScreenshotFetcher : public WebAppScreenshotFetcher {
 };
 
 using WebAppInstallDialogTestParams =
-    std::tuple<std::string, InstallDialogType>;
+    std::tuple<InstallOsType, InstallDialogType>;
 
 class WebAppInstallDialogBrowserTest
     : public DialogBrowserTest,
@@ -85,7 +85,7 @@ class WebAppInstallDialogBrowserTest
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    std::string os_type = GetOsType();
+    InstallOsType os_type = GetOsType();
     InstallDialogType dialog_type = GetDialogType();
 
     auto install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
@@ -113,7 +113,7 @@ class WebAppInstallDialogBrowserTest
         dialog_type == InstallDialogType::kDetailed
             ? screenshot_fetcher_.GetWeakPtr()
             : base::WeakPtr<WebAppScreenshotFetcher>(),
-        /*show_initiating_origin=*/false, dialog_type);
+        /*show_initiating_origin=*/false, dialog_type, os_type);
 
     views::Widget* widget = waiter.WaitIfNeededAndGet();
     ASSERT_NE(nullptr, widget);
@@ -166,7 +166,7 @@ class WebAppInstallDialogBrowserTest
   TestWebAppScreenshotFetcher screenshot_fetcher_;
 
  private:
-  std::string GetOsType() { return std::get<0>(GetParam()); }
+  InstallOsType GetOsType() { return std::get<0>(GetParam()); }
   InstallDialogType GetDialogType() { return std::get<1>(GetParam()); }
 
   base::test::ScopedFeatureList feature_list_;
@@ -193,14 +193,17 @@ IN_PROC_BROWSER_TEST_P(WebAppInstallDialogBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     /* prefix */,
     WebAppInstallDialogBrowserTest,
-    testing::Combine(
-        testing::Values("OsWindows", "OsMac", "OsChromeOs", "OsOther"),
-        testing::Values(InstallDialogType::kSimple,
-                        InstallDialogType::kDetailed,
-                        InstallDialogType::kDiy)),
+    testing::Combine(testing::Values(InstallOsType::kWin,
+                                     InstallOsType::kMac,
+                                     InstallOsType::kCros,
+                                     InstallOsType::kOther),
+                     testing::Values(InstallDialogType::kSimple,
+                                     InstallDialogType::kDetailed,
+                                     InstallDialogType::kDiy)),
     [](const testing::TestParamInfo<WebAppInstallDialogTestParams>& info) {
+      std::string os_type = base::ToString(std::get<0>(info.param));
       std::string dialog_type = base::ToString(std::get<1>(info.param));
-      return std::get<0>(info.param) + "_" + dialog_type;
+      return os_type + "_" + dialog_type;
     });
 
 using WebAppInstallDialogClosedTest = WebAppInstallDialogBrowserTest;
@@ -223,13 +226,14 @@ IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, InstallThenLaunch) {
 INSTANTIATE_TEST_SUITE_P(
     /** prefix */,
     WebAppInstallDialogClosedTest,
-    testing::Combine(testing::Values("OsOther"),
+    testing::Combine(testing::Values(InstallOsType::kOther),
                      testing::Values(InstallDialogType::kSimple,
                                      InstallDialogType::kDetailed,
                                      InstallDialogType::kDiy)),
     [](const testing::TestParamInfo<WebAppInstallDialogTestParams>& info) {
+      std::string os_type = base::ToString(std::get<0>(info.param));
       std::string dialog_type = base::ToString(std::get<1>(info.param));
-      return std::get<0>(info.param) + "_" + dialog_type;
+      return os_type + "_" + dialog_type;
     });
 
 }  // namespace web_app

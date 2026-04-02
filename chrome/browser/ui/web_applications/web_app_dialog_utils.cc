@@ -73,6 +73,16 @@ void OnWebAppInstallShowInstallDialog(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
   DCHECK(web_app_info);
+  InstallOsType os_type = InstallOsType::kOther;
+#if BUILDFLAG(IS_CHROMEOS)
+  os_type = InstallOsType::kCros;
+#endif
+#if BUILDFLAG(IS_MAC)
+  os_type = InstallOsType::kMac;
+#endif
+#if BUILDFLAG(IS_WIN)
+  os_type = InstallOsType::kWin;
+#endif
 
   switch (flow) {
     case WebAppInstallFlow::kInstallSite:
@@ -97,7 +107,7 @@ void OnWebAppInstallShowInstallDialog(
             initiator_web_contents, std::move(web_app_info),
             std::move(install_tracker), std::move(web_app_acceptance_callback),
             iph_state, std::move(screenshot_fetcher), show_initiating_origin,
-            install_type);
+            install_type, os_type);
         return;
       }
 

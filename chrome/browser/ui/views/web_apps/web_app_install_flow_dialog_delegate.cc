@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
@@ -51,6 +52,20 @@ namespace web_app {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
                                       kInstallDialogFlowViewId);
+
+std::ostream& operator<<(std::ostream& os, InstallOsType type) {
+  switch (type) {
+    case InstallOsType::kWin:
+      return os << "kWin";
+    case InstallOsType::kMac:
+      return os << "kMac";
+    case InstallOsType::kCros:
+      return os << "kCros";
+    case InstallOsType::kOther:
+      return os << "kOther";
+  }
+  return os << "Unknown";
+}
 
 WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
     content::WebContents* web_contents,
@@ -114,7 +129,8 @@ void WebAppInstallFlowDialogDelegate::Show(
     PwaInProductHelpState iph_state,
     base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
     bool show_initiating_origin,
-    InstallDialogType install_type) {
+    InstallDialogType install_type,
+    InstallOsType os_type) {
   auto* browser_context = web_contents->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
   PrefService* prefs = profile->GetPrefs();
@@ -132,7 +148,7 @@ void WebAppInstallFlowDialogDelegate::Show(
   GURL start_url = install_info->start_url();
 
   auto flow_view = std::make_unique<WebAppInstallFlowView>(
-      icon_image, title, start_url, dialog_image_info.is_maskable);
+      icon_image, title, start_url, dialog_image_info.is_maskable, os_type);
   auto flow_view_weak_ptr = flow_view->GetWeakPtr();
 
   auto install_info_description = install_info->description.value();

@@ -22,7 +22,8 @@ class WebAppInstallFlowView : public views::View {
   WebAppInstallFlowView(const gfx::ImageSkia& icon_image,
                         const std::u16string& app_name,
                         const GURL& start_url,
-                        bool is_maskable);
+                        bool is_maskable,
+                        InstallOsType os_type);
   ~WebAppInstallFlowView() override;
 
   base::WeakPtr<WebAppInstallFlowView> GetWeakPtr();
@@ -32,7 +33,10 @@ class WebAppInstallFlowView : public views::View {
   void UpdateStepVisibility(InstallDialogStep current_step);
 
  private:
+  views::View* CreateInstallOptionsView();
+
   std::map<InstallDialogStep, raw_ptr<views::View>> install_step_to_view_;
+  InstallOsType os_type_;
 
   base::WeakPtrFactory<WebAppInstallFlowView> weak_ptr_factory_{this};
 };

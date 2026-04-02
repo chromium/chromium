@@ -16,7 +16,9 @@ namespace web_app {
 WebAppInstallFlowView::WebAppInstallFlowView(const gfx::ImageSkia& icon_image,
                                              const std::u16string& app_name,
                                              const GURL& start_url,
-                                             bool is_maskable) {
+                                             bool is_maskable,
+                                             InstallOsType os_type) {
+  os_type_ = os_type;
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
@@ -27,9 +29,8 @@ WebAppInstallFlowView::WebAppInstallFlowView(const gfx::ImageSkia& icon_image,
       install_dialog_view;
 
   // kInstallerOptions
-  auto* options = AddChildView(views::Builder<views::Label>()
-                                   .SetText(u"Installer Options View")
-                                   .Build());
+  auto* options = CreateInstallOptionsView();
+
   options->SetVisible(false);
   install_step_to_view_[InstallDialogStep::kInstallerOptions] = options;
 
@@ -47,6 +48,25 @@ WebAppInstallFlowView::WebAppInstallFlowView(const gfx::ImageSkia& icon_image,
 }
 
 WebAppInstallFlowView::~WebAppInstallFlowView() = default;
+
+// Creates the installer options view based on the os_type_.
+views::View* WebAppInstallFlowView::CreateInstallOptionsView() {
+  std::u16string label;
+  switch (os_type_) {
+    case InstallOsType::kMac:
+      label = u"Installer options Mac view";
+      break;
+    case InstallOsType::kWin:
+      label = u"Installer options Windows view";
+      break;
+    case InstallOsType::kCros:
+      label = u"Installer options ChromeOS view";
+      break;
+    default:
+      label = u"Installer options Other view";
+  }
+  return AddChildView(views::Builder<views::Label>().SetText(label).Build());
+}
 
 // Assigns a view to the provided InstallDialogStep in the
 // WebAppInstallFlowView.
