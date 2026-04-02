@@ -36,8 +36,8 @@ GlicMediaContext::~GlicMediaContext() {
   for (const auto& pair : transcripts_by_title_) {
     const auto& transcript = pair.second;
     if (transcript->max_transcript_size_ > 0) {
-      UMA_HISTOGRAM_COUNTS_1M("Glic.Media.TotalContextLength",
-                              transcript->max_transcript_size_);
+      UMA_HISTOGRAM_COUNTS_10M("Glic.Media.TotalContextLength",
+                               transcript->max_transcript_size_);
     }
   }
 }
@@ -80,8 +80,8 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
     HandleNonFinalResult(transcript, std::move(new_chunk));
   } else {
     // Record timestamp metric for final result.
-    base::UmaHistogramExactLinear("Glic.Media.TimestampCount", timestamp_count,
-                                  10);
+    base::UmaHistogramExactLinear("Glic.Media.TimestampRangeCount",
+                                  timestamp_count, 10);
     HandleFinalResult(transcript, std::move(new_chunk));
   }
 
