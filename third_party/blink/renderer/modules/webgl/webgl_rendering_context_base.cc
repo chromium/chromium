@@ -462,6 +462,22 @@ void WebGLRenderingContextBase::RestoreEvictedContext(
 
 namespace {
 
+void DrawImageToCanvas(StaticBitmapImage* image,
+                       cc::PaintCanvas& canvas,
+                       const gfx::Rect& dest_rect) {
+  CHECK(image);
+  CHECK(image->PaintImageForCurrentFrame());
+  gfx::Rect src_rect(image->Size());
+  cc::PaintFlags flags;
+  flags.setBlendMode(SkBlendMode::kSrc);
+  // We use this draw helper as we need to take into account the
+  // ImageOrientation of the UnacceleratedStaticBitmapImage.
+  ImageDrawOptions draw_options;
+  draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
+  image->Draw(&canvas, flags, gfx::RectF(dest_rect), gfx::RectF(src_rect),
+              draw_options);
+}
+
 GLint Clamp(GLint value, GLint min, GLint max) {
   if (value < min)
     value = min;
@@ -2162,16 +2178,8 @@ bool WebGLRenderingContextBase::
     return false;
   }
 
-  gfx::Rect src_rect(image->Size());
-  gfx::Rect dest_rect(resource_provider->Size());
-  cc::PaintFlags flags;
-  flags.setBlendMode(SkBlendMode::kSrc);
-  // We use this draw helper as we need to take into account the
-  // ImageOrientation of the UnacceleratedStaticBitmapImage.
-  ImageDrawOptions draw_options;
-  draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-  image->Draw(&resource_provider->GetCanvasDeprecated(), flags,
-              gfx::RectF(dest_rect), gfx::RectF(src_rect), draw_options);
+  DrawImageToCanvas(image.get(), resource_provider->GetCanvasDeprecated(),
+                    gfx::Rect(resource_provider->Size()));
   return true;
 }
 
