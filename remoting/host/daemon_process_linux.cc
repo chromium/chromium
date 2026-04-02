@@ -6,6 +6,7 @@
 
 #include <signal.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #include <cstdlib>
 #include <memory>
@@ -54,6 +55,7 @@
 #include "remoting/host/linux/passwd_utils.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
+#include "remoting/host/pairing_registry_delegate_linux.h"
 #include "remoting/host/posix/signal_handler.h"
 #include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/worker_process_launcher.h"
@@ -83,6 +85,7 @@ class DaemonProcessLinux : public DaemonProcess,
       mojo::ScopedMessagePipeHandle desktop_pipe) override;
 
   void StartDesktopSessionFactory();
+  bool SetupPairingRegistry();
 
  private:
   // DaemonProcess implementation.
@@ -194,6 +197,45 @@ void DaemonProcessLinux::StartDesktopSessionFactory() {
   desktop_session_factory_.Start(
       base::BindOnce(&DaemonProcessLinux::OnStartDesktopSessionFactoryResult,
                      base::Unretained(this)));
+}
+
+bool DaemonProcessLinux::SetupPairingRegistry() {
+  // The pairing directory is under the config directory, which is owned by
+  // root, so we need to create the pairing directory and change its owner to
+  // the network process user.
+  base::FilePath pairing_dir =
+      PairingRegistryDelegateLinux::GetDefaultRegistryPath();
+
+  // Create the directory if it doesn't exist.
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(pairing_dir, &error)) {
+    LOG(ERROR) << "Failed to create pairing registry directory: "
+               << base::File::ErrorToString(error);
+    return false;
+  }
+
+  // Set the owner to the network process user.
+  auto user_info = GetPasswdUserInfo(GetNetworkProcessUsername());
+  if (!user_info.has_value()) {
+    LOG(ERROR) << "Failed to get network process user info: "
+               << user_info.error();
+    return false;
+  }
+
+  if (HANDLE_EINTR(chown(pairing_dir.value().c_str(), user_info->uid,
+                         user_info->gid)) != 0) {
+    PLOG(ERROR) << "Failed to chown pairing registry directory to "
+                << GetNetworkProcessUsername();
+    return false;
+  }
+
+  // Set permissions to 700.
+  if (!base::SetPosixFilePermissions(pairing_dir,
+                                     base::FILE_PERMISSION_USER_MASK)) {
+    LOG(ERROR) << "Failed to set permissions on pairing registry directory";
+    return false;
+  }
+  return true;
 }
 
 std::unique_ptr<DesktopSession> DaemonProcessLinux::DoCreateDesktopSession(
@@ -329,8 +371,9 @@ std::unique_ptr<DaemonProcess> DaemonProcess::Create(
   auto daemon_process = std::make_unique<DaemonProcessLinux>(
       caller_task_runner, io_task_runner, std::move(stopped_callback));
 
-  // TODO: crbug.com/475611769 - set ACL on the pairing registry directory for
-  // the network user.
+  if (!daemon_process->SetupPairingRegistry()) {
+    return nullptr;
+  }
 
   daemon_process->StartDesktopSessionFactory();
 

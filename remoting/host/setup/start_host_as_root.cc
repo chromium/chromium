@@ -155,6 +155,7 @@ struct HostConfig {
   base::FilePath config_path;
   // If nullptr, file config owner will not be changed.
   raw_ptr<const passwd> config_file_owner;
+  mode_t config_dir_permissions;
   std::string service_name;
 };
 
@@ -169,15 +170,23 @@ int MigrateExistingConfig(const HostConfig& src, const HostConfig& dst) {
   }
 
   base::FilePath dst_dir = dst.config_path.DirName();
-  if (!base::CreateDirectory(dst_dir)) {
-    std::cerr << "Failed to create directory: " << dst_dir.value() << "\n";
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(dst_dir, &error)) {
+    std::cerr << "Failed to create directory: " << dst_dir.value() << ": "
+              << base::File::ErrorToString(error) << "\n";
     return 1;
   }
   if (dst.config_file_owner &&
-      chown(dst_dir.value().c_str(), dst.config_file_owner->pw_uid,
-            dst.config_file_owner->pw_gid) != 0) {
+      HANDLE_EINTR(chown(dst_dir.value().c_str(), dst.config_file_owner->pw_uid,
+                         dst.config_file_owner->pw_gid)) != 0) {
     std::cerr << "Failed to change config directory ownership for "
               << dst_dir.value() << ": " << base::safe_strerror(errno) << "\n";
+    return 1;
+  }
+  if (HANDLE_EINTR(
+          chmod(dst_dir.value().c_str(), dst.config_dir_permissions)) != 0) {
+    std::cerr << "Failed to set permissions for " << dst_dir.value() << ": "
+              << base::safe_strerror(errno) << "\n";
     return 1;
   }
 
@@ -185,7 +194,7 @@ int MigrateExistingConfig(const HostConfig& src, const HostConfig& dst) {
   // Note that umask is applied to the whole process and therefore not
   // thread-safe. It is safe here since the start host process is
   // single-threaded.
-  mode_t old_mask = umask(0o077);
+  mode_t old_mask = umask(077);
   if (!base::CopyFile(src.config_path, dst.config_path)) {
     std::cerr << "Failed to copy config file from " << src.config_path.value()
               << " to " << dst.config_path.value() << "\n";
@@ -195,8 +204,9 @@ int MigrateExistingConfig(const HostConfig& src, const HostConfig& dst) {
   umask(old_mask);
 
   if (dst.config_file_owner &&
-      chown(dst.config_path.value().c_str(), dst.config_file_owner->pw_uid,
-            dst.config_file_owner->pw_gid) != 0) {
+      HANDLE_EINTR(chown(dst.config_path.value().c_str(),
+                         dst.config_file_owner->pw_uid,
+                         dst.config_file_owner->pw_gid)) != 0) {
     std::cerr << "Failed to change config file ownership for "
               << dst.config_path.value() << ": " << base::safe_strerror(errno)
               << "\n";
@@ -267,6 +277,7 @@ int StartHostAsRoot(int argc, char** argv) {
                            .Append(GetPerUserConfigRelativeDir())
                            .Append(GetHostHash() + ".json"),
         .config_file_owner = user_struct,
+        .config_dir_permissions = 0700,
         .service_name =
             std::string("chrome-remote-desktop@") + user_struct->pw_name};
     HostConfig gdm_managed_config = {
@@ -275,6 +286,10 @@ int StartHostAsRoot(int argc, char** argv) {
         // Config file ownership does not need to be changed since this process
         // is already run as root.
         .config_file_owner = nullptr,
+        // Allow the network user to access paired-clients/ in the config
+        // directory. The config file will still have the permissions of 600 so
+        // it won't be accessible by non-root users.
+        .config_dir_permissions = 0755,
         .service_name = "chrome-remote-desktop"};
 
     if (is_gdm_managed) {

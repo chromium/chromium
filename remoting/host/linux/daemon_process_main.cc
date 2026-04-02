@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <sys/file.h>
+#include <sys/stat.h>
 
 #include <functional>
 #include <memory>
@@ -76,21 +77,21 @@ int DaemonProcessMain() {
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
   base::FilePath config_path = DaemonProcess::GetConfigPath();
-  base::File config_file_lock(config_path,
-                              base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!config_file_lock.IsValid()) {
+  base::File config_file(config_path,
+                         base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!config_file.IsValid()) {
     // The config file may be absent or unreadable. The daemon process should
     // not be run in this case.
     PLOG(ERROR) << "Failed to open the config file: "
-                << base::File::ErrorToString(config_file_lock.error_details());
+                << base::File::ErrorToString(config_file.error_details());
     return kInvalidHostConfigurationExitCode;
   }
   // Apply an advisory lock to the config file to prevent multiple host
   // processes from using the same host config file. Only root processes can
   // apply locks to the config file, and the lock will be released once the file
   // descriptor is closed or the process is dead.
-  if (HANDLE_EINTR(
-          flock(config_file_lock.GetPlatformFile(), LOCK_EX | LOCK_NB)) == -1) {
+  if (HANDLE_EINTR(flock(config_file.GetPlatformFile(), LOCK_EX | LOCK_NB)) ==
+      -1) {
     // Note: EWOULDBLOCK and EAGAIN are expanded to the same value.
     PLOG(ERROR)
         << ((errno == EWOULDBLOCK || errno == EAGAIN)
@@ -98,6 +99,15 @@ int DaemonProcessMain() {
                   "host may be running"
                 : "Failed to lock the config file");
     return kInitializationFailed;
+  }
+  struct stat file_stat;
+  if (HANDLE_EINTR(fstat(config_file.GetPlatformFile(), &file_stat)) == -1) {
+    PLOG(ERROR) << "Failed to stat the config file";
+    return kInitializationFailed;
+  }
+  if (file_stat.st_mode & (S_IRGRP | S_IROTH | S_IWGRP | S_IWOTH)) {
+    LOG(ERROR) << "Config file is readable or writable by other users.";
+    return kInvalidHostConfigurationExitCode;
   }
 
   net::BackoffEntry backoff_entry(&kBackoffPolicy);

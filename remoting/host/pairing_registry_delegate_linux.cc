@@ -144,13 +144,18 @@ bool PairingRegistryDelegateLinux::Delete(const std::string& client_id) {
   return base::DeleteFile(pairing_file);
 }
 
+// static
+base::FilePath PairingRegistryDelegateLinux::GetDefaultRegistryPath() {
+  base::FilePath config_dir = remoting::GetConfigDir();
+  return config_dir.Append(kRegistryDirectory);
+}
+
 base::FilePath PairingRegistryDelegateLinux::GetRegistryPath() {
   if (!registry_path_for_testing_.empty()) {
     return registry_path_for_testing_;
   }
 
-  base::FilePath config_dir = remoting::GetConfigDir();
-  return config_dir.Append(kRegistryDirectory);
+  return GetDefaultRegistryPath();
 }
 
 void PairingRegistryDelegateLinux::SetRegistryPathForTesting(

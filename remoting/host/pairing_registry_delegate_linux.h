@@ -31,6 +31,10 @@ class PairingRegistryDelegateLinux
   bool Save(const protocol::PairingRegistry::Pairing& pairing) override;
   bool Delete(const std::string& client_id) override;
 
+  // Returns the default path to the directory used for loading and saving
+  // paired clients.
+  static base::FilePath GetDefaultRegistryPath();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PairingRegistryDelegateLinuxTest, SaveAndLoad);
   FRIEND_TEST_ALL_PREFIXES(PairingRegistryDelegateLinuxTest, Stateless);
