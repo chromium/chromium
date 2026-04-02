@@ -31,8 +31,15 @@ class TestManifestAssetManagerComponentState final {
  public:
   // What the broker can request to be installed.
   struct InstallTarget {
+    InstallTarget();
+    InstallTarget(const std::string& public_key_hex,
+                  const base::Version& version);
+    ~InstallTarget();
+    InstallTarget(const InstallTarget&);
+    InstallTarget& operator=(const InstallTarget&);
+
     std::string public_key_hex;
-    base::Version version;
+    std::optional<base::Version> version;
 
     bool operator==(const InstallTarget& other) const {
       return public_key_hex == other.public_key_hex && version == other.version;
@@ -41,7 +48,7 @@ class TestManifestAssetManagerComponentState final {
     template <typename H>
     friend H AbslHashValue(H h, const InstallTarget& target) {
       return H::combine(std::move(h), target.public_key_hex,
-                        target.version.components());
+                        target.version->components());
     }
   };
 
@@ -136,13 +143,16 @@ class TestManifestAssetManagerComponentState final {
   // Test assertions  //
   //////////////////////
 
+  // Whether the component is registered with any target version.
   bool IsRegistered(const std::string& public_key) const;
+  // Whether the component is registered with the given target version.
+  bool IsRegistered(const InstallTarget& target) const;
   bool WasUninstallRequested(const std::string& public_key) const;
   bool WasOnDemandUpdateRequested(const std::string& public_key) const;
   bool WasBackgroundUpdateRequested(const std::string& public_key) const;
 
-  bool WaitForRegistration(const std::string& public_key) const {
-    return base::test::RunUntil([&] { return IsRegistered(public_key); });
+  bool WaitForRegistration(const InstallTarget& target) const {
+    return base::test::RunUntil([&] { return IsRegistered(target); });
   }
 
   bool WaitForUninstall(const std::string& public_key) const {
@@ -176,16 +186,13 @@ class TestManifestAssetManagerComponentState final {
   // installed, keyed by public key.
   absl::flat_hash_map<std::string, InstallableComponent> installed_components_;
 
-  absl::flat_hash_set<std::string> registered_components_;
-  absl::flat_hash_set<std::string> uninstalled_components_;
-
   // Whether to defer calling OnInstallerRegistered/OnAssetUninstalled.
   bool defer_registration_callbacks_ = false;
   // The simulated state of CUS registrations for on-demand components.
   absl::flat_hash_map<std::string, Registration> registrations_;
 
   // All registrations for the Manifest component.
-  base::OnceCallbackList<void(base::FilePath)> manifest_ready_callbacks_;
+  base::RepeatingCallbackList<void(base::FilePath)> manifest_ready_callbacks_;
 
   testing::NiceMock<FakeComponentUpdateService> component_update_service_;
   base::WeakPtrFactory<TestManifestAssetManagerComponentState>

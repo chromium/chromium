@@ -36,6 +36,12 @@ struct DummyAsset {
   std::string public_key;
   std::string version = "1.0.0.0";
 
+  TestManifestAssetManagerComponentState::InstallTarget ToInstallTarget()
+      const {
+    return TestManifestAssetManagerComponentState::InstallTarget(
+        public_key, base::Version(version));
+  }
+
   static DummyAsset For(std::string use_case) {
     return {
         .use_case = use_case,
@@ -117,9 +123,10 @@ class ManifestAssetManagerTest : public testing::Test {
         std::move(manifest));
   }
 
-  void ResetManager() {
+  void SimulateShutdown() {
     manager_.reset();
     delegate_.reset();
+    component_state_.SimulateRestart();
   }
 
   void MakeAssetInstallable(const DummyAsset& asset) {
@@ -136,7 +143,8 @@ class ManifestAssetManagerTest : public testing::Test {
     }
     CreateManager(dummy_manifest.Build());
     for (const auto& asset : dummy_manifest.assets()) {
-      EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+      EXPECT_TRUE(
+          component_state_.WaitForRegistration(asset.ToInstallTarget()));
     }
   }
 
@@ -159,7 +167,8 @@ TEST_F(ManifestAssetManagerTest, RegistersComponentsForActiveUseCases) {
   DummyAsset test_asset = DummyAsset::For("test");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(compose_asset.use_case);
   CreateManager(DummyManifest().Add(compose_asset).Add(test_asset).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration(compose_asset.public_key));
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(compose_asset.ToInstallTarget()));
   EXPECT_TRUE(
       component_state_.WasOnDemandUpdateRequested(compose_asset.public_key));
   EXPECT_FALSE(component_state_.IsRegistered(test_asset.public_key));
@@ -175,7 +184,7 @@ TEST_F(ManifestAssetManagerTest, RegistersComponentsForLegacyFeatureUsage) {
 
   CreateManager(DummyManifest().Add(asset).Build());
 
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
   EXPECT_TRUE(component_state_.WasOnDemandUpdateRequested(asset.public_key));
 }
 
@@ -184,7 +193,7 @@ TEST_F(ManifestAssetManagerTest, DynamicEnterprisePolicyChange) {
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   CreateManager(DummyManifest().Add(asset).Build());
 
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
   // Disable enterprise policy.
   local_state_.local_state().SetInteger(
@@ -203,14 +212,14 @@ TEST_F(ManifestAssetManagerTest, DynamicEnterprisePolicyChange) {
       std::to_underlying(
           model_execution::prefs::
               GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed));
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, DynamicOnDeviceAISettingsChange) {
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   CreateManager(DummyManifest().Add(asset).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
   // Disable user setting.
   local_state_.local_state().SetBoolean(
@@ -221,7 +230,7 @@ TEST_F(ManifestAssetManagerTest, DynamicOnDeviceAISettingsChange) {
   // Enable user setting.
   local_state_.local_state().SetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled, true);
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, AlreadyInstalledFlow) {
@@ -229,7 +238,7 @@ TEST_F(ManifestAssetManagerTest, AlreadyInstalledFlow) {
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   MakeAssetInstallable(asset);
   CreateManager(DummyManifest().Add(asset).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
   // Because it was already installed, it shouldn't request an on-demand update.
   EXPECT_FALSE(component_state_.WasOnDemandUpdateRequested(asset.public_key));
 }
@@ -238,7 +247,7 @@ TEST_F(ManifestAssetManagerTest, NotYetInstalledFlow) {
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   CreateManager(DummyManifest().Add(asset).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, SimulatesAssetReady) {
@@ -247,7 +256,7 @@ TEST_F(ManifestAssetManagerTest, SimulatesAssetReady) {
   CreateManager(DummyManifest().Add(asset).Build());
 
   EXPECT_FALSE(manager_->GetInstallDirectory(asset.asset_id).has_value());
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
   MakeAssetInstallable(asset);
 
@@ -259,13 +268,13 @@ TEST_F(ManifestAssetManagerTest, ResumesInstallationOnStartup) {
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   CreateManager(DummyManifest().Add(asset).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  SimulateShutdown();
 
   // Restart manager. It should immediately load from the pref-based ledger
   // and trigger registration again.
-  ResetManager();
   CreateManager(DummyManifest().Add(asset).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, UninstallOutOfRetentionOnStartup) {
@@ -273,11 +282,11 @@ TEST_F(ManifestAssetManagerTest, UninstallOutOfRetentionOnStartup) {
   DummyAsset test_asset = DummyAsset::For("test");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(compose_asset.use_case);
   SetupReadyComponents(DummyManifest().Add(compose_asset));
+  SimulateShutdown();
 
   task_environment_.FastForwardBy(features::GetOnDeviceModelRetentionTime() +
                                   base::Days(1));
   usage_tracker_.OnDeviceEligibleUseCaseUsed(test_asset.use_case);
-  ResetManager();
   CreateManager(DummyManifest().Add(compose_asset).Add(test_asset).Build());
 
   EXPECT_TRUE(component_state_.WaitForUninstall(compose_asset.public_key));
@@ -288,16 +297,14 @@ TEST_F(ManifestAssetManagerTest, ObsoleteVersionOnStartup) {
   DummyAsset asset_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
   SetupReadyComponents(DummyManifest().Add(asset_v1));
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v1.public_key));
-  component_state_.SimulateRestart();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v1.ToInstallTarget()));
+  SimulateShutdown();
 
-  // Restart manager.
-  ResetManager();
   CreateManager(DummyManifest().Add(asset_v2).Build());
   // Wait for the delayed uninstall task.
   task_environment_.FastForwardBy(base::Seconds(2));
 
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, ChangedPublicKeyOnStartup) {
@@ -305,17 +312,15 @@ TEST_F(ManifestAssetManagerTest, ChangedPublicKeyOnStartup) {
   DummyAsset test_v2 = DummyAsset::For("test").WithPublicKey("key2");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(test_v1.use_case);
   SetupReadyComponents(DummyManifest().Add(test_v1));
-  EXPECT_TRUE(component_state_.WaitForRegistration(test_v1.public_key));
-  component_state_.SimulateRestart();
+  EXPECT_TRUE(component_state_.WaitForRegistration(test_v1.ToInstallTarget()));
+  SimulateShutdown();
 
-  // Restart manager.
-  ResetManager();
   CreateManager(DummyManifest().Add(test_v2).Build());
   // Wait for the delayed uninstall task.
   task_environment_.FastForwardBy(base::Seconds(2));
 
   EXPECT_TRUE(component_state_.WaitForUninstall(test_v1.public_key));
-  EXPECT_TRUE(component_state_.WaitForRegistration(test_v2.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(test_v2.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, ChangedAssetIdOnStartup) {
@@ -325,18 +330,16 @@ TEST_F(ManifestAssetManagerTest, ChangedAssetIdOnStartup) {
   ASSERT_EQ(asset_v1.public_key, asset_v2.public_key);
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
   SetupReadyComponents(DummyManifest().Add(asset_v1));
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v1.public_key));
-  component_state_.SimulateRestart();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v1.ToInstallTarget()));
+  SimulateShutdown();
 
-  // Restart manager.
-  ResetManager();
   CreateManager(DummyManifest().Add(asset_v2).Build());
   // Wait for the delayed uninstall task.
   task_environment_.FastForwardBy(base::Seconds(2));
 
   // Since the public key and version are the same, it should not trigger an
   // uninstall, and we should just consider it already installed.
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.ToInstallTarget()));
   EXPECT_FALSE(component_state_.WasUninstallRequested(asset_v1.public_key));
 }
 
@@ -345,11 +348,9 @@ TEST_F(ManifestAssetManagerTest, ReRegistersWhenTargetVersionUpdated) {
   DummyAsset asset_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
   SetupReadyComponents(DummyManifest().Add(asset_v1));
-  component_state_.SimulateRestart();
-
   // Trigger update manifest with a new version.
   manager_->UpdateManifest(DummyManifest().Add(asset_v2).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest,
@@ -359,8 +360,6 @@ TEST_F(ManifestAssetManagerTest,
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
   component_state_.SetDeferRegistrationCallbacks(true);
   CreateManager(DummyManifest().Add(asset_v1).Build());
-  component_state_.SimulateRestart();
-
   // Update manifest with new version while the first registration is pending.
   manager_->UpdateManifest(DummyManifest().Add(asset_v2).Build());
 
@@ -368,7 +367,7 @@ TEST_F(ManifestAssetManagerTest,
   component_state_.RunPendingRegistrations();
 
   // Register again for the new version.
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, KeepInstalledWhenAssetRenamed) {
@@ -378,7 +377,7 @@ TEST_F(ManifestAssetManagerTest, KeepInstalledWhenAssetRenamed) {
   SetupReadyComponents(DummyManifest().Add(asset_v1));
   manager_->UpdateManifest(DummyManifest().Add(asset_v2).Build());
   // When only the asset id is changed, we should consider it already installed.
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.ToInstallTarget()));
   EXPECT_FALSE(component_state_.WasUninstallRequested(asset_v1.public_key));
 }
 
@@ -417,10 +416,9 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenFeatureNotEnabled) {
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kOptimizationGuideModelExecution);
-  ResetManager();
   CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, UninstallWhileRegistrationPending) {
@@ -430,7 +428,7 @@ TEST_F(ManifestAssetManagerTest, UninstallWhileRegistrationPending) {
   CreateManager(DummyManifest().Add(asset).Build());
 
   // Verify that it is currently registering.
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
   // Feature is disabled while registration is pending.
   local_state_.local_state().SetBoolean(
@@ -458,7 +456,7 @@ TEST_F(ManifestAssetManagerTest, RegisterWhileUninstallPending) {
   local_state_.local_state().SetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled, true);
   task_environment_.FastForwardBy(base::Seconds(2));
-  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, RemainsInstalledWhenReferencedInManifest) {
@@ -500,7 +498,7 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenDisabledByEnterprisePolicy) {
 
   CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest,
@@ -513,7 +511,7 @@ TEST_F(ManifestAssetManagerTest,
 
   CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNotEnoughDiskSpace) {
@@ -524,7 +522,7 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNotEnoughDiskSpace) {
 
   CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenEligibleUseCaseUseTooOld) {
@@ -534,7 +532,7 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenEligibleUseCaseUseTooOld) {
 
   CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.ToInstallTarget()));
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNoEligibleUseCaseUse) {
@@ -545,7 +543,7 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNoEligibleUseCaseUse) {
 
   CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.ToInstallTarget()));
 }
 
 }  // namespace
