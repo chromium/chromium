@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/simple_message_box.h"
@@ -273,19 +274,19 @@ int ChildURLCountTotal(const BookmarkNode* node) {
 
 // Returns in |urls|, the url and title pairs for each open tab in browser.
 void GetURLsAndFoldersForOpenTabs(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data) {
   std::vector<std::pair<GURL, std::u16string>> tab_entries;
   base::flat_map<int, TabGroupData> groups_by_index;
-  for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+  for (int i = 0; i < browser->GetTabStripModel()->count(); ++i) {
     std::pair<GURL, std::u16string> entry;
-    auto* contents = browser->tab_strip_model()->GetWebContentsAt(i);
+    auto* contents = browser->GetTabStripModel()->GetWebContentsAt(i);
     chrome::GetURLAndTitleToBookmark(contents, &(entry.first), &(entry.second));
     tab_entries.push_back(entry);
-    auto tab_group_id = browser->tab_strip_model()->GetTabGroupForTab(i);
+    auto tab_group_id = browser->GetTabStripModel()->GetTabGroupForTab(i);
     std::u16string title;
     if (tab_group_id.has_value()) {
-      title = browser->tab_strip_model()
+      title = browser->GetTabStripModel()
                   ->group_model()
                   ->GetTabGroup(tab_group_id.value())
                   ->visual_data()
@@ -641,8 +642,8 @@ bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
                  ChildURLCountTotal(node))) == chrome::MESSAGE_BOX_RESULT_YES;
 }
 
-void ShowBookmarkAllTabsDialog(Browser* browser) {
-  Profile* profile = browser->profile();
+void ShowBookmarkAllTabsDialog(BrowserWindowInterface* browser) {
+  Profile* profile = browser->GetProfile();
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
   DCHECK(model && model->loaded());
 
@@ -652,8 +653,8 @@ void ShowBookmarkAllTabsDialog(Browser* browser) {
 
   GetURLsAndFoldersForOpenTabs(browser, &(details.bookmark_data.children));
   DCHECK(!details.bookmark_data.children.empty());
-  BookmarkEditor::Show(browser->window()->GetNativeWindow(), profile, details,
-                       BookmarkEditor::SHOW_TREE,
+  BookmarkEditor::Show(browser->GetWindow()->GetNativeWindow(), profile,
+                       details, BookmarkEditor::SHOW_TREE,
                        base::BindOnce(
                            [](const Profile* profile) {
                              // We record the profile that invoked this option.

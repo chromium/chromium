@@ -150,7 +150,7 @@ class BrowserFocusBasicTest : public InProcessBrowserTest {
 #endif
   }
 
-  views::Widget* GetWidgetForBrowser(Browser* browser) {
+  views::Widget* GetWidgetForBrowser(BrowserWindowInterface* browser) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     CHECK(browser_view);
     views::Widget* widget = browser_view->GetWidget();
@@ -158,7 +158,7 @@ class BrowserFocusBasicTest : public InProcessBrowserTest {
     return widget;
   }
 
-  bool IsBrowserActive(Browser* browser) {
+  bool IsBrowserActive(BrowserWindowInterface* browser) {
     return GetWidgetForBrowser(browser)->IsActive();
   }
 
@@ -186,7 +186,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusBasicTest, BrowserFocusedOnCreation) {
   // some tests do because this is what the production code does when opening a
   // new window. The difference is that it makes sure that there is at least one
   // tab on the window before calling `BrowserView::Show()`.
-  Browser* browser2 = chrome::OpenEmptyWindow(browser()->profile());
+  BrowserWindowInterface* browser2 =
+      chrome::OpenEmptyWindow(browser()->profile());
   ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser2).Wait();
   views::test::WaitForWidgetActive(GetWidgetForBrowser(browser2), true);
   EXPECT_TRUE(IsBrowserActive(browser2));

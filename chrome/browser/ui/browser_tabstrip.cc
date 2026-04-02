@@ -26,7 +26,7 @@
 namespace chrome {
 
 content::WebContents* AddAndReturnTabAt(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& url,
     int idx,
     bool foreground,
@@ -36,8 +36,10 @@ content::WebContents* AddAndReturnTabAt(
   // WebContents, but we want to include the time it takes to create the
   // WebContents object too.
   base::TimeTicks new_tab_start_time = base::TimeTicks::Now();
-  NavigateParams params(browser, url.is_empty() ? browser->GetNewTabURL() : url,
-                        ui::PAGE_TRANSITION_TYPED);
+  const GURL resolved_url =
+      url.is_empty() ? browser->GetBrowserForMigrationOnly()->GetNewTabURL()
+                     : url;
+  NavigateParams params(browser, resolved_url, ui::PAGE_TRANSITION_TYPED);
   params.disposition = foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                   : WindowOpenDisposition::NEW_BACKGROUND_TAB;
   params.tabstrip_index = idx;
@@ -59,7 +61,7 @@ content::WebContents* AddAndReturnTabAt(
   return params.navigated_or_inserted_contents;
 }
 
-void AddTabAt(Browser* browser,
+void AddTabAt(BrowserWindowInterface* browser,
               const GURL& url,
               int idx,
               bool foreground,

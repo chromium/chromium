@@ -75,7 +75,7 @@ class WebContentsInteractionTestUtilTest : public InProcessBrowserTest {
   }
 
   ui::InteractionSequence::Builder DefaultBuilder(
-      Browser* context_browser = nullptr) {
+      BrowserWindowInterface* context_browser = nullptr) {
     if (!context_browser) {
       context_browser = browser();
     }
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   // Open a new browser, and immediately navigate to a new page. Even though the
   // original chrome://new-tab-page might not have finished loading, the
   // element should not be created until the new URL is loaded.
-  Browser* browser2 = chrome::OpenEmptyWindow(
+  BrowserWindowInterface* browser2 = chrome::OpenEmptyWindow(
       browser()->profile(), /*should_trigger_session_restore=*/false);
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser2, kWebContentsElementId);

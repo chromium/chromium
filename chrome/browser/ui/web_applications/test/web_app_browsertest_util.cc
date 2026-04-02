@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -539,16 +540,15 @@ void CloseAndWait(BrowserWindowInterface* browser) {
   waiter.AwaitRemoved();
 }
 
-bool IsBrowserOpen(const Browser* test_browser) {
+bool IsBrowserOpen(const BrowserWindowInterface* test_browser) {
   bool is_open = false;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [test_browser, &is_open](BrowserWindowInterface* browser) {
-        Browser* const current_browser = browser->GetBrowserForMigrationOnly();
-        if (current_browser->IsAttemptingToCloseBrowser() ||
-            current_browser->is_delete_scheduled()) {
+        if (browser->capabilities()->IsAttemptingToCloseBrowser() ||
+            browser->IsDeleteScheduled()) {
           return true;
         }
-        if (current_browser == test_browser) {
+        if (browser == test_browser) {
           is_open = true;
         }
         return !is_open;

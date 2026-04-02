@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -33,7 +34,7 @@ namespace chrome {
 // If |url| is an empty URL, then the new tab-page is laoded. An |index| of -1
 // means to append it to the end of the tab strip.
 content::WebContents* AddAndReturnTabAt(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& url,
     int index,
     bool foreground,
@@ -41,7 +42,7 @@ content::WebContents* AddAndReturnTabAt(
     bool pinned = false);
 
 // Same as above, but eats the return value to make Bind*() easier.
-void AddTabAt(Browser* browser,
+void AddTabAt(BrowserWindowInterface* browser,
               const GURL& url,
               int index,
               bool foreground,

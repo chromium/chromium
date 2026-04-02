@@ -17,6 +17,7 @@
 #include "ui/gfx/native_ui_types.h"
 
 class Browser;
+class BrowserWindowInterface;
 struct NavigateParams;
 class TabGroup;
 
@@ -104,7 +105,7 @@ bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
                                const bookmarks::BookmarkNode* node);
 
 // Shows the bookmark all tabs dialog.
-void ShowBookmarkAllTabsDialog(Browser* browser);
+void ShowBookmarkAllTabsDialog(BrowserWindowInterface* browser);
 
 // Shows the bookmark tab group dialog.
 void ShowBookmarkTabGroupDialog(

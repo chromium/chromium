@@ -68,7 +68,7 @@ class BrowserActivationWaiter : public views::WidgetObserver {
     const BrowserWindowInterface* browser);
 
 // Returns true if the View is focused.
-bool IsViewFocused(const Browser* browser, ViewID vid);
+bool IsViewFocused(const BrowserWindowInterface* browser, ViewID vid);
 
 // Simulates a mouse click on a View in the browser.
 void ClickOnView(views::View* view);

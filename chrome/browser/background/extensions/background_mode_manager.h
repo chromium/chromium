@@ -95,7 +95,7 @@ class BackgroundModeManager : public BrowserCollectionObserver,
 
   // Gets a browser window for |profile| associated with the active desktop.
   // Opens a new browser window if there isn't one for the active desktop.
-  static Browser* GetBrowserWindowForProfile(Profile* profile);
+  static BrowserWindowInterface* GetBrowserWindowForProfile(Profile* profile);
 
   // Getter and setter for the flag indicating whether Chrome should start in
   // background mode the next time.
@@ -188,7 +188,7 @@ class BackgroundModeManager : public BrowserCollectionObserver,
     // Returns a browser window, or creates one if none are open. Used by
     // operations (like displaying the preferences dialog) that require a
     // Browser window.
-    Browser* GetBrowserWindow();
+    BrowserWindowInterface* GetBrowserWindow();
 
     // Returns if this profile has persistent background clients. A client is an
     // extension.

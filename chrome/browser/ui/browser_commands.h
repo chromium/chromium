@@ -24,7 +24,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
 
-class Browser;
 class BrowserWindowInterface;
 class CommandObserver;
 class GURL;
@@ -50,7 +49,7 @@ namespace chrome {
 
 bool IsCommandEnabled(BrowserWindowInterface* browser, int command);
 bool SupportsCommand(BrowserWindowInterface* browser, int command);
-bool ExecuteCommand(BrowserWindowInterface* bwi,
+bool ExecuteCommand(BrowserWindowInterface* browser,
                     int command,
                     base::TimeTicks time_stamp = base::TimeTicks::Now());
 bool ExecuteCommandWithDisposition(BrowserWindowInterface* browser,
@@ -60,7 +59,7 @@ void UpdateCommandEnabled(BrowserWindowInterface* browser, int command, bool ena
 void AddCommandObserver(BrowserWindowInterface*, int command, CommandObserver* observer);
 void RemoveCommandObserver(BrowserWindowInterface*, int command, CommandObserver* observer);
 
-int GetContentRestrictions(const BrowserWindowInterface* bwi);
+int GetContentRestrictions(const BrowserWindowInterface* browser);
 
 // Opens a new window. If the |should_trigger_session_restore| is true, a new
 // window opening should be treated like the start of a session (with potential
@@ -75,8 +74,9 @@ void NewEmptyWindow(Profile* profile,
 // opens a new window with the default blank tab. This bypasses metrics and
 // various internal bookkeeping; NewEmptyWindow (above) is preferred.
 // Returns nullptr if browser creation is not possible.
-Browser* OpenEmptyWindow(Profile* profile,
-                         bool should_trigger_session_restore = true);
+BrowserWindowInterface* OpenEmptyWindow(
+    Profile* profile,
+    bool should_trigger_session_restore = true);
 
 // Opens a new window with the tabs from |profile|'s TabRestoreService.
 void OpenWindowWithRestoredTabs(Profile* profile);
@@ -111,7 +111,7 @@ void Stop(BrowserWindowInterface* browser);
 void NewWindow(BrowserWindowInterface* browser);
 void NewIncognitoWindow(Profile* profile);
 void CloseWindow(BrowserWindowInterface* browser);
-content::WebContents& NewTab(Browser* browser,
+content::WebContents& NewTab(BrowserWindowInterface* browser,
                              NewTabTypes context = NewTabTypes::kNewTabCommand);
 void NewTabToRight(BrowserWindowInterface* browser);
 void CloseTab(BrowserWindowInterface* browser);
@@ -155,8 +155,10 @@ void MoveGroupToNewWindow(BrowserWindowInterface* browser,
                           tab_groups::TabGroupId group);
 bool CanCloseTabsToRight(const BrowserWindowInterface* browser);
 bool CanCloseOtherTabs(const BrowserWindowInterface* browser);
-content::WebContents* DuplicateTabAt(Browser* browser, int index);
-void DuplicateSplit(Browser* browser, split_tabs::SplitTabId split);
+content::WebContents* DuplicateTabAt(BrowserWindowInterface* browser,
+                                     int index);
+void DuplicateSplit(BrowserWindowInterface* browser,
+                    split_tabs::SplitTabId split);
 bool CanDuplicateTabAt(const BrowserWindowInterface* browser, int index);
 void MoveTabsToExistingWindow(BrowserWindowInterface* source,
                               BrowserWindowInterface* target,
@@ -216,14 +218,14 @@ void CloseOtherTabs(BrowserWindowInterface* browser);
 void Exit();
 // Bookmarks the current tab in the most recently used folder and shows the
 // edit dialog.
-void BookmarkCurrentTab(Browser* browser);
+void BookmarkCurrentTab(BrowserWindowInterface* browser);
 // Bookmarks the current tab in the given folder and does not show the edit
 // dialog.
 void BookmarkCurrentTabInFolder(BrowserWindowInterface* browser,
                                 bookmarks::BookmarkModel* model,
                                 int64_t folder_id);
 bool CanBookmarkCurrentTab(BrowserWindowInterface* browser);
-void BookmarkAllTabs(Browser* browser);
+void BookmarkAllTabs(BrowserWindowInterface* browser);
 bool CanBookmarkAllTabs(BrowserWindowInterface* browser);
 bool CanMoveActiveTabToReadLater(BrowserWindowInterface* browser);
 void MoveCurrentTabToReadLater(BrowserWindowInterface* browser);
@@ -231,30 +233,31 @@ void MoveTabsToReadLater(BrowserWindowInterface* browser,
                          std::vector<content::WebContents*> web_contentses);
 bool MarkCurrentTabAsReadInReadLater(BrowserWindowInterface* browser);
 bool IsCurrentTabUnreadInReadLater(BrowserWindowInterface* browser);
-void ShowOffersAndRewardsForPage(BrowserWindowInterface* bwi);
+void ShowOffersAndRewardsForPage(BrowserWindowInterface* browser);
 void SaveCreditCard(BrowserWindowInterface* browser);
 void SaveIban(BrowserWindowInterface* browser);
 void ShowMandatoryReauthOptInPrompt(BrowserWindowInterface* browser);
 void SaveAutofillAddress(BrowserWindowInterface* browser);
 void ShowFilledCardInformationBubble(BrowserWindowInterface* browser);
 void ShowVirtualCardEnrollBubble(BrowserWindowInterface* browser);
-void ShowTranslateBubble(BrowserWindowInterface* bwi);
-void ManagePasswordsForPage(BrowserWindowInterface* bwi);
-bool CanSendTabToSelf(BrowserWindowInterface* bwi);
+void StartTabOrganizationRequest(BrowserWindowInterface* browser);
+void ShowTranslateBubble(BrowserWindowInterface* browser);
+void ManagePasswordsForPage(BrowserWindowInterface* browser);
+bool CanSendTabToSelf(BrowserWindowInterface* browser);
 void SendTabToSelf(BrowserWindowInterface* browser);
 bool CanGenerateQrCode(BrowserWindowInterface* browser);
-void GenerateQRCode(BrowserWindowInterface* bwi);
+void GenerateQRCode(BrowserWindowInterface* browser);
 void SharingHub(BrowserWindowInterface* browser);
 void ScreenshotCapture(BrowserWindowInterface* browser);
 void SavePage(BrowserWindowInterface* browser);
-bool CanSavePage(const BrowserWindowInterface* bwi);
-void Print(BrowserWindowInterface* bwi);
-bool CanPrint(BrowserWindowInterface* bwi);
+bool CanSavePage(const BrowserWindowInterface* browser);
+void Print(BrowserWindowInterface* browser);
+bool CanPrint(BrowserWindowInterface* browser);
 #if BUILDFLAG(ENABLE_PRINTING)
 void BasicPrint(BrowserWindowInterface* browser);
 bool CanBasicPrint(BrowserWindowInterface* browser);
 #endif  // ENABLE_PRINTING
-bool CanRouteMedia(BrowserWindowInterface* bwi);
+bool CanRouteMedia(BrowserWindowInterface* browser);
 // NOTE: For metrics collection purposes, this method is assumed to be invoked
 // from the app menu. That will need to be changed if this is to be invoked from
 // elsewhere.
@@ -263,11 +266,11 @@ void Find(BrowserWindowInterface* browser);
 void FindNext(BrowserWindowInterface* browser);
 void FindPrevious(BrowserWindowInterface* browser);
 void FindInPage(BrowserWindowInterface* browser, bool find_next, bool forward_direction);
-void ShowTabSearch(BrowserWindowInterface* bwi);
+void ShowTabSearch(BrowserWindowInterface* browser);
 void CloseTabSearch(BrowserWindowInterface* browser);
 void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser);
 void ToggleVerticalTabs(BrowserWindowInterface* browser);
-void ToggleVerticalTabsExpandOnHover(Browser* browser);
+void ToggleVerticalTabsExpandOnHover(BrowserWindowInterface* browser);
 bool CanCloseFind(BrowserWindowInterface* browser);
 void CloseFind(BrowserWindowInterface* browser);
 void Zoom(BrowserWindowInterface* browser, content::PageZoom zoom);
@@ -280,16 +283,16 @@ void FocusInactivePopupForAccessibility(BrowserWindowInterface* browser);
 void FocusNextPane(BrowserWindowInterface* browser);
 void FocusPreviousPane(BrowserWindowInterface* browser);
 void FocusWebContentsPane(BrowserWindowInterface* browser);
-void ToggleDevToolsWindow(BrowserWindowInterface* bwi,
+void ToggleDevToolsWindow(BrowserWindowInterface* browser,
                           DevToolsToggleAction action,
                           DevToolsOpenedByAction opened_by);
 bool CanOpenTaskManager();
 // Opens task manager UI. Note that |browser| can be nullptr as input.
 // StartAction denotes which location the task manager UI was started from.
 void OpenTaskManager(
-    BrowserWindowInterface* bwi,
+    BrowserWindowInterface* browser,
     task_manager::StartAction start_action = task_manager::StartAction::kOther);
-void OpenFeedbackDialog(BrowserWindowInterface* bwi,
+void OpenFeedbackDialog(BrowserWindowInterface* browser,
                         feedback::FeedbackSource source,
                         const std::string& description_template = std::string(),
                         const std::string& category_tag = std::string());
@@ -315,13 +318,15 @@ void ToggleFullscreenMode(BrowserWindowInterface* browser,
                           bool user_initiated = false);
 void ClearCache(BrowserWindowInterface* browser);
 bool IsDebuggerAttachedToCurrentTab(BrowserWindowInterface* browser);
-void CopyURL(BrowserWindowInterface* bwi, content::WebContents* web_contents);
-bool CanCopyUrl(BrowserWindowInterface* bwi);
+void CopyURL(BrowserWindowInterface* browser,
+             content::WebContents* web_contents);
+bool CanCopyUrl(BrowserWindowInterface* browser);
 // Returns true if the browser window is for a web app or custom tab.
-bool IsWebAppOrCustomTab(const BrowserWindowInterface* bwi);
+bool IsWebAppOrCustomTab(const BrowserWindowInterface* browser);
 // Moves the WebContents of a hosted app Browser to a tabbed Browser. Returns
 // the tabbed Browser.
-Browser* OpenInChrome(Browser* hosted_app_browser);
+BrowserWindowInterface* OpenInChrome(
+    BrowserWindowInterface* hosted_app_browser);
 bool CanViewSource(BrowserWindowInterface* browser);
 bool CanToggleCaretBrowsing(BrowserWindowInterface* browser);
 void ToggleCaretBrowsing(BrowserWindowInterface* browser);
@@ -334,7 +339,7 @@ void ExecuteUIDebugCommand(int id, const BrowserWindowInterface* browser);
 std::optional<int> GetKeyboardFocusedTabIndex(
     const BrowserWindowInterface* browser);
 
-void ShowIncognitoClearBrowsingDataDialog(BrowserWindowInterface* bwi);
+void ShowIncognitoClearBrowsingDataDialog(BrowserWindowInterface* browser);
 void ShowIncognitoHistoryDisclaimerDialog(BrowserWindowInterface* browser);
 bool ShouldInterceptChromeURLNavigationInIncognito(BrowserWindowInterface* browser,
                                                    const GURL& url);

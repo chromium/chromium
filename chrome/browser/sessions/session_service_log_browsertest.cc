@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceLogTest, PRE_RestoreEvent) {
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  Browser* new_browser = chrome::OpenEmptyWindow(profile_);
+  BrowserWindowInterface* new_browser = chrome::OpenEmptyWindow(profile_);
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
   ui_test_utils::NavigateToURLWithDisposition(
       new_browser, GURL(url::kAboutBlankURL),

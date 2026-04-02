@@ -111,7 +111,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
 
   EXPECT_TRUE(IsBrowserOpen(app_browser));
 
-  Browser* const tabbed_browser = chrome::OpenInChrome(app_browser);
+  BrowserWindowInterface* const tabbed_browser =
+      chrome::OpenInChrome(app_browser);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(IsBrowserOpen(tabbed_browser));
@@ -121,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
   UninstallWebApp(app_id);
 
   EXPECT_TRUE(IsBrowserOpen(tabbed_browser));
-  EXPECT_EQ(tabbed_browser->tab_strip_model()
+  EXPECT_EQ(tabbed_browser->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetLastCommittedURL(),
             GetSecureAppURL());

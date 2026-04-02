@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -40,8 +41,8 @@
 namespace web_app {
 namespace {
 
-content::WebContents* GetActiveWebContents(Browser* browser) {
-  return browser->tab_strip_model()->GetActiveWebContents();
+content::WebContents* GetActiveWebContents(BrowserWindowInterface* browser) {
+  return browser->GetTabStripModel()->GetActiveWebContents();
 }
 
 class EnableLinkCapturingInfobarBrowserTest
@@ -353,7 +354,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest, BarRemoved) {
   EXPECT_TRUE(GetLinkCapturingInfoBar(web_contents.get()));
 
   // Note: this will close & invalidate app_browser.
-  Browser* tabbed_browser = chrome::OpenInChrome(app_browser);
+  BrowserWindowInterface* tabbed_browser = chrome::OpenInChrome(app_browser);
 
   ASSERT_TRUE(web_contents);
   EXPECT_EQ(web_contents.get(), GetActiveWebContents(tabbed_browser));

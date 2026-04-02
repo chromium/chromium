@@ -133,7 +133,7 @@ Browser* FindWebAppBrowser(Profile* profile, const webapps::AppId& app_id);
 
 void CloseAndWait(BrowserWindowInterface* browser);
 
-bool IsBrowserOpen(const Browser* test_browser);
+bool IsBrowserOpen(const BrowserWindowInterface* test_browser);
 
 // Install a web policy app with |url|.
 // Returns a valid app ID of the installed app or nullopt.

@@ -8,6 +8,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,10 +62,8 @@ class ViewFocusWaiter : public views::ViewObserver {
 
 }  // namespace
 
-bool IsViewFocused(const Browser* browser, ViewID vid) {
-  BrowserWindow* browser_window = browser->window();
-  DCHECK(browser_window);
-  gfx::NativeWindow window = browser_window->GetNativeWindow();
+bool IsViewFocused(const BrowserWindowInterface* browser, ViewID vid) {
+  gfx::NativeWindow window = browser->GetWindow()->GetNativeWindow();
   DCHECK(window);
   const views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   DCHECK(widget);

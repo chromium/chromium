@@ -158,7 +158,8 @@ void BackgroundModeManager::BackgroundModeData::
   manager_->ReleaseForceInstalledExtensionsKeepAlive();
 }
 
-Browser* BackgroundModeManager::BackgroundModeData::GetBrowserWindow() {
+BrowserWindowInterface*
+BackgroundModeManager::BackgroundModeData::GetBrowserWindow() {
   return BackgroundModeManager::GetBrowserWindowForProfile(profile_);
 }
 
@@ -426,7 +427,8 @@ void BackgroundModeManager::LaunchBackgroundApplication(
 }
 
 // static
-Browser* BackgroundModeManager::GetBrowserWindowForProfile(Profile* profile) {
+BrowserWindowInterface* BackgroundModeManager::GetBrowserWindowForProfile(
+    Profile* profile) {
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   return browser ? browser : chrome::OpenEmptyWindow(profile);
 }

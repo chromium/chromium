@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
@@ -161,9 +162,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
   EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
 
   // Reparent back to non-app browser
-  Browser* tabbed_browser = chrome::OpenInChrome(app_browser);
+  BrowserWindowInterface* tabbed_browser = chrome::OpenInChrome(app_browser);
   content::WebContents* tabbed_web_contents =
-      tabbed_browser->tab_strip_model()->GetActiveWebContents();
+      tabbed_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(web_contents, tabbed_web_contents);
 
   EXPECT_FALSE(

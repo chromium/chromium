@@ -2961,7 +2961,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
   EXPECT_TRUE(ShowingAppManagementLink(app_browser));
 
   // Move back into tabbed browser: should keep showing the app settings link.
-  Browser* tabbed_browser =
+  BrowserWindowInterface* tabbed_browser =
       chrome::OpenInChrome(app_browser->GetBrowserForMigrationOnly());
   EXPECT_TRUE(ShowingAppManagementLink(tabbed_browser));
 }

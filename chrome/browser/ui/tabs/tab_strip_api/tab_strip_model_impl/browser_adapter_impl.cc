@@ -37,8 +37,7 @@ tabs::TabHandle BrowserAdapterImpl::AddTabAt(
     std::optional<tab_groups::TabGroupId> group,
     bool pinned) {
   auto* contents = chrome::AddAndReturnTabAt(
-      browser_->GetBrowserForMigrationOnly(), url,
-      index.value_or(kAppendNewTab), true, group, pinned);
+      browser_, url, index.value_or(kAppendNewTab), true, group, pinned);
   return contents ? tabs::TabInterface::GetFromContents(contents)->GetHandle()
                   : tabs::TabHandle::Null();
 }
