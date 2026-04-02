@@ -99,6 +99,9 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   // Whether this toolbar is in incognito mode.
   BOOL _incognito;
 
+  // Whether the visible page is the NTP.
+  BOOL _NTPVisible;
+
   // Used to record the latest fullscreen progress.
   CGFloat _fullscreenProgress;
 }
@@ -167,6 +170,7 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   [self createView];
   [self setUpHierarchy];
 
+  [self updateToolbarElementsVisibility];
   [self updateToolbarVisibility];
 
   [self
@@ -241,8 +245,17 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   }
   _visible = visible;
   [self loadViewIfNeeded];
+  [self updateToolbarElementsVisibility];
+}
+
+- (void)setNTPVisible:(BOOL)NTPVisible {
+  if (NTPVisible == _NTPVisible) {
+    return;
+  }
+  _NTPVisible = NTPVisible;
   [self updateToolbarVisibility];
-  [self.toolbarHeightDelegate toolbarsHeightChanged];
+  /// TODO(crbug.com/498602138): The location bar should be initially hidden on
+  /// the NTP, until the fakebox is swiped up out of view.
 }
 
 - (void)setMenu:(UIMenu*)menu forButtonType:(ToolbarButtonType)buttonType {
@@ -656,15 +669,25 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
 
 // Updates the visibility of the toolbar.
 - (void)updateToolbarVisibility {
+  BOOL hideToolbar = _NTPVisible && !_incognito && !CanShowTabStrip(self) &&
+                     IsSplitToolbarMode(self);
+  self.view.hidden = hideToolbar;
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
+}
+
+// Updates the visibility of the toolbar elements.
+- (void)updateToolbarElementsVisibility {
   _leadingStackView.hidden = !_visible;
   _locationBarContainer.hidden = !_visible;
   _trailingStackView.hidden = !_visible;
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
 // Called when the size class is updated.
 - (void)sizeClassDidChange {
   [self updateForFullscreenProgress:_fullscreenProgress];
   [self updateLayoutConstraints];
+  [self updateToolbarVisibility];
 }
 
 @end

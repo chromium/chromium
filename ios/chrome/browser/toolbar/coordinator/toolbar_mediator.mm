@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -106,9 +107,11 @@
       setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)];
   [self.consumer setIsLoading:webState->IsLoading()];
 
-  GURL visibleURL = webState->GetVisibleURL();
+  const GURL visibleURL = webState->GetVisibleURL();
 
+  [self.consumer setNTPVisible:IsUrlNtp(visibleURL)];
   [self.consumer setShareEnabled:!visibleURL.is_empty()];
+
   [self.consumer
             setMenu:[_buttonMenuFactory
                         menuForNavigationButton:webState->GetNavigationManager()
