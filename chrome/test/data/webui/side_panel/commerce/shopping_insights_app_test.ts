@@ -17,9 +17,8 @@ import type {PriceTrackingSectionElement} from 'chrome://shopping-insights-side-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ShoppingInsightsAppTest', () => {
   let shoppingInsightsApp: ShoppingInsightsAppElement;
@@ -137,28 +136,28 @@ suite('ShoppingInsightsAppTest', () => {
     document.body.appendChild(shoppingInsightsApp);
     await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
     await shoppingServiceApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
-    await flushTasks();
+    await microtasksFinished();
 
     const panelTitle =
-        shoppingInsightsApp.shadowRoot!.querySelector('.panel-title');
+        shoppingInsightsApp.shadowRoot.querySelector('.panel-title');
     assertTrue(!!panelTitle);
     assertEquals('Product Cluster Foo', panelTitle.textContent.trim());
 
-    const range = shoppingInsightsApp.shadowRoot!.querySelector('#priceRange');
+    const range = shoppingInsightsApp.shadowRoot.querySelector('#priceRange');
     assertTrue(!!range);
     assertEquals(
         loadTimeData.getStringF('rangeMultipleOptions', '$100', '$200'),
         range.textContent.trim());
 
     const titleSection =
-        shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
+        shoppingInsightsApp.shadowRoot.querySelector('#titleSection');
     assertTrue(!!titleSection);
     assertFalse(
         isVisible(titleSection.querySelector('catalog-attributes-row')));
     assertFalse(isVisible(titleSection.querySelector('insights-comment-row')));
 
     const historySection =
-        shoppingInsightsApp.shadowRoot!.querySelector('#historySection');
+        shoppingInsightsApp.shadowRoot.querySelector('#historySection');
     assertTrue(!!historySection);
     assertTrue(isVisible(historySection));
 
@@ -214,7 +213,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertEquals(
         1, metrics.count('Commerce.PriceInsights.InlineFeedbackLinkClicked'));
 
-    assertTrue(isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
+    assertTrue(isVisible(shoppingInsightsApp.shadowRoot.querySelector(
         'shopping-insights-history-graph')));
   });
 
@@ -226,28 +225,28 @@ suite('ShoppingInsightsAppTest', () => {
     document.body.appendChild(shoppingInsightsApp);
     await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
     await shoppingServiceApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
-    await flushTasks();
+    await microtasksFinished();
 
     const panelTitle =
-        shoppingInsightsApp.shadowRoot!.querySelector('.panel-title');
+        shoppingInsightsApp.shadowRoot.querySelector('.panel-title');
     assertTrue(!!panelTitle);
     assertEquals('Product Cluster Foo', panelTitle.textContent.trim());
 
-    const range = shoppingInsightsApp.shadowRoot!.querySelector('#priceRange');
+    const range = shoppingInsightsApp.shadowRoot.querySelector('#priceRange');
     assertTrue(!!range);
     assertEquals(
         loadTimeData.getStringF('rangeSingleOptionOnePrice', '$100'),
         range.textContent.trim());
 
     const titleSection =
-        shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
+        shoppingInsightsApp.shadowRoot.querySelector('#titleSection');
     assertTrue(!!titleSection);
     assertFalse(
         isVisible(titleSection.querySelector('catalog-attributes-row')));
     assertTrue(isVisible(titleSection.querySelector('insights-comment-row')));
 
     assertFalse(isVisible(
-        shoppingInsightsApp.shadowRoot!.querySelector('#historySection')));
+        shoppingInsightsApp.shadowRoot.querySelector('#historySection')));
   });
 
   test('HasHistoryOnlySingleOption', async () => {
@@ -258,18 +257,18 @@ suite('ShoppingInsightsAppTest', () => {
     document.body.appendChild(shoppingInsightsApp);
     await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
     await shoppingServiceApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
-    await flushTasks();
+    await microtasksFinished();
 
     const panelTitle =
-        shoppingInsightsApp.shadowRoot!.querySelector('.panel-title');
+        shoppingInsightsApp.shadowRoot.querySelector('.panel-title');
     assertTrue(!!panelTitle);
     assertEquals('Product Cluster Foo', panelTitle.textContent.trim());
 
     assertFalse(isVisible(
-        shoppingInsightsApp.shadowRoot!.querySelector('#priceRange')));
+        shoppingInsightsApp.shadowRoot.querySelector('#priceRange')));
 
     const titleSection =
-        shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
+        shoppingInsightsApp.shadowRoot.querySelector('#titleSection');
     assertTrue(!!titleSection);
     const attributesRow = titleSection.querySelector('catalog-attributes-row');
     assertTrue(!!attributesRow);
@@ -294,12 +293,12 @@ suite('ShoppingInsightsAppTest', () => {
     assertFalse(isVisible(titleSection.querySelector('insights-comment-row')));
 
     const historySection =
-        shoppingInsightsApp.shadowRoot!.querySelector('#historySection');
+        shoppingInsightsApp.shadowRoot.querySelector('#historySection');
     assertTrue(!!historySection);
     assertTrue(isVisible(historySection));
 
     const historyTitle =
-        shoppingInsightsApp.shadowRoot!.querySelector('#historyTitle');
+        shoppingInsightsApp.shadowRoot.querySelector('#historyTitle');
     assertTrue(!!historyTitle);
     assertEquals(
         loadTimeData.getString('historyTitleSingleOption'),
@@ -309,7 +308,7 @@ suite('ShoppingInsightsAppTest', () => {
 
     assertTrue(isVisible(historySection.querySelector('insights-comment-row')));
 
-    assertTrue(isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
+    assertTrue(isVisible(shoppingInsightsApp.shadowRoot.querySelector(
         'shopping-insights-history-graph')));
   });
 
@@ -321,10 +320,10 @@ suite('ShoppingInsightsAppTest', () => {
     document.body.appendChild(shoppingInsightsApp);
     await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
     await shoppingServiceApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
-    await flushTasks();
+    await microtasksFinished();
 
     const titleSection =
-        shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
+        shoppingInsightsApp.shadowRoot.querySelector('#titleSection');
     assertTrue(!!titleSection);
     const attributesRow = titleSection.querySelector('catalog-attributes-row');
     assertTrue(!!attributesRow);
@@ -354,9 +353,9 @@ suite('ShoppingInsightsAppTest', () => {
       await shoppingServiceApi.whenCalled('isShoppingListEligible');
       await shoppingServiceApi.whenCalled(
           'getPriceTrackingStatusForCurrentUrl');
-      await flushTasks();
+      await microtasksFinished();
 
-      const section = shoppingInsightsApp.shadowRoot!
+      const section = shoppingInsightsApp.shadowRoot
                           .querySelector<PriceTrackingSectionElement>(
                               '#priceTrackingSection');
       assertEquals(isVisible(section), eligible);
@@ -388,15 +387,15 @@ suite('ShoppingInsightsAppTest', () => {
 
     // Price tracking section is not visible before
     // `getPriceTrackingStatusForCurrentUrl` returns.
-    let section = shoppingInsightsApp.shadowRoot!
+    let section = shoppingInsightsApp.shadowRoot
                       .querySelector<PriceTrackingSectionElement>(
                           '#priceTrackingSection');
     assertFalse(isVisible(section));
 
     await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
-    await flushTasks();
+    await microtasksFinished();
 
-    section = shoppingInsightsApp.shadowRoot!
+    section = shoppingInsightsApp.shadowRoot
                   .querySelector<PriceTrackingSectionElement>(
                       '#priceTrackingSection');
     assertTrue(isVisible(section));

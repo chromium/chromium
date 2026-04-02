@@ -11,9 +11,9 @@ build_webui("build") {
 
   static_files = [ "shopping_insights.html" ]
 
-  web_component_files = [ "app.ts" ]
-
   ts_files = [
+    "app.html.ts",
+    "app.ts",
     "catalog_attributes_row.html.ts",
     "catalog_attributes_row.ts",
     "history_graph.html.ts",
@@ -26,6 +26,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "app.css",
     "catalog_attributes_row.css",
     "history_graph.css",
     "insights_comment_row.css",
