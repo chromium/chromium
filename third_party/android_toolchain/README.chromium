@@ -1,7 +1,7 @@
 Name: Android NDK
 URL: http://developer.android.com/ndk/index.html
-Version: Canary
-Update Mechanism: Autoroll
+Version: r28
+Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
 License: Unicode-DFS-2016, NAIST-2003, IBM-DHCP, BSD-3-Clause, Unicode-DFS-2015, NCSA, Zlib, ISC, Apache-with-LLVM-Exception, BSD-2-Clause, BSD-4-Clause-UC, BSD-4-Clause-Wasabi, Apache-2.0, MIT, MPL-2.0, CERN, SunPro, Caffe, ICU
@@ -18,12 +18,26 @@ this directory only contains the following artifacts from the NDK:
 
 This allows us to use tracing and gdb support, while limiting our dependencies.
 
-We automatically package and upload to CIPD all NDK Canaries (found here:
-https://ci.android.com/builds/branches/aosp-master-ndk/grid), and then have an
-autoroller which takes the latest CIPD upload and updates our DEPS file.
+How to upgrade NDK:
+1. Commit #1:
+   * Assign `_URL` variable in `3pp/fetch.py` to point to the new file.
+   * Edit `3pp/install.sh` as needed.
+2. The builder for CIPD packagers
+https://ci.chromium.org/ui/p/chromium/builders/ci/3pp-linux-amd64-packager
+   should run (trigger if needed) with the commit. Wait for it to finish.
+3. The `fetch.py` change leads to version code change, which triggers update in
+   "latest" entry for the page:
+https://chrome-infra-packages.appspot.com/p/chromium/third_party/android_toolchain/android_toolchain
+4. Commit #2:
+   * Update the DEPS entry `src/third_party/android_toolchain/ndk` with the new
+     Instance ID.
+   * Update this README.chromium with the new version.
+   * Update //build/config/android/config.gni ("default_android_ndk_version")
+   * Add change log URL to commit message (e.g.: https://github.com/android/ndk/releases/tag/r26b)
 
 Local Modifications:
 * Removed files in the sysroot that conflict with other files when unzipped on
   case-insensitive filesystems (e.g. usr/include/netfilter/xt_CONNMARK.h).
 
+Downloaded from: https://developer.android.com/ndk/downloads/index.html
 Reference Docs: https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md
