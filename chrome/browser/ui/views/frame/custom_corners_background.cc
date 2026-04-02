@@ -273,6 +273,11 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
   }
 }
 
+void CustomCornersBackground::OnViewThemeChanged(views::View* view) {
+  Background::OnViewThemeChanged(view);
+  view_->SchedulePaint();
+}
+
 std::optional<gfx::RoundedCornersF>
 CustomCornersBackground::GetRoundedCornerRadii() const {
   // Provided for completeness; this is not used anywhere.

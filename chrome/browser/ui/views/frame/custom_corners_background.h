@@ -97,6 +97,7 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
 
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
+  void OnViewThemeChanged(views::View* view) override;
   std::optional<gfx::RoundedCornersF> GetRoundedCornerRadii() const override;
 
   // CustomCorners:
