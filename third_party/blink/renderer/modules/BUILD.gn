@@ -745,6 +745,7 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/modules/ml:unit_tests",
     "//third_party/blink/renderer/modules/peerconnection:test_support",
     "//third_party/blink/renderer/modules/permissions:unit_tests",
+    "//third_party/blink/renderer/modules/spell_check_custom_dictionary:unit_tests",
     "//third_party/blink/renderer/modules/storage:unit_tests",
     "//third_party/blink/renderer/modules/storage_access:unit_tests",
     "//third_party/blink/renderer/modules/web_install:unit_tests",

@@ -6,7 +6,6 @@
 
 [
     ImplementedAs=WindowSpellCheckCustomDictionary,
-    Exposed=Window,
     SecureContext,
     RuntimeEnabled=SpellCheckCustomDictionaryAPI
 ] partial interface Window {

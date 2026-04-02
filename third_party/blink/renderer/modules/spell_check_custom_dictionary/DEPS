@@ -1,0 +1,7 @@
+specific_include_rules = {
+"spell_check_custom_dictionary_test\.cc": [
+      "+base/path_service.h",
+      "+base/strings/string_split.h",
+      "+components/spellcheck/renderer/spellcheck_provider_test.h",
+    ],
+}

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPELL_CHECK_CUSTOM_DICTIONARY_WINDOW_SPELL_CHECK_CUSTOM_DICTIONARY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPELL_CHECK_CUSTOM_DICTIONARY_WINDOW_SPELL_CHECK_CUSTOM_DICTIONARY_H_
 
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -13,9 +14,7 @@ class SpellCheckCustomDictionary;
 class LocalDOMWindow;
 
 // The "spellCheckCustomDictionary" attribute on the Window global scope.
-class WindowSpellCheckCustomDictionary {
-  STATIC_ONLY(WindowSpellCheckCustomDictionary);
-
+class MODULES_EXPORT WindowSpellCheckCustomDictionary {
  public:
   static SpellCheckCustomDictionary* spellCheckCustomDictionary(
       LocalDOMWindow&);
