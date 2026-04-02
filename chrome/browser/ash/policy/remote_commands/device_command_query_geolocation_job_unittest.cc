@@ -289,6 +289,7 @@ TEST_F(DeviceCommandQueryGeolocationJobTest, CommandFailsIfNotDisabled) {
   base::test::TestFuture<void> job_finished_future;
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
                        job_finished_future.GetCallback()));
+  task_environment_.FastForwardBy(base::Seconds(10));
   ASSERT_TRUE(job_finished_future.Wait());
   EXPECT_EQ(job->status(), RemoteCommandJob::Status::FAILED);
   std::unique_ptr<std::string> payload = job->GetResultPayload();
@@ -306,6 +307,45 @@ TEST_F(DeviceCommandQueryGeolocationJobTest, CommandFailsIfNotDisabled) {
 }
 
 TEST_F(DeviceCommandQueryGeolocationJobTest,
+       CommandSucceedsIfDeviceBecomesDisabledDuringRetry) {
+  SetDevicePolicy(em::DeviceState::DEVICE_MODE_NORMAL,
+                  /*location_tracking_enabled=*/true);
+
+  const double latitude = 51.0;
+  const double longitude = -0.1;
+  const double accuracy = 1200.4;
+  const GURL geolocation_url = GetGeolocationUrl();
+  AddMockResponse(geolocation_url, test_utils::kSimpleResponseBody);
+
+  auto job = CreateJob(test_start_time_, test_manager_.get());
+  base::test::TestFuture<void> job_finished_future;
+  EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                       job_finished_future.GetCallback()));
+
+  // Device becomes disabled during the 10 seconds delay.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  SetDevicePolicy(em::DeviceState::DEVICE_MODE_DISABLED,
+                  /*location_tracking_enabled=*/true);
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  ASSERT_TRUE(job_finished_future.Wait());
+  EXPECT_EQ(job->status(), RemoteCommandJob::Status::SUCCEEDED);
+
+  std::unique_ptr<std::string> payload = job->GetResultPayload();
+  ASSERT_TRUE(payload);
+
+  const std::optional<base::Value> parsed_payload =
+      base::JSONReader::Read(*payload, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed_payload.has_value());
+  ASSERT_TRUE(parsed_payload->is_dict());
+  const base::DictValue& dict = parsed_payload->GetDict();
+
+  EXPECT_EQ(dict.FindDouble("latitude"), latitude);
+  EXPECT_EQ(dict.FindDouble("longitude"), longitude);
+  EXPECT_EQ(dict.FindDouble("accuracy"), accuracy);
+}
+
+TEST_F(DeviceCommandQueryGeolocationJobTest,
        CommandFailsIfLocationTrackingDisabled) {
   SetDevicePolicy(em::DeviceState::DEVICE_MODE_DISABLED,
                   /*location_tracking_enabled=*/false);
@@ -313,6 +353,7 @@ TEST_F(DeviceCommandQueryGeolocationJobTest,
   base::test::TestFuture<void> job_finished_future;
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
                        job_finished_future.GetCallback()));
+  task_environment_.FastForwardBy(base::Seconds(10));
   ASSERT_TRUE(job_finished_future.Wait());
   EXPECT_EQ(job->status(), RemoteCommandJob::Status::FAILED);
   std::unique_ptr<std::string> payload = job->GetResultPayload();
@@ -336,6 +377,7 @@ TEST_F(DeviceCommandQueryGeolocationJobTest, CommandFailsForUnmanagedDevice) {
   base::test::TestFuture<void> job_finished_future;
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
                        job_finished_future.GetCallback()));
+  task_environment_.FastForwardBy(base::Seconds(10));
   ASSERT_TRUE(job_finished_future.Wait());
 
   EXPECT_EQ(job->status(), RemoteCommandJob::Status::FAILED);

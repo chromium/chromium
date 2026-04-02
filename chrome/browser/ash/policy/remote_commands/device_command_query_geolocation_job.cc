@@ -37,6 +37,7 @@ constexpr char kQueryTimeMs[] = "query_time_ms";
 constexpr char kErrorMessage[] = "error_message";
 constexpr char kErrorCode[] = "error_code";
 constexpr base::TimeDelta kGeolocationTimeout = base::Seconds(60);
+constexpr base::TimeDelta kRetryDelay = base::Seconds(10);
 
 constexpr char kLocationSavedNotificationId[] =
     "device-located-disabled-device";
@@ -140,9 +141,28 @@ DeviceCommandQueryGeolocationJob::CheckIfCommandIsAllowed() const {
 
 void DeviceCommandQueryGeolocationJob::RunImpl(
     CallbackWithResult result_callback) {
+  RunImplInternal(std::move(result_callback), /*retried=*/false);
+}
+
+void DeviceCommandQueryGeolocationJob::RunImplInternal(
+    CallbackWithResult result_callback,
+    bool retried) {
   const std::optional<enterprise_management::QueryGeolocationCommandResultCode>
       error = CheckIfCommandIsAllowed();
   if (error.has_value()) {
+    if (!retried) {
+      // Retry once since the device might not have received the updated
+      // disabled state yet.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&DeviceCommandQueryGeolocationJob::RunImplInternal,
+                         weak_factory_.GetWeakPtr(),
+                         std::move(result_callback),
+                         /*retried=*/true),
+          kRetryDelay);
+      return;
+    }
+
     base::DictValue error_response;
     error_response.Set(kResultCode, error.value());
 

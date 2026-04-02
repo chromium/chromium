@@ -40,6 +40,8 @@ class DeviceCommandQueryGeolocationJob : public RemoteCommandJob {
   // RemoteCommandJob:
   void RunImpl(CallbackWithResult result_callback) override;
 
+  void RunImplInternal(CallbackWithResult result_callback, bool retried);
+
   std::optional<enterprise_management::QueryGeolocationCommandResultCode>
   CheckIfCommandIsAllowed() const;
 
