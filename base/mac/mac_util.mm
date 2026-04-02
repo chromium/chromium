@@ -620,7 +620,14 @@ void OpenSystemSettingsPane(SystemSettingsPane pane,
   DCHECK(url != nil ^ pane_file != nil);
 
   if (url) {
-    [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:url]];
+    NSURL* ns_url = [NSURL URLWithString:url];
+    if (!ns_url) {
+      return;
+    }
+    [NSWorkspace.sharedWorkspace
+                  openURL:ns_url
+            configuration:[NSWorkspaceOpenConfiguration configuration]
+        completionHandler:nil];
     return;
   }
 

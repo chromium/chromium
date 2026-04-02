@@ -81,7 +81,10 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
       // Note that there exists a TOCTOU race between the time that |path| was
       // verified as being a directory and when NSWorkspace invokes Finder (or
       // alternative) to open |path_string|.
-      [[NSWorkspace sharedWorkspace] openURL:url];
+      [[NSWorkspace sharedWorkspace]
+                    openURL:url
+              configuration:[NSWorkspaceOpenConfiguration configuration]
+          completionHandler:nil];
       return;
   }
 }
