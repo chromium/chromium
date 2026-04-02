@@ -618,9 +618,18 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 }
 
 - (void)processFileURL:(GURL)fileURL isPDF:(BOOL)isPDF {
+  [self processFileURL:fileURL isPDF:isPDF completion:nil];
+}
+
+- (void)processFileURL:(GURL)fileURL
+                 isPDF:(BOOL)isPDF
+            completion:(void (^)(void))completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSString* assetID = base::SysUTF8ToNSString(fileURL.spec());
   if ([_items assetAlreadyLoaded:assetID]) {
+    if (completion) {
+      completion();
+    }
     return;
   }
 
@@ -632,6 +641,9 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                               error:&error] objectForKey:NSURLFileSizeKey];
   if (fileSize && [fileSize unsignedLongLongValue] > kMaxFileAttachmentSize) {
     [self.delegate showSnackbarForItemUploadDidFail];
+    if (completion) {
+      completion();
+    }
     return;
   }
 
@@ -655,11 +667,20 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
         [weakSelf onDataReadForItemWithIdentifier:identifier
                                           fromURL:fileURL
                                          withData:data];
+        if (completion) {
+          completion();
+        }
       }));
 }
 
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider
                          assetID:(NSString*)assetID {
+  [self processImageItemProvider:itemProvider assetID:assetID completion:nil];
+}
+
+- (void)processImageItemProvider:(NSItemProvider*)itemProvider
+                         assetID:(NSString*)assetID
+                      completion:(void (^)(void))completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   BOOL unableToLoadUIImage =
@@ -667,6 +688,9 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
   BOOL assetAlreadyLoaded = [_items assetAlreadyLoaded:assetID];
   if (unableToLoadUIImage || assetAlreadyLoaded) {
+    if (completion) {
+      completion();
+    }
     return;
   }
 
@@ -677,6 +701,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   [self addItem:item];
   __block base::UnguessableToken identifier = item.identifier;
 
+  __block int requiredNumberOfLoads = 2;
   __weak __typeof(self) weakSelf = self;
   // Load the preview image.
   [itemProvider
@@ -685,6 +710,10 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                   dispatch_async(dispatch_get_main_queue(), ^{
                     [weakSelf didLoadPreviewImage:previewImage
                             forItemWithIdentifier:identifier];
+                    requiredNumberOfLoads--;
+                    if (requiredNumberOfLoads == 0 && completion) {
+                      completion();
+                    }
                   });
                 }];
 
@@ -695,6 +724,10 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                   dispatch_async(dispatch_get_main_queue(), ^{
                     [weakSelf didLoadFullImage:(UIImage*)object
                          forItemWithIdentifier:identifier];
+                    requiredNumberOfLoads--;
+                    if (requiredNumberOfLoads == 0 && completion) {
+                      completion();
+                    }
                   });
                 }];
 }
