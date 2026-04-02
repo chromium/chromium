@@ -64,7 +64,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj,
       WebContents* web_contents,
-      const base::android::JavaRef<jobject>& jaccessibility_node_info_builder);
+      const base::android::JavaRef<jobject>& jaccessibility_node_info_builder,
+      const base::android::JavaRef<jobject>& jaccessibility_fake_android_cache);
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj,
@@ -317,6 +318,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   void UpdateFrameInfo(float page_scale);
 
+  bool IsNodeLikelyKnownByAndroidFrameworkForExperiment(int32_t unique_id);
+
   // Set a new max for TYPE_WINDOW_CONTENT_CHANGED events to fire.
   void SetMaxContentChangedEventsToFireForTesting(JNIEnv* env,
                                                   int32_t maxEvents) {
@@ -566,6 +569,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // A weak reference to the Java WebContentsAccessibilityAndroid object.
   JavaObjectWeakGlobalRef java_ref_;
   JavaObjectWeakGlobalRef java_anib_ref_;
+  JavaObjectWeakGlobalRef java_fake_android_cache_ref_;
 
   // A weak reference to the AssistData tree builder which will only be
   // instantiated after a request from the Android framework.

@@ -1054,7 +1054,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
             mNativeObj =
                     WebContentsAccessibilityImplJni.get()
-                            .init(this, mDelegate.getWebContents(), mAccessibilityNodeInfoBuilder);
+                            .init(
+                                    this,
+                                    mDelegate.getWebContents(),
+                                    mAccessibilityNodeInfoBuilder,
+                                    mFakeAndroidCache);
             onNativeInit();
         }
 
@@ -2128,11 +2132,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         if (mFakeAndroidCache != null) {
-            if (setSubtreeChanged) {
-                mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ true);
-            } else {
-                mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ false);
-            }
+            mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ setSubtreeChanged);
         }
 
         mHistogramRecorder.incrementEnqueuedEvents();
@@ -2721,7 +2721,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         long init(
                 WebContentsAccessibilityImpl self,
                 WebContents webContents,
-                AccessibilityNodeInfoBuilder builder);
+                AccessibilityNodeInfoBuilder builder,
+                @Nullable FakeAndroidCache fakeAndroidCache);
 
         long initWithAXTree(
                 WebContentsAccessibilityImpl self,

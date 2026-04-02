@@ -56,6 +56,7 @@
 #include "content/public/android/content_jni_headers/AccessibilityNodeInfoBuilder_jni.h"
 #include "content/public/android/content_jni_headers/AccessibilityNodeInfoUtils_jni.h"
 #include "content/public/android/content_jni_headers/AssistDataBuilder_jni.h"
+#include "content/public/android/content_jni_headers/FakeAndroidCache_jni.h"
 #include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -585,9 +586,11 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     WebContents* web_contents,
-    const JavaRef<jobject>& jaccessibility_node_info_builder)
+    const JavaRef<jobject>& jaccessibility_node_info_builder,
+    const JavaRef<jobject>& jaccessibility_fake_android_cache)
     : java_ref_(env, obj),
       java_anib_ref_(env, jaccessibility_node_info_builder),
+      java_fake_android_cache_ref_(env, jaccessibility_fake_android_cache),
       web_contents_(static_cast<WebContentsImpl*>(web_contents)),
       frame_info_initialized_(false),
       max_content_changed_events_to_fire_(GetMaxContentChangedEventsToFire()) {
@@ -2768,6 +2771,16 @@ void WebContentsAccessibilityAndroid::UpdateFrameInfo(float page_scale) {
   frame_info_initialized_ = true;
 }
 
+// TODO(crbug.com/485227837): Remove experiment's methods.
+bool WebContentsAccessibilityAndroid::
+    IsNodeLikelyKnownByAndroidFrameworkForExperiment(int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_fake_android_cache_ref_.get(env);
+  CHECK(features::kPreventWindowContentChangesForNodesNotLikelyInAndroid.Get());
+  return Java_FakeAndroidCache_isNodeLikelyKnownByAndroidFrameworkForExperiment(
+      env, obj, unique_id);
+}
+
 void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
     JNIEnv* env,
     const JavaRef<jobject>& view_structure_root,
@@ -3013,12 +3026,14 @@ static int64_t JNI_WebContentsAccessibilityImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents,
-    const JavaRef<jobject>& jaccessibility_node_info_builder) {
+    const JavaRef<jobject>& jaccessibility_node_info_builder,
+    const JavaRef<jobject>& jaccessibility_fake_android_cache) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
   return reinterpret_cast<intptr_t>(new WebContentsAccessibilityAndroid(
-      env, obj, web_contents, jaccessibility_node_info_builder));
+      env, obj, web_contents, jaccessibility_node_info_builder,
+      jaccessibility_fake_android_cache));
 }
 
 static int64_t JNI_WebContentsAccessibilityImpl_InitForAssistData(
@@ -3037,5 +3052,6 @@ static int64_t JNI_WebContentsAccessibilityImpl_InitForAssistData(
 
 DEFINE_JNI(AccessibilityNodeInfoBuilder)
 DEFINE_JNI(AccessibilityNodeInfoUtils)
+DEFINE_JNI(FakeAndroidCache)
 DEFINE_JNI(AssistDataBuilder)
 DEFINE_JNI(WebContentsAccessibilityImpl)
