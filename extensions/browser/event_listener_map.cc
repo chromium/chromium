@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/service_worker/worker_id.h"
@@ -155,6 +156,16 @@ EventListener::EventListener(const std::string& event_name,
 EventListenerMap::EventListenerMap(Delegate* delegate) : delegate_(delegate) {}
 
 EventListenerMap::~EventListenerMap() = default;
+
+const EventListenerMap::ListenerList& EventListenerMap::GetEventListenersByName(
+    const std::string& event_name) const {
+  auto it = listeners_.find(event_name);
+  if (it != listeners_.end()) {
+    return it->second;
+  }
+  static const base::NoDestructor<ListenerList> empty_list;
+  return *empty_list;
+}
 
 bool EventListenerMap::AddListener(std::unique_ptr<EventListener> listener) {
   if (HasListener(listener.get())) {
@@ -376,7 +387,7 @@ std::set<const EventListener*> EventListenerMap::GetEventListeners(
       }
     }
   } else {
-    for (const auto& listener : listeners_[event.event_name]) {
+    for (const auto& listener : GetEventListenersByName(event.event_name)) {
       interested_listeners.insert(listener.get());
     }
   }

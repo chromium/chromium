@@ -162,7 +162,9 @@ class EventListenerMap {
  public:
   using ListenerList = std::vector<std::unique_ptr<EventListener>>;
   // The key here is an event name.
-  using ListenerMap = base::flat_map<std::string, ListenerList>;
+  // This is a std::map to guarantee iterator stability while entries are added
+  // or removed.
+  using ListenerMap = std::map<std::string, ListenerList>;
 
   class Delegate {
    public:
@@ -195,9 +197,8 @@ class EventListenerMap {
   // Returns the set of listeners that want to be notified of `event`.
   std::set<const EventListener*> GetEventListeners(const Event& event);
 
-  const ListenerList& GetEventListenersByName(const std::string& event_name) {
-    return listeners_[event_name];
-  }
+  const ListenerList& GetEventListenersByName(
+      const std::string& event_name) const;
 
   // Removes all listeners with process equal to `process`.
   void RemoveListenersForProcess(const content::RenderProcessHost* process);
