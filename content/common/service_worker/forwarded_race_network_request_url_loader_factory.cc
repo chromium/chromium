@@ -4,7 +4,15 @@
 
 #include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 
+#include "base/feature_list.h"
+
 namespace content {
+
+namespace {
+// Kill switch for multiple CreateLoaderAndStart calls.
+BASE_FEATURE(kKillSwitchForRaceNetworkRequestMultipleCreateLoaderAndStartCalls,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
 
 ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
     ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory(
@@ -34,10 +42,14 @@ void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
     CHECK(result) << resource_request.url;
     is_data_pipe_fused_ = true;
   } else {
-    // If already fused, create a new URLLoader and start the new request.
-    fallback_factory_->CreateLoaderAndStart(
-        std::move(receiver), request_id, options, resource_request,
-        std::move(client), traffic_annotation);
+    // A legitimate renderer will never hit this branch.
+    // If we are here, the renderer is compromised or severely buggy.
+    if (base::FeatureList::IsEnabled(
+            kKillSwitchForRaceNetworkRequestMultipleCreateLoaderAndStartCalls)) {
+      receiver_.ReportBadMessage(
+          "ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory: "
+          "CreateLoaderAndStart called multiple times.");
+    }
   }
 }
 
