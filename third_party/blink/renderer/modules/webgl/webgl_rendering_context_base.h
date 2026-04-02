@@ -2081,10 +2081,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // current content.
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider_;
 
-  // Whether `resource_provider_` has fresh content that should be sent to the
-  // compositor in response to a PushFrame() call.
-  bool resource_provider_has_content_for_frame_push_ = false;
-
   // If PaintRenderingResultsToSnapshot() is unable to create
   // `resource_provider_`, it will attempt to create an unaccelerated snapshot
   // directly. If it is successful in doing this, it will cache the created

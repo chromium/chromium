@@ -1651,29 +1651,15 @@ bool WebGLRenderingContextBase::PushFrame() {
     return false;
   }
 
-  // Note: we push a frame only if (a) there is fresh content to produce and
-  // (b) we successfully produced that content.
-  scoped_refptr<CanvasResource> resource = nullptr;
-  cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
-
   if (resource_provider_.get() &&
       resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
     resource_provider_.reset();
     Host()->DiscardResources();
   }
 
-  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
-    if (resource_provider_has_content_for_frame_push_) {
-      // `resource_provider_` already has the current contents.
-      resource = resource_provider_->ProduceCanvasResource();
-    }
-  } else {
-    resource = CopyRenderingResultsFromDrawingBufferToResource(kBackBuffer);
-  }
-
-  if (resource) {
+  if (scoped_refptr<CanvasResource> resource =
+          CopyRenderingResultsFromDrawingBufferToResource(kBackBuffer)) {
     submitted_frame = Host()->PushFrame(std::move(resource));
-    resource_provider_has_content_for_frame_push_ = false;
   }
   MarkLayerComposited();
   return submitted_frame;
@@ -2131,7 +2117,6 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
 
   // We successfully painted the contents to the resource provider.
   must_paint_to_canvas_ = false;
-  resource_provider_has_content_for_frame_push_ = true;
   return resource;
 }
 
