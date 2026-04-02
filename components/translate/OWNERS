@@ -9,7 +9,7 @@ jzw@chromium.org
 megjablon@chromium.org
 perrier@chromium.org
 toyoshim@chromium.org
-
+danft@google.com
 # Specialized reviewers
 # UMA and UKM translate metrics
 per-file *metric*=curranmax@chromium.org
