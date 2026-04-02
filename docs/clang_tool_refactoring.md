@@ -199,7 +199,7 @@ files the clang tool is run against.
 Dumping the AST for a file:
 
 ```shell
-clang++ -Xclang -ast-dump -std=c++14 foo.cc | less -R
+clang++ -Xclang -ast-dump -std=c++23 foo.cc | less -R
 ```
 
 Using `clang-query` to dynamically test matchers (requires checking out
