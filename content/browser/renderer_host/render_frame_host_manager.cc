@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstddef>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -105,6 +106,9 @@ using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace {
+const char kWouldSwapAboutBlankHistogramName[] =
+    "Navigation.ProcessSwap.V8Optimizer."
+    "WouldSwapRendererInitiatedAboutBlankNavigation";
 
 // Enables swapping BrowsingInstances when a navigation requires different
 // process-level flags (e.g., V8 optimizers, jitless) than the current process.
@@ -179,7 +183,13 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
 // into a new tab before taking effect.
 bool ShouldSwapBrowsingInstancesForDifferentProcessFlags(
     RenderFrameHostImpl* current_rfh,
-    const UrlInfo& destination_effective_url_info) {
+    const UrlInfo& destination_effective_url_info,
+    SiteInstanceImpl* source_instance) {
+  // TODO(crbug.com/493684112): Clean up this way of checking for
+  // renderer-initiated navigations for the histogram.
+  const bool is_renderer_initiated_about_blank =
+      destination_effective_url_info.url.IsAboutBlank() && source_instance;
+
   if (!base::FeatureList::IsEnabled(
           kSwapBrowsingInstancesForDifferentProcessFlags)) {
     return false;
@@ -192,6 +202,9 @@ bool ShouldSwapBrowsingInstancesForDifferentProcessFlags(
   // Skip cases when there are other windows that might script this one.
   SiteInstanceImpl* current_instance = current_rfh->GetSiteInstance();
   if (current_instance->GetRelatedActiveContentsCount() > 1u) {
+    if (is_renderer_initiated_about_blank) {
+      base::UmaHistogramBoolean(kWouldSwapAboutBlankHistogramName, false);
+    }
     return false;
   }
 
@@ -203,6 +216,15 @@ bool ShouldSwapBrowsingInstancesForDifferentProcessFlags(
       future_isolation_context, destination_effective_url_info);
   const SiteInfo& current_site_info = current_instance->GetSiteInfo();
 
+  if (is_renderer_initiated_about_blank) {
+    const bool should_swap_for_flags =
+        current_site_info.are_v8_optimizations_disabled() !=
+            site_info_in_future_context.are_v8_optimizations_disabled() ||
+        current_site_info.is_jit_disabled() !=
+            site_info_in_future_context.is_jit_disabled();
+    base::UmaHistogramBoolean(kWouldSwapAboutBlankHistogramName,
+                              should_swap_for_flags);
+  }
   // Navigation to about:blank should stay in its initiator's
   // SiteInstance/process.
   if (destination_effective_url_info.url.IsAboutBlank()) {
@@ -2855,7 +2877,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // applied. This ensures that the user's security preferences are applied
   // without needing to open a new tab.
   if (ShouldSwapBrowsingInstancesForDifferentProcessFlags(
-          render_frame_host_.get(), url_info_to_test)) {
+          render_frame_host_.get(), url_info_to_test, source_instance)) {
     return BrowsingContextGroupSwap::CreateSecuritySwap();
   }
 
