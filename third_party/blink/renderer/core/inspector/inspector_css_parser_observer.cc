@@ -177,7 +177,7 @@ wtf_size_t FindColonIndex(const StringView& property_string) {
       return index;
     } else if (index < property_string.length() - 1 &&
                property_string[index] == '/' &&
-               property_string[index + 1 == '*']) {
+               property_string[index + 1] == '*') {
       if (index >= property_string.length() - 2) {
         return kNotFound;
       }
