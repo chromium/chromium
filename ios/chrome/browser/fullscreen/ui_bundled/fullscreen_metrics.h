@@ -17,8 +17,9 @@ enum class FullscreenModeTransitionTrigger {
   // gesture, with the animation of entering or exiting fullscreen mode being
   // fully controlled by the scroll action.
   kUserControlled = 0,
-  // Reported when entering to fullscreen mode is forced by the code, without
-  // any user action.
+  // Reported when entering or exiting fullscreen mode is forced by the code,
+  // either without any user action or in response to a user action where the
+  // user's intent wasn't explicitly to change the fullscreen state.
   kForcedByCode = 1,
   // Reported when fullscreen mode is triggered by a minimal downward scroll
   // gesture. The system automatically completes the fullscreen animation after

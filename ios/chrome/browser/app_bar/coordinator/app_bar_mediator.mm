@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
@@ -321,6 +322,15 @@
 - (void)willEnterTabGrid {
   _currentPage = _tabGridState.currentPage;
   self.currentTabGroup = _tabGridState.visibleTabGroup;
+
+  FullscreenController* fullscreenController =
+      _incognitoState.incognitoContentVisible ? _incognitoFullscreenController
+                                              : _regularFullscreenController;
+
+  if (fullscreenController && fullscreenController->GetProgress() < 1.0) {
+    fullscreenController->ExitFullscreen(
+        FullscreenModeTransitionTrigger::kForcedByCode);
+  }
   [self updateConsumer];
 }
 
