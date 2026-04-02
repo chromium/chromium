@@ -10,7 +10,7 @@
 
   function navigate() {
     const hash = new URL(location.href).hash; // #image or #text in practice.
-    history.pushState({}, "", "/page.html?id=" + currentPage + hash);
+    history.pushState({}, "", "/soft_navigation_basics.html?id=" + currentPage + hash);
   }
 
   function loadPageContents() {
@@ -33,10 +33,14 @@
     loadPageContents();
   }
 
-  // Intercept the browser's back button to trigger a soft navigation.
-  window.addEventListener('popstate', function(event) {
-    // Don't navigate, rather let the browser update the URL.
-    currentPage--;
-    loadPageContents();
-  });
+  // This function is called by SoftNavigation.BackButton
+  // in soft_navigation_metrics_browsertest.cc.
+  function registerBackButtonHandler() {
+    // Intercept the browser's back button to trigger a soft navigation.
+    window.addEventListener('popstate', function(event) {
+      // Don't navigate, rather let the browser update the URL.
+      currentPage--;
+      loadPageContents();
+    });
+  }
 </script>

@@ -659,6 +659,12 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
   Load("/soft_navigation_basics.html#text");
   waiter.Wait();
 
+  // This registers a popstate event handler to trigger a soft navigation when
+  // the back button is clicked.
+  ASSERT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     "registerBackButtonHandler()")
+                  .is_ok());
+
   // 1st soft navigation: click on the next page button.
   TriggerSoftNavigationAndWait(web_contents(), &waiter, 1,
                                /*element_id=*/"next-page");
@@ -720,9 +726,15 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
   EXPECT_THAT(
       urls,
       testing::ElementsAre(
-          absl::StrFormat("http://example.com:%d/page.html?id=1#text", port),
-          absl::StrFormat("http://example.com:%d/page.html?id=2#text", port),
-          absl::StrFormat("http://example.com:%d/page.html?id=1#text", port),
+          absl::StrFormat(
+              "http://example.com:%d/soft_navigation_basics.html?id=1#text",
+              port),
+          absl::StrFormat(
+              "http://example.com:%d/soft_navigation_basics.html?id=2#text",
+              port),
+          absl::StrFormat(
+              "http://example.com:%d/soft_navigation_basics.html?id=1#text",
+              port),
           absl::StrFormat(
               "http://example.com:%d/soft_navigation_basics.html#text", port)));
 
