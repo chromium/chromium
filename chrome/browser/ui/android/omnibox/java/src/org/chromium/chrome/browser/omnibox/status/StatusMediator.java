@@ -620,6 +620,12 @@ public class StatusMediator
         StatusIconResource extensionIcon = getStatusIconResourceForExtensionSuppliedDSE();
         if (extensionIcon != null) return extensionIcon;
 
+        if (mSiteSearchDataSupplier != null && mSiteSearchDataSupplier.get() != null) {
+            return new StatusIconResource(
+                    R.drawable.ic_suggestion_magnifier,
+                    ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme));
+        }
+
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
             return new StatusIconResource(
