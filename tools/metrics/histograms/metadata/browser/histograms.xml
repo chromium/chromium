@@ -1201,6 +1201,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.Tabs.TabShowReason.BothTabSwitchingAndBfcache"
+    enum="Boolean" expires_after="2027-04-02">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a tab is shown. Records whether both the tab switching and
+    bfcache restore show reasons are set. This is used to understand if there is
+    any overlap between these two events.
+  </summary>
+</histogram>
+
 <histogram name="Browser.Tabs.TabSwitchResult3{TabSwitchingType}"
     enum="TabSwitchResult2" expires_after="2026-08-30">
   <owner>fdoray@chromium.org</owner>

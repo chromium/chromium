@@ -159,6 +159,10 @@ ContentToVisibleTimeReporter::TabWasShown(
     bool has_saved_frames,
     RecordContentToVisibleTimeRequest start_state) {
   DCHECK(!start_state.event_start_time.is_null());
+  base::UmaHistogramBoolean(
+      "Browser.Tabs.TabShowReason.BothTabSwitchingAndBfcache",
+      start_state.show_reason_tab_switching &&
+          start_state.show_reason_bfcache_restore);
   if (tab_switch_start_state_ &&
       tab_switch_start_state_->show_reason_tab_switching &&
       start_state.show_reason_tab_switching) {

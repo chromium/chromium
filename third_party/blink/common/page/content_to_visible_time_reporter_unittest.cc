@@ -23,6 +23,8 @@ namespace blink {
 
 constexpr char kBfcacheRestoreHistogram[] =
     "BackForwardCache.Restore.NavigationToFirstPaint";
+constexpr char kBothReasonsHistogram[] =
+    "Browser.Tabs.TabShowReason.BothTabSwitchingAndBfcache";
 
 constexpr base::TimeDelta kDuration = base::Milliseconds(42);
 constexpr base::TimeDelta kOtherDuration = base::Milliseconds(4242);
@@ -349,6 +351,52 @@ TEST_P(ContentToVisibleTimeReporterTest,
   // Bfcache restore.
   ExpectTotalSamples({kBfcacheRestoreHistogram}, 1);
   ExpectTimeBucketCounts({kBfcacheRestoreHistogram}, kDuration, 1);
+}
+
+TEST_P(ContentToVisibleTimeReporterTest, BothReasonsMetric) {
+  {
+    base::HistogramTester tester;
+    tab_switch_time_recorder_.TabWasShown(
+        tab_state_.has_saved_frames,
+        RecordContentToVisibleTimeRequest{
+            .event_start_time = base::TimeTicks::Now(),
+            .show_reason_tab_switching = true,
+            .show_reason_bfcache_restore = true});
+    tester.ExpectUniqueSample(kBothReasonsHistogram, true, 1);
+  }
+
+  {
+    base::HistogramTester tester;
+    tab_switch_time_recorder_.TabWasShown(
+        tab_state_.has_saved_frames,
+        RecordContentToVisibleTimeRequest{
+            .event_start_time = base::TimeTicks::Now(),
+            .show_reason_tab_switching = true,
+            .show_reason_bfcache_restore = false});
+    tester.ExpectUniqueSample(kBothReasonsHistogram, false, 1);
+  }
+
+  {
+    base::HistogramTester tester;
+    tab_switch_time_recorder_.TabWasShown(
+        tab_state_.has_saved_frames,
+        RecordContentToVisibleTimeRequest{
+            .event_start_time = base::TimeTicks::Now(),
+            .show_reason_tab_switching = false,
+            .show_reason_bfcache_restore = true});
+    tester.ExpectUniqueSample(kBothReasonsHistogram, false, 1);
+  }
+
+  {
+    base::HistogramTester tester;
+    tab_switch_time_recorder_.TabWasShown(
+        tab_state_.has_saved_frames,
+        RecordContentToVisibleTimeRequest{
+            .event_start_time = base::TimeTicks::Now(),
+            .show_reason_tab_switching = false,
+            .show_reason_bfcache_restore = false});
+    tester.ExpectUniqueSample(kBothReasonsHistogram, false, 1);
+  }
 }
 
 }  // namespace blink
