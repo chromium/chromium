@@ -9303,7 +9303,9 @@ void RenderFrameHostImpl::SuddenTerminationDisablerChanged(
     blink::mojom::SuddenTerminationDisablerType disabler_type) {
   switch (disabler_type) {
     case blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler:
-      CHECK_NE(has_before_unload_handler_, present);
+      // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK
+      // once we are sure this isn't hit.
+      DCHECK_NE(has_before_unload_handler_, present);
       if (IsNestedWithinFencedFrame()) {
         bad_message::ReceivedBadMessage(
             GetProcess(),
@@ -9313,7 +9315,9 @@ void RenderFrameHostImpl::SuddenTerminationDisablerChanged(
       has_before_unload_handler_ = present;
       break;
     case blink::mojom::SuddenTerminationDisablerType::kPageHideHandler:
-      CHECK_NE(has_pagehide_handler_, present);
+      // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK
+      // once we are sure this isn't hit.
+      DCHECK_NE(has_pagehide_handler_, present);
       has_pagehide_handler_ = present;
       break;
     case blink::mojom::SuddenTerminationDisablerType::kUnloadHandler:
