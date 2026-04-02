@@ -1325,7 +1325,7 @@ PasswordFormManager::PasswordFormManager(
   if (!metrics_recorder_) {
     metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
         client_->IsCommittedMainFrameSecure(), client_->GetUkmSourceId(),
-        client_->GetPrefs());
+        client_->GetPrefs(), client_->GetProfileMetricsService());
   }
   password_save_manager_->Init(
       client_, form_fetcher_, metrics_recorder_,

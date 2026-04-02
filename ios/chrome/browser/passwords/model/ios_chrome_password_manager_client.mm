@@ -37,6 +37,7 @@
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
@@ -173,6 +174,11 @@ PrefService* IOSChromePasswordManagerClient::GetPrefs() const {
 
 PrefService* IOSChromePasswordManagerClient::GetLocalStatePrefs() const {
   return GetApplicationContext()->GetLocalState();
+}
+
+metrics::ProfileMetricsService*
+IOSChromePasswordManagerClient::GetProfileMetricsService() {
+  return IOSProfileMetricsServiceFactory::GetForProfile(bridge_.profile);
 }
 
 const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()

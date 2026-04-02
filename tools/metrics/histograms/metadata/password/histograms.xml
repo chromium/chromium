@@ -1630,7 +1630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.FillingAssistance{PasswordAccountStorageUsageLevelOrSecurityOrigin}"
+    name="PasswordManager.FillingAssistance{PasswordAccountStorageUsageLevelOrSecurityOrigin}{Profile}"
     enum="PasswordManagerFillingAssistance" expires_after="2026-08-09">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
@@ -1652,6 +1652,8 @@ chromium-metrics-reviews@google.com.
     might indicate third-party password manager use, or might be a
     measurement/submission classification error.
     {PasswordAccountStorageUsageLevelOrSecurityOrigin}
+
+    {Profile}
   </summary>
   <token key="PasswordAccountStorageUsageLevelOrSecurityOrigin"
       variants="PasswordAccountStorageUsageLevel">
@@ -1663,6 +1665,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".SecureOrigin"
         summary="The recording took place on a secure origin."/>
   </token>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="PasswordManager.FillingAutomationRate" units="%"

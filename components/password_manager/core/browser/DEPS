@@ -6,6 +6,7 @@ include_rules = [
   "+components/favicon/core",
   "+components/favicon_base",
   "+components/keyed_service/core",
+  "+components/metrics",
   "+components/profile_metrics",
   "+components/pref_registry",
   "+components/security_state",

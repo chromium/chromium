@@ -102,6 +102,7 @@ class IOSChromePasswordManagerClient
       const override;
   PrefService* GetPrefs() const override;
   PrefService* GetLocalStatePrefs() const override;
+  metrics::ProfileMetricsService* GetProfileMetricsService() override;
   const syncer::SyncService* GetSyncService() const override;
   affiliations::AffiliationService* GetAffiliationService() override;
   password_manager::PasswordStoreInterface* GetProfilePasswordStore()

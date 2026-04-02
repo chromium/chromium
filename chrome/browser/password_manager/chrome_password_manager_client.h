@@ -218,6 +218,7 @@ class ChromePasswordManagerClient
       password_manager::LeakedPasswordDetails details) override;
   void NotifyKeychainError() override;
   PrefService* GetPrefs() const override;
+  metrics::ProfileMetricsService* GetProfileMetricsService() override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
   affiliations::AffiliationService* GetAffiliationService() override;

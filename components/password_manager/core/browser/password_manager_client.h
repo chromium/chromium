@@ -98,6 +98,10 @@ class WebAuthnCredManDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace webauthn
 
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
+
 namespace password_manager {
 
 class FieldInfoManager;
@@ -326,6 +330,9 @@ class PasswordManagerClient {
 
   // Gets prefs associated with this embedder.
   virtual PrefService* GetPrefs() const = 0;
+
+  // Returns the ProfileMetricsService associated with this client.
+  virtual metrics::ProfileMetricsService* GetProfileMetricsService() = 0;
 
   // Gets local state prefs.
   virtual PrefService* GetLocalStatePrefs() const = 0;

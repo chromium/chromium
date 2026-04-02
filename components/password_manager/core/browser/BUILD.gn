@@ -197,6 +197,7 @@ static_library("browser") {
     "//components/device_reauth",
     "//components/favicon/core",
     "//components/favicon_base",
+    "//components/metrics",
     "//components/os_crypt/async/browser",
     "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
@@ -467,6 +468,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//components/autofill/core/common",
+    "//components/metrics",
     "//components/version_info:channel",
     "//net",
     "//services/network:test_support",
@@ -568,6 +570,7 @@ source_set("unit_tests") {
     "//components/device_reauth",
     "//components/device_reauth:test_support",
     "//components/favicon/core/test:test_support",
+    "//components/metrics",
     "//components/os_crypt/async/browser:test_support",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",

@@ -236,7 +236,8 @@ void SaveUpdatePasswordMessageDelegateTest::SetUp() {
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
   ukm_source_id_ = ukm::UkmRecorder::GetNewSourceID();
   metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
-      true /*is_main_frame_secure*/, ukm_source_id_, nullptr /*pref_service*/);
+      true /*is_main_frame_secure*/, ukm_source_id_, nullptr /*pref_service*/,
+      password_manager_client_.GetProfileMetricsService());
   NavigateAndCommit(GURL(kDefaultUrl));
 
   auto bridge = std::make_unique<TestDeviceLockBridge>();

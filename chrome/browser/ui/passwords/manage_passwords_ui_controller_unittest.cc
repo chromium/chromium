@@ -40,6 +40,7 @@
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
@@ -622,7 +623,8 @@ TEST_P(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
     ukm::SourceId source_id = test_ukm_recorder.GetNewSourceID();
     auto recorder =
         base::MakeRefCounted<password_manager::PasswordFormMetricsRecorder>(
-            true /*is_main_frame_secure*/, source_id, /*pref_service=*/nullptr);
+            true /*is_main_frame_secure*/, source_id, /*pref_service=*/nullptr,
+            client().GetProfileMetricsService());
 
     // Exercise controller.
     std::vector<PasswordForm> best_matches;
@@ -1191,7 +1193,8 @@ TEST_P(ManagePasswordsUIControllerTest, ManualFallbackForSaving_UseFallback) {
     ukm::SourceId source_id = test_ukm_recorder.GetNewSourceID();
     auto recorder =
         base::MakeRefCounted<password_manager::PasswordFormMetricsRecorder>(
-            true /*is_main_frame_secure*/, source_id, /*pref_service=*/nullptr);
+            true /*is_main_frame_secure*/, source_id, /*pref_service=*/nullptr,
+            client().GetProfileMetricsService());
     std::vector<PasswordForm> matches = {test_local_form()};
     if (is_update) {
       matches.push_back(test_local_form());

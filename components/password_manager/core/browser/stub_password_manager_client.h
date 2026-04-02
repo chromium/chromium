@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
@@ -68,6 +69,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
       std::unique_ptr<PasswordFormManagerForUI> saved_manager,
       bool is_update_confirmation) override;
   PrefService* GetPrefs() const override;
+  metrics::ProfileMetricsService* GetProfileMetricsService() override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
   affiliations::AffiliationService* GetAffiliationService() override;
@@ -135,6 +137,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   ukm::SourceId ukm_source_id_;
   std::optional<PasswordManagerMetricsRecorder> metrics_recorder_;
   UndoPasswordChangeController undo_password_change_controller_;
+  metrics::ProfileMetricsService profile_metrics_service_;
 };
 
 }  // namespace password_manager

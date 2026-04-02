@@ -28,6 +28,7 @@
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/password_manager/android/first_cct_page_load_marker.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
@@ -998,6 +999,11 @@ void ChromePasswordManagerClient::NotifyKeychainError() {
 
 PrefService* ChromePasswordManagerClient::GetPrefs() const {
   return GetProfile()->GetPrefs();
+}
+
+metrics::ProfileMetricsService*
+ChromePasswordManagerClient::GetProfileMetricsService() {
+  return ProfileMetricsServiceFactory::GetForProfile(GetProfile());
 }
 
 PrefService* ChromePasswordManagerClient::GetLocalStatePrefs() const {

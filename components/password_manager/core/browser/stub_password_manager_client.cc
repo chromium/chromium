@@ -94,6 +94,11 @@ PrefService* StubPasswordManagerClient::GetPrefs() const {
   return nullptr;
 }
 
+metrics::ProfileMetricsService*
+StubPasswordManagerClient::GetProfileMetricsService() {
+  return &profile_metrics_service_;
+}
+
 PrefService* StubPasswordManagerClient::GetLocalStatePrefs() const {
   return nullptr;
 }

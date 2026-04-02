@@ -14,6 +14,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar_delegate.h"
+#import "components/metrics/profile_metrics_service.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -76,7 +77,7 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
     metrics_recorder_ =
         base::MakeRefCounted<password_manager::PasswordFormMetricsRecorder>(
             /*is_main_frame_secure=*/true, ukm_source_id_,
-            /*pref_service=*/nullptr);
+            /*pref_service=*/nullptr, &profile_metrics_service_);
 
     ON_CALL(testing::Const(*form_manager), GetMetricsRecorder)
         .WillByDefault(testing::Return(metrics_recorder_.get()));
@@ -91,6 +92,7 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  metrics::ProfileMetricsService profile_metrics_service_;
   // Password form metrics recorder.
   scoped_refptr<password_manager::PasswordFormMetricsRecorder>
       metrics_recorder_;

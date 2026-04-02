@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/clock.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -25,6 +26,10 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 class PrefService;
+
+namespace metrics {
+class ProfileMetricsService;
+}
 
 namespace autofill {
 class FormData;
@@ -52,9 +57,11 @@ class PasswordFormMetricsRecorder
  public:
   // Records UKM metrics and reports them on destruction. The |source_id| is
   // the ID of the WebContents document that the forms belong to.
-  PasswordFormMetricsRecorder(bool is_main_frame_secure,
-                              ukm::SourceId source_id,
-                              PrefService* pref_service);
+  PasswordFormMetricsRecorder(
+      bool is_main_frame_secure,
+      ukm::SourceId source_id,
+      PrefService* pref_service,
+      metrics::ProfileMetricsService* profile_metrics_service);
 
   PasswordFormMetricsRecorder(const PasswordFormMetricsRecorder&) = delete;
   PasswordFormMetricsRecorder& operator=(const PasswordFormMetricsRecorder&) =
@@ -615,6 +622,8 @@ class PasswordFormMetricsRecorder
   ukm::builders::PasswordForm ukm_entry_builder_;
 
   const raw_ptr<PrefService> pref_service_;
+
+  const raw_ref<metrics::ProfileMetricsService> profile_metrics_service_;
 
   // Counter for DetailedUserActions observed during the lifetime of a
   // PasswordFormManager. Reported upon destruction.
