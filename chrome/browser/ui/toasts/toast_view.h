@@ -33,6 +33,7 @@ namespace toasts {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(ToastCloseReason)
 enum class ToastCloseReason {
   kAutoDismissed = 0,
   kActionButton = 1,
@@ -43,6 +44,7 @@ enum class ToastCloseReason {
   kAbort = 6,
   kMaxValue = kAbort
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/toasts/enums.xml:ToastCloseReason)
 
 // The view for toasts.
 class ToastView : public views::BubbleDialogDelegateView,

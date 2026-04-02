@@ -10,6 +10,7 @@ enum class ToastId;
 namespace toasts {
 enum class ToastCloseReason;
 
+// LINT.IfChange(ToastAlertLevel)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ToastAlertLevel {
@@ -17,16 +18,7 @@ enum class ToastAlertLevel {
   kActionable = 1,
   kMaxValue = kActionable
 };
-
-// LINT.IfChange(ToastDismissMenuEntries)
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ToastDismissMenuEntries {
-  kDismiss = 0,
-  kDontShowAgain = 1,
-  kMaxValue = kDontShowAgain
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastDismissMenuEntries)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/toasts/enums.xml:ToastAlertLevel)
 }  // namespace toasts
 
 void RecordToastTriggeredToShow(ToastId toast_id);

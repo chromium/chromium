@@ -26,10 +26,16 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ToastAlertLevel) -->
+
 <enum name="ToastAlertLevel">
   <int value="0" label="All"/>
   <int value="1" label="Actionable"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/toasts/toast_metrics.h:ToastAlertLevel) -->
+
+<!-- LINT.IfChange(ToastCloseReason) -->
 
 <enum name="ToastCloseReason">
   <int value="0" label="Auto Dismissed"/>
@@ -40,6 +46,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Feature explicitly dismiss toast"/>
   <int value="6" label="Aborted"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/toasts/toast_view.h:ToastCloseReason) -->
 
 <!-- LINT.IfChange(ToastId) -->
 
