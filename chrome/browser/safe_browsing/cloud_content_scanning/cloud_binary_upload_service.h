@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 
@@ -231,7 +232,9 @@ class CloudBinaryUploadService
       bool force_sync_upload,
       net::NetworkTrafficAnnotationTag traffic_annotation,
       enterprise_connectors::BinaryUploadRequest::Data data,
-      enterprise_connectors::ScanRequestUploadResult result);
+      enterprise_connectors::ScanRequestUploadResult result,
+      enterprise_connectors::ResumableUploadRequestBase::
+          OnceRegisterOnGotHashCallback register_on_got_hash_callback);
 
   void MaybeTrackUploadUserCancellation(const std::string& action_id);
 

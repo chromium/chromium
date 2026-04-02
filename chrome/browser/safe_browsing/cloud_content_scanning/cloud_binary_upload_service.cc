@@ -470,6 +470,10 @@ void CloudBinaryUploadService::OnGetRequestData(
   request->set_should_skip_malware_scan(
       data.size > BinaryUploadService::kMaxUploadSizeBytes);
 
+  enterprise_connectors::ResumableUploadRequestBase::
+      OnceRegisterOnGotHashCallback register_on_got_hash_callback =
+          base::NullCallback();
+
   std::string metadata;
   request->SerializeToString(&metadata);
   metadata = base::Base64Encode(metadata);
@@ -493,7 +497,8 @@ void CloudBinaryUploadService::OnGetRequestData(
   std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
       upload_request = CreateUploadRequest(
           request, request_id, url, metadata, histogram_suffix,
-          force_sync_upload, traffic_annotation, data, get_data_result);
+          force_sync_upload, traffic_annotation, data, get_data_result,
+          std::move(register_on_got_hash_callback));
   // TODO(b/485578457): Add test validation to check that the
   // `access_token` is indeed set for the `upload_request`.
   upload_request->set_access_token(request->access_token());
@@ -842,7 +847,9 @@ CloudBinaryUploadService::CreateUploadRequest(
     bool force_sync_upload,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     BinaryUploadRequest::Data data,
-    enterprise_connectors::ScanRequestUploadResult result) {
+    enterprise_connectors::ScanRequestUploadResult result,
+    enterprise_connectors::ResumableUploadRequestBase::
+        OnceRegisterOnGotHashCallback register_on_got_hash_callback) {
   auto callback = base::BindOnce(&CloudBinaryUploadService::OnUploadComplete,
                                  weakptr_factory_.GetWeakPtr(), request_id);
   auto verdict_received_callback =
@@ -885,6 +892,7 @@ CloudBinaryUploadService::CreateUploadRequest(
                   std::move(traffic_annotation),
                   std::move(verdict_received_callback),
                   std::move(content_uploaded_callback), force_sync_upload,
+                  std::move(register_on_got_hash_callback),
                   content::GetUIThreadTaskRunner({}))
             : MultipartUploadRequest::CreateFileRequest(
                   url_loader_factory_, url, metadata, data.path, data.size,

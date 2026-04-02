@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -31,6 +32,7 @@ ResumableUploadRequest::ResumableUploadRequest(
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
     bool force_sync_upload,
+    OnceRegisterOnGotHashCallback register_on_got_hash_callback,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ResumableUploadRequestBase(std::move(url_loader_factory),
                                  base_url,
@@ -44,6 +46,7 @@ ResumableUploadRequest::ResumableUploadRequest(
                                  std::move(verdict_received_callback),
                                  std::move(content_uploaded_callback),
                                  force_sync_upload,
+                                 std::move(register_on_got_hash_callback),
                                  std::move(ui_task_runner)) {}
 
 ResumableUploadRequest::ResumableUploadRequest(
@@ -139,12 +142,23 @@ ResumableUploadRequest::CreateFileRequest(
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
     bool force_sync_upload,
+    OnceRegisterOnGotHashCallback register_on_got_hash_callback,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   if (factory_) {
+    // ConnectorUploadRequestFactory only supports one callback and does not
+    // register a callback for hash computation.
+    // For mock testing, wrap register_on_got_hash_callback, so that three input
+    // parameter callbacks can be chained into one, in the right order.
+    auto register_on_got_hash_closure =
+        register_on_got_hash_callback.is_null()
+            ? base::DoNothing()
+            : base::BindOnce(std::move(register_on_got_hash_callback),
+                             base::DoNothing());
     return factory_->CreateFileRequest(
         url_loader_factory, base_url, metadata, get_data_result, path,
         file_size, is_obfuscated, histogram_suffix, traffic_annotation,
         std::move(verdict_received_callback)
+            .Then(std::move(register_on_got_hash_closure))
             .Then(std::move(content_uploaded_callback)));
   }
   return std::make_unique<ResumableUploadRequest>(
@@ -152,7 +166,7 @@ ResumableUploadRequest::CreateFileRequest(
       is_obfuscated, histogram_suffix, traffic_annotation,
       std::move(verdict_received_callback),
       std::move(content_uploaded_callback), force_sync_upload,
-      std::move(ui_task_runner));
+      std::move(register_on_got_hash_callback), std::move(ui_task_runner));
 }
 
 // static

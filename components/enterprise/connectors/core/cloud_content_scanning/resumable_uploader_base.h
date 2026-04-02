@@ -14,6 +14,8 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   using ContentUploadedCallback = base::OnceClosure;
   using VerdictReceivedCallback =
       enterprise_connectors::ConnectorUploadRequest::Callback;
+  using OnceRegisterOnGotHashCallback =
+      base::OnceCallback<void(enterprise_connectors::OnGotHashCallback)>;
   using ConnectorUploadRequest::ConnectorUploadRequest;
 
   // Creates a ResumableUploadRequestBase, which will upload the `metadata` of
@@ -23,6 +25,11 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   // `get_data_result` is the result when getting basic information about the
   // file or page.  It lets the ResumableUploadRequestBase know if the data is
   // considered too large or is encrypted.
+  //
+  // when `register_on_got_hash_callback` is non-null the final call should
+  // include the file hash as a header. ResumableUploadRequestBase should run it
+  // with a callback that receives a string and completes the upload with the
+  // hash.
   ResumableUploadRequestBase(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
@@ -36,6 +43,7 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload,
+      OnceRegisterOnGotHashCallback register_on_got_hash_callback,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // Creates a ResumableUploadRequestBase, which will upload the `metadata` of
@@ -92,7 +100,7 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
 
  protected:
   // Called after a metadata request finishes successfully. Virtual for testing.
-  virtual void SendContentSoon(const std::string& upload_url);
+  virtual void SendContentSoon();
 
   // Called whenever a net request finishes (on success or failure). Protected
   // for testing
@@ -120,8 +128,15 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
           data_pipe_getter);
 
   // Called after `data_pipe_getter_` is known to be initialized to a correct
-  // state.
+  // state, if there is one.
   void SendContentNow(std::unique_ptr<network::ResourceRequest> request);
+
+  // Run VerdictReceivedCallback exactly once. Further calls to this function
+  // have no side effects.
+  void MaybeRunVerdictReceivedCallback(
+      int net_error,
+      int response_code,
+      std::optional<std::string> response_body);
 
   // Send the metadata information about the file/page to the server.
   void SendMetadataRequest();
@@ -132,6 +147,16 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   //    3. The `upload_status` is "active".
   // This method also has the side effect of setting upload_url_.
   bool CanUploadContent(const scoped_refptr<net::HttpResponseHeaders>& headers);
+
+  void MaybeSendHashAndFinish(size_t upload_offset,
+                              int net_error,
+                              int response_code,
+                              std::optional<std::string> response_body);
+
+  void SendHashNow(std::unique_ptr<network::ResourceRequest> request,
+                   std::string hash);
+
+  void OnSendHashCompleted(std::optional<std::string> response_body);
 
   // Returns true if `kEnableEncryptedFileUpload`
   // feature is enabled and the `scan_type_` is ASYNC.
@@ -154,6 +179,12 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   ScanRequestUploadResult get_data_result_;
 
   bool force_sync_upload_ = false;
+
+  OnceRegisterOnGotHashCallback register_on_got_hash_callback_;
+  bool hash_computation_is_synchronous_ = true;
+
+  // The upload URL returned from the metadata request.
+  std::string upload_url_;
 
   base::WeakPtrFactory<ResumableUploadRequestBase> weak_factory_{this};
 };

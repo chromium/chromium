@@ -45,6 +45,15 @@ using ::testing::_;
 constexpr char kUploadUrl[] =
     "http://uploads.google.com?upload_id=ABC&upload_protocol=resumable";
 
+std::string GetEncodedContentAnalysisResponse() {
+  // Create a ContentAnalysisResponse instance with arbitrary values.
+  ContentAnalysisResponse response;
+  auto* result = response.mutable_results()->Add();
+  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  return base::Base64EncodeEarlyStartup(
+      base::as_byte_span(response.SerializeAsString()));
+}
+
 class MockResumableUploadRequestBase : public ResumableUploadRequestBase {
  public:
   using ResumableUploadRequestBase::ResumableUploadRequestBase;
@@ -57,7 +66,9 @@ class MockResumableUploadRequestBase : public ResumableUploadRequestBase {
           verdict_received_callback,
       ResumableUploadRequestBase::ContentUploadedCallback
           content_uploaded_callback,
-      bool force_sync_upload)
+      bool force_sync_upload,
+      ResumableUploadRequestBase::OnceRegisterOnGotHashCallback
+          register_on_got_hash_callback)
       : ResumableUploadRequestBase(
             url_loader_factory,
             GURL("https://google.com"),
@@ -71,6 +82,7 @@ class MockResumableUploadRequestBase : public ResumableUploadRequestBase {
             std::move(verdict_received_callback),
             std::move(content_uploaded_callback),
             force_sync_upload,
+            std::move(register_on_got_hash_callback),
             base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   MockResumableUploadRequestBase(
@@ -131,13 +143,16 @@ class ResumableUploadRequestBaseTest : public testing::Test {
           verdict_received_callback,
       ResumableUploadRequestBase::ContentUploadedCallback
           content_uploaded_callback,
-      bool force_sync_upload) {
+      bool force_sync_upload,
+      ResumableUploadRequestBase::OnceRegisterOnGotHashCallback
+          register_on_got_hash_callback) {
     return std::make_unique<RequestT>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         CreateFile("text.txt", content), get_data_result,
         std::move(verdict_received_callback),
-        std::move(content_uploaded_callback), force_sync_upload);
+        std::move(content_uploaded_callback), force_sync_upload,
+        std::move(register_on_got_hash_callback));
   }
 
   template <typename RequestT>
@@ -164,12 +179,15 @@ class ResumableUploadRequestBaseTest : public testing::Test {
           verdict_received_callback,
       ResumableUploadRequestBase::ContentUploadedCallback
           content_uploaded_callback,
-      bool force_sync_upload) {
+      bool force_sync_upload,
+      ResumableUploadRequestBase::OnceRegisterOnGotHashCallback
+          register_on_got_hash_callback) {
     return is_file_request()
                ? CreateFileRequest<RequestT>(
                      "file content", get_data_result,
                      std::move(verdict_received_callback),
-                     std::move(content_uploaded_callback), force_sync_upload)
+                     std::move(content_uploaded_callback), force_sync_upload,
+                     std::move(register_on_got_hash_callback))
                : CreatePageRequest<RequestT>(
                      "page content", get_data_result,
                      std::move(verdict_received_callback),
@@ -182,7 +200,8 @@ class ResumableUploadRequestBaseTest : public testing::Test {
       const network::ResourceRequest& resource_request,
       std::string expected_size,
       const std::string& expected_access_token,
-      const std::string& expected_content_type = "application/octet-stream") {
+      const std::string& expected_content_type = "application/octet-stream",
+      bool hash_computation_is_synchronous = true) {
     ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
     ASSERT_THAT(resource_request.headers.GetHeader("X-Goog-Upload-Protocol"),
                 testing::Optional(std::string("resumable")));
@@ -197,11 +216,13 @@ class ResumableUploadRequestBaseTest : public testing::Test {
         resource_request.headers.GetHeader("X-Goog-Upload-Header-Content-Type"),
         testing::Optional(expected_content_type));
 
-    ASSERT_TRUE(resource_request.headers.HasHeader(
-        "X-Goog-Upload-Header-Content-Length"));
-    ASSERT_THAT(resource_request.headers.GetHeader(
-                    "X-Goog-Upload-Header-Content-Length"),
-                testing::Optional(expected_size));
+    if (hash_computation_is_synchronous) {
+      ASSERT_TRUE(resource_request.headers.HasHeader(
+          "X-Goog-Upload-Header-Content-Length"));
+      ASSERT_THAT(resource_request.headers.GetHeader(
+                      "X-Goog-Upload-Header-Content-Length"),
+                  testing::Optional(expected_size));
+    }
 
     ASSERT_TRUE(resource_request.headers.HasHeader("Authorization"));
     ASSERT_THAT(
@@ -223,7 +244,7 @@ TEST_F(ResumableUploadRequestBaseTest,
       nullptr, GURL(), "metadata", ScanRequestUploadResult::kSuccess,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      base::NullCallback(), base::SingleThreadTaskRunner::GetCurrentDefault());
   request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
@@ -237,7 +258,7 @@ TEST_F(ResumableUploadRequestBaseTest,
       nullptr, GURL(), "metadata", ScanRequestUploadResult::kFileTooLarge,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      base::NullCallback(), base::SingleThreadTaskRunner::GetCurrentDefault());
   request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
@@ -251,11 +272,30 @@ TEST_F(ResumableUploadRequestBaseTest,
       nullptr, GURL(), "metadata", ScanRequestUploadResult::kFileEncrypted,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      base::NullCallback(), base::SingleThreadTaskRunner::GetCurrentDefault());
   request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
   VerifyMetadataRequestHeaders(std::move(resource_request), "9", "test-token");
+}
+
+TEST_F(ResumableUploadRequestBaseTest,
+       GeneratesCorrectMetadataHeaders_FileRequest_ContentHashInFinalCall) {
+  network::ResourceRequest resource_request;
+  // Set RegisterOnGotHashCallback to base::DoNothing() to simulate the case
+  // where the hash is not available yet.
+  auto request = std::make_unique<MockResumableUploadRequestBase>(
+      nullptr, GURL(), "metadata", ScanRequestUploadResult::kFileTooLarge,
+      CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
+      TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
+      base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->set_access_token("test-token");
+  request->SetMetadataRequestHeaders(&resource_request);
+
+  VerifyMetadataRequestHeaders(std::move(resource_request), "", "test-token",
+                               "application/octet-stream", false);
+  EXPECT_EQ(request->GetUploadInfo(),
+            "Resumable - Pending, hash in final call");
 }
 
 TEST_F(ResumableUploadRequestBaseTest,
@@ -345,7 +385,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
                   const std::string& response_data) { run_loop.Quit(); });
   auto mock_request = CreateRequest<MockResumableUploadRequestBase>(
       ScanRequestUploadResult::kSuccess, std::move(callback), base::DoNothing(),
-      false);
+      false, base::NullCallback());
   mock_request->set_access_token("test-token");
   mock_request->Start();
 
@@ -373,7 +413,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest, HandlesFailedMetadataScan) {
       });
   auto mock_request = CreateRequest<MockResumableUploadRequestBase>(
       ScanRequestUploadResult::kSuccess, std::move(callback), base::DoNothing(),
-      false);
+      false, base::NullCallback());
   mock_request->Start();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
@@ -409,7 +449,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest,
 
   auto mock_request = CreateRequest<MockResumableUploadRequestBase>(
       ScanRequestUploadResult::kSuccess, std::move(callback), base::DoNothing(),
-      false);
+      false, base::NullCallback());
   mock_request->Start();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
@@ -450,12 +490,15 @@ class ResumableUploadSendContentRequestBaseTest
           verdict_received_callback,
       ResumableUploadRequestBase::ContentUploadedCallback
           content_uploaded_callback,
-      bool force_sync_upload) {
+      bool force_sync_upload,
+      ResumableUploadRequestBase::OnceRegisterOnGotHashCallback
+          register_on_got_hash_callback = base::NullCallback()) {
     switch (GetRequestType()) {
       case UploadRequestType::kFile:
         return CreateFileRequest<MockResumableUploadRequestBase>(
             GetContent(), get_data_result, std::move(verdict_received_callback),
-            std::move(content_uploaded_callback), force_sync_upload);
+            std::move(content_uploaded_callback), force_sync_upload,
+            std::move(register_on_got_hash_callback));
       case UploadRequestType::kPage:
         return CreatePageRequest<MockResumableUploadRequestBase>(
             GetContent(), get_data_result, std::move(verdict_received_callback),
@@ -661,6 +704,57 @@ TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesEncryptedFile) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_P(ResumableUploadSendContentRequestBaseTest, FileTooLargeStillSendsHash) {
+  if (GetRequestType() != UploadRequestType::kFile) {
+    GTEST_SKIP();
+  }
+  std::string hash_value = "123456";
+  bool called = false;
+  base::RunLoop run_loop;
+
+  auto mock_request = CreateTestRequest(
+      ScanRequestUploadResult::kFileTooLarge, base::DoNothing(),
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }), false,
+      base::BindLambdaForTesting(
+          [&](enterprise_connectors::OnGotHashCallback callback) {
+            std::move(callback).Run(hash_value);
+            called = true;
+          }));
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          metadata_response_head->headers->AddHeader(
+              "X-Goog-Upload-Header-Cep-Response",
+              GetEncodedContentAnalysisResponse());
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else if (request.url == GURL(kUploadUrl)) {
+          EXPECT_EQ(request.headers.GetHeader("X-Goog-Upload-Header-File-Hash"),
+                    hash_value);
+          auto content_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          content_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                    "final");
+          test_url_loader_factory_.AddResponse(
+              GURL(kUploadUrl), std::move(content_response_head),
+              "final_response", network::URLLoaderCompletionStatus(net::OK));
+        }
+      }));
+
+  mock_request->Start();
+  run_loop.Run();
+
+  EXPECT_TRUE(called);
+}
+
 TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesFailedContentScan) {
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
@@ -799,15 +893,6 @@ struct AsyncScanRequestUploadResult {
   bool force_sync_upload;
 };
 
-std::string GetEncodedContentAnalysisResponse() {
-  // Create a ContentAnalysisResponse instance with arbitrary values.
-  ContentAnalysisResponse response;
-  auto* result = response.mutable_results()->Add();
-  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
-  return base::Base64EncodeEarlyStartup(
-      base::as_byte_span(response.SerializeAsString()));
-}
-
 const std::vector<AsyncScanRequestUploadResult>& GetTestCases() {
   static const base::NoDestructor<std::vector<AsyncScanRequestUploadResult>>
       kTestCases({{.success = true,
@@ -839,13 +924,17 @@ class MockResumableUploadRequestForAsync
           verdict_received_callback,
       ResumableUploadRequestBase::ContentUploadedCallback
           content_uploaded_callback,
-      bool force_sync_upload)
-      : MockResumableUploadRequestBase(url_loader_factory,
-                                       path,
-                                       get_data_result,
-                                       std::move(verdict_received_callback),
-                                       std::move(content_uploaded_callback),
-                                       force_sync_upload) {}
+      bool force_sync_upload,
+      ResumableUploadRequestBase::OnceRegisterOnGotHashCallback
+          register_on_got_hash_callback)
+      : MockResumableUploadRequestBase(
+            url_loader_factory,
+            path,
+            get_data_result,
+            std::move(verdict_received_callback),
+            std::move(content_uploaded_callback),
+            force_sync_upload,
+            std::move(register_on_got_hash_callback)) {}
 
   MockResumableUploadRequestForAsync(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -863,7 +952,7 @@ class MockResumableUploadRequestForAsync
                                        std::move(content_uploaded_callback),
                                        force_sync_upload) {}
 
-  void SendContentSoon(const std::string& upload_url) override {
+  void SendContentSoon() override {
     // a null callback indicates that the user has already been unblocked.
     ASSERT_EQ(verdict_received_callback_.is_null(), !force_sync_upload());
 
@@ -895,6 +984,78 @@ class ResumableUploadSendContentAsyncBaseTest
 };
 
 TEST_P(ResumableUploadSendContentAsyncBaseTest,
+       CallsRegisterOnGotHashCallbackOnUpload) {
+  if (!is_file_request()) {
+    GTEST_SKIP();
+  }
+  base::RunLoop run_loop;
+  std::string hash_value = "123456";
+
+  bool hash_callback_called = false;
+  auto mock_request = CreateRequest<MockResumableUploadRequestBase>(
+      ScanRequestUploadResult::kSuccess, base::DoNothing(),
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }),
+      get_upload_result().force_sync_upload,
+      base::BindLambdaForTesting(
+          [&](enterprise_connectors::OnGotHashCallback callback) {
+            std::move(callback).Run(hash_value);
+            hash_callback_called = true;
+          }));
+
+  bool metadata_request_sent = false;
+  bool finalize_request_sent = false;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(get_upload_result().response_code);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          metadata_response_head->headers->AddHeader(
+              "X-Goog-Upload-Header-Cep-Response",
+              get_upload_result().intermediate_value);
+          metadata_request_sent = true;
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else if (request.url == GURL(kUploadUrl)) {
+          if (request.headers.GetHeader("X-Goog-Upload-Command") ==
+              "upload, finalize") {
+            EXPECT_EQ(request.headers.GetHeader("X-Goog-Upload-Offset"), "123");
+            EXPECT_EQ(
+                request.headers.GetHeader("X-Goog-Upload-Header-File-Hash"),
+                hash_value);
+            auto content_response_head =
+                network::CreateURLResponseHead(net::HTTP_OK);
+            content_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                      "final");
+            test_url_loader_factory_.AddResponse(
+                GURL(kUploadUrl), std::move(content_response_head),
+                "final_response", network::URLLoaderCompletionStatus(net::OK));
+            finalize_request_sent = true;
+          } else if (request.headers.GetHeader("X-Goog-Upload-Command") ==
+                     "upload") {
+            EXPECT_EQ(request.headers.GetHeader("X-Goog-Upload-Offset"), "0");
+            test_url_loader_factory_.AddResponse(
+                GURL(kUploadUrl), network::CreateURLResponseHead(net::HTTP_OK),
+                "upload_response", network::URLLoaderCompletionStatus(net::OK));
+          } else {
+            NOTREACHED();
+          }
+        }
+      }));
+
+  mock_request->Start();
+  run_loop.Run();
+
+  EXPECT_TRUE((metadata_request_sent && hash_callback_called &&
+               finalize_request_sent) ||
+              !get_upload_result().success);
+}
+
+TEST_P(ResumableUploadSendContentAsyncBaseTest,
        VerdictCallbackInvokedBeforeContentUpload) {
   base::RunLoop run_loop;
 
@@ -910,7 +1071,8 @@ TEST_P(ResumableUploadSendContentAsyncBaseTest,
             EXPECT_EQ(get_upload_result().response_code, http_status);
             run_loop.Quit();
           }),
-      base::DoNothing(), get_upload_result().force_sync_upload);
+      base::DoNothing(), get_upload_result().force_sync_upload,
+      base::NullCallback());
 
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {

@@ -39,6 +39,8 @@ class ResumableUploadRequest
   using enterprise_connectors::ResumableUploadRequestBase::
       ContentUploadedCallback;
   using enterprise_connectors::ResumableUploadRequestBase::
+      OnceRegisterOnGotHashCallback;
+  using enterprise_connectors::ResumableUploadRequestBase::
       VerdictReceivedCallback;
 
   // Creates a ResumableUploadRequest, which will upload the `metadata` of the
@@ -48,6 +50,11 @@ class ResumableUploadRequest
   // `get_data_result` is the result when getting basic information about the
   // file or page.  It lets the ResumableUploadRequest know if the data is
   // considered too large or is encrypted.
+  //
+  // when `register_on_got_hash_callback` is non-null the final call should
+  // include the file hash as a header. The ResumableUploadRequest should run it
+  // with a callback that receives a string and completes the upload with the
+  // hash.
   ResumableUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
@@ -61,6 +68,7 @@ class ResumableUploadRequest
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload,
+      OnceRegisterOnGotHashCallback register_on_got_hash_callback,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // Creates a ResumableUploadRequest, which will upload the `metadata` of the
@@ -129,6 +137,7 @@ class ResumableUploadRequest
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload,
+      OnceRegisterOnGotHashCallback register_on_got_hash_callback,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>

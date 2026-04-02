@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -52,6 +53,7 @@ constexpr char kUploadUrlHeader[] = "X-Goog-Upload-Url";
 constexpr char kUploadOffsetHeader[] = "X-Goog-Upload-Offset";
 constexpr char kUploadIntermediateHeader[] =
     "X-Goog-Upload-Header-Cep-Response";
+constexpr char kUploadHashHeader[] = "X-Goog-Upload-Header-File-Hash";
 
 // Content type of the upload contents.
 constexpr char kUploadContentType[] = "application/octet-stream";
@@ -59,6 +61,9 @@ constexpr char kUploadContentType[] = "application/octet-stream";
 constexpr char kMetadataContentType[] = "application/json";
 // Content type of pasted images.
 constexpr char kImageContentType[] = "image/png";
+
+// Combined command for upload and finalize.
+constexpr char kCommandUploadFinalize[] = "upload, finalize";
 
 bool IsSuccess(int net_error, int response_code) {
   return net_error == net::OK && response_code == net::HTTP_OK;
@@ -91,6 +96,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
     bool force_sync_upload,
+    OnceRegisterOnGotHashCallback register_on_got_hash_callback,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
@@ -105,8 +111,10 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
       verdict_received_callback_(std::move(verdict_received_callback)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
       get_data_result_(get_data_result),
-      force_sync_upload_(force_sync_upload) {
+      force_sync_upload_(force_sync_upload),
+      register_on_got_hash_callback_(std::move(register_on_got_hash_callback)) {
   AssertCalledOnUIThread();
+  hash_computation_is_synchronous_ = register_on_got_hash_callback_.is_null();
 }
 
 ResumableUploadRequestBase::ResumableUploadRequestBase(
@@ -187,7 +195,8 @@ void ResumableUploadRequestBase::OnSendContentCompleted(
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
-  Finish(url_loader_->NetError(), response_code, std::move(response_body));
+  MaybeSendHashAndFinish(data_size_, url_loader_->NetError(), response_code,
+                         std::move(response_body));
 }
 
 void ResumableUploadRequestBase::SetMetadataRequestHeaders(
@@ -199,8 +208,14 @@ void ResumableUploadRequestBase::SetMetadataRequestHeaders(
 
   request->headers.SetHeader(kUploadProtocolHeader, "resumable");
   request->headers.SetHeader(kUploadCommandHeader, "start");
-  request->headers.SetHeader(kUploadHeaderContentLengthHeader,
-                             base::NumberToString(data_size_));
+  if (hash_computation_is_synchronous_) {
+    // When the request already has hash, let the server know the content size,
+    // since there will not need to be an empty final file upload.
+    // TODO(b/496284950): Remove this header entirely once webprotect accepts
+    // the size in the ContentMetadata proto.
+    request->headers.SetHeader(kUploadHeaderContentLengthHeader,
+                               base::NumberToString(data_size_));
+  }
   request->headers.SetHeader(
       kUploadHeaderContentTypeHeader,
       data_source_ == IMAGE ? kImageContentType : kUploadContentType);
@@ -227,7 +242,9 @@ std::string ResumableUploadRequestBase::GetUploadInfo() {
       break;
   }
 
-  return base::StrCat({"Resumable - ", scan_info});
+  return base::StrCat(
+      {"Resumable - ", scan_info,
+       hash_computation_is_synchronous_ ? "" : ", hash in final call"});
 }
 
 void ResumableUploadRequestBase::Start() {
@@ -269,10 +286,36 @@ void ResumableUploadRequestBase::SendMetadataRequest() {
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
+void ResumableUploadRequestBase::MaybeSendHashAndFinish(
+    size_t upload_offset,
+    int net_error,
+    int response_code,
+    std::optional<std::string> response_body) {
+  if (hash_computation_is_synchronous_) {
+    Finish(net_error, response_code, std::move(response_body));
+  } else {
+    CHECK(!upload_url_.empty());
+    MaybeRunVerdictReceivedCallback(net_error, response_code,
+                                    std::move(response_body));
+
+    auto request = std::make_unique<network::ResourceRequest>();
+    request->method = "POST";
+    request->url = GURL(upload_url_);
+    // Sending hash is always the final request.
+    request->headers.SetHeader(kUploadCommandHeader, kCommandUploadFinalize);
+    request->headers.SetHeader(kUploadOffsetHeader,
+                               base::NumberToString(upload_offset));
+    std::move(register_on_got_hash_callback_)
+        .Run(base::BindOnce(&ResumableUploadRequestBase::SendHashNow,
+                            weak_factory_.GetWeakPtr(), std::move(request)));
+  }
+}
+
 void ResumableUploadRequestBase::Finish(
     int net_error,
     int response_code,
     std::optional<std::string> response_body) {
+  AssertCalledOnUIThread();
   if (!histogram_suffix_.empty()) {
     std::string histogram = base::StrCat(
         {"SafeBrowsing.ResumableUploader.NetworkResult.", histogram_suffix_});
@@ -281,21 +324,60 @@ void ResumableUploadRequestBase::Finish(
 
   // The callback may have been invoked when the metadata verdict was received
   // with the CEP header, to unblock the user initiate an async upload.
-  if (!verdict_received_callback_.is_null()) {
-    std::move(verdict_received_callback_)
-        .Run(/*success=*/IsSuccess(net_error, response_code), response_code,
-             response_body.value_or(""));
+  MaybeRunVerdictReceivedCallback(net_error, response_code,
+                                  response_body.value_or(""));
+
+  // If no other codepath has, ensure content_uploaded_callback_ isn't called
+  // until the hash is ready, since the object may be destroyed when the
+  // uploaded callback is run.
+  if (register_on_got_hash_callback_) {
+    std::move(register_on_got_hash_callback_)
+        .Run(base::IgnoreArgs<std::string>(
+            std::move(content_uploaded_callback_)));
+  } else {
+    std::move(content_uploaded_callback_).Run();
   }
-  std::move(content_uploaded_callback_).Run();
 }
 
-void ResumableUploadRequestBase::SendContentSoon(
-    const std::string& upload_url) {
+void ResumableUploadRequestBase::SendHashNow(
+    std::unique_ptr<network::ResourceRequest> request,
+    std::string hash) {
+  if (hash.empty()) {
+    // Hash computation failed, so finish by indicating no upload occurred.
+    Finish(url_loader_->NetError(), 0, std::nullopt);
+    return;
+  }
+  DCHECK(data_source_ == FILE && !hash.empty() &&
+         std::ranges::all_of(hash, base::IsHexDigit<char>));
+  request->headers.SetHeader(kUploadHashHeader, hash);
+  url_loader_ =
+      network::SimpleURLLoader::Create(std::move(request), traffic_annotation_);
+  url_loader_->SetAllowHttpErrorResults(true);
+  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(&ResumableUploadRequestBase::OnSendHashCompleted,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ResumableUploadRequestBase::OnSendHashCompleted(
+    std::optional<std::string> response_body) {
+  AssertCalledOnUIThread();
+  int response_code = 0;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
+  Finish(url_loader_->NetError(), response_code, std::move(response_body));
+}
+
+void ResumableUploadRequestBase::SendContentSoon() {
+  CHECK(!upload_url_.empty());
   auto request = std::make_unique<network::ResourceRequest>();
   request->method = "POST";
-  request->url = GURL(upload_url);
-  // Only sends content smaller than 50MB, in a single request.
-  request->headers.SetHeader(kUploadCommandHeader, "upload, finalize");
+  request->url = GURL(upload_url_);
+  // If hash computation is synchronous, this is the final request.
+  request->headers.SetHeader(
+      kUploadCommandHeader,
+      hash_computation_is_synchronous_ ? kCommandUploadFinalize : "upload");
   request->headers.SetHeader(kUploadOffsetHeader, "0");
 
   // TODO(crbug.com/322005992): Add retry logics.
@@ -369,7 +451,8 @@ void ResumableUploadRequestBase::SendContentNow(
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation_);
   url_loader_->SetAllowHttpErrorResults(true);
 
-  if (!data_pipe_getter_) {
+  // No data pipe and no hash callback indicates data_ is an image.
+  if (!data_pipe_getter_ && hash_computation_is_synchronous_) {
     url_loader_->AttachStringForUpload(data_, kImageContentType);
   }
 
@@ -398,43 +481,55 @@ void ResumableUploadRequestBase::OnMetadataUploadCompleted(
 
   auto headers = url_loader_->ResponseInfo()->headers;
   // If there is an error or if no content upload is required,
-  // CanUploadContent() returns false.
+  // CanUploadContent() returns false. Otherwise, it sets upload_url_.
   response_code = headers->response_code();
   if (!CanUploadContent(headers)) {
     Finish(url_loader_->NetError(), response_code, std::move(response_body));
     return;
   }
 
-  if (!force_sync_upload_) {
-    if (headers->HasHeader(kUploadIntermediateHeader)) {
-      response_body = headers->GetNormalizedHeader(kUploadIntermediateHeader);
+  if (!force_sync_upload_ && headers->HasHeader(kUploadIntermediateHeader)) {
+    response_body = headers->GetNormalizedHeader(kUploadIntermediateHeader);
 
-      std::string output;
-      bool is_decoded = base::Base64Decode(response_body.value(), &output);
+    std::string output;
+    bool is_decoded = base::Base64Decode(response_body.value(), &output);
 
-      if (output.empty() || !is_decoded) {
-        Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::nullopt);
-        return;
-      }
-
-      scan_type_ = ASYNC;
-      std::move(verdict_received_callback_)
-          .Run(IsSuccess(url_loader_->NetError(), response_code), response_code,
-               output);
+    if (output.empty() || !is_decoded) {
+      MaybeSendHashAndFinish(/*upload_offset=*/0, net::ERR_FAILED,
+                             net::HTTP_BAD_REQUEST, std::nullopt);
+      return;
     }
+
+    scan_type_ = ASYNC;
+    MaybeRunVerdictReceivedCallback(url_loader_->NetError(), response_code,
+                                    std::move(output));
   }
 
   // If chrome is being told to upload the content but the content is too large
-  // or is encrypted and encrypted file upload is not enabled, fail now.
+  // or is encrypted and encrypted file upload is not enabled, stop now and
+  // maybe upload the hash. If the verdict was delivered from an intermediate
+  // header, it had already been callbacked above and this FAILED result will
+  // not be used.
   if (get_data_result_ == ScanRequestUploadResult::kFileTooLarge ||
       (get_data_result_ == ScanRequestUploadResult::kFileEncrypted &&
        !ShouldUploadEncryptedFile())) {
-    Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::move(response_body));
+    MaybeSendHashAndFinish(/*upload_offset=*/0, net::ERR_FAILED,
+                           net::HTTP_BAD_REQUEST, std::move(response_body));
     return;
   }
 
-  // At this point, we are guaranteed to have the upload url header
-  SendContentSoon(headers->GetNormalizedHeader(kUploadUrlHeader).value());
+  SendContentSoon();
+}
+
+void ResumableUploadRequestBase::MaybeRunVerdictReceivedCallback(
+    int net_error,
+    int response_code,
+    std::optional<std::string> response_body) {
+  if (!verdict_received_callback_.is_null()) {
+    std::move(verdict_received_callback_)
+        .Run(/*success=*/IsSuccess(net_error, response_code), response_code,
+             response_body.value_or(""));
+  }
 }
 
 bool ResumableUploadRequestBase::CanUploadContent(
@@ -447,8 +542,13 @@ bool ResumableUploadRequestBase::CanUploadContent(
   if (!upload_status || !headers->HasHeader(kUploadUrlHeader)) {
     return false;
   }
-  return base::EqualsCaseInsensitiveASCII(upload_status.value_or(std::string()),
-                                          "active");
+
+  bool is_active = base::EqualsCaseInsensitiveASCII(
+      upload_status.value_or(std::string()), "active");
+  if (is_active && upload_url_.empty()) {
+    upload_url_ = headers->GetNormalizedHeader(kUploadUrlHeader).value();
+  }
+  return is_active;
 }
 
 bool ResumableUploadRequestBase::ShouldUploadEncryptedFile() {
