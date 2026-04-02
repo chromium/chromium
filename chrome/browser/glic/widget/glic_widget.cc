@@ -37,6 +37,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/frame_view.h"
+#include "ui/views/window/native_frame_view.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -51,11 +52,11 @@
 #include "ui/base/win/shell.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/views/win/hwnd_util.h"
-#include "ui/views/window/native_frame_view.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -108,27 +109,32 @@ class GlicClientView : public views::ClientView {
   GlicView* glic_view() { return static_cast<GlicView*>(contents_view()); }
 };
 
-#if BUILDFLAG(IS_WIN)
-class GlicFrameViewWin : public views::NativeFrameView {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+class GlicFrameView : public views::NativeFrameView {
  public:
-  explicit GlicFrameViewWin(views::Widget* widget)
+  explicit GlicFrameView(views::Widget* widget)
       : views::NativeFrameView(widget) {}
 
-  GlicFrameViewWin(const GlicFrameViewWin&) = delete;
-  GlicFrameViewWin& operator=(const GlicFrameViewWin&) = delete;
+  GlicFrameView(const GlicFrameView&) = delete;
+  GlicFrameView& operator=(const GlicFrameView&) = delete;
 
-  ~GlicFrameViewWin() override = default;
+  ~GlicFrameView() override = default;
 
   int NonClientHitTest(const gfx::Point& point) override {
     if (!bounds().Contains(point)) {
       return HTNOWHERE;
     }
 
-    const int resize_border =
+#if BUILDFLAG(IS_WIN)
+    int resize_border = resize_border =
         display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXSIZEFRAME);
+#elif BUILDFLAG(IS_LINUX)
+    int resize_border = OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
+#endif
     const bool can_resize = GetWidget()->widget_delegate()->CanResize();
 
-    // Same value as used in `BrowserFrameViewWin::NonClientHitTest()`.
+    // Same value as used in `BrowserFrameViewWin::NonClientHitTest()` and `
+    // OpaqueBrowserFrameView::NonClientHitTest`.
     constexpr int kResizeAreaCornerSize = 16;
     const int frame_component = GetHTComponentForFrame(
         point, gfx::Insets(resize_border),
@@ -142,7 +148,7 @@ class GlicFrameViewWin : public views::NativeFrameView {
   }
 };
 
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 class GlicWidgetDelegate : public views::WidgetDelegate {
  public:
@@ -332,12 +338,12 @@ std::unique_ptr<views::WidgetDelegate> GlicWidget::CreateWidgetDelegate(
         return std::make_unique<GlicClientView>(widget, contents_view);
       }));
 
-#if BUILDFLAG(IS_WIN)
-    delegate->SetFrameViewFactory(base::BindRepeating(
-        [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
-          return std::make_unique<GlicFrameViewWin>(widget);
-        }));
-#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  delegate->SetFrameViewFactory(base::BindRepeating(
+      [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
+        return std::make_unique<GlicFrameView>(widget);
+      }));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(b:458115863): Move ChromeOS specific code to platform specific
