@@ -1623,40 +1623,27 @@ bool WebGLRenderingContextBase::PushFrame() {
   TRACE_EVENT0("blink", "WebGLRenderingContextBase::PushFrame");
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
-  if (isContextLost() || !GetDrawingBuffer())
+  if (isContextLost() || !GetDrawingBuffer()) {
     return false;
+  }
 
   bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
   if (!must_paint_to_canvas_ && !cleared_content) {
     return false;
   }
 
+  bool submitted_frame = false;
+
   if (GetDrawingBuffer()->IsUsingGpuCompositing()) {
     // Export the DrawingBuffer's SI directly if possible.
-    if (PushFrameNoCopy())
-      return true;
+    if (auto canvas_resource = GetDrawingBuffer()->ExportCanvasResource()) {
+      submitted_frame = Host()->PushFrame(std::move(canvas_resource));
+      MarkLayerComposited();
+      if (submitted_frame) {
+        return true;
+      }
+    }
   }
-
-  return PushFrameWithCopy();
-}
-
-bool WebGLRenderingContextBase::PushFrameNoCopy() {
-  auto canvas_resource = GetDrawingBuffer()->ExportCanvasResource();
-  if (!canvas_resource)
-    return false;
-  const bool submitted_frame = Host()->PushFrame(std::move(canvas_resource));
-  MarkLayerComposited();
-  return submitted_frame;
-}
-
-void WebGLRenderingContextBase::Dispose() {
-  resource_provider_.reset();
-  cached_snapshot_.reset();
-  CanvasRenderingContext::Dispose();
-}
-
-bool WebGLRenderingContextBase::PushFrameWithCopy() {
-  bool submitted_frame = false;
 
   // Note: we push a frame only if (a) there is fresh content to produce and
   // (b) we successfully produced that content.
@@ -1668,6 +1655,12 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   }
   MarkLayerComposited();
   return submitted_frame;
+}
+
+void WebGLRenderingContextBase::Dispose() {
+  resource_provider_.reset();
+  cached_snapshot_.reset();
+  CanvasRenderingContext::Dispose();
 }
 
 void WebGLRenderingContextBase::OnErrorMessage(const char* message,

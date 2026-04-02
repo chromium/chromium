@@ -2064,13 +2064,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   void Dispose() override;
 
-  // PushFrameWithCopy will make a potential copy if the resource is accelerated
-  // or a drawImage if the resource is non accelerated.
-  bool PushFrameWithCopy();
-  // PushFrameNoCopy will try and export the content of the DrawingBuffer as a
-  // ExtenralCanvasResource.
-  bool PushFrameNoCopy();
-
   void TexElementImage2DInternal(GLenum target,
                                  GLint level,
                                  GLint internalformat,
