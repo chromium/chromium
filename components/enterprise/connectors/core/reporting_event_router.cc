@@ -448,13 +448,46 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
   }
 }
 
+void ReportingEventRouter::SendEventOnGotHash(
+    const std::string& name,
+    ReportingSettings reporting_settings,
+    chrome::cros::reporting::proto::Event event,
+    std::string hash) {
+  DCHECK(std::ranges::all_of(hash, base::IsHexDigit<char>));
+  // TODO(b/494301690): use a consistent name for the hash field.
+  if (name == kKeyUnscannedFileEvent) {
+    event.mutable_unscanned_file_event()->set_download_digest_sha_256(hash);
+  } else if (name == kKeySensitiveDataEvent) {
+    event.mutable_sensitive_data_event()->set_download_digest_sha_256(hash);
+  } else if (name == kKeyDangerousDownloadEvent) {
+    event.mutable_dangerous_download_event()->set_download_digest_sha256(hash);
+  } else {
+    NOTREACHED();
+  }
+  *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
+  reporting_client_->ReportEvent(std::move(event),
+                                 std::move(reporting_settings));
+}
+
+void ReportingEventRouter::SendEventOnGotHashDeprecated(
+    const std::string& name,
+    ReportingSettings reporting_settings,
+    base::DictValue event,
+    std::string hash) {
+  DCHECK(std::ranges::all_of(hash, base::IsHexDigit<char>));
+  event.Set(kKeyDownloadDigestSha256, hash);
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      name, std::move(reporting_settings), std::move(event), base::Time::Now(),
+      /*include_profile_user_name=*/true);
+}
+
 void ReportingEventRouter::OnUnscannedFileEvent(
     const GURL& url,
     const GURL& tab_url,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
-    const std::string& download_digest_sha256,
+    const HashCallbackVariant& sha256_or_cb,
     const std::string& mime_type,
     const std::string& trigger,
     const std::string& scan_id,
@@ -468,6 +501,11 @@ void ReportingEventRouter::OnUnscannedFileEvent(
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
+
+  std::string download_digest_sha256;
+  if (std::holds_alternative<std::string>(sha256_or_cb)) {
+    download_digest_sha256 = std::get<std::string>(sha256_or_cb);
+  }
   std::string final_file_name = GetFileName(
       file_name,
       reporting_client_->ShouldIncludeDeviceInfo(settings->per_profile));
@@ -480,9 +518,17 @@ void ReportingEventRouter::OnUnscannedFileEvent(
         download_digest_sha256, mime_type, trigger, scan_id, reason,
         content_transfer_method, reporting_client_->GetProfileIdentifier(),
         reporting_client_->GetProfileUserName(), content_size, event_result);
-    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-    reporting_client_->ReportEvent(std::move(event), settings.value());
+    auto send_event_cb =
+        base::BindOnce(&ReportingEventRouter::SendEventOnGotHash,
+                       weak_ptr_factory_.GetWeakPtr(), kKeyUnscannedFileEvent,
+                       std::move(settings.value()), std::move(event));
+    if (std::holds_alternative<RegisterOnGotHashCallback>(sha256_or_cb)) {
+      std::get<RegisterOnGotHashCallback>(sha256_or_cb)
+          .Run(std::move(send_event_cb));
+    } else {
+      std::move(send_event_cb).Run(download_digest_sha256);
+    }
   } else {
     base::DictValue event;
     event.Set(kKeyUrl, url.spec());
@@ -506,10 +552,16 @@ void ReportingEventRouter::OnUnscannedFileEvent(
       event.Set(kKeyContentTransferMethod, content_transfer_method);
     }
 
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeyUnscannedFileEvent, std::move(settings.value()), std::move(event),
-        base::Time::Now(),
-        /*include_profile_user_name=*/true);
+    auto send_event_cb =
+        base::BindOnce(&ReportingEventRouter::SendEventOnGotHashDeprecated,
+                       weak_ptr_factory_.GetWeakPtr(), kKeyUnscannedFileEvent,
+                       std::move(settings.value()), std::move(event));
+    if (std::holds_alternative<RegisterOnGotHashCallback>(sha256_or_cb)) {
+      std::get<RegisterOnGotHashCallback>(sha256_or_cb)
+          .Run(std::move(send_event_cb));
+    } else {
+      std::move(send_event_cb).Run(download_digest_sha256);
+    }
   }
 }
 
@@ -519,7 +571,7 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
-    const std::string& download_digest_sha256,
+    const HashCallbackVariant& sha256_or_cb,
     const std::string& mime_type,
     const std::string& trigger,
     const std::string& scan_id,
@@ -538,6 +590,12 @@ void ReportingEventRouter::OnSensitiveDataEvent(
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
+
+  std::string download_digest_sha256;
+  if (std::holds_alternative<std::string>(sha256_or_cb)) {
+    download_digest_sha256 = std::get<std::string>(sha256_or_cb);
+  }
+
   std::string final_file_name = GetFileName(
       file_name,
       reporting_client_->ShouldIncludeDeviceInfo(settings->per_profile));
@@ -552,9 +610,17 @@ void ReportingEventRouter::OnSensitiveDataEvent(
         reporting_client_->GetProfileIdentifier(),
         reporting_client_->GetProfileUserName(), user_justification,
         content_size, result, referrer_chain, frame_url_chain, event_result);
-    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-    reporting_client_->ReportEvent(std::move(event), settings.value());
+    auto send_event_cb =
+        base::BindOnce(&ReportingEventRouter::SendEventOnGotHash,
+                       weak_ptr_factory_.GetWeakPtr(), kKeySensitiveDataEvent,
+                       std::move(settings.value()), std::move(event));
+    if (std::holds_alternative<RegisterOnGotHashCallback>(sha256_or_cb)) {
+      std::get<RegisterOnGotHashCallback>(sha256_or_cb)
+          .Run(std::move(send_event_cb));
+    } else {
+      std::move(send_event_cb).Run(download_digest_sha256);
+    }
   } else {
     base::DictValue event;
     event.Set(kKeyUrl, url.spec());
@@ -598,10 +664,16 @@ void ReportingEventRouter::OnSensitiveDataEvent(
 
     AddAnalysisConnectorVerdictToEvent(result, event);
 
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeySensitiveDataEvent, std::move(settings.value()), std::move(event),
-        base::Time::Now(),
-        /*include_profile_user_name=*/true);
+    auto send_event_cb =
+        base::BindOnce(&ReportingEventRouter::SendEventOnGotHashDeprecated,
+                       weak_ptr_factory_.GetWeakPtr(), kKeySensitiveDataEvent,
+                       std::move(settings.value()), std::move(event));
+    if (std::holds_alternative<RegisterOnGotHashCallback>(sha256_or_cb)) {
+      std::get<RegisterOnGotHashCallback>(sha256_or_cb)
+          .Run(std::move(send_event_cb));
+    } else {
+      std::move(send_event_cb).Run(download_digest_sha256);
+    }
   }
 }
 
@@ -609,7 +681,7 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const GURL& url,
     const GURL& tab_url,
     const std::string& file_name,
-    const std::string& download_digest_sha256,
+    const HashCallbackVariant& sha256_or_cb,
     const download::DownloadDangerType danger_type,
     const std::string& mime_type,
     const std::string& trigger,
@@ -618,12 +690,11 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const ReferrerChain& referrer_chain,
     const FrameUrlChain& frame_url_chain,
     EventResult event_result) {
-  OnDangerousDownloadEvent(url, tab_url, /*source=*/"", /*destination=*/"",
-                           file_name, download_digest_sha256,
-                           DangerTypeToThreatType(danger_type), mime_type,
-                           trigger, scan_id,
-                           /*content_transfer_method*/ "", content_size,
-                           referrer_chain, frame_url_chain, event_result);
+  OnDangerousDownloadEvent(
+      url, tab_url, /*source=*/"", /*destination=*/"", file_name, sha256_or_cb,
+      DangerTypeToThreatType(danger_type), mime_type, trigger, scan_id,
+      /*content_transfer_method*/ "", content_size, referrer_chain,
+      frame_url_chain, event_result);
 }
 
 void ReportingEventRouter::OnDangerousDownloadEvent(
@@ -632,7 +703,7 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
-    const std::string& download_digest_sha256,
+    const HashCallbackVariant& sha256_or_cb,
     const std::string& threat_type,
     const std::string& mime_type,
     const std::string& trigger,
@@ -648,6 +719,11 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
+
+  std::string download_digest_sha256;
+  if (std::holds_alternative<std::string>(sha256_or_cb)) {
+    download_digest_sha256 = std::get<std::string>(sha256_or_cb);
+  }
   std::string final_file_name = GetFileName(
       file_name,
       reporting_client_->ShouldIncludeDeviceInfo(settings->per_profile));
@@ -661,9 +737,17 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
         content_transfer_method, reporting_client_->GetProfileIdentifier(),
         reporting_client_->GetProfileUserName(), content_size, referrer_chain,
         frame_url_chain, event_result);
-    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-    reporting_client_->ReportEvent(std::move(event), settings.value());
+    auto send_event_cb = base::BindOnce(
+        &ReportingEventRouter::SendEventOnGotHash,
+        weak_ptr_factory_.GetWeakPtr(), kKeyDangerousDownloadEvent,
+        std::move(settings.value()), std::move(event));
+    if (std::holds_alternative<RegisterOnGotHashCallback>(sha256_or_cb)) {
+      std::get<RegisterOnGotHashCallback>(sha256_or_cb)
+          .Run(std::move(send_event_cb));
+    } else {
+      std::move(send_event_cb).Run(download_digest_sha256);
+    }
   } else {
     base::DictValue event;
     event.Set(kKeyUrl, url.spec());
@@ -696,10 +780,16 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
 
     AddFrameUrlChainToEvent(frame_url_chain, event);
 
-    reporting_client_->ReportEventWithTimestampDeprecated(
-        kKeyDangerousDownloadEvent, std::move(settings.value()),
-        std::move(event), base::Time::Now(),
-        /*include_profile_user_name=*/true);
+    auto send_event_cb = base::BindOnce(
+        &ReportingEventRouter::SendEventOnGotHashDeprecated,
+        weak_ptr_factory_.GetWeakPtr(), kKeyDangerousDownloadEvent,
+        std::move(settings.value()), std::move(event));
+    if (std::holds_alternative<RegisterOnGotHashCallback>(sha256_or_cb)) {
+      std::get<RegisterOnGotHashCallback>(sha256_or_cb)
+          .Run(std::move(send_event_cb));
+    } else {
+      std::move(send_event_cb).Run(download_digest_sha256);
+    }
   }
 }
 
@@ -709,7 +799,7 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
-    const std::string& download_digest_sha256,
+    const HashCallbackVariant& sha256_or_cb,
     const std::string& mime_type,
     const std::string& trigger,
     const std::string& scan_id,
@@ -724,14 +814,14 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
   if (result.tag() == kMalwareTag) {
     DCHECK_EQ(1, result.triggered_rules().size());
     OnDangerousDownloadEvent(
-        url, tab_url, source, destination, file_name, download_digest_sha256,
+        url, tab_url, source, destination, file_name, sha256_or_cb,
         MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
         mime_type, trigger, scan_id, content_transfer_method, content_size,
         referrer_chain, frame_url_chain, event_result);
   } else if (result.tag() == kDlpTag) {
     OnSensitiveDataEvent(
-        url, tab_url, source, destination, file_name, download_digest_sha256,
-        mime_type, trigger, scan_id, content_transfer_method, source_email,
+        url, tab_url, source, destination, file_name, sha256_or_cb, mime_type,
+        trigger, scan_id, content_transfer_method, source_email,
         content_area_account_email, /*user_justification=*/std::nullopt, result,
         content_size, referrer_chain, frame_url_chain, event_result);
   }

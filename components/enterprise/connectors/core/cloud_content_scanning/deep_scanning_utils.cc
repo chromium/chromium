@@ -159,7 +159,7 @@ void MaybeReportDeepScanningVerdict(
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
-    const std::string& download_digest_sha256,
+    const HashCallbackVariant& sha256_or_cb,
     const std::string& mime_type,
     const std::string& trigger,
     const std::string& content_transfer_method,
@@ -168,7 +168,6 @@ void MaybeReportDeepScanningVerdict(
     ScanRequestUploadResult result,
     const ContentAnalysisResponse& response,
     EventResult event_result) {
-  DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   DCHECK(content_analysis_info);
 
   if (!reporting_event_router) {
@@ -179,9 +178,9 @@ void MaybeReportDeepScanningVerdict(
   if (!unscanned_reason.empty()) {
     reporting_event_router->OnUnscannedFileEvent(
         GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
-        source, destination, file_name, download_digest_sha256, mime_type,
-        trigger, response.request_token(), unscanned_reason,
-        content_transfer_method, content_size, event_result);
+        source, destination, file_name, sha256_or_cb, mime_type, trigger,
+        response.request_token(), unscanned_reason, content_transfer_method,
+        content_size, event_result);
   }
 
   if (result != ScanRequestUploadResult::kSuccess) {
@@ -199,17 +198,16 @@ void MaybeReportDeepScanningVerdict(
 
       reporting_event_router->OnUnscannedFileEvent(
           GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
-          source, destination, file_name, download_digest_sha256, mime_type,
-          trigger, response.request_token(), std::move(unscanned_reason),
+          source, destination, file_name, sha256_or_cb, mime_type, trigger,
+          response.request_token(), std::move(unscanned_reason),
           content_transfer_method, content_size, event_result);
     } else if (response_result.triggered_rules_size() > 0) {
       reporting_event_router->OnAnalysisConnectorResult(
           GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
-          source, destination, file_name, download_digest_sha256, mime_type,
-          trigger, response.request_token(), content_transfer_method,
-          source_email, content_analysis_info->GetContentAreaAccountEmail(),
-          response_result, content_size,
-          content_analysis_info->referrer_chain(),
+          source, destination, file_name, sha256_or_cb, mime_type, trigger,
+          response.request_token(), content_transfer_method, source_email,
+          content_analysis_info->GetContentAreaAccountEmail(), response_result,
+          content_size, content_analysis_info->referrer_chain(),
           content_analysis_info->frame_url_chain(), event_result);
     }
   }
@@ -221,14 +219,13 @@ void ReportAnalysisConnectorWarningBypass(
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
-    const std::string& download_digest_sha256,
+    const enterprise_connectors::HashCallbackVariant& sha256_or_cb,
     const std::string& mime_type,
     const std::string& trigger,
     const std::string& content_transfer_method,
     const int64_t content_size,
     const ContentAnalysisResponse& response,
     std::optional<std::u16string> user_justification) {
-  DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
   DCHECK(content_analysis_info);
 
   if (!reporting_event_router) {
@@ -243,8 +240,8 @@ void ReportAnalysisConnectorWarningBypass(
 
     reporting_event_router->OnSensitiveDataEvent(
         GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
-        source, destination, file_name, download_digest_sha256, mime_type,
-        trigger, response.request_token(), content_transfer_method,
+        source, destination, file_name, sha256_or_cb, mime_type, trigger,
+        response.request_token(), content_transfer_method,
         /*source_email=*/"",
         content_analysis_info->GetContentAreaAccountEmail(), user_justification,
         result, content_size, content_analysis_info->referrer_chain(),

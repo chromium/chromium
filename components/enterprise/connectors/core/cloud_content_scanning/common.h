@@ -8,11 +8,9 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "components/enterprise/connectors/core/common.h"
 
 namespace enterprise_connectors {
-
-// Callback to be called when the hash of a file has been computed.
-using OnGotHashCallback = base::OnceCallback<void(std::string)>;
 
 // The result of uploading a scanning request to the WebProtect server.
 //
@@ -63,8 +61,9 @@ struct FileInfo {
   FileInfo(FileInfo&& other);
   ~FileInfo();
 
-  // Hex-encoded SHA256 hash for the given file.
-  std::string sha256;
+  // Hex-encoded SHA256 hash for the given file, or a callback to register a
+  // function to be called with the hash as an argument.
+  HashCallbackVariant sha256_or_cb;
 
   // File size in bytes. 0 represents an unknown size.
   uint64_t size = 0;

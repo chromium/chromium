@@ -109,6 +109,8 @@ class FilesRequestHandler : public RequestHandlerBase {
                      ScanRequestUploadResult result,
                      BinaryUploadRequest::Data data);
 
+  void OnGotHash(size_t index, std::string hash);
+
   // Called when a request is finished early without uploading it.
   // This is, e.g., called for encrypted files and responsible for posting the
   // required data to safe-browsing ui.

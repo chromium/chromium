@@ -15,6 +15,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "build/blink_buildflags.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -45,6 +46,13 @@ using SourceDestinationStringPair = std::pair<std::string, std::string>;
 
 // Alias to reduce verbosity when using Event::EventCase.
 using EventCase = ::chrome::cros::reporting::proto::Event::EventCase;
+
+// Callback which accepts a hash for use in scan upload or reporting.
+using OnGotHashCallback = base::OnceCallback<void(std::string)>;
+
+// Variant with either a hash or a way to register a callback to receive a hash.
+using HashCallbackVariant =
+    std::variant<std::string, base::RepeatingCallback<void(OnGotHashCallback)>>;
 
 // Keys used to read a connector's policy values.
 inline constexpr char kKeyServiceProvider[] = "service_provider";

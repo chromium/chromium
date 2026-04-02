@@ -193,7 +193,7 @@ void FilesRequestHandlerBase::FileRequestCallback(
   MaybeReportDeepScanningVerdict(
       delegate_->GetReportingEventRouter(), content_analysis_info_.get(),
       delegate_->GetSource(), delegate_->GetDestination(),
-      delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256,
+      delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256_or_cb,
       file_info.mime_type, AccessPointToTriggerString(access_point_),
       content_transfer_method_,
       content_analysis_info_->GetContentAreaAccountEmail(), file_info.size,

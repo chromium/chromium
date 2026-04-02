@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_EVENT_ROUTER_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_EVENT_ROUTER_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/data_controls/core/browser/clipboard_context.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,6 +30,8 @@ class ReportingEventRouter : public KeyedService {
   using ReferrerChain =
       google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
   using FrameUrlChain = google::protobuf::RepeatedPtrField<std::string>;
+  using RegisterOnGotHashCallback =
+      base::RepeatingCallback<void(OnGotHashCallback)>;
 
  public:
   explicit ReportingEventRouter(RealtimeReportingClientBase* reporting_client);
@@ -85,13 +89,23 @@ class ReportingEventRouter : public KeyedService {
                                    bool proceed_anyway_disabled,
                                    const ReferrerChain& referrer_chain);
 
+  void SendEventOnGotHash(const std::string& name,
+                          ReportingSettings reporting_settings,
+                          chrome::cros::reporting::proto::Event event,
+                          std::string hash);
+
+  void SendEventOnGotHashDeprecated(const std::string& name,
+                                    ReportingSettings reporting_settings,
+                                    base::DictValue event,
+                                    std::string hash);
+
   // Notifies listeners that deep scanning failed, for the given |reason|.
   void OnUnscannedFileEvent(const GURL& url,
                             const GURL& tab_url,
                             const std::string& source,
                             const std::string& destination,
                             const std::string& file_name,
-                            const std::string& download_digest_sha256,
+                            const HashCallbackVariant& sha256_or_cb,
                             const std::string& mime_type,
                             const std::string& trigger,
                             const std::string& scan_id,
@@ -106,7 +120,7 @@ class ReportingEventRouter : public KeyedService {
                             const std::string& source,
                             const std::string& destination,
                             const std::string& file_name,
-                            const std::string& download_digest_sha256,
+                            const HashCallbackVariant& sha256_or_cb,
                             const std::string& mime_type,
                             const std::string& trigger,
                             const std::string& scan_id,
@@ -128,7 +142,7 @@ class ReportingEventRouter : public KeyedService {
   void OnDangerousDownloadEvent(const GURL& url,
                                 const GURL& tab_url,
                                 const std::string& file_name,
-                                const std::string& download_digest_sha256,
+                                const HashCallbackVariant& sha256_or_cb,
                                 const download::DownloadDangerType danger_type,
                                 const std::string& mime_type,
                                 const std::string& trigger,
@@ -148,7 +162,7 @@ class ReportingEventRouter : public KeyedService {
                                 const std::string& source,
                                 const std::string& destination,
                                 const std::string& file_name,
-                                const std::string& download_digest_sha256,
+                                const HashCallbackVariant& sha256_or_cb,
                                 const std::string& threat_type,
                                 const std::string& mime_type,
                                 const std::string& trigger,
@@ -165,7 +179,7 @@ class ReportingEventRouter : public KeyedService {
                                  const std::string& source,
                                  const std::string& destination,
                                  const std::string& file_name,
-                                 const std::string& download_digest_sha256,
+                                 const HashCallbackVariant& sha256_or_cb,
                                  const std::string& mime_type,
                                  const std::string& trigger,
                                  const std::string& scan_id,
@@ -238,6 +252,8 @@ class ReportingEventRouter : public KeyedService {
                                  const bool include_full_path);
 
   raw_ptr<RealtimeReportingClientBase> reporting_client_;
+
+  base::WeakPtrFactory<ReportingEventRouter> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors
