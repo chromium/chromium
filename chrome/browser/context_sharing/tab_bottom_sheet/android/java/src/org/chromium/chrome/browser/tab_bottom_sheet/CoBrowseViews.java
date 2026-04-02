@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -74,7 +76,8 @@ public class CoBrowseViews {
 
     /** Destroys the co-browse view and its components. */
     @CalledByNative
-    private void destroy() {
+    @VisibleForTesting
+    void destroy() {
         ViewGroup toolbarContainer = mView.findViewById(R.id.toolbar_container);
         ViewGroup webUiContainer = mView.findViewById(R.id.web_ui_container);
         ViewGroup fuseboxContainer = mView.findViewById(R.id.fusebox_container);

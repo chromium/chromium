@@ -6,7 +6,9 @@ package org.chromium.components.thinwebview;
 
 import android.content.Context;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.thinwebview.internal.ThinWebViewImpl;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -14,6 +16,9 @@ import org.chromium.ui.base.WindowAndroid;
 /** Factory for creating a {@link ThinWebView}. */
 @NullMarked
 public class ThinWebViewFactory {
+
+    @Nullable private static ThinWebView sInstanceForTesting;
+
     /**
      * Creates a {@link ThinWebView} backed by a {@link Surface}. The surface is provided by a
      * either a {@link TextureView} or {@link SurfaceView}.
@@ -26,6 +31,10 @@ public class ThinWebViewFactory {
             Context context,
             ThinWebViewConstraints constraints,
             IntentRequestTracker intentRequestTracker) {
+        if (sInstanceForTesting != null) {
+            return sInstanceForTesting;
+        }
+
         return new ThinWebViewImpl(context, constraints, intentRequestTracker);
     }
 
@@ -39,6 +48,15 @@ public class ThinWebViewFactory {
      */
     public static ThinWebView create(
             Context context, ThinWebViewConstraints constraints, WindowAndroid windowAndroid) {
+        if (sInstanceForTesting != null) {
+            return sInstanceForTesting;
+        }
+
         return new ThinWebViewImpl(context, constraints, windowAndroid);
+    }
+
+    public static void setInstanceForTesting(ThinWebView thinWebView) {
+        sInstanceForTesting = thinWebView;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 }

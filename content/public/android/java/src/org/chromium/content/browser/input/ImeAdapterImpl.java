@@ -502,7 +502,8 @@ public class ImeAdapterImpl
     // Tells if the ImeAdapter in valid state (i.e. not in destroyed state), and is
     // connected to render process. The former check guards against the call via
     // ThreadedInputConnection from Android framework after ImeAdapter.destroy() is called.
-    private boolean isValid() {
+    @VisibleForTesting
+    public boolean isValid() {
         return mNativeImeAdapterAndroid != 0 && mIsConnected;
     }
 
