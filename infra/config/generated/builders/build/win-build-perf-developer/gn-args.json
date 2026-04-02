@@ -4,6 +4,7 @@
       "gn_args": {
         "blink_symbol_level": 0,
         "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 2,
@@ -19,6 +20,7 @@
       "gn_args": {
         "blink_symbol_level": 0,
         "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 2,

@@ -1558,6 +1558,7 @@ gn_args.config(
     # Currently, 70% of Windows developers use this configuration.
     # See: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/windows_build_instructions.md#faster-builds
     args = {
+        "is_component_build": False,
         "is_debug": False,
         "v8_symbol_level": 0,
         "blink_symbol_level": 0,
