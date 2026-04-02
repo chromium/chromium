@@ -102,10 +102,10 @@ public class DateTimePickerDialog extends AlertDialog
 
         mTimePicker = view.findViewById(R.id.time_picker);
         mTimePicker.setIs24HourView(is24HourView);
-        setHour(mTimePicker, hourOfDay);
-        setMinute(mTimePicker, minute);
+        mTimePicker.setHour(hourOfDay);
+        mTimePicker.setMinute(minute);
         mTimePicker.setOnTimeChangedListener(this);
-        onTimeChanged(mTimePicker, getHour(mTimePicker), getMinute(mTimePicker));
+        onTimeChanged(mTimePicker, mTimePicker.getHour(), mTimePicker.getMinute());
     }
 
     @Override
@@ -123,8 +123,8 @@ public class DateTimePickerDialog extends AlertDialog
                     mDatePicker.getYear(),
                     mDatePicker.getMonth(),
                     mDatePicker.getDayOfMonth(),
-                    getHour(mTimePicker),
-                    getMinute(mTimePicker));
+                    mTimePicker.getHour(),
+                    mTimePicker.getMinute());
         }
     }
 
@@ -132,7 +132,7 @@ public class DateTimePickerDialog extends AlertDialog
     public void onDateChanged(DatePicker view, int year, int month, int day) {
         // Signal a time change so the max/min checks can be applied.
         if (mTimePicker != null) {
-            onTimeChanged(mTimePicker, getHour(mTimePicker), getMinute(mTimePicker));
+            onTimeChanged(mTimePicker, mTimePicker.getHour(), mTimePicker.getMinute());
         }
     }
 
@@ -159,15 +159,15 @@ public class DateTimePickerDialog extends AlertDialog
         // it with minimum/maximum values in UTC.
         Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         calendar.clear();
-        calendar.set(year, month, day, getHour(picker), getMinute(picker), 0);
+        calendar.set(year, month, day, picker.getHour(), picker.getMinute(), 0);
 
         if (calendar.getTimeInMillis() < minTimeMillis) {
             calendar.setTimeInMillis(minTimeMillis);
         } else if (calendar.getTimeInMillis() > maxTimeMillis) {
             calendar.setTimeInMillis(maxTimeMillis);
         }
-        setHour(picker, calendar.get(Calendar.HOUR_OF_DAY));
-        setMinute(picker, calendar.get(Calendar.MINUTE));
+        picker.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+        picker.setMinute(calendar.get(Calendar.MINUTE));
     }
 
     /**
@@ -180,29 +180,7 @@ public class DateTimePickerDialog extends AlertDialog
     public void updateDateTime(
             int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minutOfHour) {
         mDatePicker.updateDate(year, monthOfYear, dayOfMonth);
-        setHour(mTimePicker, hourOfDay);
-        setMinute(mTimePicker, minutOfHour);
-    }
-
-    // TODO(newt): delete these deprecated method calls once we support only API 23 and higher.
-
-    @SuppressWarnings("deprecation")
-    private static void setHour(TimePicker picker, int hour) {
-        picker.setCurrentHour(hour);
-    }
-
-    @SuppressWarnings("deprecation")
-    private static void setMinute(TimePicker picker, int minute) {
-        picker.setCurrentMinute(minute);
-    }
-
-    @SuppressWarnings("deprecation")
-    private static int getHour(TimePicker picker) {
-        return picker.getCurrentHour();
-    }
-
-    @SuppressWarnings("deprecation")
-    private static int getMinute(TimePicker picker) {
-        return picker.getCurrentMinute();
+        mTimePicker.setHour(hourOfDay);
+        mTimePicker.setMinute(minutOfHour);
     }
 }
