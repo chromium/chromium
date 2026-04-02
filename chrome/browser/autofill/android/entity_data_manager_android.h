@@ -81,8 +81,10 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // If the user is eligible for Google Wallet private passes, entities such as
   // passport are stored unmaked in Wallet servers, with a masked version stored
   // on device. Otherwise, entities are always stored on device.
-  // TODO(crbug.com/467563385): Show saved to local fallback message if saving
-  // to wallet fails or the user becomes ineligible.
+  // If an attempt to store `jEntity` in Wallet servers happen but fails, either
+  // because of a failed server call or because the user became ineligible,
+  // the `on_local_save_fallback` is run, which displays the user a feedback
+  // message about their data being stored locally instead.
   void AddOrUpdateEntityInstance(JNIEnv* env,
                                  const jni_zero::JavaRef<jobject>& jEntity,
                                  base::OnceClosure on_local_save_fallback);
@@ -154,12 +156,13 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // syncing is disabled between the moment whe the user opens the add entity
   // dialog and the moment the save button is clicked. In this case,
   // `entity_instance` will have its record type as `kLocal`, while
-  // `targeted_record_type` will `kServerWallet`, which will lead to a feedback
-  // message is displayed to users to let them know the entity was stored
-  // locally instead.
+  // `targeted_record_type` will `kServerWallet`, which will lead to the
+  // `on_local_save_fallback` being run, displaying a feedback message to users
+  // to let them know the entity was stored locally instead.
   void AddOrUpdateEntityInstance(
       EntityInstance entity_instance,
-      EntityInstance::RecordType targeted_record_type);
+      EntityInstance::RecordType targeted_record_type,
+      base::OnceClosure on_local_save_fallback);
 
   // Called after an attempt to save a private pass to Google Wallet.
   // If `saved_entity` exists, it will be a masked entity which will be stored
@@ -167,6 +170,7 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // attempt. It will be stored if `saved_entity` does not exist, likely due
   // to a server call failure.
   void OnSavePrivatePassToWalletFinished(
+      base::OnceClosure on_local_save_fallback,
       EntityInstance original_entity,
       std::optional<EntityInstance> saved_entity);
 

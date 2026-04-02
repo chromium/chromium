@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -113,8 +114,12 @@ TEST_F(EntityDataManagerAndroidTest,
               SaveWalletEntityInstance(entity, _, _))
       .WillOnce(RunOnceCallback<2>(std::nullopt));
 
+  base::MockOnceClosure on_local_save_callback;
+  EXPECT_CALL(on_local_save_callback, Run);
+
   test_api(*entity_data_manager_android_)
-      .AddOrUpdateEntityInstance(entity, entity.record_type());
+      .AddOrUpdateEntityInstance(entity, entity.record_type(),
+                                 on_local_save_callback.Get());
   webdata_helper_.WaitUntilIdle();
 
   EXPECT_THAT(entity_data_manager().GetEntityInstances(),
@@ -138,8 +143,12 @@ TEST_F(EntityDataManagerAndroidTest,
               SaveWalletEntityInstance(entity, _, _))
       .WillOnce(RunOnceCallback<2>(saved_entity));
 
+  base::MockOnceClosure on_local_save_callback;
+  EXPECT_CALL(on_local_save_callback, Run).Times(0);
+
   test_api(*entity_data_manager_android_)
-      .AddOrUpdateEntityInstance(entity, entity.record_type());
+      .AddOrUpdateEntityInstance(entity, entity.record_type(),
+                                 on_local_save_callback.Get());
   webdata_helper_.WaitUntilIdle();
 
   base::span<const EntityInstance> instances =
@@ -161,10 +170,14 @@ TEST_F(EntityDataManagerAndroidTest,
   EXPECT_CALL(mock_wallet_pass_access_manager(), SaveWalletEntityInstance)
       .Times(0);
 
+  base::MockOnceClosure on_local_save_callback;
+  EXPECT_CALL(on_local_save_callback, Run);
+
   // Targeted record type was wallet, but entity is local.
   test_api(*entity_data_manager_android_)
       .AddOrUpdateEntityInstance(entity,
-                                 EntityInstance::RecordType::kServerWallet);
+                                 EntityInstance::RecordType::kServerWallet,
+                                 on_local_save_callback.Get());
   webdata_helper_.WaitUntilIdle();
 
   base::span<const EntityInstance> instances =
