@@ -629,8 +629,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate = nullptr);
 
-  MemoryManagedPaintCanvas& GetCanvasDeprecated();
-
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
