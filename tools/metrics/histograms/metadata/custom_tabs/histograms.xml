@@ -153,10 +153,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.AndroidBrowserHelper.Version" units="versioncode"
-    expires_after="2026-07-26">
+    expires_after="2026-09-30">
   <owner>hattorij@google.com</owner>
   <owner>ishitatsuyuki@google.com</owner>
-  <owner>cros-virt-devices-guests@google.com</owner>
+  <owner>lt-performance@google.com</owner>
   <summary>
     Records the version of android_browser_helper during Custom Tabs startup.
   </summary>
@@ -1139,10 +1139,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedWebActivity.Startup.TimeToFirstCommitNavigation2.{suffix}"
-    units="ms" expires_after="2026-07-12">
+    units="ms" expires_after="2026-09-30">
   <owner>hattorij@google.com</owner>
   <owner>ishitatsuyuki@google.com</owner>
-  <owner>cros-virt-devices-guests@google.com</owner>
+  <owner>lt-performance@google.com</owner>
   <summary>
     Duration for a TWA from the launch of the TWA to the first navigation
     commit. Split by varying degrees of warmness, from cold to fully pre-loaded
@@ -1155,10 +1155,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedWebActivity.Startup.TimeToFirstContentfulPaint.{suffix}"
-    units="ms" expires_after="2026-05-13">
+    units="ms" expires_after="2026-09-30">
   <owner>hattorij@google.com</owner>
   <owner>ishitatsuyuki@google.com</owner>
-  <owner>cros-virt-devices-guests@google.com</owner>
+  <owner>lt-performance@google.com</owner>
   <summary>
     Duration for a TWA from the launch to the First Contentful Paint on the
     first navigation. Split by varying degrees of warmness, from cold to fully
@@ -1171,10 +1171,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedWebActivity.Startup.TimeToLargestContentfulPaint2.{suffix}"
-    units="ms" expires_after="2026-05-13">
+    units="ms" expires_after="2026-09-30">
   <owner>hattorij@google.com</owner>
   <owner>ishitatsuyuki@google.com</owner>
-  <owner>cros-virt-devices-guests@google.com</owner>
+  <owner>lt-performance@google.com</owner>
   <summary>
     Duration for a TWA from the launch to the Largest Contentful Paint on the
     first navigation. Split by varying degrees of warmness, from cold to fully
