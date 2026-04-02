@@ -193,6 +193,11 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
         reflectToAttribute: true,
       },
 
+      hideReportButton: {
+        type: Boolean,
+        value: false,
+      },
+
       showRoutineDetails: {
         type: Boolean,
         value: false,
@@ -226,6 +231,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   isPowerRoutine: boolean;
   isActive: boolean;
   hideRoutineStatus: boolean;
+  hideReportButton: boolean;
   showRoutineDetails: boolean;
   opened: boolean;
   hideVerticalLines: boolean;
@@ -484,8 +490,8 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     window.open(baseSupportUrl + this.learnMoreLinkSection);
   }
 
-  protected isResultButtonHidden(): boolean {
-    return this.shouldHideReportList() ||
+  protected isReportButtonHidden(): boolean {
+    return this.hideReportButton || this.shouldHideReportList() ||
         this.executionStatus === ExecutionProgress.NOT_STARTED;
   }
 

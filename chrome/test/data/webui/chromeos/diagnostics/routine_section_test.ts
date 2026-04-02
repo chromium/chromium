@@ -243,6 +243,12 @@ suite('routineSectionTestSuite', function() {
     return flushTasks();
   }
 
+  function setHideReportButton(hideReportButton: boolean): Promise<void> {
+    assert(routineSectionElement);
+    routineSectionElement.hideReportButton = hideReportButton;
+    return flushTasks();
+  }
+
   function getLearnMoreButton(): CrButtonElement {
     assert(routineSectionElement);
     const learnMoreButton =
@@ -849,6 +855,65 @@ suite('routineSectionTestSuite', function() {
     return initializeRoutineSection(routines)
         .then(() => clickRunTestsButton())
         .then(() => {
+          assertTrue(isVisible(getToggleTestReportButton()));
+        });
+  });
+
+  test('ReportButtonHiddenWhenHideReportButtonSet', () => {
+    const routines = [
+      RoutineType.kCpuCache,
+      RoutineType.kCpuStress,
+    ];
+    return initializeRoutineSection(routines)
+        .then(() => setHideReportButton(true))
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          // Report button stays hidden despite multiple routines running.
+          assertFalse(isVisible(getToggleTestReportButton()));
+        });
+  });
+
+  test('ReportButtonHiddenThroughTestLifecycleWhenHideReportButtonSet', () => {
+    const routines = [
+      RoutineType.kCpuCache,
+      RoutineType.kCpuStress,
+    ];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kCpuCache, StandardRoutineResult.kTestPassed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kCpuStress, StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(routines)
+        .then(() => setHideReportButton(true))
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          // Hidden during RUNNING.
+          assertFalse(isVisible(getToggleTestReportButton()));
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          // Still hidden while second routine runs.
+          assertFalse(isVisible(getToggleTestReportButton()));
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          // Still hidden after all tests complete.
+          assertFalse(isVisible(getToggleTestReportButton()));
+        });
+  });
+
+  test('ReportButtonVisibleWhenHideReportButtonExplicitlyFalse', () => {
+    const routines = [
+      RoutineType.kCpuCache,
+      RoutineType.kCpuStress,
+    ];
+    return initializeRoutineSection(routines)
+        .then(() => setHideReportButton(false))
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          // Button visible — same as default behavior.
           assertTrue(isVisible(getToggleTestReportButton()));
         });
   });

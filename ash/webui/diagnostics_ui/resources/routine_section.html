@@ -118,7 +118,7 @@
   <div id="routineSection" class="routine-container">
     <div class="routine-status-container" hidden$="[[hideRoutineStatus]]">
       <text-badge id="testStatusBadge" badge-type="[[badgeType]]"
-          hidden="[[isStatusHidden(executionStatus)]]"
+          hidden$="[[isStatusHidden(executionStatus)]]"
           value="[[badgeText]]">
       </text-badge>
       <span id="testStatusText"
@@ -139,7 +139,7 @@
           [[additionalMessage]]
         </paper-tooltip>
       <cr-button id="toggleReportButton" on-click="onToggleReportClicked"
-          hidden="[[isResultButtonHidden(executionStatus, routines.*)]]">
+          hidden$="[[isReportButtonHidden(hideReportButton, executionStatus, routines.*)]]">
         [[getReportToggleButtonText(opened)]]
       </cr-button>
       <cr-button id="toggleDetailsButton" on-click="onToggleDetailsClicked"
