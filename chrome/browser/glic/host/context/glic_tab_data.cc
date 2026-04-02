@@ -133,11 +133,13 @@ TabDataObserver::TabDataObserver(
       tab_data_changed_(std::move(tab_data_changed)),
       tab_(tab) {
   if (web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
     auto* favicon_driver =
         favicon::ContentFaviconDriver::FromWebContents(web_contents);
     if (favicon_driver) {
       favicon_driver->AddObserver(this);
     }
+#endif
     tab_detach_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
         &TabDataObserver::OnTabWillDetach, base::Unretained(this)));
   }
@@ -153,6 +155,7 @@ void TabDataObserver::ClearObservation() {
   // observer if the web contents is destroyed.
   // Note, we do not used a scoped observation because there is no event
   // notifying us when a web contents is destroyed.
+#if !BUILDFLAG(IS_ANDROID)
   if (web_contents()) {
     auto* favicon_driver =
         favicon::ContentFaviconDriver::FromWebContents(web_contents());
@@ -160,6 +163,7 @@ void TabDataObserver::ClearObservation() {
       favicon_driver->RemoveObserver(this);
     }
   }
+#endif
   Observe(nullptr);
   deferred_update_.Stop();
   ReportUpdatesPerNavigation();
@@ -221,6 +225,7 @@ void TabDataObserver::SendUpdate() {
   change_causes_ = {};
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void TabDataObserver::OnFaviconUpdated(
     favicon::FaviconDriver* favicon_driver,
     NotificationIconType notification_icon_type,
@@ -230,6 +235,7 @@ void TabDataObserver::OnFaviconUpdated(
   change_causes_.Put(TabDataChangeCause::kFavicon);
   SendUpdate();
 }
+#endif
 
 void TabDataObserver::OnTabWillDetach(tabs::TabInterface* tab,
                                       tabs::TabInterface::DetachReason reason) {
@@ -268,9 +274,10 @@ glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
   }
 
   SkBitmap favicon;
+  std::optional<GURL> favicon_url;
+#if !BUILDFLAG(IS_ANDROID)
   auto* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(web_contents);
-  std::optional<GURL> favicon_url;
   if (favicon_driver && favicon_driver->FaviconIsValid()) {
     // Attempt to get a 32x32 favicon by default (16x16 DIP at 2x scale).
     favicon = favicon_driver->GetFavicon()
@@ -281,6 +288,7 @@ glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
       favicon_url = GURL(skia::EncodePngAsDataUri(favicon.pixmap()));
     }
   }
+#endif
 
   // TODO(b/426644734): investigate triggering updates due to changes to
   // observability for focused tab data.
