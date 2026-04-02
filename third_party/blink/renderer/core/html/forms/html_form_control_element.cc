@@ -199,6 +199,10 @@ void HTMLFormControlElement::RequiredAttributeChanged() {
 }
 
 bool HTMLFormControlElement::IsReadOnly() const {
+  if (RuntimeEnabledFeatures::FixHTMLFormControlElementIsReadOnlyEnabled() &&
+      !SupportsReadOnly()) {
+    return false;
+  }
   return FastHasAttribute(html_names::kReadonlyAttr);
 }
 

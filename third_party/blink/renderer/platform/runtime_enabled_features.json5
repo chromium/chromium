@@ -2754,6 +2754,12 @@
       name: "FirstLineTextMetrics",
       status: "stable",
     },
+    // When enabled, HTMLFormControlElement::IsReadOnly() returns false for
+    // types that don't support readonly.
+    {
+      name: "FixHTMLFormControlElementIsReadOnly",
+      status: "stable",
+    },
     {
       // Returns alignment value instead of a boolean
       name: "FixJustifyQueryCommandValue",

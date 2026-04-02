@@ -661,6 +661,10 @@ FormControlType HTMLInputElement::FormControlType() const {
   return input_type_->FormControlType();
 }
 
+bool HTMLInputElement::SupportsReadOnly() const {
+  return input_type_->SupportsReadOnly();
+}
+
 const AtomicString& HTMLInputElement::FormControlTypeAsString() const {
   return input_type_->FormControlTypeAsString();
 }
@@ -2424,6 +2428,8 @@ bool HTMLInputElement::IsDraggedSlider() const {
 
 // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-fe-mutable
 bool HTMLInputElement::isMutable() {
+  // TODO(crbug.com/498262671): Remove `SupportsReadOnly()` check when
+  // the FixHTMLFormControlElementIsReadOnly flag is removed.
   return !IsDisabledFormControl() &&
          !(input_type_->SupportsReadOnly() && IsReadOnly());
 }

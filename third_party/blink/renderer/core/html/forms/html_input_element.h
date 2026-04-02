@@ -382,6 +382,7 @@ class CORE_EXPORT HTMLInputElement
 
   mojom::blink::FormControlType FormControlType() const final;
 
+  bool SupportsReadOnly() const override;
   bool isMutable();
   void showPicker(ExceptionState&);
   bool IsPickerVisible() const;

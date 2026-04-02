@@ -129,6 +129,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   FocusgroupFlags NativeArrowKeyAxes() const final;
 
   mojom::blink::FormControlType FormControlType() const override;
+  bool SupportsReadOnly() const override { return true; }
   const AtomicString& FormControlTypeAsString() const override;
 
   FormControlState SaveFormControlState() const override;
