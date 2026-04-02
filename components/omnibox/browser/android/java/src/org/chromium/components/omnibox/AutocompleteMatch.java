@@ -24,6 +24,7 @@ import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.TypesProto.SuggestSubtype;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.url.GURL;
 
@@ -173,7 +174,8 @@ public class AutocompleteMatch {
                         && mType != OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED
                         && mType != OmniboxSuggestionType.OPEN_TAB
                         && mType != OmniboxSuggestionType.TILE_SUGGESTION
-                        && !mSubtypes.contains(/* SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT */ 886);
+                        && !mSubtypes.contains(
+                                SuggestSubtype.SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT_VALUE);
         if (serializedSuggestTemplate != null) {
             try {
                 mSuggestTemplate = SuggestTemplateInfo.parseFrom(serializedSuggestTemplate);

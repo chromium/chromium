@@ -139,3 +139,20 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelAnswer) {
       kSearch + u", answer, accessibility text, 4 of 6",
       AutocompleteMatchType::ToAccessibilityLabel(match, u"", kSearch, 3, 6));
 }
+
+TEST(AutocompleteMatchTypeTest, AccessibilityLabelThreadsHistory) {
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+  match.subtypes.insert(
+      omnibox::SuggestSubtype::SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT);
+
+  std::u16string label_with_header =
+      AutocompleteMatchType::ToAccessibilityLabel(
+          match,
+          /*header_text=*/u"menu item",
+          /*match_text=*/u"View your AI Mode history",
+          /*match_index=*/0,
+          /*total_matches=*/1);
+
+  EXPECT_EQ(label_with_header, u"View your AI Mode history, menu item, 1 of 1");
+}

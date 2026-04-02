@@ -183,8 +183,9 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
   }
 
   int message = message_ids[match.type];
-  if (!message)
+  if (!message || match.IsThreadsHistorySuggestion()) {
     return match_text;
+  }
 
   std::u16string description;
   bool has_description = false;
