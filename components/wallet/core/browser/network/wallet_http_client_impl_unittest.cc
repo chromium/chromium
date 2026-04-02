@@ -167,7 +167,7 @@ TEST_F(WalletHttpClientImplTest, UpsertPublicPass_TokenFetchError) {
 
   // Access token fetch fails.
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   ASSERT_TRUE(upsert_pass_callback.Wait());
   EXPECT_EQ(upsert_pass_callback.Get().error(),
