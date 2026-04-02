@@ -21,6 +21,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace one_time_tokens {
 
 class EmailOneTimeTokenFetcher;
@@ -39,7 +43,8 @@ class GmailOtpBackend : public KeyedService {
 
   // Creates a new instance of the backend.
   static std::unique_ptr<GmailOtpBackend> Create(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager& identity_manager);
 
   // Creates a subscription for new incoming OTPs.
   [[nodiscard]] virtual ExpiringSubscription Subscribe(base::Time expiration,
@@ -55,8 +60,9 @@ class GmailOtpBackend : public KeyedService {
 // where a real backend is not available.
 class GmailOtpBackendImpl : public GmailOtpBackend {
  public:
-  explicit GmailOtpBackendImpl(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  GmailOtpBackendImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager& identity_manager);
   ~GmailOtpBackendImpl() override;
 
   ExpiringSubscription Subscribe(base::Time expiration,
@@ -75,6 +81,8 @@ class GmailOtpBackendImpl : public GmailOtpBackend {
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  raw_ref<signin::IdentityManager> identity_manager_;
 
   // Handles subscriptions to the `GmailOtpBackend`.
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;

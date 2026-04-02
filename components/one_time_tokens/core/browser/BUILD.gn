@@ -42,6 +42,8 @@ static_library("browser") {
     "//base",
     "//components/autofill/core/common:features",
     "//components/keyed_service/core",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -72,6 +74,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",

@@ -9,11 +9,18 @@
 #include "base/types/expected.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace signin {
+class IdentityManager;
+class PrimaryAccountAccessTokenFetcher;
+struct AccessTokenInfo;
+}  // namespace signin
 
 namespace one_time_tokens {
 
@@ -26,6 +33,7 @@ class EmailOneTimeTokenFetcher {
 
   EmailOneTimeTokenFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager& identity_manager,
       std::string encrypted_message_reference);
   ~EmailOneTimeTokenFetcher();
 
@@ -33,8 +41,15 @@ class EmailOneTimeTokenFetcher {
   void Start(ServerResponseCallback callback);
 
  private:
+  // Starts fetching the access token.
+  void StartAccessTokenFetch();
+
+  // Callback for when the access token fetch completes.
+  void OnAccessTokenFetched(GoogleServiceAuthError error,
+                            signin::AccessTokenInfo info);
+
   // Starts the network request to the Gmail OTP endpoint.
-  void StartOneTimeTokenServiceCall();
+  void StartOneTimeTokenServiceCall(signin::AccessTokenInfo info);
 
   // Callback for when the network request to the Gmail OTP endpoint completes.
   void OnResponseBytesFromOneTimeTokenService(
@@ -50,6 +65,16 @@ class EmailOneTimeTokenFetcher {
   // Simple URL loader required for the network request to the Gmail OTP
   // endpoint.
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+
+  // Identity manager for the authentication.
+  // IdentityManager is a KeyedService, and GmailOtpBackend (the only user of
+  // this class) is dependent on IdentityManager, so IdentityManager will
+  // outlive it.
+  raw_ref<signin::IdentityManager> identity_manager_;
+
+  // Access token fetcher for the authentication.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      access_token_fetcher_;
 
   // Retain internal copy of encrypted_message_reference.
   std::string encrypted_message_reference_;

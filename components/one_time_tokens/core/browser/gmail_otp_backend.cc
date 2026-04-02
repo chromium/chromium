@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace one_time_tokens {
@@ -15,13 +16,17 @@ GmailOtpBackend::~GmailOtpBackend() = default;
 
 // static
 std::unique_ptr<GmailOtpBackend> GmailOtpBackend::Create(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return std::make_unique<GmailOtpBackendImpl>(std::move(url_loader_factory));
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager& identity_manager) {
+  return std::make_unique<GmailOtpBackendImpl>(std::move(url_loader_factory),
+                                               identity_manager);
 }
 
 GmailOtpBackendImpl::GmailOtpBackendImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager& identity_manager)
+    : url_loader_factory_(std::move(url_loader_factory)),
+      identity_manager_(identity_manager) {}
 GmailOtpBackendImpl::~GmailOtpBackendImpl() = default;
 
 ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
@@ -53,7 +58,8 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
   }
   has_pending_request_ = true;
   auto request = std::make_unique<EmailOneTimeTokenFetcher>(
-      url_loader_factory_, encrypted_message_reference.value());
+      url_loader_factory_, *identity_manager_,
+      encrypted_message_reference.value());
   auto* request_ptr = request.get();
   request_ptr->Start(
       base::BindOnce(&GmailOtpBackendImpl::OnResponseFromGmailOtpBackend,

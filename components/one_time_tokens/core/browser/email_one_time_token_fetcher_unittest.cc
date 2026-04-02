@@ -15,6 +15,9 @@
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_request.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -24,6 +27,8 @@
 namespace one_time_tokens {
 
 namespace {
+constexpr char kTestEmail[] = "test@example.com";
+constexpr char kTestAccessToken[] = "access_token";
 constexpr char kOneTimeToken[] = "123456";
 constexpr char kEncryptedMessageReference[] = "encrypted_reference";
 constexpr char kServiceUrl[] =
@@ -38,13 +43,27 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
   void SetUp() override {
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
+    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
+
+    identity_test_env_->MakePrimaryAccountAvailable(
+        kTestEmail, signin::ConsentLevel::kSignin);
   }
 
  protected:
   std::unique_ptr<EmailOneTimeTokenFetcher> CreateFetcher() {
     return std::make_unique<EmailOneTimeTokenFetcher>(
         test_url_loader_factory_->GetSafeWeakWrapper(),
-        kEncryptedMessageReference);
+        *identity_test_env_->identity_manager(), kEncryptedMessageReference);
+  }
+
+  void WaitForAccessTokenRequestAndRespondWithSuccess() {
+    identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+        kTestAccessToken, base::Time::Now() + base::Hours(1));
+  }
+
+  void WaitForAccessTokenRequestAndRespondWithError() {
+    identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+        GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
   }
 
   std::string CreateValidResponseString() {
@@ -73,6 +92,7 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 };
 
 // Tests the happy path of the email one time token fetcher.
@@ -83,20 +103,44 @@ TEST_F(EmailOneTimeTokenFetcherTest, Success) {
       future;
 
   fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
 
   const network::ResourceRequest* pending_request =
       &test_url_loader_factory_->GetPendingRequest(0)->request;
   EXPECT_EQ(pending_request->method, "GET");
+  const std::optional<std::string> header_value =
+      pending_request->headers.GetHeader(
+          net::HttpRequestHeaders::kAuthorization);
+  ASSERT_TRUE(header_value.has_value());
+  EXPECT_EQ(*header_value, "Bearer access_token");
 
   EXPECT_EQ(pending_request->url.spec(), GetExpectedUrl());
 
   test_url_loader_factory_->AddResponse(pending_request->url.spec(),
                                         CreateValidResponseString());
 
-  auto result = future.Get();
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value(), kOneTimeToken);
   EXPECT_EQ(result->type(), OneTimeTokenType::kGmail);
+}
+
+// Tests that an error is returned when user authentication fails.
+TEST_F(EmailOneTimeTokenFetcherTest, AccessTokenError) {
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithError();
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendAuthError);
 }
 
 // Tests that an error is returned when the network request to the Gmail OTP
@@ -108,12 +152,14 @@ TEST_F(EmailOneTimeTokenFetcherTest, NetworkError) {
       future;
 
   fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
 
   ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
   test_url_loader_factory_->AddResponse(GetExpectedUrl(), "",
                                         net::HTTP_NOT_FOUND);
 
-  auto result = future.Get();
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendNetworkError);
@@ -127,12 +173,14 @@ TEST_F(EmailOneTimeTokenFetcherTest, InvalidResponseProto) {
       future;
 
   fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
 
   ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
   test_url_loader_factory_->AddResponse(GetExpectedUrl(),
                                         "invalid_proto_content");
 
-  auto result = future.Get();
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
@@ -147,15 +195,18 @@ TEST_F(EmailOneTimeTokenFetcherTest, ResponseWithoutToken) {
       future;
 
   fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
 
   ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
   test_url_loader_factory_->AddResponse(GetExpectedUrl(),
                                         CreateResponseWithoutToken());
 
-  auto result = future.Get();
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
+  auto unused = future.Get();
 }
 
 }  // namespace one_time_tokens

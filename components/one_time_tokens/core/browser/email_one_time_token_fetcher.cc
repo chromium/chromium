@@ -10,6 +10,10 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -19,8 +23,10 @@ namespace one_time_tokens {
 
 EmailOneTimeTokenFetcher::EmailOneTimeTokenFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager& identity_manager,
     std::string encrypted_message_reference)
     : url_loader_factory_(std::move(url_loader_factory)),
+      identity_manager_(identity_manager),
       encrypted_message_reference_(std::move(encrypted_message_reference)) {}
 
 EmailOneTimeTokenFetcher::~EmailOneTimeTokenFetcher() = default;
@@ -28,10 +34,34 @@ EmailOneTimeTokenFetcher::~EmailOneTimeTokenFetcher() = default;
 void EmailOneTimeTokenFetcher::Start(
     EmailOneTimeTokenFetcher::ServerResponseCallback callback) {
   callback_ = std::move(callback);
-  StartOneTimeTokenServiceCall();
+  StartAccessTokenFetch();
 }
 
-void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall() {
+void EmailOneTimeTokenFetcher::StartAccessTokenFetch() {
+  access_token_fetcher_ =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          signin::OAuthConsumerId::kOneTimeTokenService, &*identity_manager_,
+          base::BindOnce(&EmailOneTimeTokenFetcher::OnAccessTokenFetched,
+                         weakptr_factory_.GetWeakPtr()),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+          signin::ConsentLevel::kSignin);
+}
+
+void EmailOneTimeTokenFetcher::OnAccessTokenFetched(
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo info) {
+  access_token_fetcher_.reset();
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    std::move(callback_).Run(base::unexpected(
+        OneTimeTokenRetrievalError::kGmailOtpBackendAuthError));
+    return;
+  }
+
+  StartOneTimeTokenServiceCall(std::move(info));
+}
+
+void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
+    signin::AccessTokenInfo info) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   GURL url(
       "https://onetimetoken.pa.googleapis.com/v1/onetimetokens:fetchEmail");
@@ -45,6 +75,8 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall() {
       url, "encryptedMessageReference", encoded_reference);
   resource_request->method = "GET";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                      "Bearer " + info.token);
 
   // TODO(crbug.com/486136247): Update the traffic annotation to include the
   // enterprise policy.
