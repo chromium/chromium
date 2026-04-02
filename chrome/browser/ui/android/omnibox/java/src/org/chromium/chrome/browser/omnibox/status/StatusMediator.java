@@ -10,7 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.view.View;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
@@ -139,6 +139,7 @@ public class StatusMediator
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *     MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown, such as
      *     when called from a search activity.
+     * @param clickListener Specifies target object to receive events.
      */
     public StatusMediator(
             PropertyModel model,
@@ -152,7 +153,8 @@ public class StatusMediator
             PageInfoIphController pageInfoIphController,
             WindowAndroid windowAndroid,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
-                    merchantTrustSignalsCoordinatorSupplier) {
+                    merchantTrustSignalsCoordinatorSupplier,
+            OnClickListener clickListener) {
         initBackgroundDrawables(context);
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -174,6 +176,7 @@ public class StatusMediator
         mIsTablet = isTablet;
         mShowStatusIconWhenUrlFocused = mIsTablet;
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, false);
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, clickListener);
 
         mPermissionStatusHandler =
                 new PermissionStatusHandler(
@@ -294,15 +297,6 @@ public class StatusMediator
         if (mShowStatusIconWhenUrlFocused == showIconWhenFocused) return;
         mShowStatusIconWhenUrlFocused = showIconWhenFocused;
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
-    }
-
-    /**
-     * Specify object to receive status click events.
-     *
-     * @param listener Specifies target object to receive events.
-     */
-    void setStatusClickListener(View.OnClickListener listener) {
-        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, listener);
     }
 
     /** Update unfocused location bar width to determine shape and content of the Status view. */

@@ -259,7 +259,8 @@ public class PageInfoDiscoverabilityTest {
                                     ObservableSuppliers.createNonNull(mProfile),
                                     mPageInfoIphController,
                                     sPermissionTestRule.getActivity().getWindowAndroid(),
-                                    null);
+                                    /* merchantTrustSignalsCoordinatorSupplier= */ null,
+                                    /* clickListener= */ null);
                     mPermissionStatusHandler = mMediator.getPermissionStatusHandler();
                 });
     }

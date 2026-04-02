@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
@@ -50,7 +51,7 @@ import java.util.function.Supplier;
  * verbose status text.
  */
 @NullMarked
-public class StatusCoordinator implements View.OnClickListener, LocationBarDataProvider.Observer {
+public class StatusCoordinator implements LocationBarDataProvider.Observer {
 
     /** Interface for displaying page info popup on omnibox. */
     public interface PageInfoAction {
@@ -69,7 +70,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     private final PageInfoAction mPageInfoAction;
     private LocationBarDataProvider mLocationBarDataProvider;
     private boolean mUrlHasFocus;
-    private View.@Nullable OnClickListener mOnStatusIconNavigateBackButtonPress;
+    private @Nullable OnClickListener mOnStatusIconNavigateBackButtonPress;
 
     /**
      * Creates a new {@link StatusCoordinator}.
@@ -131,7 +132,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                         profileSupplier,
                         pageInfoIphController,
                         windowAndroid,
-                        merchantTrustSignalsCoordinatorSupplier);
+                        merchantTrustSignalsCoordinatorSupplier,
+                        this::onClick);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(
@@ -166,10 +168,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     /** Signals that native initialization has completed. */
     public void onNativeInitialized() {
         mMediator.updateLocationBarIcon(StatusView.IconTransitionType.CROSSFADE);
-        mMediator.setStatusClickListener(
-                mOnStatusIconNavigateBackButtonPress != null
-                        ? mOnStatusIconNavigateBackButtonPress
-                        : this);
         mMediator.updateStatusVisibility();
         mMediator.setStoreIconController();
     }
@@ -186,9 +184,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     /**
      * @param listener The custom listener that will execute when the status view is clicked.
      */
-    public void setOnStatusIconNavigateBackButtonPress(View.OnClickListener listener) {
+    public void setOnStatusIconNavigateBackButtonPress(OnClickListener listener) {
         mOnStatusIconNavigateBackButtonPress = listener;
-        mMediator.setStatusClickListener(listener != null ? listener : this);
     }
 
     /** Toggle whether the status icon should be hidden for secure origins. */
@@ -318,8 +315,12 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                 mLocationBarDataProvider.isPaintPreview());
     }
 
-    @Override
-    public void onClick(View view) {
+    private void onClick(View view) {
+        if (mOnStatusIconNavigateBackButtonPress != null) {
+            mOnStatusIconNavigateBackButtonPress.onClick(view);
+            return;
+        }
+
         if (mUrlHasFocus) return;
 
         if (!mLocationBarDataProvider.hasTab()
