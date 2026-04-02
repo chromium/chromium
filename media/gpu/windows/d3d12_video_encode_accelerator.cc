@@ -513,11 +513,11 @@ void D3D12VideoEncodeAccelerator::Destroy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   destroy_requested_ = true;
-  child_weak_this_factory_.InvalidateWeakPtrs();
+  child_weak_this_factory_.InvalidateWeakPtrsAndDoom();
 
   // We're destroying; cancel all callbacks.
   if (client_ptr_factory_) {
-    client_ptr_factory_->InvalidateWeakPtrs();
+    client_ptr_factory_->InvalidateWeakPtrsAndDoom();
   }
 
   encoder_task_runner_->PostTask(
@@ -903,12 +903,6 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
 void D3D12VideoEncodeAccelerator::DestroyTask() {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-
-  // Invalidate weak pointers created by |encoder_weak_this_factory_| so that
-  // any tasks posted with the encoder weak pointer will safely no-op if they
-  // run after this call.
-  encoder_weak_this_factory_.InvalidateWeakPtrs();
-
   delete this;
 }
 
