@@ -58,8 +58,9 @@ DelayedPassageEmbedderMock::~DelayedPassageEmbedderMock() = default;
 
 void DelayedPassageEmbedderMock::ReleaseCallback() {
   if (execution_callback_) {
+    model_execute_run_loop_ = std::make_unique<base::RunLoop>();
     std::move(execution_callback_).Run();
-    model_execute_run_loop_for_testing_.Run();
+    model_execute_run_loop_->Run();
   }
 }
 
@@ -70,7 +71,9 @@ void DelayedPassageEmbedderMock::ComputePassageEmbeddingsCallbackWrapper(
     passage_embeddings::ComputeEmbeddingsStatus status) {
   std::move(compute_embeddings_callback_)
       .Run(std::move(passages), std::move(embeddings), task_id, status);
-  model_execute_run_loop_for_testing_.Quit();
+  if (model_execute_run_loop_) {
+    model_execute_run_loop_->Quit();
+  }
 }
 
 void DelayedPassageEmbedderMock::OnCallbackReleased(
@@ -92,7 +95,21 @@ TaskId DelayedPassageEmbedderMock::ComputePassagesEmbeddings(
       base::BindOnce(
           &DelayedPassageEmbedderMock::ComputePassageEmbeddingsCallbackWrapper,
           weak_ptr_factory_.GetWeakPtr()));
+
+  if (on_callback_received_) {
+    std::move(on_callback_received_).Run();
+  }
+
   return 0;
+}
+
+void DelayedPassageEmbedderMock::WaitForEmbedderToBeTriggered() {
+  if (execution_callback_) {
+    return;  // already received
+  }
+  base::RunLoop loop;
+  on_callback_received_ = loop.QuitClosure();
+  loop.Run();
 }
 
 // ---------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_TEST_MOCK_PASSAGE_EMBEDDER_H_
 #define CHROME_BROWSER_PERMISSIONS_TEST_MOCK_PASSAGE_EMBEDDER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -68,6 +69,10 @@ class DelayedPassageEmbedderMock : public PassageEmbedderMock {
   // task_runner internally to simulate an async model execution.
   void ReleaseCallback();
 
+  // Blocks until ComputePassagesEmbeddings has been called and
+  // the pending callback is stored.
+  void WaitForEmbedderToBeTriggered();
+
  private:
   // A wrapper for the `ComputePassagesEmbeddingsCallback`. This is invoked when
   // the underlying `PassageEmbedderMock` completes its computation. It forwards
@@ -98,7 +103,12 @@ class DelayedPassageEmbedderMock : public PassageEmbedderMock {
   // A run loop used to make the asynchronous execution behave synchronously for
   // tests. `ReleaseCallback` runs this loop, and
   // `ComputePassageEmbeddingsCallbackWrapper` quits it.
-  base::RunLoop model_execute_run_loop_for_testing_;
+  std::unique_ptr<base::RunLoop> model_execute_run_loop_;
+
+  // Quit closure signaled when ComputePassagesEmbeddings stores
+  // execution_callback_. Used by WaitForEmbedderCallback() to
+  // block until the async chain has reached the embedder.
+  base::OnceClosure on_callback_received_;
 
   // Used for creating the execution_callback_.
   base::WeakPtrFactory<DelayedPassageEmbedderMock> weak_ptr_factory_{this};

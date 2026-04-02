@@ -227,15 +227,15 @@ class LanguageDetectionObserverFake : public LanguageDetectionObserver {
         web_contents, std::move(on_english_detected), std::move(on_fallback));
     // Prevent real OnLanguageDetected events from messing with tests.
     LanguageDetectionObserver::RemoveAsObserver();
-    init_run_loop_for_testing_.Quit();
+    init_run_loop_.Quit();
   }
 
   void RemoveAsObserver() override {}
 
-  void RunLoop() { init_run_loop_for_testing_.Run(); }
+  void RunLoop() { init_run_loop_.Run(); }
 
  private:
-  base::RunLoop init_run_loop_for_testing_;
+  base::RunLoop init_run_loop_;
 };
 
 class PredictionServiceMock : public PredictionService {
@@ -1300,6 +1300,145 @@ IN_PROC_BROWSER_TEST_F(Aiv4ModelTimeoutBrowserTest,
 
   histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
                                         false, 1);
+
+  // Avoid dangling raw_ptr warning:
+  model_handler_provider()->set_passage_embedder_for_testing(nullptr);
+}
+
+// Regression test for dangling RFH/RWHV pointers in the AIv4 prediction
+// pipeline when cross-origin navigation occurs during passage embeddings
+// computation. The test holds the embeddings callback via
+// DelayedPassageEmbedderMock, navigates cross-origin to destroy the
+// original RFH/RWHV, then releases the callback to verify no crash.
+// Test fixture for verifying that cross-origin navigation during the
+// AIv4 async chain does not crash due to dangling pointers or stale
+// callbacks. Extends the standard AIv4 test base but replaces the
+// passage embedder with a DelayedPassageEmbedderMock to hold the
+// async chain at the embeddings step.
+class Aiv4DanglingPtrOnNavigationBrowserTest
+    : public Aiv4ModelPredictionServiceBrowserTestBase {
+ public:
+  Aiv4DanglingPtrOnNavigationBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    Aiv4ModelPredictionServiceBrowserTestBase::SetUpOnMainThread();
+
+    delayed_passage_embedder_.set_status(
+        passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+
+    model_handler_provider()->set_passage_embedder_for_testing(
+        &delayed_passage_embedder_);
+
+    auto language_detection_observer =
+        std::make_unique<LanguageDetectionObserverFake>();
+    language_detection_observer_ = language_detection_observer.get();
+    permissions_ai_ui_selector()->set_language_detection_observer_for_testing(
+        std::move(language_detection_observer));
+
+    set_dummy_inner_text_for_testing();
+    set_dummy_screenshot_for_testing();
+  }
+
+  void TearDownOnMainThread() override {
+    model_handler_provider()->set_passage_embedder_for_testing(nullptr);
+    language_detection_observer_ = nullptr;
+    Aiv4ModelPredictionServiceBrowserTestBase::TearDownOnMainThread();
+  }
+
+  void WaitForModelExecutionIfNecessary() override {
+    // This test will not start any model execution.
+    // Do NOT fast-forward time or wait for model execution.
+    // We want the chain to stay alive (held at embeddings step) so
+    // we can navigate before it completes.
+  }
+
+ protected:
+  DelayedPassageEmbedderMock delayed_passage_embedder_;
+  raw_ptr<LanguageDetectionObserverFake> language_detection_observer_;
+};
+
+IN_PROC_BROWSER_TEST_F(Aiv4DanglingPtrOnNavigationBrowserTest,
+                       CrossOriginNavigationDuringEmbeddingsDoesNotCrash) {
+  ASSERT_TRUE(aiv4_model_handler());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  PushModelFileToModelExecutor(ModelFilePath(kOneReturnAiv4Model));
+
+  GeneratePredictionsResponse prediction_service_response =
+      BuildPredictionServiceResponse(kLikelihoodVeryUnlikely);
+  EXPECT_CALL(prediction_service(), StartLookup(_, _, _))
+      .WillRepeatedly(WithArg<2>(
+          [&](PredictionService::LookupResponseCallback response_callback) {
+            std::move(response_callback)
+                .Run(/*lookup_successful=*/true,
+                     /*response_from_cache=*/false,
+                     prediction_service_response);
+          }));
+
+  // Step 1: Navigate to origin A and trigger a permission request.
+  GURL url_a = embedded_test_server()->GetURL("origin-a.test", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  SetTranslateSourceLanguage("en");
+
+  auto* manager = permission_request_manager();
+  auto req = std::make_unique<MockPermissionRequest>(
+      request_type(), PermissionRequestGestureType::GESTURE);
+  manager->AddRequest(primary_main_frame(), std::move(req));
+
+  // Step 2: Wait for language detection to complete.
+  language_detection_observer_->RunLoop();
+  // Let the chain reach the passage embeddings step (inner text
+  // extraction completes synchronously via test override).
+  delayed_passage_embedder_.WaitForEmbedderToBeTriggered();
+
+  if (language_detection_observer_->WaitingForLanguageDetection()) {
+    translate::LanguageDetectionDetails details;
+    details.adopted_language = "en";
+    language_detection_observer_->OnLanguageDetermined(details);
+  }
+
+  // Step 3: Navigate cross-origin while embeddings are pending.
+  // This destroys origin A's RFH and RWHV, and triggers Cancel()
+  // via PermissionRequestManager.
+  GURL url_b = embedded_test_server()->GetURL("origin-b.test", "/title2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  // Step 4: Release the embeddings callback.
+  // Weak ptrs invalidated by Cancel(), callback is no-op.
+  delayed_passage_embedder_.ReleaseCallback();
+
+  // Avoid dangling raw_ptr warning:
+  model_handler_provider()->set_passage_embedder_for_testing(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(Aiv4DanglingPtrOnNavigationBrowserTest,
+                       DanglingPointerOnRendererCrash) {
+  ASSERT_TRUE(aiv4_model_handler());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  PushModelFileToModelExecutor(ModelFilePath(kOneReturnAiv4Model));
+
+  auto* manager = permission_request_manager();
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  SetTranslateSourceLanguage("en");
+
+  auto req = std::make_unique<MockPermissionRequest>(
+      request_type(), PermissionRequestGestureType::GESTURE);
+  manager->AddRequest(primary_main_frame(), std::move(req));
+
+  delayed_passage_embedder_.WaitForEmbedderToBeTriggered();
+  // The AI UI selector is now waiting on the passage embedder.
+  // Crash the renderer to destroy the RenderWidgetHostView and RenderFrameHost
+  // without notifying the PermissionRequestManager.
+  content::RenderProcessHost* process = primary_main_frame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(0);
+  crash_observer.Wait();
+
+  // This will finish the stalled passage embeddings task.
+  // It shouldn't crash here, and it will try to call TakeSnapshot.
+  delayed_passage_embedder_.ReleaseCallback();
 
   // Avoid dangling raw_ptr warning:
   model_handler_provider()->set_passage_embedder_for_testing(nullptr);
