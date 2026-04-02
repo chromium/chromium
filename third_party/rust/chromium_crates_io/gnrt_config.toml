@@ -733,6 +733,10 @@ allow_unsafe = true
 [crate.unicode-width.extra_kv]
 allow_unsafe = false
 
+[crate.utf8_iter.extra_kv]
+# Crate exists to encapsulate common UTF8 decoding code
+allow_unsafe = true
+
 [crate.uuid]
 extra_kv = { allow_unsafe = true }
 

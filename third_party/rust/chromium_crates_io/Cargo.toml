@@ -48,6 +48,7 @@ serde_json = "1.0.149"
 skrifa = "0.41.0"
 small_ctor = "0.1"
 static_assertions = "1"
+utf8_iter = "1.0.4" # temporary until the ICU4X update
 xml = "1.2.0"
 
 [dependencies.bytemuck]
