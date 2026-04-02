@@ -380,6 +380,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
     titleLabel.numberOfLines = 0;
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.text = l10n_util::GetNSString(IDS_NEW_TAB_OTR_TITLE);
+    titleLabel.accessibilityTraits = UIAccessibilityTraitHeader;
     titleLabel.adjustsFontForContentSizeCategory = YES;
     [_stackView addArrangedSubview:titleLabel];
   }

@@ -271,6 +271,16 @@ enum class QuickActionsVisibility {
   [ChromeEarlGrey closeAllIncognitoTabs];
 }
 
+// Tests that the Incognito NTP title has the 'Heading' trait for VoiceOver.
+- (void)testIncognitoNTPHeadingTrait {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
+                                   IDS_NEW_TAB_OTR_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey closeAllIncognitoTabs];
+}
+
 #pragma mark - Policy NTP Location Tests
 
 // Tests that the new tab opens the policy's New Tab Page Location when the URL
