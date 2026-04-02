@@ -40,4 +40,7 @@ constexpr base::FeatureParam<int> kThemeUrlVisitCountForOptIn{
 constexpr base::FeatureParam<int> kMaxHistoryEntries{
     &kChromeFinds, "max_history_entries", /*default_value=*/0};
 
+constexpr base::FeatureParam<int> kSRPReturnCountThreshold{
+    &kChromeFinds, "srp_return_count_threshold", /*default_value=*/3};
+
 }  // namespace finds::features

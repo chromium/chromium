@@ -68,6 +68,7 @@ bool IsFindsOptInPromoAlreadyInteracted(const PrefService* pref_service) {
 FindsTabHelper::FindsTabHelper(content::WebContents* web_contents,
                                FindsService* finds_service,
                                OptimizationGuideKeyedService* opt_guide_service,
+                               TemplateURLService* template_url_service,
                                PrefService* pref_service)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<FindsTabHelper>(*web_contents) {
@@ -75,6 +76,7 @@ FindsTabHelper::FindsTabHelper(content::WebContents* web_contents,
   finds_service_ = finds_service;
   pref_service_ = pref_service;
   opt_guide_service_ = opt_guide_service;
+  template_url_service_ = template_url_service;
 
   if (opt_guide_service_) {
     opt_guide_service_->RegisterOptimizationTypes(
@@ -103,6 +105,8 @@ void FindsTabHelper::DidFinishNavigation(
     return;
   }
 
+  CheckSRPReturnCountAndMaybeTriggerOptIn(navigation_handle);
+
   if (!opt_guide_service_) {
     return;
   }
@@ -111,6 +115,29 @@ void FindsTabHelper::DidFinishNavigation(
       navigation_handle->GetURL(), optimization_guide::proto::FINDS_PAGE_THEME,
       base::BindOnce(&FindsTabHelper::OnOptimizationGuideDecision,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FindsTabHelper::CheckSRPReturnCountAndMaybeTriggerOptIn(
+    content::NavigationHandle* navigation_handle) {
+  if (!template_url_service_) {
+    return;
+  }
+
+  bool is_current_page_srp =
+      template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
+          navigation_handle->GetURL());
+  ui::PageTransition transition = navigation_handle->GetPageTransition();
+
+  // Check if the user returned to an SRP via forward/back navigation.
+  if (is_current_page_srp && (transition & ui::PAGE_TRANSITION_FORWARD_BACK)) {
+    srp_return_count_++;
+
+    if (srp_return_count_ >= finds::features::kSRPReturnCountThreshold.Get()) {
+      if (finds_service_) {
+        finds_service_->SRPBackNavigationCountForOptInReached();
+      }
+    }
+  }
 }
 
 void FindsTabHelper::OnOptimizationGuideDecision(

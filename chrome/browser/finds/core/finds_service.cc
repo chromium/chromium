@@ -284,13 +284,15 @@ void FindsService::RecordThemeURLVisited(
   theme_url_visit_count_[theme_type]++;
   if (theme_url_visit_count_[theme_type] >=
       finds::features::kThemeUrlVisitCountForOptIn.Get()) {
-    for (auto& observer : observers_) {
-      observer.OnOptInCriteriaFulfilled();
+    NotifyOptInCriteriaFulfilled();
 
-      // Reset the count for the theme type.
-      theme_url_visit_count_[theme_type] = 0;
-    }
+    // Reset the count for the theme type.
+    theme_url_visit_count_[theme_type] = 0;
   }
+}
+
+void FindsService::SRPBackNavigationCountForOptInReached() {
+  NotifyOptInCriteriaFulfilled();
 }
 
 void FindsService::MaybeRescheduleNotifications() {
@@ -472,6 +474,12 @@ bool FindsService::ScheduleNotificationWithModelResult(
 void FindsService::OnCheckAreFindsNotificationsEnabled(bool enabled) {
   if (enabled) {
     ExecuteModelAndScheduleNotification(base::DoNothing());
+  }
+}
+
+void FindsService::NotifyOptInCriteriaFulfilled() {
+  for (auto& observer : observers_) {
+    observer.OnOptInCriteriaFulfilled();
   }
 }
 

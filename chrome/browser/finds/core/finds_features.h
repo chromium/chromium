@@ -55,6 +55,10 @@ extern const base::FeatureParam<int> kThemeUrlVisitCountForOptIn;
 // A value of 0 means "no limit".
 extern const base::FeatureParam<int> kMaxHistoryEntries;
 
+// The number of times a user should return to the SRP before we consider
+// triggering the opt in.
+extern const base::FeatureParam<int> kSRPReturnCountThreshold;
+
 }  // namespace finds::features
 
 #endif  // CHROME_BROWSER_FINDS_CORE_FINDS_FEATURES_H_

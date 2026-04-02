@@ -67,6 +67,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
@@ -655,6 +656,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       finds::FindsTabHelper::CreateForWebContents(
           web_contents, finds_service,
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+          TemplateURLServiceFactory::GetForProfile(profile),
           profile->GetPrefs());
     }
   }
