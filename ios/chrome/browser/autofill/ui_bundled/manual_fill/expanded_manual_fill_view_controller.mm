@@ -44,6 +44,11 @@ constexpr CGFloat kHeaderViewHorizontalPadding = 16;
 constexpr CGFloat kIOS26TableViewCellExtraHorizontalInset = 4;
 // Top padding for the header view.
 constexpr CGFloat kHeaderViewTopPadding = 8;
+// Top padding for the header view on iPhones with a normal height and iOS 26.0,
+// but not including iOS 26.4. iPhones models with iOS 26.0 to iOS 26.3 have
+// extra space on the top of the bottom sheet while iOS 26.4 seems to return to
+// normal spacing. See crbug.com/495768760.
+constexpr CGFloat kIOS26HeaderViewTopPadding = -10;
 // Top padding for the header view when in a bottom popover.
 constexpr CGFloat kHeaderViewPopoverTopPadding = 22;
 
@@ -59,7 +64,7 @@ constexpr CGFloat kViewHeightMultiplier = 0.6;
 constexpr CGFloat kHeaderTopViewHeightNarrowLayout = 44;
 // Vertical spacing between the bottom of the header top view and segmented
 // control. Used for the narrow layout only.
-constexpr CGFloat kHeaderTopViewBottomSpacingNarrowLayout = 4;
+constexpr CGFloat kHeaderTopViewBottomSpacingNarrowLayout = 10;
 
 // Height of the header view. Used for the wide layout only.
 constexpr CGFloat kHeaderViewHeightWideLayout = 44;
@@ -139,10 +144,13 @@ UIColor* GetCloseButtonForegroundColor() {
 
 // Returns the constant to apply to the header view top constraint.
 CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
-  if (@available(iOS 26, *)) {
-    if (!(is_compact_height ||
-          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
-      return -kHeaderViewTopPadding;
+  // Negative top padding should be applied only for iOS 26.0 - iOS 26.3.
+  if (@available(iOS 26.0, *)) {
+    if (!@available(iOS 26.4, *)) {
+      if (!is_compact_height &&
+          ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+        return kIOS26HeaderViewTopPadding;
+      }
     }
   }
 
