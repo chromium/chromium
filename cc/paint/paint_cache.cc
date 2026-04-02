@@ -39,7 +39,7 @@ void ClientPaintCache::Put(PaintCacheDataType type,
   if (max_budget_ == kNoCachingBudget)
     return;
   auto key = std::make_pair(type, id);
-  DCHECK(cache_map_.Peek(key) == cache_map_.end());
+  CHECK(cache_map_.Peek(key) == cache_map_.end());
 
   pending_entries_.push_back(key);
   cache_map_.Put(key, size);
