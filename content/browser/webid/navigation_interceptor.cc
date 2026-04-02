@@ -36,13 +36,8 @@ namespace content::webid {
 // static
 void NavigationInterceptor::MaybeCreateAndAdd(
     NavigationThrottleRegistry& registry) {
-  RenderFrameHost* rfh = RenderFrameHost::FromID(
-      registry.GetNavigationHandle().GetPreviousRenderFrameHostId());
-  // We add the throttle when either is true:
-  //   1. the interception flag is enabled
-  //   2. the embedder login feature is enabled and there's an active request
   if (!IsNavigationInterceptionEnabled() &&
-      !(IsEmbedderInitiatedLoginEnabled() && HasEmbedderLoginRequest(rfh))) {
+      !IsEmbedderInitiatedLoginEnabled()) {
     return;
   }
   registry.AddThrottle(std::make_unique<NavigationInterceptor>(registry));

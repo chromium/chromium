@@ -1069,44 +1069,6 @@ class EmbedderLoginNavigationInterceptorTest
 };
 
 TEST_F(EmbedderLoginNavigationInterceptorTest,
-       MaybeCreateAndAddWithoutEmbedderLoginRequest) {
-  NavigateAndCommit(GURL("https://rp.example/"));
-  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
-  mock_navigation_handle.set_url(base_url_);
-  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
-      .WillRepeatedly(
-          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
-
-  content::MockNavigationThrottleRegistry registry(
-      &mock_navigation_handle,
-      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
-
-  webid::NavigationInterceptor::MaybeCreateAndAdd(registry);
-  EXPECT_TRUE(registry.throttles().empty());
-}
-
-TEST_F(EmbedderLoginNavigationInterceptorTest,
-       MaybeCreateAndAddWithEmbedderLoginRequest) {
-  FederatedEmbedderLoginRequest::Set(
-      web_contents(), url::Origin::Create(GURL("https://idp.example/")), "1234",
-      base::BindLambdaForTesting([&](FederatedLoginResult result) {}));
-
-  NavigateAndCommit(GURL("https://rp.example/"));
-  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
-  mock_navigation_handle.set_url(base_url_);
-  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
-      .WillRepeatedly(
-          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
-
-  content::MockNavigationThrottleRegistry registry(
-      &mock_navigation_handle,
-      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
-
-  webid::NavigationInterceptor::MaybeCreateAndAdd(registry);
-  EXPECT_FALSE(registry.throttles().empty());
-}
-
-TEST_F(EmbedderLoginNavigationInterceptorTest,
        IgnoreConnectionStatusWithoutEmbedderLoginRequest) {
   // Uses an in-process data decoder service for testing.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
