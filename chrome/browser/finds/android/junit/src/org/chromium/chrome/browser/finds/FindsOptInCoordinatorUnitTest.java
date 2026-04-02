@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.finds;
+package org.chromium.chrome.browser.finds;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,10 +43,10 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/** Unit tests for {@link ChromeFindsOptInCoordinator}. */
+/** Unit tests for {@link FindsOptInCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class ChromeFindsOptInCoordinatorUnitTest {
+public class FindsOptInCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
@@ -55,7 +55,7 @@ public class ChromeFindsOptInCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
 
-    private ChromeFindsOptInCoordinator mCoordinator;
+    private FindsOptInCoordinator mCoordinator;
     private Activity mActivity;
 
     @Before
@@ -67,7 +67,7 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         UserPrefs.setPrefServiceForTesting(mPrefService);
 
         mCoordinator =
-                new ChromeFindsOptInCoordinator(
+                new FindsOptInCoordinator(
                         mActivity, mProfile, mBottomSheetController, mSnackbarManager);
     }
 
@@ -75,13 +75,12 @@ public class ChromeFindsOptInCoordinatorUnitTest {
     public void testShowBottomSheet() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM,
-                        ChromeFindsMetrics.ChromeFindsOptInEvent.SHOWN);
+                        FindsMetrics.OPT_IN_HISTOGRAM, FindsMetrics.FindsOptInEvent.SHOWN);
         mCoordinator.showBottomSheet();
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
-        verify(mPrefService).setInteger(ChromeFindsUtils.FINDS_OPT_IN_PROMO_SHOWN_COUNT, 1);
+        verify(mPrefService).setInteger(FindsUtils.FINDS_OPT_IN_PROMO_SHOWN_COUNT, 1);
         verify(mPrefService)
-                .setLong(eq(ChromeFindsUtils.FINDS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP), anyLong());
+                .setLong(eq(FindsUtils.FINDS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP), anyLong());
         watcher.assertExpected();
     }
 
@@ -102,8 +101,8 @@ public class ChromeFindsOptInCoordinatorUnitTest {
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM,
-                        ChromeFindsMetrics.ChromeFindsOptInEvent.ACCEPTED_FIRST_TIME);
+                        FindsMetrics.OPT_IN_HISTOGRAM,
+                        FindsMetrics.FindsOptInEvent.ACCEPTED_FIRST_TIME);
         // Simulate positive button click
         mCoordinator.onOptInAccepted();
 
@@ -112,7 +111,7 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         // Verify snackbar is shown
         verify(mSnackbarManager).showSnackbar(any());
         // Verify preference is set via UserPrefs
-        verify(mPrefService).setBoolean(ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
+        verify(mPrefService).setBoolean(FindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 
@@ -133,8 +132,8 @@ public class ChromeFindsOptInCoordinatorUnitTest {
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM,
-                        ChromeFindsMetrics.ChromeFindsOptInEvent.ACCEPTED_FIRST_TIME);
+                        FindsMetrics.OPT_IN_HISTOGRAM,
+                        FindsMetrics.FindsOptInEvent.ACCEPTED_FIRST_TIME);
         // Simulate positive button click
         mCoordinator.onOptInAccepted();
 
@@ -145,7 +144,7 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         assertNotNull(intent);
         assertEquals(Settings.ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
         // Verify preference is set via UserPrefs
-        verify(mPrefService).setBoolean(ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
+        verify(mPrefService).setBoolean(FindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 
@@ -169,8 +168,8 @@ public class ChromeFindsOptInCoordinatorUnitTest {
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM,
-                        ChromeFindsMetrics.ChromeFindsOptInEvent.ACCEPTED_RE_OPT_IN);
+                        FindsMetrics.OPT_IN_HISTOGRAM,
+                        FindsMetrics.FindsOptInEvent.ACCEPTED_RE_OPT_IN);
 
         mCoordinator.onOptInAccepted();
 
@@ -179,7 +178,7 @@ public class ChromeFindsOptInCoordinatorUnitTest {
         assertNotNull(intent);
         assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
         // Verify preference is set via UserPrefs
-        verify(mPrefService).setBoolean(ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
+        verify(mPrefService).setBoolean(FindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 
@@ -187,14 +186,13 @@ public class ChromeFindsOptInCoordinatorUnitTest {
     public void testOnOptInDeclined() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM,
-                        ChromeFindsMetrics.ChromeFindsOptInEvent.DECLINED);
+                        FindsMetrics.OPT_IN_HISTOGRAM, FindsMetrics.FindsOptInEvent.DECLINED);
         mCoordinator.onOptInDeclined();
 
         // Verify channel is created and disabled
         verify(mNotificationManagerProxy).createNotificationChannel(any());
         // Verify preference is set via UserPrefs
-        verify(mPrefService).setBoolean(ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
+        verify(mPrefService).setBoolean(FindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
     }
 }

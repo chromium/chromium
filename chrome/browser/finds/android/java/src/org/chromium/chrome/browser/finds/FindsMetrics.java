@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.finds;
+package org.chromium.chrome.browser.finds;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -13,9 +13,9 @@ import org.chromium.build.annotations.NullMarked;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Metrics for Chrome Finds Notifications. */
+/** Metrics for Finds Notifications. */
 @NullMarked
-public class ChromeFindsMetrics {
+public class FindsMetrics {
     @VisibleForTesting
     public static final String OPT_IN_HISTOGRAM = "Notifications.ChromeFinds.OptInEvent";
 
@@ -30,14 +30,14 @@ public class ChromeFindsMetrics {
 
     // LINT.IfChange(ChromeFindsOptInEvent)
     @IntDef({
-        ChromeFindsOptInEvent.SHOWN,
-        ChromeFindsOptInEvent.ACCEPTED_FIRST_TIME,
-        ChromeFindsOptInEvent.ACCEPTED_RE_OPT_IN,
-        ChromeFindsOptInEvent.DECLINED,
-        ChromeFindsOptInEvent.SNACKBAR_ACTION_CLICKED,
+        FindsOptInEvent.SHOWN,
+        FindsOptInEvent.ACCEPTED_FIRST_TIME,
+        FindsOptInEvent.ACCEPTED_RE_OPT_IN,
+        FindsOptInEvent.DECLINED,
+        FindsOptInEvent.SNACKBAR_ACTION_CLICKED,
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface ChromeFindsOptInEvent {
+    @interface FindsOptInEvent {
         int SHOWN = 0;
         int ACCEPTED_FIRST_TIME = 1;
         int ACCEPTED_RE_OPT_IN = 2;
@@ -50,7 +50,7 @@ public class ChromeFindsMetrics {
 
     /** Record that the opt-in bottom sheet was shown. */
     public static void recordOptInShown() {
-        recordEvent(ChromeFindsOptInEvent.SHOWN);
+        recordEvent(FindsOptInEvent.SHOWN);
     }
 
     /**
@@ -61,22 +61,22 @@ public class ChromeFindsMetrics {
     public static void recordOptInAccepted(boolean firstTime) {
         recordEvent(
                 firstTime
-                        ? ChromeFindsOptInEvent.ACCEPTED_FIRST_TIME
-                        : ChromeFindsOptInEvent.ACCEPTED_RE_OPT_IN);
+                        ? FindsOptInEvent.ACCEPTED_FIRST_TIME
+                        : FindsOptInEvent.ACCEPTED_RE_OPT_IN);
     }
 
     /** Record that the opt-out button was clicked. */
     public static void recordOptOutClicked() {
-        recordEvent(ChromeFindsOptInEvent.DECLINED);
+        recordEvent(FindsOptInEvent.DECLINED);
     }
 
     /** Record that the opted in snackbar action button was clicked. */
     public static void recordSnackbarActionClicked() {
-        recordEvent(ChromeFindsOptInEvent.SNACKBAR_ACTION_CLICKED);
+        recordEvent(FindsOptInEvent.SNACKBAR_ACTION_CLICKED);
     }
 
-    private static void recordEvent(@ChromeFindsOptInEvent int event) {
+    private static void recordEvent(@FindsOptInEvent int event) {
         RecordHistogram.recordEnumeratedHistogram(
-                OPT_IN_HISTOGRAM, event, ChromeFindsOptInEvent.NUM_ENTRIES);
+                OPT_IN_HISTOGRAM, event, FindsOptInEvent.NUM_ENTRIES);
     }
 }

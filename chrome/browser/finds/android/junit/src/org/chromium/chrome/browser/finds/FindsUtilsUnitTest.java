@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.finds;
+package org.chromium.chrome.browser.finds;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -30,15 +30,15 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.finds.FindsUtils.FindsOptInState;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.chrome.browser.notifications.finds.ChromeFindsUtils.ChromeFindsOptInState;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
-/** Unit tests for {@link ChromeFindsUtils}. */
+/** Unit tests for {@link FindsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ChromeFindsUtilsUnitTest {
+public class FindsUtilsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BaseNotificationManagerProxy mNotificationManagerProxy;
@@ -59,9 +59,9 @@ public class ChromeFindsUtilsUnitTest {
                 .when(mNotificationManagerProxy)
                 .getNotificationChannel(eq(ChannelId.CHROME_FINDS), any());
 
-        ChromeFindsUtils.getOptInState(
+        FindsUtils.getOptInState(
                 (state) -> {
-                    assertEquals(ChromeFindsOptInState.FIRST_TIME, state.intValue());
+                    assertEquals(FindsOptInState.FIRST_TIME, state.intValue());
                 });
     }
 
@@ -81,9 +81,9 @@ public class ChromeFindsUtilsUnitTest {
 
         NotificationProxyUtils.setNotificationEnabledForTest(true);
 
-        ChromeFindsUtils.getOptInState(
+        FindsUtils.getOptInState(
                 (state) -> {
-                    assertEquals(ChromeFindsOptInState.ENABLED, state.intValue());
+                    assertEquals(FindsOptInState.ENABLED, state.intValue());
                 });
     }
 
@@ -103,16 +103,16 @@ public class ChromeFindsUtilsUnitTest {
 
         NotificationProxyUtils.setNotificationEnabledForTest(true);
 
-        ChromeFindsUtils.getOptInState(
+        FindsUtils.getOptInState(
                 (state) -> {
-                    assertEquals(ChromeFindsOptInState.MANUALLY_DISABLED, state.intValue());
+                    assertEquals(FindsOptInState.MANUALLY_DISABLED, state.intValue());
                 });
     }
 
     @Test
     public void testAreFindsNotificationsEnabled_AppNotificationsDisabled() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);
-        ChromeFindsUtils.areFindsNotificationsEnabled(
+        FindsUtils.areFindsNotificationsEnabled(
                 (enabled) -> {
                     assertFalse(enabled);
                 });
@@ -130,7 +130,7 @@ public class ChromeFindsUtilsUnitTest {
                 .when(mNotificationManagerProxy)
                 .getNotificationChannel(eq(ChannelId.CHROME_FINDS), any());
 
-        ChromeFindsUtils.areFindsNotificationsEnabled(
+        FindsUtils.areFindsNotificationsEnabled(
                 (enabled) -> {
                     assertFalse(enabled);
                 });
@@ -151,7 +151,7 @@ public class ChromeFindsUtilsUnitTest {
                 .when(mNotificationManagerProxy)
                 .getNotificationChannel(eq(ChannelId.CHROME_FINDS), any());
 
-        ChromeFindsUtils.areFindsNotificationsEnabled(
+        FindsUtils.areFindsNotificationsEnabled(
                 (enabled) -> {
                     assertFalse(enabled);
                 });
@@ -172,7 +172,7 @@ public class ChromeFindsUtilsUnitTest {
                 .when(mNotificationManagerProxy)
                 .getNotificationChannel(eq(ChannelId.CHROME_FINDS), any());
 
-        ChromeFindsUtils.areFindsNotificationsEnabled(
+        FindsUtils.areFindsNotificationsEnabled(
                 (enabled) -> {
                     assertTrue(enabled);
                 });
@@ -183,7 +183,7 @@ public class ChromeFindsUtilsUnitTest {
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         NotificationProxyUtils.setNotificationEnabledForTest(true);
 
-        ChromeFindsUtils.launchFindsNotificationSettings(activity);
+        FindsUtils.launchFindsNotificationSettings(activity);
 
         Intent intent = shadowOf(activity).getNextStartedActivity();
         assertNotNull(intent);
@@ -197,7 +197,7 @@ public class ChromeFindsUtilsUnitTest {
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         NotificationProxyUtils.setNotificationEnabledForTest(false);
 
-        ChromeFindsUtils.launchFindsNotificationSettings(activity);
+        FindsUtils.launchFindsNotificationSettings(activity);
 
         Intent intent = shadowOf(activity).getNextStartedActivity();
         assertNotNull(intent);

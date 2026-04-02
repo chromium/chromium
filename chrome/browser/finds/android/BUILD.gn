@@ -13,18 +13,33 @@ generate_jni("jni_headers") {
 }
 
 android_library("java") {
+  resources_package = "org.chromium.chrome"
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/finds/FindsManager.java",
+    "java/src/org/chromium/chrome/browser/finds/FindsMetrics.java",
+    "java/src/org/chromium/chrome/browser/finds/FindsOptInBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/finds/FindsOptInCoordinator.java",
     "java/src/org/chromium/chrome/browser/finds/FindsService.java",
     "java/src/org/chromium/chrome/browser/finds/FindsServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/finds/FindsUtils.java",
   ]
   deps = [
     "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/flags:java",
     "//chrome/browser/notifications:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/notifications/android:utils_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
@@ -42,5 +57,32 @@ source_set("android") {
     "//chrome/browser/profiles:profile",
     "//components/optimization_guide/core:features",
     "//components/prefs",
+  ]
+}
+
+robolectric_library("junit_tests") {
+  sources = [
+    "junit/src/org/chromium/chrome/browser/finds/FindsManagerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/finds/FindsMetricsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/finds/FindsOptInCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/finds/FindsUtilsUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/notifications:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/notifications/android:utils_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }

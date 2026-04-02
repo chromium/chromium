@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.finds;
+package org.chromium.chrome.browser.finds;
 
 import android.app.NotificationManager;
 import android.content.Context;
@@ -26,9 +26,9 @@ import org.chromium.components.user_prefs.UserPrefs;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Static utilities for Chrome Finds Notifications. */
+/** Static utilities for Finds Notifications. */
 @NullMarked
-public class ChromeFindsUtils {
+public class FindsUtils {
     // LINT.IfChange(FindsOptInPromoInteractionPrefs)
     public static final String FINDS_OPT_IN_PROMO_USER_INTERACTED =
             "finds.opt_in_promo.user_interacted";
@@ -45,12 +45,12 @@ public class ChromeFindsUtils {
     // LINT.ThenChange(//chrome/browser/finds/core/finds_pref_names.cc:FindsOptInPromoInteractionPrefs)
 
     @IntDef({
-        ChromeFindsOptInState.FIRST_TIME,
-        ChromeFindsOptInState.ENABLED,
-        ChromeFindsOptInState.MANUALLY_DISABLED
+        FindsOptInState.FIRST_TIME,
+        FindsOptInState.ENABLED,
+        FindsOptInState.MANUALLY_DISABLED
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ChromeFindsOptInState {
+    public @interface FindsOptInState {
         /** The notification channel has not been created yet. */
         int FIRST_TIME = 0;
 
@@ -62,9 +62,9 @@ public class ChromeFindsUtils {
     }
 
     /**
-     * Determine the current opt-in state for Chrome Finds notifications.
+     * Determine the current opt-in state for Finds notifications.
      *
-     * @param callback Callback to return the detected {@link ChromeFindsOptInState}.
+     * @param callback Callback to return the detected {@link FindsOptInState}.
      */
     public static void getOptInState(Callback<Integer> callback) {
         BaseNotificationManagerProxyFactory.create()
@@ -72,13 +72,13 @@ public class ChromeFindsUtils {
                         ChannelId.CHROME_FINDS,
                         (channel) -> {
                             if (channel == null) {
-                                callback.onResult(ChromeFindsOptInState.FIRST_TIME);
+                                callback.onResult(FindsOptInState.FIRST_TIME);
                             } else if (NotificationProxyUtils.areNotificationsEnabled()
                                     && channel.getImportance()
                                             != NotificationManager.IMPORTANCE_NONE) {
-                                callback.onResult(ChromeFindsOptInState.ENABLED);
+                                callback.onResult(FindsOptInState.ENABLED);
                             } else {
-                                callback.onResult(ChromeFindsOptInState.MANUALLY_DISABLED);
+                                callback.onResult(FindsOptInState.MANUALLY_DISABLED);
                             }
                         });
     }
@@ -117,8 +117,8 @@ public class ChromeFindsUtils {
     }
 
     /**
-     * Launch the settings page for the Chrome Finds channel. Will default to app-level
-     * notifications page if the app-level notifications setting are not enabled.
+     * Launch the settings page for the Finds channel. Will default to app-level notifications page
+     * if the app-level notifications setting are not enabled.
      *
      * @param context The current context.
      */
@@ -137,8 +137,8 @@ public class ChromeFindsUtils {
     }
 
     /**
-     * Sets data indicating a user interaction with the Chrome Finds opt-in promo occurred by
-     * incrementing the interaction count and saving the current timestamp.
+     * Sets data indicating a user interaction with the Finds opt-in promo occurred by incrementing
+     * the interaction count and saving the current timestamp.
      *
      * @param profile The current user {@link Profile}.
      */
@@ -148,7 +148,7 @@ public class ChromeFindsUtils {
     }
 
     /**
-     * Sets data indicating a user has seen the Chrome Finds opt-in promo.
+     * Sets data indicating a user has seen the Finds opt-in promo.
      *
      * @param profile The current user {@link Profile}.
      */

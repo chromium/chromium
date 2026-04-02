@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.finds;
+package org.chromium.chrome.browser.finds;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,9 +15,9 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.finds.FindsUtils.FindsOptInState;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.chrome.browser.notifications.finds.ChromeFindsUtils.ChromeFindsOptInState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -31,14 +31,14 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.ui.widget.ButtonCompat;
 
-/** Coordinator for the Chrome Finds opt-in bottom sheet. */
+/** Coordinator for the Finds opt-in bottom sheet. */
 @NullMarked
-public class ChromeFindsOptInCoordinator {
+public class FindsOptInCoordinator {
     private final Context mContext;
     private final Profile mProfile;
     private final BottomSheetController mBottomSheetController;
     private final SnackbarManager mSnackbarManager;
-    private final ChromeFindsOptInBottomSheetContent mSheetContent;
+    private final FindsOptInBottomSheetContent mSheetContent;
     private final BottomSheetObserver mBottomSheetObserver;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -49,7 +49,7 @@ public class ChromeFindsOptInCoordinator {
      * @param bottomSheetController The system {@link BottomSheetController}.
      * @param snackbarManager The system {@link SnackbarManager}.
      */
-    public ChromeFindsOptInCoordinator(
+    public FindsOptInCoordinator(
             Context context,
             Profile profile,
             BottomSheetController bottomSheetController,
@@ -63,7 +63,7 @@ public class ChromeFindsOptInCoordinator {
                 LayoutInflater.from(context)
                         .inflate(R.layout.chrome_finds_opt_in_bottom_sheet, /* root= */ null);
         mSheetContent =
-                new ChromeFindsOptInBottomSheetContent(
+                new FindsOptInBottomSheetContent(
                         contentView, this::onBackPressed, mBackPressStateChangedSupplier);
 
         ButtonCompat positiveButtonView = contentView.findViewById(R.id.opt_in_positive_button);
@@ -99,9 +99,9 @@ public class ChromeFindsOptInCoordinator {
 
     @VisibleForTesting
     void onOptInAccepted() {
-        ChromeFindsUtils.getOptInState(
+        FindsUtils.getOptInState(
                 (state) -> {
-                    if (state == ChromeFindsOptInState.FIRST_TIME) {
+                    if (state == FindsOptInState.FIRST_TIME) {
                         // For first time opt-in, initialize the notification channel as enabled.
                         new ChannelsInitializer(
                                         BaseNotificationManagerProxyFactory.create(),
@@ -114,24 +114,24 @@ public class ChromeFindsOptInCoordinator {
                         if (NotificationProxyUtils.areNotificationsEnabled()) {
                             showOptInSnackbar();
                         } else {
-                            ChromeFindsUtils.launchFindsNotificationSettings(mContext);
+                            FindsUtils.launchFindsNotificationSettings(mContext);
                         }
-                        ChromeFindsMetrics.recordOptInAccepted(/* firstTime= */ true);
-                    } else if (state == ChromeFindsOptInState.MANUALLY_DISABLED) {
+                        FindsMetrics.recordOptInAccepted(/* firstTime= */ true);
+                    } else if (state == FindsOptInState.MANUALLY_DISABLED) {
                         // Launch the notifications settings to direct the user to manually enable
                         // since once the channel has already been created, we cannot
                         // programmatically enable it.
-                        ChromeFindsUtils.launchFindsNotificationSettings(mContext);
-                        ChromeFindsMetrics.recordOptInAccepted(/* firstTime= */ false);
+                        FindsUtils.launchFindsNotificationSettings(mContext);
+                        FindsMetrics.recordOptInAccepted(/* firstTime= */ false);
                     } else {
                         // The only other remaining state is ENABLED, which in theory should never
                         // occur but will be possible with always show opt-in enabled since the
                         // opt-in bottom sheet should not be shown otherwise.
                         showOptInSnackbar();
-                        ChromeFindsMetrics.recordOptInAccepted(/* firstTime= */ false);
+                        FindsMetrics.recordOptInAccepted(/* firstTime= */ false);
                     }
 
-                    ChromeFindsUtils.setOptInPromoInteracted(mProfile);
+                    FindsUtils.setOptInPromoInteracted(mProfile);
                 });
     }
 
@@ -142,8 +142,8 @@ public class ChromeFindsOptInCoordinator {
                                 new SnackbarController() {
                                     @Override
                                     public void onAction(@Nullable Object actionData) {
-                                        ChromeFindsUtils.launchFindsNotificationSettings(mContext);
-                                        ChromeFindsMetrics.recordSnackbarActionClicked();
+                                        FindsUtils.launchFindsNotificationSettings(mContext);
+                                        FindsMetrics.recordSnackbarActionClicked();
                                     }
                                 },
                                 Snackbar.TYPE_NOTIFICATION,
@@ -162,8 +162,8 @@ public class ChromeFindsOptInCoordinator {
                         ChromeChannelDefinitions.getInstance(),
                         mContext.getResources())
                 .ensureInitializedAndDisabled(ChannelId.CHROME_FINDS);
-        ChromeFindsUtils.setOptInPromoInteracted(mProfile);
-        ChromeFindsMetrics.recordOptOutClicked();
+        FindsUtils.setOptInPromoInteracted(mProfile);
+        FindsMetrics.recordOptOutClicked();
     }
 
     public void destroy() {
@@ -173,8 +173,8 @@ public class ChromeFindsOptInCoordinator {
     /** Shows the Chrome Finds opt-in bottom sheet. */
     public void showBottomSheet() {
         mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
-        ChromeFindsUtils.setOptInPromoSeen(mProfile);
-        ChromeFindsMetrics.recordOptInShown();
+        FindsUtils.setOptInPromoSeen(mProfile);
+        FindsMetrics.recordOptInShown();
     }
 
     private void onBackPressed() {

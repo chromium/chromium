@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.finds;
+package org.chromium.chrome.browser.finds;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.notifications.finds.ChromeFindsMetrics.ChromeFindsOptInEvent;
+import org.chromium.chrome.browser.finds.FindsMetrics.FindsOptInEvent;
 
-/** Unit tests for {@link ChromeFindsMetrics}. */
+/** Unit tests for {@link FindsMetrics}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ChromeFindsMetricsUnitTest {
+public class FindsMetricsUnitTest {
     @Test
     public void testRecordOptInShown() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM, ChromeFindsOptInEvent.SHOWN);
-        ChromeFindsMetrics.recordOptInShown();
+                        FindsMetrics.OPT_IN_HISTOGRAM, FindsOptInEvent.SHOWN);
+        FindsMetrics.recordOptInShown();
         histogram.assertExpected();
     }
 
@@ -27,9 +27,8 @@ public class ChromeFindsMetricsUnitTest {
     public void testRecordOptInAccepted_FirstTime() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM,
-                        ChromeFindsOptInEvent.ACCEPTED_FIRST_TIME);
-        ChromeFindsMetrics.recordOptInAccepted(/* firstTime= */ true);
+                        FindsMetrics.OPT_IN_HISTOGRAM, FindsOptInEvent.ACCEPTED_FIRST_TIME);
+        FindsMetrics.recordOptInAccepted(/* firstTime= */ true);
         histogram.assertExpected();
     }
 
@@ -37,9 +36,8 @@ public class ChromeFindsMetricsUnitTest {
     public void testRecordOptInAccepted_ReOptIn() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM,
-                        ChromeFindsOptInEvent.ACCEPTED_RE_OPT_IN);
-        ChromeFindsMetrics.recordOptInAccepted(/* firstTime= */ false);
+                        FindsMetrics.OPT_IN_HISTOGRAM, FindsOptInEvent.ACCEPTED_RE_OPT_IN);
+        FindsMetrics.recordOptInAccepted(/* firstTime= */ false);
         histogram.assertExpected();
     }
 
@@ -47,8 +45,8 @@ public class ChromeFindsMetricsUnitTest {
     public void testRecordOptOutClicked() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM, ChromeFindsOptInEvent.DECLINED);
-        ChromeFindsMetrics.recordOptOutClicked();
+                        FindsMetrics.OPT_IN_HISTOGRAM, FindsOptInEvent.DECLINED);
+        FindsMetrics.recordOptOutClicked();
         histogram.assertExpected();
     }
 
@@ -56,9 +54,8 @@ public class ChromeFindsMetricsUnitTest {
     public void testRecordSnackbarActionClicked() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
-                        ChromeFindsMetrics.OPT_IN_HISTOGRAM,
-                        ChromeFindsOptInEvent.SNACKBAR_ACTION_CLICKED);
-        ChromeFindsMetrics.recordSnackbarActionClicked();
+                        FindsMetrics.OPT_IN_HISTOGRAM, FindsOptInEvent.SNACKBAR_ACTION_CLICKED);
+        FindsMetrics.recordSnackbarActionClicked();
         histogram.assertExpected();
     }
 }

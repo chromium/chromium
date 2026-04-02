@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.finds;
+package org.chromium.chrome.browser.finds;
 
 import android.content.Context;
 import android.view.View;
@@ -15,14 +15,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/** Content for the Chrome Finds opt-in bottom sheet. */
+/** Content for the Finds opt-in bottom sheet. */
 @NullMarked
-class ChromeFindsOptInBottomSheetContent implements BottomSheetContent {
+class FindsOptInBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final Runnable mOnBackPress;
     private final NonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier;
 
-    ChromeFindsOptInBottomSheetContent(
+    FindsOptInBottomSheetContent(
             View contentView,
             Runnable onBackPress,
             NonNullObservableSupplier<Boolean> backPressStateChangedSupplier) {

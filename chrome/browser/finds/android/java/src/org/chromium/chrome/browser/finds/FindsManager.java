@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.notifications.finds;
+package org.chromium.chrome.browser.finds;
 
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.finds.FindsService;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -45,7 +44,7 @@ public class FindsManager implements FindsService.Observer {
         mFindsService.addObserver(this);
         mFindsService.maybeRescheduleNotifications();
 
-        if (ChromeFindsUtils.shouldAlwaysShowOptInPromo()) {
+        if (FindsUtils.shouldAlwaysShowOptInPromo()) {
             onOptInCriteriaFulfilled();
         }
     }
@@ -57,8 +56,8 @@ public class FindsManager implements FindsService.Observer {
 
     @Override
     public void onOptInCriteriaFulfilled() {
-        ChromeFindsOptInCoordinator coordinator =
-                new ChromeFindsOptInCoordinator(
+        FindsOptInCoordinator coordinator =
+                new FindsOptInCoordinator(
                         mContext, mProfile, mBottomSheetController, mSnackbarManager);
         coordinator.showBottomSheet();
     }
