@@ -23,10 +23,19 @@ namespace {
 // with additional optional information.
 // This function adds the imported profile as a candidate. This is only done
 // after the user decision to incorporate manual edits.
-void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
-                                     const AutofillProfile& profile,
-                                     const url::Origin& origin) {
+void MaybeAddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
+                                          const AutofillProfile& profile,
+                                          const url::Origin& origin) {
   if (!form_data_importer) {
+    return;
+  }
+  MultiStepImportMerger& import_merger =
+      form_data_importer->GetAddressFormDataImporter()
+          .multi_step_import_merger();
+  // Avoid adding profiles that don't match the currently tracked origin. It is
+  // possible that the user has navigated away since the import prompt was shown
+  // and submitted an (incomplete) address on the new origin in the meantime.
+  if (import_merger.origin().has_value() && import_merger.origin() != origin) {
     return;
   }
   // Metrics depending on `import_process.import_metadata()` are collected
@@ -36,10 +45,8 @@ void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
   // The `import_metadata` is thus initialized to a neutral element.
   ProfileImportMetadata import_metadata;
   import_metadata.origin = origin;
-  form_data_importer->GetAddressFormDataImporter()
-      .multi_step_import_merger()
-      .AddMultiStepImportCandidate(profile, import_metadata,
-                                   /*is_imported=*/true);
+  import_merger.AddMultiStepImportCandidate(profile, import_metadata,
+                                            /*is_imported=*/true);
 }
 
 AutofillClient::SaveAddressBubbleType AutofillProfileImportTypeToBubbleType(
@@ -147,9 +154,9 @@ void AddressProfileSaveManager::FinalizeProfileImport(
     const std::optional<AutofillProfile>& confirmed_import_candidate =
         import_process->confirmed_import_candidate();
     DCHECK(confirmed_import_candidate);
-    AddMultiStepComplementCandidate(client_->GetFormDataImporter(),
-                                    *confirmed_import_candidate,
-                                    import_process->import_metadata().origin);
+    MaybeAddMultiStepComplementCandidate(
+        client_->GetFormDataImporter(), *confirmed_import_candidate,
+        import_process->import_metadata().origin);
   }
 
   ClearPendingImport(std::move(import_process));
