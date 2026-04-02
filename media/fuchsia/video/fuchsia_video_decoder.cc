@@ -163,7 +163,6 @@ class FuchsiaVideoDecoder::OutputMailbox {
   // Create a new video frame that wraps the mailbox. |reuse_callback| will be
   // called when the mailbox can be reused.
   scoped_refptr<VideoFrame> CreateFrame(VideoPixelFormat pixel_format,
-                                        const gfx::Size& coded_size,
                                         const gfx::Rect& visible_rect,
                                         const gfx::Size& natural_size,
                                         base::TimeDelta timestamp,
@@ -176,7 +175,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
         pixel_format, shared_image_, create_sync_token_,
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &OutputMailbox::OnFrameDestroyed, base::Unretained(this))),
-        coded_size, visible_rect, natural_size, timestamp);
+        visible_rect, natural_size, timestamp);
     create_sync_token_.Clear();
 
     // Request a fence we'll wait on before reusing the buffer.
@@ -630,8 +629,8 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   num_used_output_buffers_++;
 
   auto frame = output_mailboxes_[buffer_index]->CreateFrame(
-      pixel_format, coded_size, display_rect,
-      aspect_ratio.GetNaturalSize(display_rect), timestamp,
+      pixel_format, display_rect, aspect_ratio.GetNaturalSize(display_rect),
+      timestamp,
       base::BindOnce(&FuchsiaVideoDecoder::ReleaseOutputPacket,
                      base::Unretained(this), std::move(output_packet)));
 

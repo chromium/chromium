@@ -267,8 +267,7 @@ void VideoToolboxFrameConverter::Convert(
 
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       video_pixel_format, shared_image, shared_image->creation_sync_token(),
-      std::move(release_cb), coded_size, visible_rect, natural_size,
-      metadata->timestamp);
+      std::move(release_cb), visible_rect, natural_size, metadata->timestamp);
 
   if (!frame) {
     MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create VideoFrame";
