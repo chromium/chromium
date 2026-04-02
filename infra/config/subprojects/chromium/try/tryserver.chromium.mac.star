@@ -163,6 +163,8 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac15-arm64-rel-tests",
+        "ci/GPU Mac arm64 Builder",
+        "ci/Mac Retina Release (Apple M2)",
     ],
     gn_args = gn_args.config(
         configs = [
@@ -236,7 +238,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
     use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
