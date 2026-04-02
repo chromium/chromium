@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_node.h"
 
-#include <algorithm>
-
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/event_modules.h"

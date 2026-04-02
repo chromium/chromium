@@ -4,7 +4,6 @@
 
 #include <arm_neon.h>
 
-#include <algorithm>
 #include <array>
 
 #include "base/compiler_specific.h"

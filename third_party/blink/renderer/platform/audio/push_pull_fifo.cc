@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 
 #include <algorithm>
-#include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"

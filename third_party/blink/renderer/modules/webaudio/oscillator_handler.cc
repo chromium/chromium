@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 
-#include <algorithm>
 #include <array>
 #include <limits>
 

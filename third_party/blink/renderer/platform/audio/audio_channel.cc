@@ -30,8 +30,6 @@
 
 #include <math.h>
 
-#include <algorithm>
-
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"

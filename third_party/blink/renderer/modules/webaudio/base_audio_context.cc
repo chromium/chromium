@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 
-#include <algorithm>
-
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"

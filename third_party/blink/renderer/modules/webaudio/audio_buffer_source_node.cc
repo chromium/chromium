@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer_source_node.h"
 
-#include <algorithm>
-
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_source_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"

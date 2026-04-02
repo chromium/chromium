@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/media_element_audio_source_node.h"
 
-#include <memory>
-
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_element_audio_source_options.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"

@@ -27,7 +27,6 @@
 
 #include <inttypes.h>
 
-#include "base/memory/ptr_util.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"

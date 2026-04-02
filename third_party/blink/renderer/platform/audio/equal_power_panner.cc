@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/platform/audio/equal_power_panner.h"
 
-#include <algorithm>
 #include <cmath>
 
 #include "base/compiler_specific.h"

@@ -38,11 +38,10 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
-#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 

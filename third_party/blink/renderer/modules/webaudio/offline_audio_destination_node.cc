@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_destination_node.h"
 
-#include <algorithm>
-
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"

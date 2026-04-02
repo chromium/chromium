@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 
-#include <memory>
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"

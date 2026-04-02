@@ -4,11 +4,7 @@
 
 #include "third_party/blink/renderer/platform/audio/stereo_panner.h"
 
-#include <algorithm>
-#include <memory>
-
 #include "base/compiler_specific.h"
-#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"

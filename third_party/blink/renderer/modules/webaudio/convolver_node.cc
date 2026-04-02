@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/convolver_node.h"
 
-#include <memory>
-
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_convolver_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"

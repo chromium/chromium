@@ -6,8 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_REALTIME_AUDIO_DESTINATION_HANDLER_H_
 
 #include <atomic>
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

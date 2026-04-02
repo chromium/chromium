@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/script_processor_node.h"
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/synchronization/waitable_event.h"

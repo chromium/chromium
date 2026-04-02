@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_STEREO_PANNER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_STEREO_PANNER_NODE_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/stereo_panner_handler.h"

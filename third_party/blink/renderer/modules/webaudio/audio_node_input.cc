@@ -26,9 +26,6 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 
 #include <algorithm>
-#include <memory>
-
-#include "base/memory/ptr_util.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_wiring.h"

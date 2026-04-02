@@ -34,8 +34,6 @@
 #include <algorithm>
 #include <array>
 #include <memory>
-#include <utility>
-
 #include "base/compiler_specific.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/platform.h"
