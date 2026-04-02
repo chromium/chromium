@@ -1178,7 +1178,7 @@
   {
     "name": "bookmark-pane-android",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 160
   },
   {
     "name": "bookmark-tab-group-conversion",
