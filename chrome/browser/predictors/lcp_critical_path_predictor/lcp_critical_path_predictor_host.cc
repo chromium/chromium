@@ -30,6 +30,11 @@ void LCPCriticalPathPredictorHost::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::LCPCriticalPathPredictorHost>
         receiver) {
+  // Only valid for the main frame.
+  if (render_frame_host->GetParentOrOuterDocument()) {
+    return;
+  }
+
   // The object is bound to the lifetime of the |render_frame_host| and the mojo
   // connection. See DocumentService for details.
   new LCPCriticalPathPredictorHost(*render_frame_host, std::move(receiver));
