@@ -256,7 +256,7 @@ void DeviceStatisticsTracker::AllRequestsDone() {
 
       base::UmaHistogramCounts100(
           absl::StrFormat(
-              "Sync.DeviceStatistics.Outcome.%s.NumberOfAdditionalClients",
+              "Sync.DeviceStatistics.Outcome.%s.NumberOfAdditionalClients2",
               infix),
           other_devices->size());
 
@@ -265,7 +265,7 @@ void DeviceStatisticsTracker::AllRequestsDone() {
           [](const DeviceData& device) { return device.history_opt_in; });
       base::UmaHistogramCounts100(
           absl::StrFormat("Sync.DeviceStatistics.Outcome.%s."
-                          "NumberOfAdditionalClientsWithHistoryOptIn",
+                          "NumberOfAdditionalClientsWithHistoryOptIn2",
                           infix),
           other_devices_with_history_opt_in);
 
@@ -282,12 +282,12 @@ void DeviceStatisticsTracker::AllRequestsDone() {
 
       base::UmaHistogramCounts100(
           absl::StrFormat(
-              "Sync.DeviceStatistics.Outcome.%s.NumberOfAdditionalPlatforms",
+              "Sync.DeviceStatistics.Outcome.%s.NumberOfAdditionalPlatforms2",
               infix),
           other_platforms);
       base::UmaHistogramCounts100(
           absl::StrFormat("Sync.DeviceStatistics.Outcome.%s."
-                          "NumberOfAdditionalPlatformsWithHistoryOptIn",
+                          "NumberOfAdditionalPlatformsWithHistoryOptIn2",
                           infix),
           other_platforms_with_history_opt_in);
 
@@ -296,7 +296,7 @@ void DeviceStatisticsTracker::AllRequestsDone() {
             other_devices->size(), other_devices_with_history_opt_in);
 
         base::UmaHistogramEnumeration(
-            "Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptIn",
+            "Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptIn2",
             GetHistoryOptInDevicesSummary(other_devices->size(),
                                           other_devices_with_history_opt_in));
 
@@ -305,7 +305,7 @@ void DeviceStatisticsTracker::AllRequestsDone() {
 
         base::UmaHistogramEnumeration(
             "Sync.DeviceStatistics.Outcome.PrimaryAccount."
-            "HistoryOptInMultiPlatform",
+            "HistoryOptInMultiPlatform2",
             GetHistoryOptInPlatformsSummary(
                 other_platforms, other_platforms_with_history_opt_in));
       }
@@ -313,7 +313,7 @@ void DeviceStatisticsTracker::AllRequestsDone() {
       for (DeviceData device : *other_devices) {
         base::UmaHistogramEnumeration(
             absl::StrFormat(
-                "Sync.DeviceStatistics.Outcome.%s.PlatformOfAdditionalClient",
+                "Sync.DeviceStatistics.Outcome.%s.PlatformOfAdditionalClient2",
                 infix),
             device.platform);
       }
@@ -325,13 +325,13 @@ void DeviceStatisticsTracker::AllRequestsDone() {
 }
 
 void DeviceStatisticsTracker::RecordOverallDevicesOutcome() const {
-  base::UmaHistogramEnumeration("Sync.DeviceStatistics.Outcome.Overall",
+  base::UmaHistogramEnumeration("Sync.DeviceStatistics.Outcome.Overall2",
                                 GetOverallDevicesOutcome());
 }
 
 void DeviceStatisticsTracker::RecordOverallPlatformsOutcome() const {
   base::UmaHistogramEnumeration(
-      "Sync.DeviceStatistics.Outcome.OverallMultiPlatform",
+      "Sync.DeviceStatistics.Outcome.OverallMultiPlatform2",
       GetOverallPlatformsOutcome());
 }
 
@@ -591,8 +591,9 @@ DeviceStatisticsTracker::DeduplicateEntities(
   for (const sync_pb::SyncEntity& entity : entities) {
     const sync_pb::DeviceInfoSpecifics& device =
         entity.specifics().device_info();
-    // Only consider Chrome devices (not Google Play Services).
-    if (!device.has_chrome_version_info()) {
+    // Only consider Chrome devices (not Google Play Services or iGSA).
+    if (!device.has_chrome_version_info() ||
+        device.sync_user_agent().starts_with("iGSA")) {
       continue;
     }
 
