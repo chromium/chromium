@@ -27,6 +27,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/ptr_util.h"
@@ -75,10 +76,7 @@ void AppendUnencodableReplacement(UChar32 code_point,
                                   Vector<uint8_t>& result) {
   std::string replacement =
       TextCodec::GetUnencodableReplacement(code_point, handling);
-  result.reserve(result.size() + replacement.size());
-  for (uint8_t r : replacement) {
-    result.UncheckedAppend(r);
-  }
+  result.append_range(base::as_byte_span(replacement));
 }
 
 std::optional<UChar> FindCodePointInJis0208(uint16_t pointer) {

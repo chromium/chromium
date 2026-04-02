@@ -252,12 +252,6 @@ static std::string EncodeComplexWindowsLatin1(
       std::string replacement =
           TextCodec::GetUnencodableReplacement(c, handling);
       DCHECK_GT(replacement.length(), 0UL);
-      // Only one char was initially reserved per input character, so grow if
-      // necessary.
-      target_length += replacement.length() - 1;
-      if (target_length > result.size()) {
-        result.reserve(target_length);
-      }
       result.append(replacement);
       continue;
     }
