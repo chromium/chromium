@@ -184,7 +184,6 @@ public class StatusMediator
         mShowStatusIconWhenUrlFocused = mIsTablet;
         mPageInfoAction = pageInfoAction;
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, false);
-        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, this::onClick);
 
         mPermissionStatusHandler =
                 new PermissionStatusHandler(
@@ -494,24 +493,10 @@ public class StatusMediator
     public void showPermissionIcon(PermissionIconResource icon) {
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, icon);
         mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, icon.getContentDescriptionRes());
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, this::onClickOpenPageInfo);
     }
 
-    /**
-     * Update selection of icon presented on the location bar.
-     *
-     * <ul>
-     *   <li>Navigation button is:
-     *       <ul>
-     *         <li>shown only on large form factor devices (tablets and up)
-     *         <li>shown only if URL is focused.
-     *       </ul>
-     *   <li>Security icon is:
-     *       <ul>
-     *         <li>shown only if specified,
-     *         <li>not shown if URL is focused.
-     *       </ul>
-     * </ul>
-     */
+    /** Update selection of icon presented on the location bar. */
     @Override
     public void updateLocationBarIcon(@IconTransitionType int transitionType) {
         // Reset the store icon status.
@@ -527,6 +512,7 @@ public class StatusMediator
         int tint = 0;
         int toast = 0;
         @StringRes int doubleTapDescriptionRes = R.string.accessibility_toolbar_view_site_info;
+        OnClickListener clickListener = null;
 
         mIsSecurityViewShown = false;
 
@@ -542,6 +528,7 @@ public class StatusMediator
             applyStatusIconAndTooltipProperties(
                     mModel.get(StatusProperties.SHOW_STATUS_ICON),
                     mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
+            clickListener = mOnStatusIconNavigateBackButtonPress;
         } else if (mUrlHasFocus) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             if (mShowStatusIconWhenUrlFocused) {
@@ -563,6 +550,7 @@ public class StatusMediator
                 icon = mSecurityIconRes;
                 tint = mSecurityIconTintRes;
                 toast = R.string.menu_page_info;
+                clickListener = this::onClickOpenPageInfo;
             }
         }
 
@@ -579,6 +567,7 @@ public class StatusMediator
         mModel.set(
                 StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
                 doubleTapDescriptionRes);
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, clickListener);
     }
 
     @VisibleForTesting
@@ -596,6 +585,7 @@ public class StatusMediator
 
         mModel.set(
                 StatusProperties.STATUS_ICON_RESOURCE, getStatusIconResourceForSearchEngineIcon());
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, null);
         updateStatusViewVisibility();
         return true;
     }
@@ -755,6 +745,7 @@ public class StatusMediator
         // Set the timer to switch the icon back afterwards.
         mIconTaskHandler.removeCallbacksAndMessages(null);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, permissionIconResource);
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, this::onClickOpenPageInfo);
         mIconTaskHandler.postDelayed(
                 () -> updateLocationBarIcon(IconTransitionType.ROTATE),
                 PermissionStatusHandler.PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS);
@@ -793,6 +784,7 @@ public class StatusMediator
                     }
                 });
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, storeIconResource);
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, this::onClickOpenPageInfo);
         mStoreIconHandler.postDelayed(
                 () -> {
                     updateLocationBarIcon(IconTransitionType.ROTATE);
@@ -990,14 +982,7 @@ public class StatusMediator
                         || mIsStoreIconShowing);
     }
 
-    private void onClick(View view) {
-        if (mOnStatusIconNavigateBackButtonPress != null) {
-            mOnStatusIconNavigateBackButtonPress.onClick(view);
-            return;
-        }
-
-        if (mUrlHasFocus) return;
-
+    private void onClickOpenPageInfo(View view) {
         if (!mLocationBarDataProvider.hasTab()
                 || assumeNonNull(mLocationBarDataProvider.getTab()).getWebContents() == null) {
             return;

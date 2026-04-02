@@ -191,6 +191,7 @@ public final class StatusMediatorUnitTest {
 
         StatusIconResource icon = mModel.get(StatusProperties.STATUS_ICON_RESOURCE);
         Assert.assertNotNull("Permission icon should be shown", icon);
+        Assert.assertNotNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
         assertEquals(IconTransitionType.ROTATE, icon.getTransitionType());
         icon.getAnimationFinishedCallback().run();
         verify(mPageInfoIphController, times(1))
@@ -351,6 +352,7 @@ public final class StatusMediatorUnitTest {
         assertEquals(
                 R.drawable.ic_logo_googleg_20dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+        Assert.assertNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
     }
 
     @Test
@@ -498,6 +500,7 @@ public final class StatusMediatorUnitTest {
         mMediator.showStoreIcon(
                 mWindowAndroid, JUnitTestGURLs.BLUE_1.getSpec(), mStoreIconDrawable, 0, true);
         Assert.assertTrue(mMediator.isStoreIconShowing());
+        Assert.assertNotNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
         assertEquals(
                 IconTransitionType.ROTATE,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getTransitionType());
@@ -826,6 +829,7 @@ public final class StatusMediatorUnitTest {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
+        mMediator.updateSecurityIcon(R.drawable.ic_globe_24dp, 0, 0);
 
         mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
         verify(mPageInfoAction).show(any(), any());
@@ -834,7 +838,12 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     public void testStatusClickListener_withBackButtonPressListener() {
+        doReturn(PageClassification.ANDROID_HUB_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
         mMediator.setOnStatusIconNavigateBackButtonPress(mOnClickListener);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
         mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
         verify(mOnClickListener).onClick(any());
     }
@@ -843,13 +852,7 @@ public final class StatusMediatorUnitTest {
     @SmallTest
     public void testStatusClickListener_whenUrlHasFocus() {
         mMediator.setUrlHasFocus(true);
-        doReturn(true).when(mLocationBarDataProvider).hasTab();
-        doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
-
-        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
-        verify(mPageInfoAction, never()).show(any(), any());
+        Assert.assertNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
     }
 
     private String getIconIdentifierForTesting() {
