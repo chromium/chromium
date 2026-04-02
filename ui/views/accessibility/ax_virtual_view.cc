@@ -269,7 +269,6 @@ void AXVirtualView::NotifyEvent(ax::mojom::Event event_type,
     return;
   }
 
-  DCHECK(ax_platform_node_);
   if (event_type == ax::mojom::Event::kAlert) {
     CHECK(ui::IsAlert(GetRole()))
         << "On some platforms, the alert event does not work correctly unless "
@@ -284,8 +283,10 @@ void AXVirtualView::NotifyEvent(ax::mojom::Event event_type,
     }
   }
 
-  // This is used on platforms that have a native accessibility API.
-  ax_platform_node_->NotifyAccessibilityEvent(event_type);
+  if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    DCHECK(ax_platform_node_);
+    ax_platform_node_->NotifyAccessibilityEvent(event_type);
+  }
 
   // This is used on platforms that don't have a native accessibility API.
   AXUpdateNotifier::Get()->NotifyVirtualViewEvent(this, event_type);

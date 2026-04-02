@@ -13,9 +13,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
@@ -912,5 +914,65 @@ TEST_P(AXVirtualViewTest, GetTargetForEvents) {
 
 // Instantiate the values of device scale factor in the parameterized tests.
 INSTANTIATE_TEST_SUITE_P(All, AXVirtualViewTest, ::testing::Values(1.0f, 2.0f));
+
+class AXVirtualViewViewsAXTest : public ViewsTestBase {
+ public:
+  AXVirtualViewViewsAXTest() : ax_mode_setter_(ui::kAXModeComplete) {
+    feature_list_.InitAndEnableFeature(features::kAccessibilityTreeForViews);
+  }
+
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+
+    widget_ = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    params.bounds = gfx::Rect(0, 0, 200, 200);
+    widget_->Init(std::move(params));
+    button_ = widget_->GetContentsView()->AddChildView(
+        std::make_unique<TestButton>());
+    button_->SetSize(gfx::Size(20, 20));
+    button_->GetViewAccessibility().SetName(u"Button");
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    button_ = nullptr;
+    if (!widget_->IsClosed()) {
+      widget_->Close();
+    }
+    widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<Widget> widget_;
+  raw_ptr<Button> button_ = nullptr;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  ::ui::ScopedAXModeSetter ax_mode_setter_;
+};
+
+TEST_F(AXVirtualViewViewsAXTest, NotifyEventDoesNotCrash) {
+  // Some platforms (e.g. ChromeOS) never enable ViewsAX regardless of the
+  // feature flag.
+  if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    GTEST_SKIP() << "ViewsAX not supported on this platform";
+  }
+
+  auto virtual_view = std::make_unique<AXVirtualView>();
+  ASSERT_FALSE(virtual_view->ax_platform_node());
+
+  virtual_view->SetRole(ax::mojom::Role::kListBoxOption);
+  virtual_view->SetName("Item");
+  AXVirtualView* virtual_view_ptr = virtual_view.get();
+  button_->GetViewAccessibility().AddVirtualChildView(
+      std::move(virtual_view));
+
+  virtual_view_ptr->SetIsExpanded();
+  virtual_view_ptr->SetIsCollapsed();
+}
 
 }  // namespace views::test
