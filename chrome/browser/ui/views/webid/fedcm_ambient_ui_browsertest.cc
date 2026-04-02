@@ -305,34 +305,18 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
     account_selected = true;
   }));
 
-  // We simulate it expanding into an anchored message.
+  // We simulate clicking on the icon, which should now sign the user in
+  // directly.
   view()->OnPageActionClicked();
 
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer.GetCurrentPageActionState().anchored_message_showing;
-  }));
-
-  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
-                               AmbientImpression::kSignInAnchoredMessage, 1);
-
-  // It should NOT have selected the account yet.
-  EXPECT_FALSE(account_selected);
-
-  // Finally, click on the anchored message, now it should select the account.
-  view()->OnPageActionClicked();
   ASSERT_TRUE(base::test::RunUntil([&]() { return account_selected; }));
-
-  // When the anchored message is clicked on, it gets hidden.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !observer.GetCurrentPageActionState().anchored_message_showing;
-  }));
-
-  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
-                               AmbientImpression::kSignInAnchoredMessage, 1);
 
   // And we show a "Signing in ..." message after the user selects the account.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
+                               AmbientClick::kSignInIcon, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiAccountFallback) {
@@ -475,11 +459,8 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
   view()->OnPageActionClicked();
   histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
                                AmbientClick::kSignInChip, 1);
-  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
-                               AmbientImpression::kSignInAnchoredMessage, 0);
 
-  // Anchored message should be shown (no widget yet) because we fallback to
-  // the browser's sign-in state.
+  // Sign-in should be triggered immediately.
   EXPECT_FALSE(view()->GetDialogWidget());
 
   EXPECT_FALSE(observer.GetCurrentPageActionState().anchored_message_showing);
@@ -544,8 +525,6 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
 
   histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
                                AmbientClick::kSignInChip, 1);
-  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
-                               AmbientImpression::kSignInAnchoredMessage, 0);
 }
 
 // This test verifies the UMA metrics logged during the Ambient UI flow for a
@@ -557,18 +536,17 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
 //    omnibox chip appears.
 // 2. Blink.FedCm.Ambient.ClickSource:
 //    - 'kSignInChip': Logged when the user clicks the sign-in chip.
-//    - 'kSignInAnchoredMessage': Logged when the user clicks the anchored
-//    message.
+//    - 'kSignInIcon': Logged when the user clicks the sign-in icon.
 //
 // The CTR for sign-in can be calculated the following way:
 //
 // - Percentage of users that see the URL chip and Sign-in:
-//              Blink.FedCm.Ambient.ClickSource.kSignInAnchoredMessage /
-//              Blink.FedCm.Ambient.Impression.kSignInChip
-//
-// - Percentage of users that see the URL chip but don't click on it:
 //             Blink.FedCm.Ambient.ClickSource.kSignInChip /
 //             Blink.FedCm.Ambient.Impression.kSignInChip
+//
+// - Percentage of users that see the URL icon and Sign-in:
+//             Blink.FedCm.Ambient.ClickSource.kSignInIcon /
+//             Blink.FedCm.Ambient.Impression.kSignInIcon
 //
 // There are a few additional signals that are collected as part of the
 // page action framework and the existing FedCM UMAs:
@@ -576,23 +554,13 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
 // 1. Blink.FedCm.Status.RequestIdToken: Logged when the flow completes.
 // 2. PageActionController.Federation.Chip.CTR2:
 //    - 'kShown': Logged when the omnibox chip appears.
-//    - 'kClicked': Logged when the user clicks the chip (opens anchored
-//      message) OR the anchored message chip (completes login).
+//    - 'kClicked': Logged when the user clicks the chip.
 //    - Measuring CTR: The generic CTR for the Page Action can be
 //      calculated as (Number of 'kClicked' events) / (Number of 'kShown'
-//      events). Note that for FedCM sign-in, a single successful flow
-//      records two 'kClicked' events (one for the chip and one for the
-//      anchored message). More precise CTRs can be calculated as:
-//      - Sign-in Chip CTR: 'Blink.FedCm.Ambient.ClickSource:kSignInChip' /
-//        'Blink.FedCm.Ambient.Impression:kSignInChip'
-//      - SignIn Anchored Message CTR:
-//      'Blink.FedCm.Ambient.ClickSource:kSignInAnchoredMessage' /
-//        'Blink.FedCm.Ambient.ClickSource:kSignInChip'
-//      - Overall Flow CTR: 'Blink.FedCm.Status.RequestIdToken' /
-//        'Blink.FedCm.Ambient.Impression:kSignInChip'
+//      events).
 // 3. PageActionController.ChipTypeShown: Logged with value 'kFederation'.
 // 4. Blink.FedCm.AccountsDialogShown: Should be 0 for this flow, as no modal
-//    dialog widget is shown (only the Page Action anchored message).
+//    dialog widget is shown (only the Page Action).
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignInMetrics) {
   base::HistogramTester histograms;
 
@@ -640,17 +608,13 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignInMetrics) {
   histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
                                AmbientClick::kSignInChip, 1);
   // Re-assert shown metrics after the chip was clicked.
-  // We expect these to be correctly recorded only once, even after the
-  // anchored message appears.
   histograms.ExpectBucketCount("PageActionController.ChipTypeShown",
                                PageActionIconType::kFederation, 1);
 
   // Blink.FedCm.AccountsDialogShown is currently associated with the widget
-  // (modal or bubble), which is *not* shown in this case (only the anchored
-  // message bubble is shown, which is part of the Page Action framework).
+  // (modal or bubble), which is *not* shown in this case.
   histograms.ExpectTotalCount("Blink.FedCm.AccountsDialogShown", 0);
 
-  // For sign-in, clicking the anchored message chip completes the flow.
   // For sign-in, clicking the chip completes the flow.
   // In a fully integrated browser test (without MockDelegate), we would
   // expect the success status (Blink.FedCm.Status.RequestIdToken) to be

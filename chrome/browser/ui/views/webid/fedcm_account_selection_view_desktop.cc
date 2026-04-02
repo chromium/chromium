@@ -130,15 +130,8 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
                    ? AmbientClick::kSignInChip
                    : AmbientClick::kSignInIcon));
 
-    if (!GetCurrentPageActionState().chip_showing &&
-        !GetCurrentPageActionState().anchored_message_showing) {
-      controller->ShowAnchoredMessage(kActionFederation);
-      return;
-    }
-
-    // After clicking on the chip or the anchored message, we hide both of them
-    // to collapse the page action back into an icon and sign the user in.
-    controller->HideAnchoredMessage(kActionFederation);
+    // After clicking on the chip or the icon, we sign the user in and show the
+    // "Signing in ..." text.
     controller->OverrideText(
         kActionFederation,
         l10n_util::GetStringUTF16(IDS_FEDERATION_SIGNING_IN_TITLE));
