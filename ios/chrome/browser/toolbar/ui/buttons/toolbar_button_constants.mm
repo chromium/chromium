@@ -4,6 +4,6 @@
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 
-CGFloat const kSize = 38;
+CGFloat const kToolbarButtonSize = 38;
 
-CGFloat const kSquareCornerRadius = 13;
+CGFloat const kToolbarButtonSquareCornerRadius = 13;

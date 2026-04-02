@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
@@ -33,6 +35,19 @@ constexpr CGFloat kStackViewSpacing = 9;
 constexpr CGFloat kButtonMinScale = 0.2;
 
 constexpr CGFloat kAnimationDuration = 0.2f;
+
+// The margin for the leading/trailing edges of the stack view.
+constexpr CGFloat kStackViewMarginRegularRegular = 16;
+constexpr CGFloat kStackViewMarginLandscape = 46;
+constexpr CGFloat kStackViewMarginPortrait = 9;
+
+// The margin between the stack views and the location bar.
+constexpr CGFloat kLocationBarStackViewMarginRegularRegular = 40;
+constexpr CGFloat kLocationBarStackViewMarginPortrait = 9;
+constexpr CGFloat kLocationBarStackViewMarginLandscape = 18;
+
+// Max width of the location bar.
+constexpr CGFloat kLocationBarMaxWidth = 600;
 
 }  // namespace
 
@@ -67,9 +82,14 @@ constexpr CGFloat kAnimationDuration = 0.2f;
   // The constraint for the bottom padding of the toolbar.
   NSLayoutConstraint* _locationBarBottomPaddingConstraint;
 
-  // Constraints for portrait and landscape modes.
+  // Constraints for different modes.
   NSArray<NSLayoutConstraint*>* _portraitOrientationConstraints;
   NSArray<NSLayoutConstraint*>* _landscapeOrientationConstraints;
+  NSArray<NSLayoutConstraint*>* _regularRegularConstraints;
+
+  // The constraints for the leading/trailing margins of the stacks.
+  NSLayoutConstraint* _leadingStackLeadingConstraint;
+  NSLayoutConstraint* _trailingStackTrailingConstraint;
 
   // Whether this toolbar is currently visible.
   /// TODO(crbug.com/493268305): Clean up the animation dismissing the toolbar
@@ -488,17 +508,9 @@ constexpr CGFloat kAnimationDuration = 0.2f;
                      constant:-kToolbarPadding];
   _locationBarBottomPaddingConstraint.active = YES;
 
-  UILayoutGuide* safeAreaGuide = self.view.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
-    [_leadingStackView.leadingAnchor
-        constraintEqualToAnchor:safeAreaGuide.leadingAnchor
-                       constant:kStackViewSpacing],
     [_leadingStackView.centerYAnchor
         constraintEqualToAnchor:_locationBarContainer.centerYAnchor],
-
-    [_trailingStackView.trailingAnchor
-        constraintEqualToAnchor:safeAreaGuide.trailingAnchor
-                       constant:-kStackViewSpacing],
     [_trailingStackView.centerYAnchor
         constraintEqualToAnchor:_locationBarContainer.centerYAnchor],
   ]];
@@ -507,29 +519,64 @@ constexpr CGFloat kAnimationDuration = 0.2f;
       constraintEqualToAnchor:self.view.widthAnchor];
   widthConstraint.priority = UILayoutPriorityRequired - 1;
 
-  /// TODO(crbug.com/493603959): Set appropriate width constraints for portrait
-  /// orientation on iPad.
+  [_locationBarContainer.widthAnchor
+      constraintLessThanOrEqualToConstant:kLocationBarMaxWidth]
+      .active = YES;
+
+  _leadingStackLeadingConstraint = [_leadingStackView.leadingAnchor
+      constraintEqualToAnchor:self.view.leadingAnchor];
+  _leadingStackLeadingConstraint.active = YES;
+  _trailingStackTrailingConstraint = [self.view.trailingAnchor
+      constraintEqualToAnchor:_trailingStackView.trailingAnchor];
+  _trailingStackTrailingConstraint.active = YES;
+
   _portraitOrientationConstraints = @[
     [_locationBarContainer.leadingAnchor
         constraintEqualToAnchor:_leadingStackView.trailingAnchor
-                       constant:kStackViewSpacing],
+                       constant:kLocationBarStackViewMarginPortrait],
     [_locationBarContainer.trailingAnchor
         constraintEqualToAnchor:_trailingStackView.leadingAnchor
-                       constant:-kStackViewSpacing],
+                       constant:-kLocationBarStackViewMarginPortrait],
   ];
 
-  /// TODO(crbug.com/493603959): Set appropriate width constraints for landscape
-  /// orientation on iPhone and iPad.
-  _landscapeOrientationConstraints = @[
-    [_leadingStackView.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_locationBarContainer.leadingAnchor
-                                 constant:-kStackViewSpacing],
+  CGFloat regularMargin = kLocationBarStackViewMarginRegularRegular;
+  _regularRegularConstraints = @[
+    [_locationBarContainer.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:_leadingStackView.trailingAnchor
+                                    constant:regularMargin],
     [_trailingStackView.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:_locationBarContainer
                                                  .trailingAnchor
-                                    constant:kStackViewSpacing],
+                                    constant:regularMargin],
     [_locationBarContainer.centerXAnchor
-        constraintEqualToAnchor:safeAreaGuide.centerXAnchor],
+        constraintEqualToAnchor:self.view.centerXAnchor],
+
+    widthConstraint,
+  ];
+
+  // On iPhone portrait and iPad regular x regular, the location bar is not
+  // supposed to move when the forward button appears. So add a constrait to
+  // make sure the width of the leading stack view is enough to contain 3
+  // buttons and one spacing.
+  CGFloat minimalLeadingMargin = kLocationBarStackViewMarginLandscape +
+                                 2 * kToolbarButtonSize + kStackViewSpacing +
+                                 kToolbarButtonSize;
+  _landscapeOrientationConstraints = @[
+    [_locationBarContainer.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:_leadingStackView.trailingAnchor
+                                    constant:
+                                        kLocationBarStackViewMarginLandscape],
+    [_locationBarContainer.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:_leadingStackView.leadingAnchor
+                                    constant:minimalLeadingMargin],
+    [_trailingStackView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:_locationBarContainer
+                                                 .trailingAnchor
+                                    constant:
+                                        kLocationBarStackViewMarginLandscape],
+    [_locationBarContainer.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+
     widthConstraint,
   ];
 
@@ -541,11 +588,21 @@ constexpr CGFloat kAnimationDuration = 0.2f;
 // between the leading and trailing toolbar buttons. In landscape orientation,
 // the location bar has a fixed size in the center of the toolbar.
 - (void)updateLayoutConstraints {
-  if (IsLandscape(self.view.window)) {
-    [NSLayoutConstraint deactivateConstraints:_portraitOrientationConstraints];
+  [NSLayoutConstraint deactivateConstraints:_portraitOrientationConstraints];
+  [NSLayoutConstraint deactivateConstraints:_landscapeOrientationConstraints];
+  [NSLayoutConstraint deactivateConstraints:_regularRegularConstraints];
+
+  if (IsRegularXRegularSizeClass(self.view.window)) {
+    _leadingStackLeadingConstraint.constant = kStackViewMarginRegularRegular;
+    _trailingStackTrailingConstraint.constant = kStackViewMarginRegularRegular;
+    [NSLayoutConstraint activateConstraints:_regularRegularConstraints];
+  } else if (IsIPhoneLandscape(self.view.window)) {
+    _leadingStackLeadingConstraint.constant = kStackViewMarginLandscape;
+    _trailingStackTrailingConstraint.constant = kStackViewMarginLandscape;
     [NSLayoutConstraint activateConstraints:_landscapeOrientationConstraints];
   } else {
-    [NSLayoutConstraint deactivateConstraints:_landscapeOrientationConstraints];
+    _leadingStackLeadingConstraint.constant = kStackViewMarginPortrait;
+    _trailingStackTrailingConstraint.constant = kStackViewMarginPortrait;
     [NSLayoutConstraint activateConstraints:_portraitOrientationConstraints];
   }
 }

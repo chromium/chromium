@@ -40,7 +40,7 @@ constexpr CGFloat kBlueDotWhiteBorderThickness = 2;
     _imageLoader = [imageLoader copy];
 
     [NSLayoutConstraint activateConstraints:@[
-      [self.widthAnchor constraintEqualToConstant:kSize],
+      [self.widthAnchor constraintEqualToConstant:kToolbarButtonSize],
       [self.heightAnchor constraintEqualToAnchor:self.widthAnchor],
     ]];
 

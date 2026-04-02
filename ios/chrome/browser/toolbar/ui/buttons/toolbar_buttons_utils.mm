@@ -45,6 +45,7 @@ void ConfigureCornerRadiusForToolbarButtonContainer(
   BOOL isRegularXCompactSizeClass =
       trait_collection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
       trait_collection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
-  container.layer.cornerRadius =
-      isRegularXCompactSizeClass ? kSquareCornerRadius : kSize / 2;
+  container.layer.cornerRadius = isRegularXCompactSizeClass
+                                     ? kToolbarButtonSquareCornerRadius
+                                     : kToolbarButtonSize / 2;
 }

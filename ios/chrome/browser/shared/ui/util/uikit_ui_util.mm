@@ -268,6 +268,14 @@ bool CanShowTabStrip(id<UITraitEnvironment> environment) {
   return CanShowTabStrip(environment.traitCollection);
 }
 
+bool IsIPhoneLandscape(id<UITraitEnvironment> environment) {
+  return IsIPhoneLandscape(environment.traitCollection);
+}
+
+bool IsIPhoneLandscape(UITraitCollection* trait_collection) {
+  return IsCompactHeight(trait_collection);
+}
+
 bool IsCompactWidth(id<UITraitEnvironment> environment) {
   return IsCompactWidth(environment.traitCollection);
 }

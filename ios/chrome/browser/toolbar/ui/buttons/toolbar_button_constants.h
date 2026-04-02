@@ -8,9 +8,9 @@
 #import <UIKit/UIKit.h>
 
 // Height and width of a toolbar button.
-extern CGFloat const kSize;
+extern CGFloat const kToolbarButtonSize;
 
 // Corner radius for square toolbar buttons.
-extern CGFloat const kSquareCornerRadius;
+extern CGFloat const kToolbarButtonSquareCornerRadius;
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUTTONS_TOOLBAR_BUTTON_CONSTANTS_H_

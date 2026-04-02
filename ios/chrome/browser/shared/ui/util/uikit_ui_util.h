@@ -143,6 +143,10 @@ bool IsLandscape(UIWindow* window);
 bool CanShowTabStrip(UITraitCollection* traitCollection);
 bool CanShowTabStrip(id<UITraitEnvironment> environment);
 
+// Whether it is iPhone landscape layout.
+bool IsIPhoneLandscape(id<UITraitEnvironment> environment);
+bool IsIPhoneLandscape(UITraitCollection* trait_collection);
+
 // Whether the `environment` has a compact horizontal size class.
 bool IsCompactWidth(id<UITraitEnvironment> environment);
 
