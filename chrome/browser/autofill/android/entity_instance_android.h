@@ -25,7 +25,8 @@ struct EntityInstanceAndroid {
   static jni_zero::ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
       const EntityInstanceAndroid& entity_instance,
-      bool requires_reauth_to_see);
+      bool requires_reauth_to_see,
+      bool is_masked_server_entity);
 
   static EntityInstanceAndroid FromJavaEntityInstance(
       JNIEnv* env,
@@ -40,7 +41,8 @@ struct EntityInstanceAndroid {
                         EntityInstance::RecordType record_type,
                         std::vector<AttributeInstanceAndroid> attribute_values,
                         EntityMetadataAndroid metadata,
-                        bool requires_reauth_to_see);
+                        bool requires_reauth_to_see,
+                        bool is_masked_server_entity);
   EntityInstanceAndroid(const EntityInstanceAndroid&);
   EntityInstanceAndroid& operator=(const EntityInstanceAndroid&) = default;
   EntityInstanceAndroid(EntityInstanceAndroid&&);
@@ -61,6 +63,7 @@ struct EntityInstanceAndroid {
   std::vector<AttributeInstanceAndroid> attribute_instances;
   EntityMetadataAndroid metadata;
   bool requires_reauth_to_see = false;
+  bool is_masked_server_entity = false;
 };
 
 }  // namespace autofill
@@ -78,7 +81,8 @@ inline ScopedJavaLocalRef<jobject> ToJniType<autofill::EntityInstanceAndroid>(
     JNIEnv* env,
     const autofill::EntityInstanceAndroid& entity_instance) {
   return autofill::EntityInstanceAndroid::Create(
-      env, entity_instance, entity_instance.requires_reauth_to_see);
+      env, entity_instance, entity_instance.requires_reauth_to_see,
+      entity_instance.is_masked_server_entity);
 }
 }  // namespace jni_zero
 

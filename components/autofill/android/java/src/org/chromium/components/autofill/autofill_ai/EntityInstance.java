@@ -30,6 +30,7 @@ public class EntityInstance {
     private final Map<AttributeType, AttributeInstance> mAttributes = new HashMap<>();
     private final EntityMetadata mMetadata;
     private final boolean mRequiresReauthToSee;
+    private final boolean mIsMaskedServerEntity;
 
     /** Builder for the {@link EntityInstance}. */
     public static final class Builder {
@@ -40,6 +41,7 @@ public class EntityInstance {
         private @Nullable LocalDate mModifiedDate;
         private @Nullable Integer mUseCount;
         private boolean mRequiresReauthToSee;
+        private boolean mIsMaskedServerEntity;
 
         public Builder(EntityType entityType) {
             mEntityType = Objects.requireNonNull(entityType, "Entity type cannot be null");
@@ -75,6 +77,11 @@ public class EntityInstance {
             return this;
         }
 
+        public Builder setIsMaskedServerEntity(boolean isMaskedServerEntity) {
+            mIsMaskedServerEntity = isMaskedServerEntity;
+            return this;
+        }
+
         public EntityInstance build() {
             if (mModifiedDate == null) {
                 throw new IllegalStateException("mModifiedDate cannot be null");
@@ -89,7 +96,13 @@ public class EntityInstance {
                             mModifiedDate.getYear(),
                             mUseCount);
             return new EntityInstance(
-                    mGUID, mRecordType, mEntityType, mAttributes, metadata, mRequiresReauthToSee);
+                    mGUID,
+                    mRecordType,
+                    mEntityType,
+                    mAttributes,
+                    metadata,
+                    mRequiresReauthToSee,
+                    mIsMaskedServerEntity);
         }
     }
 
@@ -101,7 +114,8 @@ public class EntityInstance {
             @JniType("std::vector<autofill::AttributeInstanceAndroid>")
                     List<AttributeInstance> attributes,
             @JniType("autofill::EntityMetadataAndroid") EntityMetadata metadata,
-            boolean requiresReauthToSee) {
+            boolean requiresReauthToSee,
+            boolean isMaskedServerEntity) {
         mGUID = guid;
         mRecordType = recordType;
         mEntityType = entityType;
@@ -112,6 +126,7 @@ public class EntityInstance {
             mAttributes.put(attribute.getAttributeType(), attribute);
         }
         mRequiresReauthToSee = requiresReauthToSee;
+        mIsMaskedServerEntity = isMaskedServerEntity;
     }
 
     @CalledByNative
@@ -170,5 +185,10 @@ public class EntityInstance {
     @CalledByNative
     public boolean requiresReauthToSee() {
         return mRequiresReauthToSee;
+    }
+
+    @CalledByNative
+    public boolean isMaskedServerEntity() {
+        return mIsMaskedServerEntity;
     }
 }
