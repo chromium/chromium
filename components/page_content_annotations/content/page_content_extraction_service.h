@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -53,6 +54,9 @@ class PageContentCacheHandler;
 class PageContentExtractionService : public KeyedService,
                                      public base::SupportsUserData {
  public:
+  using GetExtractedPageContentAndEligibilityCallback =
+      base::OnceCallback<void(std::optional<ExtractedPageContentResult>)>;
+
   class Observer : public base::CheckedObserver {
    public:
     // Invoked when `page_content` is extracted for `page`. The extraction is
@@ -82,7 +86,8 @@ class PageContentExtractionService : public KeyedService,
   bool ShouldEnablePageContentExtraction() const;
 
   // Returns the cached APC for `page` and whether it is eligible for
-  // server upload. Will return nullopt if not available.
+  // server upload. Will return nullopt if not available or not supported (e.g.
+  // for PDFs).
   // Virtual for testing.
   virtual std::optional<ExtractedPageContentResult>
   GetExtractedPageContentAndEligibilityForPage(content::Page& page);
@@ -92,6 +97,18 @@ class PageContentExtractionService : public KeyedService,
   // Virtual for testing.
   virtual std::optional<bool> GetServerUploadEligibilityForPage(
       content::Page& page);
+
+  // Extracts a new APC for `page` and computes its eligibility for server
+  // upload, and caches the new result. It will wait for the initial
+  // extraction to complete if there is one pending. For PDFs, it will return
+  // the cached copy instead. If the extraction request is cleared or reset
+  // (e.g. from a navigation or destruction), the callbacks will resolve with
+  // std::nullopt. Extraction is not supported for PDFs and will also result in
+  // nullopt.
+  // Virtual for testing.
+  virtual void RefreshExtractedPageContentAndEligibilityForPage(
+      content::Page& page,
+      GetExtractedPageContentAndEligibilityCallback callback);
 
   // Called when a tab is closed.
   void OnTabClosed(int64_t tab_id);

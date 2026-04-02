@@ -4,14 +4,21 @@
 
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/content_extraction/content/browser/inner_text.h"
 #include "components/history/core/browser/features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
@@ -28,6 +35,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
@@ -51,6 +59,19 @@ void RecordPdfPageCountMetrics(
       .Record(ukm::UkmRecorder::Get());
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+std::optional<ExtractedPageContentResult>
+RecordAndReturnOnDemandExtractionResult(
+    base::ElapsedTimer timer,
+    std::optional<ExtractedPageContentResult> result) {
+  base::UmaHistogramTimes(
+      "OptimizationGuide.PageContentExtraction.OnDemand.Latency",
+      timer.Elapsed());
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageContentExtraction.OnDemand.Success",
+      result.has_value());
+  return result;
+}
 
 }  // namespace
 
@@ -105,7 +126,9 @@ AnnotatedPageContentRequest::AnnotatedPageContentRequest(
           weak_factory_.GetWeakPtr()));
 }
 
-AnnotatedPageContentRequest::~AnnotatedPageContentRequest() = default;
+AnnotatedPageContentRequest::~AnnotatedPageContentRequest() {
+  ResolveAllCallbacksWith(std::nullopt);
+}
 
 void AnnotatedPageContentRequest::PrimaryPageChanged() {
   ResetForNewNavigation();
@@ -151,9 +174,8 @@ void AnnotatedPageContentRequest::DidFinishNavigation(
 
   ResetForNewNavigation();
 
-  // We don't have reliable load and FCP signals for same-document
-  // navigations. So we assume the content is ready as soon as the navigation
-  // commits.
+  // We don't have reliable load and FCP signals for same-document navigations.
+  // So we assume the content is ready as soon as the navigation commits.
   waiting_for_fcp_ = false;
   waiting_for_load_ = false;
   MaybeScheduleExtraction();
@@ -196,6 +218,8 @@ void AnnotatedPageContentRequest::ResetForNewNavigation() {
 
   cached_content_ = std::nullopt;
 
+  ResolveAllCallbacksWith(std::nullopt);
+
   // Drop pending extraction request for the previous page, if any.
   weak_factory_.InvalidateWeakPtrs();
 
@@ -212,19 +236,22 @@ void AnnotatedPageContentRequest::MaybeScheduleExtraction(bool on_hide) {
 
   content::GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&AnnotatedPageContentRequest::ExtractPageContent,
+      base::BindOnce(&AnnotatedPageContentRequest::OnExtractionTimerFired,
                      weak_factory_.GetWeakPtr()),
       delay_);
 }
 
-void AnnotatedPageContentRequest::ExtractPageContent() {
+void AnnotatedPageContentRequest::OnExtractionTimerFired() {
   // If there was a navigation in between the delay, skip extraction.
   if (lifecycle_ != Lifecycle::kScheduled) {
     return;
   }
 
-  lifecycle_ = Lifecycle::kRunning;
+  StartExtraction();
+}
 
+void AnnotatedPageContentRequest::StartExtraction() {
+  lifecycle_ = Lifecycle::kRunning;
   if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType) {
 #if BUILDFLAG(ENABLE_PDF)
     RequestPdfPageCount();
@@ -294,13 +321,17 @@ bool AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
     }
   }
 
+  if (lifecycle_ != Lifecycle::kNavigated) {
+    return false;
+  }
+
   bool trigger_on_load =
       triggering_mode ==
           features::PageContentExtractionTriggeringMode::kOnLoad ||
       triggering_mode ==
           features::PageContentExtractionTriggeringMode::kOnLoadAndHidden;
 
-  if (trigger_on_load && lifecycle_ == Lifecycle::kNavigated) {
+  if (trigger_on_load || !on_demand_callbacks_.empty()) {
     return true;
   }
 
@@ -313,6 +344,7 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
 
   if (!result.has_value() || !result.value() ||
       !result.value()->annotated_page_content_result.has_value()) {
+    ResolveAllCallbacksWith(std::nullopt);
     return;
   }
   base::Time extraction_time = base::Time::Now();
@@ -343,6 +375,8 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
   cached_content_ = ExtractedPageContentResult(
       std::move(ref_counted_content), extraction_time,
       is_eligible_for_server_upload, std::move(screenshot_data));
+
+  ResolveAllCallbacksWith(cached_content_);
 }
 
 void AnnotatedPageContentRequest::OnInnerTextReceived(
@@ -383,6 +417,11 @@ void AnnotatedPageContentRequest::OnPdfDocumentLoadComplete() {
             &RecordPdfPageCountMetrics,
             web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId()));
   }
+
+  // Requests for PDFs are synchronously rejected in
+  // RefreshExtractedPageContentAndEligibilityForPage. Therefore, they never get
+  // added to the on_demand_callbacks_ queue, so it will always be empty here.
+  CHECK(on_demand_callbacks_.empty());
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -400,6 +439,74 @@ std::optional<bool> AnnotatedPageContentRequest::GetServerUploadEligibility() {
   return cached_content_ ? std::make_optional(
                                cached_content_->is_eligible_for_server_upload)
                          : std::nullopt;
+}
+
+void AnnotatedPageContentRequest::
+    RefreshExtractedPageContentAndEligibilityForPage(
+        GetExtractedPageContentAndEligibilityCallback callback) {
+  bool is_pdf = web_contents_->GetContentsMimeType() == pdf::kPDFMimeType;
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageContentExtraction.OnDemand.IsPDF", is_pdf);
+
+  // PDFs have special handling where we only save a metric of their page count
+  // and do not extract an AnnotatedPageContent.
+  if (is_pdf) {
+    CHECK(!cached_content_.has_value());
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PageContentExtraction.OnDemand.StateAtRequest",
+      lifecycle_);
+
+  auto wrapped_callback =
+      base::BindOnce(&RecordAndReturnOnDemandExtractionResult,
+                     base::ElapsedTimer())
+          .Then(std::move(callback));
+  on_demand_callbacks_.push_back(std::move(wrapped_callback));
+
+  // This on-demand request must coordinate with the automatic extraction.
+  if (on_demand_callbacks_.size() == 1) {
+    switch (lifecycle_) {
+      case Lifecycle::kNavigated:
+        // The initial extraction has not been scheduled. Force it to be
+        // scheduled if the page is ready. This is a no-op unless the
+        // triggering mode is "on hidden" only.
+        // TODO(b/490161242): Consider shortening the delay based on how long
+        // ago the page navigated.
+        MaybeScheduleExtraction();
+        break;
+      case Lifecycle::kScheduled:
+      case Lifecycle::kRunning:
+        // Already scheduled or running, wait for it.
+        break;
+      case Lifecycle::kExtracted:
+        // The previous extraction is complete. Start a new one immediately.
+        StartExtraction();
+        break;
+    }
+  }
+}
+
+void AnnotatedPageContentRequest::ResolveAllCallbacksWith(
+    const std::optional<ExtractedPageContentResult>& result) {
+  if (on_demand_callbacks_.empty()) {
+    return;
+  }
+
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.PageContentExtraction.OnDemand."
+      "PendingCallbacksBatched",
+      on_demand_callbacks_.size());
+
+  auto callbacks = std::exchange(on_demand_callbacks_, {});
+  for (auto& callback : callbacks) {
+    // TODO(b/490161242): Consider wrapping the screenshot data (or the whole
+    // ExtractedPageContentResult) in a scoped_refptr to avoid copying for each
+    // of the callbacks.
+    std::move(callback).Run(result);
+  }
 }
 
 void AnnotatedPageContentRequest::OnVisibilityChanged(

@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -32,6 +34,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "url/gurl.h"
 
 namespace page_content_annotations {
 
@@ -492,6 +495,174 @@ TEST_F(AnnotatePageContentRequestTest,
   task_environment()->FastForwardBy(base::Seconds(1));
 
   EXPECT_EQ(extraction_service().extraction_count(), 2);
+}
+
+TEST_F(AnnotatePageContentRequestTest, RefreshAPC) {
+  SetTriggeringMode("on_load");
+
+  SimulatePageLoad();
+  WaitForExtraction();
+
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      refresh_future;
+  request_->RefreshExtractedPageContentAndEligibilityForPage(
+      refresh_future.GetCallback());
+
+  std::optional<ExtractedPageContentResult> result = refresh_future.Get();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(extraction_service().extraction_count(), 2);
+}
+
+TEST_F(AnnotatePageContentRequestTest, RefreshAPC_Batching) {
+  SetTriggeringMode("on_load");
+
+  SimulatePageLoad();
+  WaitForExtraction();
+
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+
+  // Create another request with an async fetcher to test batching.
+  FetchPageContextResultCallback saved_callback;
+  auto async_request = AnnotatedPageContentRequest::Create(
+      web_contents(), extraction_service(),
+      base::BindRepeating(
+          [](FetchPageContextResultCallback* saved, content::WebContents&,
+             const FetchPageContextOptions&,
+             std::unique_ptr<FetchPageProgressListener>,
+             FetchPageContextResultCallback callback) {
+            *saved = std::move(callback);
+          },
+          &saved_callback),
+      base::BindRepeating([](content::WebContents* web_contents) {
+        return std::make_optional(reinterpret_cast<int64_t>(web_contents));
+      }));
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>> future1;
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>> future2;
+
+  async_request->RefreshExtractedPageContentAndEligibilityForPage(
+      future1.GetCallback());
+  async_request->RefreshExtractedPageContentAndEligibilityForPage(
+      future2.GetCallback());
+
+  // The request is now running, but has not completed.
+  EXPECT_TRUE(saved_callback);
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+
+  // Complete the async call.
+  auto page_content =
+      std::make_unique<optimization_guide::AIPageContentResult>();
+  auto result = std::make_unique<FetchPageContextResult>();
+  result->annotated_page_content_result =
+      PageContentResultWithEndTime(std::move(*page_content));
+  std::move(saved_callback).Run(std::move(result));
+
+  EXPECT_TRUE(future1.Get().has_value());
+  EXPECT_TRUE(future2.Get().has_value());
+  EXPECT_EQ(extraction_service().extraction_count(), 2);
+}
+
+TEST_F(AnnotatePageContentRequestTest, RefreshAPC_PdfShortCircuit) {
+  SetTriggeringMode("on_load");
+
+  // Simulate a PDF navigation.
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://example.com/file.pdf"), web_contents());
+  simulator->SetContentsMimeType("application/pdf");
+  simulator->Commit();
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      refresh_future;
+  request_->RefreshExtractedPageContentAndEligibilityForPage(
+      refresh_future.GetCallback());
+
+  // PDF extraction is not supported.
+  EXPECT_FALSE(refresh_future.Get().has_value());
+}
+
+TEST_F(AnnotatePageContentRequestTest,
+       RefreshAPC_WhileInitialExtractionPending) {
+  SetTriggeringMode("on_load");
+
+  SimulatePageLoad();
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      refresh_future;
+  request_->RefreshExtractedPageContentAndEligibilityForPage(
+      refresh_future.GetCallback());
+
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+
+  WaitForExtraction();
+
+  EXPECT_TRUE(refresh_future.Get().has_value());
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+}
+
+TEST_F(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
+  // Create a request with a failing fetcher.
+  auto failing_request = AnnotatedPageContentRequest::Create(
+      web_contents(), extraction_service(),
+      base::BindRepeating([](content::WebContents&,
+                             const FetchPageContextOptions&,
+                             std::unique_ptr<FetchPageProgressListener>,
+                             FetchPageContextResultCallback callback) {
+        FetchPageContextErrorDetails error;
+        error.error_code = FetchPageContextError::kUnknown;
+        std::move(callback).Run(base::unexpected(error));
+      }),
+      base::BindRepeating([](content::WebContents* web_contents) {
+        return std::make_optional(reinterpret_cast<int64_t>(web_contents));
+      }));
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      refresh_future;
+  failing_request->RefreshExtractedPageContentAndEligibilityForPage(
+      refresh_future.GetCallback());
+
+  EXPECT_FALSE(refresh_future.Get().has_value());
+}
+
+TEST_F(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
+  // Create a request with an async fetcher (saves the callback).
+  FetchPageContextResultCallback saved_callback;
+  auto async_request = AnnotatedPageContentRequest::Create(
+      web_contents(), extraction_service(),
+      base::BindRepeating(
+          [](FetchPageContextResultCallback* saved, content::WebContents&,
+             const FetchPageContextOptions&,
+             std::unique_ptr<FetchPageProgressListener>,
+             FetchPageContextResultCallback callback) {
+            *saved = std::move(callback);
+          },
+          &saved_callback),
+      base::BindRepeating([](content::WebContents* web_contents) {
+        return std::make_optional(reinterpret_cast<int64_t>(web_contents));
+      }));
+
+  SimulatePageLoad();
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      refresh_future;
+  async_request->RefreshExtractedPageContentAndEligibilityForPage(
+      refresh_future.GetCallback());
+
+  // Extraction should be running now.
+  EXPECT_TRUE(saved_callback);
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+
+  // Simulate another navigation.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example_new.com/"), web_contents());
+  navigation->Start();
+  async_request->PrimaryPageChanged();
+  navigation->Commit();
+
+  // The callback should error out due to the navigation.
+  EXPECT_FALSE(refresh_future.Get().has_value());
 }
 
 }  // namespace page_content_annotations

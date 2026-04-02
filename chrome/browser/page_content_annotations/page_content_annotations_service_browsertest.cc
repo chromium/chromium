@@ -4,10 +4,12 @@
 
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/callback.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -56,6 +59,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1649,6 +1653,16 @@ class FakeExtractionServiceObserver
   void Wait() { EXPECT_TRUE(page_content_future_.Wait()); }
   base::test::TestFuture<optimization_guide::proto::AnnotatedPageContent>
       page_content_future_;
+
+  void Observe(PageContentExtractionService* service) {
+    scoped_observation_.Observe(service);
+  }
+  void Reset() { scoped_observation_.Reset(); }
+
+ private:
+  base::ScopedObservation<PageContentExtractionService,
+                          PageContentExtractionService::Observer>
+      scoped_observation_{this};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -1657,7 +1671,7 @@ IN_PROC_BROWSER_TEST_F(
   FakeExtractionServiceObserver observer;
   auto* service =
       PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
-  service->AddObserver(&observer);
+  observer.Observe(service);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1675,7 +1689,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(service->GetServerUploadEligibilityForPage(
       web_contents->GetPrimaryPage()));
 
-  service->RemoveObserver(&observer);
+  observer.Reset();
 
   GURL new_url(embedded_test_server()->GetURL(
       "a.test", "/optimization_guide/newurl.html"));
@@ -1721,7 +1735,7 @@ IN_PROC_BROWSER_TEST_F(
   FakeExtractionServiceObserver observer;
   auto* service =
       PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
-  service->AddObserver(&observer);
+  observer.Observe(service);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1735,6 +1749,255 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(page_content.mode(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+                       RefreshAPC) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  observer.Wait();
+  const optimization_guide::proto::AnnotatedPageContent& page_content =
+      observer.page_content_future_.Get();
+  EXPECT_TRUE(page_content.IsInitialized());
+  EXPECT_TRUE(page_content.has_main_frame_data());
+  std::string initial_content = page_content.main_frame_data().title();
+
+  observer.page_content_future_.Clear();
+
+  // Modify the page content via JS to verify the on-demand extraction fetches
+  // the new content.
+  ASSERT_TRUE(content::ExecJs(web_contents, "document.title = 'New Title';"));
+
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      refresh_future;
+  service->RefreshExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage(), refresh_future.GetCallback());
+
+  std::optional<page_content_annotations::ExtractedPageContentResult> result =
+      refresh_future.Get();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result->page_content->data.has_main_frame_data());
+  EXPECT_NE(initial_content,
+            result->page_content->data.main_frame_data().title());
+  EXPECT_EQ("New Title", result->page_content->data.main_frame_data().title());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+                       RefreshAPC_QueuedCallbacks) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  observer.Wait();
+  observer.page_content_future_.Clear();
+
+  ASSERT_TRUE(content::ExecJs(web_contents, "document.title = 'New Title';"));
+
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      refresh_future_1;
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      refresh_future_2;
+
+  // Queue two requests concurrently before either finishes.
+  service->RefreshExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage(), refresh_future_1.GetCallback());
+  service->RefreshExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage(), refresh_future_2.GetCallback());
+
+  std::optional<page_content_annotations::ExtractedPageContentResult> result_1 =
+      refresh_future_1.Get();
+  EXPECT_TRUE(result_1.has_value());
+  EXPECT_EQ("New Title",
+            result_1->page_content->data.main_frame_data().title());
+
+  std::optional<page_content_annotations::ExtractedPageContentResult> result_2 =
+      refresh_future_2.Get();
+  EXPECT_TRUE(result_2.has_value());
+  EXPECT_EQ("New Title",
+            result_2->page_content->data.main_frame_data().title());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+                       RefreshAPC_WebContentsClosed) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  observer.Wait();
+  observer.page_content_future_.Clear();
+
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      refresh_future;
+  service->RefreshExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage(), refresh_future.GetCallback());
+
+  // Destroy the WebContents, which should cancel pending extractions and
+  // resolve the callback with nullopt.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
+
+  std::optional<page_content_annotations::ExtractedPageContentResult> result =
+      refresh_future.Get();
+  EXPECT_FALSE(result.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+                       RefreshAPC_PdfShortCircuit) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test", "/pdf/test.pdf"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      refresh_future;
+  service->RefreshExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage(), refresh_future.GetCallback());
+
+  std::optional<page_content_annotations::ExtractedPageContentResult> result =
+      refresh_future.Get();
+  EXPECT_FALSE(result.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+                       RefreshAPC_WhileInitialExtractionPending) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/hello.html"));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      refresh_future;
+  service->RefreshExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage(), refresh_future.GetCallback());
+
+  observer.Wait();
+
+  std::optional<page_content_annotations::ExtractedPageContentResult> result =
+      refresh_future.Get();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result->page_content->data.has_main_frame_data());
+  EXPECT_EQ(observer.page_content_future_.Get().main_frame_data().title(),
+            result->page_content->data.main_frame_data().title());
+}
+
+class PageContentAnnotationsServiceContentExtractionTestLongCaptureDelay
+    : public PageContentAnnotationsServiceContentExtractionTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAnnotatedPageContentExtraction, {{"capture_delay", "120s"}});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceContentExtractionTestLongCaptureDelay,
+    RefreshAPC_MultipleNavigations_PendingCallbackResolvedWithNullopt) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url1(embedded_test_server()->GetURL("a.test",
+                                           "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url1, 1);
+
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      refresh_future;
+  service->RefreshExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage(), refresh_future.GetCallback());
+
+  // Due to the long capture delay, the second navigation should finish before
+  // the first extraction occurs, resulting in a failure.
+  GURL url2(embedded_test_server()->GetURL("b.test",
+                                           "/optimization_guide/hello.html"));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url2));
+
+  std::optional<page_content_annotations::ExtractedPageContentResult> result =
+      refresh_future.Get();
+  EXPECT_FALSE(result.has_value());
+}
+
+class PageContentAnnotationsServiceContentExtractionTestHidden
+    : public PageContentAnnotationsServiceContentExtractionTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAnnotatedPageContentExtraction,
+        {{"capture_delay", "0s"}, {"triggering_mode", "on_hidden"}});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTestHidden,
+                       RefreshAPC_WithOnHiddenTrigger) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  // The extraction won't happen automatically since we haven't hidden the tab.
+  base::test::TestFuture<
+      std::optional<page_content_annotations::ExtractedPageContentResult>>
+      refresh_future;
+
+  // This should force the extraction to be scheduled immediately despite the
+  // tab being visible.
+  service->RefreshExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage(), refresh_future.GetCallback());
+
+  std::optional<page_content_annotations::ExtractedPageContentResult> result =
+      refresh_future.Get();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result->page_content->data.has_main_frame_data());
+  EXPECT_EQ("Test Page", result->page_content->data.main_frame_data().title());
 }
 
 }  // namespace page_content_annotations
