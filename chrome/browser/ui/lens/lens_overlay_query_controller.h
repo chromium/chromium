@@ -199,7 +199,8 @@ class LensOverlayQueryController {
       lens::mojom::SemanticEvent event);
 
   bool IsPageContentUploadInProgress() const {
-    return page_content_endpoint_fetcher_.get() != nullptr;
+    return page_content_request_in_progress_ ||
+           page_content_endpoint_fetcher_.get() != nullptr;
   }
 
   // Returns whether the query controller is off.

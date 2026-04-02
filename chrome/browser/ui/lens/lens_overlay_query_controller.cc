@@ -297,7 +297,6 @@ lens::LensOverlayUploadChunkRequest CreateUploadChunkRequest(
 // Returns the lens::Payload to be sent after uploading chunked data using the
 // repeated Content field instead of the deprecated payload fields.
 lens::Payload CreatePageContentPayloadForChunks(
-    base::span<const lens::PageContent> page_content,
     lens::MimeType primary_content_type,
     GURL page_url,
     std::optional<std::string> page_title,
@@ -328,7 +327,7 @@ lens::Payload CreatePageContentPayloadForChunks(
 // Returns the lens::Payload using the repeated Content field instead of the
 // deprecated payload fields.
 lens::Payload CreatePageContentPayload(
-    base::span<const lens::PageContent> page_contents,
+    std::vector<lens::PageContent> page_contents,
     GURL page_url,
     std::optional<std::string> page_title) {
   lens::Payload payload;
@@ -505,6 +504,7 @@ void LensOverlayQueryController::ResetPageContentData() {
   page_url_ = GURL();
   page_title_ = std::nullopt;
   partial_content_ = base::span<const std::u16string>();
+  page_content_request_in_progress_ = false;
 }
 
 void LensOverlayQueryController::SendUpdatedPageContent(
@@ -1270,13 +1270,13 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
     return;
   }
 
+  compression_task_tracker_->TryCancelAll();
+
   if (underlying_page_contents_.empty() ||
       underlying_page_contents_.front().bytes_.empty()) {
     //  No need to send the request without underlying content bytes.
     return;
   }
-
-  compression_task_tracker_->TryCancelAll();
   page_contents_request_start_time_ = base::TimeTicks::Now();
   page_content_request_in_progress_ = true;
   chunk_upload_in_progress_ = false;
@@ -1318,9 +1318,11 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   } else {
     // Post CreatePageContentPayload to a task off the main thread so
     // compression does not throttle the main thread.
+    std::vector<lens::PageContent> contents_copy(
+        underlying_page_contents_.begin(), underlying_page_contents_.end());
     compression_task_tracker_->PostTaskAndReplyWithResult(
         compression_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&CreatePageContentPayload, underlying_page_contents_,
+        base::BindOnce(&CreatePageContentPayload, std::move(contents_copy),
                        page_url_, page_title_),
         base::BindOnce(
             &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
@@ -1416,9 +1418,8 @@ void LensOverlayQueryController::UploadChunkResponseHandler(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&CreatePageContentPayloadForChunks,
-                       underlying_page_contents_, primary_content_type_,
-                       page_url_, page_title_, total_chunks,
-                       retrying_page_content_upload_),
+                       primary_content_type_, page_url_, page_title_,
+                       total_chunks, retrying_page_content_upload_),
         base::BindOnce(
             &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
             weak_ptr_factory_.GetWeakPtr(), request_id));
