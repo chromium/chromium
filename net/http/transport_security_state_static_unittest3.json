@@ -14,16 +14,9 @@
       "mode": "force-https",
       "include_subdomains": true
     }, {
-      "name": "hpkp.example.com",
-      "policy": "test"
-    }, {
       "name": "example.org",
       "policy": "test",
       "mode": "force-https"
-    }, {
-      "name": "badssl.com",
-      "policy": "test",
-      "include_subdomains": true
     }, {
       "name": "mix.badssl.com",
       "policy": "test",

@@ -13,9 +13,6 @@
       "policy": "test",
       "mode": "force-https"
     }, {
-      "name": "hpkp.example.com",
-      "policy": "test"
-    }, {
       "name": "mix.example.com",
       "policy": "test",
       "mode": "force-https",

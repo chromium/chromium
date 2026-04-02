@@ -859,9 +859,19 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultipleMix) {
 
   sts_state = TransportSecurityState::STSState();
   pkp_state = TransportSecurityState::PKPState();
+  // example.com is in the HSTS json with include_subdirs=true, while
+  // hpkp.example.com (a subdomain of example.com) only occurs in the
+  // pins.json.
+  // In the old implementation where HSTS and PKP were mixed in a single data
+  // structure, this would have the unintuitive side effect that HSTS would be
+  // disabled for hpkp.example.com. Now that they are separated, a PKP entry
+  // has no effect on HSTS enforcement for conflicting domain names, or
+  // vice-versa.
   EXPECT_TRUE(
       GetStaticDomainState(&state, "hpkp.example.com", &sts_state, &pkp_state));
-  EXPECT_TRUE(sts_state == TransportSecurityState::STSState());
+  EXPECT_TRUE(sts_state.include_subdomains);
+  EXPECT_EQ(TransportSecurityState::STSState::MODE_FORCE_HTTPS,
+            sts_state.upgrade_mode);
   EXPECT_TRUE(pkp_state.include_subdomains);
   EXPECT_THAT(pkp_state.spki_hashes,
               testing::UnorderedElementsAre(GetSampleSPKIHash(0x1)));

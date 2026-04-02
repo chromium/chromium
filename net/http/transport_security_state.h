@@ -477,6 +477,7 @@ class NET_EXPORT TransportSecurityState {
   // the map keys instead. In addition, |upgrade_mode| in the STSState is never
   // MODE_DEFAULT and |HasPublicKeyPins| in the PKPState always returns true.
   STSStateMap enabled_sts_hosts_;
+  // This is the dynamic PKP data set by AddHPKP:
   PKPStateMap enabled_pkp_hosts_;
 
   raw_ptr<Delegate> delegate_ = nullptr;
@@ -493,6 +494,7 @@ class NET_EXPORT TransportSecurityState {
 
   bool ct_emergency_disable_ = false;
 
+  // These 3 members are for the component-updated "static" PKP data:
   // The values in host_pins_ maps are references to PinSet objects in the
   // pinsets_ vector.
   std::optional<

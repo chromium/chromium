@@ -24,6 +24,7 @@
 #include "net/tools/transport_security_state_generator/preloaded_state_generator.h"
 #include "net/tools/transport_security_state_generator/transport_security_state_entry.h"
 
+using net::transport_security_state::PinEntries;
 using net::transport_security_state::Pinsets;
 using net::transport_security_state::PreloadedStateGenerator;
 using net::transport_security_state::TransportSecurityStateEntries;
@@ -126,10 +127,24 @@ bool CheckDuplicateEntries(const TransportSecurityStateEntries& entries) {
   return !has_duplicates;
 }
 
+// Checks if there are two or more entries for the same hostname.
+bool CheckDuplicatePinEntries(const PinEntries& entries) {
+  std::set<std::string_view> seen_entries;
+  bool has_duplicates = false;
+  for (const auto& entry : entries) {
+    if (seen_entries.find(entry->hostname) != seen_entries.cend()) {
+      LOG(ERROR) << "Duplicate pin entry for " << entry->hostname;
+      has_duplicates = true;
+    }
+    seen_entries.emplace(entry->hostname);
+  }
+  return !has_duplicates;
+}
+
 // Checks for entries which have no effect.
 bool CheckNoopEntries(const TransportSecurityStateEntries& entries) {
   for (const auto& entry : entries) {
-    if (!entry->force_https && entry->pinset.empty()) {
+    if (!entry->force_https) {
       if (entry->hostname == "learn.doubleclick.net") {
         // This entry is deliberately used as an exclusion.
         continue;
@@ -147,39 +162,55 @@ bool IsLowercaseAlphanumeric(char c) {
   return ((c >= 'a') && (c <= 'z')) || ((c >= '0') && (c <= '9'));
 }
 
+bool CheckHostname(std::string_view hostname) {
+  bool in_component = false;
+  bool most_recent_component_started_alphanumeric = false;
+  for (const char& c : hostname) {
+    if (!in_component) {
+      most_recent_component_started_alphanumeric = IsLowercaseAlphanumeric(c);
+      if (!most_recent_component_started_alphanumeric && (c != '-') &&
+          (c != '_')) {
+        LOG(ERROR) << hostname << " is not in canonicalized form";
+        return false;
+      }
+      in_component = true;
+    } else if (c == '.') {
+      in_component = false;
+    } else if (!IsLowercaseAlphanumeric(c) && (c != '-') && (c != '_')) {
+      LOG(ERROR) << hostname << " is not in canonicalized form";
+      return false;
+    }
+  }
+
+  if (!most_recent_component_started_alphanumeric) {
+    LOG(ERROR) << "The last label of " << hostname
+               << " must start with a lowercase alphanumeric character";
+    return false;
+  }
+
+  if (!in_component) {
+    LOG(ERROR) << hostname << " must not end with a \".\"";
+    return false;
+  }
+
+  return true;
+}
+
 // Checks the well-formedness of the hostnames. All hostnames should be in their
 // canonicalized form because they will be matched against canonicalized input.
 bool CheckHostnames(const TransportSecurityStateEntries& entries) {
   for (const auto& entry : entries) {
-    const std::string& hostname = entry->hostname;
-
-    bool in_component = false;
-    bool most_recent_component_started_alphanumeric = false;
-    for (const char& c : hostname) {
-      if (!in_component) {
-        most_recent_component_started_alphanumeric = IsLowercaseAlphanumeric(c);
-        if (!most_recent_component_started_alphanumeric && (c != '-') &&
-            (c != '_')) {
-          LOG(ERROR) << hostname << " is not in canonicalized form";
-          return false;
-        }
-        in_component = true;
-      } else if (c == '.') {
-        in_component = false;
-      } else if (!IsLowercaseAlphanumeric(c) && (c != '-') && (c != '_')) {
-        LOG(ERROR) << hostname << " is not in canonicalized form";
-        return false;
-      }
-    }
-
-    if (!most_recent_component_started_alphanumeric) {
-      LOG(ERROR) << "The last label of " << hostname
-                 << " must start with a lowercase alphanumeric character";
+    if (!CheckHostname(entry->hostname)) {
       return false;
     }
+  }
 
-    if (!in_component) {
-      LOG(ERROR) << hostname << " must not end with a \".\"";
+  return true;
+}
+
+bool CheckPinHostnames(const PinEntries& entries) {
+  for (const auto& entry : entries) {
+    if (!CheckHostname(entry->hostname)) {
       return false;
     }
   }
@@ -246,18 +277,21 @@ int main(int argc, char* argv[]) {
   }
 
   TransportSecurityStateEntries entries;
+  PinEntries pin_entries;
   Pinsets pinsets;
   base::Time timestamp;
 
   if (!ParseCertificatesFile(certs_input, &pinsets, &timestamp) ||
-      !ParseJSON(hsts_json_input, pins_json_input, &entries, &pinsets)) {
+      !ParseJSON(hsts_json_input, pins_json_input, &entries, &pin_entries,
+                 &pinsets)) {
     LOG(ERROR) << "Error while parsing the input files.";
     return 1;
   }
 
   if (!CheckDuplicateEntries(entries) || !CheckNoopEntries(entries) ||
+      !CheckDuplicatePinEntries(pin_entries) ||
       !CheckForDuplicatePins(pinsets) || !CheckCertificatesInPinsets(pinsets) ||
-      !CheckHostnames(entries)) {
+      !CheckHostnames(entries) || !CheckPinHostnames(pin_entries)) {
     LOG(ERROR) << "Checks failed. Aborting.";
     return 1;
   }
@@ -277,7 +311,8 @@ int main(int argc, char* argv[]) {
 
   std::string output;
   PreloadedStateGenerator generator;
-  output = generator.Generate(preload_template, entries, pinsets, timestamp);
+  output = generator.Generate(preload_template, entries, pin_entries, pinsets,
+                              timestamp);
   if (output.empty()) {
     LOG(ERROR) << "Trie generation failed.";
     return 1;

@@ -13,8 +13,7 @@ namespace {
 // Such entries, when written, can be represented more compactly, and thus
 // reduce the overall size of the trie.
 bool IsSimpleEntry(const TransportSecurityStateEntry* entry) {
-  return entry->force_https && entry->include_subdomains &&
-         entry->pinset.empty();
+  return entry->force_https && entry->include_subdomains;
 }
 
 }  // namespace
@@ -23,9 +22,8 @@ TransportSecurityStateEntry::TransportSecurityStateEntry() = default;
 TransportSecurityStateEntry::~TransportSecurityStateEntry() = default;
 
 TransportSecurityStateTrieEntry::TransportSecurityStateTrieEntry(
-    const NameIDMap& pinsets_map,
     TransportSecurityStateEntry* entry)
-    : pinsets_map_(pinsets_map), entry_(entry) {}
+    : entry_(entry) {}
 
 TransportSecurityStateTrieEntry::~TransportSecurityStateTrieEntry() = default;
 
@@ -53,32 +51,6 @@ bool TransportSecurityStateTrieEntry::WriteEntry(
     force_https = 1;
   }
   writer->WriteBit(force_https);
-
-  if (entry_->pinset.size()) {
-    writer->WriteBit(1);
-
-    auto pin_id_it = pinsets_map_.find(entry_->pinset);
-    if (pin_id_it == pinsets_map_.cend()) {
-      return false;
-    }
-
-    const uint8_t& pin_id = pin_id_it->second;
-    if (pin_id > 15) {
-      return false;
-    }
-
-    writer->WriteBits(pin_id, 4);
-
-    if (!entry_->include_subdomains) {
-      uint8_t include_subdomains_for_pinning = 0;
-      if (entry_->hpkp_include_subdomains) {
-        include_subdomains_for_pinning = 1;
-      }
-      writer->WriteBit(include_subdomains_for_pinning);
-    }
-  } else {
-    writer->WriteBit(0);
-  }
 
   return true;
 }

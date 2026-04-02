@@ -33,6 +33,14 @@ std::string FormatRejectedKeyName(const std::string& name) {
   return "k" + name + "RejectedCerts";
 }
 
+std::string FormatPinsetName(const std::string& name) {
+  return "k" + name + "Pinset";
+}
+
+std::string FormatBool(bool value) {
+  return value ? "true" : "false";
+}
+
 // Replaces the first occurrence of "[[" + name + "]]" in |*tpl| with
 // |value|.
 bool ReplaceTag(const std::string& name,
@@ -121,23 +129,27 @@ PreloadedStateGenerator::PreloadedStateGenerator() = default;
 
 PreloadedStateGenerator::~PreloadedStateGenerator() = default;
 
+// TODO(crbug.com/497882860): split this into separate functions for HSTS and
+// PKP, and put the PKP data in a separate output file.
 std::string PreloadedStateGenerator::Generate(
     const std::string& preload_template,
     const TransportSecurityStateEntries& entries,
+    const PinEntries& pin_entries,
     const Pinsets& pinsets,
     base::Time timestamp) {
   std::string output = preload_template;
 
   ProcessSPKIHashes(pinsets, &output);
 
-  NameIDMap pinsets_map;
-  ProcessPinsets(pinsets, &pinsets_map, &output);
+  ProcessPinsets(pinsets, &output);
+
+  ProcessPinEntries(pin_entries, &output);
 
   std::vector<std::unique_ptr<TransportSecurityStateTrieEntry>> trie_entries;
   std::vector<huffman_trie::TrieEntry*> raw_trie_entries;
   for (const auto& entry : entries) {
-    auto trie_entry = std::make_unique<TransportSecurityStateTrieEntry>(
-        pinsets_map, entry.get());
+    auto trie_entry =
+        std::make_unique<TransportSecurityStateTrieEntry>(entry.get());
     raw_trie_entries.push_back(trie_entry.get());
     trie_entries.push_back(std::move(trie_entry));
   }
@@ -216,11 +228,9 @@ void PreloadedStateGenerator::ProcessSPKIHashes(const Pinsets& pinset,
 }
 
 void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
-                                             NameIDMap* pinset_map,
                                              std::string* tpl) {
   std::string certs_output;
-  std::string pinsets_output = "{";
-  pinsets_output.append(kNewLine);
+  std::string pinsets_output;
 
   const PinsetMap& pinsets = pinset.pinsets();
   for (const auto& current : pinsets) {
@@ -244,22 +254,41 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
       certs_output.append(kNewLine);
     }
 
-    pinsets_output.append(kIndent);
-    pinsets_output.append(kIndent);
-    pinsets_output.append("{" + accepted_pins_names + ", " +
-                          rejected_pins_names + "},");
+    pinsets_output.append(
+        "static constexpr net::TransportSecurityStateSource::Pinset " +
+        FormatPinsetName(uppercased_name) + " = {" + accepted_pins_names +
+        ", " + rejected_pins_names + "};");
     pinsets_output.append(kNewLine);
-
-    pinset_map->insert(NameIDPair(pinset_ptr->name(),
-                                  static_cast<uint32_t>(pinset_map->size())));
   }
 
-  pinsets_output.append("}");
 
   base::TrimString(certs_output, kNewLine, &certs_output);
 
   ReplaceTag("ACCEPTABLE_CERTS", certs_output, tpl);
   ReplaceTag("PINSETS", pinsets_output, tpl);
+}
+
+void PreloadedStateGenerator::ProcessPinEntries(const PinEntries& pin_entries,
+                                                std::string* tpl) {
+  std::string output =
+      "base::MakeFixedFlatMap<std::string_view, "
+      "net::TransportSecurityStateSource::HostPin>({";
+  output.append(kNewLine);
+
+  for (const auto& pin_entry : pin_entries) {
+    output.append(kIndent);
+    output.append("{\"" + pin_entry->hostname + "\", ");
+    std::string uppercased_name = pin_entry->pinset;
+    uppercased_name[0] = base::ToUpperASCII(uppercased_name[0]);
+    output.append("{&" + FormatPinsetName(uppercased_name) + ", " +
+                  FormatBool(pin_entry->include_subdomains) + "}");
+    output.append("},");
+    output.append(kNewLine);
+  }
+
+  output.append("})");
+
+  ReplaceTag("HOST_PINS", output, tpl);
 }
 
 }  // namespace net::transport_security_state

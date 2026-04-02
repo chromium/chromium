@@ -35,6 +35,7 @@ bool ParseCertificatesFile(std::string_view certs_input,
 bool ParseJSON(std::string_view hsts_json,
                std::string_view pins_json,
                TransportSecurityStateEntries* entries,
+               PinEntries* pin_entries,
                Pinsets* pinsets);
 
 }  // namespace net::transport_security_state

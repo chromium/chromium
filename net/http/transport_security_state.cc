@@ -102,14 +102,11 @@ std::vector<uint8_t> CanonicalizeHost(std::string_view host) {
 // PreloadResult is the result of resolving a specific name in the preloaded
 // data.
 struct PreloadResult {
-  uint32_t pinset_id = 0;
   // hostname_offset contains the number of bytes from the start of the given
   // hostname where the name of the matching entry starts.
   size_t hostname_offset = 0;
   bool sts_include_subdomains = false;
-  bool pkp_include_subdomains = false;
   bool force_https = false;
-  bool has_pins = false;
 };
 
 using extras::PreloadDecoder;
@@ -141,18 +138,8 @@ class HSTSPreloadDecoder : public extras::PreloadDecoder {
       tmp.sts_include_subdomains = true;
     } else {
       if (!reader->Next(&tmp.sts_include_subdomains) ||
-          !reader->Next(&tmp.force_https) || !reader->Next(&tmp.has_pins)) {
+          !reader->Next(&tmp.force_https)) {
         return false;
-      }
-
-      tmp.pkp_include_subdomains = tmp.sts_include_subdomains;
-
-      if (tmp.has_pins) {
-        if (!reader->Read(4, &tmp.pinset_id) ||
-            (!tmp.sts_include_subdomains &&
-             !reader->Next(&tmp.pkp_include_subdomains))) {
-          return false;
-        }
       }
     }
 
@@ -160,7 +147,7 @@ class HSTSPreloadDecoder : public extras::PreloadDecoder {
 
     if (current_search_offset == 0 ||
         search[current_search_offset - 1] == '.') {
-      *out_found = tmp.sts_include_subdomains || tmp.pkp_include_subdomains;
+      *out_found = tmp.sts_include_subdomains;
 
       result_ = tmp;
 
@@ -653,22 +640,23 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
     return false;
   }
 
-  PreloadResult result;
-  if (host_pins_.has_value()) {
-    // Ensure that |host| is a valid hostname before processing.
-    if (CanonicalizeHost(host).empty()) {
-      return false;
-    }
-    // Normalize any trailing '.' used for DNS suffix searches.
-    size_t trailing_dot_found = host.find_last_not_of('.');
-    if (trailing_dot_found == std::string::npos) {
-      // Hostname is either empty or all dots
-      return false;
-    }
-    host.remove_suffix(host.size() - trailing_dot_found - 1);
-    std::string normalized_host = base::ToLowerASCII(host);
+  // Ensure that |host| is a valid hostname before processing.
+  if (CanonicalizeHost(host).empty()) {
+    return false;
+  }
+  // Normalize any trailing '.' used for DNS suffix searches.
+  size_t trailing_dot_found = host.find_last_not_of('.');
+  if (trailing_dot_found == std::string::npos) {
+    // Hostname is either empty or all dots
+    return false;
+  }
+  host.remove_suffix(host.size() - trailing_dot_found - 1);
+  std::string normalized_host = base::ToLowerASCII(host);
 
-    std::string_view search_hostname = normalized_host;
+  std::string_view search_hostname = normalized_host;
+
+  // Use component updater supplied PKP data if available:
+  if (host_pins_.has_value()) {
     while (true) {
       auto iter = host_pins_->find(search_hostname);
       // Only consider this a match if either include_subdomains is set, or
@@ -697,28 +685,43 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
       // subdomains.
       search_hostname = search_hostname.substr(dot_pos + 1);
     }
-  } else if (DecodeHSTSPreload(host, &result) && result.has_pins) {
-    if (result.pinset_id >= g_hsts_source->pinsets.size()) {
-      return false;
-    }
-
-    pkp_result->domain = host.substr(result.hostname_offset);
-    pkp_result->include_subdomains = result.pkp_include_subdomains;
-    pkp_result->last_observed = base::GetBuildTime();
-
-    const TransportSecurityStateSource::Pinset* pinset =
-        &g_hsts_source->pinsets[result.pinset_id];
-
-    for (const SHA256HashValue* hash : pinset->accepted_pins) {
-      pkp_result->spki_hashes.insert(*hash);
-    }
-    for (const SHA256HashValue* hash : pinset->rejected_pins) {
-      pkp_result->bad_spki_hashes.insert(*hash);
-    }
-    return true;
   }
 
-  return false;
+  // Otherwise, use the compiled-in PKP data:
+  // TODO(crbug.com/497882860): this loop duplicates some (but not exactly)
+  // logic from the above while loop but operating on a different type. Think
+  // about if there is a better way to structure this.
+  while (true) {
+    const TransportSecurityStateSource::HostPin* pin =
+        g_hsts_source->find_host_pin(search_hostname);
+    // Only consider this a match if either include_subdomains is set, or
+    // this is an exact match of the full hostname.
+    if (pin &&
+        (pin->include_subdomains || search_hostname == normalized_host)) {
+      pkp_result->domain = std::string(search_hostname);
+      // TODO(crbug.com/497882860): using GetBuildTime() here matches the
+      // pre-existing behavior of this code, but shouldn't this be
+      // kPinsListTimestamp? Don't know if anything actually cares.
+      pkp_result->last_observed = base::GetBuildTime();
+      pkp_result->include_subdomains = pin->include_subdomains;
+      for (const SHA256HashValue* hash : pin->pinset->accepted_pins) {
+        pkp_result->spki_hashes.insert(*hash);
+      }
+      for (const SHA256HashValue* hash : pin->pinset->rejected_pins) {
+        pkp_result->bad_spki_hashes.insert(*hash);
+      }
+      return true;
+    }
+    auto dot_pos = search_hostname.find(".");
+    if (dot_pos == std::string::npos) {
+      // If this was not a match, and there are no more dots in the string,
+      // there are no more domains to try.
+      return false;
+    }
+    // Try again in case this is a subdomain of a pinned domain that includes
+    // subdomains.
+    search_hostname = search_hostname.substr(dot_pos + 1);
+  }
 }
 
 bool TransportSecurityState::GetSTSState(std::string_view host,

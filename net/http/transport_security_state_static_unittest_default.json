@@ -14,14 +14,6 @@
     { "name": "include-subdomains-hsts-preloaded.test", "policy": "test", "mode": "force-https", "include_subdomains": true },
     { "name": "example", "policy": "test", "mode": "force-https", "include_subdomains": true },
 
-    { "name": "no-rejected-pins-pkp.preloaded.test", "policy": "test" },
-
-    { "name": "hsts-hpkp-preloaded.test", "policy": "test", "mode": "force-https" },
-
-    { "name": "www.example.org", "policy": "test" },
-    { "name": "test.example.org", "policy": "test" },
-    { "name": "mail.example.org", "policy": "test" },
-    { "name": "mail.example.com", "policy": "test" },
-    { "name": "example.test", "policy": "test" }
+    { "name": "hsts-hpkp-preloaded.test", "policy": "test", "mode": "force-https" }
   ]
 }

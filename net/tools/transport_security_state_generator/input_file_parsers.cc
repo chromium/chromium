@@ -307,9 +307,12 @@ bool ParseCertificatesFile(std::string_view certs_input,
   return true;
 }
 
+// TODO(crbug.com/497882860): split this into separate functions for HSTS and
+// PKP.
 bool ParseJSON(std::string_view hsts_json,
                std::string_view pins_json,
                TransportSecurityStateEntries* entries,
+               PinEntries* pin_entries,
                Pinsets* pinsets) {
   static constexpr auto valid_hsts_keys =
       base::MakeFixedFlatSet<std::string_view>({
@@ -353,7 +356,6 @@ bool ParseJSON(std::string_view hsts_json,
     LOG(ERROR) << "Could not parse the entries in the input pins JSON";
     return false;
   }
-  std::map<std::string, std::pair<std::string, bool>> pins_map;
   for (size_t i = 0; i < pinning_entries_list->size(); ++i) {
     const base::DictValue* parsed = (*pinning_entries_list)[i].GetIfDict();
     if (!parsed) {
@@ -389,15 +391,9 @@ bool ParseJSON(std::string_view hsts_json,
       return false;
     }
 
-    if (pins_map.find(*maybe_hostname) != pins_map.end()) {
-      LOG(ERROR) << *maybe_hostname
-                 << " has duplicate entries in the input pins JSON";
-      return false;
-    }
-
-    pins_map[*maybe_hostname] =
-        std::pair(*maybe_pinset,
-                  parsed->FindBool(kIncludeSubdomainsJSONKey).value_or(false));
+    pin_entries->push_back(std::make_unique<PinEntry>(
+        *maybe_hostname, *maybe_pinset,
+        parsed->FindBool(kIncludeSubdomainsJSONKey).value_or(false)));
   }
 
   const base::ListValue* preload_entries_list = hsts_dict->FindList("entries");
@@ -457,24 +453,6 @@ bool ParseJSON(std::string_view hsts_json,
     entry->include_subdomains =
         parsed->FindBool(kIncludeSubdomainsJSONKey).value_or(false);
 
-    auto pins_it = pins_map.find(entry->hostname);
-    if (pins_it != pins_map.end()) {
-      entry->pinset = pins_it->second.first;
-      entry->hpkp_include_subdomains = pins_it->second.second;
-      pins_map.erase(entry->hostname);
-    }
-
-    entries->push_back(std::move(entry));
-  }
-
-  // Any remaining entries in pins_map have pinning information, but are not
-  // HSTS preloaded.
-  for (auto const& pins_entry : pins_map) {
-    auto entry = std::make_unique<TransportSecurityStateEntry>();
-    entry->hostname = pins_entry.first;
-    entry->force_https = false;
-    entry->pinset = pins_entry.second.first;
-    entry->hpkp_include_subdomains = pins_entry.second.second;
     entries->push_back(std::move(entry));
   }
 

@@ -21,7 +21,10 @@ constexpr base::Time kPinsListTimestamp = base::Time::FromTimeT([[PINS_LIST_TIME
 
 [[ACCEPTABLE_CERTS]]
 
-static constexpr net::TransportSecurityStateSource::Pinset kPinsets[] = [[PINSETS]];
+[[PINSETS]]
+
+// Map from hostname to TransportSecurityStateSource::HostPin.
+static constexpr auto kHostPins = [[HOST_PINS]];
 
 // kHSTSHuffmanTree describes a Huffman tree. The nodes of the tree are pairs
 // of uint8s. The last node in the array is the root of the tree. Each pair is
@@ -40,5 +43,5 @@ static constexpr net::TransportSecurityStateSource kHSTSSource = {
   kPreloadedHSTSData,
   kPreloadedHSTSBits,
   kHSTSRootPosition,
-  kPinsets,
+  [](std::string_view hostname) { return base::FindOrNull(kHostPins, hostname); },
 };
