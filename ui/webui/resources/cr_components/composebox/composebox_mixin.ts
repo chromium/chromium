@@ -201,6 +201,18 @@ export const ComposeboxEmbedderMixin =
         // Common event handlers
         // =====================================================================
 
+        // This function is called when backend starts a file upload flow,
+        // whether through `addFileFromAttachment_`,
+        // `addFileContextFromBrowser`, etc. This contrasts with the workflows
+        // where the frontend starts a file upload flow
+        // (`addFileContext`).
+        onFileContextAdded(file: ComposeboxFile) {
+          const newFiles = new Map(this.files);
+          newFiles.set(file.uuid, file);
+          this.files = newFiles;
+          this.addToPendingUploads(file.uuid);
+        }
+
         onTranscriptUpdate(e: CustomEvent<string>) {
           this.transcript = e.detail;
         }
@@ -259,6 +271,11 @@ export const ComposeboxEmbedderMixin =
         // =====================================================================
         // Common helper methods
         // =====================================================================
+
+        addToPendingUploads(uuid: UnguessableToken) {
+          this.pendingUploads.add(uuid);
+          this.fileUploadsComplete = false;
+        }
 
         focusInput() {
           this.getInputElement().inputElement.focus();
@@ -321,6 +338,25 @@ export const ComposeboxEmbedderMixin =
 
           this.recordFileValidationMetric(metric);
           this.closeMenu();
+        }
+
+        isFileAllowed(fileType: string): boolean {
+          if (this.lensSendRawFileMediaTypesEnabled) {
+            return true;
+          }
+          return this.isMimeTypeAllowed(fileType, this.imageFileTypes) ||
+              this.isMimeTypeAllowed(fileType, this.attachmentFileTypes);
+        }
+
+        isMimeTypeAllowed(mimeType: string, allowedTypes: string[]): boolean {
+          const lowerMimeType = mimeType.toLowerCase();
+          return allowedTypes.some(type => {
+            if (type.endsWith('/*')) {
+              const prefix = type.slice(0, -1);
+              return lowerMimeType.startsWith(prefix);
+            }
+            return lowerMimeType === type;
+          });
         }
 
         getInputType(type: string): InputType {
@@ -496,6 +532,7 @@ export interface ComposeboxEmbedderMixinInterface {
   getSearchboxHandler(): SearchboxPageHandlerRemote;
 
   // Common event handlers
+  onFileContextAdded(file: ComposeboxFile): void;
   onTranscriptUpdate(e: CustomEvent<string>): void;
   onSpeechReceived(): void;
   onDismissErrorScrim(): void;
@@ -505,10 +542,13 @@ export interface ComposeboxEmbedderMixinInterface {
   onInputFocusin(): void;
 
   // Common helper methods
+  addToPendingUploads(token: UnguessableToken): void;
   focusInput(): void;
   hasContent(): boolean;
   clearInput(): void;
   handleProcessFilesError(error: ProcessFilesError): void;
+  isFileAllowed(fileType: string): boolean;
+  isMimeTypeAllowed(mimeType: string, allowedTypes: string[]): boolean;
   getInputType(type: string): InputType;
   setDefaultModel(): void;
   resetToolsAndModels(): void;

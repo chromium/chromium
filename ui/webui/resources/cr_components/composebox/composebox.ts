@@ -609,11 +609,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     await this.updateComplete;
   }
 
-  protected addToPendingUploads_(token: UnguessableToken) {
-    this.pendingUploads.add(token);
-    this.fileUploadsComplete = false;
-  }
-
   protected computeCancelButtonTitle_() {
     return this.input.trim().length > 0 || this.files.size > 0 ?
         this.i18n('composeboxCancelButtonTitleInput') :
@@ -863,7 +858,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       supportsUnimodal: true,
     };
 
-    this.onFileContextAdded_(attachment);
+    this.onFileContextAdded(attachment);
   }
 
   injectInput(
@@ -873,7 +868,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         fileToken, thumbnail, title, iconName ?? null);
     attachment.supportsUnimodal = supportsUnimodal;
 
-    this.onFileContextAdded_(attachment);
+    this.onFileContextAdded(attachment);
   }
 
   private updateAutoSuggestedTabContext_(tab: TabInfo|null) {
@@ -1632,7 +1627,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         // `NotUploaded`, `UploadStarted` come before and after `kProcessing`
         //  respectively, so we only need to add to `pendingUploads` when in a
         //  type of processing state.
-        this.addToPendingUploads_(file.uuid);
+        this.addToPendingUploads(file.uuid);
       }
 
       // Fetch contextual suggestions for processingSuggestSignalsReady
@@ -1705,17 +1700,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.shouldShowVoiceSearch_();
   }
 
-  // This function is called when backend starts a file upload flow, whether
-  // through `addFileFromAttachment_`, `addFileContextFromBrowser`, etc. This
-  // contrasts with the workflows where the frontend starts a file upload flow
-  // (`addFileContext_`).
-  private onFileContextAdded_(file: ComposeboxFile) {
-    const newFiles = new Map(this.files);
-    newFiles.set(file.uuid, file);
-    this.files = newFiles;
-    this.addToPendingUploads_(file.uuid);
-  }
-
   private updateFileStatus_(
       token: UnguessableToken, status: ContextUploadStatus,
       errorType: ContextUploadErrorType|null) {
@@ -1786,7 +1770,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         };
         // Update pending uploads in 'composebox.ts' to disable
         // submit button.
-        this.onFileContextAdded_(file);
+        this.onFileContextAdded(file);
       }
     }
     return {file, errorMessage};
@@ -1843,7 +1827,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         continue;
       }
 
-      if (!this.isFileAllowed_(file.type)) {
+      if (!this.isFileAllowed(file.type)) {
         errorToDisplay =
             Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
         continue;
@@ -1886,28 +1870,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.handleProcessFilesError(errorToDisplay);
   }
 
-  private isFileAllowed_(fileType: string): boolean {
-    if (this.lensSendRawFileMediaTypesEnabled) {
-      return true;
-    }
-    return this.isMimeTypeAllowed_(fileType, this.imageFileTypes) ||
-        this.isMimeTypeAllowed_(fileType, this.attachmentFileTypes);
-  }
-
-  private isMimeTypeAllowed_(
-      mimeType: string, allowedTypes: string[]): boolean {
-    const lowerMimeType = mimeType.toLowerCase();
-    return allowedTypes.some(type => {
-      if (type.endsWith('/*')) {
-        const prefix = type.slice(0, -1);
-        return lowerMimeType.startsWith(prefix);
-      }
-      return lowerMimeType === type;
-    });
-  }
-
   private addFileFromAttachment_(fileAttachment: FileAttachment) {
-    if (!this.isFileAllowed_(fileAttachment.mimeType)) {
+    if (!this.isFileAllowed(fileAttachment.mimeType)) {
       this.handleProcessFilesError(ProcessFilesError.INVALID_TYPE);
       return;
     }
@@ -1917,7 +1881,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         {name: fileAttachment.name, type: fileAttachment.mimeType},
         pendingStatus ?? ContextUploadStatus.kNotUploaded,
         {dataUrl: fileAttachment.imageDataUrl ?? null, supportsUnimodal: true});
-    this.onFileContextAdded_(composeboxFile);
+    this.onFileContextAdded(composeboxFile);
   }
 
   private addTabFromAttachment_(tabAttachment: TabAttachment) {
@@ -1944,7 +1908,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   addFileContextForTesting(file: ComposeboxFile) {
-    this.onFileContextAdded_(file);
+    this.onFileContextAdded(file);
   }
 
   setAutomaticActiveTabForTesting(file: ComposeboxFile) {
