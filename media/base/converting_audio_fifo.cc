@@ -10,13 +10,15 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_bus_pool.h"
 #include "media/base/audio_converter.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_mixer.h"
 
 namespace media {
 
 ConvertingAudioFifo::ConvertingAudioFifo(
     const AudioParameters& input_params,
-    const AudioParameters& converted_params)
+    const AudioParameters& converted_params,
+    bool use_input_bus_pool)
     : input_params_(input_params),
       converted_params_(converted_params),
       converter_(std::make_unique<AudioConverter>(input_params,
@@ -36,6 +38,18 @@ ConvertingAudioFifo::ConvertingAudioFifo(
                                  converted_params_.frames_per_buffer());
   output_pool_ = std::make_unique<AudioBusPoolImpl>(converted_params_,
                                                     kPreallocated, kMaxSize);
+  if (use_input_bus_pool) {
+    // Max capacity needed to safely hold frames until
+    // `min_input_frames_needed_` is reached, plus one extra buffer for the
+    // current push.
+    const int kInputMaxSize =
+        std::ceil(static_cast<double>(min_input_frames_needed_) /
+                  input_params_.frames_per_buffer()) +
+        1;
+
+    input_pool_ = std::make_unique<AudioBusPoolImpl>(
+        input_params_, kPreallocated, kInputMaxSize);
+  }
 }
 
 ConvertingAudioFifo::~ConvertingAudioFifo() {
@@ -54,6 +68,12 @@ void ConvertingAudioFifo::Push(std::unique_ptr<AudioBus> input_bus) {
   while (total_frames_ >= min_input_frames_needed_) {
     Convert();
   }
+}
+
+base::TimeDelta ConvertingAudioFifo::GetBufferedInputDuration() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return AudioTimestampHelper::FramesToTime(total_frames_,
+                                            input_params_.sample_rate());
 }
 
 void ConvertingAudioFifo::Convert() {
@@ -83,7 +103,13 @@ void ConvertingAudioFifo::Flush() {
   converter_->Reset();
   converter_->PrimeWithSilence();
 
-  inputs_.clear();
+  // Clear out all remaining input frames.
+  // Note: Draining `total_frames_` in the loop above normally exhausts
+  // `inputs_` via ProvideInput() & PopInputs(), but this acts as a safety net.
+  while (!inputs_.empty()) {
+    PopInputs();
+  }
+
   total_frames_ = 0;
   front_frame_index_ = 0;
   is_flushing_ = false;
@@ -101,7 +127,7 @@ double ConvertingAudioFifo::ProvideInput(AudioBus* audio_bus,
   int frames_written = 0;
 
   // If we aren't flushing, this should only be called if we have enough
-  // frames to completey satisfy the request.
+  // frames to completely satisfy the request.
   DCHECK(is_flushing_ || total_frames_ >= frames_needed)
       << "is_flushing_=" << is_flushing_ << ",total_frames_=" << total_frames_
       << ",frames_needed=" << frames_needed;
@@ -123,7 +149,7 @@ double ConvertingAudioFifo::ProvideInput(AudioBus* audio_bus,
 
     if (front_frame_index_ == front->frames()) {
       // We exhausted all frames in the front buffer, remove it.
-      inputs_.pop_front();
+      PopInputs();
       front_frame_index_ = 0;
     }
   }
@@ -132,7 +158,7 @@ double ConvertingAudioFifo::ProvideInput(AudioBus* audio_bus,
   if (frames_written != frames_needed) {
     DCHECK(is_flushing_);
     DCHECK(!total_frames_);
-    DCHECK(!inputs_.size());
+    DCHECK(inputs_.empty());
     audio_bus->ZeroFramesPartial(frames_written,
                                  frames_needed - frames_written);
   }
@@ -147,6 +173,9 @@ std::unique_ptr<AudioBus> ConvertingAudioFifo::EnsureExpectedChannelCount(
   // No mixing required.
   if (audio_bus->channels() == input_params_.channels())
     return audio_bus;
+
+  // We don't support mixing when using the input pool.
+  CHECK(!input_pool_);
 
   const int& incoming_channels = audio_bus->channels();
   if (!mixer_ || mixer_input_params_.channels() != incoming_channels) {
@@ -188,6 +217,26 @@ void ConvertingAudioFifo::PopOutput() {
   CHECK(HasOutput());
   output_pool_->InsertAudioBus(std::move(pending_outputs_.front()));
   pending_outputs_.pop_front();
+}
+
+std::unique_ptr<AudioBus> ConvertingAudioFifo::GetInputAudioBus() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(input_pool_);
+  return input_pool_->GetAudioBus();
+}
+
+void ConvertingAudioFifo::PopInputs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::unique_ptr<AudioBus> bus = std::move(inputs_.front());
+  inputs_.pop_front();
+
+  // Only recycle the bus if its frame count strictly matches the parameters.
+  // ConvertingAudioFifo supports receiving buffers with varying frame counts,
+  // but AudioBusPoolImpl requires strict matching and will DCHECK otherwise.
+  if (input_pool_ && bus->frames() == input_params_.frames_per_buffer()) {
+    input_pool_->InsertAudioBus(std::move(bus));
+  }
 }
 
 }  // namespace media

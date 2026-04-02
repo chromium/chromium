@@ -27,7 +27,8 @@ class MEDIA_EXPORT ConvertingAudioFifo final
     : public AudioConverter::InputCallback {
  public:
   ConvertingAudioFifo(const AudioParameters& input_params,
-                      const AudioParameters& converted_params);
+                      const AudioParameters& converted_params,
+                      bool use_input_bus_pool = false);
 
   ConvertingAudioFifo(const ConvertingAudioFifo&) = delete;
   ConvertingAudioFifo& operator=(const ConvertingAudioFifo&) = delete;
@@ -35,8 +36,11 @@ class MEDIA_EXPORT ConvertingAudioFifo final
   ~ConvertingAudioFifo() override;
 
   // Adds inputs into the FIFO. `input_bus` must have the same sample rate as
-  // |input_params_|, but the number of channels or frames can be different.
+  // `input_params_`, but the number of channels or frames can be different.
+  // When input pooling is enabled, the channel count must match as well.
   void Push(std::unique_ptr<AudioBus> input_bus);
+
+  base::TimeDelta GetBufferedInputDuration() const;
 
   // Returns whether there is any available converted output.
   bool HasOutput();
@@ -46,6 +50,10 @@ class MEDIA_EXPORT ConvertingAudioFifo final
 
   // Releases the current output.
   void PopOutput();
+
+  // Returns an AudioBus from the input audio bus pool. Can only be used when
+  // input pooling is enabled.
+  std::unique_ptr<AudioBus> GetInputAudioBus();
 
   // Forces all remaining frames to be converted, ouputing silence in case there
   // isn't enough data. Noop if there aren't any available frames.
@@ -67,10 +75,15 @@ class MEDIA_EXPORT ConvertingAudioFifo final
   // |output_params_| fills |dest|.
   void Convert();
 
-  // Returns an AudioBus with the same number of channels as |input_params_|,
-  // mixing |audio_bus| if necessary.
+  // Returns an AudioBus with the same number of channels as `input_params_`,
+  // mixing `audio_bus` if necessary. No mixing is performed when input
+  // pooling is enabled, and the channel count must match exactly.
   std::unique_ptr<AudioBus> EnsureExpectedChannelCount(
       std::unique_ptr<AudioBus> audio_bus);
+
+  // Removes the front input bus, inserting it into the input pool for reuse if
+  // pooling is enabled.
+  void PopInputs();
 
   const AudioParameters input_params_;
   const AudioParameters converted_params_;
@@ -106,6 +119,8 @@ class MEDIA_EXPORT ConvertingAudioFifo final
 
   // All current input frames.
   base::circular_deque<std::unique_ptr<AudioBus>> inputs_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<AudioBusPool> input_pool_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

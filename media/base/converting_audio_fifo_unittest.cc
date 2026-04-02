@@ -9,6 +9,7 @@
 
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -190,6 +191,11 @@ TEST_P(ConvertingAudioFifoTest, Push_NotEnoughFrames) {
     total_frames_pushed += frames_to_push;
     DrainAndVerifyOutputs();
     EXPECT_EQ(0, number_outputs());
+    EXPECT_NEAR(fifo()->GetBufferedInputDuration().InSecondsF(),
+                AudioTimestampHelper::FramesToTime(total_frames_pushed,
+                                                   kInputSampleRate)
+                    .InSecondsF(),
+                0.001);
     EXPECT_EQ(current_frames_in_fifo(), total_frames_pushed);
   }
 
@@ -322,5 +328,76 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(kTestChannels),
                      testing::ValuesIn(kTestSampleRates),
                      testing::ValuesIn(kTestOutputFrames)));
+
+class ConvertingAudioFifoInputPoolTest : public ::testing::Test {
+ public:
+  ConvertingAudioFifoInputPoolTest() = default;
+  ConvertingAudioFifoInputPoolTest(const ConvertingAudioFifoInputPoolTest&) =
+      delete;
+  ConvertingAudioFifoInputPoolTest& operator=(
+      const ConvertingAudioFifoInputPoolTest&) = delete;
+  ~ConvertingAudioFifoInputPoolTest() override = default;
+
+  void SetUp() override {
+    fifo_ = std::make_unique<ConvertingAudioFifo>(
+        kDefaultParams, kDefaultParams, /*use_input_bus_pool=*/true);
+  }
+
+ protected:
+  std::unique_ptr<ConvertingAudioFifo> fifo_;
+};
+
+TEST_F(ConvertingAudioFifoInputPoolTest, ReusesInputBuses) {
+  auto bus1 = fifo_->GetInputAudioBus();
+  EXPECT_TRUE(bus1);
+  EXPECT_EQ(bus1->channels(), kDefaultParams.channels());
+  EXPECT_EQ(bus1->frames(), kDefaultParams.frames_per_buffer());
+
+  AudioBus* bus1_ptr = bus1.get();
+
+  // Push the bus into the FIFO.
+  fifo_->Push(std::move(bus1));
+
+  // Flush to force the FIFO to process the input and pop it.
+  fifo_->Flush();
+
+  // Pop the output to ensure the input is consumed.
+  while (fifo_->HasOutput()) {
+    fifo_->PopOutput();
+  }
+
+  // Get another bus from the pool. It should reuse the same underlying memory.
+  auto bus2 = fifo_->GetInputAudioBus();
+  EXPECT_EQ(bus2.get(), bus1_ptr);
+}
+
+TEST_F(ConvertingAudioFifoInputPoolTest, VaryingFramesAreNotPooled) {
+  auto pool_bus = fifo_->GetInputAudioBus();
+  AudioBus* pool_bus_ptr = pool_bus.get();
+  fifo_->Push(std::move(pool_bus));
+
+  // Push a custom bus with a different frame count to test the rejection logic
+  // in PopInput() and ensure the pool doesn't ingest mis-sized buses.
+  const int different_frames = kDefaultParams.frames_per_buffer() / 2;
+  auto small_bus =
+      AudioBus::Create(kDefaultParams.channels(), different_frames);
+  fifo_->Push(std::move(small_bus));
+
+  fifo_->Flush();
+  while (fifo_->HasOutput()) {
+    fifo_->PopOutput();
+  }
+
+  // The standard bus should be recycled, but the mis-sized bus should be
+  // dropped.
+  auto recycled_bus = fifo_->GetInputAudioBus();
+  EXPECT_EQ(recycled_bus.get(), pool_bus_ptr);
+
+  // `small_bus` should not be reused. Note that this is not necessarily unequal
+  // to `small_bus_ptr`, as the same memory may be reused by the system's heap
+  // allocator. We can however check that the frames are correct.
+  auto newly_allocated_bus = fifo_->GetInputAudioBus();
+  EXPECT_EQ(newly_allocated_bus->frames(), kDefaultParams.frames_per_buffer());
+}
 
 }  // namespace media
