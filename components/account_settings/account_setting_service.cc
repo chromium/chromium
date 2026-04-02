@@ -94,8 +94,8 @@ void AccountSettingService::OnDataLoadedFromDisk() {
       GetBoolean(kWalletPrivacyContextualSurfacing).value_or(false));
 }
 
-void AccountSettingService::OnDataUpdated() {
-  observers_.Notify(&Observer::OnAccountSettingDataUpdated);
+void AccountSettingService::OnDataUpdated(const std::string& setting_name) {
+  observers_.Notify(&Observer::OnAccountSettingDataUpdated, setting_name);
 }
 
 }  // namespace account_settings

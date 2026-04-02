@@ -29,8 +29,9 @@ class AccountSettingService : public KeyedService,
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called when account settings data changes.
-    virtual void OnAccountSettingDataUpdated() = 0;
+    // Called when the value of a specific account setting changes.
+    virtual void OnAccountSettingDataUpdated(
+        const std::string& setting_name) = 0;
   };
 
   explicit AccountSettingService(
@@ -53,7 +54,7 @@ class AccountSettingService : public KeyedService,
  private:
   // AccountSettingSyncBridge::Observer:
   void OnDataLoadedFromDisk() override;
-  void OnDataUpdated() override;
+  void OnDataUpdated(const std::string& setting_name) override;
 
   base::ObserverList<AccountSettingService::Observer> observers_;
 

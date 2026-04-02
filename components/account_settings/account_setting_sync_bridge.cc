@@ -127,11 +127,13 @@ AccountSettingSyncBridge::ApplyIncrementalSyncChanges(
             change->data().specifics.account_setting();
         batch->WriteData(change->storage_key(), specifics.SerializeAsString());
         settings_.insert_or_assign(change->storage_key(), specifics);
+        observers_.Notify(&Observer::OnDataUpdated, change->storage_key());
         break;
       }
       case syncer::EntityChange::ACTION_DELETE: {
         batch->DeleteData(change->storage_key());
         settings_.erase(change->storage_key());
+        observers_.Notify(&Observer::OnDataUpdated, change->storage_key());
         break;
       }
     }
@@ -140,7 +142,6 @@ AccountSettingSyncBridge::ApplyIncrementalSyncChanges(
       std::move(batch),
       base::BindOnce(&AccountSettingSyncBridge::ReportErrorIfSet,
                      weak_factory_.GetWeakPtr()));
-  observers_.Notify(&Observer::OnDataUpdated);
   return std::nullopt;
 }
 
@@ -149,8 +150,11 @@ void AccountSettingSyncBridge::ApplyDisableSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_->DeleteAllDataAndMetadata(base::BindOnce(
       &AccountSettingSyncBridge::ReportErrorIfSet, weak_factory_.GetWeakPtr()));
+
+  for (const auto& [name, specifics] : settings_) {
+    observers_.Notify(&Observer::OnDataUpdated, name);
+  }
   settings_.clear();
-  observers_.Notify(&Observer::OnDataUpdated);
 }
 
 std::unique_ptr<syncer::DataBatch> AccountSettingSyncBridge::GetDataForCommit(

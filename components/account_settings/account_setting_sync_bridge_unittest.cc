@@ -60,7 +60,7 @@ class MockObserver : public AccountSettingSyncBridge::Observer {
   }
 
   MOCK_METHOD(void, OnDataLoadedFromDisk, (), (override));
-  MOCK_METHOD(void, OnDataUpdated, (), (override));
+  MOCK_METHOD(void, OnDataUpdated, (const std::string&), (override));
 
  private:
   base::ScopedObservation<AccountSettingSyncBridge,
@@ -195,7 +195,8 @@ TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdate) {
     change_list.push_back(syncer::EntityChange::CreateUpdate(
         "name1",
         EntityFromSpecifics(CreateSettingSpecifics("name1", "new-string"))));
-    EXPECT_CALL(o, OnDataUpdated);
+    EXPECT_CALL(o, OnDataUpdated("name2"));
+    EXPECT_CALL(o, OnDataUpdated("name1"));
     EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
         bridge().CreateMetadataChangeList(), std::move(change_list)));
     // Expect that the setting is available immediately.
@@ -219,7 +220,7 @@ TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
     syncer::EntityChangeList change_list;
     change_list.push_back(
         syncer::EntityChange::CreateDelete("name1", syncer::EntityData()));
-    EXPECT_CALL(o, OnDataUpdated);
+    EXPECT_CALL(o, OnDataUpdated("name1"));
     EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
         bridge().CreateMetadataChangeList(), std::move(change_list)));
     // Expect that the change was applied immediately.

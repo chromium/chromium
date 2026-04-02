@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_
 #define COMPONENTS_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SYNC_BRIDGE_H_
 
+#include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -23,8 +24,8 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
     // and into `settings_`.
     virtual void OnDataLoadedFromDisk() = 0;
 
-    // Called when data changes in `store_`.
-    virtual void OnDataUpdated() = 0;
+    // Called when the value of a specific `setting_name` changes in `store_`.
+    virtual void OnDataUpdated(const std::string& setting_name) = 0;
   };
 
   explicit AccountSettingSyncBridge(
