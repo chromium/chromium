@@ -54,7 +54,7 @@ constexpr char kPhoneNumberPrefix[] = "tel:";
 GURL GetAbsoluteUrl(const blink::WebNode& node,
                     const std::u16string& url_fragment) {
   return GURL(node.GetDocument().CompleteURL(
-      blink::WebString::FromUTF16(url_fragment)));
+      blink::WebString::FromUtf16(url_fragment)));
 }
 
 std::u16string GetHref(const blink::WebElement& element) {

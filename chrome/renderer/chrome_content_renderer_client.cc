@@ -328,9 +328,9 @@ void AppendParams(
   }
 
   for (size_t i = 0; i < additional_params.size(); ++i) {
-    names[existing_size + i] = WebString::FromUTF16(additional_params[i].name);
+    names[existing_size + i] = WebString::FromUtf16(additional_params[i].name);
     values[existing_size + i] =
-        WebString::FromUTF16(additional_params[i].value);
+        WebString::FromUtf16(additional_params[i].value);
   }
 
   existing_names->swap(names);

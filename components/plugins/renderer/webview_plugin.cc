@@ -337,7 +337,7 @@ void WebViewPlugin::WebViewHelper::UpdateTooltip(
     const std::u16string& tooltip_text) {
   if (plugin_->container_) {
     plugin_->container_->GetElement().SetAttribute(
-        "title", WebString::FromUTF16(tooltip_text));
+        "title", WebString::FromUtf16(tooltip_text));
   }
 }
 

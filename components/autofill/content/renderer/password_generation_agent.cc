@@ -326,7 +326,7 @@ void PasswordGenerationAgent::PreviewGenerationSuggestion(
 
   for (auto& password_field : current_generation_item_->password_elements_) {
     PreviewGeneratedValue(password_field,
-                          blink::WebString::FromUTF16(password));
+                          blink::WebString::FromUtf16(password));
   }
 }
 
@@ -363,7 +363,7 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
   for (auto& password_element : current_generation_item_->password_elements_) {
     base::AutoReset<bool> auto_reset_update_confirmation_password(
         &current_generation_item_->updating_other_password_fields_, true);
-    password_element.SetAutofillValue(blink::WebString::FromUTF16(password));
+    password_element.SetAutofillValue(blink::WebString::FromUtf16(password));
     // setAutofillValue() above may have resulted in JavaScript closing the
     // frame.
     if (!render_frame()) {

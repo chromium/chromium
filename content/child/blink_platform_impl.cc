@@ -176,7 +176,7 @@ base::RefCountedMemory* BlinkPlatformImpl::GetDataResourceBytes(
 WebString BlinkPlatformImpl::QueryLocalizedString(int resource_id) {
   if (resource_id < 0)
     return WebString();
-  return WebString::FromUTF16(
+  return WebString::FromUtf16(
       GetContentClient()->GetLocalizedString(resource_id));
 }
 
@@ -198,7 +198,7 @@ WebString BlinkPlatformImpl::QueryLocalizedString(int resource_id,
   if (format_string.empty())
     return WebString();
 
-  return WebString::FromUTF16(
+  return WebString::FromUtf16(
       base::ReplaceStringPlaceholders(format_string, value.Utf16(), nullptr));
 }
 
@@ -211,7 +211,7 @@ WebString BlinkPlatformImpl::QueryLocalizedString(int resource_id,
   values.reserve(2);
   values.push_back(value1.Utf16());
   values.push_back(value2.Utf16());
-  return WebString::FromUTF16(base::ReplaceStringPlaceholders(
+  return WebString::FromUtf16(base::ReplaceStringPlaceholders(
       GetContentClient()->GetLocalizedString(resource_id), values, nullptr));
 }
 

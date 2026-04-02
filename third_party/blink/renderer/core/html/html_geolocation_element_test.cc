@@ -63,11 +63,11 @@ class LocalePlatformSupport : public TestingPlatformSupport {
       case IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION:
         return kPreciseGeolocationString;
       case IDS_PERMISSION_REQUEST_GEOLOCATION_pt_PT:
-        return WebString::FromUTF16(kGeolocationStringPt);
+        return WebString::FromUtf16(kGeolocationStringPt);
       case IDS_PERMISSION_REQUEST_GEOLOCATION_pt_BR:
-        return WebString::FromUTF16(kGeolocationStringBr);
+        return WebString::FromUtf16(kGeolocationStringBr);
       case IDS_PERMISSION_REQUEST_GEOLOCATION_ta:
-        return WebString::FromUTF16(kGeolocationStringTa);
+        return WebString::FromUtf16(kGeolocationStringTa);
       default:
         break;
     }

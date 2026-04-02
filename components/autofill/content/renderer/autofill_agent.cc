@@ -1290,7 +1290,7 @@ void AutofillAgent::ApplyFieldAction(
             }
             previewed_elements_.emplace_back(field_id,
                                              form_control.GetAutofillState());
-            form_control.SetSuggestedValue(WebString::FromUTF16(preview_value));
+            form_control.SetSuggestedValue(WebString::FromUtf16(preview_value));
             break;
           }
           case mojom::FieldActionType::kReplaceSelection:
@@ -1300,7 +1300,7 @@ void AutofillAgent::ApplyFieldAction(
           case mojom::FieldActionType::kReplaceAll:
             previewed_elements_.emplace_back(field_id,
                                              form_control.GetAutofillState());
-            form_control.SetSuggestedValue(WebString::FromUTF16(value));
+            form_control.SetSuggestedValue(WebString::FromUtf16(value));
             break;
           case mojom::FieldActionType::kSelectAll:
             NOTIMPLEMENTED() << "Previewing select all is not implemented";
@@ -1323,12 +1323,12 @@ void AutofillAgent::ApplyFieldAction(
                     .Equals("@@")) {
               form_control.SetSelectionRange(sel_start - 2, sel_start);
             }
-            form_control.PasteText(WebString::FromUTF16(value),
+            form_control.PasteText(WebString::FromUtf16(value),
                                    /*replace_all=*/false);
             break;
           }
           case mojom::FieldActionType::kReplaceSelection: {
-            form_control.PasteText(WebString::FromUTF16(value),
+            form_control.PasteText(WebString::FromUtf16(value),
                                    /*replace_all=*/false);
             break;
           }
@@ -1380,7 +1380,7 @@ void AutofillAgent::ApplyFieldAction(
             [[fallthrough]];
           case mojom::FieldActionType::kReplaceSelection:
             content_editable.PasteText(
-                WebString::FromUTF16(value),
+                WebString::FromUtf16(value),
                 /*replace_all=*/
                 (action_type == mojom::FieldActionType::kReplaceAll));
             break;
@@ -1394,7 +1394,7 @@ void AutofillAgent::ApplyFieldAction(
                                                  selection.StartOffset());
             }
             frame->ExecuteCommand(WebString::FromAscii("InsertText"),
-                                  WebString::FromUTF16(value));
+                                  WebString::FromUtf16(value));
             break;
         }
     }
@@ -1640,7 +1640,7 @@ void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
                                          WebFormControlElement& element,
                                          WebAutofillState autofill_state) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
-  element.SetAutofillValue(WebString::FromUTF16(value), autofill_state);
+  element.SetAutofillValue(WebString::FromUtf16(value), autofill_state);
   UpdateStateForTextChange(element,
                            autofill_state == WebAutofillState::kAutofilled
                                ? FieldPropertiesFlags::kAutofilledOnUserTrigger

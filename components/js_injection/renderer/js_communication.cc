@@ -108,7 +108,7 @@ void JsCommunication::AddPersistentJavaScript(
     mojom::JavaScriptExecutablePtr script_ptr) {
   JavaScriptExecutable* script = new JavaScriptExecutable{
       script_ptr->origin_matcher,
-      blink::WebString::FromUTF16(script_ptr->script), script_ptr->script_id,
+      blink::WebString::FromUtf16(script_ptr->script), script_ptr->script_id,
       script_ptr->injection_time, script_ptr->js_world};
   scripts_.push_back(std::unique_ptr<JavaScriptExecutable>(script));
 }

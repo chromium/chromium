@@ -89,7 +89,7 @@ std::u16string WebString::Utf16() const {
   return impl_ ? impl_->ToU16String() : std::u16string();
 }
 
-WebString WebString::FromUTF16(std::optional<std::u16string_view> s) {
+WebString WebString::FromUtf16(std::optional<std::u16string_view> s) {
   if (!s.has_value()) {
     return WebString();
   }

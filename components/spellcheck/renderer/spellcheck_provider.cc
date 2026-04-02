@@ -310,7 +310,7 @@ void SpellCheckProvider::CheckSpelling(
 
     std::vector<std::u16string> suggestions;
     spellcheck::FillSuggestions(per_language_suggestions, &suggestions);
-    *optional_suggestions = base::ToVector(suggestions, &WebString::FromUTF16);
+    *optional_suggestions = base::ToVector(suggestions, &WebString::FromUtf16);
     spellcheck_renderer_metrics::RecordCheckedTextLengthWithSuggestions(
         base::saturated_cast<int>(word.size()));
   } else {

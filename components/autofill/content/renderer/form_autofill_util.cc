@@ -1248,7 +1248,7 @@ WebOptionElement FindOptionToSelect(const WebSelectElement& select,
   std::vector<WebOptionElement> select_options = GetOptionElements(select);
 
   WebString value_to_select(data.value);
-  WebString text_to_select = WebString::FromUTF16(data.selected_option_text);
+  WebString text_to_select = WebString::FromUtf16(data.selected_option_text);
 
   WebOptionElement option_to_select;
   for (const WebOptionElement& option : select_options) {
@@ -1385,11 +1385,11 @@ void FillFormField(const FormFieldData::FillData& data,
             FindOptionToSelect(select_element, data)) {
       select_element.SetAutofillOption(&new_option, new_autofill_state);
     } else {
-      select_element.SetAutofillValue(WebString::FromUTF16(data.value),
+      select_element.SetAutofillValue(WebString::FromUtf16(data.value),
                                       new_autofill_state);
     }
   } else {
-    form_control.SetAutofillValue(WebString::FromUTF16(data.value),
+    form_control.SetAutofillValue(WebString::FromUtf16(data.value),
                                   new_autofill_state);
   }
   // Changing the field's value might trigger JavaScript, which is capable
@@ -1447,10 +1447,10 @@ void PreviewFormField(const FormFieldData::FillData& data,
             FindOptionToSelect(select_element, data)) {
       select_element.SetSuggestedOption(&new_option);
     } else {
-      select_element.SetSuggestedValue(WebString::FromUTF16(data.value));
+      select_element.SetSuggestedValue(WebString::FromUtf16(data.value));
     }
   } else {
-    form_control.SetSuggestedValue(WebString::FromUTF16(data.value));
+    form_control.SetSuggestedValue(WebString::FromUtf16(data.value));
   }
   WebAutofillState new_autofill_state = data.is_autofilled
                                             ? WebAutofillState::kPreviewed
@@ -2773,7 +2773,7 @@ void DispatchAutofillEvent(blink::WebDocument document,
     }
 
     autofill_values.emplace_back(control_element,
-                                 WebString::FromUTF16(field.value));
+                                 WebString::FromUtf16(field.value));
   }
 
   if (autofill_values.empty()) {

@@ -478,7 +478,7 @@ std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
     }
     std::vector<WebString> suggestions;
     WebTestSpellChecker::FillSuggestionList(
-        WebString::FromUTF16(context_menu->misspelled_word), &suggestions);
+        WebString::FromUtf16(context_menu->misspelled_word), &suggestions);
     for (const WebString& suggestion : suggestions)
       strings.push_back(suggestion.Utf8());
   } else {

@@ -109,7 +109,7 @@ std::vector<WebString> FilterReplacementSuggestions(
     if (replacement == misspelled_word)
       continue;
 
-    replacements_filtered.push_back(WebString::FromUTF16(replacement));
+    replacements_filtered.push_back(WebString::FromUtf16(replacement));
   }
 
   return replacements_filtered;

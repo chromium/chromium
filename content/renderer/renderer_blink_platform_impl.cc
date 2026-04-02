@@ -914,7 +914,7 @@ void RendererBlinkPlatformImpl::OnGpuChannelEstablished(
 
 blink::WebString RendererBlinkPlatformImpl::ConvertIDNToUnicode(
     const blink::WebString& host) {
-  return WebString::FromUTF16(url_formatter::IDNToUnicode(host.Ascii()));
+  return WebString::FromUtf16(url_formatter::IDNToUnicode(host.Ascii()));
 }
 
 //------------------------------------------------------------------------------

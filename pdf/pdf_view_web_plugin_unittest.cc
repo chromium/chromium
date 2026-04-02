@@ -1627,7 +1627,7 @@ TEST_F(PdfViewWebPluginImeTest, ImeSetCompositionAndFinishAscii) {
 }
 
 TEST_F(PdfViewWebPluginImeTest, ImeSetCompositionAndFinishUnicode) {
-  const blink::WebString text = blink::WebString::FromUTF16(u"你好");
+  const blink::WebString text = blink::WebString::FromUtf16(u"你好");
   TestImeSetCompositionForPlugin(text);
   TestImeFinishComposingTextForPlugin(text);
   // Calling ImeFinishComposingTextForPlugin() again is a no-op.
@@ -1646,7 +1646,7 @@ TEST_F(PdfViewWebPluginImeTest, ImeCommitTextForPluginAscii) {
 }
 
 TEST_F(PdfViewWebPluginImeTest, ImeCommitTextForPluginUnicode) {
-  const blink::WebString text = blink::WebString::FromUTF16(u"さようなら");
+  const blink::WebString text = blink::WebString::FromUtf16(u"さようなら");
   TestImeCommitTextForPlugin(text);
 }
 

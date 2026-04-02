@@ -46,7 +46,7 @@ WebString FilePathToWebString(const base::FilePath& path) {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return WebString::FromUTF8(path.value());
 #else
-  return WebString::FromUTF16(path.AsUTF16Unsafe());
+  return WebString::FromUtf16(path.AsUTF16Unsafe());
 #endif
 }
 

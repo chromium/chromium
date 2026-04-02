@@ -242,7 +242,7 @@ void JsBinding::OnExecuteJavaScript(const std::u16string& javascript,
   }
 
   blink::WebScriptSource web_script_source(
-      blink::WebString::FromUTF16(javascript));
+      blink::WebString::FromUtf16(javascript));
   web_frame->RequestExecuteScript(
       world_id_, base::span_from_ref(web_script_source),
       blink::mojom::UserActivationOption::kDoNotActivate,

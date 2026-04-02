@@ -758,7 +758,7 @@ bool ContextMenuController::ShowContextMenu(
         size_t misspelled_offset, misspelled_length;
         std::vector<WebString> suggestions;
         spell_checker.GetTextCheckerClient()->CheckSpelling(
-            WebString::FromUTF16(data.misspelled_word), misspelled_offset,
+            WebString::FromUtf16(data.misspelled_word), misspelled_offset,
             misspelled_length, &suggestions);
         data.dictionary_suggestions =
             base::ToVector(suggestions, &WebString::Utf16);

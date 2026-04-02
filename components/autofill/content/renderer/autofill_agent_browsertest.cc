@@ -2159,7 +2159,7 @@ TEST_F(AutofillAgentAtMemoryTest,
   Focus("f");
 
   // 1. Targeted replacement of the "@@" trigger: "hello @@" -> "hello result"
-  input.SetValue(blink::WebString::FromUTF16(u"hello @@"));
+  input.SetValue(blink::WebString::FromUtf16(u"hello @@"));
   input.SetSelectionRange(8, 8);
   autofill_agent().ApplyFieldAction(
       mojom::FieldActionType::kReplaceAtMemoryTrigger,
@@ -2168,7 +2168,7 @@ TEST_F(AutofillAgentAtMemoryTest,
   EXPECT_EQ(input.SelectionStart(), 12u);
 
   // 2. Replacement of a non-empty selection: "hello [selection] world"
-  input.SetValue(blink::WebString::FromUTF16(u"hello selection world"));
+  input.SetValue(blink::WebString::FromUtf16(u"hello selection world"));
   input.SetSelectionRange(6, 15);
   autofill_agent().ApplyFieldAction(
       mojom::FieldActionType::kReplaceAtMemoryTrigger,
@@ -2178,7 +2178,7 @@ TEST_F(AutofillAgentAtMemoryTest,
 
   // 3. Fallback insertion (no @@, no selection): "hello result" -> "hello
   // result extra"
-  input.SetValue(blink::WebString::FromUTF16(u"hello result"));
+  input.SetValue(blink::WebString::FromUtf16(u"hello result"));
   input.SetSelectionRange(12, 12);
   autofill_agent().ApplyFieldAction(
       mojom::FieldActionType::kReplaceAtMemoryTrigger,
@@ -2201,7 +2201,7 @@ TEST_F(AutofillAgentAtMemoryTest,
   Focus("f");
 
   // 1. Targeted replacement: "hello @@" -> "hello result"
-  input.SetValue(blink::WebString::FromUTF16(u"hello @@"));
+  input.SetValue(blink::WebString::FromUtf16(u"hello @@"));
   input.SetSelectionRange(8, 8);
   autofill_agent().ApplyFieldAction(
       mojom::FieldActionType::kReplaceAtMemoryTrigger,
@@ -2212,7 +2212,7 @@ TEST_F(AutofillAgentAtMemoryTest,
   EXPECT_EQ(input.SuggestedValue().Utf16(), u"hello result");
 
   // 2. Fallback insertion (no @@): "hello result" -> "hello result extra"
-  input.SetValue(blink::WebString::FromUTF16(u"hello result"));
+  input.SetValue(blink::WebString::FromUtf16(u"hello result"));
   input.SetSelectionRange(12, 12);
   // Note: Unlike `kFill`, `kPreview` uses literal string insertion and does
   // not trigger Blink's "Smart Paste". Thus, we manually include the space

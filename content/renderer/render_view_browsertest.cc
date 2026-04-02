@@ -3015,7 +3015,7 @@ TEST_F(RenderViewImplModalDialogTest, ModalDialogs) {
   EXPECT_CALL(*alert_mock_frame_host(),
               RunModalAlertDialog(alert_message, false, testing::_))
       .WillOnce(base::test::RunOnceCallback<2>());
-  frame()->GetWebFrame()->Alert(WebString::FromUTF16(alert_message));
+  frame()->GetWebFrame()->Alert(WebString::FromUtf16(alert_message));
 }
 
 TEST_F(RenderViewImplBlinkSettingsTest, Default) {

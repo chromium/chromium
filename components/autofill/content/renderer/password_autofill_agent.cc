@@ -1055,14 +1055,14 @@ void PasswordAutofillAgent::DoPreviewField(WebInputElement input,
       .autofill_state = input.GetAutofillState(),
       .is_password = is_password,
   });
-  input.SetSuggestedValue(WebString::FromUTF16(credential));
+  input.SetSuggestedValue(WebString::FromUtf16(credential));
 }
 
 void PasswordAutofillAgent::DoFillField(WebInputElement input,
                                         const std::u16string& credential,
                                         FieldPropertiesMask field_properties) {
   CHECK(input);
-  input.SetAutofillValue(WebString::FromUTF16(credential));
+  input.SetAutofillValue(WebString::FromUtf16(credential));
   field_data_manager().UpdateFieldDataMap(form_util::GetFieldRendererId(input),
                                           credential, field_properties);
 
@@ -2323,7 +2323,7 @@ void PasswordAutofillAgent::FillFieldAutomatically(const std::u16string& value,
   if (field.Value().Utf16() == value) {
     return;
   }
-  field.SetSuggestedValue(WebString::FromUTF16(value));
+  field.SetSuggestedValue(WebString::FromUtf16(value));
   field.SetAutofillState(WebAutofillState::kAutofilled);
   // Wait to fill until a user gesture occurs. This is to make sure that we do
   // not fill in the DOM with a password until we believe the user is
@@ -2331,7 +2331,7 @@ void PasswordAutofillAgent::FillFieldAutomatically(const std::u16string& value,
   gatekeeper_.RegisterElement(field);
   field_data_manager().UpdateFieldDataMap(
       field_id, value, FieldPropertiesFlags::kAutofilledOnPageLoad);
-  autofilled_elements_cache_.emplace(field_id, WebString::FromUTF16(value));
+  autofilled_elements_cache_.emplace(field_id, WebString::FromUtf16(value));
   all_autofilled_elements_.insert(field_id);
 }
 

@@ -114,17 +114,17 @@ class LocalePlatformSupport : public TestingPlatformSupport {
       case IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION_ALLOWED:
         return kPreciseGeolocationAllowedString;
       case IDS_PERMISSION_REQUEST_GEOLOCATION_pt_PT:
-        return WebString::FromUTF16(kGeolocationStringPt);
+        return WebString::FromUtf16(kGeolocationStringPt);
       case IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED_pt_PT:
-        return WebString::FromUTF16(kGeolocationAllowedStringPt);
+        return WebString::FromUtf16(kGeolocationAllowedStringPt);
       case IDS_PERMISSION_REQUEST_GEOLOCATION_pt_BR:
-        return WebString::FromUTF16(kGeolocationStringBr);
+        return WebString::FromUtf16(kGeolocationStringBr);
       case IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED_pt_BR:
-        return WebString::FromUTF16(kGeolocationAllowedStringBr);
+        return WebString::FromUtf16(kGeolocationAllowedStringBr);
       case IDS_PERMISSION_REQUEST_GEOLOCATION_ta:
-        return WebString::FromUTF16(kGeolocationStringTa);
+        return WebString::FromUtf16(kGeolocationStringTa);
       case IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED_ta:
-        return WebString::FromUTF16(kGeolocationAllowedStringTa);
+        return WebString::FromUtf16(kGeolocationAllowedStringTa);
       default:
         break;
     }

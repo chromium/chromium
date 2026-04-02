@@ -319,7 +319,7 @@ bool RenderViewTest::ExecuteJavaScriptAndReturnIntValue(
     int* int_result) {
   v8::HandleScope handle_scope(Isolate());
   v8::Local<v8::Value> result = GetMainFrame()->ExecuteScriptAndReturnValue(
-      WebScriptSource(blink::WebString::FromUTF16(script)));
+      WebScriptSource(blink::WebString::FromUtf16(script)));
   if (result.IsEmpty() || !result->IsInt32())
     return false;
 
@@ -334,7 +334,7 @@ bool RenderViewTest::ExecuteJavaScriptAndReturnNumberValue(
     double* number_result) {
   v8::HandleScope handle_scope(Isolate());
   v8::Local<v8::Value> result = GetMainFrame()->ExecuteScriptAndReturnValue(
-      WebScriptSource(blink::WebString::FromUTF16(script)));
+      WebScriptSource(blink::WebString::FromUtf16(script)));
   if (result.IsEmpty() || !result->IsNumber())
     return false;
 
