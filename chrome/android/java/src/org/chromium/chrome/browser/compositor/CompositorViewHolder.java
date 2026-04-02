@@ -781,8 +781,8 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void addTouchEventObserver(TouchEventObserver o) {
-        mTouchEventObservers.addObserver(o);
-        if (o.mayInterceptTouchSequenceInWebContents()) {
+        boolean added = mTouchEventObservers.addObserver(o);
+        if (added && o.mayInterceptTouchSequenceInWebContents()) {
             mActiveTouchInterceptors += 1;
             if (mActiveTouchInterceptors == 1) {
                 mCompositorView.setHasActiveTouchInterceptors(true);
@@ -792,8 +792,8 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void removeTouchEventObserver(TouchEventObserver o) {
-        mTouchEventObservers.removeObserver(o);
-        if (o.mayInterceptTouchSequenceInWebContents()) {
+        boolean removed = mTouchEventObservers.removeObserver(o);
+        if (removed && o.mayInterceptTouchSequenceInWebContents()) {
             mActiveTouchInterceptors -= 1;
             if (mActiveTouchInterceptors == 0) {
                 mCompositorView.setHasActiveTouchInterceptors(false);

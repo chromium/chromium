@@ -1139,6 +1139,36 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
+    public void testAsymmetricTouchInterceptors() {
+        TouchEventObserver observer = mock(TouchEventObserver.class);
+        when(observer.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
+
+        mCompositorViewHolder.addTouchEventObserver(null);
+        verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
+        reset(mCompositorView);
+
+        mCompositorViewHolder.addTouchEventObserver(observer);
+        verify(mCompositorView).setHasActiveTouchInterceptors(eq(true));
+        reset(mCompositorView);
+
+        mCompositorViewHolder.addTouchEventObserver(observer);
+        verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
+        reset(mCompositorView);
+
+        mCompositorViewHolder.removeTouchEventObserver(null);
+        verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
+        reset(mCompositorView);
+
+        mCompositorViewHolder.removeTouchEventObserver(observer);
+        verify(mCompositorView).setHasActiveTouchInterceptors(eq(false));
+        reset(mCompositorView);
+
+        mCompositorViewHolder.removeTouchEventObserver(observer);
+        verify(mCompositorView, never()).setHasActiveTouchInterceptors(anyBoolean());
+        reset(mCompositorView);
+    }
+
+    @Test
     public void testMultipleActiveTouchInterceptors() {
         TouchEventObserver observer1 = mock(TouchEventObserver.class);
         when(observer1.mayInterceptTouchSequenceInWebContents()).thenReturn(true);
