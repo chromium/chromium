@@ -798,8 +798,7 @@ class ActorAttemptLoginToolFederatedTest : public ActorAttemptLoginToolTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {password_manager::features::kActorLoginFederatedClickFromActor,
-         features::kFedCmEmbedderInitiatedLogin,
-         features::kFedCmNavigationInterception},
+         features::kFedCmEmbedderInitiatedLogin},
         /*disabled_features=*/{});
   }
 

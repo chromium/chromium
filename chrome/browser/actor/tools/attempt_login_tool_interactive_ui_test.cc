@@ -179,10 +179,8 @@ class AttemptLoginToolInteractiveUiTest
     std::vector<base::test::FeatureRef> disabled_features;
     if (federation_enabled()) {
       enabled_features.push_back(features::kFedCmEmbedderInitiatedLogin);
-      enabled_features.push_back(features::kFedCmNavigationInterception);
     } else {
       disabled_features.push_back(features::kFedCmEmbedderInitiatedLogin);
-      disabled_features.push_back(features::kFedCmNavigationInterception);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
