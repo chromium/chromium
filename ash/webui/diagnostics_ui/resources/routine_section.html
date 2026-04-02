@@ -115,7 +115,7 @@
 </style>
 <div class="routine-section-container container-spacing"
     hidden$="[[hideRoutineSection(routines.*)]]">
-  <div id="routineSection" class="routine-container">
+  <div id="routineSection" part="controls" class="routine-container">
     <div class="routine-status-container" hidden$="[[hideRoutineStatus]]">
       <text-badge id="testStatusBadge" badge-type="[[badgeType]]"
           hidden$="[[isStatusHidden(executionStatus)]]"
@@ -161,7 +161,7 @@
       </cr-button>
     </div>
   </div>
-  <iron-collapse id="collapse" opened="{{opened}}">
+  <iron-collapse id="collapse" part="results" opened="{{opened}}">
     <div class="result-list">
       <routine-result-list id="resultList"
           hide-vertical-lines="[[hideVerticalLines]]"
@@ -176,7 +176,7 @@
   </iron-collapse>
   <!-- Detail messages are TrustedHTML produced by sanitizeInnerHtml()
        from plain-text blocks supplied via RoutineResultInfo.details. -->
-  <iron-collapse id="detailsCollapse" opened="{{detailsOpened}}">
+  <iron-collapse id="detailsCollapse" part="details" opened="{{detailsOpened}}">
     <template is="dom-if" if="[[hasDetailMessages(detailMessagesHTML.*)]]" restamp>
       <div class="details-list grey-container">
         <template is="dom-repeat" items="[[detailMessagesHTML]]">

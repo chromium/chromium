@@ -2000,4 +2000,74 @@ suite('routineSectionTestSuite', function() {
           assertFalse(detailsButton.hidden);
         });
   });
+
+  test('ExportsCssPartsForSectionOrdering', () => {
+    return initializeRoutineSection([RoutineType.kCpuStress]).then(() => {
+      assert(routineSectionElement);
+      const controls = routineSectionElement.shadowRoot!
+          .querySelector('[part="controls"]');
+      assert(controls);
+      assertEquals('routineSection', controls.id);
+
+      const results = routineSectionElement.shadowRoot!
+          .querySelector('[part="results"]');
+      assert(results);
+      assertEquals('collapse', results.id);
+
+      const details = routineSectionElement.shadowRoot!
+          .querySelector('[part="details"]');
+      assert(details);
+      assertEquals('detailsCollapse', details.id);
+    });
+  });
+
+  test('DefaultPlacesRoutineSectionBeforeCollapse', () => {
+    return initializeRoutineSection([RoutineType.kCpuStress]).then(() => {
+      assert(routineSectionElement);
+      const collapse = routineSectionElement.shadowRoot!
+          .querySelector('#collapse');
+      assert(collapse);
+      const routineSection = routineSectionElement.shadowRoot!
+          .querySelector('#routineSection');
+      assert(routineSection);
+      const detailsCollapse = routineSectionElement.shadowRoot!
+          .querySelector('#detailsCollapse');
+      assert(detailsCollapse);
+      const collapseOrder = getComputedStyle(collapse).order;
+      const sectionOrder = getComputedStyle(routineSection).order;
+      const detailsCollapseOrder = getComputedStyle(detailsCollapse).order;
+      assertEquals(collapseOrder, sectionOrder,
+          'both should have the same CSS order by default');
+      assertEquals(detailsCollapseOrder, sectionOrder,
+          'both should have the same CSS order by default');
+    });
+  });
+
+  test('CssPartsAllowParentToControlSectionOrder', () => {
+    const style = document.createElement('style');
+    style.textContent = `
+        routine-section::part(results) { order: 0; }
+        routine-section::part(controls) { order: 1; }
+        routine-section::part(details) { order: 2; }`;
+    return initializeRoutineSection([RoutineType.kCpuStress]).then(() => {
+      assert(routineSectionElement);
+      document.head.appendChild(style);
+      return flushTasks().then(() => {
+        const collapse = routineSectionElement!.shadowRoot!
+            .querySelector('#collapse');
+        assert(collapse);
+        const routineSection = routineSectionElement!.shadowRoot!
+            .querySelector('#routineSection');
+        assert(routineSection);
+        const detailsCollapse = routineSectionElement!.shadowRoot!
+            .querySelector('#detailsCollapse');
+        assert(detailsCollapse);
+        assertEquals('0', getComputedStyle(collapse).order);
+        assertEquals('1', getComputedStyle(routineSection).order);
+        assertEquals('2', getComputedStyle(detailsCollapse).order);
+      });
+    }).finally(() => {
+      style.remove();
+    });
+  });
 });
