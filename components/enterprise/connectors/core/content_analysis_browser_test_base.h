@@ -18,7 +18,7 @@ namespace enterprise_connectors::test {
 
 // Base class that allows tests to set up an embedded test server that expects
 // to receive content analysis requests and that returns responses.
-// TODO(crbug.com/488379628): Enhance this class to handle more content analysis
+// TODO(crbug.com/498915066): Enhance this class to handle more content analysis
 // actions and management contexts.
 class ContentAnalysisBrowserTestBase {
  public:

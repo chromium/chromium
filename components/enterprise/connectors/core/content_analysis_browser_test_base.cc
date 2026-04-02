@@ -196,7 +196,7 @@ ContentAnalysisBrowserTestBase::HandleRequest(
 std::unique_ptr<net::test_server::HttpResponse>
 ContentAnalysisBrowserTestBase::HandleResumableMetadataRequest(
     const net::test_server::HttpRequest& request) {
-  // TODO(crbug.com/488379628): Add logic to validate headers.
+  // TODO(crbug.com/498915066): Add logic to validate headers.
 
   // The ContentAnalysisRequest is expected to be encoded in base64 in the
   // initial resumable request body.
@@ -233,7 +233,7 @@ ContentAnalysisBrowserTestBase::HandleResumableMetadataRequest(
 std::unique_ptr<net::test_server::HttpResponse>
 ContentAnalysisBrowserTestBase::HandleResumableContentRequest(
     const net::test_server::HttpRequest& request) {
-  // TODO(crbug.com/488379628): Add logic to validate headers.
+  // TODO(crbug.com/498915066): Add logic to validate headers.
 
   auto expected = std::find_if(
       expected_requests_.begin(), expected_requests_.end(),
@@ -250,7 +250,7 @@ ContentAnalysisBrowserTestBase::HandleResumableContentRequest(
 std::unique_ptr<net::test_server::HttpResponse>
 ContentAnalysisBrowserTestBase::HandleMultipartRequest(
     const net::test_server::HttpRequest& request) {
-  // TODO(crbug.com/488379628): Add logic to validate headers.
+  // TODO(crbug.com/498915066): Add logic to validate headers.
 
   ContentAnalysisRequest content_analysis_request =
       GetMultipartMetadata(request);
@@ -281,7 +281,7 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
     const std::vector<std::string>& headers) {
   ContentAnalysisRequest request;
   request.set_analysis_connector(GetAnalysisConnector(data));
-  // TODO(crbug.com/488379628): Add logic to evaluate more profile management
+  // TODO(crbug.com/498915066): Add logic to evaluate more profile management
   // cases instead of just relying on the headers not being empty.
   request.set_device_token(headers.empty() ? ExpectedDeviceToken()
                                            : ExpectedProfileToken());
@@ -312,7 +312,7 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
     *request_data->mutable_copied_text_source() = data.clipboard_source;
   }
   request_data->set_destination(data.url.spec());
-  // TODO(crbug.com/488379628): Add better logic for managed profiles.
+  // TODO(crbug.com/498915066): Add better logic for managed profiles.
   bool has_auth_header = false;
   for (const std::string& header : headers) {
     if (header.starts_with("Authorization:")) {
@@ -324,7 +324,7 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
   request_data->set_source(data.clipboard_source.url());
   request_data->set_tab_url(data.url.spec());
   request_data->set_url(data.url.spec());
-  // TODO(crbug.com/488379628): Add logic for multiple files.
+  // TODO(crbug.com/498915066): Add logic for multiple files.
   if (!data.paths.empty()) {
     request_data->set_filename(data.paths[0].AsUTF8Unsafe());
     request_data->set_file_size(body.size());
@@ -337,7 +337,7 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
     request_data->set_digest(base::HexEncode(hash_value));
   }
 
-  // TODO(crbug.com/488379628): Add logic for comparing arbitrary referrer
+  // TODO(crbug.com/498915066): Add logic for comparing arbitrary referrer
   // chains with more fields set and more than one entry.
   auto* referrer_chain = request_data->add_referrer_chain();
   referrer_chain->set_is_retargeting(false);
@@ -399,7 +399,7 @@ bool ContentAnalysisBrowserTestBase::MatchesRequest(
     }
 
     // ContentAnalysisRequest::request_data::content_type
-    // TODO(crbug.com/488379628): Add an enterprise mime type function to call
+    // TODO(crbug.com/498915066): Add an enterprise mime type function to call
     // to set this earlier instead of just copying `received_request`'s mime
     // type.
     if (received_request.request_data().has_content_type()) {
@@ -412,7 +412,7 @@ bool ContentAnalysisBrowserTestBase::MatchesRequest(
 }
 
 std::string ContentAnalysisBrowserTestBase::ExpectedDeviceToken() {
-  // TODO(crbug.com/488379628): Handle cases where device_token is set with a
+  // TODO(crbug.com/498915066): Handle cases where device_token is set with a
   // profile DM token.
 #if BUILDFLAG(IS_CHROMEOS)
   return "device_dm_token";
@@ -422,7 +422,7 @@ std::string ContentAnalysisBrowserTestBase::ExpectedDeviceToken() {
 }
 
 std::string ContentAnalysisBrowserTestBase::ExpectedProfileToken() {
-  // TODO(crbug.com/488379628): Handle more complex profile/device management
+  // TODO(crbug.com/498915066): Handle more complex profile/device management
   // cases.
 #if BUILDFLAG(IS_CHROMEOS)
   return "device_dm_token";
