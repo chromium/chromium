@@ -245,7 +245,7 @@ public class GeolocationHeader {
 
             // TODO(raymes): The call to isDseOrigin is only needed if this could be called for
             // an origin that isn't the default search engine. Otherwise remove this line.
-            boolean isDseOrigin = WebsitePreferenceBridge.isDSEOrigin(profile, gurl);
+            boolean isDseOrigin = WebsitePreferenceBridge.isDseOrigin(profile, gurl);
             if (!isDseOrigin) return HeaderState.LOCATION_PERMISSION_BLOCKED;
 
             final GeolocationSetting setting = getGeolocationSettingForUrl(profile, url);

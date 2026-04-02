@@ -39,7 +39,7 @@ public final class FeedFeatures {
     public static boolean isFeedEnabled(Profile profile) {
         return (!ChromeFeatureList.sNtpSimplification.isEnabled() || !DeviceInfo.isDesktop())
                 && FeedServiceBridge.isEnabled()
-                && isFeedEnabledByDSE(profile);
+                && isFeedEnabledByDse(profile);
     }
 
     /**
@@ -58,10 +58,10 @@ public final class FeedFeatures {
         return WebFeedBridge.isWebFeedEnabled()
                 && isPrimaryAccountSignedIn
                 && !profile.isChild()
-                && isFeedEnabledByDSE(profile);
+                && isFeedEnabledByDse(profile);
     }
 
-    private static boolean isFeedEnabledByDSE(Profile profile) {
+    private static boolean isFeedEnabledByDse(Profile profile) {
         return getPrefService(profile).getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE);
     }
 

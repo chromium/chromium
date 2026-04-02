@@ -619,7 +619,7 @@ public class StatusMediator
 
     /** Returns status icon resource for the user-selected default search engine. */
     private StatusIconResource getStatusIconResourceForSearchEngineIcon() {
-        StatusIconResource extensionIcon = getStatusIconResourceForExtensionSuppliedDSE();
+        StatusIconResource extensionIcon = getStatusIconResourceForExtensionSuppliedDse();
         if (extensionIcon != null) return extensionIcon;
 
         if (mSiteSearchDataSupplier != null && mSiteSearchDataSupplier.get() != null) {
@@ -644,7 +644,7 @@ public class StatusMediator
         return mSearchEngineIcon;
     }
 
-    private @Nullable StatusIconResource getStatusIconResourceForExtensionSuppliedDSE() {
+    private @Nullable StatusIconResource getStatusIconResourceForExtensionSuppliedDse() {
         if (mSiteSearchDataSupplier == null) return null;
 
         SiteSearchData siteSearchData = mSiteSearchDataSupplier.get();

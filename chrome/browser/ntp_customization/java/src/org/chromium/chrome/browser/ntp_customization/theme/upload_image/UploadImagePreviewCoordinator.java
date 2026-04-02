@@ -292,12 +292,12 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
      */
     private void setUpLogo(Activity activity, Profile profile, PropertyModel model) {
         boolean shouldShowLogo = doesDefaultSearchEngineHaveLogo(profile);
-        boolean isGoogleDSE =
+        boolean isGoogleDse =
                 TemplateUrlServiceFactory.getForProfile(profile).isDefaultSearchEngineGoogle();
         Bitmap logoBitmap =
                 NtpCustomizationConfigManager.getInstance().getDefaultSearchEngineLogoBitmap();
 
-        if (!shouldShowLogo || (!isGoogleDSE && logoBitmap == null)) {
+        if (!shouldShowLogo || (!isGoogleDse && logoBitmap == null)) {
             model.set(LOGO_VISIBILITY, View.GONE);
             return;
         }

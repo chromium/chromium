@@ -114,7 +114,7 @@ public class GeolocationHeaderUnitTest {
         GeolocationHeader.resetStateForTesting();
         setSiteGeolocationPermissions(
                 /* approximate= */ ContentSetting.ALLOW, /* precise= */ ContentSetting.ALLOW);
-        when(mWebsitePreferenceBridgeJniMock.isDSEOrigin(any(BrowserContextHandle.class), any()))
+        when(mWebsitePreferenceBridgeJniMock.isDseOrigin(any(BrowserContextHandle.class), any()))
                 .thenReturn(true);
         when(mProfileMock.isOffTheRecord()).thenReturn(false);
         when(mTemplateUrlServiceMock.getUrlForSearchQuery(anyString()))

@@ -961,7 +961,7 @@ static void JNI_WebsitePreferenceBridge_ClearMediaLicenses(
       base::DoNothing());
 }
 
-static bool JNI_WebsitePreferenceBridge_IsDSEOrigin(
+static bool JNI_WebsitePreferenceBridge_IsDseOrigin(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
     const GURL& jorigin) {

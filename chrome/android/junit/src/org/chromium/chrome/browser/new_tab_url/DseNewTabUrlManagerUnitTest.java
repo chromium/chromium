@@ -97,21 +97,21 @@ public class DseNewTabUrlManagerUnitTest {
     }
 
     @Test
-    public void testGetDSENewTabUrl() {
-        String newTabUrl = DseNewTabUrlManager.getDSENewTabUrl(null);
+    public void testGetDseNewTabUrl() {
+        String newTabUrl = DseNewTabUrlManager.getDseNewTabUrl(null);
         assertNull(newTabUrl);
 
         mSharedPreferenceManager.writeString(ChromePreferenceKeys.DSE_NEW_TAB_URL, NEW_TAB_URL);
-        assertEquals(NEW_TAB_URL, DseNewTabUrlManager.getDSENewTabUrl(null));
+        assertEquals(NEW_TAB_URL, DseNewTabUrlManager.getDseNewTabUrl(null));
 
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        assertNull(DseNewTabUrlManager.getDSENewTabUrl(mTemplateUrlService));
+        assertNull(DseNewTabUrlManager.getDseNewTabUrl(mTemplateUrlService));
 
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        assertEquals(NEW_TAB_URL, DseNewTabUrlManager.getDSENewTabUrl(mTemplateUrlService));
+        assertEquals(NEW_TAB_URL, DseNewTabUrlManager.getDseNewTabUrl(mTemplateUrlService));
 
         doReturn(null).when(mTemplateUrl).getNewTabURL();
-        assertEquals(SEARCH_URL, DseNewTabUrlManager.getDSENewTabUrl(mTemplateUrlService));
+        assertEquals(SEARCH_URL, DseNewTabUrlManager.getDseNewTabUrl(mTemplateUrlService));
     }
 
     @Test

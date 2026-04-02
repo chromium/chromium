@@ -151,7 +151,7 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSEGeolocation_InPrimaryOtrProfile_DefaultsToAskFromBlock()
+    public void testResetDseGeolocation_InPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile primaryOtrProfile = getPrimaryOtrProfile();
         setSettingAndExpectValue(
@@ -173,7 +173,7 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSEGeolocation_InNonPrimaryOtrProfile_DefaultsToAskFromBlock()
+    public void testResetDseGeolocation_InNonPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile nonPrimaryOtrProfile = getNonPrimaryOtrProfile();
         setSettingAndExpectValue(
@@ -195,7 +195,7 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSEGeolocation_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
+    public void testResetDseGeolocation_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
         Profile regularProfile = getRegularProfile();
         setSettingAndExpectValue(
                 getGeolocationType(),
@@ -216,7 +216,7 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSENotification_InPrimaryOtrProfile_DefaultsToAskFromBlock()
+    public void testResetDseNotification_InPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile primaryOtrProfile = getPrimaryOtrProfile();
 
@@ -241,7 +241,7 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSENotification_InNonPrimaryOtrProfile_DefaultsToAskFromBlock()
+    public void testResetDseNotification_InNonPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile nonPrimaryOtrProfile = getNonPrimaryOtrProfile();
 
@@ -266,7 +266,7 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSENotification_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
+    public void testResetDseNotification_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
         Profile regularProfile = getRegularProfile();
         resetNotificationsSettingsForTest();
         setSettingAndExpectValue(
