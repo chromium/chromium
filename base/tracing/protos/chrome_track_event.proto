@@ -2913,7 +2913,7 @@ message ChromeTrackEvent {
   reserved "chrome_accessibility_win_notify_win_event";
 
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1082
+  // Next ID: 1083
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -3086,5 +3086,7 @@ message ChromeTrackEvent {
     optional MemoryDumpProvider memory_dump_provider = 1079;
 
     optional FrameIntervalDecider frame_interval_decider = 1081;
+
+    optional BeginFrameArgsV2 begin_frame_args = 1082;
   }
 }
