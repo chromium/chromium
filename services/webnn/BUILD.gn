@@ -320,8 +320,12 @@ test("webnn_graph_impl_fuzzer") {
   ]
 
   fuzztests = [
-    "WebNNGraphImplFuzzer.SingleOpConv2d",
-    "WebNNGraphImplFuzzer.SingleOpPool2d",
+    "WebNNGraphImplFuzzer_CPU.SingleOpConv2d",
+    "WebNNGraphImplFuzzer_GPU.SingleOpConv2d",
+    "WebNNGraphImplFuzzer_NPU.SingleOpConv2d",
+    "WebNNGraphImplFuzzer_CPU.SingleOpPool2d",
+    "WebNNGraphImplFuzzer_GPU.SingleOpPool2d",
+    "WebNNGraphImplFuzzer_NPU.SingleOpPool2d",
   ]
 
   deps = [
