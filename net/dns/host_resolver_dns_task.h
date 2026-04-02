@@ -64,10 +64,11 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
   class Delegate {
    public:
-    virtual void OnDnsTaskComplete(base::TimeTicks start_time,
-                                   bool allow_fallback,
-                                   Results results,
-                                   bool secure) = 0;
+    virtual void OnDnsTaskComplete(
+        base::TimeTicks start_time,
+        bool allow_fallback,
+        Results results,
+        DnsTransactionFactory::AttemptMode attempt_mode) = 0;
 
     // Called when one transaction completes successfully, or one more
     // transactions get cancelled, but only if more transactions are

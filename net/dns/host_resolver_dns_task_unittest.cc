@@ -52,7 +52,7 @@ class MockHostResolverDnsTaskDelegate : public HostResolverDnsTask::Delegate {
               (base::TimeTicks start_time,
                bool allow_fallback,
                HostResolverDnsTask::Results results,
-               bool secure),
+               DnsTransactionFactory::AttemptMode attempt_mode),
               (override));
   MOCK_METHOD(void,
               OnIntermediateTransactionsComplete,
@@ -150,9 +150,12 @@ TEST_F(HostResolverDnsTaskTest, PlatformAttemptSuccessIsParsedCorrectly) {
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_dns_task_delegate_,
-        OnDnsTaskComplete(_, /*allow_fallback=*/true, _, /*secure=*/false))
+        OnDnsTaskComplete(
+            _, /*allow_fallback=*/true, _,
+            /*attempt_mode=*/DnsTransactionFactory::AttemptMode::kPlatform))
         .WillOnce([&](base::TimeTicks start_time, bool allow_fallback,
-                      HostResolverDnsTask::Results results, bool secure) {
+                      HostResolverDnsTask::Results results,
+                      DnsTransactionFactory::AttemptMode attempt_mode) {
           EXPECT_THAT(
               results,
               ElementsAre(Pointee(AllOf(
@@ -205,9 +208,12 @@ TEST_F(HostResolverDnsTaskTest, PlatformAttemptCorruptResponseFailsParsing) {
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_dns_task_delegate_,
-        OnDnsTaskComplete(_, /*allow_fallback=*/true, _, /*secure=*/false))
+        OnDnsTaskComplete(
+            _, /*allow_fallback=*/true, _,
+            /*attempt_mode=*/DnsTransactionFactory::AttemptMode::kPlatform))
         .WillOnce([&](base::TimeTicks start_time, bool allow_fallback,
-                      HostResolverDnsTask::Results results, bool secure) {
+                      HostResolverDnsTask::Results results,
+                      DnsTransactionFactory::AttemptMode attempt_mode) {
           EXPECT_THAT(
               results,
               ElementsAre(Pointee(AllOf(
@@ -274,9 +280,12 @@ TEST_F(HostResolverDnsTaskTest,
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_dns_task_delegate_,
-        OnDnsTaskComplete(_, /*allow_fallback=*/true, _, /*secure=*/false))
+        OnDnsTaskComplete(
+            _, /*allow_fallback=*/true, _,
+            /*attempt_mode=*/DnsTransactionFactory::AttemptMode::kPlatform))
         .WillOnce([&](base::TimeTicks start_time, bool allow_fallback,
-                      HostResolverDnsTask::Results results, bool secure) {
+                      HostResolverDnsTask::Results results,
+                      DnsTransactionFactory::AttemptMode attempt_mode) {
           EXPECT_THAT(
               results,
               ElementsAre(Pointee(AllOf(

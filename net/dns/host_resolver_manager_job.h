@@ -216,6 +216,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     std::array<size_t, NUM_PRIORITIES> counts_ = {};
   };
 
+  // This is private static, instead of being in an anonymous namespace, to have
+  // access to HostResolverManager::TaskType. Otherwise,
+  // HostResolverManager::TaskType would need to be made public.
+  static TaskType AttemptModeToTaskType(
+      DnsTransactionFactory::AttemptMode attempt_mode);
+
   base::DictValue NetLogJobCreationParams(const NetLogSource& source);
 
   void Finish();
@@ -253,7 +259,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   void InsecureCacheLookup();
 
-  void StartDnsTask(bool secure);
+  void StartDnsTask(DnsTransactionFactory::AttemptMode attempt_mode);
   void StartNextDnsTransaction();
   // Called if DnsTask fails. It is posted from StartDnsTask, so Job may be
   // deleted before this callback. In this case dns_task is deleted as well,
@@ -262,12 +268,13 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
                         base::TimeDelta duration,
                         bool allow_fallback,
                         const HostCache::Entry& failure_results,
-                        bool secure);
+                        DnsTransactionFactory::AttemptMode attempt_mode);
   // HostResolverDnsTask::Delegate implementation:
-  void OnDnsTaskComplete(base::TimeTicks start_time,
-                         bool allow_fallback,
-                         HostResolverDnsTask::Results results,
-                         bool secure) override;
+  void OnDnsTaskComplete(
+      base::TimeTicks start_time,
+      bool allow_fallback,
+      HostResolverDnsTask::Results results,
+      DnsTransactionFactory::AttemptMode attempt_mode) override;
   void OnIntermediateTransactionsComplete(
       std::optional<HostResolverDnsTask::SingleTransactionResults>
           single_transaction_results) override;
@@ -332,7 +339,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   struct CompletionResult {
     const HostCache::Entry entry;
     base::TimeDelta ttl;
-    bool secure;
+    DnsTransactionFactory::AttemptMode attempt_mode;
   };
 
   // Results to use in last-ditch attempt to complete request.

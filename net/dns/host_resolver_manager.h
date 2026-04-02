@@ -312,8 +312,9 @@ class NET_EXPORT HostResolverManager
     CONFIG_PRESET = 7,
     NAT64 = 8,
     HOSTS = 9,
+    DNS_PLATFORM = 10,
 
-    kMaxValue = HOSTS,
+    kMaxValue = DNS_PLATFORM,
   };
 
   // Returns true if the task is local, synchronous, and instantaneous.
