@@ -178,7 +178,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param appMenuBlocker Controls the app menu blocking.
      * @param supportsAppMenuSupplier Supplies the support state for the app menu.
-     * @param supportsFindInPage Supplies the support state for find in page.
      * @param tabCreatorManagerSupplier Supplies the {@link TabCreatorManager}.
      * @param fullscreenManager Manages the fullscreen state.
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
@@ -221,7 +220,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull AppMenuBlocker appMenuBlocker,
             @NonNull BooleanSupplier supportsAppMenuSupplier,
-            @NonNull BooleanSupplier supportsFindInPage,
             @NonNull Supplier<TabCreatorManager> tabCreatorManagerSupplier,
             @NonNull FullscreenManager fullscreenManager,
             @NonNull MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
@@ -272,7 +270,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 modalDialogManagerSupplier,
                 appMenuBlocker,
                 supportsAppMenuSupplier,
-                supportsFindInPage,
                 tabCreatorManagerSupplier,
                 fullscreenManager,
                 compositorViewHolderSupplier,

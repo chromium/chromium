@@ -3111,13 +3111,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return getToolbarLayoutId() != ActivityUtils.NO_RESOURCE_ID;
     }
 
-    /**
-     * @return Whether this activity supports the find in page feature.
-     */
-    public boolean supportsFindInPage() {
-        return true;
-    }
-
     public RootUiCoordinator getRootUiCoordinatorForTesting() {
         return mRootUiCoordinator;
     }

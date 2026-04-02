@@ -402,7 +402,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getModalDialogManagerSupplier().asNonNull(),
                         /* appMenuBlocker= */ this,
                         this::supportsAppMenu,
-                        this::supportsFindInPage,
                         getTabCreatorManagerSupplier(),
                         getFullscreenManager(),
                         getCompositorViewHolderSupplier(),

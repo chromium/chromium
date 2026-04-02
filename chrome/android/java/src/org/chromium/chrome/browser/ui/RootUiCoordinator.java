@@ -48,7 +48,9 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -371,7 +373,6 @@ public class RootUiCoordinator
     protected final NonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final AppMenuBlocker mAppMenuBlocker;
     private final BooleanSupplier mSupportsAppMenuSupplier;
-    protected final BooleanSupplier mSupportsFindInPageSupplier;
     protected final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
     protected final FullscreenManager mFullscreenManager;
     protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
@@ -454,7 +455,6 @@ public class RootUiCoordinator
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param appMenuBlocker Controls the app menu blocking.
      * @param supportsAppMenuSupplier Supplies the support state for the app menu.
-     * @param supportsFindInPage Supplies the support state for find in page.
      * @param tabCreatorManagerSupplier Supplies the {@link TabCreatorManager}.
      * @param fullscreenManager Manages the fullscreen state.
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
@@ -502,7 +502,6 @@ public class RootUiCoordinator
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             AppMenuBlocker appMenuBlocker,
             BooleanSupplier supportsAppMenuSupplier,
-            BooleanSupplier supportsFindInPage,
             Supplier<TabCreatorManager> tabCreatorManagerSupplier,
             FullscreenManager fullscreenManager,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
@@ -538,7 +537,6 @@ public class RootUiCoordinator
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mAppMenuBlocker = appMenuBlocker;
         mSupportsAppMenuSupplier = supportsAppMenuSupplier;
-        mSupportsFindInPageSupplier = supportsFindInPage;
         mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
         mFullscreenManager = fullscreenManager;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
@@ -1784,6 +1782,7 @@ public class RootUiCoordinator
      * Constructs {@link ToolbarManager} and the handler necessary for controlling the menu on the
      * {@link Toolbar}.
      */
+    @RequiresNonNull("mFindToolbarManager")
     protected void initializeToolbar() {
         try (TraceEvent te = TraceEvent.scoped("RootUiCoordinator.initializeToolbar")) {
             final View controlContainer = mActivity.findViewById(R.id.control_container);
@@ -2111,8 +2110,8 @@ public class RootUiCoordinator
         return stubId;
     }
 
+    @EnsuresNonNull("mFindToolbarManager")
     private void initFindToolbarManager() {
-        if (!mSupportsFindInPageSupplier.getAsBoolean()) return;
         int stubId = getFindToolbarStub();
         mFindToolbarManager =
                 new FindToolbarManager(

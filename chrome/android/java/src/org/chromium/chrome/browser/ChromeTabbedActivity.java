@@ -3115,7 +3115,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getModalDialogManagerSupplier().asNonNull(),
                 /* appMenuBlocker= */ this,
                 this::supportsAppMenu,
-                this::supportsFindInPage,
                 getTabCreatorManagerSupplier(),
                 getFullscreenManager(),
                 getCompositorViewHolderSupplier(),

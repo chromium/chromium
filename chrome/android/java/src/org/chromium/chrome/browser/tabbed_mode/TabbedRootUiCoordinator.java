@@ -425,7 +425,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param appMenuBlocker Controls the app menu blocking.
      * @param supportsAppMenuSupplier Supplies the support state for the app menu.
-     * @param supportsFindInPage Supplies the support state for find in page.
      * @param tabCreatorManagerSupplier Supplies the {@link TabCreatorManager}.
      * @param fullscreenManager Manages the fullscreen state.
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
@@ -483,7 +482,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             AppMenuBlocker appMenuBlocker,
             BooleanSupplier supportsAppMenuSupplier,
-            BooleanSupplier supportsFindInPage,
             Supplier<TabCreatorManager> tabCreatorManagerSupplier,
             FullscreenManager fullscreenManager,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
@@ -538,7 +536,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 modalDialogManagerSupplier.asNonNull(),
                 appMenuBlocker,
                 supportsAppMenuSupplier,
-                supportsFindInPage,
                 tabCreatorManagerSupplier,
                 fullscreenManager,
                 compositorViewHolderSupplier,
