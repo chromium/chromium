@@ -336,6 +336,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_KEEP_FORWARD_ENTRIES,
         ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_KEEP_FORWARD_ENTRIES,
         ApiCall.GET_MAX_PRERENDERS,
+        ApiCall.CLEAR_MAX_PREFETCHES,
+        ApiCall.CLEAR_PREFETCH_TTL,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -535,8 +537,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_MAX_PRERENDERS = 188;
         int GET_MAX_PREFETCHES = 189;
         int GET_PREFETCH_TTL_SECONDS = 190;
+        int CLEAR_MAX_PREFETCHES = 191;
+        int CLEAR_PREFETCH_TTL = 192;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 191;
+        int COUNT = 193;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

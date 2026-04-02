@@ -39,12 +39,15 @@ class AwPrefetchManagerTest : public AwMetricsTestBase {
   std::unique_ptr<content::TestBrowserContext> browser_context_;
 };
 
-// Tests GetMaxPrefetches and GetTtlInSec returns the correct values.
+// Tests Max Prefetches and TTL Seconds setter APIs
 TEST_F(AwPrefetchManagerTest, UpdateCacheConfig) {
   AwPrefetchManager prefetch_manager(browser_context_.get());
 
   int actual_ttl_in_sec = 30 * 10;
   size_t actual_max_prefetches = 5;
+
+  int default_ttl_in_sec = kDefaultTtlInSec;
+  size_t default_max_prefetches = kDefaultMaxPrefetches;
 
   prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
                                actual_ttl_in_sec);
@@ -55,6 +58,14 @@ TEST_F(AwPrefetchManagerTest, UpdateCacheConfig) {
             prefetch_manager.GetTtlInSec(base::android::AttachCurrentThread()));
   EXPECT_EQ(actual_max_prefetches, prefetch_manager.GetMaxPrefetches(
                                        base::android::AttachCurrentThread()));
+
+  prefetch_manager.ClearTtl(base::android::AttachCurrentThread());
+  prefetch_manager.ClearMaxPrefetches(base::android::AttachCurrentThread());
+
+  EXPECT_EQ(default_ttl_in_sec,
+            prefetch_manager.GetTtlInSec(base::android::AttachCurrentThread()));
+  EXPECT_EQ(default_max_prefetches, prefetch_manager.GetMaxPrefetches(
+                                        base::android::AttachCurrentThread()));
 }
 
 TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {

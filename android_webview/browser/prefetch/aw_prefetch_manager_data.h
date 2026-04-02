@@ -84,12 +84,12 @@ class AwPrefetchManagerData {
 
   void CancelPrefetch(AwPrefetchKey prefetch_key) LOCKS_EXCLUDED(lock_);
 
+  size_t GetMaxPrefetches() const LOCKS_EXCLUDED(lock_);
   void SetTtlInSec(int ttl_in_sec) LOCKS_EXCLUDED(lock_);
   int GetTtlInSec() const LOCKS_EXCLUDED(lock_);
   void SetMaxPrefetches(size_t max_prefetches) LOCKS_EXCLUDED(lock_);
 
   // Testing utilities.
-  size_t GetMaxPrefetchesForTesting() const LOCKS_EXCLUDED(lock_);
   std::vector<AwPrefetchKey> GetAllPrefetchKeysForTesting() const
       LOCKS_EXCLUDED(lock_);
   AwPrefetchKey GetLastPrefetchKeyForTesting() const LOCKS_EXCLUDED(lock_);

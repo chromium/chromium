@@ -115,7 +115,7 @@ int AwPrefetchManagerData::GetTtlInSec() const {
   return ttl_in_sec_;
 }
 
-size_t AwPrefetchManagerData::GetMaxPrefetchesForTesting() const {  // IN-TEST
+size_t AwPrefetchManagerData::GetMaxPrefetches() const {
   base::AutoLockMaybe auto_lock(lock_.get());
 
   return max_prefetches_;

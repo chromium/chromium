@@ -300,6 +300,8 @@ public class Features {
     // Profile.getPrefetchTtlSeconds
     // Profile.setMaxPrefetches
     // Profile.setPrefetchTtlSeconds
+    // Profile.clearMaxPrefetches
+    // Profile.clearPrefetchTtl
     public static final String PREFETCH_CACHE = "PREFETCH_CACHE_V1";
 
     // PrefetchOperationCallbackBoundaryInterface.onResult

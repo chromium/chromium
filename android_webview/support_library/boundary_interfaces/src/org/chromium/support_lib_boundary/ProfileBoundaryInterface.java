@@ -52,9 +52,19 @@ public interface ProfileBoundaryInterface {
 
     void setMaxPrerenders(@Nullable Integer maxPrerenders);
 
+    // Kept for compatibility. `int` version is going to be used moving forward.
     void setMaxPrefetches(@Nullable Integer maxPrefetches);
 
+    // Kept for compatibility. `int` version is going to be used moving forward.
     void setPrefetchTtlSeconds(@Nullable Integer prefetchTtlSeconds);
+
+    void setMaxPrefetches(int maxPrefetches);
+
+    void setPrefetchTtlSeconds(int prefetchTtlSeconds);
+
+    void clearMaxPrefetches();
+
+    void clearPrefetchTtl();
 
     int getMaxPrerenders();
 

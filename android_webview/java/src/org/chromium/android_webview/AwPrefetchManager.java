@@ -257,7 +257,7 @@ public class AwPrefetchManager {
     }
 
     @UiThread
-    public void setMaxPrefetches(@Nullable Integer maxPrefetches) {
+    public void setMaxPrefetches(int maxPrefetches) {
         try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.SET_MAX_PREFETCHES")) {
             assert ThreadUtils.runningOnUiThread();
             AwPrefetchManagerJni.get().setMaxPrefetches(mNativePrefetchManager, maxPrefetches);
@@ -265,11 +265,29 @@ public class AwPrefetchManager {
     }
 
     @UiThread
-    public void setPrefetchTtlSeconds(@Nullable Integer prefetchTtlSeconds) {
+    public void setPrefetchTtlSeconds(int prefetchTtlSeconds) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.Profile.Prefetch.SET_PREFETCH_TTL_SECONDS")) {
             assert ThreadUtils.runningOnUiThread();
             AwPrefetchManagerJni.get().setTtlInSec(mNativePrefetchManager, prefetchTtlSeconds);
+        }
+    }
+
+    @UiThread
+    public void clearMaxPrefetches() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.Profile.Prefetch.CLEAR_MAX_PREFETCHES")) {
+            assert ThreadUtils.runningOnUiThread();
+            AwPrefetchManagerJni.get().clearMaxPrefetches(mNativePrefetchManager);
+        }
+    }
+
+    @UiThread
+    public void clearPrefetchTtl() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.Profile.Prefetch.CLEAR_PREFETCH_TTL_SECONDS")) {
+            assert ThreadUtils.runningOnUiThread();
+            AwPrefetchManagerJni.get().clearTtl(mNativePrefetchManager);
         }
     }
 
@@ -364,13 +382,13 @@ public class AwPrefetchManager {
         // IN-TESTS
         boolean getIsPrefetchInCacheForTesting(long nativeAwPrefetchManager, int prefetchKey);
 
-        void setTtlInSec(
-                long nativeAwPrefetchManager,
-                @JniType("std::optional<int>") @Nullable Integer ttlInSeconds);
+        void setTtlInSec(long nativeAwPrefetchManager, int ttlInSeconds);
 
-        void setMaxPrefetches(
-                long nativeAwPrefetchManager,
-                @JniType("std::optional<int>") @Nullable Integer maxPrefetches);
+        void setMaxPrefetches(long nativeAwPrefetchManager, int maxPrefetches);
+
+        void clearTtl(long nativeAwPrefetchManager);
+
+        void clearMaxPrefetches(long nativeAwPrefetchManager);
 
         int getTtlInSec(long nativeAwPrefetchManager);
 

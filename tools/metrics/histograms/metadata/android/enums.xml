@@ -753,6 +753,8 @@ chromium-metrics-reviews@google.com.
   <int value="188" label="WebSettingsCompat.getMaxPrerenders"/>
   <int value="189" label="WebSettingsCompat.getMaxPrefetches"/>
   <int value="190" label="WebSettingsCompat.getPrefetchTtlSeconds"/>
+  <int value="191" label="WebSettingsCompat.clearMaxPrefetches"/>
+  <int value="192" label="WebSettingsCompat.clearPrefetchTtl"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

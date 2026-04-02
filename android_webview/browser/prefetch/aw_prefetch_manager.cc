@@ -370,25 +370,19 @@ void AwPrefetchManager::CancelPrefetch(JNIEnv* env,
   aw_prefetch_manager_data_.CancelPrefetch(prefetch_key);
 }
 
-void AwPrefetchManager::SetTtlInSec(JNIEnv* env,
-                                    std::optional<int> ttl_in_sec) {
+void AwPrefetchManager::SetTtlInSec(JNIEnv* env, int ttl_in_sec) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  int sanitized_ttl_in_sec = ttl_in_sec.value_or(kDefaultTtlInSec);
-  CHECK_GT(sanitized_ttl_in_sec, 0);
+  CHECK_GT(ttl_in_sec, 0);
 
-  aw_prefetch_manager_data_.SetTtlInSec(sanitized_ttl_in_sec);
+  aw_prefetch_manager_data_.SetTtlInSec(ttl_in_sec);
 }
 
-void AwPrefetchManager::SetMaxPrefetches(JNIEnv* env,
-                                         std::optional<int> max_prefetches) {
+void AwPrefetchManager::SetMaxPrefetches(JNIEnv* env, int max_prefetches) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  size_t sanitized_max_prefetches = kDefaultMaxPrefetches;
-  if (max_prefetches) {
-    CHECK_GT(max_prefetches.value(), 0);
-    sanitized_max_prefetches = static_cast<size_t>(max_prefetches.value());
-  }
+  CHECK_GT(max_prefetches, 0);
+  size_t sanitized_max_prefetches = static_cast<size_t>(max_prefetches);
 
   aw_prefetch_manager_data_.SetMaxPrefetches(
       std::min(sanitized_max_prefetches, kAbsoluteMaxPrefetches));
@@ -399,7 +393,15 @@ int AwPrefetchManager::GetTtlInSec(JNIEnv* env) const {
 }
 
 size_t AwPrefetchManager::GetMaxPrefetches(JNIEnv* env) const {
-  return aw_prefetch_manager_data_.GetMaxPrefetchesForTesting();
+  return aw_prefetch_manager_data_.GetMaxPrefetches();
+}
+
+void AwPrefetchManager::ClearTtl(JNIEnv* env) {
+  aw_prefetch_manager_data_.SetTtlInSec(kDefaultTtlInSec);
+}
+
+void AwPrefetchManager::ClearMaxPrefetches(JNIEnv* env) {
+  aw_prefetch_manager_data_.SetMaxPrefetches(kDefaultMaxPrefetches);
 }
 
 std::vector<AwPrefetchKey>
