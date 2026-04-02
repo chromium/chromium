@@ -20,6 +20,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/frame_view.h"
+#include "ui/views/window/hit_test_utils.h"
 
 namespace views {
 
@@ -96,6 +97,12 @@ gfx::Rect NonClientView::GetWindowBoundsForClientBounds(
 }
 
 int NonClientView::NonClientHitTest(const gfx::Point& point) {
+  if (overlay_view_ && overlay_view_->GetVisible()) {
+    int component = views::GetHitTestComponent(overlay_view_, point);
+    if (component != HTNOWHERE) {
+      return component;
+    }
+  }
   // The FrameView is responsible for also asking the ClientView.
   return frame_view_->NonClientHitTest(point);
 }
@@ -163,6 +170,17 @@ void NonClientView::Layout(PassKey) {
 }
 
 View* NonClientView::GetTooltipHandlerForPoint(const gfx::Point& point) {
+  if (overlay_view_ && overlay_view_->GetVisible()) {
+    gfx::Point point_in_child_coords(point);
+    View::ConvertPointToTarget(this, overlay_view_.get(),
+                               &point_in_child_coords);
+    View* handler =
+        overlay_view_->GetTooltipHandlerForPoint(point_in_child_coords);
+    if (handler) {
+      return handler;
+    }
+  }
+
   // The same logic as for TargetForRect() applies here.
   if (frame_view_->parent() == this) {
     // During the reset of the frame_view_ it's possible to be in this code
@@ -203,6 +221,18 @@ View* NonClientView::TargetForRect(View* root, const gfx::Rect& rect) {
     return ViewTargeterDelegate::TargetForRect(root, rect);
   }
 
+  // The overlay view is above the frame_view, so process it first.
+  if (overlay_view_ && overlay_view_->GetVisible()) {
+    gfx::RectF rect_in_child_coords_f(rect);
+    View::ConvertRectToTarget(this, overlay_view_.get(),
+                              &rect_in_child_coords_f);
+    gfx::Rect rect_in_child_coords =
+        gfx::ToEnclosingRect(rect_in_child_coords_f);
+    if (overlay_view_->HitTestRect(rect_in_child_coords)) {
+      return overlay_view_->GetEventHandlerForRect(rect_in_child_coords);
+    }
+  }
+
   // Because of the z-ordering of our child views (the client view is positioned
   // over the frame view, if the client view ever overlaps the frame view
   // visually (as it does for the browser window), then it will eat events for
@@ -222,7 +252,6 @@ View* NonClientView::TargetForRect(View* root, const gfx::Rect& rect) {
       return frame_view_->GetEventHandlerForRect(rect_in_child_coords);
     }
   }
-
   return ViewTargeterDelegate::TargetForRect(root, rect);
 }
 

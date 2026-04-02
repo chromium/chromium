@@ -594,23 +594,6 @@ void BrowserFrameViewChromeOS::ChildPreferredSizeChanged(views::View* child) {
   }
 }
 
-bool BrowserFrameViewChromeOS::DoesIntersectRect(const views::View* target,
-                                                 const gfx::Rect& rect) const {
-  DCHECK_EQ(target, this);
-  if (!views::ViewTargeterDelegate::DoesIntersectRect(this, rect)) {
-    // |rect| is outside the frame's bounds.
-    return false;
-  }
-
-  // In immersive mode, the caption buttons container is reparented to the
-  // TopContainerView and hence |rect| should not be claimed here.  See
-  // BrowserFrameViewChromeOS::OnImmersiveRevealStarted().
-  const bool should_leave_to_top_container =
-      ImmersiveModeController::From(GetBrowserView()->browser())->IsRevealed();
-
-  return !should_leave_to_top_container;
-}
-
 views::View::Views BrowserFrameViewChromeOS::GetChildrenInZOrder() {
   if (frame_header_) {
     return frame_header_->GetAdjustedChildrenInZOrder(this);

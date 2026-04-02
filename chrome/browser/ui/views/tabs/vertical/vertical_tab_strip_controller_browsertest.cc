@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/fade_label_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
@@ -21,6 +24,11 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
+#include "chrome/browser/ui/views/toolbar/app_menu.h"
+#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -29,8 +37,14 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/view_utils.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/aura/window.h"
+#endif
 
 namespace {
 
@@ -146,6 +160,45 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   // Verify Tab is at Index 0.
   EXPECT_EQ(0, model->GetIndexOfTab(tab_to_move));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+                       ClickTabInImmersiveMode) {
+  // Add another tab to switch to.
+  AppendTab();
+
+  // Enter immersive fullscreen.
+  chrome::ToggleFullscreenMode(browser());
+  RunScheduledLayouts();
+
+  TabCollectionNode* last_tab_node =
+      unpinned_collection_node()->children()[1].get();
+  views::View* last_tab_view = last_tab_node->view();
+
+  ui::test::EventGenerator event_generator(
+      browser()->window()->GetNativeWindow()->GetRootWindow());
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
+
+  event_generator.MoveMouseTo(last_tab_view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ToolbarView* toolbar = browser_view->toolbar();
+  ToolbarButtonProvider* button_provider =
+      browser_view->toolbar_button_provider();
+  EXPECT_TRUE(toolbar->IsDrawn());
+  EXPECT_TRUE(button_provider->GetBackButton()->IsDrawn());
+  EXPECT_TRUE(toolbar->forward_button()->IsDrawn());
+  EXPECT_TRUE(toolbar->reload_button()->IsDrawn());
+  EXPECT_TRUE(toolbar->location_bar()->IsDrawn());
+  EXPECT_TRUE(toolbar->app_menu_button()->IsDrawn());
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class VerticalTabGroupHoverCardTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
