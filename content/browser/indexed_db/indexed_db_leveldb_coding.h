@@ -205,6 +205,13 @@ class KeyPrefix {
 
   std::string DebugString();
 
+  // Returns false if `this` cannot have been created by encoding a valid key by
+  // any means. This can only evaluate to true due to disk corruption. Note that
+  // this is not baked into `Decode()` simply because these extra checks can
+  // have a performance impact, which would anyway be redundant with checks made
+  // by many of the callers of `Decode()`.
+  bool CanBeValid() const;
+
   // The KeyPrefix for any record stored in the DB should always evaluate to
   // some `type`, but ones that are just used for range bounds and therefore not
   // stored (such as that for `BlobEntryKey::EncodeStopKeyForOrigin()`) may not

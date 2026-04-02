@@ -1335,7 +1335,7 @@ int Compare(std::string_view a,
   KeyPrefix prefix_b;
   bool ok_a = KeyPrefix::Decode(&slice_a, &prefix_a);
   bool ok_b = KeyPrefix::Decode(&slice_b, &prefix_b);
-  if (!ok_a || !ok_b) {
+  if (!ok_a || !ok_b || !prefix_a.CanBeValid() || !prefix_b.CanBeValid()) {
     *ok = false;
     return 0;
   }
@@ -1780,24 +1780,27 @@ bool KeyPrefix::Decode(std::string_view* slice, KeyPrefix* result) {
       slice->size())
     return false;
 
+  // Technically, `database_id_`, `object_store_id_`, and `index_id_` should
+  // never be negative, but enforcing that via extra checks here affects
+  // performance on some systems. We rely on every user of `KeyPrefix::Decode`
+  // to verify these values make sense.
   {
     std::string_view tmp = slice->substr(0, database_id_bytes);
-    if (!DecodeInt(&tmp, &result->database_id_) || result->database_id_ < 0) {
+    if (!DecodeInt(&tmp, &result->database_id_)) {
       return false;
     }
   }
   slice->remove_prefix(database_id_bytes);
   {
     std::string_view tmp = slice->substr(0, object_store_id_bytes);
-    if (!DecodeInt(&tmp, &result->object_store_id_) ||
-        result->object_store_id_ < 0) {
+    if (!DecodeInt(&tmp, &result->object_store_id_)) {
       return false;
     }
   }
   slice->remove_prefix(object_store_id_bytes);
   {
     std::string_view tmp = slice->substr(0, index_id_bytes);
-    if (!DecodeInt(&tmp, &result->index_id_) || result->index_id_ < 0) {
+    if (!DecodeInt(&tmp, &result->index_id_)) {
       return false;
     }
   }
@@ -1899,8 +1902,12 @@ std::string KeyPrefix::DebugString() {
   return result.str();
 }
 
+bool KeyPrefix::CanBeValid() const {
+  return database_id_ >= 0 && object_store_id_ >= 0 && index_id_ >= 0;
+}
+
 std::optional<KeyPrefix::Type> KeyPrefix::MaybeType() const {
-  if (database_id_ < 0 || object_store_id_ < 0 || index_id_ < 0) {
+  if (!CanBeValid()) {
     return std::nullopt;
   }
 
@@ -2550,8 +2557,8 @@ const int64_t ExistsEntryKey::kSpecialIndexNumber = kExistsEntryIndexId;
 bool BlobEntryKey::Decode(std::string_view* slice, BlobEntryKey* result) {
   KeyPrefix prefix;
   if (!KeyPrefix::Decode(slice, &prefix) ||
-      !KeyPrefix::IsValidDatabaseId(prefix.database_id_) ||
-      !prefix.object_store_id_ || prefix.index_id_ != kSpecialIndexNumber) {
+      !KeyPrefix::ValidIds(prefix.database_id_, prefix.object_store_id_) ||
+      prefix.index_id_ != kSpecialIndexNumber) {
     return false;
   }
   if (!ExtractEncodedIDBKey(slice, &result->encoded_user_key_)) {
@@ -2567,8 +2574,7 @@ bool BlobEntryKey::FromObjectStoreDataKey(std::string_view* slice,
                                           BlobEntryKey* result) {
   KeyPrefix prefix;
   if (!KeyPrefix::Decode(slice, &prefix) ||
-      !KeyPrefix::IsValidDatabaseId(prefix.database_id_) ||
-      !prefix.object_store_id_ ||
+      !KeyPrefix::ValidIds(prefix.database_id_, prefix.object_store_id_) ||
       prefix.index_id_ != ObjectStoreDataKey::kSpecialIndexNumber) {
     return false;
   }
@@ -2660,8 +2666,9 @@ IndexDataKey::~IndexDataKey() {}
 
 bool IndexDataKey::Decode(std::string_view* slice, IndexDataKey* result) {
   KeyPrefix prefix;
-  if (!KeyPrefix::Decode(slice, &prefix) || !prefix.database_id_ ||
-      !prefix.object_store_id_ || prefix.index_id_ < kMinimumIndexId) {
+  if (!KeyPrefix::Decode(slice, &prefix) ||
+      !KeyPrefix::ValidIds(prefix.database_id_, prefix.object_store_id_,
+                           prefix.index_id_)) {
     return false;
   }
   result->database_id_ = prefix.database_id_;
