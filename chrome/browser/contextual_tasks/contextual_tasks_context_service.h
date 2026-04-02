@@ -129,6 +129,16 @@ class ContextualTasksContextService
     std::vector<ScoredPassage> active_tab_passage_similarities;
   };
 
+  struct SiteExclusionDetail {
+    int tabs_checked = 0;
+    int tabs_filtered = 0;
+    int exclusions_checked = 0;
+    base::TimeDelta duration;
+
+    void RecordActiveTabMetrics();
+    void RecordAllTabsMetrics();
+  };
+
   // EmbedderMetadataObserver:
   void EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata metadata) override;
@@ -198,7 +208,10 @@ class ContextualTasksContextService
       content::WebContents* web_contents);
 
   // Returns whether the tab is valid i.e. it is not NTP, internal page, etc.
-  bool IsValidTab(content::WebContents* web_contents);
+  // `site_exclusion_detail` is updated with results of site exclusion filtering
+  // for metrics.
+  bool IsValidTab(content::WebContents* web_contents,
+                  SiteExclusionDetail& site_exclusion_detail);
 
   // Returns whether the tab should be added to the selection.
   bool ShouldAddTabToSelection(content::WebContents* web_contents);

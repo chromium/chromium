@@ -183,6 +183,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContextualTasks.Context.SiteExclusions.ActiveTab.ExclusionsChecked"
+    units="count" expires_after="2026-09-17">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a query is made and the active tab eligibility
+    determined. Records the number of site exclusions checked to determine
+    eligibility of active tab.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.SiteExclusions.ActiveTab.Filtered"
+    enum="Boolean" expires_after="2026-09-17">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a query is made and the active tab eligibility
+    determined. Records whether the active tab was filtered by site exclusions.
+  </summary>
+</histogram>
+
+<histogram
+    name="ContextualTasks.Context.SiteExclusions.AllTabs.CheckingDuration"
+    units="ms" expires_after="2026-09-17">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when eligibility is determined for all tabs. Records the number of
+    milliseconds spent on site exclusion checking/filtering for all tabs.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.SiteExclusions.AllTabs.TabsChecked"
+    units="count" expires_after="2026-09-17">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when eligibility is determined for all tabs. Records the number of
+    tabs checked for site exclusions.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.SiteExclusions.AllTabs.TabsFiltered"
+    units="count" expires_after="2026-09-17">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when eligibility is determined for all tabs. Records the number of
+    tabs filtered out by site exclusions.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Context.TabExcessCount" units="count"
     expires_after="2026-09-13">
   <owner>sophiechang@chromium.org</owner>
