@@ -25,11 +25,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/load_flags.h"
+#include "net/base/network_activity_monitor.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
@@ -2848,6 +2850,54 @@ TEST_F(NetworkQualityEstimatorTest, AdjustHttpRttBasedOnRttCounts) {
     EXPECT_EQ(adjust_rtt_based_on_rtt_counts ? typical_http_rtt_4g : rtt_new,
               estimator.GetHttpRTT().value());
   }
+}
+
+// Tests that when `kNetworkQualityEstimatorAsyncNotifyStartTransaction` is
+// enabled (the default), short/small responses completely bypass throughput
+// detection because the observation window's timestamp is asynchronously
+// captured *after* the fast response transferred its entire byte payload.
+TEST_F(NetworkQualityEstimatorTest,
+       TestThroughputNoRequestOverlapSmallResponse) {
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> variation_params;
+  variation_params["throughput_min_requests_in_flight"] = "1";
+  variation_params["add_default_platform_observations"] = "false";
+
+  TestNetworkQualityEstimator estimator(
+      variation_params,
+      /*allow_local_host_requests_for_tests=*/true,
+      /*allow_smaller_responses_for_tests=*/true);
+
+  TestThroughputObserver throughput_observer;
+  estimator.AddThroughputObserver(&throughput_observer);
+
+  TestDelegate test_delegate;
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_network_quality_estimator(&estimator);
+  auto context = context_builder->Build();
+
+  uint64_t bytes_start = activity_monitor::GetBytesReceived();
+
+  // Resolve to a tiny fast payload.
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      estimator.GetEchoURL().Resolve("/echo.html"), DEFAULT_PRIORITY,
+      &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
+                        net::LOAD_DISABLE_CACHE);
+  request->Start();
+  test_delegate.RunUntilComplete();
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return throughput_observer.observations().size() == 1u; }));
+
+  uint64_t bytes_end = activity_monitor::GetBytesReceived();
+  // Ensure if the data is sent completely.
+  EXPECT_GT(bytes_end, bytes_start);
+
+  // Check if the throughput is successfully measured.
+  EXPECT_EQ(1u, throughput_observer.observations().size());
+  EXPECT_GT(throughput_observer.observations().front().throughput_kbps, 0);
+  estimator.RemoveThroughputObserver(&throughput_observer);
 }
 
 }  // namespace net

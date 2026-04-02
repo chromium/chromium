@@ -39,6 +39,7 @@
 #include "net/nqe/peer_to_peer_connections_count_observer.h"
 #include "net/nqe/rtt_throughput_estimates_observer.h"
 #include "net/nqe/socket_watcher_factory.h"
+#include "net/nqe/throughput_analyzer.h"
 
 namespace base {
 class TickClock;
@@ -83,6 +84,9 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
     RTTObserver() = default;
     virtual ~RTTObserver() = default;
   };
+
+  using AsyncNotifyStartTransactionInfo =
+      nqe::internal::ThroughputAnalyzer::AsyncNotifyStartTransactionInfo;
 
   // Observes measurements of throughput.
   class NET_EXPORT_PRIVATE ThroughputObserver {
@@ -467,8 +471,9 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // Notifies NetworkQualityEstimator that the headers of `request` are about to
   // be sent. This is the internal implementation that is called either
   // synchronously or asynchronously.
-  void NotifyStartTransactionInternal(const URLRequest& request,
-                                      const base::TimeTicks& time);
+  void NotifyStartTransactionInternal(
+      const URLRequest& request,
+      const AsyncNotifyStartTransactionInfo& info);
 
   // Asynchronously calls NotifyStartTransactionInternal.
   void NotifyStartTransactionInternalAsync(base::WeakPtr<URLRequest> request);
@@ -664,8 +669,9 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // A map of URLRequests for which NotifyStartTransaction has been called
   // asynchronously, but the asynchronous task has not yet completed. The value
-  // is the time at which NotifyStartTransaction was called.
-  std::unordered_map<raw_ptr<const URLRequest>, base::TimeTicks>
+  // is what ThroughputAnalyzer wanted to know when NotifyStartTransaction was
+  // called.
+  std::unordered_map<raw_ptr<const URLRequest>, AsyncNotifyStartTransactionInfo>
       waiting_async_notify_start_transactions_;
 
   // A map of URLRequests for which NotifyHeadersReceived has been called

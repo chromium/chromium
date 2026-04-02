@@ -48,6 +48,11 @@ namespace nqe::internal {
 //     observation, that window is discarded.
 class NET_EXPORT_PRIVATE ThroughputAnalyzer {
  public:
+  struct AsyncNotifyStartTransactionInfo {
+    base::TimeTicks time;
+    int64_t bits_received;
+  };
+
   // `throughput_observation_callback` is called on the `task_runner` when
   // `this` has a new throughput observation.
   // `use_local_host_requests_for_tests` should only be true when testing
@@ -71,9 +76,14 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
 
   virtual ~ThroughputAnalyzer();
 
+  // Captures the current `tick_clock_` time and the active `GetBitsReceived()`
+  // count synchronously. This info will be used by
+  // NotifyStartTransaction() later.
+  AsyncNotifyStartTransactionInfo CreateAsyncNotifyStartTransactionInfo() const;
+
   // Notifies `this` that the headers of `request` are about to be sent.
   void NotifyStartTransaction(const URLRequest& request,
-                              const base::TimeTicks& time);
+                              const AsyncNotifyStartTransactionInfo& info);
 
   // Notifies `this` that unfiltered bytes have been read for `request`.
   void NotifyBytesRead(const URLRequest& request, const base::TimeTicks& time);
@@ -176,9 +186,11 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // (i) All active requests are non-local;
   // (ii) There is at least one active, non-local request; and,
   // (iii) The throughput observation window is not already tracking
-  // throughput. The window is started by setting the `start_` and
-  // `bits_received_`.
-  void MaybeStartThroughputObservationWindow();
+  // throughput. The window is started by setting `window_start_time_` and
+  // `bits_received_at_window_start_`. If `info` is provided, those variables
+  // are set with the ones in 'info'.
+  void MaybeStartThroughputObservationWindow(
+      std::optional<AsyncNotifyStartTransactionInfo> info = std::nullopt);
 
   // EndThroughputObservationWindow ends the throughput observation window.
   void EndThroughputObservationWindow();

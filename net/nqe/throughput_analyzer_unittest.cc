@@ -167,7 +167,7 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
           context->CreateRequest(test_case.url, DEFAULT_PRIORITY,
                                  &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
       throughput_analyzer.NotifyStartTransaction(*(request.get()),
-                                                 tick_clock->NowTicks());
+                                                 {tick_clock->NowTicks(), 0});
       requests.push_back(std::move(request));
     }
     // Too many local requests should cause the `throughput_analyzer` to disable
@@ -248,7 +248,7 @@ TEST_F(ThroughputAnalyzerTest,
             net::SiteForCookies()));
       }
       throughput_analyzer.NotifyStartTransaction(*(request.get()),
-                                                 tick_clock->NowTicks());
+                                                 {tick_clock->NowTicks(), 0});
       requests.push_back(std::move(request));
     }
     // Too many local requests should cause the `throughput_analyzer` to disable
@@ -298,7 +298,7 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
 
     for (const auto& request : requests_not_local) {
       throughput_analyzer.NotifyStartTransaction(*request,
-                                                 tick_clock->NowTicks());
+                                                 {tick_clock->NowTicks(), 0});
     }
 
     // Increment the bytes received count to emulate the bytes received for
@@ -421,7 +421,7 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
 
     for (size_t i = 0; i < num_requests; ++i) {
       throughput_analyzer.NotifyStartTransaction(*requests_not_local.at(i),
-                                                 tick_clock->NowTicks());
+                                                 {tick_clock->NowTicks(), 0});
     }
 
     // Increment the bytes received count to emulate the bytes received for
@@ -495,7 +495,7 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequestsCheckedOnlyPeriodically) {
   for (size_t i = 0; i < 2; ++i) {
     tick_clock.Advance(base::Milliseconds(1000));
     throughput_analyzer.NotifyStartTransaction(*requests_not_local.at(i),
-                                               tick_clock.NowTicks());
+                                               {tick_clock.NowTicks(), 0});
   }
 
   EXPECT_EQ(2u, throughput_analyzer.CountActiveInFlightRequests());
@@ -563,7 +563,7 @@ TEST_F(ThroughputAnalyzerTest, TestLastReceivedTimeIsUpdated) {
   // Start time for the request is t=0 second. The request will be marked as
   // hanging at t=5 seconds.
   throughput_analyzer.NotifyStartTransaction(*request_not_local,
-                                             tick_clock.NowTicks());
+                                             {tick_clock.NowTicks(), 0});
 
   tick_clock.Advance(base::Milliseconds(4000));
   // Current time is t=4.0 seconds.
@@ -615,7 +615,7 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
   // Start time for the request is t=0 second. The request will be marked as
   // hanging at t=2 seconds.
   throughput_analyzer.NotifyStartTransaction(*request_not_local,
-                                             tick_clock.NowTicks());
+                                             {tick_clock.NowTicks(), 0});
   EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
   tick_clock.Advance(base::Milliseconds(2900));
@@ -711,11 +711,11 @@ TEST_F(ThroughputAnalyzerTest,
     // at all times.
     if (test.start_local_request)
       throughput_analyzer.NotifyStartTransaction(*request_local,
-                                                 tick_clock->NowTicks());
+                                                 {tick_clock->NowTicks(), 0});
 
     for (const auto& request : requests_not_local) {
       throughput_analyzer.NotifyStartTransaction(*request,
-                                                 tick_clock->NowTicks());
+                                                 {tick_clock->NowTicks(), 0});
     }
 
     if (test.local_request_completes_first) {
@@ -815,7 +815,7 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithNetworkRequestsOverlap) {
     for (size_t i = 0; i < test.number_requests_in_flight; ++i) {
       URLRequest* request = requests_in_flight.at(i).get();
       throughput_analyzer.NotifyStartTransaction(*request,
-                                                 tick_clock->NowTicks());
+                                                 {tick_clock->NowTicks(), 0});
     }
 
     // Increment the bytes received count to emulate the bytes received for
@@ -890,9 +890,9 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleNetworkRequests) {
   EXPECT_EQ(0, throughput_analyzer.throughput_observations_received());
 
   throughput_analyzer.NotifyStartTransaction(*(request_1.get()),
-                                             tick_clock->NowTicks());
+                                             {tick_clock->NowTicks(), 0});
   throughput_analyzer.NotifyStartTransaction(*(request_2.get()),
-                                             tick_clock->NowTicks());
+                                             {tick_clock->NowTicks(), 0});
 
   const size_t increment_bits = 100 * 1000 * 8;
 
@@ -907,9 +907,9 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleNetworkRequests) {
   EXPECT_EQ(0, throughput_analyzer.throughput_observations_received());
 
   throughput_analyzer.NotifyStartTransaction(*(request_3.get()),
-                                             tick_clock->NowTicks());
+                                             {tick_clock->NowTicks(), 0});
   throughput_analyzer.NotifyStartTransaction(*(request_4.get()),
-                                             tick_clock->NowTicks());
+                                             {tick_clock->NowTicks(), 0});
   EXPECT_EQ(0, throughput_analyzer.throughput_observations_received());
 
   // 3 requests are in flight which is at least as many as the minimum number of

@@ -70,7 +70,14 @@ ThroughputAnalyzer::~ThroughputAnalyzer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ThroughputAnalyzer::MaybeStartThroughputObservationWindow() {
+ThroughputAnalyzer::AsyncNotifyStartTransactionInfo
+ThroughputAnalyzer::CreateAsyncNotifyStartTransactionInfo() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return {tick_clock_->NowTicks(), GetBitsReceived()};
+}
+
+void ThroughputAnalyzer::MaybeStartThroughputObservationWindow(
+    std::optional<AsyncNotifyStartTransactionInfo> info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (disable_throughput_measurements_)
@@ -85,8 +92,9 @@ void ThroughputAnalyzer::MaybeStartThroughputObservationWindow() {
       requests_.size() < params_->throughput_min_requests_in_flight()) {
     return;
   }
-  window_start_time_ = tick_clock_->NowTicks();
-  bits_received_at_window_start_ = GetBitsReceived();
+  window_start_time_ = info ? info->time : tick_clock_->NowTicks();
+  bits_received_at_window_start_ =
+      info ? info->bits_received : GetBitsReceived();
 }
 
 void ThroughputAnalyzer::EndThroughputObservationWindow() {
@@ -139,8 +147,9 @@ void ThroughputAnalyzer::UpdateResponseContentSize(const URLRequest* request,
   response_content_sizes_[request] = response_size;
 }
 
-void ThroughputAnalyzer::NotifyStartTransaction(const URLRequest& request,
-                                                const base::TimeTicks& time) {
+void ThroughputAnalyzer::NotifyStartTransaction(
+    const URLRequest& request,
+    const AsyncNotifyStartTransactionInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UpdateResponseContentSize(&request, kDefaultContentSizeBytes);
@@ -166,9 +175,9 @@ void ThroughputAnalyzer::NotifyStartTransaction(const URLRequest& request,
 
   EraseHangingRequests(request);
 
-  requests_[&request] = time;
+  requests_[&request] = info.time;
   BoundRequestsSize();
-  MaybeStartThroughputObservationWindow();
+  MaybeStartThroughputObservationWindow(info);
 }
 
 void ThroughputAnalyzer::NotifyBytesRead(const URLRequest& request,

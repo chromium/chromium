@@ -33,6 +33,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/network_activity_monitor.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/trace_constants.h"
 #include "net/http/http_response_headers.h"
@@ -273,7 +274,8 @@ NetworkQualityEstimator::~NetworkQualityEstimator() {
 
 void NetworkQualityEstimator::NotifyStartTransaction(URLRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::TimeTicks now = tick_clock_->NowTicks();
+  AsyncNotifyStartTransactionInfo info =
+      throughput_analyzer_->CreateAsyncNotifyStartTransactionInfo();
   if (base::FeatureList::IsEnabled(
           kNetworkQualityEstimatorAsyncNotifyStartTransaction)) {
     if (!kDeferUntilNextStep.Get()) {
@@ -283,9 +285,9 @@ void NetworkQualityEstimator::NotifyStartTransaction(URLRequest& request) {
               &NetworkQualityEstimator::NotifyStartTransactionInternalAsync,
               weak_ptr_factory_.GetWeakPtr(), request.GetWeakPtr()));
     }
-    waiting_async_notify_start_transactions_[&request] = now;
+    waiting_async_notify_start_transactions_[&request] = info;
   } else {
-    NotifyStartTransactionInternal(request, now);
+    NotifyStartTransactionInternal(request, info);
   }
 }
 
@@ -310,14 +312,14 @@ void NetworkQualityEstimator::WaitNotifyStartTransactionDone(
     return;
   }
 
-  base::TimeTicks time = request_it->second;
+  AsyncNotifyStartTransactionInfo info = request_it->second;
   CHECK_EQ(waiting_async_notify_start_transactions_.erase(&request), 1u);
-  NotifyStartTransactionInternal(request, time);
+  NotifyStartTransactionInternal(request, info);
 }
 
 void NetworkQualityEstimator::NotifyStartTransactionInternal(
     const URLRequest& request,
-    const base::TimeTicks& time) {
+    const AsyncNotifyStartTransactionInfo& info) {
   TRACE_EVENT(NetTracingCategory(),
               "NetworkQualityEstimator::NotifyStartTransaction");
   SCOPED_UMA_HISTOGRAM_TIMER("NQE.Duration.NotifyStartTransaction");
@@ -332,7 +334,7 @@ void NetworkQualityEstimator::NotifyStartTransactionInternal(
   } else {
     MaybeComputeEffectiveConnectionType();
   }
-  throughput_analyzer_->NotifyStartTransaction(request, time);
+  throughput_analyzer_->NotifyStartTransaction(request, info);
 }
 
 bool NetworkQualityEstimator::IsHangingRequest(
