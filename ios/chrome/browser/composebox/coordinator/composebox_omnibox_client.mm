@@ -349,7 +349,7 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
                      isSearchType:AutocompleteMatch::IsSearchType(match.type)];
 }
 
-base::WeakPtr<OmniboxClient> ComposeboxOmniboxClient::AsWeakPtr() {
+base::WeakPtr<OmniboxClientIOS> ComposeboxOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

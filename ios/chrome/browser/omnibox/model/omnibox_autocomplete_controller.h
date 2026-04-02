@@ -25,7 +25,7 @@ class GURL;
 @protocol OmniboxAutocompleteControllerDelegate;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
 @protocol OmniboxLensDelegate;
-class OmniboxClient;
+class OmniboxClientIOS;
 @class OmniboxMetricsRecorder;
 @class OmniboxTextController;
 struct OmniboxTextModel;
@@ -64,7 +64,7 @@ struct OmniboxTextModel;
     AutocompleteProviderClient* autocompleteProviderClient;
 
 - (instancetype)
-     initWithOmniboxClient:(OmniboxClient*)omniboxClient
+     initWithOmniboxClient:(OmniboxClientIOS*)omniboxClient
     autocompleteController:(AutocompleteController*)autocompleteController
           omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
        presentationContext:(OmniboxPresentationContext)presentationContext

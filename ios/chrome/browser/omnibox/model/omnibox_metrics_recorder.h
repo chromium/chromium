@@ -16,7 +16,7 @@ class AutocompleteController;
 struct AutocompleteMatch;
 class GURL;
 @class OmniboxAutocompleteController;
-class OmniboxClient;
+class OmniboxClientIOS;
 struct OmniboxPopupSelection;
 struct OmniboxTextModel;
 
@@ -27,7 +27,7 @@ struct OmniboxTextModel;
     OmniboxAutocompleteController* omniboxAutocompleteController;
 
 /// Creates an instance with the dependency used for state retrieval.
-- (instancetype)initWithClient:(OmniboxClient*)omniboxClient
+- (instancetype)initWithClient:(OmniboxClientIOS*)omniboxClient
                      textModel:(const OmniboxTextModel*)omniboxTextModel
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

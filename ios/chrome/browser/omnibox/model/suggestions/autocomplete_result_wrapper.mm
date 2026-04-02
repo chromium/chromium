@@ -10,9 +10,9 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion.h"
@@ -38,12 +38,12 @@
   /// List of suggestions without the pedal group. Used to debounce pedals.
   NSArray<id<AutocompleteSuggestionGroup>>* _nonPedalSuggestionsGroups;
   /// The omnibox client.
-  base::WeakPtr<OmniboxClient> _omniboxClient;
+  base::WeakPtr<OmniboxClientIOS> _omniboxClient;
   /// The autocomplete client.
   base::WeakPtr<AutocompleteProviderClient> _autocompleteProviderClient;
 }
 
-- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
+- (instancetype)initWithOmniboxClient:(OmniboxClientIOS*)omniboxClient
            autocompleteProviderClient:
                (AutocompleteProviderClient*)autocompleteProviderClient {
   self = [super init];

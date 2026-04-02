@@ -14,7 +14,7 @@
 
 @protocol AutocompleteSuggestion;
 @class OmniboxAutocompleteController;
-class OmniboxClient;
+class OmniboxClientIOS;
 @protocol OmniboxFocusDelegate;
 @protocol OmniboxTextControllerDelegate;
 @protocol OmniboxTextInput;
@@ -39,7 +39,7 @@ class OmniboxClient;
 /// Returns the current selection range.
 @property(nonatomic, assign, readonly) NSRange currentSelection;
 
-- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
+- (instancetype)initWithOmniboxClient:(OmniboxClientIOS*)omniboxClient
                      omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                   presentationContext:
                       (OmniboxPresentationContext)presentationContext

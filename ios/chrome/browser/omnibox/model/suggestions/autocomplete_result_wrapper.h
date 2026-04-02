@@ -15,7 +15,7 @@
 @class AutocompleteMatchFormatter;
 class AutocompleteProviderClient;
 class AutocompleteResult;
-class OmniboxClient;
+class OmniboxClientIOS;
 @class OmniboxPedalAnnotator;
 class TemplateURLService;
 
@@ -24,7 +24,7 @@ class TemplateURLService;
 @interface AutocompleteResultWrapper : NSObject
 
 /// Initializes the wrapper with the given omnibox client.
-- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
+- (instancetype)initWithOmniboxClient:(OmniboxClientIOS*)omniboxClient
            autocompleteProviderClient:(AutocompleteProviderClient*)acClient
     NS_DESIGNATED_INITIALIZER;
 

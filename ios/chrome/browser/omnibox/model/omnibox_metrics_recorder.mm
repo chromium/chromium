@@ -19,13 +19,13 @@
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/omnibox/browser/autocomplete_provider_client.h"
 #import "components/omnibox/browser/history_fuzzy_provider.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_event_global_tracker.h"
 #import "components/omnibox/browser/omnibox_log.h"
 #import "components/omnibox/browser/omnibox_logging_utils.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "net/cookies/cookie_util.h"
@@ -45,7 +45,7 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
 
 @implementation OmniboxMetricsRecorder {
   /// The omnibox client.
-  raw_ptr<OmniboxClient, DanglingUntriaged> _omniboxClient;
+  raw_ptr<OmniboxClientIOS, DanglingUntriaged> _omniboxClient;
   /// The omnibox text model used to retrieve the text state.
   raw_ptr<const OmniboxTextModel, DanglingUntriaged> _omniboxTextModel;
   /// The autocomplete controller.
@@ -55,7 +55,7 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
   NSInteger _numberOfLines;
 }
 
-- (instancetype)initWithClient:(OmniboxClient*)omniboxClient
+- (instancetype)initWithClient:(OmniboxClientIOS*)omniboxClient
                      textModel:(const OmniboxTextModel*)omniboxTextModel {
   self = [super init];
   if (self) {

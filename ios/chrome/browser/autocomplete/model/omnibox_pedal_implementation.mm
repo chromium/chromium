@@ -8,7 +8,6 @@
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_provider_client.h"
 #import "components/omnibox/browser/buildflags.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/resources/grit/omnibox_pedal_synonyms.h"

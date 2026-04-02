@@ -12,8 +12,8 @@
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "components/omnibox/browser/autocomplete_match.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
 #import "ios/web/public/web_state_observer.h"
 
 @protocol ComposeboxOmniboxClientDelegate;
@@ -25,7 +25,7 @@ namespace feature_engagement {
 class Tracker;
 }
 
-class ComposeboxOmniboxClient final : public OmniboxClient {
+class ComposeboxOmniboxClient final : public OmniboxClientIOS {
  public:
   ComposeboxOmniboxClient(WebLocationBar* location_bar,
                           Browser* browser,
@@ -98,7 +98,7 @@ class ComposeboxOmniboxClient final : public OmniboxClient {
       const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match) override;
-  base::WeakPtr<OmniboxClient> AsWeakPtr() override;
+  base::WeakPtr<OmniboxClientIOS> AsWeakPtr() override;
 
   // Returns the LensOverlaySuggestInputs if available.
   std::optional<lens::proto::LensOverlaySuggestInputs>

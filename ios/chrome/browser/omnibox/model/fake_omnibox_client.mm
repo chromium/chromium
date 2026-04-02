@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/eg_tests/inttest/fake_omnibox_client.h"
+#import "ios/chrome/browser/omnibox/model/fake_omnibox_client.h"
 
 #import "base/feature_list.h"
+#import "base/logging.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
@@ -30,6 +32,7 @@
 #import "url/gurl.h"
 
 FakeOmniboxClient::FakeOmniboxClient(ProfileIOS* profile) : profile_(profile) {
+  CHECK(profile_);
   prefs_ = profile_->GetPrefs();
 }
 
@@ -37,7 +40,10 @@ FakeOmniboxClient::~FakeOmniboxClient() = default;
 
 std::unique_ptr<AutocompleteProviderClient>
 FakeOmniboxClient::CreateAutocompleteProviderClient() {
-  return std::make_unique<AutocompleteProviderClientImpl>(profile_);
+  if (profile_) {
+    return std::make_unique<AutocompleteProviderClientImpl>(profile_);
+  }
+  return std::make_unique<FakeAutocompleteProviderClient>();
 }
 
 bool FakeOmniboxClient::CurrentPageExists() const {
@@ -103,6 +109,9 @@ const AutocompleteSchemeClassifier& FakeOmniboxClient::GetSchemeClassifier()
 }
 
 AutocompleteClassifier* FakeOmniboxClient::GetAutocompleteClassifier() {
+  if (autocomplete_classifier_) {
+    return autocomplete_classifier_;
+  }
   return ios::AutocompleteClassifierFactory::GetForProfile(profile_);
 }
 
@@ -257,6 +266,6 @@ bool FakeOmniboxClient::IsHistoryEmbeddingsEnabled() const {
   return is_history_embeddings_enabled_;
 }
 
-base::WeakPtr<OmniboxClient> FakeOmniboxClient::AsWeakPtr() {
+base::WeakPtr<OmniboxClientIOS> FakeOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

@@ -293,6 +293,6 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
                             match);
 }
 
-base::WeakPtr<OmniboxClient> ChromeOmniboxClientIOS::AsWeakPtr() {
+base::WeakPtr<OmniboxClientIOS> ChromeOmniboxClientIOS::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

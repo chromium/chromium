@@ -8,7 +8,7 @@
 #import "base/trace_event/trace_event.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 
-OmniboxTextModel::OmniboxTextModel(OmniboxClient* client)
+OmniboxTextModel::OmniboxTextModel(OmniboxClientIOS* client)
     : omnibox_client(client),
       focus_state(OMNIBOX_FOCUS_NONE),
       user_input_in_progress(false),

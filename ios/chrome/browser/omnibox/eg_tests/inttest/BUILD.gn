@@ -5,8 +5,6 @@
 source_set("inttest") {
   testonly = true
   sources = [
-    "fake_omnibox_client.h",
-    "fake_omnibox_client.mm",
     "omnibox_inttest_coordinator.h",
     "omnibox_inttest_coordinator.mm",
     "omnibox_inttest_view_controller.h",

@@ -23,7 +23,6 @@
 #import "components/omnibox/browser/clipboard_provider.h"
 #import "components/omnibox/browser/history_url_provider.h"
 #import "components/omnibox/browser/lens_suggest_inputs_utils.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/page_classification_functions.h"
@@ -32,6 +31,7 @@
 #import "ios/chrome/browser/omnibox/model/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_debugger_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_lens_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
@@ -58,7 +58,7 @@ using base::UserMetricsAction;
 
 @implementation OmniboxAutocompleteController {
   /// Client of the omnibox.
-  raw_ptr<OmniboxClient, DanglingUntriaged> _omniboxClient;
+  raw_ptr<OmniboxClientIOS, DanglingUntriaged> _omniboxClient;
   /// Omnibox text model.
   raw_ptr<OmniboxTextModel, DanglingUntriaged> _omniboxTextModel;
 
@@ -76,7 +76,7 @@ using base::UserMetricsAction;
 }
 
 - (instancetype)
-     initWithOmniboxClient:(OmniboxClient*)omniboxClient
+     initWithOmniboxClient:(OmniboxClientIOS*)omniboxClient
     autocompleteController:(AutocompleteController*)autocompleteController
           omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
        presentationContext:(OmniboxPresentationContext)presentationContext {
@@ -794,7 +794,7 @@ using base::UserMetricsAction;
   if (action) {
     OmniboxAction::ExecutionContext context(
         *(self.autocompleteController->autocomplete_provider_client()),
-        base::BindOnce(&OmniboxClient::OnAutocompleteAccept,
+        base::BindOnce(&OmniboxClientIOS::OnAutocompleteAccept,
                        _omniboxClient->AsWeakPtr()),
         matchSelectionTimestamp, disposition);
     action->Execute(context);

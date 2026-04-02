@@ -243,7 +243,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
-  std::unique_ptr<OmniboxClient> omniboxClient;
+  std::unique_ptr<OmniboxClientIOS> omniboxClient;
   if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
     omniboxClient = std::make_unique<ComposeboxCobrowseOmniboxClient>(
         self.browser,

@@ -14,9 +14,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_text_util.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion.h"
@@ -38,7 +38,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 @implementation OmniboxTextController {
   /// Client of the omnibox.
-  raw_ptr<OmniboxClient, DanglingUntriaged> _omniboxClient;
+  raw_ptr<OmniboxClientIOS, DanglingUntriaged> _omniboxClient;
   /// Whether the popup was scrolled during this omnibox interaction.
   BOOL _suggestionsListScrolled;
   /// The omnbibox text model, holding the text state.
@@ -55,7 +55,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   NSRange _oldSelection;
 }
 
-- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
+- (instancetype)initWithOmniboxClient:(OmniboxClientIOS*)omniboxClient
                      omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                   presentationContext:
                       (OmniboxPresentationContext)presentationContext {
@@ -742,7 +742,10 @@ const char kOmniboxFocusResultedInNavigation[] =
       _omniboxAutocompleteController.hasSuggestions
           ? std::optional<AutocompleteMatch>([self currentMatch:nullptr])
           : std::nullopt,
-      _omniboxClient, &URL, &writeURL);
+      _omniboxClient->GetNavigationEntryURL(),
+      _omniboxClient->GetAutocompleteClassifier(),
+      _omniboxClient->GetPageClassification(/*is_prefetch=*/false),
+      _omniboxClient->GetContextualTasksInnerFrameURL(), &URL, &writeURL);
 
   // Create the pasteboard item manually because the pasteboard expects a single
   // item with multiple representations.  This is expressed as a single

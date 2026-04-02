@@ -11,8 +11,8 @@
 #import "base/time/time.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
 
 // Represents the changes between two OmniboxTextState objects. This is used by
 // the controller to determine how its internal state should be updated after
@@ -43,7 +43,7 @@ struct OmniboxTextState {
 // Manages the Omnibox text state.
 struct OmniboxTextModel {
  public:
-  OmniboxTextModel(OmniboxClient* client);
+  OmniboxTextModel(OmniboxClientIOS* client);
   ~OmniboxTextModel();
 
   // Sets the state of user_input_in_progress_. Returns whether said state
@@ -76,7 +76,7 @@ struct OmniboxTextModel {
                                       const OmniboxTextState& after) const;
 
   // The Omnibox client.
-  raw_ptr<OmniboxClient> omnibox_client;
+  raw_ptr<OmniboxClientIOS> omnibox_client;
 
   // The Omnibox focus state.
   OmniboxFocusState focus_state;

@@ -252,7 +252,7 @@ void ComposeboxCobrowseOmniboxClient::OnAutocompleteAccept(
                      isSearchType:AutocompleteMatch::IsSearchType(match.type)];
 }
 
-base::WeakPtr<OmniboxClient> ComposeboxCobrowseOmniboxClient::AsWeakPtr() {
+base::WeakPtr<OmniboxClientIOS> ComposeboxCobrowseOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

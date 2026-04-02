@@ -8,13 +8,17 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
-#import "components/omnibox/browser/test_omnibox_client.h"
+#import "ios/chrome/browser/omnibox/model/fake_omnibox_client.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 class OmniboxTextModelTest : public PlatformTest {
  protected:
-  OmniboxTextModelTest() : model_(&client_) {}
+  OmniboxTextModelTest()
+      : profile_(TestProfileIOS::Builder().Build()),
+        client_(profile_.get()),
+        model_(&client_) {}
 
   // Helper to create OmniboxTextState for tests.
   static OmniboxTextState CreateState(const std::string& text_utf8,
@@ -29,7 +33,8 @@ class OmniboxTextModelTest : public PlatformTest {
 
  public:
   base::test::TaskEnvironment task_environment_;
-  TestOmniboxClient client_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  FakeOmniboxClient client_;
   OmniboxTextModel model_;
 };
 

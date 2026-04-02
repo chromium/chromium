@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_INTTEST_FAKE_OMNIBOX_CLIENT_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_INTTEST_FAKE_OMNIBOX_CLIENT_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_FAKE_OMNIBOX_CLIENT_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_FAKE_OMNIBOX_CLIENT_H_
 
 #import <memory>
 #import <optional>
@@ -11,23 +11,23 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/vector_icon_types.h"
 
 class ProfileIOS;
 
-/// Fake OmniboxClient class used in tests.
-class FakeOmniboxClient : public OmniboxClient {
+/// Fake OmniboxClientIOS class used in tests.
+class FakeOmniboxClient : public OmniboxClientIOS {
  public:
   explicit FakeOmniboxClient(ProfileIOS* profile);
   FakeOmniboxClient(const FakeOmniboxClient&) = delete;
   FakeOmniboxClient& operator=(const FakeOmniboxClient&) = delete;
   ~FakeOmniboxClient() override;
 
-  // OmniboxClient:
+  // OmniboxClientIOS:
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
   bool CurrentPageExists() const override;
@@ -114,13 +114,14 @@ class FakeOmniboxClient : public OmniboxClient {
   void OnThumbnailRemoved() override;
   void OpenIphLink(GURL gurl) override;
   bool IsHistoryEmbeddingsEnabled() const override;
-  base::WeakPtr<OmniboxClient> AsWeakPtr() override;
+  base::WeakPtr<OmniboxClientIOS> AsWeakPtr() override;
 
   // Setters for return values (for those not retrieved from ProfileIOS)
   void set_current_page_exists(bool exists) { current_page_exists_ = exists; }
   void set_url(const GURL& url) { url_ = url; }
   void set_title(const std::u16string& title) { title_ = title; }
   void set_favicon(const gfx::Image& favicon) { favicon_ = favicon; }
+  void set_prefs(PrefService* prefs) { prefs_ = prefs; }
   void set_ukm_source_id(ukm::SourceId id) { ukm_source_id_ = id; }
   void set_is_loading(bool loading) { is_loading_ = loading; }
   void set_is_paste_and_go_enabled(bool enabled) {
@@ -136,6 +137,9 @@ class FakeOmniboxClient : public OmniboxClient {
   }
   void set_should_default_typed_navigations_to_https(bool should_default) {
     should_default_typed_navigations_to_https_ = should_default;
+  }
+  void set_autocomplete_classifier(AutocompleteClassifier* classifier) {
+    autocomplete_classifier_ = classifier;
   }
   void set_formatted_full_url(const std::u16string& url) {
     formatted_full_url_ = url;
@@ -185,6 +189,8 @@ class FakeOmniboxClient : public OmniboxClient {
   raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
   raw_ptr<AutocompleteControllerEmitter, DanglingUntriaged>
       autocomplete_controller_emitter_ = nullptr;
+  raw_ptr<AutocompleteClassifier, DanglingUntriaged> autocomplete_classifier_ =
+      nullptr;
   bool should_default_typed_navigations_to_https_ = false;
   std::u16string formatted_full_url_ = u"";
   std::u16string url_for_display_ = u"";
@@ -202,4 +208,4 @@ class FakeOmniboxClient : public OmniboxClient {
   base::WeakPtrFactory<FakeOmniboxClient> weak_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_INTTEST_FAKE_OMNIBOX_CLIENT_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_FAKE_OMNIBOX_CLIENT_H_

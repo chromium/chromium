@@ -13,6 +13,7 @@ include_rules = [
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h",
+  "+ios/chrome/browser/omnibox/model/omnibox_client_ios.h",
   "+ios/chrome/browser/omnibox/public",
   "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h",

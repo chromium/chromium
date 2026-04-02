@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
@@ -14,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -128,15 +130,20 @@ std::u16string SanitizeTextForPaste(const std::u16string& text) {
   return StripJavascriptSchemas(output);
 }
 
-void AdjustTextForCopy(int sel_min,
-                       std::u16string* text,
-                       bool has_user_modified_text,
-                       bool is_keyword_selected,
-                       std::optional<AutocompleteMatch> current_popup_match,
-                       OmniboxClient* client,
-                       GURL* url_from_text,
-                       bool* write_url) {
+void AdjustTextForCopy(
+    int sel_min,
+    std::u16string* text,
+    bool has_user_modified_text,
+    bool is_keyword_selected,
+    std::optional<AutocompleteMatch> current_popup_match,
+    const GURL& navigation_entry_url,
+    AutocompleteClassifier* autocomplete_classifier,
+    ::metrics::OmniboxEventProto::PageClassification page_classification,
+    const GURL& contextual_tasks_inner_frame_url,
+    GURL* url_from_text,
+    bool* write_url) {
   DCHECK(text);
+
   DCHECK(url_from_text);
   DCHECK(write_url);
 
@@ -151,7 +158,7 @@ void AdjustTextForCopy(int sel_min,
   // text (whether it's in the elided or unelided form), copy the omnibox
   // contents as a hyperlink to the current page.
   if (!has_user_modified_text) {
-    *url_from_text = client->GetNavigationEntryURL();
+    *url_from_text = navigation_entry_url;
     *write_url = true;
 
     // Don't let users copy Reader Mode page URLs.
@@ -173,10 +180,9 @@ void AdjustTextForCopy(int sel_min,
   // the user is probably holding down control to cause the copy, which will
   // screw up our calculation of the desired_tld.
   AutocompleteMatch match_from_text;
-  client->GetAutocompleteClassifier()->Classify(
-      *text, is_keyword_selected, true,
-      client->GetPageClassification(/*is_prefetch=*/false), &match_from_text,
-      nullptr);
+  autocomplete_classifier->Classify(*text, is_keyword_selected, true,
+                                    page_classification, &match_from_text,
+                                    nullptr);
   if (AutocompleteMatch::IsSearchType(match_from_text.type)) {
     return;
   }
@@ -185,7 +191,7 @@ void AdjustTextForCopy(int sel_min,
   *url_from_text = match_from_text.destination_url;
 
   // Get the current page GURL (or the GURL of the currently selected match).
-  GURL current_page_url = client->GetNavigationEntryURL();
+  GURL current_page_url = navigation_entry_url;
   if (current_popup_match) {
     AutocompleteMatch current_match = *current_popup_match;
     if (!AutocompleteMatch::IsSearchType(current_match.type) &&
@@ -205,15 +211,14 @@ void AdjustTextForCopy(int sel_min,
           contextual_tasks::GetContextualTasksDisplayUrlHost() &&
       url_from_text->GetPath() ==
           contextual_tasks::GetContextualTasksDisplayUrlPath()) {
-    const GURL inner_frame_url = client->GetContextualTasksInnerFrameURL();
-    if (!inner_frame_url.is_valid()) {
+    if (!contextual_tasks_inner_frame_url.is_valid()) {
       return;
     }
 
     GURL::Replacements replacements;
-    replacements.SetSchemeStr(inner_frame_url.scheme());
-    replacements.SetHostStr(inner_frame_url.host());
-    replacements.SetPathStr(inner_frame_url.path());
+    replacements.SetSchemeStr(contextual_tasks_inner_frame_url.scheme());
+    replacements.SetHostStr(contextual_tasks_inner_frame_url.host());
+    replacements.SetPathStr(contextual_tasks_inner_frame_url.path());
 
     *url_from_text = url_from_text->ReplaceComponents(replacements);
     *text = base::UTF8ToUTF16(url_from_text->spec());

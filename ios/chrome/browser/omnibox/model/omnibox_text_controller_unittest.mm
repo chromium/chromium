@@ -5,17 +5,23 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 
 #import "base/test/task_environment.h"
+#import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_provider_client.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/browser/test_location_bar_model.h"
-#import "components/omnibox/browser/test_omnibox_client.h"
+#import "components/omnibox/browser/test_scheme_classifier.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/omnibox/model/fake_omnibox_client.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -57,11 +63,20 @@
 class OmniboxTextControllerTest : public PlatformTest {
  public:
   OmniboxTextControllerTest() {
-    omnibox_client_ = std::make_unique<TestOmniboxClient>();
-    omnibox::RegisterProfilePrefs(
-        static_cast<sync_preferences::TestingPrefServiceSyncable*>(
-            classifier_pref_service())
-            ->registry());
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    omnibox::RegisterProfilePrefs(pref_service_->registry());
+
+    omnibox_client_ = std::make_unique<FakeOmniboxClient>(profile_.get());
+    omnibox_client_->set_prefs(pref_service_.get());
 
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
@@ -75,6 +90,18 @@ class OmniboxTextControllerTest : public PlatformTest {
         AutocompleteControllerConfig{
             .provider_types =
                 AutocompleteClassifier::DefaultOmniboxProviders()});
+
+    autocomplete_classifier_override_ =
+        std::make_unique<AutocompleteClassifier>(
+            std::make_unique<AutocompleteController>(
+                omnibox_client_->CreateAutocompleteProviderClient(),
+                AutocompleteControllerConfig{
+                    .provider_types =
+                        AutocompleteClassifier::DefaultOmniboxProviders()}),
+            std::make_unique<TestSchemeClassifier>());
+
+    omnibox_client_->set_autocomplete_classifier(
+        autocomplete_classifier_override_.get());
 
     omnibox_autocomplete_controller_ = [[OmniboxAutocompleteController alloc]
          initWithOmniboxClient:omnibox_client_.get()
@@ -96,23 +123,19 @@ class OmniboxTextControllerTest : public PlatformTest {
     omnibox_text_controller_ = nil;
     [omnibox_autocomplete_controller_ disconnect];
     omnibox_autocomplete_controller_ = nil;
+    autocomplete_classifier_override_->Shutdown();
     autocomplete_controller_.reset();
     omnibox_text_model_.reset();
     omnibox_client_.reset();
+    profile_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
   }
 
   PrefService* classifier_pref_service() {
-    return omnibox_client_->autocomplete_classifier()
-        ->autocomplete_controller()
-        ->autocomplete_provider_client()
-        ->GetPrefs();
+    return pref_service_.get();  // fallback
   }
 
-  TestLocationBarModel* location_bar_model() {
-    return omnibox_client_->location_bar_model();
-  }
 
   bool current_text_is_URL() const {
     return !omnibox_text_model_->user_input_in_progress ||
@@ -123,11 +146,14 @@ class OmniboxTextControllerTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment environment_;
 
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
+  std::unique_ptr<AutocompleteClassifier> autocomplete_classifier_override_;
   OmniboxAutocompleteController* omnibox_autocomplete_controller_;
   TestOmniboxTextController* omnibox_text_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
-  std::unique_ptr<TestOmniboxClient> omnibox_client_;
+  std::unique_ptr<FakeOmniboxClient> omnibox_client_;
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   // Application pref service.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
 };
@@ -165,8 +191,9 @@ TEST_F(OmniboxTextControllerTest, InlineAutocompleteText) {
 TEST_F(OmniboxTextControllerTest, CurrentMatch) {
   // Test the HTTP case.
   {
-    location_bar_model()->set_url(GURL("http://www.example.com/"));
-    location_bar_model()->set_url_for_display(u"example.com");
+    omnibox_client_->set_url(GURL("http://www.example.com/"));
+    omnibox_client_->set_url_for_display(u"example.com");
+    omnibox_client_->set_formatted_full_url(u"http://www.example.com/");
     [omnibox_text_controller_ resetDisplayTexts];
     [omnibox_text_controller_ revertState];
 
@@ -182,8 +209,9 @@ TEST_F(OmniboxTextControllerTest, CurrentMatch) {
   // Test that generating a match from an elided HTTPS URL doesn't drop the
   // secure scheme.
   {
-    location_bar_model()->set_url(GURL("https://www.google.com/"));
-    location_bar_model()->set_url_for_display(u"google.com");
+    omnibox_client_->set_url(GURL("https://www.google.com/"));
+    omnibox_client_->set_url_for_display(u"google.com");
+    omnibox_client_->set_formatted_full_url(u"https://www.google.com/");
     [omnibox_text_controller_ resetDisplayTexts];
     [omnibox_text_controller_ revertState];
 
@@ -200,8 +228,9 @@ TEST_F(OmniboxTextControllerTest, CurrentMatch) {
 }
 
 TEST_F(OmniboxTextControllerTest, DisplayText) {
-  location_bar_model()->set_url(GURL("https://www.example.com/"));
-  location_bar_model()->set_url_for_display(u"example.com");
+  omnibox_client_->set_url(GURL("https://www.example.com/"));
+  omnibox_client_->set_url_for_display(u"example.com");
+  omnibox_client_->set_formatted_full_url(u"https://www.example.com/");
 
   EXPECT_TRUE([omnibox_text_controller_ resetDisplayTexts]);
   [omnibox_text_controller_ revertState];

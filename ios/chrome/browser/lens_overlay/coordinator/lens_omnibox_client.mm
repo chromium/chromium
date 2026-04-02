@@ -252,6 +252,6 @@ void LensOmniboxClient::OnThumbnailOnlyAccept() {
   [delegate_ omniboxDidAcceptText:u"" destinationURL:GURL() textClobbered:NO];
 }
 
-base::WeakPtr<OmniboxClient> LensOmniboxClient::AsWeakPtr() {
+base::WeakPtr<OmniboxClientIOS> LensOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

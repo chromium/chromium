@@ -8,11 +8,11 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_test_util.h"
 #import "components/omnibox/browser/autocomplete_result.h"
-#import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
+#import "ios/chrome/browser/omnibox/model/fake_omnibox_client.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_annotator.h"
@@ -50,7 +50,7 @@ class AutocompleteResultWrapperTest : public PlatformTest {
 
     _fake_autocomplete_wrapper_delegate =
         [[FakeAutocompleteResultWrapperDelegate alloc] init];
-    omnibox_client_ = std::make_unique<TestOmniboxClient>();
+    omnibox_client_ = std::make_unique<FakeOmniboxClient>(profile_.get());
     autocomplete_provider_client_ =
         std::make_unique<AutocompleteProviderClientImpl>(profile_.get());
 
@@ -72,7 +72,7 @@ class AutocompleteResultWrapperTest : public PlatformTest {
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   FakeAutocompleteResultWrapperDelegate* _fake_autocomplete_wrapper_delegate;
-  std::unique_ptr<TestOmniboxClient> omnibox_client_;
+  std::unique_ptr<FakeOmniboxClient> omnibox_client_;
   std::unique_ptr<AutocompleteProviderClientImpl> autocomplete_provider_client_;
 };
 

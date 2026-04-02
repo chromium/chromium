@@ -311,7 +311,10 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
         input[i].sel_start, &result, has_user_modified_text,
         /*is_keyword_selected=*/false,
         is_popup_open ? std::optional<AutocompleteMatch>(match) : std::nullopt,
-        client(), &url, &write_url);
+        client()->GetNavigationEntryURL(),
+        client()->GetAutocompleteClassifier(),
+        client()->GetPageClassification(/*is_prefetch=*/false),
+        client()->GetContextualTasksInnerFrameURL(), &url, &write_url);
     EXPECT_EQ(base::UTF8ToUTF16(input[i].expected_output), result)
         << "@: " << i;
     EXPECT_EQ(input[i].write_url, write_url) << " @" << i;
@@ -334,8 +337,11 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopyReaderMode) {
   std::u16string result = base::UTF8ToUTF16(distiller_url.spec());
   GURL url;
   bool write_url = false;
-  omnibox::AdjustTextForCopy(0, &result, false, false, std::nullopt, client(),
-                             &url, &write_url);
+  omnibox::AdjustTextForCopy(
+      0, &result, false, false, std::nullopt, client()->GetNavigationEntryURL(),
+      client()->GetAutocompleteClassifier(),
+      client()->GetPageClassification(/*is_prefetch=*/false),
+      client()->GetContextualTasksInnerFrameURL(), &url, &write_url);
 
   EXPECT_EQ(base::ASCIIToUTF16(article_url.spec()), result);
   EXPECT_EQ(article_url, url);

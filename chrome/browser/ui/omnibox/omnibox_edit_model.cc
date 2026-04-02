@@ -468,7 +468,11 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
       controller_->IsPopupOpen()
           ? std::optional<AutocompleteMatch>(CurrentMatch())
           : std::nullopt,
-      controller_->client(), url_from_text, write_url);
+      controller_->client()->GetNavigationEntryURL(),
+      controller_->client()->GetAutocompleteClassifier(),
+      controller_->client()->GetPageClassification(/*is_prefetch=*/false),
+      controller_->client()->GetContextualTasksInnerFrameURL(), url_from_text,
+      write_url);
 }
 
 bool OmniboxEditModel::ShouldShowCurrentPageIcon() const {

@@ -11,8 +11,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/omnibox/browser/autocomplete_match.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
 
 class Browser;
 class ProfileIOS;
@@ -22,7 +22,7 @@ namespace feature_engagement {
 class Tracker;
 }
 
-class ChromeOmniboxClientIOS final : public OmniboxClient {
+class ChromeOmniboxClientIOS final : public OmniboxClientIOS {
  public:
   ChromeOmniboxClientIOS(WebLocationBar* location_bar,
                          Browser* browser,
@@ -33,7 +33,7 @@ class ChromeOmniboxClientIOS final : public OmniboxClient {
 
   ~ChromeOmniboxClientIOS() override;
 
-  // OmniboxClient.
+  // OmniboxClientIOS.
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
   bool CurrentPageExists() const override;
@@ -88,7 +88,7 @@ class ChromeOmniboxClientIOS final : public OmniboxClient {
       const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match) override;
-  base::WeakPtr<OmniboxClient> AsWeakPtr() override;
+  base::WeakPtr<OmniboxClientIOS> AsWeakPtr() override;
 
  private:
   raw_ptr<WebLocationBar> location_bar_;
