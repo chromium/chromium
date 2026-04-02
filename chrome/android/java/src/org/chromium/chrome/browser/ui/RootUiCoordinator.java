@@ -1151,6 +1151,7 @@ public class RootUiCoordinator
 
         initMessagesInfra();
         initScrollCapture();
+        assumeNonNull(mAdaptiveToolbarUiCoordinator);
         mAdaptiveToolbarUiCoordinator.onFinishNativeInitialization();
 
         EdgeToEdgeUtils.recordEligibilityForEveryStart(mActivity);
@@ -1489,7 +1490,7 @@ public class RootUiCoordinator
                                         profile,
                                         mTabModelSelectorSupplier.get(),
                                         new WebSigninBridge.Factory()),
-                                mDeviceLockActivityLauncherSupplier.get(),
+                                assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                                 profileSupplier,
                                 getBottomSheetControllerSupplier().asNonNull(),
                                 mModalDialogManagerSupplier.get(),
@@ -1746,6 +1747,7 @@ public class RootUiCoordinator
     protected void onLayoutManagerAvailable(LayoutManagerImpl layoutManager) {
         mLayoutManager = layoutManager;
         if (mOverlayPanelManager != null) {
+            assumeNonNull(mOverlayPanelManagerObserver);
             mOverlayPanelManager.removeObserver(mOverlayPanelManagerObserver);
         }
         mOverlayPanelManager = layoutManager.getOverlayPanelManager();
@@ -1820,7 +1822,7 @@ public class RootUiCoordinator
                     mTabModelSelectorSupplier,
                     assertNonNull(getBottomSheetController()),
                     SupplierUtils.asNonNull(mSnackbarManagerSupplier),
-                    mTabBookmarkerSupplier,
+                    mTabBookmarkerSupplier.asNonNull(),
                     mProfileSupplier,
                     mBookmarkModelSupplier,
                     mReadAloudControllerSupplier,
@@ -1829,7 +1831,7 @@ public class RootUiCoordinator
                             mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS),
                     mWindowAndroid,
                     mActivityResultTracker,
-                    mDeviceLockActivityLauncherSupplier.get(),
+                    assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                     trackerSupplier,
                     mScrimManagerSupplier.asNonNull(),
                     mReaderModeIphControllerSupplier);
@@ -1915,7 +1917,7 @@ public class RootUiCoordinator
                             mPromoShownOneshotSupplier,
                             mWindowAndroid,
                             mActivityResultTracker,
-                            mDeviceLockActivityLauncherSupplier.get(),
+                            assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                             mChromeAndroidTaskSupplier,
                             mIsInOverviewModeSupplier,
                             mModalDialogManagerSupplier,
@@ -1961,6 +1963,13 @@ public class RootUiCoordinator
     }
 
     protected void addVoiceSearchAdaptiveButton(Supplier<@Nullable Tracker> trackerSupplier) {
+        if (mAdaptiveToolbarUiCoordinator == null) {
+            assert mActivity == null
+                    : "mAdaptiveToolbarUiCoordinator was null but RootUiCoordinator was not"
+                            + " destroyed";
+            return;
+        }
+
         mAdaptiveToolbarUiCoordinator.addVoiceSearchAdaptiveButton(
                 () -> mToolbarManager.getVoiceRecognitionHandler(), trackerSupplier);
     }

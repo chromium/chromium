@@ -70,7 +70,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private final ActivityTabProvider mTabProvider;
 
     /** The manager for overlay panels to attach listeners to. */
-    private final Supplier<OverlayPanelManager> mOverlayPanelManager;
+    private final Supplier<@Nullable OverlayPanelManager> mOverlayPanelManager;
 
     private final Callback<@Nullable Tab> mOnActiveTabChanged = this::setActivityTab;
 
@@ -93,7 +93,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             BrowserControlsVisibilityManager controlsVisibilityManager,
             ExpandedSheetHelper expandedSheetHelper,
             MonotonicObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            Supplier<OverlayPanelManager> overlayManager,
+            Supplier<@Nullable OverlayPanelManager> overlayManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mSheetController = controller;
         mTabProvider = tabProvider;
@@ -224,12 +224,12 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             }
         }
 
-        if (mOverlayPanelManager.get() != null
-                && mOverlayPanelManager.get().getActivePanel() != null) {
-            mOverlayPanelManager
-                    .get()
-                    .getActivePanel()
-                    .closePanel(OverlayPanel.StateChangeReason.UNKNOWN, true);
+        OverlayPanelManager overlayPanelManager = mOverlayPanelManager.get();
+        if (overlayPanelManager != null) {
+            OverlayPanel activePanel = overlayPanelManager.getActivePanel();
+            if (activePanel != null) {
+                activePanel.closePanel(OverlayPanel.StateChangeReason.UNKNOWN, true);
+            }
         }
 
         BottomSheetContent content = mSheetController.getCurrentSheetContent();

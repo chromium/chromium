@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
     private final Supplier<Profile> mProfileSupplier;
-    private final Supplier<TabSwitcher> mTabSwitcherSupplier;
+    private final Supplier<@Nullable TabSwitcher> mTabSwitcherSupplier;
 
     /**
      * @param profileSupplier A supplier for {@link Profile} that owns the data being deleted.
@@ -33,7 +33,8 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
      *     trigger the Quick Delete animation.
      */
     public QuickDeleteDelegateImpl(
-            Supplier<Profile> profileSupplier, Supplier<TabSwitcher> tabSwitcherSupplier) {
+            Supplier<Profile> profileSupplier,
+            Supplier<@Nullable TabSwitcher> tabSwitcherSupplier) {
         mProfileSupplier = profileSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
     }

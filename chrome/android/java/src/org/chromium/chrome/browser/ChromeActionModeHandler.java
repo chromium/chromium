@@ -75,7 +75,7 @@ public class ChromeActionModeHandler {
             boolean showWebSearch,
             Supplier<ShareDelegate> shareDelegateSupplier,
             BrowserControlsStateProvider controlsState,
-            Supplier<ReadAloudController> readAloudControllerSupplier) {
+            Supplier<@Nullable ReadAloudController> readAloudControllerSupplier) {
         mInitWebContentsObserver =
                 (webContents) -> {
                     SelectionPopupController spc =
@@ -135,7 +135,7 @@ public class ChromeActionModeHandler {
         private final Callback<String> mSearchCallback;
         private final boolean mShowWebSearch;
         private final Supplier<ShareDelegate> mShareDelegateSupplier;
-        private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
+        private final Supplier<@Nullable ReadAloudController> mReadAloudControllerSupplier;
         private final BrowserControlsStateProvider mControlsState;
 
         // Used for recording UMA histograms.
@@ -148,7 +148,7 @@ public class ChromeActionModeHandler {
                 boolean showWebSearch,
                 Supplier<ShareDelegate> shareDelegateSupplier,
                 BrowserControlsStateProvider controlsState,
-                Supplier<ReadAloudController> readAloudControllerSupplier) {
+                Supplier<@Nullable ReadAloudController> readAloudControllerSupplier) {
             mTab = tab;
             mHelper = getActionModeCallbackHelper(webContents);
             mShowWebSearch = showWebSearch;
