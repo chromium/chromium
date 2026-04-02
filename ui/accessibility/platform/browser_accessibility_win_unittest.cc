@@ -4004,4 +4004,51 @@ TEST_F(BrowserAccessibilityWinTest, OnExtendedPropertiesUsedAfterDestruction) {
   text_field_node->SetDelegateForTesting(pre_delegate);
 }
 
+// Regression test for type confusion fix: verify get_hyperlink uses
+// QueryInterface and returns correct results for valid hyperlinks.
+TEST_F(BrowserAccessibilityWinTest, TestHyperlinkSafeTypeCheck) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddState(ax::mojom::State::kFocusable);
+
+  AXNodeData text;
+  text.id = 2;
+  text.role = ax::mojom::Role::kStaticText;
+  text.SetName("Hello ");
+
+  AXNodeData link;
+  link.id = 3;
+  link.role = ax::mojom::Role::kLink;
+  link.AddState(ax::mojom::State::kFocusable);
+  link.AddState(ax::mojom::State::kLinked);
+  link.SetName("world");
+  link.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  root.child_ids = {text.id, link.id};
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(root, text, link), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityComWin* root_obj =
+      ToBrowserAccessibilityWin(manager->GetBrowserAccessibilityRoot())
+          ->GetCOM();
+
+  LONG hyperlink_count = -1;
+  EXPECT_EQ(S_OK, root_obj->get_nHyperlinks(&hyperlink_count));
+  EXPECT_EQ(1, hyperlink_count);
+
+  Microsoft::WRL::ComPtr<IAccessibleHyperlink> hyperlink;
+  EXPECT_EQ(S_OK, root_obj->get_hyperlink(0, &hyperlink));
+  EXPECT_NE(nullptr, hyperlink.Get());
+  hyperlink.Reset();
+
+  EXPECT_EQ(E_INVALIDARG, root_obj->get_hyperlink(1, &hyperlink));
+  EXPECT_EQ(E_INVALIDARG, root_obj->get_hyperlink(-1, &hyperlink));
+
+  manager.reset();
+}
+
 }  // namespace ui

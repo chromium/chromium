@@ -1928,6 +1928,13 @@ BrowserAccessibility* BrowserAccessibilityManager::ApproximateHitTest(
 }
 
 void BrowserAccessibilityManager::DetachFromParentManager() {
+  // Notify the parent to invalidate its hypertext cache before disconnecting,
+  // otherwise stale hyperlink IDs can cause type confusion after reassignment.
+  if (connected_to_parent_tree_node_) {
+    if (AXNode* parent = GetParentNodeFromParentTree()) {
+      UpdateAttributesOnParent(parent);
+    }
+  }
   connected_to_parent_tree_node_ = false;
 }
 

@@ -563,11 +563,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
                << "\nroot=" << manager->GetRootManager()->GetRoot();
     return E_FAIL;
   }
-  auto* link = static_cast<BrowserAccessibilityComWin*>(node);
-  if (!link)
+  Microsoft::WRL::ComPtr<IAccessibleHyperlink> hyperlink_result;
+  if (FAILED(node->GetNativeViewAccessible()->QueryInterface(
+          IID_PPV_ARGS(&hyperlink_result)))) {
     return E_FAIL;
+  }
 
-  *hyperlink = static_cast<IAccessibleHyperlink*>(link->NewReference());
+  *hyperlink = hyperlink_result.Detach();
   return S_OK;
 }
 
