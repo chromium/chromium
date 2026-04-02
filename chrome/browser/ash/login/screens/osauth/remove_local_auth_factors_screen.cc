@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/osauth/remove_local_auth_factors_screen.h"
 
 #include <memory>
+#include <string>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/ui/webui/ash/login/remove_local_auth_factors_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
@@ -23,6 +25,7 @@
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 namespace {
@@ -59,8 +62,20 @@ void RemoveLocalAuthFactorsScreen::ShowImpl() {
   if (!view_) {
     return;
   }
+  CHECK(context()->user_context)
+      << "User context should not be null when removing the local auth factors";
+  if (!context()->user_context->GetAccountId().is_valid()) {
+    LOG(ERROR) << "Invalid AccountId detected";
+  }
 
-  view_->Show();
+  std::string domain = enterprise_util::GetDomainFromEmail(
+      context()->user_context->GetAccountId().GetUserEmail());
+  if (domain.empty()) {
+    LOG(ERROR) << "Unable to resolve a domain name for remove local auth "
+                  "factors screen";
+  }
+
+  view_->Show(domain);
 
   GetAuthFactorEditor()->GetAuthFactorsConfiguration(
       std::move(context()->user_context),

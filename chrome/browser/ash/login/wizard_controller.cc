@@ -1101,24 +1101,11 @@ WizardController::CreateScreens() {
                               weak_factory_.GetWeakPtr())));
     }
   }
-
-  if (features::IsManagedLocalPinAndPasswordEnabled()) {
-    append(std::make_unique<RemoveLocalAuthFactorsScreen>(
-        &local_state_.get(),
-        oobe_ui->GetView<RemoveLocalAuthFactorsScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(
-            &WizardController::OnRemoveLocalAuthFactorsScreenExit,
-            weak_factory_.GetWeakPtr())));
-  }
-
-  if (features::IsManagedLocalPinAndPasswordEnabled()) {
-    append(std::make_unique<RemoveLocalAuthFactorsScreen>(
-        &local_state_.get(),
-        oobe_ui->GetView<RemoveLocalAuthFactorsScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(
-            &WizardController::OnRemoveLocalAuthFactorsScreenExit,
-            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<RemoveLocalAuthFactorsScreen>(
+      &local_state_.get(),
+      oobe_ui->GetView<RemoveLocalAuthFactorsScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnRemoveLocalAuthFactorsScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   return result;
 }

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_REMOVE_LOCAL_AUTH_FACTORS_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_REMOVE_LOCAL_AUTH_FACTORS_SCREEN_HANDLER_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
@@ -26,7 +28,7 @@ class RemoveLocalAuthFactorsScreenView {
   virtual ~RemoveLocalAuthFactorsScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(const std::string& domain) = 0;
 
   // Shows the success step of the screen.
   virtual void ShowRemoveLocalAuthFactorsSuccessStep() = 0;
@@ -55,7 +57,7 @@ class RemoveLocalAuthFactorsScreenHandler
       ::login::LocalizedValuesBuilder* builder) override;
 
   // RemoveLocalAuthFactorsScreenView:
-  void Show() override;
+  void Show(const std::string& domain) override;
   void ShowRemoveLocalAuthFactorsSuccessStep() override;
   base::WeakPtr<RemoveLocalAuthFactorsScreenView> AsWeakPtr() override;
 

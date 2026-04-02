@@ -7,20 +7,23 @@ found in the LICENSE file.
 
 </style>
 <oobe-adaptive-dialog role="dialog" for-step="success">
-  <!-- TODO: b/445628245 - Update translatable text and replace next button with
-    text button done -->
   <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
-  <h1 slot="title">
-    Sign-in method updated
+  <h1 slot="title" aria-live="polite">
+    [[i18nDynamic(locale,'factorsRemovedTitle')]]
   </h1>
   <div slot="subtitle">
-    For security reasons, your administrator disabled your device PIN or
-    password. From now on, use your [work or school account] password.
+    [[i18nDynamic(locale,'factorsRemovedSubtitle', domain)]]
   </div>
+    <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon icon="oobe-illos:pin-illustration-illo"
+        class="illustration-jelly">
+    </iron-icon>
+  </div>
+
   <div slot="bottom-buttons">
-    <oobe-next-button id="doneButton" inverse on-click="onDoneClicked"
-        class="focus-on-show" >
-    </oobe-next-button>
+    <oobe-text-button id="doneButton" inverse on-click="onDoneClicked"
+        class="focus-on-show" text-key="factorsRemovedDoneButton">
+    </oobe-text-button>
   </div>
 
 </oobe-adaptive-dialog>

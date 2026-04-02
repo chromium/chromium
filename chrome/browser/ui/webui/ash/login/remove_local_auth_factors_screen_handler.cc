@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/login/remove_local_auth_factors_screen_handler.h"
 
+#include <string>
+#include <utility>
+
+#include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
 namespace ash {
@@ -15,12 +20,18 @@ RemoveLocalAuthFactorsScreenHandler::RemoveLocalAuthFactorsScreenHandler()
 RemoveLocalAuthFactorsScreenHandler::~RemoveLocalAuthFactorsScreenHandler() =
     default;
 
-// TODO: b/445628245 - add localized values.
 void RemoveLocalAuthFactorsScreenHandler::DeclareLocalizedValues(
-    ::login::LocalizedValuesBuilder* builder) {}
+    ::login::LocalizedValuesBuilder* builder) {
+  builder->Add("factorsRemovedDoneButton", IDS_LOGIN_GENERIC_DONE_BUTTON);
+  builder->Add("factorsRemovedTitle", IDS_LOGIN_FACTORS_REMOVED_TITLE);
+  builder->Add("factorsRemovedSubtitle", IDS_LOGIN_FACTORS_REMOVED_SUBTITLE);
+}
 
-void RemoveLocalAuthFactorsScreenHandler::Show() {
-  ShowInWebUI();
+void RemoveLocalAuthFactorsScreenHandler::Show(const std::string& domain) {
+  base::DictValue data;
+  data.Set("domain", domain);
+
+  ShowInWebUI(std::move(data));
 }
 
 void RemoveLocalAuthFactorsScreenHandler::

@@ -22,6 +22,10 @@ import {getTemplate} from './remove_local_auth_factors.html.js';
 const RemoveLocalAuthFactorsScreenElementBase =
     LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
+interface RemoveLocalAuthFactorsScreenData {
+  domain: string;
+}
+
 enum UserAction {
   DONE = 'done',
 }
@@ -42,12 +46,27 @@ class RemoveLocalAuthFactorsScreen extends
   }
 
   static get properties(): PolymerElementProperties {
-    return {};
+    return {
+      // The domain this user belongs to.
+      domain: {type: String, value: ''}
+    };
   }
 
+  private domain: string = '';
 
   override get EXTERNAL_API(): string[] {
     return ['showRemoveLocalAuthFactorsSuccessStep'];
+  }
+
+
+  /**
+   * Event handler that is invoked just before the frame is shown.
+   * data contains domain string which is used for localization.
+   */
+  override onBeforeShow(data: RemoveLocalAuthFactorsScreen): void {
+    super.onBeforeShow(data);
+    this.domain = data.domain;
+    console.log('domain is =====' + this.domain);
   }
 
   override defaultUIStep(): string {

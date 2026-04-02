@@ -607,9 +607,7 @@ void OobeUI::ConfigureOobeDisplay() {
     }
   }
 
-  if (features::IsManagedLocalPinAndPasswordEnabled()) {
-    AddScreenHandler(std::make_unique<RemoveLocalAuthFactorsScreenHandler>());
-  }
+  AddScreenHandler(std::make_unique<RemoveLocalAuthFactorsScreenHandler>());
 
   Profile* const profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.

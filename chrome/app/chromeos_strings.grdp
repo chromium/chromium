@@ -1768,6 +1768,12 @@
   <message name="IDS_LOGIN_FACTOR_SETUP_SUCCESS_LOCAL_PASSWORD_SUBTITLE" desc="Subtitle for the factor setup informational dialog, shown when local password was set up (to indicate that it only applies to the current device).">
     You can use this password to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
+   <message name="IDS_LOGIN_FACTORS_REMOVED_TITLE" desc="Title for the factor removed informational dialog, shown when all local auth factors are successuly removed.">
+    Sign-in method updated
+  </message>
+   <message name="IDS_LOGIN_FACTORS_REMOVED_SUBTITLE" desc="Subtitle for the factor removed informational dialog, shown when all local auth factors are successuly removed..">
+    For security reasons, your administrator disabled your device PIN and password. From now on, use your <ph name="MANAGER">$1<ex>example.com</ex></ph> password.
+  </message>
   <message name="IDS_LOGIN_MANUAL_PASSWORD_TITLE" desc="Title for the manual password setting dialog.">
     Please create a password to protect your local data.
   </message>
