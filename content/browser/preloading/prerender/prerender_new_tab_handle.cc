@@ -10,6 +10,7 @@
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -103,9 +104,29 @@ PrerenderHostId PrerenderNewTabHandle::StartPrerendering(
   return prerender_host_id_;
 }
 
-void PrerenderNewTabHandle::CancelPrerendering(
+// static
+void PrerenderNewTabHandle::CancelPrerenderingAndDestroy(
+    std::unique_ptr<PrerenderNewTabHandle> handle,
     const PrerenderCancellationReason& reason) {
-  GetPrerenderHostRegistry().CancelHost(prerender_host_id_, reason);
+  auto& registry = handle->GetPrerenderHostRegistry();
+  PrerenderHostId host_id = handle->prerender_host_id();
+
+  if (reason.final_status() == PrerenderFinalStatus::kSpeculationRuleRemoved) {
+    // Defer destruction of the handle until the pagehide event is fired in a
+    // prerendered page in a new tab. The event is fired only when prerendering
+    // is intentionally cancelled by an initiator page (i.e., Speculation rule
+    // is removed).
+    registry.SchedulePendingDeletionPrerenderNewTabHandle(
+        base::PassKey<PrerenderNewTabHandle>(), std::move(handle));
+  } else {
+    // Defer destruction of the handle to avoid synchronous destruction of the
+    // owned WebContentsImpl. This prevents Use-After-Free if this is called
+    // while iterating over a snapshot of raw pointers to all WebContents (e.g.,
+    // in BrowsingDataRemoverImpl::RemoveImpl).
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(handle));
+  }
+  registry.CancelHost(host_id, reason);
 }
 
 std::unique_ptr<WebContentsImpl>
