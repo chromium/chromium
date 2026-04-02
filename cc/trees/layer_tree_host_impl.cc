@@ -846,7 +846,14 @@ void LayerTreeHostImpl::CommitComplete() {
   // With that, when CC finishes animating an input property, the value of that
   // property stays at finish state until a commit kicks in, which is consistent
   // with current composited animations.
-  paint_worklet_tracker_.ClearUnusedInputProperties();
+  base::flat_set<PaintWorkletInput::PropertyKey> used_properties;
+  for (auto* layer : sync_tree()->picture_layers_with_paint_worklets()) {
+    for (const auto& map_entry : layer->GetPaintWorkletRecords()) {
+      const auto& property_keys = map_entry.first->GetPropertyKeys();
+      used_properties.insert(property_keys.begin(), property_keys.end());
+    }
+  }
+  paint_worklet_tracker_.ClearUnusedInputProperties(std::move(used_properties));
 
   // Start animations before UpdateDrawProperties and PrepareTiles, as they can
   // change the results. When doing commit to the active tree, this must happen
@@ -945,7 +952,23 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   // trees created by impl-side invalidations). But we ensure here that we
   // request another invalidation if an input property was mutated on the active
   // tree.
-  if (paint_worklet_tracker_.InvalidatePaintWorkletsOnPendingTree()) {
+  bool worklets_invalidated = false;
+  auto animated_properties =
+      paint_worklet_tracker_.TakeAndResetAnimatedProperties();
+  for (auto* layer : sync_tree()->picture_layers_with_paint_worklets()) {
+    for (const auto& map_entry : layer->GetPaintWorkletRecords()) {
+      for (const auto& property_key : map_entry.first->GetPropertyKeys()) {
+        const auto& it = animated_properties.find(property_key);
+        if (it != animated_properties.end()) {
+          worklets_invalidated = true;
+          layer->InvalidatePaintWorklets(property_key, it->second.first,
+                                         it->second.second);
+        }
+      }
+    }
+  }
+
+  if (worklets_invalidated) {
     client_->SetNeedsImplSideInvalidation(
         true /* needs_first_draw_on_activation */);
     if (sync_tree()->property_change_forces_commit_criteria() ==

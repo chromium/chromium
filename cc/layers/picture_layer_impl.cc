@@ -103,20 +103,8 @@ PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
     : TileBasedLayerImpl(tree_impl, id) {}
 
 PictureLayerImpl::~PictureLayerImpl() {
-  if (twin_layer_)
+  if (twin_layer_) {
     twin_layer_->twin_layer_ = nullptr;
-
-  // We only track PaintWorklet-containing PictureLayerImpls on the pending
-  // tree. However this deletion may happen outside the commit flow when we are
-  // on the recycle tree instead, so just check !IsActiveTree().
-  if (!paint_worklet_records_.empty() && !layer_tree_impl()->IsActiveTree())
-    layer_tree_impl()->NotifyLayerHasPaintWorkletsChanged(this, false);
-
-  // Similarly, AnimatedPaintWorkletTracker is only valid on the pending tree.
-  if (!layer_tree_impl()->IsActiveTree()) {
-    layer_tree_impl()
-        ->paint_worklet_tracker()
-        .UpdatePaintWorkletInputProperties({}, this);
   }
 }
 
@@ -2019,7 +2007,7 @@ void PictureLayerImpl::SetPaintWorkletInputs(
   if (layer_tree_impl()->IsPendingTree()) {
     layer_tree_impl()
         ->paint_worklet_tracker()
-        .UpdatePaintWorkletInputProperties(inputs, this);
+        .UpdatePaintWorkletInputProperties(inputs);
   }
 }
 

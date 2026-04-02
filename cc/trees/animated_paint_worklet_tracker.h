@@ -6,11 +6,11 @@
 #define CC_TREES_ANIMATED_PAINT_WORKLET_TRACKER_H_
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/cc_export.h"
 #include "cc/paint/discardable_image_map.h"
@@ -18,8 +18,6 @@
 #include "cc/paint/paint_worklet_input.h"
 
 namespace cc {
-
-class PictureLayerImpl;
 
 // AnimatedPaintWorkletTracker is responsible for managing the state needed to
 // hook up the compositor animation system to PaintWorklets. This allows a
@@ -38,31 +36,35 @@ class CC_EXPORT AnimatedPaintWorkletTracker {
       delete;
   ~AnimatedPaintWorkletTracker();
 
+  using PropertyKey = PaintWorkletInput::PropertyKey;
+  using PropertyValue = PaintWorkletInput::PropertyValue;
+  typedef std::pair<PropertyValue, PropertyValue> PropertyChange;
+  typedef base::flat_map<PropertyKey, PropertyChange> PropertyChangeMap;
+
   // Update the |input_properties_| map, which is a map from a property to all
   // picture layers that have a PaintWorkletInput that depends on the property.
   void UpdatePaintWorkletInputProperties(
       const std::vector<DiscardableImageMap::PaintWorkletInputWithImageId>&
-          inputs,
-      PictureLayerImpl* layer);
+          inputs);
 
   // Called when the value of a property is changed by the CC animation system.
   // Responsible for updating the property value in |input_properties_|, and
   // marking any relevant PaintWorkletInputs as needs-invalidation.
-  void OnCustomPropertyMutated(PaintWorkletInput::PropertyKey property_key,
-                               PaintWorkletInput::PropertyValue property_value);
-  // Invalidate all the paint worklets that uses the set of dirtied properties.
-  // Returns whether the set of dirtied properties is empty or not.
-  bool InvalidatePaintWorkletsOnPendingTree();
+  void OnCustomPropertyMutated(PropertyKey property_key,
+                               PropertyValue property_value);
+
+  // Resets dirty state on all properties that were mutated during a preceding
+  // animation update.
+  PropertyChangeMap TakeAndResetAnimatedProperties();
 
   // Given a property, return its latest value if the property is animated.
   // Otherwise return a PropertyValue with no value.
-  PaintWorkletInput::PropertyValue GetPropertyAnimationValue(
-      const PaintWorkletInput::PropertyKey& key) const;
+  PropertyValue GetPropertyAnimationValue(const PropertyKey& key) const;
 
   // Called right after Blink commit, clears the entries in |input_properties_|
   // that is never mutated by CC animations from the previous Blink commit. Also
   // reset the property value in the map.
-  void ClearUnusedInputProperties();
+  void ClearUnusedInputProperties(base::flat_set<PropertyKey> used_properties);
 
   bool HasInputPropertiesAnimatedOnImpl() const;
 
@@ -79,9 +81,7 @@ class CC_EXPORT AnimatedPaintWorkletTracker {
   //      invalidate them when the property's value is changed by an animation.
   struct PropertyState {
     PropertyState();
-    explicit PropertyState(
-        PaintWorkletInput::PropertyValue value,
-        base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>> layers);
+    explicit PropertyState(PropertyValue value);
     PropertyState(const PropertyState&);
     ~PropertyState();
 
@@ -90,23 +90,19 @@ class CC_EXPORT AnimatedPaintWorkletTracker {
     // still being animated in CC. This allows us to continue using the final
     // value of the animation, after it finishes on the impl thread, until the
     // next commit.
-    PaintWorkletInput::PropertyValue animation_value;
-    PaintWorkletInput::PropertyValue last_animation_value;
-    base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>
-        associated_layers;
+    PropertyValue animation_value;
+    PropertyValue last_animation_value;
   };
 
   // The set of input properties managed by AnimatedPaintWorkletTracker.
-  base::flat_map<PaintWorkletInput::PropertyKey, PropertyState>
-      input_properties_;
+  base::flat_map<PropertyKey, PropertyState> input_properties_;
 
   // Tracks the set of input properties that were invalidated by an animation
   // in the current frame. These are used to invalidate the relevant
   // PaintWorklets after either an impl side invalidation or commit, so that
   // they will be repainted. The set is emptied once all paint worklets have
   // been invalidated.
-  base::flat_set<PaintWorkletInput::PropertyKey>
-      input_properties_animated_on_impl_;
+  base::flat_set<PropertyKey> input_properties_animated_on_impl_;
 };
 
 }  // namespace cc

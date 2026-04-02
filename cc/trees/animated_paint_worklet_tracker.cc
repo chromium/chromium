@@ -17,10 +17,8 @@ AnimatedPaintWorkletTracker::AnimatedPaintWorkletTracker() = default;
 
 AnimatedPaintWorkletTracker::~AnimatedPaintWorkletTracker() = default;
 
-AnimatedPaintWorkletTracker::PropertyState::PropertyState(
-    PaintWorkletInput::PropertyValue value,
-    base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>> layers)
-    : animation_value(value), associated_layers(std::move(layers)) {}
+AnimatedPaintWorkletTracker::PropertyState::PropertyState(PropertyValue value)
+    : animation_value(value) {}
 
 AnimatedPaintWorkletTracker::PropertyState::PropertyState() = default;
 
@@ -30,8 +28,8 @@ AnimatedPaintWorkletTracker::PropertyState::PropertyState(
 AnimatedPaintWorkletTracker::PropertyState::~PropertyState() = default;
 
 void AnimatedPaintWorkletTracker::OnCustomPropertyMutated(
-    PaintWorkletInput::PropertyKey property_key,
-    PaintWorkletInput::PropertyValue property_value) {
+    PropertyKey property_key,
+    PropertyValue property_value) {
   auto iter = input_properties_.find(property_key);
   // OnCustomPropertyMutated is called for all composited custom property
   // animations and some types of native properties that uses the paint worklet
@@ -49,7 +47,9 @@ void AnimatedPaintWorkletTracker::OnCustomPropertyMutated(
   input_properties_animated_on_impl_.insert(property_key);
 }
 
-bool AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree() {
+AnimatedPaintWorkletTracker::PropertyChangeMap
+AnimatedPaintWorkletTracker::TakeAndResetAnimatedProperties() {
+  PropertyChangeMap result;
   for (const auto& prop_key : input_properties_animated_on_impl_) {
     auto it = input_properties_.find(prop_key);
     // Since the invalidations happen on a newly created pending tree,
@@ -58,62 +58,40 @@ bool AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree() {
       continue;
     }
     PropertyState& state = it->second;
-    for (PictureLayerImpl* layer : state.associated_layers) {
-      layer->InvalidatePaintWorklets(prop_key, state.animation_value,
-                                     state.last_animation_value);
-    }
+    result.insert(std::make_pair(
+        prop_key,
+        std::make_pair(state.last_animation_value, state.animation_value)));
     state.last_animation_value = state.animation_value;
   }
-  bool return_value = !input_properties_animated_on_impl_.empty();
   input_properties_animated_on_impl_.clear();
-  return return_value;
+  return result;
 }
 
 PaintWorkletInput::PropertyValue
 AnimatedPaintWorkletTracker::GetPropertyAnimationValue(
-    const PaintWorkletInput::PropertyKey& key) const {
+    const PropertyKey& key) const {
   return input_properties_.find(key)->second.animation_value;
 }
 
 void AnimatedPaintWorkletTracker::UpdatePaintWorkletInputProperties(
     const std::vector<DiscardableImageMap::PaintWorkletInputWithImageId>&
-        inputs,
-    PictureLayerImpl* layer) {
-  // Flatten the |inputs| into a set of all PropertyKeys, as we only care about
-  // PropertyKeys and PictureLayerImpls.
-  std::vector<PaintWorkletInput::PropertyKey> all_input_properties_vector;
+        inputs) {
   for (const auto& input : inputs) {
-    all_input_properties_vector.insert(
-        all_input_properties_vector.end(),
-        std::begin(input.first->GetPropertyKeys()),
-        std::end(input.first->GetPropertyKeys()));
-  }
-  base::flat_set<PaintWorkletInput::PropertyKey> all_input_properties(
-      std::move(all_input_properties_vector));
-
-  // Update all existing properties, marking whether or not the input |layer| is
-  // associated with them.
-  for (auto& entry : input_properties_) {
-    if (all_input_properties.contains(entry.first))
-      entry.second.associated_layers.insert(layer);
-    else
-      entry.second.associated_layers.erase(layer);
-  }
-
-  // Handle any new properties that we did not previously track.
-  for (const auto& prop_key : all_input_properties) {
-    if (!input_properties_.contains(prop_key))
-      input_properties_[prop_key].associated_layers.insert(layer);
+    for (const auto& prop_key : input.first->GetPropertyKeys()) {
+      input_properties_.try_emplace(prop_key);
+    }
   }
 }
 
-void AnimatedPaintWorkletTracker::ClearUnusedInputProperties() {
+void AnimatedPaintWorkletTracker::ClearUnusedInputProperties(
+    base::flat_set<PropertyKey> used_properties) {
   // base::flat_map::erase takes linear time, which causes O(N^2) behavior when
   // using a naive loop + erase approach. Using base::EraseIf avoids that.
   base::EraseIf(
       input_properties_,
-      [](const std::pair<PaintWorkletInput::PropertyKey, PropertyState>&
-             entry) { return entry.second.associated_layers.empty(); });
+      [&used_properties](const std::pair<PropertyKey, PropertyState>& entry) {
+        return !used_properties.contains(entry.first);
+      });
   for (auto& entry : input_properties_)
     entry.second.animation_value.reset();
 }
