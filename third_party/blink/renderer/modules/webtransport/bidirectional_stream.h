@@ -8,15 +8,14 @@
 #include <stdint.h>
 
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
+#include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class OutgoingStream;
 class ScriptState;
 class WebTransport;
 
@@ -40,7 +39,9 @@ class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable {
 
   ReadableStream* readable() const { return receive_stream_.Get(); }
 
-  OutgoingStream* GetOutgoingStream();
+  OutgoingStream* GetOutgoingStream() {
+    return send_stream_->GetOutgoingStream();
+  }
   IncomingStream* GetIncomingStream() {
     return receive_stream_->GetIncomingStream();
   }
@@ -48,11 +49,7 @@ class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  // send_stream_ is either a SendStream or a WebTransportSendStream depending
-  // on whether the WebTransportSendGroup runtime flag is enabled.
-  // TODO(crbug.com/487117768): Remove old SendStream path when
-  // WebTransportSendGroup ships.
-  Member<WritableStream> send_stream_;
+  const Member<SendStream> send_stream_;
   const Member<ReceiveStream> receive_stream_;
 };
 
