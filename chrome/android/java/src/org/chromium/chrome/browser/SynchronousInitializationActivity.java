@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.CallSuper;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -17,6 +22,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 
 /**
  * Ensures that the native library is loaded by synchronously initializing it on creation.
@@ -29,7 +36,9 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 @NullMarked
 public abstract class SynchronousInitializationActivity extends ChromeBaseAppCompatActivity {
     private final OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
+    private ActivityWindowAndroid mWindowAndroid;
 
+    @Initializer
     @Override
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
         // Make sure the native is initialized before calling super.onCreate(), as calling
@@ -39,8 +48,37 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
         super.onCreate(savedInstanceState);
         onCreateInternal(savedInstanceState);
 
+        mWindowAndroid = createWindowAndroid();
         if (isFinishing()) return;
         mProfileSupplier.runSyncOrOnAvailable(this::onProfileAvailable);
+    }
+
+    @CallSuper
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
+        assumeNonNull(mWindowAndroid.getIntentRequestTracker())
+                .onActivityResult(requestCode, resultCode, intent);
+        super.onActivityResult(requestCode, resultCode, intent);
+    }
+
+    @CallSuper
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, String[] permissions, int[] grantResults) {
+        if (mWindowAndroid.handlePermissionResult(requestCode, permissions, grantResults)) {
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        mWindowAndroid.destroy();
+
+        // This must be after destroying ActivityWindowAndroid because it has a reference to
+        // the Activity.
+        super.onDestroy();
     }
 
     /**
@@ -49,6 +87,23 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
      */
     @Initializer
     protected void onCreateInternal(@Nullable Bundle savedInstanceState) {}
+
+    /**
+     * Creates an {@link ActivityWindowAndroid} to delegate calls to, if the Activity requires it.
+     */
+    protected ActivityWindowAndroid createWindowAndroid() {
+        return new ActivityWindowAndroid(
+                this,
+                /* listenToActivityState= */ true,
+                IntentRequestTracker.createFromActivity(this),
+                getInsetObserver(),
+                /* trackOcclusion= */ true);
+    }
+
+    /** Returns the {@link ActivityWindowAndroid} instance attached to the activity. */
+    protected ActivityWindowAndroid getWindowAndroid() {
+        return mWindowAndroid;
+    }
 
     /**
      * On initial startup, called when the profile is fully loaded and ready to use. This is not

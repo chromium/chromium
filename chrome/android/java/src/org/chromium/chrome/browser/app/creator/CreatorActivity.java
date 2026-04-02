@@ -41,8 +41,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityResultTracker;
-import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -53,7 +51,6 @@ import java.util.function.Supplier;
 /** Activity for the Creator Page. */
 @NullMarked
 public class CreatorActivity extends SnackbarActivity {
-    private @Nullable ActivityWindowAndroid mWindowAndroid;
     private @Nullable BottomSheetController mBottomSheetController;
     private @Nullable CreatorActionDelegateImpl mCreatorActionDelegate;
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
@@ -116,15 +113,6 @@ public class CreatorActivity extends SnackbarActivity {
         int parentTabId =
                 getIntent().getIntExtra(CreatorIntentConstants.CREATOR_TAB_ID, INVALID_TAB_ID);
 
-        IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
-        mWindowAndroid =
-                new ActivityWindowAndroid(
-                        this,
-                        false,
-                        intentRequestTracker,
-                        getInsetObserver(),
-                        /* trackOcclusion= */ true);
-
         TabShareDelegateImpl tabshareDelegate =
                 new TabShareDelegateImpl(
                         this,
@@ -148,7 +136,7 @@ public class CreatorActivity extends SnackbarActivity {
                         this,
                         webFeedId,
                         getSnackbarManager(),
-                        mWindowAndroid,
+                        getWindowAndroid(),
                         profile,
                         url,
                         this::createWebContents,
@@ -216,16 +204,8 @@ public class CreatorActivity extends SnackbarActivity {
         mTabShareDelegateSupplier.destroy();
         mShareDelegateSupplier.destroy();
 
-        // Destroy ActivityWindowAndroid if it exists. This must be after
-        // mLifecycleDispatcher.dispatchOnDestroy() because objects subscribing to
-        // mLifecycleDispatcher's onDestroy events may have references to ActivityWindowAndroid.
-        if (mWindowAndroid != null) {
-            mWindowAndroid.destroy();
-            mWindowAndroid = null;
-        }
-
-        // Finally, destroy the activity. This must be after destroying ActivityWindowAndroid
-        // because it has a reference to the Activity.
+        // This must be after mLifecycleDispatcher.dispatchOnDestroy() because objects subscribing
+        // to mLifecycleDispatcher's onDestroy events may have references to ActivityWindowAndroid.
         super.onDestroy();
     }
 

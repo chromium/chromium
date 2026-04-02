@@ -44,8 +44,6 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
-import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -65,7 +63,6 @@ public class BookmarkActivity extends SnackbarActivity {
     private @Nullable BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable OnKeyDownHandler mOnKeyDownHandler;
-    private @Nullable ActivityWindowAndroid mWindowAndroid;
     // Nullable after activity destruction.
     private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
 
@@ -82,13 +79,6 @@ public class BookmarkActivity extends SnackbarActivity {
                         () -> BookmarkModel.getForProfile(profile),
                         /* context= */ this,
                         /* componentName= */ parentComponent);
-        mWindowAndroid =
-                new ActivityWindowAndroid(
-                        this,
-                        /* listenToActivityState= */ true,
-                        IntentRequestTracker.createFromActivity(this),
-                        getInsetObserver(),
-                        /* trackOcclusion= */ true);
 
         ScrimManager scrimManager =
                 new ScrimManager(this, getContentView(), ScrimClient.BOOKMARK_ACTIVITY);
@@ -101,7 +91,7 @@ public class BookmarkActivity extends SnackbarActivity {
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> scrimManager,
                         getWindow(),
-                        mWindowAndroid.getKeyboardDelegate(),
+                        getWindowAndroid().getKeyboardDelegate(),
                         () -> sheetContainer,
                         () -> getEdgeToEdgeInset(),
                         /* desktopWindowStateManager= */ null);
@@ -109,7 +99,7 @@ public class BookmarkActivity extends SnackbarActivity {
         mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         mBookmarkManagerCoordinator =
                 new BookmarkManagerCoordinator(
-                        mWindowAndroid,
+                        getWindowAndroid(),
                         this,
                         true,
                         getSnackbarManager(),
@@ -158,11 +148,6 @@ public class BookmarkActivity extends SnackbarActivity {
             mBookmarkOpener = null;
         }
 
-        if (mWindowAndroid != null) {
-            mWindowAndroid.destroy();
-            mWindowAndroid = null;
-        }
-
         if (mBookmarkUiPrefs != null) {
             mBookmarkUiPrefs.destroy();
             mBookmarkUiPrefs = null;
@@ -172,10 +157,6 @@ public class BookmarkActivity extends SnackbarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (mWindowAndroid != null) {
-            assumeNonNull(mWindowAndroid.getIntentRequestTracker())
-                    .onActivityResult(requestCode, resultCode, data);
-        }
 
         if (requestCode == EDIT_BOOKMARK_REQUEST_CODE && resultCode == RESULT_OK) {
             assumeNonNull(data);
