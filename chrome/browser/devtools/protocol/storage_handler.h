@@ -32,12 +32,6 @@ class StorageHandler : public protocol::Storage::Backend {
   void GetRelatedWebsiteSets(
       std::unique_ptr<GetRelatedWebsiteSetsCallback> callback) override;
 
-  protocol::Response GetAffectedUrlsForThirdPartyCookieMetadata(
-      const protocol::String& first_party_url,
-      std::unique_ptr<protocol::Array<protocol::String>> third_party_urls,
-      std::unique_ptr<protocol::Array<protocol::String>>* matched_urls)
-      override;
-
   static void GotDeletedSites(
       std::unique_ptr<RunBounceTrackingMitigationsCallback> callback,
       const std::vector<std::string>& sites);

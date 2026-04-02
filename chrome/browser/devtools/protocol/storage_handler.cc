@@ -111,51 +111,6 @@ void StorageHandler::GetRelatedWebsiteSets(
   callback->sendSuccess(std::move(protocol_list));
 }
 
-protocol::Response StorageHandler::GetAffectedUrlsForThirdPartyCookieMetadata(
-    const protocol::String& first_party_url,
-    std::unique_ptr<protocol::Array<protocol::String>> third_party_urls,
-    std::unique_ptr<protocol::Array<protocol::String>>* matched_urls) {
-  // The frontend should ensure that each call at least passes the current page
-  // URL.
-  const GURL first_party_gurl(first_party_url);
-  if (!first_party_gurl.is_valid()) {
-    return protocol::Response::InvalidParams(
-        "Invalid first-party URL provided.");
-  }
-
-  tpcd::metadata::Manager* tpcd_metadata_manager =
-      tpcd::metadata::ManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-  if (!tpcd_metadata_manager) {
-    return protocol::Response::InternalError();
-  }
-
-  *matched_urls = std::make_unique<protocol::Array<protocol::String>>();
-
-  // If the first-party URL has a first-party pattern without a third-party
-  // pattern defined, all URLs will be matched. Instead just return the first-
-  // party URL.
-  if (tpcd_metadata_manager->IsAllowed(GURL(), first_party_gurl, nullptr)) {
-    (*matched_urls)->push_back(std::move(first_party_url));
-    return protocol::Response::Success();
-  }
-
-  CHECK(third_party_urls);
-  for (const auto& url : *third_party_urls) {
-    const GURL gurl(url);
-    if (!gurl.is_valid()) {
-      return protocol::Response::InvalidParams(
-          "Invalid third-party URL provided.");
-    }
-
-    if (tpcd_metadata_manager->IsAllowed(gurl, first_party_gurl, nullptr)) {
-      (*matched_urls)->push_back(std::move(url));
-    }
-  }
-
-  return protocol::Response::Success();
-}
-
 /* static */
 void StorageHandler::GotDeletedSites(
     std::unique_ptr<RunBounceTrackingMitigationsCallback> callback,
