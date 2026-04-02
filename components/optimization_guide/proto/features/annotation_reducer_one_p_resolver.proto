@@ -38,5 +38,214 @@ message AnnotationReducerOnePResolverRequest {
 
 // Answer to the user query based on the 1p context.
 message AnnotationReducerOnePResolverResponse {
-  string answer = 1 [features = { field_presence: EXPLICIT }];
+  string answer = 1 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
+
+  repeated ReducedAnswer answers = 2;
+}
+
+message ReducedAnswer {
+  // The type of answer.
+  AnswerType type = 1 [features = { field_presence: EXPLICIT }];
+
+  // If type is ANSWER_TYPE_UNKNOWN, this field will contain a one-word type
+  // name.
+  string type_name = 2 [features = { field_presence: EXPLICIT }];
+
+  // The answer value.
+  string value = 3 [features = { field_presence: EXPLICIT }];
+
+  // The sources of the answer.
+  repeated Source sources = 4;
+
+  // Additional metadata related to the answer.
+  repeated Metadata metadata_list = 5;
+
+  // The confidence score of the answer.
+  float confidence_score = 6 [features = { field_presence: EXPLICIT }];
+
+  // Source contains information about where the answer was derived from.
+  message Source {
+    // The type of source.
+    SourceType type = 1 [features = { field_presence: EXPLICIT }];
+
+    // The deeplink to the source.
+    string deeplink_url = 2 [features = { field_presence: EXPLICIT }];
+
+    // This enum defines the only valid source types for a ReducedAnswer.
+    // If a source type returned by the model is not one of these values,
+    // parsing of the response will fail and this proto will not be generated.
+    enum SourceType {
+      SOURCE_TYPE_AUTOFILL = 0;
+
+      SOURCE_TYPE_GMAIL = 1;
+
+      SOURCE_TYPE_CALENDAR = 2;
+
+      SOURCE_TYPE_PHOTOS = 3;
+
+      SOURCE_TYPE_AMBIENT = 4;
+
+      SOURCE_TYPE_LIVE_TABS = 5;
+    }
+  }
+
+  // Metadata contains additional data related to the answer.
+  message Metadata {
+    // The type of metadata.
+    AnswerType type = 1 [features = { field_presence: EXPLICIT }];
+
+    // If type is ANSWER_TYPE_UNKNOWN, this field will contain a one-word type
+    // name.
+    string type_name = 2 [features = { field_presence: EXPLICIT }];
+
+    // The value of the metadata.
+    string value = 3 [features = { field_presence: EXPLICIT }];
+  }
+
+  enum AnswerType {
+    // If type is ANSWER_TYPE_UNKNOWN, `type_name` in ReducedAnswer or Metadata
+    // must contain a custom type name; otherwise, `type_name` must be empty.
+    ANSWER_TYPE_UNKNOWN = 0;
+
+    ANSWER_TYPE_NAME_FULL = 1;
+
+    ANSWER_TYPE_ADDRESS_FULL = 2;
+
+    ANSWER_TYPE_ADDRESS_STREET_ADDRESS = 3;
+
+    ANSWER_TYPE_ADDRESS_CITY = 4;
+
+    ANSWER_TYPE_ADDRESS_STATE = 5;
+
+    ANSWER_TYPE_ADDRESS_ZIP = 6;
+
+    ANSWER_TYPE_ADDRESS_COUNTRY = 7;
+
+    ANSWER_TYPE_PHONE = 8;
+
+    ANSWER_TYPE_EMAIL = 9;
+
+    ANSWER_TYPE_COMPANY_NAME = 10;
+
+    ANSWER_TYPE_IBAN = 11;
+
+    ANSWER_TYPE_IBAN_NICKNAME = 12;
+
+    ANSWER_TYPE_VEHICLE = 13;
+
+    ANSWER_TYPE_VEHICLE_MAKE = 14;
+
+    ANSWER_TYPE_VEHICLE_MODEL = 15;
+
+    ANSWER_TYPE_VEHICLE_YEAR = 16;
+
+    ANSWER_TYPE_VEHICLE_OWNER = 17;
+
+    ANSWER_TYPE_VEHICLE_PLATE_NUMBER = 18;
+
+    ANSWER_TYPE_VEHICLE_PLATE_STATE = 19;
+
+    ANSWER_TYPE_VEHICLE_VIN = 20;
+
+    ANSWER_TYPE_PASSPORT_FULL = 21;
+
+    ANSWER_TYPE_PASSPORT_NAME = 22;
+
+    ANSWER_TYPE_PASSPORT_COUNTRY = 23;
+
+    ANSWER_TYPE_PASSPORT_NUMBER = 24;
+
+    ANSWER_TYPE_PASSPORT_ISSUE_DATE = 25;
+
+    ANSWER_TYPE_PASSPORT_EXPIRATION_DATE = 26;
+
+    ANSWER_TYPE_FLIGHT_RESERVATION_FULL = 27;
+
+    ANSWER_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER = 28;
+
+    ANSWER_TYPE_FLIGHT_RESERVATION_TICKET_NUMBER = 29;
+
+    ANSWER_TYPE_FLIGHT_RESERVATION_CONFIRMATION_CODE = 30;
+
+    ANSWER_TYPE_FLIGHT_RESERVATION_PASSENGER_NAME = 31;
+
+    ANSWER_TYPE_FLIGHT_RESERVATION_DEPARTURE_AIRPORT = 32;
+
+    ANSWER_TYPE_FLIGHT_RESERVATION_ARRIVAL_AIRPORT = 33;
+
+    ANSWER_TYPE_FLIGHT_RESERVATION_DEPARTURE_DATE = 34;
+
+    ANSWER_TYPE_FLIGHT_RESERVATION_ARRIVAL_DATE = 35;
+
+    ANSWER_TYPE_SHIPMENT_FULL = 36;
+
+    ANSWER_TYPE_SHIPMENT_TRACKING_NUMBER = 37;
+
+    ANSWER_TYPE_SHIPMENT_ASSOCIATED_ORDER_ID = 38;
+
+    ANSWER_TYPE_SHIPMENT_DELIVERY_ADDRESS = 39;
+
+    ANSWER_TYPE_SHIPMENT_CARRIER_NAME = 40;
+
+    ANSWER_TYPE_SHIPMENT_CARRIER_DOMAIN = 41;
+
+    ANSWER_TYPE_SHIPMENT_ESTIMATED_DELIVERY_DATE = 42;
+
+    ANSWER_TYPE_NATIONAL_ID_CARD_FULL = 43;
+
+    ANSWER_TYPE_NATIONAL_ID_CARD_NAME = 44;
+
+    ANSWER_TYPE_NATIONAL_ID_CARD_COUNTRY = 45;
+
+    ANSWER_TYPE_NATIONAL_ID_CARD_NUMBER = 46;
+
+    ANSWER_TYPE_NATIONAL_ID_CARD_ISSUE_DATE = 47;
+
+    ANSWER_TYPE_NATIONAL_ID_CARD_EXPIRATION_DATE = 48;
+
+    ANSWER_TYPE_REDRESS_NUMBER_FULL = 49;
+
+    ANSWER_TYPE_REDRESS_NUMBER_NAME = 50;
+
+    ANSWER_TYPE_REDRESS_NUMBER_NUMBER = 51;
+
+    ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_FULL = 52;
+
+    ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_NAME = 53;
+
+    ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_NUMBER = 54;
+
+    ANSWER_TYPE_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE = 55;
+
+    ANSWER_TYPE_DRIVERS_LICENSE_FULL = 56;
+
+    ANSWER_TYPE_DRIVERS_LICENSE_NAME = 57;
+
+    ANSWER_TYPE_DRIVERS_LICENSE_STATE = 58;
+
+    ANSWER_TYPE_DRIVERS_LICENSE_NUMBER = 59;
+
+    ANSWER_TYPE_DRIVERS_LICENSE_ISSUE_DATE = 60;
+
+    ANSWER_TYPE_DRIVERS_LICENSE_EXPIRATION_DATE = 61;
+
+    ANSWER_TYPE_ORDER_FULL = 62;
+
+    ANSWER_TYPE_ORDER_ID = 63;
+
+    ANSWER_TYPE_ORDER_ACCOUNT = 64;
+
+    ANSWER_TYPE_ORDER_DATE = 65;
+
+    ANSWER_TYPE_ORDER_MERCHANT_NAME = 66;
+
+    ANSWER_TYPE_ORDER_MERCHANT_DOMAIN = 67;
+
+    ANSWER_TYPE_ORDER_PRODUCT_NAMES = 68;
+
+    ANSWER_TYPE_ORDER_GRAND_TOTAL = 69;
+  }
 }

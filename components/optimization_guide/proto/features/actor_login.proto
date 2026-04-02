@@ -135,6 +135,24 @@ message ActorLoginQuality {
     bool is_new_password_visible = 6 [features = { field_presence: EXPLICIT }];
   }
 
+  message FederatedGetCredentialsDetails {
+    // Outcome of the GetCredentials step.
+    FederatedGetCredentialsOutcome outcome = 1 [features = { field_presence: EXPLICIT }];
+
+    // Time it took for the list permissions API call to complete.
+    int64 list_permissions_call_time_ms = 2 [features = { field_presence: EXPLICIT }];
+
+    enum FederatedGetCredentialsOutcome {
+      UNSPECIFIED = 0;
+
+      // No federated credentials found for this site.
+      NO_CREDENTIALS = 1;
+
+      // At least one federated credential found for this site.
+      CREDENTIALS_FOUND = 2;
+    }
+  }
+
   message GetCredentialsDetails {
     // Logs the finder logic outcome for every possible form on the page.
     repeated ParsedFormDetails parsed_form_details = 1;
@@ -146,6 +164,9 @@ message ActorLoginQuality {
 
     // Time it took for getting credentials of the site.
     int64 getting_credentials_time_ms = 4 [features = { field_presence: EXPLICIT }];
+
+    // Federated credentials logs
+    FederatedGetCredentialsDetails federated_get_credentials_details = 5 [features = { field_presence: EXPLICIT }];
 
     enum GetCredentialsOutcome {
       UNSPECIFIED = 0;
@@ -191,6 +212,13 @@ message ActorLoginQuality {
     // Time it took for the whole step to complete.
     int64 attempt_login_time_ms = 4 [features = { field_presence: EXPLICIT }];
 
+    // Indicates if a button click is required to start the login. Can be false
+    // for active FedCM API calls.
+    bool button_click_required = 5 [features = { field_presence: EXPLICIT }];
+
+    // Indicates if the button click was successful.
+    bool button_click_succeeded = 6 [features = { field_presence: EXPLICIT }];
+
     // The result of filling eligible login forms.
     message FillingFormResult {
       // The form data of the filled form.
@@ -206,6 +234,7 @@ message ActorLoginQuality {
     enum AttemptLoginOutcome {
       UNSPECIFIED = 0;
 
+      // Password specific statuses :
       // Username field, password field or both at the same
       // time were able to be filled.
       SUCCESS = 1;
@@ -229,6 +258,45 @@ message ActorLoginQuality {
 
       // Device reauth failed
       REAUTH_FAILED = 7;
+
+      // Federated login statuses:
+      FEDERATED_SUCCESS = 8;
+
+      // Flow requires user interaction. Often this is because the website
+      // requuested non-standard permission to access user informaition.
+      FEDERATED_CONTINUATION = 9;
+
+      // The chosen account is no longer available. Should be rare because it
+      // means the account state changed inbetween the credential picker and the
+      // login attempt.
+      FEDERATED_ACCOUNT_NOT_LOGGED_IN = 10;
+
+      // The chosen account turned out to be a sign-up account. This means we
+      // had a false-positive from the GetCredentials step.
+      FEDERATED_ACCOUNT_IS_SIGN_UP = 11;
+
+      // The account chosen in the credential picker is not eligible to log in
+      // for various reasons, like not being supported by the RP. This can also
+      // be a false-positive from the GetCredentials step.
+      FEDERATED_ACCOUNT_IS_NOT_AVAILABLE = 12;
+
+      // Generic error from the IdP.
+      FEDERATED_IDP_RETURNED_ERROR = 13;
+
+      // Network error from the IdP.
+      FEDERATED_IDP_NETWORK_ERROR = 14;
+
+      // Request to the IdP to fetch the token was aborted.
+      FEDERATED_TOKEN_REQUEST_ABORTED = 15;
+
+      // FedCM UI cannot be displayed.
+      FEDERATED_FRAME_NOT_ACTIVE = 16;
+
+      // Similar to FEDERATED_ACCOUNT_IS_NOT_AVAILABLE.
+      FEDERATED_EXPECTED_ACCOUNT_NOT_PRESENT = 17;
+
+      // Timeout for the federated login.
+      FEDERATED_TIMEOUT = 18;
     }
   }
 
