@@ -6,11 +6,11 @@
 import collections
 import os
 import logging
+import pathlib
 import pickle
 import shutil
 import subprocess
 import sys
-import tempfile
 from typing import Optional
 import zipfile
 
@@ -586,18 +586,16 @@ def _RunJavap(javap_path, class_file):
 def _ParseClassFiles(jar_file, class_files, args):
   # Parse javap output.
   ret = []
-  with tempfile.TemporaryDirectory() as temp_dir:
-    with zipfile.ZipFile(jar_file) as z:
-      z.extractall(temp_dir, class_files)
-      for class_file in class_files:
-        class_file = os.path.join(temp_dir, class_file)
-        contents = _RunJavap(args.javap, class_file)
-        parsed_file = parse.parse_javap_data(class_file, contents)
-        ret.append(
-            JniObject(parsed_file,
-                      from_javap=True,
-                      default_namespace=args.namespace,
-                      javap_unchecked_exceptions=args.unchecked_exceptions))
+  jar_file = pathlib.Path(jar_file).absolute().as_posix()
+  for class_file in class_files:
+    path_arg = f'jar:file://{jar_file}!/{class_file}'
+    contents = _RunJavap(args.javap, path_arg)
+    parsed_file = parse.parse_javap_data(class_file, contents)
+    ret.append(
+        JniObject(parsed_file,
+                  from_javap=True,
+                  default_namespace=args.namespace,
+                  javap_unchecked_exceptions=args.unchecked_exceptions))
   return ret
 
 
