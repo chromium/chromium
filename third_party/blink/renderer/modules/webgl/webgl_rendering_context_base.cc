@@ -1932,9 +1932,13 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   }
 
   bool copy_succeeded = false;
+  scoped_refptr<StaticBitmapImage> snapshot;
   if (resource_provider->IsAccelerated()) {
     copy_succeeded = CopyRenderingResultsFromDrawingBufferAccelerated(
         resource_provider, source_buffer);
+    if (copy_succeeded) {
+      snapshot = resource_provider->Snapshot();
+    }
   } else {
     // As the resource provider is not accelerated, we don't need an accelerated
     // image.
@@ -1943,8 +1947,12 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
             kBackBuffer, viz::SharedImageFormat::N32Format(),
             kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin);
     if (image && image->PaintImageForCurrentFrame()) {
-      DrawImageToCanvas(image.get(), resource_provider->GetCanvasDeprecated(),
-                        gfx::Rect(resource_provider->Size()));
+      gfx::Rect dest_rect(resource_provider->Size());
+      snapshot = resource_provider->DoExternalDrawAndSnapshot(
+          [&image, dest_rect](cc::PaintCanvas& canvas) {
+            DrawImageToCanvas(image.get(), canvas, dest_rect);
+          },
+          ImageOrientationEnum::kDefault);
       copy_succeeded = true;
     }
   }
@@ -1955,7 +1963,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
 
   // We successfully painted the canvas' contents.
   must_paint_to_canvas_ = false;
-  return resource_provider->Snapshot();
+  return snapshot;
 }
 
 scoped_refptr<CanvasResource>
