@@ -1381,13 +1381,12 @@ void ClientSession::OnDesktopDisplayChanged(
             << size.width() << "x" << size.height() << " [" << dpi_x << ","
             << dpi_y << "]";
 
+  desktop_display_info_.CopyFromVideoLayoutProto(*displays);
+
   // Add a VideoTrackLayout entry for each separate display.
-  desktop_display_info_.Reset();
   for (int display_id = 0; display_id < displays->video_track_size();
        display_id++) {
     protocol::VideoTrackLayout display = displays->video_track(display_id);
-    desktop_display_info_.AddDisplayFrom(display);
-
     video_track = layout.add_video_track();
     video_track->CopyFrom(display);
     if (multiStreamEnabled) {

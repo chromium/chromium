@@ -100,6 +100,7 @@ webrtc::DesktopSize DesktopDisplayInfo::CalcSizeDips(webrtc::DesktopSize size,
 
 void DesktopDisplayInfo::Reset() {
   displays_.clear();
+  pixel_type_.reset();
 }
 
 int DesktopDisplayInfo::NumDisplays() const {
@@ -261,6 +262,26 @@ std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
     }
   }
   return layout;
+}
+
+void DesktopDisplayInfo::CopyFromVideoLayoutProto(
+    const protocol::VideoLayout& layout) {
+  Reset();
+  if (layout.has_pixel_type()) {
+    switch (layout.pixel_type()) {
+      case protocol::VideoLayout::LOGICAL:
+        pixel_type_ = PixelType::LOGICAL;
+        break;
+      case protocol::VideoLayout::PHYSICAL:
+        pixel_type_ = PixelType::PHYSICAL;
+        break;
+      default:
+        break;
+    }
+  }
+  for (const auto& track : layout.video_track()) {
+    AddDisplayFrom(track);
+  }
 }
 
 std::ostream& operator<<(std::ostream& out, const DisplayGeometry& geo) {

@@ -100,6 +100,7 @@ class DesktopDisplayInfo {
       const webrtc::DesktopVector& global_absolute_coordinate) const;
 
   std::unique_ptr<protocol::VideoLayout> GetVideoLayoutProto() const;
+  void CopyFromVideoLayoutProto(const protocol::VideoLayout& layout);
 
  private:
   std::vector<DisplayGeometry> displays_;
