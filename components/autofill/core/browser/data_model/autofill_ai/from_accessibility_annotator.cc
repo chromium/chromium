@@ -376,6 +376,18 @@ std::u16string GetEntryTypeNameForI18n(aa::QueryIntentType type) {
       return u"IBAN";
     case aa::QueryIntentType::kIbanNickname:
       return u"Name";
+    case aa::QueryIntentType::kCreditCardFull:
+      return u"Credit card";
+    case aa::QueryIntentType::kCreditCardNumber:
+      return u"Card number";
+    case aa::QueryIntentType::kCreditCardExpirationDate:
+      return u"Expiration date";
+    case aa::QueryIntentType::kCreditCardSecurityCode:
+      return u"Security code";
+    case aa::QueryIntentType::kCreditCardNameOnCard:
+      return u"Name on card";
+    case aa::QueryIntentType::kCreditCardNickname:
+      return u"Card Nickname";
     // Entity types:
     case aa::QueryIntentType::kVehicle:
     case aa::QueryIntentType::kPassportFull:

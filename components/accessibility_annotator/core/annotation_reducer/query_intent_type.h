@@ -80,6 +80,12 @@ enum class QueryIntentType {
   kOrderMerchantDomain,
   kOrderProductNames,
   kOrderGrandTotal,
+  kCreditCardFull,
+  kCreditCardNumber,
+  kCreditCardExpirationDate,
+  kCreditCardSecurityCode,
+  kCreditCardNameOnCard,
+  kCreditCardNickname,
 };
 // LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/util.cc:QueryIntentType)
 

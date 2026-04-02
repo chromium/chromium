@@ -46,6 +46,15 @@ TEST(AtMemoryDataTypeTest, ToAtMemoryDataType) {
               Optional(VariantWith<FieldType>(COMPANY_NAME)));
   EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kIban),
               Optional(VariantWith<FieldType>(IBAN_VALUE)));
+  EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kCreditCardNumber),
+              Optional(VariantWith<FieldType>(CREDIT_CARD_NUMBER)));
+  EXPECT_THAT(
+      ToAtMemoryDataType(QueryIntentType::kCreditCardExpirationDate),
+      Optional(VariantWith<FieldType>(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)));
+  EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kCreditCardSecurityCode),
+              Optional(VariantWith<FieldType>(CREDIT_CARD_VERIFICATION_CODE)));
+  EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kCreditCardNameOnCard),
+              Optional(VariantWith<FieldType>(CREDIT_CARD_NAME_FULL)));
 
   EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kVehicle),
               Optional(VariantWith<autofill::EntityType>(

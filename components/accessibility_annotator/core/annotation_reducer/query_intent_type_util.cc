@@ -156,6 +156,7 @@ bool IsFullQueryIntentType(QueryIntentType intent_type) {
     case QueryIntentType::kDriversLicenseFull:
     case QueryIntentType::kOrderFull:
     case QueryIntentType::kShipmentFull:
+    case QueryIntentType::kCreditCardFull:
       return true;
     case QueryIntentType::kNameFull:
     case QueryIntentType::kAddressFull:
@@ -217,6 +218,11 @@ bool IsFullQueryIntentType(QueryIntentType intent_type) {
     case QueryIntentType::kOrderMerchantDomain:
     case QueryIntentType::kOrderProductNames:
     case QueryIntentType::kOrderGrandTotal:
+    case QueryIntentType::kCreditCardNumber:
+    case QueryIntentType::kCreditCardExpirationDate:
+    case QueryIntentType::kCreditCardSecurityCode:
+    case QueryIntentType::kCreditCardNameOnCard:
+    case QueryIntentType::kCreditCardNickname:
     case QueryIntentType::kUnknown:
       return false;
   }
@@ -582,6 +588,12 @@ EntityTypeEnumSet GetEntityTypesForQueryIntentType(
     case QueryIntentType::kCompanyName:
     case QueryIntentType::kIban:
     case QueryIntentType::kIbanNickname:
+    case QueryIntentType::kCreditCardFull:
+    case QueryIntentType::kCreditCardNumber:
+    case QueryIntentType::kCreditCardExpirationDate:
+    case QueryIntentType::kCreditCardSecurityCode:
+    case QueryIntentType::kCreditCardNameOnCard:
+    case QueryIntentType::kCreditCardNickname:
     case QueryIntentType::kRedressNumberFull:
     case QueryIntentType::kRedressNumberName:
     case QueryIntentType::kRedressNumberNumber:

@@ -293,6 +293,13 @@ AutofillDataProviderImpl::~AutofillDataProviderImpl() = default;
 void AutofillDataProviderImpl::RetrieveAll(
     QueryIntentType intent_type,
     base::OnceCallback<void(std::vector<MemorySearchResult>)> callback) {
+  if (intent_type == QueryIntentType::kCreditCardFull) {
+    // TODO(crbug.com/497795513): Handle credit card data once re-auth
+    // flow is implemented.
+    std::move(callback).Run({});
+    return;
+  }
+
   std::optional<AtMemoryDataType> at_memory_type =
       ToAtMemoryDataType(intent_type);
   if (!at_memory_type) {
