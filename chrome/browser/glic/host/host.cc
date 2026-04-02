@@ -240,6 +240,8 @@ void Host::NotifyContextualSkillsChanged(
   if (auto* client = GetPrimaryWebClient()) {
     client->NotifyContextualSkillPreviewsChanged(
         std::move(contextual_skill_previews));
+  } else {
+    pending_contextual_skills_ = std::move(contextual_skill_previews);
   }
 }
 
@@ -323,6 +325,7 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
                          PanelWillOpenOptions options) {
   VLOG(1) << "Glic [Host] PanelWillOpen";
   CHECK(delegate_);
+  panel_open_ = true;
   invocation_source_ = invocation_source;
   if (handler_info_ && handler_info_->web_client) {
     handler_info_->web_client->PanelWillOpen(
@@ -345,7 +348,7 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
 
 void Host::PanelWasClosed() {
   VLOG(1) << "Glic [Host] PanelWasClosed";
-  invocation_source_ = std::nullopt;
+  panel_open_ = false;
   if (handler_info_ && handler_info_->web_client) {
     handler_info_->web_client->PanelWasClosed(base::DoNothing());
     handler_info_->open_complete = false;
@@ -519,6 +522,16 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
   CHECK(handler_info_);
   CHECK(web_client);
   handler_info_->web_client = web_client;
+
+  if (!pending_contextual_skills_.empty()) {
+    web_client->NotifyContextualSkillPreviewsChanged(
+        std::move(pending_contextual_skills_));
+    pending_contextual_skills_.clear();
+  }
+
+  if (is_manually_resizing_) {
+    web_client->ManualResizeChanged(true);
+  }
   if (invocation_source_ && web_client) {
     std::optional<std::string> prompt_suggestion;
     std::optional<std::vector<mojom::ConversationInfoPtr>>
@@ -539,6 +552,9 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
       pending_panel_open_options_.reset();
     }
 
+    // Note: we're sending the open call even if the panel as since been closed.
+    // This ensure we don't drop the invocation information. Finally, a call to
+    // PanelWasClosed() resolves the discrepancy.
     web_client->PanelWillOpen(
         mojom::PanelOpeningData::New(
             glic_instance_ ? glic_instance_->GetPanelState().Clone()
@@ -553,6 +569,9 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
             base::Unretained(this),
             // Unretained is safe because web_client is calling us.
             base::Unretained(web_client)));
+    if (!panel_open_) {
+      web_client->PanelWasClosed(base::DoNothing());
+    }
   }
   skills_manager().UpdateSkillPreviews(std::nullopt);
 
@@ -582,6 +601,13 @@ bool Host::IsContextAccessIndicatorEnabled() const {
 
 GlicWebClientAccess* Host::GetPrimaryWebClient() {
   return handler_info_ ? handler_info_->web_client : nullptr;
+}
+
+void Host::ManualResizeChanged(bool resizing) {
+  is_manually_resizing_ = resizing;
+  if (auto* client = GetPrimaryWebClient()) {
+    client->ManualResizeChanged(resizing);
+  }
 }
 
 bool Host::IsPrimaryClientOpen() {
@@ -643,7 +669,7 @@ void Host::PanelWillOpenComplete(GlicWebClientAccess* client,
                                  mojom::OpenPanelInfoPtr open_info) {
   CHECK(client);
   // If the panel was closed before opening finished, return early.
-  if (!invocation_source_) {
+  if (!panel_open_) {
     return;
   }
   if (handler_info_ && handler_info_->web_client == client) {

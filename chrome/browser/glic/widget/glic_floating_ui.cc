@@ -86,7 +86,11 @@ GlicFloatingUi::~GlicFloatingUi() {
     modal_dialog_host_observers_.Notify(
         &web_modal::ModalDialogHostObserver::OnHostDestroying);
   }
-  GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(nullptr);
+  // Null during teardown.
+  if (auto* profile_manager = GlicProfileManager::GetInstance()) {
+    profile_manager->SetCurrentDetachedGlic(nullptr);
+  }
+
   ClearWebContentsDelegate();
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
@@ -407,16 +411,12 @@ void GlicFloatingUi::OnWidgetBoundsChanged(views::Widget* widget,
 void GlicFloatingUi::OnWidgetUserResizeStarted(views::Widget* widget) {
   user_resizing_ = true;
   instance_metrics_->OnUserResizeStarted(GetPanelSize());
-  if (GlicWebClientAccess* client = delegate_->host().GetPrimaryWebClient()) {
-    client->ManualResizeChanged(true);
-  }
+  delegate_->host().ManualResizeChanged(true);
 }
 
 void GlicFloatingUi::OnWidgetUserResizeEnded(views::Widget* widget) {
   instance_metrics_->OnUserResizeEnded(GetPanelSize());
-  if (GlicWebClientAccess* client = delegate_->host().GetPrimaryWebClient()) {
-    client->ManualResizeChanged(false);
-  }
+  delegate_->host().ManualResizeChanged(false);
 
   glic_window_animator_->ResetLastTargetSize();
   user_resizing_ = false;

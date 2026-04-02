@@ -697,6 +697,11 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
           "Glic.Instance.WebUiStateChanged.DisabledByAdmin"));
       LogEvent(GlicInstanceEvent::kWebUiStateDisabledByAdmin);
       break;
+    case mojom::WebUiState::kWarmed:
+      base::RecordAction(
+          base::UserMetricsAction("Glic.Instance.WebUiStateChanged.kWarmed"));
+      LogEvent(GlicInstanceEvent::kWebUiStateWarmed);
+      break;
   }
 }
 

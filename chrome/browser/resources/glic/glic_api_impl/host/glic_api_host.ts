@@ -23,6 +23,7 @@ import {urlFromClient} from './conversions.js';
 import {GatedSender} from './gated_sender.js';
 import {HostMessageHandler, TabDataHandlerSet, TabFaviconHandlerSet} from './host_from_client.js';
 import type {CaptureRegionObserverImpl, PinCandidatesObserverImpl} from './host_from_client.js';
+import {TaskQueue} from './task_queue.js';
 import type {HostBackgroundResponse, HostBackgroundResponseDoes, HostBackgroundResponseReturns} from './types.js';
 import {BACKGROUND_RESPONSES} from './types.js';
 
@@ -68,6 +69,7 @@ export interface ApiHostEmbedder {
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
   webClientReady(): void;
+  webClientWarmed(): void;
 }
 
 
@@ -183,8 +185,14 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private webClientErrorTimer: OneShotTimer;
   private webClientState =
       ObservableValue.withValue<WebClientState>(WebClientState.UNINITIALIZED);
+  openCloseTasks = new TaskQueue();
   private waitingOnPanelWillOpenValue = false;
+  // Synchronizes panel open/close events between the browser and client,
+  // ensuring panel open state is eventually consistent.
   private clientActiveObs = ObservableValue.withValue(false);
+  // The open state as understood by the client, this is delayed
+  // from the notifyPanelWillOpen and notifyPanelWasClosed calls because
+  // processing is async.
   private panelOpenState = PanelOpenState.CLOSED;
   private instanceIsActive = true;
   private hasShownDebuggerAttachedWarning = false;

@@ -15513,6 +15513,12 @@ should be able to be added at any place in this file.
   <description>The Glic instance WebUI is unresponsive.</description>
 </action>
 
+<action name="Glic.Instance.WebUiStateChanged.Warmed">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>The Glic instance WebUI is warmed.</description>
+</action>
+
 <action name="Glic.Pinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

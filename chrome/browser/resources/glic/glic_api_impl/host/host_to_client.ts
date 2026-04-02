@@ -4,8 +4,6 @@
 
 // This file handles messages from the browser, sending messages to the client.
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
-
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
 import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, FocusedTabData as FocusedTabDataMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, Skill as SkillMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
 import {enumToClient} from '../enum_conversions.js';
@@ -19,13 +17,19 @@ import {PanelOpenState} from './types.js';
 
 export class WebClientImpl implements WebClientInterface {
   private sender: GatedSender;
+  private clientCreated = Promise.withResolvers<void>();
 
   constructor(private host: GlicApiHost, private embedder: ApiHostEmbedder) {
     this.sender = this.host.sender;
   }
 
-  async notifyPanelWillOpen(panelOpeningData: PanelOpeningDataMojo):
+  markCreated() {
+    this.clientCreated.resolve();
+  }
+
+  async processNotifyPanelWillOpen(panelOpeningData: PanelOpeningDataMojo):
       Promise<{openPanelInfo: OpenPanelInfoMojo}> {
+    await this.clientCreated.promise;
     this.host.setWaitingOnPanelWillOpen(true);
     let result;
     try {
@@ -39,9 +43,7 @@ export class WebClientImpl implements WebClientInterface {
 
     // The web client is ready to show, ensure the webview is
     // displayed.
-    if (!loadTimeData.getBoolean('glicWebContentsWarming')) {
-      this.embedder.webClientReady();
-    }
+    this.embedder.webClientReady();
 
     const openPanelInfoMojo: OpenPanelInfoMojo = {
       webClientMode: webClientModeToMojo(result.openPanelInfo?.startingMode),
@@ -61,10 +63,21 @@ export class WebClientImpl implements WebClientInterface {
     return {openPanelInfo: openPanelInfoMojo};
   }
 
-  notifyPanelWasClosed(): Promise<void> {
+  async notifyPanelWillOpen(panelOpeningData: PanelOpeningDataMojo):
+      Promise<{openPanelInfo: OpenPanelInfoMojo}> {
+    return this.host.openCloseTasks.add(async () => {
+      return this.processNotifyPanelWillOpen(panelOpeningData);
+    });
+  }
+
+  async processNotifyPanelWasClosed(): Promise<void> {
     this.host.panelOpenStateChanged(PanelOpenState.CLOSED);
     return this.sender.requestWithResponse(
         'glicWebClientNotifyPanelWasClosed', undefined);
+  }
+  notifyPanelWasClosed(): Promise<void> {
+    return this.host.openCloseTasks.add(
+        () => this.processNotifyPanelWasClosed());
   }
 
   invoke(options: InvokeOptionsMojo): Promise<void> {

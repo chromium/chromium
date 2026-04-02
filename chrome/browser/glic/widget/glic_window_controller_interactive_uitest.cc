@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -883,7 +884,9 @@ class GlicWindowControllerWithDelayedPreloadingUiTest
   auto CheckWarmed() {
     return Do([this]() {
       if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-        EXPECT_TRUE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
+        EXPECT_TRUE(glic_service()
+                        ->web_contents_warming_pool()
+                        .HasWarmedContainerForTesting());
       } else {
         EXPECT_TRUE(GetWindowControllerImpl().IsWarmed());
       }

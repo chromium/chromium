@@ -249,6 +249,12 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
         {{features::kGlicScrollTo, {}},
          {features::kGlicApiActivationGating, {}},
          {mojom::features::kGlicMultiTab, {}},
+         {features::kGlicWebContentsWarming,
+          {
+              // Effectively disable web contents warming, to make test output
+              // easier to understand.
+              {features::kGlicWebContentsWarmingDelay.name, "7d"},
+          }},
          {features::kGlicWebActuationSetting, {}},
          {features::kGlicCaptureRegion, {}},
          {features::kGlicPopupWindowsEnabled, {}},
@@ -585,6 +591,13 @@ class GlicApiTestWithFastTimeout : public GlicApiTest {
         {});
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicApiTest::SetUpCommandLine(command_line);
+    // --glic-dev brings behavioral changes, and we'd rather test the default
+    // behavior.
+    command_line->RemoveSwitch(::switches::kGlicDev);
+  }
+
  private:
   base::test::ScopedFeatureList features2_;
 };
@@ -805,7 +818,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
       return new Promise((resolve, reject) => {
         // Poll for state change.
         const interval = setInterval(() => {
-          if (controller.state === 8 /* kReady */) {
+          if (controller.state === 13 /* kWarmed */) {
             clearInterval(interval);
             resolve(true);
           } else if (controller.state === 5 /* kError */ ||
@@ -1045,7 +1058,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoClientCreated) {
   listener.WaitForWebUiState(mojom::WebUiState::kError);
   // Note that the client does receive the bootstrap message, but never calls
   // back, so from the host's perspective bootstrapping is still pending.
-  // There may be warmed instances that also receive this error, so expect at
+  // There may be warmed contents that also receive this error, so expect at
   // least one count.
   EXPECT_GT(histogram_tester.GetBucketCount(
                 "Glic.Host.WebClientState.OnDestroy", 0 /*BOOTSTRAP_PENDING*/),
@@ -1064,7 +1077,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoBootstrap) {
   WebUIStateListener listener(GetHost());
   ExecuteJsTest();
   listener.WaitForWebUiState(mojom::WebUiState::kError);
-  // May have more than one sample because there can be a warmed instance.
+  // May have more than one sample because there can be a warmed contents.
   EXPECT_GT(histogram_tester.GetBucketCount(
                 "Glic.Host.WebClientState.OnDestroy", 0 /*BOOTSTRAP_PENDING*/),
             0);
@@ -1082,7 +1095,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
       .params = base::Value(base::DictValue().Set("failWith", "timeout")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kError);
-  // There may be warmed instances that also receive this error, so expect at
+  // There may be warmed contents that also receive this error, so expect at
   // least one count.
   EXPECT_GT(
       histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
@@ -3467,9 +3480,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRegisterConversationWithEmptyId) {
   EXPECT_EQ("Empty Conversation", retrieved_info->conversation_title);
 }
 
+// TODO(b/498955581): Clean up glic hibernation experiments, and test in the
+// coordinator test.
 IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllOnMemoryPressure,
                        testHibernateAllOnMemoryPressure) {
-  GetInstanceCoordinator().SetWarmingEnabledForTesting(true);
+  GetService()->web_contents_warming_pool().EnsurePreload();
 
   // Open 3 instances, with instance 2 being the active one.
   GlicInstanceImpl* instance1 = OpenGlicInNewTabAndGetInstance(0, kFirstTab);
@@ -3490,7 +3505,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllOnMemoryPressure,
 
   // There is a warmed contents initially. It should be non-showing and
   // non-actuating.
-  ASSERT_TRUE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
+  GetService()->web_contents_warming_pool().EnsurePreload();
+  ASSERT_TRUE(
+      GetService()->web_contents_warming_pool().HasWarmedContainerForTesting());
 
   // Simulate memory pressure.
   base::MemoryPressureListener::NotifyMemoryPressure(
@@ -3501,8 +3518,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllOnMemoryPressure,
     return instance2->IsHibernated() && instance3->IsHibernated();
   }));
 
-  // Verify the warmed instance is reset.
-  ASSERT_FALSE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
+  // Verify the warmed contents is reset.
+  ASSERT_FALSE(
+      GetService()->web_contents_warming_pool().HasWarmedContainerForTesting());
 
   // Active instance should not be hibernated.
   ASSERT_TRUE(instance1->IsShowing());
@@ -3511,14 +3529,16 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllOnMemoryPressure,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllAggressiveOnMemoryPressure,
                        testHibernateAllAggressiveOnMemoryPressure) {
-  GetInstanceCoordinator().SetWarmingEnabledForTesting(true);
+  GetService()->web_contents_warming_pool().EnsurePreload();
 
   // Open instance 1, making it active and showing.
   GlicInstanceImpl* instance1 = OpenGlicInNewTabAndGetInstance(0, kFirstTab);
   ASSERT_TRUE(instance1->IsShowing());
 
-  // There is a warmed instance initially.
-  ASSERT_TRUE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
+  // There is a warmed contents initially.
+  GetService()->web_contents_warming_pool().EnsurePreload();
+  ASSERT_TRUE(
+      GetService()->web_contents_warming_pool().HasWarmedContainerForTesting());
 
   WebUIStateListener listener(&instance1->host());
 
@@ -3526,8 +3546,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllAggressiveOnMemoryPressure,
   base::MemoryPressureListener::NotifyMemoryPressure(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
-  // Verify the warmed instance is reset.
-  ASSERT_FALSE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
+  // Verify the warmed contents is reset.
+  ASSERT_FALSE(
+      GetService()->web_contents_warming_pool().HasWarmedContainerForTesting());
 
   // In aggressive mode, even the showing instance should be hibernated and
   // closed.

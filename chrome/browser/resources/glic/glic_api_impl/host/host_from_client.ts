@@ -75,13 +75,14 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
         DetailedWebClientState.WEB_CLIENT_NOT_INITIALIZED;
 
     if (loadTimeData.getBoolean('glicWebContentsWarming')) {
-      this.embedder.webClientReady();
+      this.embedder.webClientWarmed();
     }
 
     const webClientImpl = new WebClientImpl(this.host, this.embedder);
     this.receiver = new WebClientReceiver(webClientImpl);
     const {initialState} = await this.handler.webClientCreated(
         this.receiver.$.bindNewPipeAndPassRemote());
+    webClientImpl.markCreated();
     conversionSettings.platform = enumToClient(initialState.platform);
     this.host.setInitialState(initialState);
     const chromeVersion = initialState.chromeVersion.components;

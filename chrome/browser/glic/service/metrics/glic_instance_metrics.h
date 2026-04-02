@@ -110,7 +110,8 @@ enum class GlicInstanceEvent {
   kReaction = 46,
   kShown = 47,
   kOpen = 48,
-  kMaxValue = kOpen,
+  kWebUiStateWarmed = 49,
+  kMaxValue = kWebUiStateWarmed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 

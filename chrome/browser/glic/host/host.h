@@ -293,6 +293,8 @@ class Host : public GlicSharingManagerProvider {
   // TODO(b/409332639): Hide direct access to the web client.
   GlicWebClientAccess* GetPrimaryWebClient();
 
+  void ManualResizeChanged(bool resizing);
+
   // Whether the primary client is alive and has returned from PanelWillOpen().
   // This transitions to false after PanelWasClosed() is called.
   bool IsPrimaryClientOpen();
@@ -498,10 +500,13 @@ class Host : public GlicSharingManagerProvider {
   raw_ptr<EmbedderDelegate> delegate_;
   base::ReentrantObserverList<Observer> observers_;
 
-  // The invocation source if the panel is open. nullopt while the panel is
-  // closed.
+  // The invocation source if the panel was opened. This remains present even
+  // after the panel is closed.
   std::optional<mojom::InvocationSource> invocation_source_;
+  bool panel_open_ = false;
+  bool is_manually_resizing_ = false;
   std::optional<PanelWillOpenOptions> pending_panel_open_options_;
+  std::vector<mojom::SkillPreviewPtr> pending_contextual_skills_;
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
   std::optional<mojom::PanelState> pending_panel_state_;
 

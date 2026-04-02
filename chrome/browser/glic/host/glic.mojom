@@ -211,6 +211,8 @@ enum WebUiState {
   kGuestError = 11,
   // Similar to kUnavailable, but the admin has explicitly disabled Glic.
   kDisabledByAdmin = 12,
+  // Created for background warming, not yet displayed or fully initialized.
+  kWarmed = 13,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
@@ -1172,7 +1174,8 @@ interface WebClientHandler {
   // interrupt was initiated.
   // No-op if a task with the given id does not exist.
   // No-op if the state of the task not in the reflecting state.
-  InterruptActorTask(int32 task_id, ActorTaskInterruptReason? interrupt_reason);
+  InterruptActorTask(
+      int32 task_id, ActorTaskInterruptReason? interrupt_reason);
 
   // Indicates the task associated with the given id is no longer waiting
   // on user input.

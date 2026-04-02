@@ -491,6 +491,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="Reaction Logged on Response"/>
   <int value="47" label="Shown"/>
   <int value="48" label="Open"/>
+  <int value="49" label="WebUI State Warmed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.h:GlicInstanceEvent) -->
@@ -1046,6 +1047,7 @@ chromium-metrics-reviews@google.com.
   <int value="11"
       label="Web view is displayed, but it is displaying an error page"/>
   <int value="12" label="Glic is disabled by the administrator"/>
+  <int value="13" label="Web contents is warmed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUiState) -->

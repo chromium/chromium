@@ -465,13 +465,7 @@ BASE_FEATURE(kGlicDetached, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicMultiInstance, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Glic warms up WebContents instead of a full instance.
-BASE_FEATURE(kGlicWebContentsWarming,
-#if !BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else  // Android does not support instance warming, only web contents warming.
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kGlicWebContentsWarming, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the delay before the WebContents is warmed. A large delay will
 // effectively turn off warming.

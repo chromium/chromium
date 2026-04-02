@@ -253,6 +253,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       case 'regular':
         $.guestPanel.classList.toggle('show-header', false);
         if (this.state === WebUiState.kReady ||
+            this.state === WebUiState.kWarmed ||
             this.state === WebUiState.kGuestError) {
           this.setState(WebUiState.kBeginLoad);
         }
@@ -346,6 +347,15 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
               this.destroyWebview();
               this.showPanel('disabledByAdminPanel');
             },
+      },
+    ],
+    [
+      WebUiState.kWarmed,
+      {
+        onEnter: () => {
+          $.guestPanel.classList.toggle('show-header', false);
+          this.showPanel('guestPanel');
+        },
       },
     ],
     [
@@ -654,12 +664,39 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
   // when triggered from the browser.
   webClientReady(): void {
     if (this.state === WebUiState.kBeginLoad ||
-        this.state === WebUiState.kFinishLoading) {
+        this.state === WebUiState.kFinishLoading ||
+        this.state === WebUiState.kWarmed) {
+      this.cancelTimeout();
       this.trackLoadingStageEnd();
       this.setState(WebUiState.kReady);
     } else if (this.state === WebUiState.kShowLoading) {
+      this.cancelTimeout();
       this.setState(WebUiState.kHoldLoading);
     }
+  }
+
+  webClientWarmed(): void {
+    if (this.state === WebUiState.kBeginLoad ||
+        this.state === WebUiState.kFinishLoading ||
+        this.state === WebUiState.kShowLoading) {
+      this.cancelTimeout();
+      this.trackLoadingStageEnd();
+      this.setState(WebUiState.kWarmed);
+      if (this.panelStateKind !== PanelStateKind.kHidden) {
+        this.startWarmedTimeout();
+      }
+    }
+  }
+
+  private startWarmedTimeout(): void {
+    if (this.loadingTimer) {
+      return;
+    }
+    this.loadingTimer = setTimeout(() => {
+      if (this.state === WebUiState.kWarmed) {
+        this.setState(WebUiState.kError);
+      }
+    }, kMaxWaitTimeMs);
   }
 
   webClientStateChanged(state: WebClientState): void {
@@ -745,6 +782,11 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       return;
     }
     this.panelStateKind = panelStateKind;
+
+    if (this.panelStateKind !== PanelStateKind.kHidden &&
+        this.state === WebUiState.kWarmed) {
+      this.startWarmedTimeout();
+    }
 
     const panelStateKindSection = getRequiredElement('localPanels');
     panelStateKindSection.classList.toggle(

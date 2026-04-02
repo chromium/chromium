@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceMetricsTest,
         START_TIMER_MS + base::Milliseconds(10));
     run_loop.Run();
   }
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Instance.Created"), 2);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Instance.Created"), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceMetricsTest,

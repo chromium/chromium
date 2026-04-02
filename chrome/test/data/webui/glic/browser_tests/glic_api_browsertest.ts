@@ -1277,10 +1277,12 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testManualResizeChanged() {
     assertDefined(this.host.isManuallyResizing);
-    await observeSequence(this.host.isManuallyResizing()).waitForValue(true);
+    const seq = observeSequence(this.host.isManuallyResizing());
+    await seq.waitForValue(true);
 
     await this.advanceToNextStep();
-    await observeSequence(this.host.isManuallyResizing()).waitForValue(false);
+    await seq.waitForValue(false);
+    seq.unsubscribe();
   }
 
   async testResizeWindowTooSmall() {
