@@ -77,12 +77,11 @@ class EduCoexistenceLoginHandlerBrowserTest
 
   void SimulateAccessTokenFetched(EduCoexistenceLoginHandler* handler,
                                   bool success = true) {
-    GoogleServiceAuthError::State state =
-        success ? GoogleServiceAuthError::NONE
-                : GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS;
-
     handler->OnOAuthAccessTokensFetched(
-        GoogleServiceAuthError(state),
+        success ? GoogleServiceAuthError::AuthErrorNone()
+                : GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          UNKNOWN),
         signin::AccessTokenInfo("access_token",
                                 base::Time::Now() + base::Minutes(1), ""));
   }
