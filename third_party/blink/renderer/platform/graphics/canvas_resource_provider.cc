@@ -1012,16 +1012,11 @@ CanvasResourceProviderSharedImage::GetSharedImageUsageFlags() const {
   return image_pool_->GetImageInfo().usage;
 }
 
-void CanvasNon2DResourceProviderSharedImage::ExternalCanvasDrawHelper(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
-  cached_snapshot_.reset();
-  draw_callback(recorder_->getRecordingCanvas());
-}
-
 scoped_refptr<CanvasResource>
 CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndProduceResource(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
-  ExternalCanvasDrawHelper(draw_callback);
+  cached_snapshot_.reset();
+  draw_callback(recorder_->getRecordingCanvas());
   return ProduceCanvasResource();
 }
 
@@ -1029,7 +1024,8 @@ scoped_refptr<StaticBitmapImage>
 CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
     ImageOrientation orientation) {
-  ExternalCanvasDrawHelper(draw_callback);
+  cached_snapshot_.reset();
+  draw_callback(recorder_->getRecordingCanvas());
   return Snapshot(orientation);
 }
 

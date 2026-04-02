@@ -742,11 +742,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
  private:
-  // Drops the cached snapshot (if any) and invokes `draw_callback` on this
-  // instance's canvas.
-  void ExternalCanvasDrawHelper(
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
-
   void FlushCanvas(bool is_overwrite);
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
