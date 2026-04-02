@@ -24,12 +24,12 @@ public interface PdfActionsDelegate {
      *
      * @param pageCount The total page count.
      */
-    default void onDocumentLoaded(int pageCount) {}
+    void onDocumentLoaded(int pageCount);
 
     /**
      * Called when the PDF page is changed.
      *
      * @param pageIndex The 0-based index of the current page.
      */
-    default void onPageChanged(int pageIndex) {}
+    void onPageChanged(int pageIndex);
 }

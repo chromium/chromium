@@ -287,19 +287,6 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         }
     }
 
-    @Override
-    public boolean onLinkClicked(Uri uri) {
-        if (!PdfUtils.isInlinePdfV2Enabled()) {
-            return false;
-        }
-        LoadUrlParams params = new LoadUrlParams(uri.toString(), PAGE_TRANSITION_TYPE);
-        params.setIsRendererInitiated(true);
-        // TODO(crbug.com/484103003): Reconsider initiator origin if renderer initiated is true.
-        params.setInitiatorOrigin(Origin.create(new GURL(mUrl)));
-        mNativePageHost.loadUrl(params, mIsIncognito);
-        return true;
-    }
-
     /** Returns the intended view for PdfPage tab. */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public View getView() {
@@ -455,6 +442,8 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         return (viewHeightPx / 2f) / currentZoom;
     }
 
+    // Implementation of PdfToolbarActionsDelegate
+
     /**
      * Navigates to the specified page.
      *
@@ -463,6 +452,21 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     @Override
     public void navigateToPage(int pageIndex) {
         mChromePdfViewerFragment.scrollToPage(pageIndex);
+    }
+
+    // Implementation of PdfActionsDelegate
+
+    @Override
+    public boolean onLinkClicked(Uri uri) {
+        if (!PdfUtils.isInlinePdfV2Enabled()) {
+            return false;
+        }
+        LoadUrlParams params = new LoadUrlParams(uri.toString(), PAGE_TRANSITION_TYPE);
+        params.setIsRendererInitiated(true);
+        // TODO(crbug.com/484103003): Reconsider initiator origin if renderer initiated is true.
+        params.setInitiatorOrigin(Origin.create(new GURL(mUrl)));
+        mNativePageHost.loadUrl(params, mIsIncognito);
+        return true;
     }
 
     @Override
