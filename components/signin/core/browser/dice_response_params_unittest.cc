@@ -26,8 +26,8 @@ TEST(DiceResponseParamsTest, IsValidSignin) {
   // back to the only account.
   EXPECT_TRUE(params.IsValid());
 
-  signin_info->set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  signin_info->set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .primary_is_connected = Tribool::kTrue,
           .initiator_id = GaiaId("unknown")});
   // One account: IsValid is still true because it falls back to the only
@@ -40,8 +40,8 @@ TEST(DiceResponseParamsTest, IsValidSignin) {
       {{GaiaId("id2"), "email2", 0}, "code2", false, "binding2", false});
   EXPECT_FALSE(params.IsValid());
 
-  signin_info->set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  signin_info->set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .primary_is_connected = Tribool::kTrue,
           .initiator_id = GaiaId("id2")});
   EXPECT_TRUE(params.IsValid());
@@ -61,13 +61,13 @@ TEST(DiceResponseParamsTest, IsValidSigninMultipleAccountsInitiatorNotSet) {
   EXPECT_FALSE(params.IsValid());
 
   // Empty Gaia id.
-  signin_info->set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  signin_info->set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .primary_is_connected = Tribool::kTrue, .initiator_id = GaiaId()});
   EXPECT_FALSE(params.IsValid());
 
-  signin_info->set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  signin_info->set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .primary_is_connected = Tribool::kTrue,
           .initiator_id = GaiaId("id")});
   EXPECT_TRUE(params.IsValid());
@@ -94,22 +94,22 @@ TEST(SigninInfoTest, SigninInfoGetInitiator) {
   EXPECT_EQ(nullptr, signin_info.GetInitiator());
 
   // Set initiator to account 2.
-  signin_info.set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  signin_info.set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .primary_is_connected = Tribool::kTrue,
           .initiator_id = GaiaId("id2")});
   EXPECT_EQ(&signin_info.accounts()[1], signin_info.GetInitiator());
 
   // Set initiator to account 1.
-  signin_info.set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  signin_info.set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .primary_is_connected = Tribool::kTrue,
           .initiator_id = GaiaId("id1")});
   EXPECT_EQ(&signin_info.accounts()[0], signin_info.GetInitiator());
 
   // Set initiator to unknown account: returns nullptr.
-  signin_info.set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  signin_info.set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .primary_is_connected = Tribool::kTrue,
           .initiator_id = GaiaId("unknown")});
   EXPECT_EQ(nullptr, signin_info.GetInitiator());

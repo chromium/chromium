@@ -31,7 +31,8 @@ const char kChromeManageAccountsHeader[] = "X-Chrome-Manage-Accounts";
 const char kAutoLoginHeader[] = "X-Auto-Login";
 const char kDiceRequestHeader[] = "X-Chrome-ID-Consistency-Request";
 const char kDiceResponseHeader[] = "X-Chrome-ID-Consistency-Response";
-const char kDiceConaccMetaHeader[] = "X-Chrome-ID-Consistency-Conacc-Meta";
+const char kDiceLinkedAccountsMetaHeader[] =
+    "X-Chrome-ID-Consistency-Linked-Accounts-Meta";
 
 ManageAccountsParams::ManageAccountsParams() = default;
 

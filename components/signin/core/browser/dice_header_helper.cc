@@ -48,9 +48,9 @@ const char kSignoutEmailAttrName[] = "email";
 const char kSignoutSessionIndexAttrName[] = "sessionindex";
 const char kSignoutObfuscatedIDAttrName[] = "obfuscatedid";
 
-// ConnectedAccounts metadata response parameters.
-constexpr char kConnectedAccountsInitiatorIdAttrName[] = "initiator_id";
-constexpr char kConnectedAccountsPrimaryIsConnectedAttrName[] =
+// LinkedAccounts metadata response parameters.
+constexpr char kLinkedAccountsInitiatorIdAttrName[] = "initiator_id";
+constexpr char kLinkedAccountsPrimaryIsConnectedAttrName[] =
     "primary_is_connected";
 
 // Determines the Dice action that has been passed from Gaia in the header.
@@ -273,14 +273,13 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
 }
 
 // static
-DiceResponseParams::SigninInfo::ConnectedAccountsMetadata
-DiceHeaderHelper::ParseConnectedAccountsMetadata(
-    const std::string& header_value) {
+DiceResponseParams::SigninInfo::LinkedAccountsMetadata
+DiceHeaderHelper::ParseLinkedAccountsMetadata(const std::string& header_value) {
   if (header_value.empty()) {
-    return DiceResponseParams::SigninInfo::ConnectedAccountsMetadata();
+    return DiceResponseParams::SigninInfo::LinkedAccountsMetadata();
   }
 
-  DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata;
+  DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata;
   for (std::string_view field :
        base::SplitStringPiece(header_value, ";", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
@@ -295,9 +294,9 @@ DiceHeaderHelper::ParseConnectedAccountsMetadata(
         base::UnescapeRule::PATH_SEPARATORS |
             base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
 
-    if (key == kConnectedAccountsInitiatorIdAttrName) {
+    if (key == kLinkedAccountsInitiatorIdAttrName) {
       metadata.initiator_id = GaiaId(value);
-    } else if (key == kConnectedAccountsPrimaryIsConnectedAttrName) {
+    } else if (key == kLinkedAccountsPrimaryIsConnectedAttrName) {
       metadata.primary_is_connected =
           (value == "1") ? Tribool::kTrue : Tribool::kFalse;
     }

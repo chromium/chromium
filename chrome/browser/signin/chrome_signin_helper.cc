@@ -529,26 +529,26 @@ void ProcessDiceResponseHeaderIfExists(ResponseAdapter* response,
   }
 
   if (std::optional<std::string> meta_header_value =
-          response_headers->GetNormalizedHeader(kDiceConaccMetaHeader);
+          response_headers->GetNormalizedHeader(kDiceLinkedAccountsMetaHeader);
       meta_header_value) {
-    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata meta_header =
-        DiceHeaderHelper::ParseConnectedAccountsMetadata(*meta_header_value);
+    DiceResponseParams::SigninInfo::LinkedAccountsMetadata meta_header =
+        DiceHeaderHelper::ParseLinkedAccountsMetadata(*meta_header_value);
     if (!meta_header.IsValid()) {
       // TODO(crbug.com/475435113):
       // - Revisit handling gracefully malformed meta header. The code as it is
       // as of now, sign-in will fail completely if `initiator_id is empty`.
       // - Add histogram
-      DLOG(WARNING) << "Malformed X-Chrome-ID-Consistency-Conacc-Meta header: "
-                    << *meta_header_value;
+      DLOG(WARNING)
+          << "Malformed X-Chrome-ID-Consistency-LinkedAccounts-Meta header: "
+          << *meta_header_value;
     }
 
     if (DiceResponseParams::SigninInfo* signin_info = params.signin_info();
         signin_info) {
-      signin_info->set_connected_accounts_metadata(std::move(meta_header));
+      signin_info->set_linked_accounts_metadata(std::move(meta_header));
     } else {
-      DLOG(WARNING)
-          << "X-Chrome-ID-Consistency-Conacc-Meta is only supported for "
-             "Sign-in Dice action";
+      DLOG(WARNING) << "X-Chrome-ID-Consistency-LinkedAccounts-Meta is only "
+                       "supported for Sign-in Dice action";
     }
   }
 

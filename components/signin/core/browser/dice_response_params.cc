@@ -112,8 +112,7 @@ DiceResponseParams::SigninInfo::SigninInfo(SigninInfo&&) = default;
 DiceResponseParams::SigninInfo& DiceResponseParams::SigninInfo::operator=(
     SigninInfo&&) = default;
 
-bool DiceResponseParams::SigninInfo::ConnectedAccountsMetadata::IsValid()
-    const {
+bool DiceResponseParams::SigninInfo::LinkedAccountsMetadata::IsValid() const {
   return !initiator_id.empty() && primary_is_connected != Tribool::kUnknown;
 }
 
@@ -123,7 +122,7 @@ DiceResponseParams::SigninInfo::GetInitiator() const {
     return &accounts_[0];
   }
 
-  const GaiaId& initiator_id = connected_accounts_metadata_.initiator_id;
+  const GaiaId& initiator_id = linked_accounts_metadata_.initiator_id;
   auto it = std::ranges::find_if(accounts_, [&](const SigninAccount& account) {
     return account.account_info.gaia_id == initiator_id;
   });

@@ -512,8 +512,8 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMultiAccount_Basic) {
 
   // Metadata is required to identify the initiator when multiple accounts are
   // present.
-  params.signin_info()->set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  params.signin_info()->set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .initiator_id = GaiaId("id2")});
 
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
@@ -552,9 +552,9 @@ TEST_F(DiceHeaderHelperTest,
   DiceResponseParams params =
       DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
 
-  params.signin_info()->set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{.initiator_id =
-                                                                    kGaiaID2});
+  params.signin_info()->set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{.initiator_id =
+                                                                 kGaiaID2});
 
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
   const auto* signin_info = params.signin_info();
@@ -588,9 +588,11 @@ TEST_F(DiceHeaderHelperTest,
   DiceResponseParams params =
       DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
 
-  params.signin_info()->set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{.initiator_id =
-                                                                    kGaiaID});
+  // Metadata is required to identify the initiator when multiple accounts are
+  // present.
+  params.signin_info()->set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{.initiator_id =
+                                                                 kGaiaID});
 
   EXPECT_EQ(1U, params.signin_info()->accounts().size());
   {
@@ -609,8 +611,8 @@ TEST_F(DiceHeaderHelperTest,
   DiceResponseParams params =
       DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
 
-  params.signin_info()->set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  params.signin_info()->set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .initiator_id = GaiaId("id2")});
 
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
@@ -638,8 +640,8 @@ TEST_F(DiceHeaderHelperTest,
   DiceResponseParams params =
       DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
 
-  params.signin_info()->set_connected_accounts_metadata(
-      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+  params.signin_info()->set_linked_accounts_metadata(
+      DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
           .initiator_id = GaiaId("id2")});
 
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
@@ -659,14 +661,14 @@ TEST_F(DiceHeaderHelperTest,
   EXPECT_TRUE(params.IsValid());
 }
 
-TEST_F(DiceHeaderHelperTest, ParseConnectedAccountsMetadata) {
+TEST_F(DiceHeaderHelperTest, ParseLinkedAccountsMetadata) {
   {
     // Valid header.
     std::string header_value =
         "initiator_id=initiator_gaia_id;primary_is_connected=1";
-    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
                   .primary_is_connected = Tribool::kTrue,
                   .initiator_id = GaiaId("initiator_gaia_id")}),
               metadata);
@@ -677,9 +679,9 @@ TEST_F(DiceHeaderHelperTest, ParseConnectedAccountsMetadata) {
     // primary_is_connected=0
     std::string header_value =
         "initiator_id=initiator_gaia_id;primary_is_connected=0";
-    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
                   .primary_is_connected = Tribool::kFalse,
                   .initiator_id = GaiaId("initiator_gaia_id")}),
               metadata);
@@ -689,9 +691,9 @@ TEST_F(DiceHeaderHelperTest, ParseConnectedAccountsMetadata) {
   {
     // Missing primary_is_connected -> Partial info.
     std::string header_value = "initiator_id=initiator_gaia_id";
-    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
                   .primary_is_connected = Tribool::kUnknown,
                   .initiator_id = GaiaId("initiator_gaia_id")}),
               metadata);
@@ -701,10 +703,10 @@ TEST_F(DiceHeaderHelperTest, ParseConnectedAccountsMetadata) {
   {
     // Missing initiator_id -> Partial info.
     std::string header_value = "primary_is_connected=1";
-    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
+    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
     EXPECT_EQ(
-        (DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+        (DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
             .primary_is_connected = Tribool::kTrue, .initiator_id = GaiaId()}),
         metadata);
     EXPECT_FALSE(metadata.IsValid());
@@ -713,9 +715,9 @@ TEST_F(DiceHeaderHelperTest, ParseConnectedAccountsMetadata) {
   {
     // Empty header -> Default metadata.
     std::string header_value = "";
-    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
                   .primary_is_connected = Tribool::kUnknown,
                   .initiator_id = GaiaId()}),
               metadata);
@@ -725,9 +727,9 @@ TEST_F(DiceHeaderHelperTest, ParseConnectedAccountsMetadata) {
   {
     // Garbage header -> Default metadata.
     std::string header_value = "garbage";
-    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
                   .primary_is_connected = Tribool::kUnknown,
                   .initiator_id = GaiaId()}),
               metadata);
@@ -737,9 +739,9 @@ TEST_F(DiceHeaderHelperTest, ParseConnectedAccountsMetadata) {
   {
     // Escaped values.
     std::string header_value = "initiator_id=gaia%3Aid;primary_is_connected=1";
-    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
                   .primary_is_connected = Tribool::kTrue,
                   .initiator_id = GaiaId("gaia:id")}),
               metadata);

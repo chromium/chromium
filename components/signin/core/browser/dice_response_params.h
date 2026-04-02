@@ -76,10 +76,10 @@ struct DiceResponseParams {
       bool mtls_token_binding = false;
     };
 
-    // Metadata for Connected Accounts.
-    struct ConnectedAccountsMetadata {
-      friend bool operator==(const ConnectedAccountsMetadata&,
-                             const ConnectedAccountsMetadata&) = default;
+    // Metadata for Linked Accounts.
+    struct LinkedAccountsMetadata {
+      friend bool operator==(const LinkedAccountsMetadata&,
+                             const LinkedAccountsMetadata&) = default;
 
       bool IsValid() const;
 
@@ -107,16 +107,16 @@ struct DiceResponseParams {
 
     const std::vector<SigninAccount>& accounts() const { return accounts_; }
 
-    const ConnectedAccountsMetadata& connected_accounts_metadata() const {
-      return connected_accounts_metadata_;
+    const LinkedAccountsMetadata& linked_accounts_metadata() const {
+      return linked_accounts_metadata_;
     }
 
-    void set_connected_accounts_metadata(ConnectedAccountsMetadata metadata) {
-      connected_accounts_metadata_ = std::move(metadata);
+    void set_linked_accounts_metadata(LinkedAccountsMetadata metadata) {
+      linked_accounts_metadata_ = std::move(metadata);
     }
 
    private:
-    ConnectedAccountsMetadata connected_accounts_metadata_;
+    LinkedAccountsMetadata linked_accounts_metadata_;
     std::vector<SigninAccount> accounts_;
   };
 
