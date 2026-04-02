@@ -4,7 +4,9 @@
 
 #include "chrome/browser/regional_capabilities/regional_capabilities_metrics_provider.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
@@ -29,7 +31,14 @@ void RegionalCapabilitiesMetricsProvider::ProvideCurrentSessionData(
       continue;
     }
 
-    programs.insert(regional_capabilities->GetActiveProgramForMetrics());
+    ActiveRegionalProgram active_program =
+        regional_capabilities->GetActiveProgramForMetrics();
+    programs.insert(active_program);
+
+    metrics::ProfileMetricsService* profile_metrics_service =
+        ProfileMetricsServiceFactory::GetForProfile(profile);
+    RecordActiveRegionalProgramPerProfile(active_program,
+                                          CHECK_DEREF(profile_metrics_service));
   }
 
   RecordActiveRegionalProgram(programs);

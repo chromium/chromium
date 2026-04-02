@@ -228,6 +228,13 @@ void RecordActiveRegionalProgram(
                                 merged_program);
 }
 
+void RecordActiveRegionalProgramPerProfile(
+    ActiveRegionalProgram program,
+    metrics::ProfileMetricsService& profile_metrics_service) {
+  profile_metrics_service.UmaHistogramEnumeration(
+      "RegionalCapabilities.ActiveRegionalProgram3", program);
+}
+
 void RecordProgramSpecificExclusion(ProgramSpecificExclusion exclusion) {
   base::UmaHistogramEnumeration(
       "RegionalCapabilities.Debug.ProgramSpecificExclusion", exclusion);

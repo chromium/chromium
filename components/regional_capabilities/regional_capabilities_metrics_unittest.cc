@@ -5,6 +5,7 @@
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -61,6 +62,20 @@ TEST(RegionalCapabilitiesMetricsTest,
       "RegionalCapabilities.Debug.HasActiveRegionalProgram", true, 1);
   histogram_tester.ExpectUniqueSample(
       "RegionalCapabilities.ActiveRegionalProgram2",
+      ActiveRegionalProgram::kWaffle, 1);
+}
+
+TEST(RegionalCapabilitiesMetricsTest, RecordActiveRegionalProgramPerProfile) {
+  base::HistogramTester histogram_tester;
+  metrics::ProfileMetricsService profile_metrics_service{
+      metrics::ProfileMetricsContext{1}};
+  RecordActiveRegionalProgramPerProfile(ActiveRegionalProgram::kWaffle,
+                                        profile_metrics_service);
+  histogram_tester.ExpectUniqueSample(
+      "RegionalCapabilities.ActiveRegionalProgram3",
+      ActiveRegionalProgram::kWaffle, 1);
+  histogram_tester.ExpectUniqueSample(
+      "RegionalCapabilities.ActiveRegionalProgram3.Profile1",
       ActiveRegionalProgram::kWaffle, 1);
 }
 

@@ -121,6 +121,12 @@ void RecordTriggeringFunnelStageDetails(
 void RecordActiveRegionalProgram(
     const absl::flat_hash_set<ActiveRegionalProgram> programs);
 
+// Records the histogram for the active regional program for a given profile
+// through `profile_metrics_service`, used for UMA filtering.
+void RecordActiveRegionalProgramPerProfile(
+    ActiveRegionalProgram program,
+    metrics::ProfileMetricsService& profile_metrics_service);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
