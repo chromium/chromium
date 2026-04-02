@@ -32,6 +32,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/base_window.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -111,6 +112,11 @@ class GlicBrowserTestMixin : public T {
 
     CHECK(glic_test_environment_.SetupEmbeddedTestServers(
         T::embedded_test_server(), &T::embedded_https_test_server()));
+    T::GetTabListInterface()
+        ->GetActiveTab()
+        ->GetBrowserWindowInterface()
+        ->GetWindow()
+        ->Activate();
     LOG(INFO) << "GlicBrowserTest: done setting up";
   }
 
@@ -140,6 +146,18 @@ class GlicBrowserTestMixin : public T {
       LOG(ERROR) << "Failed to open Glic for active tab";
     }
     return instance;
+  }
+
+  // Registers a conversation and submits input to prevent the instance from
+  // being deleted when closed.
+  void PreventDeletionOnClose(
+      GlicInstanceImpl* instance,
+      const std::string& conversation_id = "test_conversation") {
+    CHECK(instance);
+    auto info = mojom::ConversationInfo::New();
+    info->conversation_id = conversation_id;
+    instance->RegisterConversation(std::move(info), base::DoNothing());
+    instance->OnUserInputSubmitted(mojom::WebClientMode::kText);
   }
 
   // Opens the Glic UI on the active tab and detaches it.

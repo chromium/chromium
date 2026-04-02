@@ -610,11 +610,11 @@ void GlicInstanceCoordinatorImpl::ApplyMaxAwakeInstancesLimit() {
       }
     }
 
-    // Sort candidates by last activation time (ascending = oldest first).
+    // Sort candidates by time since last active (descending = oldest first).
     std::sort(hibernatable_instances.begin(), hibernatable_instances.end(),
               [](const GlicInstanceImpl* a, const GlicInstanceImpl* b) {
-                return a->GetLastActivationTimestamp() <
-                       b->GetLastActivationTimestamp();
+                return a->GetTimeSinceLastActive() >
+                       b->GetTimeSinceLastActive();
               });
 
     // Hibernate until we reach `limit - 1`.

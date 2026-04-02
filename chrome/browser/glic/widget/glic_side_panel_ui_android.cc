@@ -17,6 +17,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/base_window.h"
 
 namespace glic {
 
@@ -37,16 +38,8 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
 
   browser_observation_.Observe(GlobalBrowserCollection::GetInstance());
   if (auto* browser_window = tab_->GetBrowserWindowInterface()) {
-    bool is_active = false;
-    GlobalBrowserCollection::GetInstance()->ForEach(
-        [&](BrowserWindowInterface* browser) {
-          if (browser == browser_window) {
-            is_active = true;
-          }
-          return false;  // Stop after first (most active)
-        },
-        BrowserCollection::Order::kActivation);
-    delegate_->OnEmbedderWindowActivationChanged(is_active);
+    delegate_->OnEmbedderWindowActivationChanged(
+        browser_window->GetWindow()->IsActive());
   }
 
   glic_side_panel_coordinator->SetWebContents(
