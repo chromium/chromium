@@ -132,6 +132,11 @@ wheel: <
   name: "infra/python/wheels/pexpect/${vpython_platform}"
   version: "version:4.8.0.chromium.1"
 >
+# Dependency of pexpect.
+wheel: <
+  name: "infra/python/wheels/ptyprocess-py2_py3"
+  version: "version:0.7.0"
+>
 wheel: <
   name: "infra/python/wheels/psutil/${vpython_platform}"
   version: "version:5.8.0.chromium.3"
