@@ -64,17 +64,23 @@ TEST_F(ConnectionUnusedTimeoutTest, TimeoutFires) {
   EXPECT_EQ(disconnect_error_, ErrorCode::kUnusedConnection);
 }
 
-TEST_F(ConnectionUnusedTimeoutTest, SendStopsTimeout) {
+TEST_F(ConnectionUnusedTimeoutTest, SendResetsTimeout) {
   // Advance time to just before the timeout.
   task_environment_.FastForwardBy(kUnusedTimeout - base::Milliseconds(1));
   EXPECT_FALSE(is_disconnected_);
 
-  // Sending a request stops unused timeout.
+  // Sending a request resets unused timeout.
   connection_unused_timeout_->Send(proto::PrivateAiRequest(), base::Seconds(10),
                                    base::DoNothing());
 
-  task_environment_.FastForwardBy(base::Milliseconds(1));
+  // Advance time by kUnusedTimeout - 1ms. Timer should not fire.
+  task_environment_.FastForwardBy(kUnusedTimeout - base::Milliseconds(1));
   EXPECT_FALSE(is_disconnected_);
+
+  // Advance time by 1ms to trigger the reset timeout.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(is_disconnected_);
+  EXPECT_EQ(disconnect_error_, ErrorCode::kUnusedConnection);
 }
 
 TEST_F(ConnectionUnusedTimeoutTest, OnDestroyStopsTimeout) {

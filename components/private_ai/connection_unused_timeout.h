@@ -17,7 +17,9 @@
 namespace private_ai {
 
 // A decorator for `Connection` that adds an inactivity timeout after
-// the connection construction.
+// the connection construction. The timer is reset after each message
+// is sent. If no message is sent within the timeout period, the
+// connection is closed.
 class ConnectionUnusedTimeout : public Connection {
  public:
   ConnectionUnusedTimeout(std::unique_ptr<Connection> inner_connection,

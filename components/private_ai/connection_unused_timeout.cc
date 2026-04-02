@@ -26,7 +26,7 @@ ConnectionUnusedTimeout::~ConnectionUnusedTimeout() = default;
 void ConnectionUnusedTimeout::Send(proto::PrivateAiRequest request,
                                    base::TimeDelta timeout,
                                    OnRequestCallback callback) {
-  unused_timer_.Stop();
+  unused_timer_.Reset();
   inner_connection_->Send(std::move(request), timeout, std::move(callback));
 }
 
