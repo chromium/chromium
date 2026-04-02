@@ -40,6 +40,13 @@ extern NSString* const kPersonalizeGoogleServicesIdentifier;
 // Accessibility identifier for the Personalize Google Services view.
 extern NSString* const kPersonalizeGoogleServicesViewIdentifier;
 
+// Accessibility identifier for the Manage accounts on this device... button
+extern NSString* const kManageAccountsOnDeviceAccessibilityIdentifier;
+// Accessibility identifier for the Use Another Account button
+extern NSString* const kUseAnotherAccountAccessibilityIdentifier;
+// Accessibility identifier for the Sign Out button
+extern NSString* const kSignOutAccessibilityIdentifier;
+
 // Sections used in Sync Settings page.
 typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
   // Section for all the sync settings.

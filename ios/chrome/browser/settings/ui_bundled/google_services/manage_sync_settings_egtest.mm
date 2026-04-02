@@ -11,6 +11,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/test/separate_profiles_util.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -1600,26 +1601,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Go to the Sync settings page.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI openSyncSettings];
-
-  // Scroll to the bottom to view all section.
-  id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Tap on switch account item.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                         IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SWITCH_ACCOUNT_ITEM)),
-                     grey_userInteractionEnabled(), nil)]
-      performAction:grey_tap()];
-
-  // Verify the account menu is shown.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kAccountMenuTableViewId)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [SigninEarlGreyUI openAccountMenuFromSettings];
 
   // Switch account.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -1627,6 +1609,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       performAction:grey_tap()];
 
   // Verify the account settings view remains on top of screen.
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
   [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
       performAction:grey_scrollToContentEdgeWithStartPoint(kGREYContentEdgeTop,
                                                            0.5, 0.2)];
@@ -1650,29 +1634,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Go to the Sync settings page.
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI openSyncSettings];
-
-  // Scroll to the bottom to view all section.
-  id<GREYMatcher> scroll_view_matcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Tap on switch account item.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                         IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SWITCH_ACCOUNT_ITEM)),
-                     grey_userInteractionEnabled(), nil)]
-      performAction:grey_tap()];
-
-  // Verify the account menu is shown.
-  id<GREYMatcher> account_menu_view_matcher =
-      grey_accessibilityID(kAccountMenuTableViewId);
-  [[EarlGrey selectElementWithMatcher:account_menu_view_matcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [SigninEarlGreyUI openAccountMenuFromSettings];
 
   // Scroll to the bottom to view the sign-out button.
+  id<GREYMatcher> account_menu_view_matcher =
+      grey_accessibilityID(kAccountMenuTableViewId);
   [[EarlGrey selectElementWithMatcher:account_menu_view_matcher]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   // Sign out.
@@ -1731,6 +1697,40 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                      IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
 
   [SigninEarlGrey verifySignedOut];
+}
+
+// Tests switching to a managed account from sync settings.
+- (void)testSwitchToManagedAccountFromAccountMenu {
+  FakeSystemIdentity* managedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  FakeSystemIdentity* personalIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:managedIdentity];
+  [SigninEarlGrey addFakeIdentity:personalIdentity];
+
+  [SigninEarlGrey signinWithFakeIdentity:personalIdentity];
+  [SigninEarlGreyUI openAccountMenuFromSettings];
+
+  // Tap on the managed account.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuSecondaryAccountButtonId)]
+      performAction:grey_tap()];
+
+  WaitForEnterpriseOnboardingScreen();
+
+  // Tap on Continue button to acknowledge signing in with a managed account.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_text(l10n_util::GetNSString(
+                                IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE)),
+                            grey_interactable(), nil)]
+      performAction:grey_tap()];
+
+  // Dismiss history sync screen.
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
+      performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
 
 @end

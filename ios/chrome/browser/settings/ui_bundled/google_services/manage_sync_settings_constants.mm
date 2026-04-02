@@ -33,3 +33,10 @@ NSString* const kPersonalizeGoogleServicesIdentifier =
     @"PersonalizeGoogleServicesIdentifier";
 NSString* const kPersonalizeGoogleServicesViewIdentifier =
     @"PersonalizeGoogleServicesViewIdentifier";
+
+NSString* const kManageAccountsOnDeviceAccessibilityIdentifier =
+    @"manageAccountsOnDeviceAccessibilityIdentifier";
+NSString* const kUseAnotherAccountAccessibilityIdentifier =
+    @"useAnotherAccountAccessibilityIdentifier";
+NSString* const kSignOutAccessibilityIdentifier =
+    @"signOutAccessibilityIdentifier";

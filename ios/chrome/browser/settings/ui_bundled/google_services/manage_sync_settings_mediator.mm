@@ -511,6 +511,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits |= UIAccessibilityTraitButton;
+  item.accessibilityIdentifier = kManageAccountsOnDeviceAccessibilityIdentifier;
   [model addItem:item
       toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 }
@@ -535,6 +536,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SWITCH_ACCOUNT_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits |= UIAccessibilityTraitButton;
+  item.accessibilityIdentifier = kUseAnotherAccountAccessibilityIdentifier;
   [model addItem:item
       toSectionWithIdentifier:SwitchAccountAndSignOutSectionIdentifier];
 
@@ -543,6 +545,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits |= UIAccessibilityTraitButton;
+  item.accessibilityIdentifier = kSignOutAccessibilityIdentifier;
   [model addItem:item
       toSectionWithIdentifier:SwitchAccountAndSignOutSectionIdentifier];
   if (self.forcedSigninEnabled) {

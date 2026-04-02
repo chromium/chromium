@@ -103,6 +103,9 @@
 // Opens settings > identity > Manage accounts on this device.
 + (void)openManageAccountsFromSettings;
 
+// Opens settings > identity > account menu.
++ (void)openAccountMenuFromSettings;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_TEST_SIGNIN_EARL_GREY_UI_TEST_UTIL_H_

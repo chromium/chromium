@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
@@ -40,6 +41,21 @@ using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SignOutAccountsButton;
 
 namespace {
+
+// Opens settings > sync settings > button with `identifier`.
+// `identifier` is an accessiblity identifier. It must be visible when the view
+// scrolled to the bottom.
+void OpenSyncSettingsSubmenu(NSString* identifier) {
+  // First scroll down so that the button is visible.
+  id<GREYMatcher> scroll_view_matcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  // Now tap the button with `identifier`.
+  id<GREYMatcher> button_matcher =
+      grey_allOf(grey_accessibilityID(identifier), grey_interactable(), nil);
+  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:button_matcher] performAction:grey_tap()];
+}
 
 BOOL IsIdentityPossiblyManaged(id<SystemIdentity> identity) {
   return ![identity.userEmail hasSuffix:@"@gmail.com"];
@@ -178,18 +194,7 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
 }
 
 + (void)tapSignOutFromSyncSettings {
-  // Scroll to the bottom to view the signout button.
-  id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Tap the "Sign out" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM)),
-                            grey_userInteractionEnabled(), nil)]
-      performAction:grey_tap()];
+  OpenSyncSettingsSubmenu(kSignOutAccessibilityIdentifier);
 }
 
 + (void)signOut {
@@ -437,20 +442,12 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
 
 + (void)openManageAccountsFromSettings {
   [SigninEarlGreyUI openSyncSettings];
-  // Tap "Manage accounts on this device" to get to the accounts view.
-  // First scroll down so that the button is visible.
-  id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  OpenSyncSettingsSubmenu(kManageAccountsOnDeviceAccessibilityIdentifier);
+}
 
-  // Now tap the "Manage accounts on this device" button.
-  id<GREYMatcher> manageAccountsButtonMatcher =
-      grey_allOf(grey_text(l10n_util::GetNSString(
-                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM)),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:manageAccountsButtonMatcher]
-      performAction:grey_tap()];
++ (void)openAccountMenuFromSettings {
+  [SigninEarlGreyUI openSyncSettings];
+  OpenSyncSettingsSubmenu(kUseAnotherAccountAccessibilityIdentifier);
 }
 
 @end

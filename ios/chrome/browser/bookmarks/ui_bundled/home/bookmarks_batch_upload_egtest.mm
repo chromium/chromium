@@ -331,7 +331,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   DismissBatchUploadConfirmationSnackbar(1, fakeIdentity.userEmail);
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Close the bookamrks manager.
+  // Close the bookmarks manager.
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kBookmarksHomeNavigationBarDoneButtonIdentifier)]
