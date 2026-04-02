@@ -77,6 +77,9 @@ void PasswordSyncTokenVerifier::CreateTokenAsync() {
 }
 
 void PasswordSyncTokenVerifier::CheckForPasswordNotInSync() {
+  // TODO: b/498965905 - Only check password sync when the user has a gaia
+  // password.
+
   // In-session password change is as of now the only way to trigger the sync
   // token update. We do not need to poll if this feature is not enabled.
   PrefService* prefs = primary_profile_->GetPrefs();
