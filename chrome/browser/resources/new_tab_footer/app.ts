@@ -99,8 +99,8 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
       showCustomizeButtons_: {type: Boolean},
       showCustomizeText_: {type: Boolean},
       showExtension_: {type: Boolean},
-      ntpType_: {type: Object},
-      backgroundAttributionLink_: {type: Object},
+      ntpType_: {type: Number},
+      backgroundAttributionLink_: {type: String},
       backgroundAttributionText_: {type: String},
       showBackgroundAttribution_: {type: Boolean},
     };

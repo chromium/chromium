@@ -133,7 +133,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         reflect: true,
       },
       enableUpfrontInputModes: {type: Boolean},
-      feedbackState_: {type: String},
+      feedbackState_: {type: Number},
       hasPartialOutput_: {type: Boolean},
       input_: {type: String},
       inputParams_: {type: Object},

@@ -90,8 +90,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
       previewVoiceInitiated: {type: Object},
       localeToDisplayName: {type: Object},
       showLanguageMenuDialog_: {type: Boolean},
-      downloadingMessages_: {type: Boolean},
-      voiceGroups_: {type: Object},
+      downloadingMessages_: {type: Array},
+      voiceGroups_: {type: Array},
       nonModal: {type: Boolean},
     };
   }

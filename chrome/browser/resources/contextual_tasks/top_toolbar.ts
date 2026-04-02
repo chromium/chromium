@@ -66,7 +66,6 @@ export class TopToolbarElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      logoImageUrl_: {type: String},
       title: {type: String},
       hideMenuButton_: {type: Boolean},
       showReopenTabs_: {type: Boolean},

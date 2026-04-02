@@ -58,7 +58,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         type: String,
       },
 
-      computedFilter_: {type: String},
+      computedFilter_: {type: Object},
       maxColumns_: {type: Number},
 
       filteredExtensions_: {type: Array},

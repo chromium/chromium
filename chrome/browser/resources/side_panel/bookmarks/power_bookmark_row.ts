@@ -68,7 +68,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
       hasActiveDrag: {type: Boolean},
       activeFolderPath: {type: Array},
       hasFolders: {type: Boolean, reflect: true},
-      sortedChildren: {type: Array},
       activeSortIndex: {type: Number},
     };
   }
@@ -106,7 +105,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
   accessor activeFolderPath: BookmarksTreeNode[] = [];
   accessor hasFolders: boolean = false;
   accessor activeSortIndex: number = 0;
-
   accessor listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
 
   private bookmarksService_: PowerBookmarksService =

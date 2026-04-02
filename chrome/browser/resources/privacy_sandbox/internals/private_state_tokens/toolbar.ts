@@ -40,7 +40,6 @@ export class PrivateStateTokensToolbarElement extends CrLitElement {
       narrowThreshold: {type: Number},
       pageName: {type: String},
       searchPrompt_: {type: String},
-      showSearch_: {type: Boolean},
     };
   }
 

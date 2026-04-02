@@ -75,6 +75,7 @@ export class CustomizeButtonsElement extends CrLitElement {
   accessor showShadow: boolean = false;
   accessor showWallpaperSearch: boolean = false;
   accessor showWallpaperSearchButton: boolean = false;
+  accessor wallpaperSearchButtonAnimationEnabled: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();

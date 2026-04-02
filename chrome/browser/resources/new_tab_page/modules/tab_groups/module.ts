@@ -72,7 +72,7 @@ export class TabGroupsModuleElement extends TabGroupsModuleElementBase {
   static override get properties() {
     return {
       ariaLabels: {type: Object},
-      tabGroups: {type: Object},
+      tabGroups: {type: Array},
       showInfoDialog: {type: Boolean},
     };
   }

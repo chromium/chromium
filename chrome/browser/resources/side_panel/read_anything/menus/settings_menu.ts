@@ -155,7 +155,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       isReadAnythingPinned: {type: Boolean},
       isSpeechActive: {type: Boolean},
       settingsPrefs: {type: Object},
-      currentOpenId_: {state: true},
+      currentOpenId_: {
+        state: true,
+        type: String,
+      },
     };
   }
 

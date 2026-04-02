@@ -105,7 +105,7 @@ export class ViewerToolbarElement extends CrLitElement {
       },
 
       displayAnnotations_: {type: Boolean},
-      fittingType_: {type: Number},
+      fittingType_: {type: String},
       printingEnabled_: {type: Boolean},
       viewportZoomPercent_: {type: Number},
 

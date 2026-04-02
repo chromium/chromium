@@ -42,7 +42,7 @@ export class OutlookCalendarModuleElement extends
 
   static override get properties() {
     return {
-      events_: {type: Object},
+      events_: {type: Array},
       showInfoDialog_: {type: Boolean},
     };
   }

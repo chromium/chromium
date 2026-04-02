@@ -42,7 +42,7 @@ export class KeyValuePairViewerElement extends CrLitElement {
 
   static override get properties() {
     return {
-      entries: {type: String},
+      entries: {type: Array},
 
       loading: {
         type: Boolean,

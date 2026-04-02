@@ -52,12 +52,12 @@ export class DoodleShareDialogElement extends CrLitElement {
       title: {type: String},
 
       /** Share URL provided to the user. */
-      url: {type: Object},
+      url: {type: String},
     };
   }
 
   override accessor title: string = '';
-  accessor url = '';
+  accessor url: string = '';
 
   protected onFacebookClick_() {
     const url = 'https://www.facebook.com/dialog/share' +

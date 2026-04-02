@@ -238,7 +238,7 @@ export class AppElement extends AppElementBase {
 
       // Used in cr-searchbox component via host-context.
       colorSourceIsBaseline: {type: Boolean},
-      logoColor_: {type: String},
+      logoColor_: {type: Object},
       singleColoredLogo_: {type: Boolean},
 
       realboxShown_: {type: Boolean},
@@ -294,7 +294,6 @@ export class AppElement extends AppElementBase {
       wallpaperSearchButtonAnimationEnabled_: {type: Boolean},
       wallpaperSearchButtonEnabled_: {type: Boolean},
       showWallpaperSearchButton_: {type: Boolean},
-      composeboxCloseByClickOutside_: {type: Boolean},
       isActionChipsVisible_: {type: Boolean},
       isFooterVisible_: {type: Boolean},
 
@@ -321,16 +320,12 @@ export class AppElement extends AppElementBase {
 
       contextMenuGlifAnimationState_: {type: String},
       undoToastCallback_: {type: Object},
-      undoToastMessage_: {type: Object},
+      undoToastMessage_: {type: String},
 
       /**
        * Whether to show the AIM threads rail when composebox is open.
        */
       enableThreadsRail_: {type: Boolean},
-      reducedMotionPreferred_: {
-        type: Boolean,
-        reflect: true,
-      },
 
       // =======================================================================
       // Private properties

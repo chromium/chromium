@@ -157,7 +157,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       inspirationToggleIcon_: {type: String},
       openInspirations_: {type: Boolean},
       resultsDescriptors_: {type: Object},
-      results_: {type: Object},
+      results_: {type: Array},
       selectedFeedbackOption_: {type: Number},
       selectedDescriptorA_: {type: String},
       selectedDescriptorB_: {type: String},

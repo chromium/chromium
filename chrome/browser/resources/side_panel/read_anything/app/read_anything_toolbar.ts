@@ -151,7 +151,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       isReadAnythingPinned: {type: Boolean},
       isImmersiveEnabled_: {type: Boolean},
       lineFocusStyle: {type: Object},
-      lineFocusMovement: {type: Object},
+      lineFocusMovement: {type: Number},
     };
   }
 

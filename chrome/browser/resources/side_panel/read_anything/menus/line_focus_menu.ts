@@ -42,7 +42,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
       settingsPrefs: {type: Object},
       nonModal: {type: Boolean},
       lineFocusStyle: {type: Object},
-      lineFocusMovement: {type: Object},
+      lineFocusMovement: {type: Number},
     };
   }
 

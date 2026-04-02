@@ -104,7 +104,6 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
       isQueryPending_: {type: Boolean},
       tabSelectionMode_: {type: String},
       minModelScore_: {type: Number},
-      minModelScoreTicks_: {type: Array},
       eventLogMessages_: {type: Array},
       forcedHost_: {type: String},
       currentHost_: {type: String},

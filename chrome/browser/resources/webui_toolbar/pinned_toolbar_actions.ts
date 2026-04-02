@@ -25,7 +25,7 @@ export class PinnedToolbarActionsElement extends CrLitElement {
 
   static override get properties() {
     return {
-      state: {type: Object},
+      state: {type: Array},
     };
   }
 

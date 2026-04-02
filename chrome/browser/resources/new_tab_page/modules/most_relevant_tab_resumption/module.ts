@@ -57,7 +57,7 @@ export class MostRelevantTabResumptionModuleElement extends I18nMixinLit
       },
 
       /** The cluster displayed by this element. */
-      urlVisits: {type: Object},
+      urlVisits: {type: Array},
 
       /**
        * To determine whether the favicon service should use the host if
@@ -83,6 +83,7 @@ export class MostRelevantTabResumptionModuleElement extends I18nMixinLit
   accessor urlVisits: URLVisit[] = [];
   protected accessor fallbackToHost_: boolean =
       loadTimeData.getBoolean('mostRelevantTabResumptionModuleFallbackToHost');
+  protected accessor shouldShowDeviceIcon_: boolean = false;
   protected accessor showInfoDialog_: boolean = false;
   protected accessor allowFaviconServerFallback_: boolean =
       loadTimeData.getBoolean(

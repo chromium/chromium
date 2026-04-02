@@ -38,7 +38,6 @@ export class RelatedWebsiteSetsToolbarElement extends CrLitElement {
       narrowThreshold_: {type: Number},
       pageName: {type: String},
       searchPrompt_: {type: String},
-      showSearch_: {type: Boolean},
     };
   }
 

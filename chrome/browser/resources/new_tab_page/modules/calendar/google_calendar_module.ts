@@ -43,7 +43,7 @@ export class GoogleCalendarModuleElement extends
 
   static override get properties() {
     return {
-      events_: {type: Object},
+      events_: {type: Array},
       showInfoDialog_: {type: Boolean},
     };
   }

@@ -87,7 +87,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       pageLanguage_: {type: String},
       presentationState_: {type: Number},
       lineFocusStyle_: {type: Object},
-      lineFocusMovement_: {type: Object},
+      lineFocusMovement_: {type: Number},
     };
   }
 

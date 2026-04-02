@@ -39,7 +39,7 @@ export class EnterprisePolicyTableSectionElement extends CrLitElement {
 
   static override get properties() {
     return {
-      rowData: {type: Object},
+      rowData: {type: Array},
     };
   }
 
