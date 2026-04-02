@@ -293,6 +293,9 @@ class It2MeNativeMessagingHostTest : public testing::Test {
   raw_ptr<MockIt2MeHostFactory, AcrossTasksDanglingUntriaged> factory_raw_ptr_ =
       nullptr;
 
+  raw_ptr<It2MeNativeMessagingHost, AcrossTasksDanglingUntriaged>
+      it2me_host_raw_ptr_ = nullptr;
+
  private:
   void StartHost();
   void ExitTest();
@@ -357,6 +360,9 @@ void It2MeNativeMessagingHostTest::SetUp() {
 }
 
 void It2MeNativeMessagingHostTest::TearDown() {
+  // Clear the RawPtr so it is not detected as a leak.
+  it2me_host_raw_ptr_ = nullptr;
+
   // Release reference to AutoThreadTaskRunner, so the host thread can be shut
   // down.
   host_task_runner_ = nullptr;
@@ -617,6 +623,7 @@ void It2MeNativeMessagingHostTest::StartHost() {
       new It2MeNativeMessagingHost(
           /*needs_elevation=*/false, std::move(policy_watcher),
           std::move(context), std::move(factory)));
+  it2me_host_raw_ptr_ = it2me_host.get();
   it2me_host->SetPolicyErrorClosureForTesting(base::BindOnce(
       base::IgnoreResult(&base::TaskRunner::PostTask),
       task_environment_->GetMainThreadTaskRunner(), FROM_HERE,
@@ -702,7 +709,6 @@ TEST_F(It2MeNativeMessagingHostTest,
        ConnectRespectsEnterpriseOptionsParameterOnChromeOsOnly) {
   int next_id = 1;
   base::DictValue connect_message = CreateConnectMessage(next_id);
-  connect_message.Set(kIsEnterpriseAdminUser, true);
   ChromeOsEnterpriseParams params;
   params.suppress_user_dialogs = true;
   params.suppress_notifications = true;
@@ -713,7 +719,9 @@ TEST_F(It2MeNativeMessagingHostTest,
   params.connection_auto_accept_timeout = base::Hours(8);
   params.request_origin = ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
   params.audio_playback = ChromeOsEnterpriseAudioPlayback::kLocalOnly;
-  connect_message.Merge(params.ToDict());
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
+  it2me_host_raw_ptr_->set_chrome_os_enterprise_params(params);
+#endif
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
 #if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
@@ -742,7 +750,12 @@ TEST_F(It2MeNativeMessagingHostTest,
        ConnectRespectsIsEnterpriseAdminUserParameterOnChromeOsOnly) {
   int next_id = 1;
   base::DictValue connect_message = CreateConnectMessage(next_id);
-  connect_message.Set(kIsEnterpriseAdminUser, true);
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
+  ChromeOsEnterpriseParams params;
+  params.request_origin = ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  params.audio_playback = ChromeOsEnterpriseAudioPlayback::kLocalOnly;
+  it2me_host_raw_ptr_->set_chrome_os_enterprise_params(params);
+#endif
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
 #if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
@@ -750,6 +763,33 @@ TEST_F(It2MeNativeMessagingHostTest,
 #else
   EXPECT_FALSE(factory_raw_ptr_->host->is_enterprise_session());
 #endif
+  ++next_id;
+  WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
+  VerifyDisconnectResponses(next_id);
+}
+
+TEST_F(It2MeNativeMessagingHostTest,
+       ConnectIgnoresEnterpriseOptionsParameterInJson) {
+  int next_id = 1;
+  base::DictValue connect_message = CreateConnectMessage(next_id);
+  connect_message.Set(kIsEnterpriseAdminUser, true);
+  ChromeOsEnterpriseParams params;
+  params.suppress_user_dialogs = true;
+  params.suppress_notifications = true;
+  params.terminate_upon_input = true;
+  params.curtain_local_user_session = true;
+  params.allow_remote_input = false;
+  params.allow_clipboard_sync = false;
+  params.connection_auto_accept_timeout = base::Hours(8);
+  params.request_origin = ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  params.audio_playback = ChromeOsEnterpriseAudioPlayback::kLocalOnly;
+  connect_message.Merge(params.ToDict());
+  WriteMessageToInputPipe(connect_message);
+  VerifyConnectResponses(next_id);
+
+  EXPECT_FALSE(factory_raw_ptr_->host->is_enterprise_session());
+  ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
+
   ++next_id;
   WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
   VerifyDisconnectResponses(next_id);

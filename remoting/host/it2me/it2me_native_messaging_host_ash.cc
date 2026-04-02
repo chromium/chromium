@@ -70,14 +70,13 @@ void It2MeNativeMessageHostAsh::Connect(
   host_state_disconnected_callback_ =
       std::move(host_state_disconnected_callback);
 
-  auto message =
-      base::DictValue()
-          .Set(kMessageType, kConnectMessage)
-          .Set(kUserName, params.user_name)
-          .Set(kAccessToken, params.oauth_access_token)
-          .Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
+  auto message = base::DictValue()
+                     .Set(kMessageType, kConnectMessage)
+                     .Set(kUserName, params.user_name)
+                     .Set(kAccessToken, params.oauth_access_token);
+
   if (enterprise_params.has_value()) {
-    message.Merge(enterprise_params->ToDict());
+    native_message_host_->set_chrome_os_enterprise_params(*enterprise_params);
   }
 
   if (params.authorized_helper.has_value()) {
@@ -89,8 +88,7 @@ void It2MeNativeMessageHostAsh::Connect(
     // prevent anyone else from snooping in and connecting to the session.
     CHECK(params.authorized_helper.has_value());
 
-    message.Set(kReconnectParamsDict,
-                ReconnectParams::ToDict(*reconnect_params));
+    native_message_host_->set_reconnect_params(*reconnect_params);
   }
 
   native_message_host_->OnMessage(*base::WriteJson(message));

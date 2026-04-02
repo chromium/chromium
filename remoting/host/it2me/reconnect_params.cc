@@ -13,7 +13,10 @@
 namespace remoting {
 
 ReconnectParams::ReconnectParams() = default;
+ReconnectParams::ReconnectParams(const ReconnectParams& other) = default;
 ReconnectParams::ReconnectParams(ReconnectParams&& other) = default;
+ReconnectParams& ReconnectParams::operator=(const ReconnectParams& other) =
+    default;
 ReconnectParams& ReconnectParams::operator=(ReconnectParams&& other) = default;
 ReconnectParams::~ReconnectParams() = default;
 

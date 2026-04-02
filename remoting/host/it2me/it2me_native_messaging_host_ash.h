@@ -25,6 +25,7 @@ namespace remoting {
 
 class ChromotingHostContext;
 class It2MeHostFactory;
+class It2MeNativeMessagingHost;
 class PolicyWatcher;
 struct ChromeOsEnterpriseParams;
 struct ReconnectParams;
@@ -94,7 +95,7 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
   base::OnceClosure disconnected_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<extensions::NativeMessageHost> native_message_host_
+  std::unique_ptr<It2MeNativeMessagingHost> native_message_host_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::Remote<mojom::SupportHostObserver> remote_

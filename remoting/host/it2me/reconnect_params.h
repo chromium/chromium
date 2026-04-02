@@ -13,7 +13,9 @@ namespace remoting {
 
 struct ReconnectParams {
   ReconnectParams();
+  ReconnectParams(const ReconnectParams& other);
   ReconnectParams(ReconnectParams&& other);
+  ReconnectParams& operator=(const ReconnectParams& other);
   ReconnectParams& operator=(ReconnectParams&& other);
   ~ReconnectParams();
 

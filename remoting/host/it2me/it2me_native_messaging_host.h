@@ -16,7 +16,9 @@
 #include "build/build_config.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/it2me/it2me_host.h"
+#include "remoting/host/it2me/reconnect_params.h"
 #include "remoting/protocol/errors.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -64,6 +66,13 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   // Set a callback to be called when a policy error notification has been
   // processed.
   void SetPolicyErrorClosureForTesting(base::OnceClosure closure);
+
+  void set_chrome_os_enterprise_params(ChromeOsEnterpriseParams params) {
+    enterprise_params_ = std::move(params);
+  }
+  void set_reconnect_params(ReconnectParams params) {
+    reconnect_params_ = std::move(params);
+  }
 
  private:
   // These "Process.." methods handle specific request types. The |response|
@@ -146,6 +155,9 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   base::OnceClosure pending_connect_;
 
   base::OnceClosure policy_error_closure_for_testing_;
+
+  std::optional<ChromeOsEnterpriseParams> enterprise_params_;
+  std::optional<ReconnectParams> reconnect_params_;
 
   base::WeakPtr<It2MeNativeMessagingHost> weak_ptr_;
   base::WeakPtrFactory<It2MeNativeMessagingHost> weak_factory_{this};
