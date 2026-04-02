@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -312,7 +313,9 @@ void EntityDataManager::SetReauthAvailability(bool reauth_available) {
 void EntityDataManager::EnforceEntityReauthRequirements() {
   // If the re-auth state is unknown, assume that re-auth is supported. This
   // prevents removing data during transient inavailability on start-up.
-  if (!reauth_availability_ || reauth_availability_.value()) {
+  if (!reauth_availability_ || reauth_availability_.value() ||
+      base::FeatureList::IsEnabled(
+          features::debug::kAutofillAiDisableReauthRequirement)) {
     return;
   }
   // The device doesn't support re-auth. Remove all Wallet private passes.

@@ -527,7 +527,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       // re-auth.
       if (!supports_reauth &&
           IsMaskedStorageSupported(*entity_type,
-                                   EntityInstance::RecordType::kServerWallet)) {
+                                   EntityInstance::RecordType::kServerWallet) &&
+          !base::FeatureList::IsEnabled(
+              features::debug::kAutofillAiDisableReauthRequirement)) {
         return false;
       }
       break;

@@ -11,6 +11,10 @@
 
 namespace autofill::features::debug {
 
+// When enabled, Wallet private passes are supported on devices without re-auth.
+BASE_FEATURE(kAutofillAiDisableReauthRequirement,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the user will be considered to be opted-in to Autofill AI by
 // default. Used for development purposes.
 BASE_FEATURE(kAutofillAiForceOptIn, base::FEATURE_DISABLED_BY_DEFAULT);
