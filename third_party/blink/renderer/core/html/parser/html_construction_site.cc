@@ -1064,6 +1064,15 @@ void HTMLConstructionSite::InsertFormattingElement(AtomicHTMLToken* token) {
   // Possible active formatting elements include:
   // a, b, big, code, em, font, i, nobr, s, small, strike, strong, tt, and u.
   InsertHTMLElement(token);
+
+  // Disallow custom elements from being on the stack of active formatting
+  // elements.  https://github.com/whatwg/html/issues/12327 suggests changing
+  // the spec to match this behavior.
+  if (token->GetAttributeItem(html_names::kIsAttr) &&
+      RuntimeEnabledFeatures::CustomElementsDisableFormattingFixupsEnabled()) {
+    return;
+  }
+
   active_formatting_elements_.Append(CurrentStackItem());
 }
 

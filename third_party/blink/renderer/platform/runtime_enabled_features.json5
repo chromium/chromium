@@ -1996,6 +1996,11 @@
       status: "experimental",
     },
     {
+      // Shipping in M148 (or backported earlier), can be removed in M150.
+      name: "CustomElementsDisableFormattingFixups",
+      status: "stable",
+    },
+    {
       // appearance:base for the <datalist> element when it is invoked as a
       // picker from an <input type=text>.
       // https://issues.chromium.org/issues/453705243
