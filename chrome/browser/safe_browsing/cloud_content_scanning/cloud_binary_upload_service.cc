@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -447,6 +448,22 @@ void CloudBinaryUploadService::OnIpAddressesFetched(
   MaybeGetAccessToken(request_id);
 }
 
+void CloudBinaryUploadService::RegisterOnGotHashCallback(
+    BinaryUploadRequest::Id request_id,
+    enterprise_connectors::OnGotHashCallback on_got_hash_callback) {
+  BinaryUploadRequest* request = GetRequest(request_id);
+  if (!request) {
+    std::move(on_got_hash_callback).Run("");
+    return;
+  }
+  // If the request's hash has completed, the parameter callback will run
+  // immediately. Post it as a task so it runs after this function returns. Also
+  // set call_last to true since the parameter callback can delete the request.
+  request->register_on_got_hash_callback_.Run(
+      /*call_last=*/true,
+      base::BindPostTaskToCurrentDefault(std::move(on_got_hash_callback)));
+}
+
 void CloudBinaryUploadService::OnGetRequestData(
     BinaryUploadRequest::Id request_id,
     enterprise_connectors::ScanRequestUploadResult get_data_result,
@@ -473,6 +490,14 @@ void CloudBinaryUploadService::OnGetRequestData(
   enterprise_connectors::ResumableUploadRequestBase::
       OnceRegisterOnGotHashCallback register_on_got_hash_callback =
           base::NullCallback();
+  if (request->digest().empty() && request->register_on_got_hash_callback_) {
+    // The hash is being computed. Let the server know the hash will be
+    // uploaded as a header during the finalize call.
+    request->set_content_hash_in_final_call(true);
+    register_on_got_hash_callback =
+        base::BindOnce(&CloudBinaryUploadService::RegisterOnGotHashCallback,
+                       weakptr_factory_.GetWeakPtr(), request_id);
+  }
 
   std::string metadata;
   request->SerializeToString(&metadata);

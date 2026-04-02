@@ -376,6 +376,52 @@ TEST_F(CloudBinaryUploadServiceTest, FailsForLargeFile) {
             enterprise_connectors::ScanRequestUploadResult::kUploadFailure);
 }
 
+// TODO(b/498192657): Add an integration test for resumable uploads.
+TEST_F(CloudBinaryUploadServiceTest,
+       UploadSucceedsWithRegisterOnGotHashCallback) {
+  enterprise_connectors::ScanRequestUploadResult scanning_result;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
+  ASSERT_TRUE(base::WriteFile(file_path, "test"));
+
+  base::RunLoop run_loop;
+
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+  request->set_analysis_connector(
+      enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
+  auto request_ptr = request.get();
+  request->register_on_got_hash_callback_ = base::BindLambdaForTesting(
+      [&](bool call_last, enterprise_connectors::OnGotHashCallback callback) {
+        EXPECT_TRUE(call_last);
+        EXPECT_EQ(request_ptr->content_hash_in_final_call(), true);
+        std::move(callback).Run("123456");
+        run_loop.Quit();
+      });
+
+  ON_CALL(*request, GetRequestData(_))
+      .WillByDefault([file_path](BinaryUploadRequest::DataCallback callback) {
+        BinaryUploadRequest::Data data;
+        data.path = file_path;
+        data.hash = "";
+        data.size = 4;  // Must not be zero.
+        std::move(callback).Run(
+            enterprise_connectors::ScanRequestUploadResult::kSuccess,
+            std::move(data));
+      });
+
+  UploadForDeepScanning(std::move(request));
+
+  run_loop.Run();
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(scanning_result,
+            enterprise_connectors::ScanRequestUploadResult::kSuccess);
+}
+
 TEST_F(CloudBinaryUploadServiceTest, FailsForEncryptedFile) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(

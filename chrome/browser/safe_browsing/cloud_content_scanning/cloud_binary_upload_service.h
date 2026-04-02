@@ -138,6 +138,13 @@ class CloudBinaryUploadService
       enterprise_connectors::BinaryUploadRequest::Id request_id,
       std::vector<std::string> ip_addresses);
 
+  // Convenience wrapper around the
+  // FileAnalysisRequestBase::RegisterOnGotHashCallback to ensure the request is
+  // posted as a task to the current thread.
+  void RegisterOnGotHashCallback(
+      enterprise_connectors::BinaryUploadRequest::Id request_id,
+      enterprise_connectors::OnGotHashCallback on_got_hash_callback);
+
   // Convenience callback method that calls both OnGetContentAnalysisResponse
   // and OnContentUploaded. Since the multipart uploader does not send separate
   // requests for metadata and content, it only needs one callback that finishes
