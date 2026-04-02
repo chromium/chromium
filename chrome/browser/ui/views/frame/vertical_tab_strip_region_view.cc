@@ -357,10 +357,10 @@ void VerticalTabStripRegionView::AddedToWidget() {
 }
 
 void VerticalTabStripRegionView::RemovedFromWidget() {
-  TabStripRegionView::RemovedFromWidget();
   if (GetFocusManager()) {
     GetFocusManager()->RemoveFocusChangeListener(&focus_listener_);
   }
+  TabStripRegionView::RemovedFromWidget();
 }
 
 void VerticalTabStripRegionView::Layout(PassKey) {
@@ -814,8 +814,8 @@ VerticalTabStripRegionView::RegionViewFocusListener::RegionViewFocusListener(
 void VerticalTabStripRegionView::RegionViewFocusListener::OnDidChangeFocus(
     views::View* focused_before,
     views::View* focused_now) {
-  if (region_view_->Contains(focused_before) ||
-      region_view_->Contains(focused_now)) {
+  if ((focused_before && region_view_->Contains(focused_before)) ||
+      (focused_now && region_view_->Contains(focused_now))) {
     region_view_->UpdateExpandOnHoverState();
   }
 }
