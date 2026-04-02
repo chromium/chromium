@@ -1332,17 +1332,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Decode.SymphoniaOversizedPcmPacket" units="frames"
-    expires_after="2026-07-23">
-  <owner>jophba@chromium.org</owner>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Reports the number of frames in a PCM packet that was larger than the static
-    buffer used for decoding.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.DecoderType" enum="AudioDecoderType"
     expires_after="2026-06-30">
   <owner>jophba@chromium.org</owner>
@@ -1928,6 +1917,37 @@ chromium-metrics-reviews@google.com.
     The delay between audio being delivered to the OS-specific implementation of
     AudioOutputStream and the audio being played out by the speakers. Reported
     every time the AudioOutputStream calls AudioSourceCallback::OnMoreData.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Symphonia.DecodeError"
+    enum="SymphoniaDecodeStatus" expires_after="2027-04-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the error code associated with a failed Symphonia audio decoder
+    decoding attempt.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Symphonia.InitStatus" enum="SymphoniaInitStatus"
+    expires_after="2027-04-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the status code returned by the Symphonia audio decoder for each
+    initialization attempt.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Symphonia.OversizedPcmPacket" units="frames"
+    expires_after="2027-04-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Reports the number of frames in a PCM packet that was larger than the static
+    buffer used for decoding.
   </summary>
 </histogram>
 

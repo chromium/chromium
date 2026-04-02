@@ -298,8 +298,8 @@ void SymphoniaAudioDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer,
     const int frames_in_buffer = buffer->size() / bytes_per_frame;
 
     if (frames_in_buffer > kDefaultMaxFramesPerPcmPacket) {
-      base::UmaHistogramCounts100000(
-          "Media.Audio.Decode.SymphoniaOversizedPcmPacket", frames_in_buffer);
+      base::UmaHistogramCounts100000("Media.Audio.Symphonia.OversizedPcmPacket",
+                                     frames_in_buffer);
       std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
       return;
     }
@@ -364,6 +364,12 @@ bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {
 
   SymphoniaDecodeResult result = symphonia_decoder_.value()->decode(
       ToSymphoniaPacket(buffer, first_frame_timestamp_));
+
+  // Record status for every decode attempt.
+  if (result.status != SymphoniaDecodeStatus::Ok) {
+    base::UmaHistogramEnumeration("Media.Audio.Symphonia.DecodeError",
+                                  result.status);
+  }
 
   // The Symphonia glue will return an empty buffer if end of stream is reached.
   if (result.buffer->data.empty()) {
@@ -457,6 +463,9 @@ bool SymphoniaAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
   // an error as an initialization result if the codec is not supported.
   const SymphoniaDecoderConfig symphonia_config = ToSymphoniaConfig(config);
   SymphoniaInitResult result = init_symphonia_decoder(symphonia_config);
+  // Record status for every initialization attempt.
+  base::UmaHistogramEnumeration("Media.Audio.Symphonia.InitStatus",
+                                result.status);
   if (result.status != SymphoniaInitStatus::Ok) {
     MEDIA_LOG(ERROR, media_log_)
         << "Could not initialize Symphonia audio decoder: "

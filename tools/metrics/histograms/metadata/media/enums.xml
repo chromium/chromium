@@ -2261,6 +2261,32 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Prediction stays at Smooth after update"/>
 </enum>
 
+<enum name="SymphoniaDecodeStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="UnexpectedEndOfStream"/>
+  <int value="2" label="InvalidDecoderState"/>
+  <int value="3" label="Error"/>
+  <int value="4" label="DecodeError"/>
+  <int value="5" label="IoError"/>
+  <int value="6" label="ResetRequired"/>
+  <int value="7" label="SeekError"/>
+  <int value="8" label="Unsupported"/>
+  <int value="9" label="InsufficentData"/>
+  <int value="10" label="InvalidDecodedBufferSampleFormat"/>
+</enum>
+
+<enum name="SymphoniaInitStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="InvalidConfig"/>
+  <int value="2" label="DecoderError"/>
+  <int value="3" label="UnsupportedCodec"/>
+  <int value="4" label="XiphVorbisUnpackError"/>
+  <int value="5" label="SymphoniaUnsupported"/>
+  <int value="6" label="SymphoniaDecodeError"/>
+  <int value="7" label="SymphoniaIoError"/>
+  <int value="8" label="SymphoniaLimitError"/>
+</enum>
+
 <enum name="SystemMediaCapturePermission">
   <int value="0" label="Not determined"/>
   <int value="1" label="Restricted"/>

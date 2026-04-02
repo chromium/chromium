@@ -142,6 +142,8 @@ pub mod ffi {
 
     /// Detailed status code indicating the result of a decoder initialization
     /// attempt.
+    /// NOTE: these values are persisted to UMA histograms, and should not be
+    /// reordered or deleted.
     #[derive(Debug)]
     enum SymphoniaInitStatus {
         /// Initialization was successful.
@@ -151,6 +153,22 @@ pub mod ffi {
         InvalidConfig,
         /// Failed to construct a valid decoder instance.
         DecoderError,
+        /// The requested codec is not supported by the bridge.
+        UnsupportedCodec,
+        /// Failed to unpack Xiph lacing for Vorbis extradata.
+        XiphVorbisUnpackError,
+        /// Symphonia returned an 'Unsupported' error during initialization.
+        SymphoniaUnsupported,
+        /// Symphonia returned a 'DecodeError' during initialization (likely
+        /// bad extradata).
+        SymphoniaDecodeError,
+        /// Symphonia returned an 'IoError' during initialization.
+        SymphoniaIoError,
+        /// Symphonia returned a 'LimitError' during initialization.
+        SymphoniaLimitError,
+
+        /// Boundary for UMA histograms.
+        kMaxValue,
     }
 
     /// Represents the result of a decoder initialization attempt.
@@ -166,6 +184,8 @@ pub mod ffi {
     }
 
     /// Represents the possible outcomes of a decode operation.
+    /// NOTE: these values are persisted to UMA histograms, and should not be
+    /// reordered or deleted.
     #[derive(Debug)]
     enum SymphoniaDecodeStatus {
         /// The packet was successfully decoded.
@@ -185,7 +205,7 @@ pub mod ffi {
         /// The decoder needs to be reset, e.g., due to a change in stream
         /// parameters.
         ResetRequired,
-        /// An error occurred while seeking within the media.
+        /// An error occurred while seeking.
         SeekError,
         /// The stream contains a feature or format that is not supported.
         Unsupported,
@@ -194,6 +214,9 @@ pub mod ffi {
         /// The decoder returned a sample format that is not supported by
         /// the Chromium media stack.
         InvalidDecodedBufferSampleFormat,
+
+        /// Boundary for UMA histograms.
+        kMaxValue,
     }
 
     /// Represents the result of an attempt to decode an audio packet.
@@ -511,9 +534,42 @@ pub fn unpack_xiph_vorbis_extradata(extradata: &[u8]) -> Result<Vec<u8>, String>
     Ok(unpacked)
 }
 
+/// Detailed status code indicating the result of a decoder initialization
+/// attempt.
+#[derive(Debug, Clone)]
+pub enum SymphoniaInitError {
+    UnsupportedCodec(String),
+    XiphVorbisUnpackError(String),
+    SymphoniaError(ffi::SymphoniaInitStatus, String),
+}
+
+impl From<SymphoniaInitError> for (ffi::SymphoniaInitStatus, String) {
+    fn from(err: SymphoniaInitError) -> Self {
+        match err {
+            SymphoniaInitError::UnsupportedCodec(s) => {
+                (ffi::SymphoniaInitStatus::UnsupportedCodec, s)
+            }
+            SymphoniaInitError::XiphVorbisUnpackError(s) => {
+                (ffi::SymphoniaInitStatus::XiphVorbisUnpackError, s)
+            }
+            SymphoniaInitError::SymphoniaError(status, s) => (status, s),
+        }
+    }
+}
+
+fn to_symphonia_init_status(err: &Error) -> ffi::SymphoniaInitStatus {
+    match err {
+        Error::Unsupported(_) => ffi::SymphoniaInitStatus::SymphoniaUnsupported,
+        Error::DecodeError(_) => ffi::SymphoniaInitStatus::SymphoniaDecodeError,
+        Error::IoError(_) => ffi::SymphoniaInitStatus::SymphoniaIoError,
+        Error::LimitError(_) => ffi::SymphoniaInitStatus::SymphoniaLimitError,
+        _ => ffi::SymphoniaInitStatus::DecoderError,
+    }
+}
+
 /// Converts an FFI `SymphoniaDecoderConfig` to Symphonia `CodecParameters`.
 impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for CodecParameters {
-    type Error = String;
+    type Error = SymphoniaInitError;
 
     fn try_from(value: &ffi::SymphoniaDecoderConfig<'a>) -> Result<Self, Self::Error> {
         let bits_per_sample: u32 = (value.bytes_per_sample as u32) * u8::BITS;
@@ -532,14 +588,18 @@ impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for CodecParameters {
                     // Symphonia might handle it natively if it's already unwrapped). We only log
                     // an error if we actually attempted to parse it as Xiph but failed.
                     if !extra_data.is_empty() && extra_data[0] == VORBIS_NUM_LACED_HEADERS {
-                        return Err(format!("failed to unpack xiph vorbis extradata: {}", err));
+                        return Err(SymphoniaInitError::XiphVorbisUnpackError(format!(
+                            "failed to unpack xiph vorbis extradata: {}",
+                            err
+                        )));
                     }
                 }
             }
         }
 
         Ok(CodecParameters {
-            codec: to_symphonia_codec_type(value.codec)?,
+            codec: to_symphonia_codec_type(value.codec)
+                .map_err(SymphoniaInitError::UnsupportedCodec)?,
             time_base: Some(TimeBase::new(1_000_000, 1)), // Microsecond timebase
             extra_data: Some(extra_data.into_boxed_slice()),
 
@@ -563,7 +623,7 @@ impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for CodecParameters {
 }
 
 /// Type alias for the result of a decoder initialization attempt.
-type InitResult = Result<SymphoniaDecoder, (ffi::SymphoniaInitStatus, String)>;
+type InitResult = Result<SymphoniaDecoder, SymphoniaInitError>;
 
 /// Helper to convert our internal `InitResult` type to the FFI type.
 impl From<InitResult> for ffi::SymphoniaInitResult {
@@ -574,11 +634,14 @@ impl From<InitResult> for ffi::SymphoniaInitResult {
                 decoder: Box::new(decoder),
                 error_str: String::new(),
             },
-            Err((status, error_str)) => ffi::SymphoniaInitResult {
-                status,
-                decoder: Box::new(SymphoniaDecoder { decoder_impl: None }),
-                error_str,
-            },
+            Err(err) => {
+                let (status, error_str) = err.into();
+                ffi::SymphoniaInitResult {
+                    status,
+                    decoder: Box::new(SymphoniaDecoder { decoder_impl: None }),
+                    error_str,
+                }
+            }
         }
     }
 }
@@ -589,12 +652,12 @@ impl From<InitResult> for ffi::SymphoniaInitResult {
 /// type that can get translated to the FFI boundary type using its `From`
 /// trait.
 fn init_symphonia_decoder_impl(config: &ffi::SymphoniaDecoderConfig) -> InitResult {
-    let codec_params = CodecParameters::try_from(config)
-        .map_err(|e| (ffi::SymphoniaInitStatus::InvalidConfig, e))?;
+    let codec_params = CodecParameters::try_from(config)?;
 
-    let decoder = symphonia::default::get_codecs()
-        .make(&codec_params, &Default::default())
-        .map_err(|e| (ffi::SymphoniaInitStatus::DecoderError, e.to_string()))?;
+    let decoder =
+        symphonia::default::get_codecs().make(&codec_params, &Default::default()).map_err(|e| {
+            SymphoniaInitError::SymphoniaError(to_symphonia_init_status(&e), e.to_string())
+        })?;
 
     Ok(SymphoniaDecoder {
         decoder_impl: Some(DecoderImpl {
