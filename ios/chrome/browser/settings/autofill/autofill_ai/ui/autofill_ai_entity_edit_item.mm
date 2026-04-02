@@ -7,5 +7,19 @@
 @implementation AutofillAIEntityEditItem
 
 @synthesize attributeType = _attributeType;
+@synthesize hasValidValueStatus = _hasValidValueStatus;
+
+- (instancetype)initWithType:(NSInteger)type {
+  self = [super initWithType:type];
+  if (self) {
+    _hasValidValueStatus = YES;
+  }
+  return self;
+}
+
+- (void)setHasValidValueStatus:(BOOL)hasValidValueStatus {
+  _hasValidValueStatus = hasValidValueStatus;
+  [self setHasValidText:hasValidValueStatus];
+}
 
 @end

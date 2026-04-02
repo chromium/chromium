@@ -63,6 +63,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   countryItem.detailText = value;
   countryItem.attributeType = attributeType.name();
   countryItem.selectionStyle = UITableViewCellSelectionStyleNone;
+  countryItem.hasValidValueStatus = YES;
   return countryItem;
 }
 
@@ -100,6 +101,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.selectionStyle = UITableViewCellSelectionStyleNone;
   item.customTextfieldAccessibilityIdentifier =
       base::SysUTF8ToNSString(attributeType.name_as_string());
+  item.hasValidValueStatus = YES;
   return item;
 }
 

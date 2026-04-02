@@ -53,4 +53,12 @@
   [self.delegate didChangeDate:sender.date forItem:self];
 }
 
+- (BOOL)hasValidValueStatus {
+  return YES;
+}
+
+- (void)setHasValidValueStatus:(BOOL)hasValidValueStatus {
+  // Do nothing. Because date field uses UIDatePicker, it is always valid.
+}
+
 @end

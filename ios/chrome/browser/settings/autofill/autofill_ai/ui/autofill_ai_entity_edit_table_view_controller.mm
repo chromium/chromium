@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -29,6 +30,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFooter = kItemTypeEnumZero,
 };
 }  // namespace
+
+@interface AutofillAIEntityEditTableViewController () <
+    TableViewTextEditItemDelegate>
+@end
 
 @implementation AutofillAIEntityEditTableViewController {
   // Items to be displayed.
@@ -82,13 +87,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [model addItem:item toSectionWithIdentifier:SectionIdentifierAttributes];
 
     if ([item isKindOfClass:[AutofillAIEntityEditItem class]]) {
-      AutofillAIEntityEditItem* editItem = (AutofillAIEntityEditItem*)item;
+      AutofillAIEntityEditItem* editItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(item);
       editItem.textFieldEnabled = self.tableView.editing;
       editItem.hideIcon = !self.tableView.editing;
       editItem.textFieldDelegate = self;
+      editItem.delegate = self;
     } else if ([item isKindOfClass:[AutofillAIEntityCountryItem class]]) {
       AutofillAIEntityCountryItem* countryItem =
-          (AutofillAIEntityCountryItem*)item;
+          base::apple::ObjCCastStrict<AutofillAIEntityCountryItem>(item);
       if (self.tableView.editing) {
         countryItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         countryItem.selectionStyle = UITableViewCellSelectionStyleDefault;
@@ -98,7 +105,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       }
     } else if ([item isKindOfClass:[AutofillAIEntityEditDateItem class]]) {
       AutofillAIEntityEditDateItem* dateItem =
-          (AutofillAIEntityEditDateItem*)item;
+          base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
       dateItem.editingEnabled = self.tableView.editing;
       dateItem.delegate = self;
     }
@@ -261,6 +268,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)didTapEditDone {
+  if (![self validateFields]) {
+    return;
+  }
   [self.mutator saveEntityInstance];
   [self setEditing:NO animated:YES];
 }
@@ -272,6 +282,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   BOOL wasEditing = self.tableView.editing;
+  if (wasEditing && ![self validateFields]) {
+    return;
+  }
+
   [super editButtonPressed];
 
   if (wasEditing && !self.tableView.editing) {
@@ -281,6 +295,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)didTapSaveNewEntity {
   CHECK(self.mode == AutofillAIEntityEditMode::kCreate);
+  if (![self validateFields]) {
+    return;
+  }
   [self.mutator saveEntityInstance];
 }
 
@@ -348,6 +365,71 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:cellPath];
   return [item isKindOfClass:[AutofillAIEntityEditItem class]];
+}
+
+#pragma mark - TableViewTextEditItemDelegate
+
+- (void)tableViewItemDidBeginEditing:
+    (TableViewTextEditItem*)tableViewTextEditItem {
+  if ([tableViewTextEditItem isKindOfClass:[AutofillAIEntityEditItem class]]) {
+    AutofillAIEntityEditItem* editItem =
+        base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(
+            tableViewTextEditItem);
+    if (!editItem.hasValidValueStatus) {
+      editItem.hasValidValueStatus = YES;
+      [self reconfigureCellsForItems:@[ editItem ]];
+    }
+  }
+}
+
+- (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewTextEditItem {
+  // We don't have to monitor every keystroke. When the user finishes editing,
+  // switches to another field, or hits the Done button or Save button, that
+  // will trigger the validation.
+}
+
+- (void)tableViewItemDidEndEditing:
+    (TableViewTextEditItem*)tableViewTextEditItem {
+  if ([tableViewTextEditItem isKindOfClass:[AutofillAIEntityEditItem class]]) {
+    AutofillAIEntityEditItem* editItem =
+        base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(
+            tableViewTextEditItem);
+    BOOL isEmpty = editItem.textFieldValue.length == 0;
+    BOOL isRequired = [self.mutator isFieldRequired:editItem.attributeType];
+    BOOL isValid = !(isRequired && isEmpty);
+    if (editItem.hasValidValueStatus != isValid) {
+      editItem.hasValidValueStatus = isValid;
+      [self reconfigureCellsForItems:@[ editItem ]];
+    }
+  }
+}
+
+#pragma mark - Private
+
+- (BOOL)validateFields {
+  BOOL isValid = YES;
+  NSMutableArray<TableViewItem*>* itemsToReconfigure =
+      [[NSMutableArray alloc] init];
+  for (TableViewItem* item in _editItems) {
+    if ([item isKindOfClass:[AutofillAIEntityEditItem class]]) {
+      AutofillAIEntityEditItem* editItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(item);
+      BOOL isEmpty = editItem.textFieldValue.length == 0;
+      BOOL isRequired = [self.mutator isFieldRequired:editItem.attributeType];
+      BOOL itemIsValid = !(isRequired && isEmpty);
+      if (editItem.hasValidValueStatus != itemIsValid) {
+        editItem.hasValidValueStatus = itemIsValid;
+        [itemsToReconfigure addObject:editItem];
+      }
+      if (!itemIsValid) {
+        isValid = NO;
+      }
+    }
+  }
+  if (itemsToReconfigure.count > 0) {
+    [self reconfigureCellsForItems:itemsToReconfigure];
+  }
+  return isValid;
 }
 
 @end

@@ -11,6 +11,7 @@
 @implementation AutofillAIEntityCountryItem
 
 @synthesize attributeType = _attributeType;
+@synthesize hasValidValueStatus = _hasValidValueStatus;
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];

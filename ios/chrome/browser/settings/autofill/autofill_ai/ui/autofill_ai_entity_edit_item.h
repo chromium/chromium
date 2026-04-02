@@ -15,9 +15,6 @@
 @interface AutofillAIEntityEditItem
     : TableViewTextEditItem <AutofillAIEntityFieldItem>
 
-// The date value of the attribute, if applicable.
-@property(nonatomic, strong) NSDate* dateValue;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_UI_AUTOFILL_AI_ENTITY_EDIT_ITEM_H_

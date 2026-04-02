@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+
 @class AutofillAIEntityEditDateItem;
 
 // Mutator for Autofill AI entities.
@@ -17,6 +19,9 @@
 
 // Notifies the mutator that the date for `item` has changed to `date`.
 - (void)didChangeDate:(NSDate*)date forItem:(AutofillAIEntityEditDateItem*)item;
+
+// Returns YES if `attributeTypeName` is a required field.
+- (BOOL)isFieldRequired:(autofill::AttributeTypeName)attributeTypeName;
 
 @end
 

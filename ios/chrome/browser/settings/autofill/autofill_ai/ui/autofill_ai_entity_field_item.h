@@ -15,6 +15,9 @@
 // The type of the attribute being edited.
 @property(nonatomic, assign) autofill::AttributeTypeName attributeType;
 
+// Whether the value is valid. This value is externally decided and set.
+@property(nonatomic, assign) BOOL hasValidValueStatus;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_UI_AUTOFILL_AI_ENTITY_FIELD_ITEM_H_

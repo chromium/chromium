@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
 
+#import <algorithm>
+
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -42,6 +44,15 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   dateFormatter.locale =
       [NSLocale localeWithLocaleIdentifier:base::SysUTF8ToNSString(locale)];
   return dateFormatter;
+}
+
+// Returns true if `attribute_type` is found in `required_fields`.
+bool IsFieldRequired(const EntityInstance& entity_instance,
+                     AttributeType attribute_type) {
+  return std::ranges::any_of(entity_instance.type().required_fields(),
+                             [&](const auto& required_set) {
+                               return required_set.contains(attribute_type);
+                             });
 }
 
 }  // namespace
@@ -223,6 +234,11 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
               forItem:(AutofillAIEntityEditDateItem*)item {
   item.dateValue = date;
   item.detailText = [_dateFormatter stringFromDate:date];
+}
+
+- (BOOL)isFieldRequired:(autofill::AttributeTypeName)attributeTypeName {
+  return IsFieldRequired(*_entityInstance,
+                         autofill::AttributeType(attributeTypeName));
 }
 
 #pragma mark - Public
