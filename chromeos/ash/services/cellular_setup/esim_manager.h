@@ -136,13 +136,17 @@ class ESimManager : public mojom::ESimManager,
   mojo::RemoteSet<mojom::ESimManagerObserver> observers_;
   mojo::ReceiverSet<mojom::ESimManager> receivers_;
 
-  base::ScopedObservation<HermesManagerClient, HermesManagerClient::Observer>
-      hermes_manager_client_observation_{this};
-  base::ScopedObservation<HermesEuiccClient, HermesEuiccClient::Observer>
+  // TODO(crbug.com/498493551): remove when the ESimManager is no longer
+  // outliving the HermesManagerClient, HermesEuiccClient and
+  // CellularESimProfileHandler it observes.
+  base::ScopedObservation<HermesManagerClient, HermesManagerClient::Observer>::
+      LeakedDanglingUntriaged hermes_manager_client_observation_{this};
+  base::ScopedObservation<HermesEuiccClient,
+                          HermesEuiccClient::Observer>::LeakedDanglingUntriaged
       hermes_euicc_client_observation_{this};
   base::ScopedObservation<CellularESimProfileHandler,
-                          CellularESimProfileHandler::Observer>
-      cellular_esim_profile_handler_observation_{this};
+                          CellularESimProfileHandler::Observer>::
+      LeakedDanglingUntriaged cellular_esim_profile_handler_observation_{this};
 
   base::WeakPtrFactory<ESimManager> weak_ptr_factory_{this};
 };
