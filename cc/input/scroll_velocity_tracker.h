@@ -26,10 +26,8 @@ class CC_EXPORT ScrollVelocityTracker {
   //
   // NOTE:
   //  - If there are no samples, the velocity is zero.
-  //  - If there is only one sample, the velocity is zero in the directions
-  //    where the sample scroll delta is zero, positive max-float in the
-  //    directions where the sample scroll delta is positive and negative
-  //    max-float in the directions where the sample scroll delta is negative.
+  //  - If there is only one sample, the velocity is computed by dividing the
+  //    scroll delta by the window delta.
   gfx::Vector2dF CurrentVelocity() const;
 
   // Adds a scroll delta to the set of samples. All previously added samples

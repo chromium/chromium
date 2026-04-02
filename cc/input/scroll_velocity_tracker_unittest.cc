@@ -15,11 +15,9 @@ namespace cc {
 
 namespace {
 
-constexpr float kMaxFloat = std::numeric_limits<float>::max();
-
 class ScrollVelocityTrackerTest : public testing::Test {
  public:
-  ScrollVelocityTrackerTest() : velocity_tracker_(base::Milliseconds(10)) {}
+  ScrollVelocityTrackerTest() : velocity_tracker_(kWindowDelta) {}
 
  protected:
   void RecordSample(base::TimeDelta t, const gfx::Vector2dF& scroll_delta) {
@@ -35,6 +33,7 @@ class ScrollVelocityTrackerTest : public testing::Test {
  private:
   static constexpr base::TimeTicks kTestStartTime =
       base::TimeTicks() + base::Seconds(1);
+  static constexpr base::TimeDelta kWindowDelta = base::Milliseconds(10);
   ScrollVelocityTracker velocity_tracker_;
 };
 
@@ -43,16 +42,10 @@ TEST_F(ScrollVelocityTrackerTest, VelocityIsZeroWhenNoSamples) {
 }
 
 TEST_F(ScrollVelocityTrackerTest, VelocityForSingleSample) {
-  constexpr std::array<std::pair<float, float>, 10> delta_to_velocity{
-      {{0.f, 0.f}, {10.f, kMaxFloat}, {-10.f, -kMaxFloat}}};
-
-  for (const auto& [delta_x, velocity_x] : delta_to_velocity) {
-    for (const auto& [delta_y, velocity_y] : delta_to_velocity) {
-      ResetSamples();
-      RecordSample(base::Milliseconds(0), gfx::Vector2dF(delta_x, delta_y));
-      EXPECT_EQ(CurrentVelocity(), gfx::Vector2dF(velocity_x, velocity_y));
-    }
-  }
+  // When there is only one sample, velocity is computed based on the time
+  // window.
+  RecordSample(base::Milliseconds(0), gfx::Vector2dF(10.f, 20.f));
+  EXPECT_EQ(CurrentVelocity(), gfx::Vector2dF(1.f, 2.f));
 }
 
 TEST_F(ScrollVelocityTrackerTest, OldSamplesDiscarded) {
@@ -76,7 +69,7 @@ TEST_F(ScrollVelocityTrackerTest, OldSamplesDiscarded) {
 TEST_F(ScrollVelocityTrackerTest, SamplesWithSameTimestampAreCoalesced) {
   RecordSample(base::Milliseconds(2), gfx::Vector2dF(10.f, 0.f));
   RecordSample(base::Milliseconds(2), gfx::Vector2dF(20.f, 0.f));
-  EXPECT_EQ(CurrentVelocity(), gfx::Vector2dF(kMaxFloat, 0.f));
+  EXPECT_EQ(CurrentVelocity(), gfx::Vector2dF(3.f, 0.f));
 
   RecordSample(base::Milliseconds(4), gfx::Vector2dF(20.f, 0.f));
   EXPECT_EQ(CurrentVelocity(), gfx::Vector2dF(25.f, 0.f));

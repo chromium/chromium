@@ -11,17 +11,6 @@
 
 namespace cc {
 
-namespace {
-float ZeroOrSignedMaxFloat(float value) {
-  if (value == 0.f) {
-    return 0.f;
-  }
-
-  return value > 0.f ? std::numeric_limits<float>::max()
-                     : -std::numeric_limits<float>::max();
-}
-}  // namespace
-
 ScrollVelocityTracker::ScrollVelocityTracker(base::TimeDelta window_delta)
     : window_delta_(window_delta) {}
 
@@ -32,26 +21,24 @@ gfx::Vector2dF ScrollVelocityTracker::CurrentVelocity() const {
     return gfx::Vector2dF();
   }
 
-  if (samples_.size() == 1) {
-    const auto& scroll_delta = samples_.front().scroll_delta;
+  // Find the smallest duration encompassing all samples. If there is only one
+  // sample, use the window delta as an approximation.
+  float duration_ms = window_delta_.InMillisecondsF();
+  if (samples_.size() > 1) {
+    const auto& oldest_sample = samples_.front();
+    const auto& latest_sample = samples_.back();
 
-    return gfx::Vector2dF(ZeroOrSignedMaxFloat(scroll_delta.x()),
-                          ZeroOrSignedMaxFloat(scroll_delta.y()));
+    duration_ms =
+        (latest_sample.timestamp - oldest_sample.timestamp).InMillisecondsF();
   }
-
-  const auto& oldest_sample = samples_.front();
-  const auto& latest_sample = samples_.back();
-
-  float duration_units =
-      (latest_sample.timestamp - oldest_sample.timestamp).InMillisecondsF();
-  CHECK_GT(duration_units, 0.f);
+  CHECK_GT(duration_ms, 0.f);
 
   gfx::Vector2dF total_delta;
   for (const auto& samples : samples_) {
     total_delta += samples.scroll_delta;
   }
 
-  total_delta.InvScale(duration_units);
+  total_delta.InvScale(duration_ms);
   return total_delta;
 }
 
