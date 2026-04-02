@@ -1138,7 +1138,8 @@ class ExecutionEngineOriginGatingParamBrowserTest
           /*prompt_user_for_sensitive_navigations_enabled=*/bool,
           /*confirm_navigation_to_new_origins_enabled=*/bool,
           /*prompt_user_for_navigation_to_new_origins_enabled=*/bool,
-          /*allow_implicit_tool_origin_grants=*/bool>> {
+          /*allow_implicit_tool_origin_grants=*/bool,
+          /*confirm_navigation_to_new_origins_dark_launch*/ bool>> {
  public:
   ExecutionEngineOriginGatingParamBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -1158,6 +1159,9 @@ class ExecutionEngineOriginGatingParamBrowserTest
                       : "false"},
                  {"allow_implicit_tool_origin_grants",
                   allow_implicit_tool_origin_grants() ? "true" : "false"},
+                 {"confirm_navigation_to_new_origins_dark_launch",
+                  confirm_navigation_to_new_origins_dark_launch() ? "true"
+                                                                  : "false"},
              }}},
         },
         /*disabled_features=*/{});
@@ -1174,6 +1178,9 @@ class ExecutionEngineOriginGatingParamBrowserTest
     return std::get<2>(GetParam());
   }
   bool allow_implicit_tool_origin_grants() { return std::get<3>(GetParam()); }
+  bool confirm_navigation_to_new_origins_dark_launch() {
+    return std::get<4>(GetParam());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1208,13 +1215,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
-                       NavigationConfirmationDisabled) {
-  if (confirm_navigation_to_new_origins_enabled()) {
-    GTEST_SKIP() << "confirm_navigation_to_new_origins enabled already tested "
-                    "in ExecutionEngineOriginGatingBrowserTest.";
-    ;
+                       NavigationConfirmation) {
+  if (prompt_user_for_navigation_to_new_origins_enabled()) {
+    GTEST_SKIP() << "This feature param is tested in "
+                    "ExecutionEngineOriginGatingParamBrowserTest."
+                    "PromptUserForNewOrigin.";
   }
-
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL second_url =
@@ -1234,7 +1240,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", second_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kOk);
+  if (confirm_navigation_to_new_origins_enabled() &&
+      !confirm_navigation_to_new_origins_dark_launch()) {
+    ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  } else {
+    ClickTarget("#link", mojom::ActionResultCode::kOk);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
@@ -1401,14 +1412,16 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
 // (prompt_user_for_sensitive_navigations,
 //  confirm_navigation_to_new_origins,
 //  prompt_user_for_navigation_to_new_origins,
-//  allow_implicit_tool_origin_grants).
+//  allow_implicit_tool_origin_grants,
+//  confirm_navigation_to_new_origins_dark_launch).
 INSTANTIATE_TEST_SUITE_P(
     All,
     ExecutionEngineOriginGatingParamBrowserTest,
-    testing::Values(std::make_tuple(false, true, false, true),
-                    std::make_tuple(true, false, false, true),
-                    std::make_tuple(true, true, true, true),
-                    std::make_tuple(true, true, false, false)),
+    testing::Values(std::make_tuple(false, true, false, true, false),
+                    std::make_tuple(true, false, false, true, false),
+                    std::make_tuple(true, true, true, true, false),
+                    std::make_tuple(true, true, false, false, false),
+                    std::make_tuple(true, true, false, true, true)),
     [](auto& info) {
       if (!std::get<0>(info.param)) {
         return "UserConfirmDisabled";
@@ -1421,6 +1434,9 @@ INSTANTIATE_TEST_SUITE_P(
       }
       if (!std::get<3>(info.param)) {
         return "ImplicitToolOriginGrantsDisabled";
+      }
+      if (std::get<4>(info.param)) {
+        return "NavigationConfirmDarkLaunch";
       }
       NOTREACHED();
     });
@@ -1611,7 +1627,8 @@ class ExecutionEngineGatingConfirmationMetricBrowserTest
   ExecutionEngineGatingConfirmationMetricBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {kGlicCrossOriginNavigationGating,
-         {{"confirm_navigation_to_new_origins", "true"}}}};
+         {{"confirm_navigation_to_new_origins", "true"},
+          {"confirm_navigation_to_new_origins_dark_launch", "true"}}}};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (recording_metrics_enabled()) {
@@ -1732,7 +1749,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", novel_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
 
   StopAllTasks();
   if (recording_metrics_enabled()) {

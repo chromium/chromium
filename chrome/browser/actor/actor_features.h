@@ -42,7 +42,12 @@ BASE_DECLARE_FEATURE_PARAM(bool, kGlicPromptUserForSensitiveNavigations);
 BASE_DECLARE_FEATURE_PARAM(bool, kGlicConfirmNavigationToNewOrigins);
 // Toggles displaying a user confirmation to confirm the navigation instead of
 // relying on the web client making a server call.
+// kGlicConfirmNavigationToNewOrigins must be enabled for this feature to work.
 BASE_DECLARE_FEATURE_PARAM(bool, kGlicPromptUserForNavigationToNewOrigins);
+// Toggles whether we are in "dark launch" mode where we ask the server for
+// validation but only log the response.
+// kGlicConfirmNavigationToNewOrigins must be enabled for this feature to work.
+BASE_DECLARE_FEATURE_PARAM(bool, kGlicConfirmNavigationToNewOriginsDarkLaunch);
 // Toggles whether novel origin gating is based on site (true) or origin
 // (false). Note that gating sensitive sites will still be origin based.
 BASE_DECLARE_FEATURE_PARAM(bool, kGlicNavigationGatingUseSiteNotOrigin);

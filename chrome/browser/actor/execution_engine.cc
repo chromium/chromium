@@ -537,11 +537,13 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
     ukm::builders::Actor_OriginGating builder(ukm_source_id);
     builder
         .SetServerConfirmationResult(static_cast<int64_t>(
-            response->result->get_permission_granted()
+            permission_granted
                 ? ExecutionEngine::ActorServerConfirmationResult::kAccepted
                 : ExecutionEngine::ActorServerConfirmationResult::kRejected))
         .SetEngineState(static_cast<int64_t>(state_));
     builder.Record(ukm::UkmRecorder::Get());
+    permission_granted = permission_granted ||
+                         kGlicConfirmNavigationToNewOriginsDarkLaunch.Get();
     if (permission_granted) {
       origin_checker_.AllowNavigationTo(destination,
                                         /*is_user_confirmed=*/false);

@@ -66,6 +66,11 @@ BASE_FEATURE_PARAM(bool,
                    "prompt_user_for_navigation_to_new_origins",
                    false);
 BASE_FEATURE_PARAM(bool,
+                   kGlicConfirmNavigationToNewOriginsDarkLaunch,
+                   &kGlicCrossOriginNavigationGating,
+                   "confirm_navigation_to_new_origins_dark_launch",
+                   false);
+BASE_FEATURE_PARAM(bool,
                    kGlicNavigationGatingUseSiteNotOrigin,
                    &kGlicCrossOriginNavigationGating,
                    "gate_on_site_not_origin",
