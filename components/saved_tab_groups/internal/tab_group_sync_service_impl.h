@@ -450,7 +450,16 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       shared_tab_groups_waiting_for_collaboration_;
 
   // Obsevers of the model.
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      TabGroupSyncService::Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
+#else
   base::ObserverList<TabGroupSyncService::Observer> observers_;
+#endif
 
   // Temporary storage for shared tab groups that were available at startup,
   // before applying local changes. This is retrieved by the
