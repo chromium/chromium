@@ -26,6 +26,7 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/google/core/common/google_util.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -3574,8 +3575,9 @@ const char kChromeAppStoreUrl[] =
     geminiTabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
     gemini::FloatyUpdateSource hideSource =
         gemini::FloatyUpdateSource::IneligibleSite;
-    if (geminiTabHelper->IsAimRelatedUrl(
-            self.activeWebState->GetVisibleURL())) {
+    const GURL& url = self.activeWebState->GetVisibleURL();
+    if (google_util::IsGoogleSearchUrl(url) &&
+        IsGeminiCopresenceSRPCheckEnabled()) {
       hideSource = gemini::FloatyUpdateSource::SearchRelatedPage;
     }
     geminiBrowserAgent->HideFloatyIfInvoked(animated, hideSource);

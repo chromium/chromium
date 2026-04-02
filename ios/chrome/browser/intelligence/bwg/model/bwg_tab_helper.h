@@ -84,9 +84,9 @@ class BwgTabHelper : public web::WebStateObserver,
   // Takes a fullscreen screenshot and sets the session to active.
   void PrepareBwgFreBackgrounding();
 
-  // Returns true if the URL is an Aim-related URL (e.g. Google search, home
-  // page, or zero state URL).
-  bool IsAimRelatedUrl(const GURL& url);
+  // Returns true if the URL is eligible for Gemini (e.g. HTTP/HTTPS and not
+  // blocked for AIM/Search-related reasons).
+  bool IsUrlEligibleForGemini(const GURL& url);
 
   // Gets the client and server IDs for the BWG session for the associated
   // WebState. server ID is optional because it may not be found or is expired.
