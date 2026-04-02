@@ -88,6 +88,15 @@ void MapActionTarget(const base::DictValue& dict,
                      optimization_guide::proto::ActionTarget* target) {
   if (const base::DictValue* coordinate = dict.FindDict("coordinate")) {
     MapCoordinate(*coordinate, target->mutable_coordinate());
+    return;
+  }
+  if (std::optional<int> content_node_id = dict.FindInt("content_node_id")) {
+    target->set_content_node_id(*content_node_id);
+  }
+  if (const std::string* document_identifier =
+          dict.FindString("document_identifier")) {
+    target->mutable_document_identifier()->set_serialized_token(
+        *document_identifier);
   }
 }
 

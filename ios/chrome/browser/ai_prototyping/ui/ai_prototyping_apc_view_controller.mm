@@ -123,7 +123,8 @@
   _submitButton.backgroundColor = [UIColor colorNamed:kDisabledTintColor];
   _responseContainer.text = @"";
   [self.mutator
-      executeAPCExtractionWithRichExtraction:_richExtractionSwitch.isOn];
+      executeAPCExtractionWithRichExtraction:_richExtractionSwitch.isOn
+                            includeDebugData:NO];
 }
 
 - (void)copyButtonPressed:(UIButton*)button {

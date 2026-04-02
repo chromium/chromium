@@ -15,29 +15,40 @@ NSString* const kToolNavigate = @"Navigate";
 NSString* const kToolClick = @"Click";
 NSString* const kToolHistoryBack = @"History Back";
 NSString* const kToolHistoryForward = @"History Forward";
+
+NSSet* const kWebActuationTools = [NSSet setWithObjects:kToolClick, nil];
 }  // namespace
 
 @interface AIPrototypingActorViewController () <UITextViewDelegate> {
   UIButton* _toolPickerButton;
   UIButton* _submitButton;
   UIButton* _clearButton;
+  UIButton* _updateAPCDebugData;
   UITextView* _responseContainer;
+  UITextView* _framesAndContentNodesContainer;
   UIButton* _tabIdButton;
   UITextView* _jsonInputView;
   UIView* _tabIdContainer;
+  UIButton* _frameIdButton;
+  UIView* _frameIdContainer;
   UIView* _jsonContainer;
 
   NSString* _selectedTabId;
   NSString* _activeTabId;
+  NSString* _selectedFrameId;
 
   // Completion handler for deferred menu element.
   void (^_menuCompletion)(NSArray<UIMenuElement*>*);
+  void (^_frameMenuCompletion)(NSArray<UIMenuElement*>*);
 
-  // Configuration map for tools.
+  UILabel* _framesAndContentNodesLabel;
+
+  // Configuration map for tools. Note that tool templates specify coordinates
+  // by default for targeting (where applicable).
   // Keys: Tool Name (NSString)
   // Values: NSDictionary with keys:
   //   - @"ui": NSArray of UIViews to show
-  //   - @"json": NSString template for JSON
+  //   - @"template": NSDictionary template for JSON
   NSDictionary<NSString*, NSDictionary*>* _toolConfigs;
 }
 
@@ -93,8 +104,12 @@ NSString* const kToolHistoryForward = @"History Forward";
 
   UILabel* tabLabel = [[UILabel alloc] init];
   tabLabel.text = @"Tab:";
+  tabLabel.textColor = primaryColor;
   [tabLabel setContentHuggingPriority:UILayoutPriorityRequired
                               forAxis:UILayoutConstraintAxisHorizontal];
+  [tabLabel
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   UIView* borderedTabContainer = [[UIView alloc] init];
   borderedTabContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -140,17 +155,97 @@ NSString* const kToolHistoryForward = @"History Forward";
         constraintEqualToAnchor:_tabIdContainer.bottomAnchor],
   ]];
 
+  _frameIdButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [_frameIdButton setTitle:@"Select Frame" forState:UIControlStateNormal];
+  _frameIdButton.showsMenuAsPrimaryAction = YES;
+
+  __weak __typeof(self) weakSelf = self;
+  UIDeferredMenuElement* deferredFrameElement =
+      [UIDeferredMenuElement elementWithUncachedProvider:^(
+                                 void (^completion)(NSArray<UIMenuElement*>*)) {
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        strongSelf->_frameMenuCompletion = completion;
+        [strongSelf.mutator executeAPCExtractionWithRichExtraction:YES
+                                                  includeDebugData:YES];
+      }];
+  _frameIdButton.menu = [UIMenu menuWithTitle:@"Select Frame"
+                                     children:@[ deferredFrameElement ]];
+
+  UILabel* frameLabel = [[UILabel alloc] init];
+  frameLabel.text = @"Frame";
+  frameLabel.textColor = primaryColor;
+  [frameLabel setContentHuggingPriority:UILayoutPriorityRequired
+                                forAxis:UILayoutConstraintAxisHorizontal];
+  [frameLabel
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+  UIView* borderedFrameContainer = [[UIView alloc] init];
+  borderedFrameContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  borderedFrameContainer.layer.borderColor = [[UIColor blackColor] CGColor];
+  borderedFrameContainer.layer.borderWidth = kBorderWidth;
+  borderedFrameContainer.layer.cornerRadius = kCornerRadius;
+  [borderedFrameContainer addSubview:_frameIdButton];
+  _frameIdButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_frameIdButton.leadingAnchor
+        constraintEqualToAnchor:borderedFrameContainer.leadingAnchor
+                       constant:kHorizontalInset],
+    [_frameIdButton.trailingAnchor
+        constraintEqualToAnchor:borderedFrameContainer.trailingAnchor
+                       constant:-kHorizontalInset],
+    [_frameIdButton.topAnchor
+        constraintEqualToAnchor:borderedFrameContainer.topAnchor
+                       constant:kVerticalInset],
+    [_frameIdButton.bottomAnchor
+        constraintEqualToAnchor:borderedFrameContainer.bottomAnchor
+                       constant:-kVerticalInset],
+  ]];
+
+  UIStackView* frameStack = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ frameLabel, borderedFrameContainer ]];
+  frameStack.translatesAutoresizingMaskIntoConstraints = NO;
+  frameStack.axis = UILayoutConstraintAxisHorizontal;
+  frameStack.spacing = kButtonStackViewSpacing;
+
+  _frameIdContainer = [[UIView alloc] init];
+  _frameIdContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [_frameIdContainer addSubview:frameStack];
+  _frameIdContainer.hidden = YES;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [frameStack.leadingAnchor
+        constraintEqualToAnchor:_frameIdContainer.leadingAnchor],
+    [frameStack.trailingAnchor
+        constraintEqualToAnchor:_frameIdContainer.trailingAnchor],
+    [frameStack.topAnchor constraintEqualToAnchor:_frameIdContainer.topAnchor],
+    [frameStack.bottomAnchor
+        constraintEqualToAnchor:_frameIdContainer.bottomAnchor],
+  ]];
+
   _jsonInputView = [[UITextView alloc] init];
   _jsonInputView.translatesAutoresizingMaskIntoConstraints = NO;
   _jsonInputView.font = [UIFont fontWithName:@"Menlo" size:12];
   _jsonInputView.layer.borderColor = [primaryColor CGColor];
   _jsonInputView.layer.borderWidth = 1.0;
   _jsonInputView.layer.cornerRadius = kCornerRadius;
+  _jsonInputView.autocapitalizationType = UITextAutocapitalizationTypeNone;
+  _jsonInputView.smartQuotesType = UITextSmartQuotesTypeNo;
   _jsonInputView.text = @"";
 
-  _jsonContainer =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ _jsonInputView ]];
-  ((UIStackView*)_jsonContainer).axis = UILayoutConstraintAxisHorizontal;
+  UILabel* jsonLabel = [[UILabel alloc] init];
+  jsonLabel.text = @"Editable JSON";
+  jsonLabel.textColor = primaryColor;
+  [jsonLabel setContentHuggingPriority:UILayoutPriorityRequired
+                               forAxis:UILayoutConstraintAxisVertical];
+
+  _jsonContainer = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ jsonLabel, _jsonInputView ]];
+  ((UIStackView*)_jsonContainer).axis = UILayoutConstraintAxisVertical;
   ((UIStackView*)_jsonContainer).spacing = kButtonStackViewSpacing;
   _jsonContainer.hidden = YES;
 
@@ -165,8 +260,12 @@ NSString* const kToolHistoryForward = @"History Forward";
 
   UILabel* toolLabel = [[UILabel alloc] init];
   toolLabel.text = @"Tool:";
+  toolLabel.textColor = primaryColor;
   [toolLabel setContentHuggingPriority:UILayoutPriorityRequired
                                forAxis:UILayoutConstraintAxisHorizontal];
+  [toolLabel
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   UIStackView* toolStack = [[UIStackView alloc]
       initWithArrangedSubviews:@[ toolLabel, _toolPickerButton ]];
@@ -189,8 +288,17 @@ NSString* const kToolHistoryForward = @"History Forward";
                    action:@selector(onClearButtonPressed:)
          forControlEvents:UIControlEventTouchUpInside];
 
-  UIStackView* buttonsStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _submitButton, _clearButton ]];
+  _updateAPCDebugData = [UIButton buttonWithType:UIButtonTypeSystem];
+  [_updateAPCDebugData setTitle:@"Update APC" forState:UIControlStateNormal];
+  [_updateAPCDebugData setTitleColor:primaryColor
+                            forState:UIControlStateNormal];
+  [_updateAPCDebugData addTarget:self
+                          action:@selector(onUpdateApcButtonPressed:)
+                forControlEvents:UIControlEventTouchUpInside];
+
+  UIStackView* buttonsStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _submitButton, _clearButton, _updateAPCDebugData
+  ]];
   buttonsStack.axis = UILayoutConstraintAxisHorizontal;
   buttonsStack.spacing = kButtonStackViewSpacing;
   buttonsStack.distribution = UIStackViewDistributionFillEqually;
@@ -205,72 +313,99 @@ NSString* const kToolHistoryForward = @"History Forward";
   _responseContainer.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
   _responseContainer.text = @"Result will appear here...";
 
+  _framesAndContentNodesContainer =
+      [UITextView textViewUsingTextLayoutManager:NO];
+  _framesAndContentNodesContainer.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  _framesAndContentNodesContainer.editable = NO;
+  _framesAndContentNodesContainer.font = [UIFont fontWithName:@"Menlo" size:10];
+  _framesAndContentNodesContainer.layer.cornerRadius = kCornerRadius;
+  _framesAndContentNodesContainer.layer.masksToBounds = YES;
+  _framesAndContentNodesContainer.layer.borderColor = [primaryColor CGColor];
+  _framesAndContentNodesContainer.layer.borderWidth = kBorderWidth;
+  _framesAndContentNodesContainer.text =
+      @"A debug string from APC data will appear here...";
+
+  _framesAndContentNodesLabel = [[UILabel alloc] init];
+  _framesAndContentNodesLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _framesAndContentNodesLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  _framesAndContentNodesLabel.text = @"Frames and Content Nodes:";
+  _framesAndContentNodesLabel.textColor = primaryColor;
+
   UIStackView* mainStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    label, toolStack, _tabIdContainer, _jsonContainer, buttonsStack,
-    _responseContainer
+    label, toolStack, _tabIdContainer, _frameIdContainer, _jsonContainer,
+    buttonsStack, _responseContainer, _framesAndContentNodesLabel,
+    _framesAndContentNodesContainer
   ]];
   mainStack.translatesAutoresizingMaskIntoConstraints = NO;
   mainStack.axis = UILayoutConstraintAxisVertical;
   mainStack.spacing = kMainStackViewSpacing;
-  [self.view addSubview:mainStack];
+
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:scrollView];
+  [scrollView addSubview:mainStack];
 
   [NSLayoutConstraint activateConstraints:@[
-    [mainStack.topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                        constant:kMainStackTopInset],
-    [mainStack.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                            constant:kHorizontalInset],
-    [mainStack.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                             constant:-kHorizontalInset],
+    [scrollView.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+    [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [scrollView.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [scrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+
+    [mainStack.topAnchor
+        constraintEqualToAnchor:scrollView.contentLayoutGuide.topAnchor
+                       constant:kMainStackTopInset],
+    [mainStack.leadingAnchor
+        constraintEqualToAnchor:scrollView.contentLayoutGuide.leadingAnchor
+                       constant:kHorizontalInset],
+    [mainStack.trailingAnchor
+        constraintEqualToAnchor:scrollView.contentLayoutGuide.trailingAnchor
+                       constant:-kHorizontalInset],
+    [mainStack.bottomAnchor
+        constraintEqualToAnchor:scrollView.contentLayoutGuide.bottomAnchor
+                       constant:-kMainStackTopInset],
+    [mainStack.widthAnchor
+        constraintEqualToAnchor:scrollView.frameLayoutGuide.widthAnchor
+                       constant:-2 * kHorizontalInset],
+
     [_jsonInputView.heightAnchor constraintEqualToConstant:150],
-    [_responseContainer.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:self.view.heightAnchor
-                                  multiplier:
-                                      kResponseContainerHeightMultiplier],
+    [_responseContainer.heightAnchor constraintEqualToConstant:100],
+    [_framesAndContentNodesContainer.heightAnchor
+        constraintEqualToConstant:200],
   ]];
 }
 
+// Sets up the configuration for each tool. Note that templates default to a
+// coordinate based approach.
 - (void)setupToolConfigs {
   _toolConfigs = @{
     kToolNavigate : @{
       @"ui" : @[ _tabIdContainer, _jsonContainer ],
-      @"json" : @("{\n"
-                  "  \"navigate\": {\n"
-                  "    \"tab_id\": %d,\n"
-                  "    \"url\": \"https://www.google.com\"\n"
-                  "  }\n"
-                  "}")
+      @"template" : @{
+        @"navigate" : @{@"tab_id" : @(0), @"url" : @"https://www.google.com"}
+      }
     },
     kToolClick : @{
-      @"ui" : @[ _tabIdContainer, _jsonContainer ],
-      @"json" : @("{\n"
-                  "  \"click\": {\n"
-                  "    \"tab_id\": %d,\n"
-                  "    \"target\": {\n"
-                  "      \"coordinate\": {\n"
-                  "        \"x\": 200,\n"
-                  "        \"y\": 200\n"
-                  "      }\n"
-                  "    },\n"
-                  "    \"click_type\": 1,\n"
-                  "    \"click_count\": 1\n"
-                  "  }\n"
-                  "}")
+      @"ui" : @[ _tabIdContainer, _frameIdContainer, _jsonContainer ],
+      @"template" : @{
+        @"click" : @{
+          @"tab_id" : @(0),
+          @"target" : @{@"coordinate" : @{@"x" : @(200), @"y" : @(200)}},
+          @"click_type" : @(1),
+          @"click_count" : @(1)
+        }
+      }
     },
     kToolHistoryBack : @{
       @"ui" : @[ _tabIdContainer, _jsonContainer ],
-      @"json" : @("{\n"
-                  "  \"back\": {\n"
-                  "    \"tab_id\": %d\n"
-                  "  }\n"
-                  "}")
+      @"template" : @{@"back" : @{@"tab_id" : @(0)}}
     },
     kToolHistoryForward : @{
       @"ui" : @[ _tabIdContainer, _jsonContainer ],
-      @"json" : @("{\n"
-                  "  \"forward\": {\n"
-                  "    \"tab_id\": %d\n"
-                  "  }\n"
-                  "}")
+      @"template" : @{@"forward" : @{@"tab_id" : @(0)}}
     }
   };
 
@@ -295,34 +430,109 @@ NSString* const kToolHistoryForward = @"History Forward";
                                    children:@[ deferredElement ]];
 }
 
-- (void)updateJsonTemplateForTool:(NSString*)toolName {
-  int tabId = [_selectedTabId intValue];
-  if (tabId == 0 && _activeTabId) {
-    tabId = [_activeTabId intValue];
+/**
+ * Updates the JSON template for the specified tool with the given params.
+ *
+ * This parses the existing JSON (or loads the template if empty) and updates it
+ * with the provided tab ID and frame ID. If frameId is unset, the `target` in
+ * the default is used. If frameId is set, a document-identifier based target is
+ * used.
+ *
+ * @param toolName The name of the tool (e.g. "Navigate", "Click").
+ * @param tabId The tab ID to set in the JSON (can be nil).
+ * @param frameId The frame ID to set in the JSON (can be nil).
+ */
+- (void)updateJsonInputForTool:(NSString*)toolName
+                     withTabId:(NSString*)tabId
+                       frameId:(NSString*)frameId {
+  NSDictionary* config = _toolConfigs[toolName];
+  if (!config) {
+    return;
   }
 
-  NSDictionary* config = _toolConfigs[toolName];
-  if (config) {
-    NSString* templateString = config[@"json"];
-    NSString* newText;
-    // Assuming the template has one %d placeholder for tab_id.
-    // If it doesn't, this won't crash but might not format as expected if
-    // placeholders differ. Simple safety check:
-    if ([templateString containsString:@"%d"]) {
-      newText = [NSString stringWithFormat:templateString, tabId];
-    } else {
-      newText = templateString;
+  NSString* toolKey = [toolName lowercaseString];
+  NSMutableDictionary* jsonDict = nil;
+
+  // 1. Get or create the JSON Object.
+  if (_jsonInputView.text.length == 0) {
+    NSData* data = [NSJSONSerialization dataWithJSONObject:config[@"template"]
+                                                   options:0
+                                                     error:nil];
+    jsonDict =
+        [NSJSONSerialization JSONObjectWithData:data
+                                        options:NSJSONReadingMutableContainers
+                                          error:nil];
+  } else {
+    NSError* error = nil;
+    NSData* data = [_jsonInputView.text dataUsingEncoding:NSUTF8StringEncoding];
+    jsonDict =
+        [NSJSONSerialization JSONObjectWithData:data
+                                        options:NSJSONReadingMutableContainers
+                                          error:&error];
+    if (!jsonDict) {
+      _responseContainer.text =
+          [NSString stringWithFormat:@"Failed to parse JSON: %@",
+                                     error.localizedDescription];
+      return;
     }
-    _jsonInputView.text = newText;
+    if (!jsonDict[toolKey]) {
+      _responseContainer.text = [NSString
+          stringWithFormat:@"JSON mismatch: missing key '%@'", toolKey];
+      return;
+    }
+  }
+
+  // 2. Update Tab ID.
+  if (tabId) {
+    jsonDict[toolKey][@"tab_id"] = @([tabId intValue]);
+  }
+
+  // 3. Update Target (Frame).
+  NSMutableDictionary* toolDict = jsonDict[toolKey];
+  if (toolDict && toolDict[@"target"]) {
+    if (frameId) {
+      toolDict[@"target"] =
+          @{@"document_identifier" : frameId, @"content_node_id" : @(1)};
+    } else if (toolDict[@"target"][@"document_identifier"]) {
+      // Revert to template default if frame deselected.
+      toolDict[@"target"] =
+          [config[@"template"][toolKey][@"target"] mutableCopy];
+    }
+  }
+
+  // 4. Write Back to UI.
+  NSData* output = [NSJSONSerialization
+      dataWithJSONObject:jsonDict
+                 options:NSJSONWritingPrettyPrinted |
+                         NSJSONWritingWithoutEscapingSlashes
+                   error:nil];
+  if (output) {
+    _jsonInputView.text = [[NSString alloc] initWithData:output
+                                                encoding:NSUTF8StringEncoding];
   }
 }
 
 - (void)selectTool:(NSString*)toolName {
   [_toolPickerButton setTitle:toolName forState:UIControlStateNormal];
-  [self updateJsonTemplateForTool:toolName];
+  _jsonInputView.text = @"";
+  NSString* effectiveTabId = _selectedTabId ?: _activeTabId;
+  [self updateJsonInputForTool:toolName
+                     withTabId:effectiveTabId
+                       frameId:_selectedFrameId];
 
   _tabIdContainer.hidden = YES;
+  _frameIdContainer.hidden = YES;
   _jsonContainer.hidden = YES;
+
+  BOOL isWebActuationTool = [kWebActuationTools containsObject:toolName];
+  _updateAPCDebugData.hidden = !isWebActuationTool;
+  _framesAndContentNodesContainer.hidden = !isWebActuationTool;
+  _framesAndContentNodesLabel.hidden = !isWebActuationTool;
+
+  if (isWebActuationTool) {
+    [self.mutator executeAPCExtractionWithRichExtraction:YES
+                                        includeDebugData:YES];
+  }
 
   NSDictionary* config = _toolConfigs[toolName];
   if (config) {
@@ -364,6 +574,12 @@ NSString* const kToolHistoryForward = @"History Forward";
   [self enableSubmitButtons];
 }
 
+- (void)onUpdateApcButtonPressed:(UIButton*)sender {
+  _framesAndContentNodesContainer.text = @"Refreshing page context...";
+  [self.mutator executeAPCExtractionWithRichExtraction:YES
+                                      includeDebugData:YES];
+}
+
 #pragma mark - AIPrototypingViewControllerProtocol
 
 - (void)updateTabList:(NSArray<NSDictionary*>*)tabs {
@@ -401,9 +617,13 @@ NSString* const kToolHistoryForward = @"History Forward";
                   strongSelf->_selectedTabId = isActive ? nil : tabID;
                   [strongSelf->_tabIdButton setTitle:displayTitle
                                             forState:UIControlStateNormal];
+                  NSString* effectiveTabId =
+                      strongSelf->_selectedTabId ?: strongSelf->_activeTabId;
                   [strongSelf
-                      updateJsonTemplateForTool:strongSelf->_toolPickerButton
-                                                    .titleLabel.text];
+                      updateJsonInputForTool:strongSelf->_toolPickerButton
+                                                 .titleLabel.text
+                                   withTabId:effectiveTabId
+                                     frameId:strongSelf->_selectedFrameId];
                 }];
     [actions addObject:action];
   }
@@ -416,7 +636,93 @@ NSString* const kToolHistoryForward = @"History Forward";
   if (!_selectedTabId) {
     [_tabIdButton setTitle:activeTabDisplayTitle forState:UIControlStateNormal];
   }
-  [self updateJsonTemplateForTool:_toolPickerButton.titleLabel.text];
+  NSString* effectiveTabId = _selectedTabId ?: _activeTabId;
+  [self updateJsonInputForTool:_toolPickerButton.titleLabel.text
+                     withTabId:effectiveTabId
+                       frameId:_selectedFrameId];
+}
+
+- (void)updateFrameList:(NSArray<NSDictionary*>*)frames {
+  NSMutableArray<UIAction*>* actions = [NSMutableArray array];
+  __weak __typeof(self) weakSelf = self;
+
+  // Add an option to clear the frame selection
+  UIAction* clearAction = [UIAction
+      actionWithTitle:@"None (Use Coordinate)"
+                image:nil
+           identifier:nil
+              handler:^(UIAction* menuAction) {
+                __typeof(self) strongSelf = weakSelf;
+                if (!strongSelf) {
+                  return;
+                }
+                strongSelf->_selectedFrameId = nil;
+                [strongSelf->_frameIdButton setTitle:@"Select Frame"
+                                            forState:UIControlStateNormal];
+                NSString* effectiveTabId =
+                    strongSelf->_selectedTabId ?: strongSelf->_activeTabId;
+                [strongSelf updateJsonInputForTool:strongSelf->_toolPickerButton
+                                                       .titleLabel.text
+                                         withTabId:effectiveTabId
+                                           frameId:nil];
+              }];
+  [actions addObject:clearAction];
+
+  for (NSDictionary* frame in frames) {
+    NSString* docId = frame[@"document_identifier"];
+    NSString* urlString = frame[@"url"];
+    BOOL isMainFrame = [frame[@"is_main_frame"] boolValue];
+    int depth = [frame[@"depth"] intValue];
+
+    NSURL* url = [NSURL URLWithString:urlString];
+    NSString* origin = url.host ? url.host : @"unknown origin";
+    NSString* displayId = docId.length > 8 ? [docId substringToIndex:8] : docId;
+
+    NSString* indent = [@"" stringByPaddingToLength:depth * 2
+                                         withString:@" "
+                                    startingAtIndex:0];
+
+    NSString* displayTitle;
+    if (isMainFrame) {
+      displayTitle =
+          [NSString stringWithFormat:@"Main: %@ (%@...)", origin, displayId];
+    } else {
+      displayTitle = [NSString
+          stringWithFormat:@"%@Iframe: %@ (%@...)", indent, origin, displayId];
+    }
+
+    UIAction* action = [UIAction
+        actionWithTitle:displayTitle
+                  image:nil
+             identifier:nil
+                handler:^(UIAction* menuAction) {
+                  __typeof(self) strongSelf = weakSelf;
+                  if (!strongSelf) {
+                    return;
+                  }
+                  strongSelf->_selectedFrameId = docId;
+                  [strongSelf->_frameIdButton setTitle:displayTitle
+                                              forState:UIControlStateNormal];
+                  NSString* effectiveTabId =
+                      strongSelf->_selectedTabId ?: strongSelf->_activeTabId;
+                  [strongSelf
+                      updateJsonInputForTool:strongSelf->_toolPickerButton
+                                                 .titleLabel.text
+                                   withTabId:effectiveTabId
+                                     frameId:docId];
+                }];
+    [actions addObject:action];
+  }
+
+  if (_frameMenuCompletion) {
+    _frameMenuCompletion(actions);
+    _frameMenuCompletion = nil;
+  }
+}
+
+- (void)updateFramesAndContentNodesDebugString:
+    (NSString*)framesAndContentNodes {
+  _framesAndContentNodesContainer.text = framesAndContentNodes;
 }
 
 - (void)updateResponseField:(NSString*)response {

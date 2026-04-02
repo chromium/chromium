@@ -19,6 +19,13 @@
 // Updates the list of tabs available for selection.
 - (void)updateTabList:(NSArray<NSDictionary*>*)tabs;
 
+// Updates the representation of the current tabs FrameData and ContentNodes, as
+// fetched from the AnnotatedPageContent.
+- (void)updateFramesAndContentNodesDebugString:(NSString*)debugString;
+
+// Updates the list of frames available for selection.
+- (void)updateFrameList:(NSArray<NSDictionary*>*)frames;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UI_AI_PROTOTYPING_ACTOR_VIEW_CONTROLLER_H_

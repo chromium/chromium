@@ -55,7 +55,8 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 - (void)listTabs;
 
 // Executes an APC extraction request.
-- (void)executeAPCExtractionWithRichExtraction:(BOOL)useRichExtraction;
+- (void)executeAPCExtractionWithRichExtraction:(BOOL)useRichExtraction
+                              includeDebugData:(BOOL)includeDebugData;
 
 @end
 

@@ -562,7 +562,7 @@
     return;
   }
   std::optional<base::Value> jsonVal = base::JSONReader::Read(
-      base::SysNSStringToUTF8(jsonString), base::JSON_PARSE_RFC);
+      base::SysNSStringToUTF8(jsonString), base::JSON_ALLOW_TRAILING_COMMAS);
 
   if (!jsonVal || !jsonVal->is_dict()) {
     [self.consumer updateQueryResult:@"Error: Invalid JSON."
@@ -625,11 +625,15 @@
 // `PageContextWrapper`. The resulting `PageContext` proto is serialized to disk
 // in a background thread, and the file path is displayed in the prototyping
 // menu.
-- (void)executeAPCExtractionWithRichExtraction:(BOOL)useRichExtraction {
+- (void)executeAPCExtractionWithRichExtraction:(BOOL)useRichExtraction
+                              includeDebugData:(BOOL)includeDebugData {
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {
     [self.consumer updateQueryResult:@"Error: No active web state."
                           forFeature:AIPrototypingFeature::kAPC];
+    if ([self.consumer respondsToSelector:@selector(updateFrameList:)]) {
+      [self.consumer updateFrameList:@[]];
+    }
     return;
   }
 
@@ -644,11 +648,19 @@
       [weakSelf.consumer
           updateQueryResult:@"Error: Failed to populate PageContext."
                  forFeature:AIPrototypingFeature::kAPC];
+      if ([weakSelf.consumer respondsToSelector:@selector(updateFrameList:)]) {
+        [weakSelf.consumer updateFrameList:@[]];
+      }
       return;
     }
 
     std::unique_ptr<optimization_guide::proto::PageContext> page_context =
         std::move(response.value());
+
+    if (includeDebugData) {
+      [weakSelf getFramesAndContentNodes:*page_context
+                             forConsumer:weakSelf.consumer];
+    }
 
     std::string serialized_proto = page_context->SerializeAsString();
 
@@ -701,6 +713,125 @@
 
   _pageContextWrapper.shouldGetAnnotatedPageContent = YES;
   [_pageContextWrapper populatePageContextFieldsAsync];
+}
+
+// Retrieves the frames and content nodes from the `PageContext` as needed by
+// the `consumer`.
+- (void)getFramesAndContentNodes:
+            (const optimization_guide::proto::PageContext&)pageContext
+                     forConsumer:(id<AIPrototypingConsumer>)consumer {
+  if (!pageContext.has_annotated_page_content()) {
+    if ([consumer respondsToSelector:@selector
+                  (updateFramesAndContentNodesDebugString:)]) {
+      [consumer updateFramesAndContentNodesDebugString:
+                    @"Error: AnnotatedPageContent is not available."];
+    }
+    if ([consumer respondsToSelector:@selector(updateFrameList:)]) {
+      [consumer updateFrameList:@[]];
+    }
+    return;
+  }
+  const auto& apc = pageContext.annotated_page_content();
+  NSMutableArray<NSDictionary*>* frames = [NSMutableArray array];
+
+  if (apc.has_main_frame_data()) {
+    NSDictionary* mainFrame =
+        [self frameDictionaryFromFrameData:apc.main_frame_data()
+                               isMainFrame:YES
+                                     depth:0];
+    if (mainFrame) {
+      [frames addObject:mainFrame];
+    }
+  }
+
+  std::string framesAndContentNodes;
+  if (apc.has_main_frame_data() &&
+      apc.main_frame_data().has_document_identifier()) {
+    framesAndContentNodes += base::StringPrintf(
+        "Main Frame [ID: %s]\n",
+        apc.main_frame_data().document_identifier().serialized_token().c_str());
+  }
+
+  [self extractFramesAndContentNodesFromNode:apc.root_node()
+                                  intoFrames:frames
+                             intoDebugString:framesAndContentNodes
+                                       depth:0];
+
+  if ([consumer respondsToSelector:@selector(updateFrameList:)]) {
+    [consumer updateFrameList:frames];
+  }
+  if ([consumer respondsToSelector:@selector
+                (updateFramesAndContentNodesDebugString:)]) {
+    [consumer
+        updateFramesAndContentNodesDebugString:base::SysUTF8ToNSString(
+                                                   framesAndContentNodes)];
+  }
+}
+
+// Traverses the `PageContext` tree to extract frames and build a debug string.
+- (void)extractFramesAndContentNodesFromNode:
+            (const optimization_guide::proto::ContentNode&)node
+                                  intoFrames:
+                                      (NSMutableArray<NSDictionary*>*)frames
+                             intoDebugString:(std::string&)debugString
+                                       depth:(int)depth {
+  std::string indent(depth * 2, ' ');
+  debugString += indent;
+
+  const auto& attrs = node.content_attributes();
+  if (attrs.has_common_ancestor_dom_node_id()) {
+    debugString +=
+        base::StringPrintf("[ID: %d] ", attrs.common_ancestor_dom_node_id());
+  }
+
+  if (attrs.has_text_data()) {
+    std::string text = attrs.text_data().text_content();
+    if (text.length() > 50) {
+      text = std::string(base::TruncateUTF8ToByteSize(text, 47)) + "...";
+    }
+    debugString += "\"" + text + "\"";
+  } else {
+    debugString += optimization_guide::proto::ContentAttributeType_Name(
+        attrs.attribute_type());
+
+    if (attrs.has_iframe_data() && attrs.iframe_data().has_frame_data()) {
+      const auto& frameData = attrs.iframe_data().frame_data();
+      NSDictionary* frame = [self frameDictionaryFromFrameData:frameData
+                                                   isMainFrame:NO
+                                                         depth:depth + 1];
+      if (frame) {
+        [frames addObject:frame];
+        debugString += base::StringPrintf(
+            "\n%s  [Frame ID: %s]", indent.c_str(),
+            frameData.document_identifier().serialized_token().c_str());
+      }
+    }
+  }
+  debugString += "\n";
+
+  for (const auto& child : node.children_nodes()) {
+    [self extractFramesAndContentNodesFromNode:child
+                                    intoFrames:frames
+                               intoDebugString:debugString
+                                         depth:depth + 1];
+  }
+}
+
+- (NSDictionary*)frameDictionaryFromFrameData:
+                     (const optimization_guide::proto::FrameData&)frameData
+                                  isMainFrame:(BOOL)isMainFrame
+                                        depth:(int)depth {
+  if (!frameData.has_document_identifier()) {
+    return nil;
+  }
+  return @{
+    @"document_identifier" : base::SysUTF8ToNSString(
+        frameData.document_identifier().serialized_token())
+        ?: @"",
+    @"url" : base::SysUTF8ToNSString(frameData.url()) ?: @"",
+    @"is_main_frame" : @(isMainFrame),
+    @"depth" : @(depth)
+  };
 }
 
 @end

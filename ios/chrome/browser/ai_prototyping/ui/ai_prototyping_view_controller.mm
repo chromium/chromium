@@ -108,6 +108,14 @@
   [_actorViewController updateTabList:tabs];
 }
 
+- (void)updateFrameList:(NSArray<NSDictionary*>*)frames {
+  [_actorViewController updateFrameList:frames];
+}
+
+- (void)updateFramesAndContentNodesDebugString:(NSString*)debugString {
+  [_actorViewController updateFramesAndContentNodesDebugString:debugString];
+}
+
 #pragma mark - UIPageViewControllerDataSource
 
 - (UIViewController*)

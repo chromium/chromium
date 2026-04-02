@@ -18,6 +18,15 @@ enum class AIPrototypingFeature : NSInteger;
 // tabs: Array of dictionaries with keys "id", "title", "url".
 - (void)updateTabList:(NSArray<NSDictionary*>*)tabs;
 
+@optional
+// Updates the representation of the current tabs Frames and contained
+// ContentNodes, as fetched from the AnnotatedPageContent.
+- (void)updateFramesAndContentNodesDebugString:(NSString*)framesAndContentNodes;
+
+// Updates the list of frames in the current page context.
+// frames: Array of dictionaries with keys "document_id", "url".
+- (void)updateFrameList:(NSArray<NSDictionary*>*)frames;
+
 // Updates the raw bytes (in Base64 representation) of the PageContext proto.
 - (void)updateRawBytes:(NSString*)rawBytes
             forFeature:(AIPrototypingFeature)feature;
