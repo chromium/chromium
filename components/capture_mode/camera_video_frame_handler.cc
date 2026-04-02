@@ -354,6 +354,13 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       return {};
     }
 
+    if (frame_info->coded_size != shared_image_->size()) {
+      LOG(ERROR) << "Different sizes, frame_info="
+                 << frame_info->coded_size.ToString()
+                 << " shared_image=" << shared_image_->size().ToString();
+      return {};
+    }
+
 #if !BUILDFLAG(IS_WIN)
     // The camera GpuMemoryBuffer is backed by a DMA-buff, and doesn't use a
     // pre-mapped shared memory region.
@@ -365,8 +372,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
         frame_info->pixel_format, shared_image_, shared_image_sync_token_,
         base::BindOnce(&GpuMemoryBufferHandleHolder::OnMailboxReleased,
                        weak_ptr_factory_.GetWeakPtr()),
-        frame_info->coded_size, frame_info->visible_rect,
-        frame_info->visible_rect.size(), frame_info->timestamp);
+        frame_info->visible_rect, frame_info->visible_rect.size(),
+        frame_info->timestamp);
     shared_image_sync_token_.Clear();
 
     if (!frame) {
