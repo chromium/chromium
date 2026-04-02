@@ -181,7 +181,6 @@ public class SignOutCoordinatorTest {
         setUpMocks();
         @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
         doReturn(true).when(mSigninManagerMock).isSignOutAllowed();
-        doReturn(true).when(mSigninManagerMock).isSigninAllowed();
         doReturn(true).when(mSigninManagerMock).isForceSigninEnabled();
         doAnswer(
                         args -> {

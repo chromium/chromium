@@ -202,7 +202,6 @@ public class FullscreenSigninPromoLauncherTest {
     public void promoShownWhenSigninForcedByPolicy() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSigninManagerMock.isForceSigninEnabled()).thenReturn(true);
-        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
                         eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.FORCED_SIGNIN)))
                 .thenReturn(mSigninIntent);
@@ -212,25 +211,6 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext, mProfile, mFullscreenSigninLauncherMock));
 
         verify(mContext).startActivity(mSigninIntent);
-    }
-
-    @Test
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
-    public void promoNotShownWhenSigninForcedByPolicy_signinNotAllowed() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mSigninManagerMock.isForceSigninEnabled()).thenReturn(true);
-        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
-                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.FORCED_SIGNIN)))
-                .thenReturn(mSigninIntent);
-
-        Assert.assertFalse(
-                FullscreenSigninPromoLauncher.launchPromoIfForced(
-                        mContext, mProfile, mFullscreenSigninLauncherMock));
-
-        verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(
-                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.FORCED_SIGNIN));
     }
 
     @Test

@@ -93,8 +93,7 @@ public final class FullscreenSigninPromoLauncher {
                 assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
         final boolean shouldDisplayForForcedSigninPolicy =
                 SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
-                        && signinManager.isForceSigninEnabled()
-                        && signinManager.isSigninAllowed();
+                        && signinManager.isForceSigninEnabled();
         if (!SigninFeatureMap.isEnabled(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)
                 && !shouldDisplayForForcedSigninPolicy) {
             return false;
