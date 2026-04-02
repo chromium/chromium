@@ -21,7 +21,8 @@ STYLE = colorama.Style
 
 def InitColorama():
   # NO_COLOR is a common way of disabling colors in terminal apps.
-  colorama.init(strip=bool(os.environ.get('NO_COLOR')))
+  strip = True if bool(os.environ.get('NO_COLOR')) else None
+  colorama.init(strip=strip)
 
 
 def Colorize(text, style=''):
