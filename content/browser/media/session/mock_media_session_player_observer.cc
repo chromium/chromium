@@ -31,7 +31,8 @@ void MockMediaSessionPlayerObserver::OnSuspend(int player_id) {
   players_[player_id].is_playing_ = false;
 }
 
-void MockMediaSessionPlayerObserver::OnResume(int player_id) {
+void MockMediaSessionPlayerObserver::OnResume(int player_id,
+                                              bool triggered_by_user) {
   EXPECT_GE(player_id, 0);
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
 

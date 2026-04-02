@@ -59,7 +59,7 @@ class CONTENT_EXPORT MediaSessionController
 
   // MediaSessionPlayerObserver implementation.
   void OnSuspend(int player_id) override;
-  void OnResume(int player_id) override;
+  void OnResume(int player_id, bool triggered_by_user) override;
   void OnSeekForward(int player_id, base::TimeDelta seek_time) override;
   void OnSeekBackward(int player_id, base::TimeDelta seek_time) override;
   void OnSeekTo(int player_id, base::TimeDelta seek_time) override;

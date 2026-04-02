@@ -1038,6 +1038,20 @@ TEST_F(WebMediaPlayerImplTest, ConstructAndDestroy) {
   EXPECT_FALSE(IsSuspended());
 }
 
+TEST_F(WebMediaPlayerImplTest, UnlockBackgroundPlayback) {
+  InitializeWebMediaPlayerImpl();
+
+  // Page hidden should lock background video playback.
+  delegate_.SetPageHiddenForTesting(true);
+  wmpi_->OnPageHidden();
+  EXPECT_TRUE(IsVideoLockedWhenPausedWhenHidden());
+
+  // UnlockBackgroundPlayback should unlock background video playback without
+  // user activation.
+  wmpi_->UnlockBackgroundPlayback();
+  EXPECT_FALSE(IsVideoLockedWhenPausedWhenHidden());
+}
+
 // Verify LoadAndWaitForCurrentData() functions without issue.
 TEST_F(WebMediaPlayerImplTest, LoadAndDestroy) {
   InitializeWebMediaPlayerImpl();

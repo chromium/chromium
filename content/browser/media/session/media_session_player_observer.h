@@ -32,7 +32,7 @@ class MediaSessionPlayerObserver {
   virtual void OnSuspend(int player_id) = 0;
 
   // The given |player_id| has been resumed by the MediaSession.
-  virtual void OnResume(int player_id) = 0;
+  virtual void OnResume(int player_id, bool triggered_by_user) = 0;
 
   // The given |player_id| has been seeked forward by the MediaSession.
   virtual void OnSeekForward(int player_id, base::TimeDelta seek_time) = 0;

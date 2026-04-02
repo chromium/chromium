@@ -204,6 +204,9 @@ class WebMediaPlayer {
 
   // Playback controls.
   virtual void Play() = 0;
+  // Unlocks background video playback without requiring a user activation token
+  // when authorized by the system (e.g. audio focus regain).
+  virtual void UnlockBackgroundPlayback() {}
   virtual void Pause(PauseReason pause_reason) = 0;
   virtual void Seek(double seconds) = 0;
   virtual void SetRate(double) = 0;

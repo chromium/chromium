@@ -56,11 +56,11 @@ void MediaSessionController::OnSuspend(int player_id) {
       ->RequestPause(/*triggered_by_user=*/true);
 }
 
-void MediaSessionController::OnResume(int player_id) {
+void MediaSessionController::OnResume(int player_id, bool triggered_by_user) {
   DCHECK_EQ(player_id_, player_id);
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
-      ->RequestPlay();
+      ->RequestPlay(triggered_by_user);
 }
 
 void MediaSessionController::OnSeekForward(int player_id,
@@ -153,7 +153,7 @@ void MediaSessionController::OnRequestMediaRemoting(int player_id) {
   if (is_paused_) {
     web_contents_->media_web_contents_observer()
         ->GetMediaPlayerRemote(id_)
-        ->RequestPlay();
+        ->RequestPlay(/*triggered_by_user=*/true);
   }
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)

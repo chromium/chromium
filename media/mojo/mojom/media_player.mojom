@@ -13,7 +13,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // browser to control media playback.
 interface MediaPlayer {
   // Requests the media player to start or resume media playback.
-  RequestPlay();
+  RequestPlay(bool triggered_by_user);
 
   // Requests the media player to pause media playback.
   RequestPause(bool triggered_by_user);

@@ -1007,6 +1007,14 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
       &WebMediaPlayerImpl::MultiBufferDataSourceInitialized, weak_this_));
 }
 
+void WebMediaPlayerImpl::UnlockBackgroundPlayback() {
+  DVLOG(1) << __func__;
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  // Authorized system resume unlocks background video playback.
+  video_locked_when_paused_when_hidden_ = false;
+}
+
 void WebMediaPlayerImpl::Play() {
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());

@@ -5103,13 +5103,21 @@ HTMLMediaElement::AddMediaPlayerObserverAndPassReceiver() {
   return observer_receiver;
 }
 
-void HTMLMediaElement::RequestPlay() {
-  LocalFrame* frame = GetDocument().GetFrame();
-  if (frame) {
-    LocalFrame::NotifyUserActivation(
-        frame, mojom::blink::UserActivationNotificationType::kInteraction);
+void HTMLMediaElement::RequestPlay(bool triggered_by_user) {
+  if (triggered_by_user) {
+    LocalFrame* frame = GetDocument().GetFrame();
+    if (frame) {
+      LocalFrame::NotifyUserActivation(
+          frame, mojom::blink::UserActivationNotificationType::kInteraction);
+    }
   }
   autoplay_policy_->EnsureAutoplayInitiatedSet();
+  if (web_media_player_ && !triggered_by_user) {
+    // If it was not user triggered, it is an authorized system resume.
+    // Call UnlockBackgroundPlayback to bypass the user activation check while
+    // still unlocking background playback.
+    web_media_player_->UnlockBackgroundPlayback();
+  }
   PlayInternal();
 }
 

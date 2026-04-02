@@ -112,8 +112,9 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
   }
 
   // media::mojom::MediaPlayer implementation.
-  void RequestPlay() override {
+  void RequestPlay(bool triggered_by_user) override {
     received_play_ = true;
+    received_play_triggered_by_user_ = triggered_by_user;
     run_loop_->Quit();
   }
 
@@ -186,6 +187,9 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
 
   // Getters used from MediaSessionControllerTest.
   bool received_play() const { return received_play_; }
+  bool received_play_triggered_by_user() const {
+    return received_play_triggered_by_user_;
+  }
 
   PauseRequestType received_pause() const { return received_pause_type_; }
 
@@ -220,6 +224,7 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
   mojo::AssociatedReceiver<media::mojom::MediaPlayer> receiver_{this};
 
   bool received_play_{false};
+  bool received_play_triggered_by_user_{false};
   double received_volume_multiplier_{0};
   PauseRequestType received_pause_type_{PauseRequestType::kNone};
   base::TimeDelta received_seek_forward_time_;
@@ -318,8 +323,9 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
     media_player_->WaitUntilReceivedMessage();
   }
 
-  void Resume() {
-    controller_->OnResume(controller_->get_player_id_for_testing());
+  void Resume(bool triggered_by_user = true) {
+    controller_->OnResume(controller_->get_player_id_for_testing(),
+                          triggered_by_user);
     media_player_->WaitUntilReceivedMessage();
   }
 
@@ -354,7 +360,11 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   }
 
   // Helpers to check the results of using the basic controls.
-  bool ReceivedMessagePlay() { return media_player_->received_play(); }
+  bool ReceivedMessagePlay(bool triggered_by_user) {
+    return media_player_->received_play() &&
+           media_player_->received_play_triggered_by_user() ==
+               triggered_by_user;
+  }
 
   bool ReceivedMessagePause(bool triggered_by_user) {
     TestMediaPlayer::PauseRequestType expected_pause_request =
@@ -419,7 +429,7 @@ TEST_F(MediaSessionControllerTest, BasicControls) {
 
   // Likewise verify the resume behavior.
   Resume();
-  EXPECT_TRUE(ReceivedMessagePlay());
+  EXPECT_TRUE(ReceivedMessagePlay(/*triggered_by_user=*/true));
 
   // ...as well as the seek behavior.
   const base::TimeDelta kTestSeekForwardTime = base::Seconds(1);
@@ -496,7 +506,14 @@ TEST_F(MediaSessionControllerTest, Reinitialize) {
 
   // Likewise verify the resume behavior.
   Resume();
-  EXPECT_TRUE(ReceivedMessagePlay());
+  EXPECT_TRUE(ReceivedMessagePlay(/*triggered_by_user=*/true));
+
+  Suspend();
+  EXPECT_TRUE(ReceivedMessagePause(/*triggered_by_user=*/true));
+
+  // Verify the system resume behavior.
+  Resume(/*triggered_by_user=*/false);
+  EXPECT_TRUE(ReceivedMessagePlay(/*triggered_by_user=*/false));
 }
 
 TEST_F(MediaSessionControllerTest, PositionState) {

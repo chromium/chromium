@@ -64,7 +64,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   ~MockMediaSessionPlayerObserver() override = default;
 
   MOCK_METHOD1(OnSuspend, void(int player_id));
-  MOCK_METHOD1(OnResume, void(int player_id));
+  MOCK_METHOD2(OnResume, void(int player_id, bool triggered_by_user));
   MOCK_METHOD2(OnSeekForward, void(int player_id, base::TimeDelta seek_time));
   MOCK_METHOD2(OnSeekBackward, void(int player_id, base::TimeDelta seek_time));
   MOCK_METHOD2(OnSeekTo, void(int player_id, base::TimeDelta seek_time));

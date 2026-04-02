@@ -977,8 +977,10 @@ void MediaSessionImpl::OnResumeInternal(SuspendType suspend_type) {
   if (suspend_type == SuspendType::kSystem && suspend_type_ != suspend_type)
     return;
 
+  const bool triggered_by_user = (suspend_type == SuspendType::kUI);
+
   for (const auto& it : normal_players_)
-    it.first.observer->OnResume(it.first.player_id);
+    it.first.observer->OnResume(it.first.player_id, triggered_by_user);
 
   RebuildAndNotifyMediaSessionInfoChanged();
 }
