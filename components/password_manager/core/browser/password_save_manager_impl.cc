@@ -868,7 +868,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
         pending_credentials_.type == PasswordForm::Type::kGenerated,
         client_->GetPasswordFeatureManager()
             ->ComputePasswordAccountStorageUsageLevel(),
-        client_->GetUkmSourceId());
+        client_->GetUkmSourceId(), client_->GetProfileMetricsService());
   }
 
   if (IsNewLogin()) {

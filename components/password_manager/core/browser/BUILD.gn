@@ -341,6 +341,7 @@ source_set("metrics_util") {
     "//components/autofill/core/common",
     "//components/autofill/core/common/mojom:mojo_types",
     "//components/device_reauth",
+    "//components/metrics",
     "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/common",

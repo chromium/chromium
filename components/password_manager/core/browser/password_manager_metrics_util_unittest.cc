@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -129,16 +130,26 @@ TEST(PasswordManagerMetricsUtil, LogIfSavedPasswordWasGenerated) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
+  metrics::ProfileMetricsService profile_metrics_service{
+      metrics::ProfileMetricsContext(1)};
+
   constexpr bool kIsGeneratedPassword = true;
   LogIfSavedPasswordWasGenerated(
       /*is_generated_password=*/true,
       features_util::PasswordAccountStorageUsageLevel::kNotUsingAccountStorage,
-      kTestSourceId);
+      kTestSourceId, &profile_metrics_service);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SavedPasswordIsGenerated", kIsGeneratedPassword, 1);
   histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordIsGenerated.Profile1", kIsGeneratedPassword,
+      1);
+  histogram_tester.ExpectUniqueSample(
       "PasswordManager.SavedPasswordIsGenerated.NotUsingAccountStorage",
+      kIsGeneratedPassword, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordIsGenerated.NotUsingAccountStorage."
+      "Profile1",
       kIsGeneratedPassword, 1);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.SavedPasswordIsGenerated.UsingAccountStorage", 0);

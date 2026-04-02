@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -377,15 +379,18 @@ void LogIfSavedPasswordWasGenerated(
     bool is_generated_password,
     password_manager::features_util::PasswordAccountStorageUsageLevel
         account_storage_usage_level,
-    ukm::SourceId ukm_source_id) {
-  ukm::builders::PasswordManager_SavedPassword ukm_entry_builder(ukm_source_id);
+    ukm::SourceId ukm_source_id,
+    metrics::ProfileMetricsService* profile_metrics_service) {
+  CHECK(profile_metrics_service);
+  profile_metrics_service->UmaHistogramBoolean(
+      "PasswordManager.SavedPasswordIsGenerated", is_generated_password);
 
-  base::UmaHistogramBoolean("PasswordManager.SavedPasswordIsGenerated",
-                            is_generated_password);
+  ukm::builders::PasswordManager_SavedPassword ukm_entry_builder(ukm_source_id);
   ukm_entry_builder.SetIsPasswordGenerated(is_generated_password);
+
   std::string_view suffix = GetPasswordAccountStorageUsageLevelHistogramSuffix(
       account_storage_usage_level);
-  base::UmaHistogramBoolean(
+  profile_metrics_service->UmaHistogramBoolean(
       base::StrCat({"PasswordManager.SavedPasswordIsGenerated.", suffix}),
       is_generated_password);
 

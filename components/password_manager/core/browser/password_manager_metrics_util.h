@@ -26,6 +26,10 @@
 
 class PrefService;
 
+namespace metrics {
+class ProfileMetricsService;
+}
+
 namespace password_manager::metrics_util {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -783,7 +787,8 @@ void LogIfSavedPasswordWasGenerated(
     bool is_generated_password,
     password_manager::features_util::PasswordAccountStorageUsageLevel
         account_storage_usage_level,
-    ukm::SourceId ukm_source_id);
+    ukm::SourceId ukm_source_id,
+    metrics::ProfileMetricsService* profile_metrics_service);
 
 // Log whether the generated password was accepted or rejected for generation of
 // |type| (automatic or manual).
