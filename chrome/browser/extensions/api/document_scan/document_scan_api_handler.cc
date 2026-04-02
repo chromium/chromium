@@ -46,6 +46,21 @@ crosapi::mojom::DocumentScan* GetDocumentScanInterface() {
   return crosapi::CrosapiManager::Get()->crosapi_ash()->document_scan_ash();
 }
 
+void OnGetOptionGroupsResponse(
+    const std::string& scanner_handle,
+    DocumentScanAPIHandler::GetOptionGroupsCallback callback,
+    const std::optional<lorgnette::GetCurrentConfigResponse>& response) {
+  api::document_scan::GetOptionGroupsResponse api_response;
+  if (response.has_value()) {
+    api_response =
+        api::document_scan::ConvertLorgnetteGetCurrentConfigResponse(*response);
+  } else {
+    api_response.scanner_handle = scanner_handle;
+    api_response.result = api::document_scan::OperationResult::kInternalError;
+  }
+  std::move(callback).Run(std::move(api_response));
+}
+
 void OnCancelScanResponse(
     const std::string& job_handle,
     DocumentScanAPIHandler::CancelScanCallback callback,
@@ -53,7 +68,7 @@ void OnCancelScanResponse(
   api::document_scan::CancelScanResponse api_response;
   if (response.has_value()) {
     api_response =
-        mojo::ConvertTo<api::document_scan::CancelScanResponse>(*response);
+        api::document_scan::ConvertLorgnetteCancelScanResponse(*response);
   } else {
     api_response.job = job_handle;
     api_response.result = api::document_scan::OperationResult::kInternalError;
@@ -285,24 +300,20 @@ void DocumentScanAPIHandler::GetOptionGroups(
   // Ensure this scanner is allocated to this extension.
   ExtensionState& state = extension_state_[extension->id()];
   if (!state.scanner_handles.contains(scanner_handle)) {
-    auto response = crosapi::mojom::GetOptionGroupsResponse::New();
-    response->scanner_handle = scanner_handle;
-    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    OnGetOptionGroupsResponse(std::move(callback), std::move(response));
+    api::document_scan::GetOptionGroupsResponse response;
+    response.scanner_handle = scanner_handle;
+    response.result = api::document_scan::OperationResult::kInvalid;
+    std::move(callback).Run(std::move(response));
     return;
   }
 
-  document_scan_->GetOptionGroups(
-      scanner_handle,
-      base::BindOnce(&DocumentScanAPIHandler::OnGetOptionGroupsResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
+  lorgnette::GetCurrentConfigRequest request;
+  request.mutable_scanner()->set_token(scanner_handle);
 
-void DocumentScanAPIHandler::OnGetOptionGroupsResponse(
-    GetOptionGroupsCallback callback,
-    crosapi::mojom::GetOptionGroupsResponsePtr response) {
-  std::move(callback).Run(
-      response.To<api::document_scan::GetOptionGroupsResponse>());
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->GetCurrentConfig(
+          request, base::BindOnce(&OnGetOptionGroupsResponse, scanner_handle,
+                                  std::move(callback)));
 }
 
 void DocumentScanAPIHandler::CloseScanner(

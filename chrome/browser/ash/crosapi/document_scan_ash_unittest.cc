@@ -104,12 +104,6 @@ class DocumentScanAshTest : public testing::Test {
     return future.Take();
   }
 
-  mojom::GetOptionGroupsResponsePtr GetOptionGroups(
-      const std::string& scanner_handle) {
-    base::test::TestFuture<mojom::GetOptionGroupsResponsePtr> future;
-    document_scan_ash().GetOptionGroups(scanner_handle, future.GetCallback());
-    return future.Take();
-  }
 
  private:
   // Must outlive `profile_`.
@@ -308,43 +302,6 @@ TEST_F(DocumentScanAshTest, SetOptions_GoodResponse) {
   const auto& it = response->options.value().find("config-option");
   ASSERT_TRUE(it != response->options.value().end());
   EXPECT_EQ(it->second->name, "scanner-option");
-}
-
-TEST_F(DocumentScanAshTest, GetOptionGroups_BadResponse) {
-  GetLorgnetteScannerManager()->SetGetCurrentConfigResponse(std::nullopt);
-  const mojom::GetOptionGroupsResponsePtr response =
-      GetOptionGroups("scanner-handle");
-
-  EXPECT_EQ(response->scanner_handle, "scanner-handle");
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
-  EXPECT_FALSE(response->groups.has_value());
-}
-
-TEST_F(DocumentScanAshTest, GetOptionGroups_GoodResponse) {
-  lorgnette::GetCurrentConfigResponse fake_response;
-  fake_response.mutable_scanner()->set_token("scanner-handle");
-  fake_response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-
-  // Config
-  lorgnette::ScannerConfig config;
-  lorgnette::OptionGroup group;
-  group.set_title("group-title");
-  group.add_members("group-member");
-  *config.add_option_groups() = std::move(group);
-  *fake_response.mutable_config() = std::move(config);
-
-  GetLorgnetteScannerManager()->SetGetCurrentConfigResponse(
-      std::move(fake_response));
-  const mojom::GetOptionGroupsResponsePtr response =
-      GetOptionGroups("scanner-handle");
-
-  EXPECT_EQ(response->scanner_handle, "scanner-handle");
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
-  EXPECT_TRUE(response->groups.has_value());
-  ASSERT_EQ(response->groups.value().size(), 1U);
-  EXPECT_EQ(response->groups.value()[0]->title, "group-title");
-  EXPECT_THAT(response->groups.value()[0]->members,
-              ElementsAre("group-member"));
 }
 
 }  // namespace crosapi

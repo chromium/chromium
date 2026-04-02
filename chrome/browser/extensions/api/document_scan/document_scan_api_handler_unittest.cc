@@ -750,6 +750,9 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_SecondOpenClosesFirstHandle) {
   const std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
 
+  GetLorgnetteScannerManager()->ConfigureGetCurrentConfigResponse(
+      lorgnette::OPERATION_RESULT_SUCCESS, std::nullopt);
+
   // The first open succeeds because the scanner is not open.
   OpenScannerFuture future1;
   document_scan_api_handler_->OpenScanner(extension_, scanner_id,
@@ -812,6 +815,13 @@ TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_ValidScanner) {
   std::string scanner_handle = OpenScannerForExtension(extension_);
   EXPECT_FALSE(scanner_handle.empty());
 
+  lorgnette::ScannerConfig config;
+  lorgnette::OptionGroup* group = config.add_option_groups();
+  group->set_title("group-title");
+  group->add_members("group-member");
+  GetLorgnetteScannerManager()->ConfigureGetCurrentConfigResponse(
+      lorgnette::OPERATION_RESULT_SUCCESS, std::move(config));
+
   GetOptionGroupsFuture future;
   document_scan_api_handler_->GetOptionGroups(extension_, scanner_handle,
                                               future.GetCallback());
@@ -820,6 +830,25 @@ TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_ValidScanner) {
   EXPECT_EQ(response.scanner_handle, scanner_handle);
   EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
   ASSERT_TRUE(response.groups.has_value());
+  ASSERT_EQ(response.groups->size(), 1U);
+  EXPECT_EQ(response.groups.value()[0].title, "group-title");
+  EXPECT_THAT(response.groups.value()[0].members,
+              testing::ElementsAre("group-member"));
+}
+
+TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_DBusFailure) {
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+
+  GetOptionGroupsFuture future;
+  document_scan_api_handler_->GetOptionGroups(extension_, scanner_handle,
+                                              future.GetCallback());
+  const api::document_scan::GetOptionGroupsResponse& response = future.Get();
+
+  EXPECT_EQ(response.scanner_handle, scanner_handle);
+  EXPECT_EQ(response.result,
+            api::document_scan::OperationResult::kInternalError);
+  EXPECT_FALSE(response.groups.has_value());
 }
 
 TEST_F(DocumentScanAPIHandlerTest, CloseScanner_CloseBeforeOpenFails) {

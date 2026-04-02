@@ -80,9 +80,13 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetSetOptionsResponse(
       const std::optional<lorgnette::SetOptionsResponse>& response);
 
-  // Sets the response returned by GetCurrentConfig().
-  void SetGetCurrentConfigResponse(
-      const std::optional<lorgnette::GetCurrentConfigResponse>& response);
+  // Configures the response returned by GetCurrentConfig().
+  // If `result` has no value, the response will be nullopt (that's the
+  // default). Otherwise, the response will consist of the given values and the
+  // scanner from the request.
+  void ConfigureGetCurrentConfigResponse(
+      std::optional<lorgnette::OperationResult> result,
+      std::optional<lorgnette::ScannerConfig> config);
 
   // Sets the response returned by StartPreparedScan().
   void SetStartPreparedScanResponse(
@@ -117,8 +121,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   std::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
   std::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
   std::optional<lorgnette::SetOptionsResponse> set_options_response_;
-  std::optional<lorgnette::GetCurrentConfigResponse>
-      get_current_config_response_;
+  std::optional<lorgnette::OperationResult> get_current_config_result_;
+  std::optional<lorgnette::ScannerConfig> get_current_config_config_;
   std::optional<lorgnette::StartPreparedScanResponse>
       start_prepared_scan_response_;
   std::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;

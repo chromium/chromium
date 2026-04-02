@@ -64,30 +64,6 @@ void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
   std::move(callback).Run(std::move(response));
 }
 
-void FakeDocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,
-                                          GetOptionGroupsCallback callback) {
-  if (!open_scanners_.contains(scanner_handle)) {
-    auto response = crosapi::mojom::GetOptionGroupsResponse::New();
-    response->scanner_handle = scanner_handle;
-    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
-  // The API handler just passes through responses from this function, so always
-  // returning a hardcoded value shouldn't matter.
-  auto response = crosapi::mojom::GetOptionGroupsResponse::New();
-  response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
-  response->scanner_handle = scanner_handle;
-  response->groups.emplace();
-  auto option_group = crosapi::mojom::OptionGroup::New();
-  option_group->title = "title";
-  option_group->members.emplace_back("item1");
-  option_group->members.emplace_back("item2");
-  response->groups->emplace_back(std::move(option_group));
-  std::move(callback).Run(std::move(response));
-}
-
 void FakeDocumentScanAsh::CloseScanner(const std::string& scanner_handle,
                                        CloseScannerCallback callback) {
   auto response = crosapi::mojom::CloseScannerResponse::New();

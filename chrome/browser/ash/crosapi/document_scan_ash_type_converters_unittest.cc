@@ -937,39 +937,5 @@ TEST(DocumentScanAshTypeConvertersTest, SetOptionsResponse_Success) {
   EXPECT_EQ(value->second->name, "option-name");
 }
 
-TEST(DocumentScanAshTypeConvertersTest, GetOptionGroupsResponse_EmptyObject) {
-  lorgnette::GetCurrentConfigResponse input;
-  auto output = crosapi::mojom::GetOptionGroupsResponse::From(input);
-  EXPECT_TRUE(output->scanner_handle.empty());
-  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kUnknown);
-  EXPECT_FALSE(output->groups.has_value());
-}
-
-TEST(DocumentScanAshTypeConvertersTest, GetOptionGroupsResponse_Success) {
-  lorgnette::GetCurrentConfigResponse input;
-  input.mutable_scanner()->set_token("scanner-handle");
-  input.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-  lorgnette::ScannerConfig* config = input.mutable_config();
-  lorgnette::OptionGroup* group1 = config->add_option_groups();
-  group1->set_title("group1");
-  group1->add_members("group1-val1");
-  group1->add_members("group1-val2");
-  lorgnette::OptionGroup* group2 = config->add_option_groups();
-  group2->set_title("group2");
-  group2->add_members("group2-val1");
-
-  auto output = crosapi::mojom::GetOptionGroupsResponse::From(input);
-  EXPECT_EQ(output->scanner_handle, "scanner-handle");
-  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kSuccess);
-  EXPECT_TRUE(output->groups.has_value());
-  ASSERT_EQ(output->groups.value().size(), 2U);
-  const auto& actual1 = output->groups.value()[0];
-  EXPECT_EQ(actual1->title, "group1");
-  EXPECT_THAT(actual1->members, ElementsAre("group1-val1", "group1-val2"));
-  const auto& actual2 = output->groups.value()[1];
-  EXPECT_EQ(actual2->title, "group2");
-  EXPECT_THAT(actual2->members, ElementsAre("group2-val1"));
-}
-
 }  // namespace
 }  // namespace mojo

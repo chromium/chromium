@@ -69,13 +69,6 @@ struct TypeConverter<crosapi::mojom::SetOptionsResponsePtr,
       const lorgnette::SetOptionsResponse& input);
 };
 
-template <>
-struct TypeConverter<crosapi::mojom::GetOptionGroupsResponsePtr,
-                     lorgnette::GetCurrentConfigResponse> {
-  static crosapi::mojom::GetOptionGroupsResponsePtr Convert(
-      const lorgnette::GetCurrentConfigResponse& input);
-};
-
 // Types that don't need to be converted directly, but are easier to test in
 // isolation.
 crosapi::mojom::OptionType ConvertForTesting(lorgnette::OptionType input);

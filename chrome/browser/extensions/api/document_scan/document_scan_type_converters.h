@@ -11,8 +11,22 @@
 
 namespace lorgnette {
 class CancelScanResponse;
+class GetCurrentConfigResponse;
 enum OperationResult : int;
 }  // namespace lorgnette
+
+namespace extensions::api::document_scan {
+
+OperationResult ConvertLorgnetteOperationResult(
+    lorgnette::OperationResult result);
+
+CancelScanResponse ConvertLorgnetteCancelScanResponse(
+    const lorgnette::CancelScanResponse& response);
+
+GetOptionGroupsResponse ConvertLorgnetteGetCurrentConfigResponse(
+    const lorgnette::GetCurrentConfigResponse& response);
+
+}  // namespace extensions::api::document_scan
 
 namespace mojo {
 
@@ -21,20 +35,6 @@ struct TypeConverter<extensions::api::document_scan::OperationResult,
                      crosapi::mojom::ScannerOperationResult> {
   static extensions::api::document_scan::OperationResult Convert(
       crosapi::mojom::ScannerOperationResult input);
-};
-
-template <>
-struct TypeConverter<extensions::api::document_scan::OperationResult,
-                     lorgnette::OperationResult> {
-  static extensions::api::document_scan::OperationResult Convert(
-      lorgnette::OperationResult input);
-};
-
-template <>
-struct TypeConverter<extensions::api::document_scan::CancelScanResponse,
-                     lorgnette::CancelScanResponse> {
-  static extensions::api::document_scan::CancelScanResponse Convert(
-      const lorgnette::CancelScanResponse& input);
 };
 
 template <>

@@ -464,6 +464,7 @@ interface DocumentScan {
   // GetScannerNames@0 was removed.
   // GetScannerList@2 was removed.
   // CancelScan@9 was removed.
+  // GetOptionGroups@8 was removed.
 
   // Open an exclusive handle to a scanner returned from `GetScannerList()`.
   [MinVersion=2]
@@ -490,9 +491,4 @@ interface DocumentScan {
   [MinVersion=4]
   SetOptions@7(string scanner_handle, array<OptionSetting> options)
       => (SetOptionsResponse response);
-
-  // Get the option groups for a scanner opened by `OpenScanner()`.
-  [MinVersion=4]
-  GetOptionGroups@8(string scanner_handle)
-      => (GetOptionGroupsResponse response);
 };

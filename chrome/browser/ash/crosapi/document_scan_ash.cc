@@ -133,21 +133,6 @@ void SetOptionsAdapter(
   std::move(callback).Run(mojom::SetOptionsResponse::From(response));
 }
 
-void GetOptionGroupsAdapter(
-    const std::string& scanner_handle,
-    DocumentScanAsh::GetOptionGroupsCallback callback,
-    const std::optional<lorgnette::GetCurrentConfigResponse>& response_in) {
-  if (!response_in) {
-    auto response = mojom::GetOptionGroupsResponse::New();
-    response->result = mojom::ScannerOperationResult::kInternalError;
-    response->scanner_handle = scanner_handle;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-  std::move(callback).Run(
-      mojom::GetOptionGroupsResponse::From(response_in.value()));
-}
-
 }  // namespace
 
 DocumentScanAsh::DocumentScanAsh() = default;
@@ -236,17 +221,6 @@ void DocumentScanAsh::SetOptions(const std::string& scanner_handle,
       ->SetOptions(request, base::BindOnce(&SetOptionsAdapter, scanner_handle,
                                            option_names, invalid_option_names,
                                            std::move(callback)));
-}
-
-void DocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,
-                                      GetOptionGroupsCallback callback) {
-  lorgnette::GetCurrentConfigRequest request;
-  request.mutable_scanner()->set_token(scanner_handle);
-
-  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
-      ->GetCurrentConfig(request,
-                         base::BindOnce(&GetOptionGroupsAdapter, scanner_handle,
-                                        std::move(callback)));
 }
 
 }  // namespace crosapi

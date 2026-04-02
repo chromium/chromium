@@ -217,9 +217,17 @@ void FakeLorgnetteScannerManager::SetOptions(
 void FakeLorgnetteScannerManager::GetCurrentConfig(
     const lorgnette::GetCurrentConfigRequest& request,
     GetCurrentConfigCallback callback) {
+  std::optional<lorgnette::GetCurrentConfigResponse> response;
+  if (get_current_config_result_.has_value()) {
+    response.emplace();
+    response->mutable_scanner()->set_token(request.scanner().token());
+    response->set_result(*get_current_config_result_);
+    if (get_current_config_config_.has_value()) {
+      *response->mutable_config() = *get_current_config_config_;
+    }
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), get_current_config_response_));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
 
 void FakeLorgnetteScannerManager::StartPreparedScan(
@@ -345,9 +353,11 @@ void FakeLorgnetteScannerManager::SetSetOptionsResponse(
   set_options_response_ = response;
 }
 
-void FakeLorgnetteScannerManager::SetGetCurrentConfigResponse(
-    const std::optional<lorgnette::GetCurrentConfigResponse>& response) {
-  get_current_config_response_ = response;
+void FakeLorgnetteScannerManager::ConfigureGetCurrentConfigResponse(
+    std::optional<lorgnette::OperationResult> result,
+    std::optional<lorgnette::ScannerConfig> config) {
+  get_current_config_result_ = std::move(result);
+  get_current_config_config_ = std::move(config);
 }
 
 void FakeLorgnetteScannerManager::SetStartPreparedScanResponse(
@@ -367,7 +377,7 @@ void FakeLorgnetteScannerManager::SetScanResponse(
 
 void FakeLorgnetteScannerManager::SetCancelScanResult(
     std::optional<lorgnette::OperationResult> result) {
-  cancel_scan_result_ = result;
+  cancel_scan_result_ = std::move(result);
 }
 
 void FakeLorgnetteScannerManager::SetCancelScanCallback(
