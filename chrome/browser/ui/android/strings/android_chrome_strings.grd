@@ -7760,16 +7760,16 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         No, thanks
       </message>
       <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Content description of the Chrome Finds opt-in bottom sheet informing the user on what Chrome Finds is and asking whether to opt-in.">
-        Chrome Finds opt-in bottom sheet
+        Chrome finds opt-in bottom sheet
       </message>
       <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_CLOSED_CONTENT_DESCRIPTION" desc="Content description of the Chrome Finds opt-in bottom sheet when closed.">
-        Chrome Finds opt-in closed
+        Chrome finds opt-in closed
       </message>
       <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_HALF_HEIGHT_CONTENT_DESCRIPTION" desc="Content description of the Chrome Finds opt-in bottom sheet when opened at half height.">
-        Chrome Finds opt-in opened at half height
+        Chrome finds opt-in opened at half height
       </message>
       <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_FULL_HEIGHT_CONTENT_DESCRIPTION" desc="Content description of the Chrome Finds opt-in bottom sheet when opened at full height.">
-        Chrome Finds opt-in opened at full height
+        Chrome finds opt-in opened at full height
       </message>
       <message name="IDS_CHROME_FINDS_OPT_IN_SNACKBAR_MESSAGE" desc="Snackbar message shown when the user opts in to receive personalized notifications.">
         Chrome finds notifications turned on
@@ -7777,6 +7777,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CHROME_FINDS_OPT_IN_SNACKBAR_ACTION_TEXT" desc="Action button of the Chrome Finds snackbar on user opt-in. [CHAR_LIMIT=10]">
         Manage
       </message>
+
     <!-- Glic strings -->
       <message name="IDS_GLIC_ACTOR_TASK_IN_PROGRESS" desc="Snackbar message shown when a Glic actor task is still in progress.">
         Your task is still in progress
