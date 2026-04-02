@@ -2406,7 +2406,7 @@
             ]
         }
     ],
-    "AutofillAiM4": [
+    "AutofillAiM4Android": [
         {
             "platforms": [
                 "android"
@@ -2421,6 +2421,8 @@
                         "AutofillAiServerModel",
                         "AutofillAiVoteForFormatStringsForFlightNumbers",
                         "AutofillAiWalletFlightReservation",
+                        "AutofillAiWalletPrivatePasses",
+                        "AutofillAiWalletPrivatePassesDeepLink",
                         "AutofillAiWalletVehicleRegistration",
                         "AutofillAiWithDataSchema",
                         "FormsClassificationsMqlsLogging",
@@ -2428,7 +2430,8 @@
                         "SyncAccountSettings",
                         "SyncAutofillValuableMetadata",
                         "SyncWalletFlightReservations",
-                        "SyncWalletVehicleRegistrations"
+                        "SyncWalletVehicleRegistrations",
+                        "WalletApiPrivatePassesEnabled"
                     ]
                 }
             ]
