@@ -17475,7 +17475,6 @@
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
                         "AvoidUnnecessaryShouldRenderRichAnimation",
-                        "FastPathNoRaster",
                         "GCOnArrayBufferAllocationFailure",
                         "MvcUpdateViewWhenModelChanged",
                         "ReducePPMs",

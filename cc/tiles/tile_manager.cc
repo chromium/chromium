@@ -1384,8 +1384,7 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
   // common case when e.g. scrolling, where we get a compositor frame, but do
   // not need to raster anything (if the page is not running any rAF for
   // instance).
-  if (only_completion_tasks &&
-      base::FeatureList::IsEnabled(features::kFastPathNoRaster)) {
+  if (only_completion_tasks) {
     DCHECK_EQ(required_for_activate_count, 0u);
     DCHECK_EQ(required_for_draw_count, 0u);
     DCHECK_EQ(all_count, 0u);
