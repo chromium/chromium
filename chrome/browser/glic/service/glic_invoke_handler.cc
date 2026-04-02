@@ -63,6 +63,12 @@ void GlicInvokeHandler::Invoke() {
 
     show_options.fre_override = options_.fre_override;
   }
+
+  if (auto_submit_passkey_ && RequiresAutoSubmitIncompatibleFre()) {
+    OnError(GlicInvokeError::kInvalidConfiguration);
+    return;
+  }
+
   instance_->Show(show_options);
 
   if (instance_->host().IsReady()) {
@@ -87,7 +93,8 @@ bool GlicInvokeHandler::RequiresAutoSubmitIncompatibleFre() const {
   }
   return GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(
              instance_->profile()) &&
-         features::kGlicTrustFirstOnboardingArmParam.Get() == 1;
+         (features::kGlicTrustFirstOnboardingArmParam.Get() == 1 ||
+          features::kGlicTrustFirstOnboardingArmParam.Get() == 2);
 }
 
 bool GlicInvokeHandler::RequiresOverrideIncompatibleFre() const {
@@ -102,10 +109,6 @@ void GlicInvokeHandler::SendToClient() {
   if (!instance_->host().IsReady()) {
     OnError(GlicInvokeError::kTimeout);
     return;
-  }
-
-  if (auto_submit_passkey_ && RequiresAutoSubmitIncompatibleFre()) {
-    auto_submit_passkey_ = std::nullopt;
   }
 
   if (auto_submit_passkey_) {
