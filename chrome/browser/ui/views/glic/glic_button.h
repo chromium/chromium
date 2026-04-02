@@ -231,11 +231,6 @@ class GlicButton : public GlicBaseShim<T>,
     WidthState old_width_state = width_state_;
     SetWidthState(WidthState::kNormal);
 
-    // If the label should not show, no further animation is needed.
-    if (!ShouldShowLabel()) {
-      return;
-    }
-
     start_width_ = kCollapsedWidth;
     end_width_ = normal_width_;
     width_animation_controller_->Start(old_width_state, width_state_);
@@ -607,10 +602,6 @@ class GlicButton : public GlicBaseShim<T>,
   }
 
   static std::u16string GetLabelText() {
-    if (!ShouldShowLabel()) {
-      return std::u16string();
-    }
-
     if (base::FeatureList::IsEnabled(features::kGlicButtonAltLabel)) {
       switch (features::kGlicButtonAltLabelVariant.Get()) {
         case 0:
@@ -741,8 +732,7 @@ class GlicButton : public GlicBaseShim<T>,
 
   void SetLabelMargins() {
     int right = kLabelRightMargin;
-    if ((!close_button() || !close_button()->GetVisible()) &&
-        ShouldShowLabel()) {
+    if ((!close_button() || !close_button()->GetVisible())) {
       right += 4;
     }
     this->label()->SetProperty(views::kMarginsKey,
@@ -773,10 +763,8 @@ class GlicButton : public GlicBaseShim<T>,
     width_animation_controller_->Start(old_width_state, width_state_);
 
     const base::TimeDelta kLabelFadeOutDuration = DurationMs(17);
-    const base::TimeDelta kNudgeFadeInStart =
-        DurationMs(ShouldShowLabel() ? 267 : 150);
-    const base::TimeDelta kNudgeFadeInDuration =
-        DurationMs(ShouldShowLabel() ? 100 : 200);
+    const base::TimeDelta kNudgeFadeInStart = DurationMs(267);
+    const base::TimeDelta kNudgeFadeInDuration = DurationMs(100);
     views::AnimationBuilder()
         .OnEnded(base::BindOnce(&GlicButton<T>::ApplyTextAndFadeIn,
                                 weak_ptr_factory_.GetWeakPtr(),
@@ -813,11 +801,9 @@ class GlicButton : public GlicBaseShim<T>,
     end_width_ = normal_width_;
     width_animation_controller_->Start(old_width_state, width_state_);
 
-    const base::TimeDelta kNudgeFadeOutStart =
-        DurationMs(ShouldShowLabel() ? 0 : 50);
-    const base::TimeDelta kNudgeFadeOutDuration =
-        DurationMs(ShouldShowLabel() ? 133 : 267);
-    const float kNudgeFinalOpacity = ShouldShowLabel() ? 0.5 : 0;
+    const base::TimeDelta kNudgeFadeOutStart = DurationMs(0);
+    const base::TimeDelta kNudgeFadeOutDuration = DurationMs(133);
+    const float kNudgeFinalOpacity = 0.5;
     const base::TimeDelta kLabelFadeInStart = DurationMs(34);
     const base::TimeDelta kLabelFadeInDuration = DurationMs(17);
 
@@ -848,7 +834,7 @@ class GlicButton : public GlicBaseShim<T>,
 
     if (width_state_ == WidthState::kNudge) {
       // Start at 50% opacity if replacing default label with nudge.
-      this->label()->layer()->SetOpacity(ShouldShowLabel() ? 0.5 : 0);
+      this->label()->layer()->SetOpacity(0.5);
     }
 
     views::AnimationBuilder()
@@ -873,11 +859,6 @@ class GlicButton : public GlicBaseShim<T>,
     const int old_width = PreferredSize().width();
     // Replace old label with new.
     int new_width = old_width - this->label()->width() + nudge_text_width;
-    if (!ShouldShowLabel()) {
-      // If transitioning from empty label to nudge label, make sure the label
-      // margin is included.
-      new_width += kLabelRightMargin;
-    }
     if (last_width_state_ == WidthState::kCollapsed) {
       // Add extra margin if the label was previously collapsed, as the
       // old_width is smaller.
@@ -912,11 +893,6 @@ class GlicButton : public GlicBaseShim<T>,
 
   static bool EntrypointVariationsEnabled() {
     return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
-  }
-
-  static bool ShouldShowLabel() {
-    return EntrypointVariationsEnabled() &&
-           features::kGlicEntrypointVariationsShowLabel.Get();
   }
 
   static bool ShouldUseAltIcon() {

@@ -69,16 +69,7 @@ bool EntrypointVariationsEnabled() {
   return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
 }
 
-bool ShouldShowLabel() {
-  return EntrypointVariationsEnabled() &&
-         features::kGlicEntrypointVariationsShowLabel.Get();
-}
-
 std::u16string GetLabelText() {
-  if (!ShouldShowLabel()) {
-    return std::u16string();
-  }
-
   if (base::FeatureList::IsEnabled(features::kGlicButtonAltLabel)) {
     switch (features::kGlicButtonAltLabelVariant.Get()) {
       case 0:
@@ -327,11 +318,6 @@ void TabStripGlicButton::Expand() {
   }
   WidthState old_width_state = width_state_;
   SetWidthState(WidthState::kNormal);
-
-  // If the label should not show, no further animation is needed.
-  if (!ShouldShowLabel()) {
-    return;
-  }
 
   start_width_ = kCollapsedWidth;
   end_width_ = normal_width_;
@@ -668,10 +654,8 @@ void TabStripGlicButton::ShowNudge() {
   width_animation_controller_->Start(old_width_state, width_state_);
 
   const base::TimeDelta kLabelFadeOutDuration = DurationMs(17);
-  const base::TimeDelta kNudgeFadeInStart =
-      DurationMs(ShouldShowLabel() ? 267 : 150);
-  const base::TimeDelta kNudgeFadeInDuration =
-      DurationMs(ShouldShowLabel() ? 100 : 200);
+  const base::TimeDelta kNudgeFadeInStart = DurationMs(267);
+  const base::TimeDelta kNudgeFadeInDuration = DurationMs(100);
   views::AnimationBuilder()
       .OnEnded(base::BindOnce(&TabStripGlicButton::ApplyTextAndFadeIn,
                               weak_ptr_factory_.GetWeakPtr(),
@@ -707,11 +691,9 @@ void TabStripGlicButton::HideNudge() {
   end_width_ = normal_width_;
   width_animation_controller_->Start(old_width_state, width_state_);
 
-  const base::TimeDelta kNudgeFadeOutStart =
-      DurationMs(ShouldShowLabel() ? 0 : 50);
-  const base::TimeDelta kNudgeFadeOutDuration =
-      DurationMs(ShouldShowLabel() ? 133 : 267);
-  const float kNudgeFinalOpacity = ShouldShowLabel() ? 0.5 : 0;
+  const base::TimeDelta kNudgeFadeOutStart = DurationMs(0);
+  const base::TimeDelta kNudgeFadeOutDuration = DurationMs(133);
+  const float kNudgeFinalOpacity = 0.5;
   const base::TimeDelta kLabelFadeInStart = DurationMs(34);
   const base::TimeDelta kLabelFadeInDuration = DurationMs(17);
 
@@ -742,7 +724,7 @@ void TabStripGlicButton::ApplyTextAndFadeIn(std::optional<std::u16string> text,
 
   if (width_state_ == WidthState::kNudge) {
     // Start at 50% opacity if replacing default label with nudge.
-    label()->layer()->SetOpacity(ShouldShowLabel() ? 0.5 : 0);
+    label()->layer()->SetOpacity(0.5);
   }
 
   views::AnimationBuilder()
@@ -767,11 +749,6 @@ int TabStripGlicButton::CalculateExpandedWidth() {
   const int old_width = PreferredSize().width();
   // Replace old label with new.
   int new_width = old_width - label()->width() + nudge_text_width;
-  if (!ShouldShowLabel()) {
-    // If transitioning from empty label to nudge label, make sure the label
-    // margin is included.
-    new_width += kLabelRightMargin;
-  }
   if (last_width_state_ == WidthState::kCollapsed) {
     // Add extra margin if the label was previously collapsed, as the old_width
     // is smaller.
@@ -792,8 +769,7 @@ void TabStripGlicButton::RefreshBackground() {
 
 void TabStripGlicButton::OnLabelVisibilityChanged() {
   image_container_view()->SetProperty(
-      views::kMarginsKey,
-      GetIconMargins(ShouldShowLabel() && !IsAnimatingTextVisibility()));
+      views::kMarginsKey, GetIconMargins(!IsAnimatingTextVisibility()));
 }
 
 bool TabStripGlicButton::IsAnimatingTextVisibility() const {
@@ -865,7 +841,7 @@ void TabStripGlicButton::SetLabelMargins() {
   }
 
   int right = kLabelRightMargin;
-  if (!close_button()->GetVisible() && ShouldShowLabel()) {
+  if (!close_button()->GetVisible()) {
     right += 4;
   }
 
