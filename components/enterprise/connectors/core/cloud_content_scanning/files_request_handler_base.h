@@ -6,19 +6,24 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_FILES_REQUEST_HANDLER_BASE_H_
 
 #include "base/gtest_prod_util.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
 
 namespace enterprise_connectors {
 
 class BinaryUploadService;
+class ReportingEventRouter;
 
 // A base class for handling scanning and reporting of deep scanning requests
 // for files.
 class FilesRequestHandlerBase : public RequestHandlerBase {
  public:
   // Delegate interface to be implemented by child classes to handle the
-  // specifics of different types of file requests.
+  // specifics of different types of file requests. Methods with an `index`
+  // parameter are intended to support multiple files on other platforms
+  // (e.g. desktop). Since iOS only supports single-file operations, the `index`
+  // will always be 0 for iOS.
   class Delegate {
    public:
     Delegate() = default;
@@ -42,11 +47,33 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
     // to upload.
     virtual bool UploadDataImpl() = 0;
 
-    // Update the file_info for a given `index`. Unlike desktop and android, on
-    // ios, user can't download a folder containing multiple items. So we'll
-    // have platform-dependent implementations for updating the file_info.
+    // Updates the file_info for a given `index`.
     virtual void UpdateFileInfo(size_t index,
                                 BinaryUploadRequest::Data data) = 0;
+
+    // Updates the `RequestHandlerResult` in `result_` for a scanning request
+    // corresponding to the given `index`, and update the file_warnings_
+    // accordingly based on the `result.final_result`.
+    virtual void UpdateRequestHandlerResult(
+        size_t index,
+        RequestHandlerResult result,
+        ContentAnalysisResponse response) = 0;
+
+    // Returns the file path for the given index.
+    virtual const base::FilePath& GetPath(size_t index) const = 0;
+
+    // Returns the file_info for the given index.
+    virtual const FileInfo& GetFileInfo(size_t index) = 0;
+
+    // Returns the reporting event router.
+    virtual ReportingEventRouter* GetReportingEventRouter() = 0;
+
+    virtual void MaybeCompleteScanRequest() = 0;
+
+    // The source and destination string are only for chromeOS, for other
+    // platforms it should return "",
+    virtual std::string GetSource() = 0;
+    virtual std::string GetDestination() = 0;
   };
 
   // `content_analysis_info` and `upload_service` are used to manage the deep
@@ -58,6 +85,7 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
       ContentAnalysisInfoBase* content_analysis_info,
       BinaryUploadService* upload_service,
       GURL url,
+      const std::string& content_transfer_method,
       DeepScanAccessPoint access_point,
       std::unique_ptr<FilesRequestHandlerBase::Delegate> delegate);
 
@@ -79,6 +107,7 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
                            OnGotFileInfo_EmptyFile);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure);
+  FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, FileRequestCallback);
 
   // Called when the file info for `path` has been fetched. Also begins the
   // upload process.
@@ -100,10 +129,21 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
   void UploadFileForDeepScanning(ScanRequestUploadResult result,
                                  std::unique_ptr<BinaryUploadRequest> request);
 
+  void FileRequestCallback(
+      size_t index,
+      ScanRequestUploadResult upload_result,
+      enterprise_connectors::ContentAnalysisResponse response);
+
   // This is set to true as soon as a TOO_MANY_REQUESTS response is obtained. No
   // more data should be upload for `this` at that point.
   bool throttled_ = false;
 
+  // The number of file scans that have completed. If more than one file is
+  // requested for scanning in `data_`, each is scanned in parallel with
+  // separate requests.
+  size_t file_result_count_ = 0;
+
+  std::string content_transfer_method_;
   std::unique_ptr<Delegate> delegate_;
 };
 

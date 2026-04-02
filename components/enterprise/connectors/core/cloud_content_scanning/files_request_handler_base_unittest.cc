@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/content_analysis_info_base.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,6 +38,21 @@ class MockFilesRequestHandlerBaseDelegate
               UpdateFileInfo,
               (size_t index, BinaryUploadRequest::Data data),
               (override));
+  MOCK_METHOD(void,
+              UpdateRequestHandlerResult,
+              (size_t index,
+               RequestHandlerResult result,
+               ContentAnalysisResponse response),
+              (override));
+  MOCK_METHOD(const base::FilePath&,
+              GetPath,
+              (size_t index),
+              (const, override));
+  MOCK_METHOD(const FileInfo&, GetFileInfo, (size_t index), (override));
+  MOCK_METHOD(ReportingEventRouter*, GetReportingEventRouter, (), (override));
+  MOCK_METHOD(void, MaybeCompleteScanRequest, (), (override));
+  MOCK_METHOD(std::string, GetSource, (), (override));
+  MOCK_METHOD(std::string, GetDestination, (), (override));
 };
 
 // Mock implementation of the BinaryUploadService.
@@ -116,6 +132,7 @@ class FilesRequestHandlerBaseTest : public testing::Test {
   MockBinaryUploadService upload_service_;
   AnalysisSettings settings_;
   GURL url_{"https://example.com"};
+  base::FilePath path_;
 };
 
 // Tests that ReportWarningBypass correctly calls the delegate.
@@ -129,7 +146,8 @@ TEST_F(FilesRequestHandlerBaseTest, ReportWarningBypass) {
       .Times(1);
 
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
-                                  url_, DeepScanAccessPoint::UPLOAD,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
                                   std::move(delegate_ptr));
   handler.ReportWarningBypass(u"justification");
 }
@@ -144,7 +162,8 @@ TEST_F(FilesRequestHandlerBaseTest, UploadDataImpl) {
       .WillOnce(testing::Return(true));
 
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
-                                  url_, DeepScanAccessPoint::UPLOAD,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
                                   std::move(delegate_ptr));
   EXPECT_TRUE(handler.UploadData());
 }
@@ -155,7 +174,8 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Success) {
   auto* delegate = delegate_ptr.get();
 
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
-                                  url_, DeepScanAccessPoint::UPLOAD,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
                                   std::move(delegate_ptr));
 
   EXPECT_CALL(*delegate, UpdateFileInfo(0, testing::_)).Times(1);
@@ -177,7 +197,8 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_EmptyFile) {
   auto* delegate = delegate_ptr.get();
 
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
-                                  url_, DeepScanAccessPoint::UPLOAD,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
                                   std::move(delegate_ptr));
 
   EXPECT_CALL(*delegate, UpdateFileInfo(0, testing::_)).Times(1);
@@ -212,7 +233,8 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure) {
   auto* delegate = delegate_ptr.get();
 
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
-                                  url_, DeepScanAccessPoint::UPLOAD,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
                                   ::std::move(delegate_ptr));
 
   EXPECT_CALL(*delegate, UpdateFileInfo(0, testing::_)).Times(1);
@@ -239,6 +261,43 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure) {
                         std::move(data));
   run_loop.Run();
   EXPECT_TRUE(callback_called);
+}
+
+// Tests that FileRequestCallback calls the delegate methods and reports events.
+TEST_F(FilesRequestHandlerBaseTest, FileRequestCallback) {
+  auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
+  auto* delegate = delegate_ptr.get();
+
+  FileInfo file_info;
+  EXPECT_CALL(content_analysis_info_, settings())
+      .WillRepeatedly(testing::ReturnRef(settings_));
+  EXPECT_CALL(*delegate, UpdateRequestHandlerResult(0, testing::_, testing::_))
+      .Times(2);
+  EXPECT_CALL(*delegate, GetFileInfo(0))
+      .WillRepeatedly(testing::ReturnRef(file_info));
+  EXPECT_CALL(*delegate, GetPath(0)).WillRepeatedly(testing::ReturnRef(path_));
+  EXPECT_CALL(*delegate, GetReportingEventRouter()).Times(2);
+  EXPECT_CALL(*delegate, GetSource()).Times(2);
+  EXPECT_CALL(*delegate, GetDestination()).Times(2);
+  EXPECT_CALL(*delegate, MaybeCompleteScanRequest()).Times(2);
+
+  FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
+                                  std::move(delegate_ptr));
+
+  EXPECT_EQ(handler.file_result_count_, 0u);
+  EXPECT_FALSE(handler.throttled_);
+
+  ContentAnalysisResponse response;
+  handler.FileRequestCallback(0, ScanRequestUploadResult::kSuccess, response);
+  EXPECT_EQ(handler.file_result_count_, 1u);
+  EXPECT_FALSE(handler.throttled_);
+
+  handler.FileRequestCallback(0, ScanRequestUploadResult::kTooManyRequests,
+                              response);
+  EXPECT_EQ(handler.file_result_count_, 2u);
+  EXPECT_TRUE(handler.throttled_);
 }
 
 }  // namespace enterprise_connectors

@@ -4,8 +4,10 @@
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
@@ -13,16 +15,63 @@
 
 namespace enterprise_connectors {
 
+namespace {
+
+AnalysisConnector AccessPointToEnterpriseConnector(
+    DeepScanAccessPoint access_point) {
+  switch (access_point) {
+    case DeepScanAccessPoint::FILE_TRANSFER:
+      return enterprise_connectors::FILE_TRANSFER;
+    case DeepScanAccessPoint::UPLOAD:
+    case DeepScanAccessPoint::DRAG_AND_DROP:
+    case DeepScanAccessPoint::PASTE:
+      // A file can be uploaded to a website by either a normal file picker, a
+      // dragNdrop event or using copy+paste.
+      return enterprise_connectors::FILE_ATTACHED;
+    case DeepScanAccessPoint::DOWNLOAD:
+    case DeepScanAccessPoint::PRINT:
+  }
+  NOTREACHED();
+}
+
+// LINT.IfChange(AccessPointToUmaHistogramPrefix)
+std::string AccessPointToUmaHistogramPrefix(DeepScanAccessPoint access_point) {
+  switch (AccessPointToEnterpriseConnector(access_point)) {
+    case enterprise_connectors::FILE_TRANSFER:
+      return "Enterprise.OnFileTransfer";
+    case enterprise_connectors::FILE_ATTACHED:
+      return "Enterprise.OnFileAttach";
+    default:
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml:FileUploadEvent)
+
+std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
+  switch (AccessPointToEnterpriseConnector(access_point)) {
+    case enterprise_connectors::FILE_TRANSFER:
+      return kFileTransferDataTransferEventTrigger;
+    case enterprise_connectors::FILE_ATTACHED:
+      return kFileUploadDataTransferEventTrigger;
+    default:
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 FilesRequestHandlerBase::FilesRequestHandlerBase(
     ContentAnalysisInfoBase* content_analysis_info,
     BinaryUploadService* upload_service,
     GURL url,
+    const std::string& content_transfer_method,
     DeepScanAccessPoint access_point,
     std::unique_ptr<FilesRequestHandlerBase::Delegate> delegate)
     : RequestHandlerBase(content_analysis_info,
                          upload_service,
                          url,
                          access_point),
+      content_transfer_method_(content_transfer_method),
       delegate_(std::move(delegate)) {}
 
 FilesRequestHandlerBase::~FilesRequestHandlerBase() = default;
@@ -104,6 +153,57 @@ void FilesRequestHandlerBase::UploadFileForDeepScanning(
   if (upload_service) {
     upload_service->MaybeUploadForDeepScanning(std::move(request));
   }
+}
+
+void FilesRequestHandlerBase::FileRequestCallback(
+    size_t index,
+    ScanRequestUploadResult upload_result,
+    enterprise_connectors::ContentAnalysisResponse response) {
+  // Remember to send an ack for this response.  It's possible for the response
+  // to be empty and have no request token.  This may happen if Chrome decides
+  // to allow the file without uploading with the binary upload service.  For
+  // example, zero length files.
+  if (upload_result == ScanRequestUploadResult::kSuccess &&
+      response.has_request_token()) {
+    request_tokens_to_ack_final_actions_[response.request_token()] =
+        GetAckFinalAction(response);
+  }
+
+  if (upload_result == ScanRequestUploadResult::kTooManyRequests) {
+    if (!throttled_) {
+      if (auto prefix = AccessPointToUmaHistogramPrefix(access_point_);
+          !prefix.empty()) {
+        base::UmaHistogramBoolean(prefix + ".Throttled", true);
+      }
+    }
+    throttled_ = true;
+  }
+
+  // TODO(crbug.com/498649243): Add UMA recording once the refactoring is done.
+  const auto& analysis_settings = content_analysis_info_->settings();
+  RequestHandlerResult request_handler_result =
+      CalculateRequestHandlerResult(analysis_settings, upload_result, response);
+  delegate_->UpdateRequestHandlerResult(index, request_handler_result,
+                                        response);
+  ++file_result_count_;
+
+  bool result_is_warning = request_handler_result.final_result ==
+                           FinalContentAnalysisResult::WARNING;
+  const FileInfo& file_info = delegate_->GetFileInfo(index);
+  MaybeReportDeepScanningVerdict(
+      delegate_->GetReportingEventRouter(), content_analysis_info_.get(),
+      delegate_->GetSource(), delegate_->GetDestination(),
+      delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256,
+      file_info.mime_type, AccessPointToTriggerString(access_point_),
+      content_transfer_method_,
+      content_analysis_info_->GetContentAreaAccountEmail(), file_info.size,
+      upload_result, response,
+      CalculateEventResult(analysis_settings, request_handler_result.complies,
+                           result_is_warning));
+
+  // TODO(crbug.com/498649243): Decrement the crash key once related free
+  // functions are moved from //chrome to //components.
+  delegate_->MaybeCompleteScanRequest();
 }
 
 }  // namespace enterprise_connectors
