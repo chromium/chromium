@@ -3958,9 +3958,6 @@
   <message name="IDS_CROSTINI_INSTALLER_LOAD_TERMINA_MESSAGE" desc="Text shown in the Crostini installer dialog when the VM component is loading">
     This process may take a few minutes. Downloading the virtual machine.
   </message>
-  <message name="IDS_CROSTINI_INSTALLER_START_CONCIERGE_MESSAGE" desc="Text shown in the Crostini installer dialog when the VM service is starting">
-    This process may take a few minutes. Starting the virtual machine.
-  </message>
   <message name="IDS_CROSTINI_INSTALLER_CREATE_DISK_IMAGE_MESSAGE" desc="Text shown in the Crostini installer dialog when the disk image is being created">
     This process may take a few minutes. Starting the virtual machine.
   </message>
@@ -4013,9 +4010,6 @@
       To finish setting up Linux, update ChromeOS and try again.
     </message>
   </if>
-  <message name="IDS_CROSTINI_INSTALLER_START_CONCIERGE_ERROR" desc="Text shown in the Crostini installer dialog when the VM service fails to start">
-    Error starting the virtual machine service. Please try again.
-  </message>
   <message name="IDS_CROSTINI_INSTALLER_CREATE_DISK_IMAGE_ERROR" desc="Text shown in the Crostini installer dialog when the failing to create the disk image">
     Error creating disk image. Please try again.
   </message>
@@ -4091,12 +4085,6 @@
   <message name="IDS_CROSTINI_CREDITS_PLACEHOLDER" desc="Message shown to the user if the credits file is unavailable (e.g. because Crostini isn't installed).">
     Crostini is not installed. Please install Crostini to view credits.
   </message>
-  <message name="IDS_CROSTINI_TERMINA_UPDATE_REQUIRED" desc="Text shown in the Crostini update dialog when the VM component needs updating.">
-    Linux update required
-  </message>
-  <message name="IDS_CROSTINI_TERMINA_UPDATE_OFFLINE" desc="Text shown in the Crostini update dialog when the VM component needs updating but the user is offline.">
-    Please connect to the internet and try again.
-  </message>
 
   <!-- Linux windows force closing messages -->
   <message name="IDS_CROSTINI_FORCE_CLOSE_TITLE_UNKNOWN" desc="Title of the crostini force-close dialog, which is used to destroy windows which are not responding. This version is used when we don't know which app is not responding.">
@@ -4131,9 +4119,6 @@
   <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_DONE" desc="Title displayed in the notification when export (backup) of the Linux container is complete.">
     Backup complete
   </message>
-  <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_CANCELLED" desc="Title displayed in the notification when export (backup) of the Linux container has been cancelled.">
-    Linux backup cancelled
-  </message>
   <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_DONE" desc="Message displayed in the notification when export (backup) of the Linux container is complete.">
     Linux apps &amp; files have been successfully backed up
   </message>
@@ -4154,9 +4139,6 @@
   </message>
   <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_DONE" desc="Title displayed in the notification when import (restore) of the Linux container is complete.">
     Restore complete
-  </message>
-  <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_CANCELLED" desc="Title displayed in the notification when import (restore) of the Linux container has been cancelled.">
-    Linux restore cancelled
   </message>
   <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_DONE" desc="Message displayed in the notification when import (restore) of the Linux container is complete.">
     Linux apps &amp; files have been successfully replaced
@@ -5139,9 +5121,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   <!-- Strings for notifications about features which aren't supported in Crostini -->
   <message name="IDS_CROSTINI_UNSUPPORTED_VIRTUAL_KEYBOARD" desc="Text for notification message shown when a user tries to use a virtual keyboard or tablet mode in a Linux app.">
     The on-screen keyboard doesn’t work in Linux apps yet
-  </message>
-  <message name="IDS_CROSTINI_UNSUPPORTED_IME" desc="Text for notification message shown when a user tries to use an unsupported Input Method Editor (IME) in a Linux app.">
-    <ph name="IME_NAME">$1<ex>German NEO 2 keyboard</ex></ph> doesn’t work in Linux apps yet
   </message>
 
   <!-- Strings for the security token PIN dialog shown during SAML user sign-in. -->
