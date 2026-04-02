@@ -315,7 +315,7 @@ void NodeController::MergePortIntoInviter(const std::string& name,
     return;
   }
 
-  RecordPendingPortMerge(port);
+  RecordPendingPortMerge(port, inviter->GetRemoteNodeName());
 
   inviter->RequestPortMerge(port.name(), name);
 }
@@ -369,11 +369,12 @@ void NodeController::ForceDisconnectProcessForTesting(
           base::Unretained(this), process_id));
 }
 
-void NodeController::RecordPendingPortMerge(const ports::PortRef& port_ref) {
-  // TODO(sroettger): this should also keep track of the node that is allowed
-  //                  to trigger the merge.
+void NodeController::RecordPendingPortMerge(
+    const ports::PortRef& port_ref,
+    const ports::NodeName& allowed_node) {
   ports::SinglePortLocker locker(&port_ref);
   locker.port()->pending_merge_peer = true;
+  locker.port()->pending_merge_peer_node = allowed_node;
 }
 
 // static
@@ -588,7 +589,7 @@ void NodeController::ConnectIsolatedOnIOThread(
   channel->SetRemoteNodeName(token);
   channel->Start();
 
-  RecordPendingPortMerge(port);
+  RecordPendingPortMerge(port, token);
 
   channel->AcceptPeer(name_, token, port.name());
 }
@@ -1119,7 +1120,7 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
     }
     std::vector<ports::PortName> pending_port_names;
     for (auto& request : pending_port_merges) {
-      RecordPendingPortMerge(request.second);
+      RecordPendingPortMerge(request.second, inviter->GetRemoteNodeName());
       inviter->RequestPortMerge(request.second.name(), request.first);
     }
   }
@@ -1394,6 +1395,8 @@ void NodeController::OnAcceptPeer(const ports::NodeName& from_node,
             true /* allow_name_reuse */);
     DVLOG(1) << "Node " << name_ << " accepted peer " << peer_name;
   }
+
+  RecordPendingPortMerge(local_port, peer_name);
 
   // We need to choose one side to initiate the port merge. It doesn't matter
   // who does it as long as they don't both try. Simple solution: pick the one

@@ -233,6 +233,7 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
   int OnObserveClosure(const PortRef& port_ref,
                        std::unique_ptr<ObserveClosureEvent> event);
   int OnMergePort(const PortRef& port_ref,
+                  const NodeName& from_node,
                   std::unique_ptr<MergePortEvent> event);
   int OnUserMessageReadAckRequest(
       const PortRef& port_ref,

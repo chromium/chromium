@@ -114,8 +114,10 @@ class Port : public base::RefCountedThreadSafe<Port> {
   NodeName prev_node_name;
   PortName prev_port_name;
 
-  // Mark this port as to be merged.
+  // Marks this port as pending a merge from |pending_merge_peer_node|. If that
+  // node is invalid, any sender is accepted.
   bool pending_merge_peer;
+  NodeName pending_merge_peer_node;
 
   // Next sequence number to send for all event messages.
   uint64_t next_control_sequence_num_to_send;

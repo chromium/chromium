@@ -289,7 +289,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
 
   // Mark a port that it is about to be merged. This allows us to do a security
   // check on the incoming port merge that this port was intended to be merged.
-  void RecordPendingPortMerge(const ports::PortRef& port);
+  void RecordPendingPortMerge(const ports::PortRef& port,
+                              const ports::NodeName& allowed_node);
 
   // These are safe to access from any thread as long as the Node is alive.
   const ports::NodeName name_;

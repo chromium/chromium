@@ -132,6 +132,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
 
   // Used for context in Delegate calls (via |from_node| arguments.)
   void SetRemoteNodeName(const ports::NodeName& name);
+  const ports::NodeName& GetRemoteNodeName() const { return remote_node_name_; }
 
   void AcceptInvitee(const ports::NodeName& inviter_name,
                      const ports::NodeName& token);

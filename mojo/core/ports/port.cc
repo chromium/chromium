@@ -20,6 +20,7 @@ Port::Port(uint64_t next_sequence_num_to_send,
            uint64_t next_sequence_num_to_receive)
     : state(kUninitialized),
       pending_merge_peer(false),
+      pending_merge_peer_node(kInvalidNodeName),
       next_control_sequence_num_to_send(kInitialSequenceNum),
       next_control_sequence_num_to_receive(kInitialSequenceNum),
       next_sequence_num_to_send(next_sequence_num_to_send),

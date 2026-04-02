@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/mock_log.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "mojo/core/ports/event.h"
@@ -278,9 +279,11 @@ class TestNode : public NodeDelegate {
     return status.unacknowledged_message_count;
   }
 
-  void AllowPortMerge(const PortRef& port_ref) {
+  void AllowPortMerge(const PortRef& port_ref,
+                      const NodeName& allowed_node = kInvalidNodeName) {
     SinglePortLocker locker(&port_ref);
     locker.port()->pending_merge_peer = true;
+    locker.port()->pending_merge_peer_node = allowed_node;
   }
 
  private:
@@ -1335,6 +1338,62 @@ TEST_F(PortsTest, MergePorts) {
   // No more ports should be open.
   EXPECT_TRUE(node0.node().CanShutdownCleanly());
   EXPECT_TRUE(node1.node().CanShutdownCleanly());
+}
+
+TEST_F(PortsTest, PendingMergeRejectsUnexpectedNode) {
+  TestNode node0(0);
+  AddNode(&node0);
+
+  TestNode node1(1);
+  AddNode(&node1);
+
+  TestNode node2(2);
+  AddNode(&node2);
+
+  // Set up three independent port pairs:
+  //   A-B on node0, C-D on node1, and E-F on node2.
+  PortRef A, B, C, D, E, F;
+  EXPECT_EQ(OK, node0.node().CreatePortPair(&A, &B));
+  EXPECT_EQ(OK, node1.node().CreatePortPair(&C, &D));
+  EXPECT_EQ(OK, node2.node().CreatePortPair(&E, &F));
+
+  // node1 is explicitly waiting for a merge from node0, not node2.
+  node1.AllowPortMerge(C, node0.name());
+
+  base::test::MockLog log;
+  log.StartCapturingLogs();
+
+  EXPECT_CALL(log, Log(logging::LOGGING_ERROR, ::testing::_, ::testing::_,
+                       ::testing::_, ::testing::HasSubstr("MergePort sender")))
+      .Times(1);
+
+  // node2 is not the expected merge peer, so this merge must be rejected.
+  EXPECT_EQ(OK, node2.SendStringMessage(E, "intruder"));
+  EXPECT_EQ(OK, node2.node().MergePorts(F, node1.name(), C.name()));
+
+  WaitForIdle();
+
+  log.StopCapturingLogs();
+
+  ScopedMessage message;
+  EXPECT_FALSE(node1.ReadMessage(D, &message));
+
+  // The original expected merge from node0 can still proceed afterward.
+  EXPECT_EQ(OK, node0.SendStringMessage(A, "expected"));
+  EXPECT_EQ(OK, node0.node().MergePorts(B, node1.name(), C.name()));
+  WaitForIdle();
+  ASSERT_TRUE(node1.ReadMessage(D, &message));
+  EXPECT_TRUE(MessageEquals(message, "expected"));
+
+  EXPECT_EQ(OK, node0.node().ClosePort(A));
+  EXPECT_EQ(OK, node1.node().ClosePort(D));
+  EXPECT_EQ(OK, node2.node().ClosePort(E));
+
+  WaitForIdle();
+
+  EXPECT_TRUE(node0.node().CanShutdownCleanly());
+  EXPECT_TRUE(node1.node().CanShutdownCleanly());
+  EXPECT_TRUE(node2.node().CanShutdownCleanly());
 }
 
 TEST_F(PortsTest, MergePortWithClosedPeer1) {

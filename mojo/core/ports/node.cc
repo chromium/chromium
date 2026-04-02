@@ -512,7 +512,8 @@ int Node::AcceptEventInternal(const PortRef& port_ref,
       return OnObserveClosure(port_ref,
                               Event::Cast<ObserveClosureEvent>(&event));
     case Event::Type::kMergePort:
-      return OnMergePort(port_ref, Event::Cast<MergePortEvent>(&event));
+      return OnMergePort(port_ref, from_node,
+                         Event::Cast<MergePortEvent>(&event));
     case Event::Type::kUserMessageReadAckRequest:
       return OnUserMessageReadAckRequest(
           port_ref, Event::Cast<UserMessageReadAckRequestEvent>(&event));
@@ -1028,6 +1029,7 @@ int Node::OnObserveClosure(const PortRef& port_ref,
 }
 
 int Node::OnMergePort(const PortRef& port_ref,
+                      const NodeName& from_node,
                       std::unique_ptr<MergePortEvent> event) {
   DVLOG(1) << "MergePort at " << port_ref.name() << "@" << name_
            << " merging with proxy " << event->new_port_name() << "@" << name_
@@ -1059,6 +1061,7 @@ int Node::OnMergePort(const PortRef& port_ref,
   }
 
   bool peer_allowed = true;
+  bool sender_allowed = true;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
@@ -1066,12 +1069,24 @@ int Node::OnMergePort(const PortRef& port_ref,
       LOG(ERROR) << "MergePort called on unexpected port: "
                  << event->port_name();
       peer_allowed = false;
+    } else if (port->pending_merge_peer_node != kInvalidNodeName &&
+               port->pending_merge_peer_node != from_node) {
+      LOG(ERROR) << "MergePort sender " << from_node
+                 << " did not match expected peer "
+                 << port->pending_merge_peer_node << " for "
+                 << event->port_name();
+      sender_allowed = false;
     } else {
       port->pending_merge_peer = false;
+      port->pending_merge_peer_node = kInvalidNodeName;
     }
   }
   if (!peer_allowed) {
     ClosePort(port_ref);
+    return ERROR_PORT_STATE_UNEXPECTED;
+  }
+  if (!sender_allowed) {
+    ClosePort(new_port_ref);
     return ERROR_PORT_STATE_UNEXPECTED;
   }
 
