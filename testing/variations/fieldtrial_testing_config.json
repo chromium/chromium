@@ -7525,7 +7525,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledInfraOnly",
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
+                        "HomeModulePrefRefactor"
+                    ]
+                },
+                {
+                    "name": "EnabledAll",
                     "enable_features": [
                         "EnableCrossDevicePrefTracker",
                         "HomeModulePrefRefactor",
