@@ -11,11 +11,18 @@ import subprocess
 import time
 import typing
 import functools
+import sys
 
 import constants
 import test_runner
 import test_runner_errors
 import mac_util
+
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.append(
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+import measures
 
 
 LOGGER = logging.getLogger(__name__)
@@ -278,10 +285,14 @@ def create_device_by_platform_and_version(platform, version, use_cache=False):
       use_cache: (bool) Whether to try to use a clone of a prebooted simulator
         in the cache.
   """
+  enabled_datapoint = measures.data_points('simulator_caching_enabled')
   if not use_cache:
     LOGGER.info("Simulator caching not enabled. Creating disposable simulator "
                 "in the default set.")
+    enabled_datapoint.record(False)
     return _create_device_by_platform_and_version(platform, version)
+
+  enabled_datapoint.record(True)
 
   # Ensure Cache Path Exists
   os.makedirs(SIMULATOR_CACHE_PATH, exist_ok=True)
@@ -291,14 +302,19 @@ def create_device_by_platform_and_version(platform, version, use_cache=False):
   cache_udids = get_simulator_udids_by_platform_and_version(
       platform, version, path=SIMULATOR_CACHE_PATH)
 
+  cache_hit_datapoint = measures.data_points('simulator_cache_hit')
   if cache_udids:
     LOGGER.info("Simulator found in cache. Cloning into default set")
-    return clone_simulator_by_udid(
-        cache_udids[0],
-        _compose_simulator_name(platform, version),
-        path=SIMULATOR_CACHE_PATH,
-        dest_path=SIMULATOR_DEFAULT_PATH)
+    cache_hit_datapoint.record(True)
+    with measures.time_consumption('Simulator clone', 'cache to working set'):
+      udid = clone_simulator_by_udid(
+          cache_udids[0],
+          _compose_simulator_name(platform, version),
+          path=SIMULATOR_CACHE_PATH,
+          dest_path=SIMULATOR_DEFAULT_PATH)
+    return udid
 
+  cache_hit_datapoint.record(False)
   LOGGER.info("Simulator not found in cache, attempting to create")
 
   max_attempts = 2
@@ -309,17 +325,24 @@ def create_device_by_platform_and_version(platform, version, use_cache=False):
     # Run first boot of the simulator to ensure that costly data migrations
     # have completed, then shutdown simulator so it can be cloned for future
     # use.
-    if ensure_simulator_fully_booted(udid, path=SIMULATOR_CACHE_PATH):
+
+    with measures.time_consumption('Simulator full boot', 'iossim_util',
+                                   'Pre launch for cache creation',
+                                   f'attempt {attempt}'):
+      booted = ensure_simulator_fully_booted(udid, path=SIMULATOR_CACHE_PATH)
+    if booted:
       shutdown_simulator_by_udid(udid, path=SIMULATOR_CACHE_PATH)
       LOGGER.info(
           f"Attempt {attempt} to create simulator and boot it succeeded. "
           f"Cloning simulator into the default set.")
-      return clone_simulator_by_udid(
-          udid,
-          _compose_simulator_name(platform, version),
-          path=SIMULATOR_CACHE_PATH,
-          dest_path=SIMULATOR_DEFAULT_PATH,
-      )
+      with measures.time_consumption('Simulator clone', 'cache to working set'):
+        udid = clone_simulator_by_udid(
+            udid,
+            _compose_simulator_name(platform, version),
+            path=SIMULATOR_CACHE_PATH,
+            dest_path=SIMULATOR_DEFAULT_PATH,
+        )
+      return udid
     LOGGER.info(f"Attempt {attempt} to create simulator in cache failed.")
     shutdown_simulator_by_udid(udid, path=SIMULATOR_CACHE_PATH)
     delete_simulator_by_udid(udid, path=SIMULATOR_CACHE_PATH)
