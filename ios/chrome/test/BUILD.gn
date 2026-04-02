@@ -548,6 +548,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/shared/ui/table_view/cells:unit_tests",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration:unit_tests",
     "//ios/chrome/browser/shared/ui/util:unit_tests",
+    "//ios/chrome/browser/shared/ui/util/image:unit_tests",
     "//ios/chrome/browser/sharing/ui_bundled:unit_tests",
     "//ios/chrome/browser/sharing/ui_bundled/activity_services:unit_tests",
     "//ios/chrome/browser/sharing/ui_bundled/activity_services/activities:unit_tests",

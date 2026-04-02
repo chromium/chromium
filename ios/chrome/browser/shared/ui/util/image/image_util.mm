@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 
+#import <ImageIO/ImageIO.h>
 #import <UIKit/UIKit.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
+#import <algorithm>
 
 #import "base/apple/foundation_util.h"
 #import "ui/gfx/color_analysis.h"
@@ -26,6 +29,34 @@ template <typename T, size_t E>
 bool starts_with(base::span<T> span, base::span<T, E> prefix) {
   const auto head = span.first(E);
   return head == prefix;
+}
+
+// Creates a downsampled UIImage from `source` fitting within `point_size`
+// at the given `scale`. Returns nil if the thumbnail cannot be created.
+UIImage* CreateDownsampledImage(CGImageSourceRef source,
+                                CGSize point_size,
+                                CGFloat scale) {
+  CGFloat max_dimension_in_pixels =
+      std::max(point_size.width, point_size.height) * scale;
+  NSDictionary* downsample_options = @{
+    (__bridge id)kCGImageSourceCreateThumbnailFromImageAlways : @YES,
+    (__bridge id)kCGImageSourceShouldCacheImmediately : @YES,
+    (__bridge id)kCGImageSourceCreateThumbnailWithTransform : @YES,
+    (__bridge id)
+    kCGImageSourceThumbnailMaxPixelSize : @(max_dimension_in_pixels)
+  };
+
+  CGImageRef downsampled_image = CGImageSourceCreateThumbnailAtIndex(
+      source, 0, (__bridge CFDictionaryRef)downsample_options);
+  if (!downsampled_image) {
+    return nil;
+  }
+
+  UIImage* image = [[UIImage alloc] initWithCGImage:downsampled_image
+                                              scale:scale
+                                        orientation:UIImageOrientationUp];
+  CGImageRelease(downsampled_image);
+  return image;
 }
 
 }  // namespace
@@ -126,4 +157,75 @@ NSString* GetImageUTIFromData(NSData* data) {
   };
 
   return dict[GetImageExtensionFromData(data)];
+}
+
+CGSize ImageSizeFromData(NSData* data) {
+  if (!data) {
+    return CGSizeZero;
+  }
+
+  CGImageSourceRef source = CGImageSourceCreateWithData(
+      (__bridge CFDataRef)data,
+      (__bridge CFDictionaryRef)
+          @{(__bridge id)kCGImageSourceShouldCache : @NO});
+  if (!source) {
+    return CGSizeZero;
+  }
+
+  CFDictionaryRef properties =
+      CGImageSourceCopyPropertiesAtIndex(source, 0, nil);
+  CFRelease(source);
+  if (!properties) {
+    return CGSizeZero;
+  }
+
+  NSDictionary* dict = CFBridgingRelease(properties);
+  NSNumber* width = dict[(__bridge id)kCGImagePropertyPixelWidth];
+  NSNumber* height = dict[(__bridge id)kCGImagePropertyPixelHeight];
+  if (!width || !height) {
+    return CGSizeZero;
+  }
+
+  return CGSizeMake(width.doubleValue, height.doubleValue);
+}
+
+UIImage* DownsampledImageFromData(NSData* data,
+                                  CGSize point_size,
+                                  CGFloat scale) {
+  if (!data || point_size.width <= 0 || point_size.height <= 0 || scale <= 0) {
+    return nil;
+  }
+
+  NSDictionary* source_options =
+      @{(__bridge id)kCGImageSourceShouldCache : @NO};
+  CGImageSourceRef source = CGImageSourceCreateWithData(
+      (__bridge CFDataRef)data, (__bridge CFDictionaryRef)source_options);
+  if (!source) {
+    return nil;
+  }
+
+  UIImage* image = CreateDownsampledImage(source, point_size, scale);
+  CFRelease(source);
+  return image;
+}
+
+UIImage* DownsampledImageFromURL(NSURL* fileURL,
+                                 CGSize point_size,
+                                 CGFloat scale) {
+  if (!fileURL || point_size.width <= 0 || point_size.height <= 0 ||
+      scale <= 0) {
+    return nil;
+  }
+
+  NSDictionary* source_options =
+      @{(__bridge id)kCGImageSourceShouldCache : @NO};
+  CGImageSourceRef source = CGImageSourceCreateWithURL(
+      (__bridge CFURLRef)fileURL, (__bridge CFDictionaryRef)source_options);
+  if (!source) {
+    return nil;
+  }
+
+  UIImage* image = CreateDownsampledImage(source, point_size, scale);
+  CFRelease(source);
+  return image;
 }

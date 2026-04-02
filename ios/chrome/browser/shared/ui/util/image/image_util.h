@@ -31,4 +31,24 @@ NSString* GetImageExtensionFromData(NSData* data);
 // is nil, empty, or cannot be recognized, nil will be returned.
 NSString* GetImageUTIFromData(NSData* data);
 
+// Returns the pixel dimensions of the image in `data` without decoding
+// the full image. Returns CGSizeZero if the data is nil or cannot be read.
+CGSize ImageSizeFromData(NSData* data);
+
+// Decodes `data` into a UIImage downsampled to fit within `point_size` at
+// the given display `scale`. Uses CGImageSource to decode only the needed
+// pixels, significantly reducing memory usage compared to decoding the
+// full image. Returns nil if the data is nil or cannot be decoded.
+UIImage* DownsampledImageFromData(NSData* data,
+                                  CGSize point_size,
+                                  CGFloat scale);
+
+// Decodes the image at `fileURL` into a UIImage downsampled to fit within
+// `point_size` at the given display `scale`. Reads directly from disk
+// without loading the entire file into memory first. Returns nil if the
+// URL is nil or the image cannot be decoded.
+UIImage* DownsampledImageFromURL(NSURL* fileURL,
+                                 CGSize point_size,
+                                 CGFloat scale);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_UTIL_H_
