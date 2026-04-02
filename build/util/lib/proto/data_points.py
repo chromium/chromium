@@ -16,9 +16,12 @@ class DataPoints(Measure):
     self._name = name
     self._points = []
 
-  def record(self, value: float) -> None:
+  def record(self, value: float | int | bool) -> None:
     point = TestScriptMetric.DataPoint()
-    point.value = value
+    if isinstance(value, bool):
+      point.value = int(value)
+    else:
+      point.value = value
     # The function name is confusing, it updates itself to the current time.
     point.timestamp.GetCurrentTime()
     self._points.append(point)

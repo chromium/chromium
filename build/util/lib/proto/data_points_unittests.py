@@ -28,10 +28,14 @@ class DataPointsTest(unittest.TestCase):
     points = DataPoints("c")
     points.record(1)
     points.record(2)
+    points.record(True)
+    points.record(3.14)
     self.assertEqual(points.dump().name, "c")
-    self.assertEqual(len(points.dump().points.points), 2)
+    self.assertEqual(len(points.dump().points.points), 4)
     self.assertEqual(points.dump().points.points[0].value, 1)
     self.assertEqual(points.dump().points.points[1].value, 2)
+    self.assertEqual(points.dump().points.points[2].value, 1)
+    self.assertEqual(points.dump().points.points[3].value, 3.14)
 
 
 if __name__ == '__main__':
