@@ -1494,7 +1494,8 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
   builder.ExpectSegment(
       HasEncryptionData,
       std::make_tuple(GURL("http://localhost/enc.key"), XKeyTagMethod::kAES128,
-                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 0x42)));
+                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 0x42),
+                      MediaSegment::EncryptionData::KeyLocation::kSafeOrigin));
   builder.ExpectOk();
 
   builder.AppendLine("#EXT-X-KEY:METHOD=NONE");
@@ -1516,7 +1517,8 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
   builder.ExpectSegment(
       HasEncryptionData,
       std::make_tuple(GURL("http://localhost/enc.key"), XKeyTagMethod::kAES128,
-                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 3)));
+                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 3),
+                      MediaSegment::EncryptionData::KeyLocation::kSafeOrigin));
   builder.ExpectOk();
 
   builder.AppendLine("#EXTINF:1.600000,");
@@ -1527,7 +1529,8 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
   builder.ExpectSegment(
       HasEncryptionData,
       std::make_tuple(GURL("http://localhost/enc.key"), XKeyTagMethod::kAES128,
-                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 4)));
+                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 4),
+                      MediaSegment::EncryptionData::KeyLocation::kSafeOrigin));
   builder.ExpectOk();
 
   builder.AppendLine(
@@ -1541,7 +1544,8 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
       HasEncryptionData,
       std::make_tuple(GURL("http://localhost/enc.key"),
                       XKeyTagMethod::kSampleAES, XKeyTagKeyFormat::kIdentity,
-                      std::make_tuple(0, 5)));
+                      std::make_tuple(0, 5),
+                      MediaSegment::EncryptionData::KeyLocation::kSafeOrigin));
   builder.ExpectOk();
 
   builder.AppendLine(
@@ -1556,7 +1560,74 @@ TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
       HasEncryptionData,
       std::make_tuple(GURL("http://localhost/enc.key"),
                       XKeyTagMethod::kSampleAESCTR, XKeyTagKeyFormat::kIdentity,
-                      std::make_tuple(0, 6)));
+                      std::make_tuple(0, 6),
+                      MediaSegment::EncryptionData::KeyLocation::kSafeOrigin));
+  builder.ExpectOk();
+
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI=\"https://example.com/"
+      "key\",KEYFORMAT="
+      "\"identity\"");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data06.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data06.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 7);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(
+          GURL("https://example.com/key"), XKeyTagMethod::kSampleAESCTR,
+          XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 7),
+          MediaSegment::EncryptionData::KeyLocation::kUnsafeOrigin));
+  builder.ExpectOk();
+
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI=\"data:text/"
+      "plain;base64,SGVsbG8sIFdvcmxkIQ==\",KEYFORMAT="
+      "\"identity\"");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data06.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data06.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 8);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(GURL("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="),
+                      XKeyTagMethod::kSampleAESCTR, XKeyTagKeyFormat::kIdentity,
+                      std::make_tuple(0, 8),
+                      MediaSegment::EncryptionData::KeyLocation::kSafeOrigin));
+  builder.ExpectOk();
+
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI=\"//keyhost/key\","
+      "KEYFORMAT=\"identity\"");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data07.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data07.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 9);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(
+          GURL("http://keyhost/key"), XKeyTagMethod::kSampleAESCTR,
+          XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 9),
+          MediaSegment::EncryptionData::KeyLocation::kUnsafeOrigin));
+  builder.ExpectOk();
+
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI=\"/keypath/key\","
+      "KEYFORMAT=\"identity\"");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data08.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data08.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 10);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(GURL("http://localhost/keypath/key"),
+                      XKeyTagMethod::kSampleAESCTR, XKeyTagKeyFormat::kIdentity,
+                      std::make_tuple(0, 10),
+                      MediaSegment::EncryptionData::KeyLocation::kSafeOrigin));
   builder.ExpectOk();
 }
 

@@ -323,7 +323,6 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
     return ManifestDemuxer::SeekState::kIsReady;
   }
 
-  key_.clear();
   last_discontinuity_sequence_num_ = std::nullopt;
 
   if (IsLive()) {

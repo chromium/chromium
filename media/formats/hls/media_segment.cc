@@ -35,11 +35,13 @@ MediaSegment::EncryptionData::EncryptionData(
     GURL uri,
     XKeyTagMethod method,
     XKeyTagKeyFormat format,
-    MediaSegment::EncryptionData::IVContainer iv)
+    MediaSegment::EncryptionData::IVContainer iv,
+    KeyLocation location)
     : uri_(std::move(uri)),
       method_(method),
       iv_(std::move(iv)),
-      format_(format) {}
+      format_(format),
+      key_location_(location) {}
 
 MediaSegment::EncryptionData::~EncryptionData() = default;
 

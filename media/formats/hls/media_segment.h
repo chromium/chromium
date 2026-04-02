@@ -51,13 +51,24 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
    public:
     REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
+    // KeyLocation is considered "safe" when it is either a data:// url, or when
+    // it is a path-only URL and therefore on the same origin as the manifest
+    // in which it is included. Manifests should not be allowed to load keys
+    // that would otherwise be cross-origin to the manifest itself unless the
+    // key supports the proper cross-origin headers.
+    enum class KeyLocation {
+      kSafeOrigin,
+      kUnsafeOrigin,
+    };
+
     using IVType = types::parsing::HexRepr<128>;
     using IVContainer = std::optional<IVType::Container>;
 
     EncryptionData(GURL uri,
                    XKeyTagMethod method,
                    XKeyTagKeyFormat format,
-                   IVContainer iv);
+                   IVContainer iv,
+                   KeyLocation location);
     EncryptionData(const EncryptionData& copy) = delete;
     EncryptionData(EncryptionData&& copy) = delete;
     EncryptionData& operator=(const EncryptionData& copy) = delete;
@@ -67,6 +78,7 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     XKeyTagMethod GetMethod() const { return method_; }
     std::vector<uint8_t> GetKey() const { return key_; }
     XKeyTagKeyFormat GetKeyFormat() const { return format_; }
+    KeyLocation GetKeyLocation() const { return key_location_; }
 
     bool NeedsKeyFetch() const { return key_.empty(); }
 
@@ -89,6 +101,7 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     const XKeyTagMethod method_;
     const IVContainer iv_;
     const XKeyTagKeyFormat format_;
+    const KeyLocation key_location_;
 
     // Used for clear key AES128 and AES256 full segment encryption.
     std::vector<uint8_t> key_;

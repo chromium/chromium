@@ -15,11 +15,6 @@ namespace media {
 
 namespace {
 
-enum class KeyMode {
-  kPresent,
-  kAbsent,
-};
-
 enum class InitMode {
   kPresent,
   kAbsent,
@@ -61,20 +56,25 @@ class HlsNetworkAccessImplUnittest : public testing::Test {
       std::optional<std::tuple<uint64_t, uint64_t>> byte_range,
       std::optional<std::tuple<uint64_t, uint64_t>> init_br,
       InitMode init_mode = InitMode::kAbsent,
-      KeyMode key_mode = KeyMode::kAbsent) {
+      std::optional<std::string> key_location = std::nullopt) {
     scoped_refptr<hls::MediaSegment::InitializationSegment> init = nullptr;
     scoped_refptr<hls::MediaSegment::EncryptionData> enc_data = nullptr;
     if (init_mode == InitMode::kPresent) {
       init = base::MakeRefCounted<hls::MediaSegment::InitializationSegment>(
           GURL("https://foo.com"), ByteRangeFromTuple(init_br));
     }
-    if (key_mode == KeyMode::kPresent) {
+    auto manifest_uri = GURL("https://example.com");
+    if (key_location.has_value()) {
+      auto key_uri = GURL(*key_location);
       enc_data = base::MakeRefCounted<hls::MediaSegment::EncryptionData>(
-          GURL("https://example.com/enc.key"), hls::XKeyTagMethod::kAES128,
-          hls::XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 0));
+          GURL(*key_location), hls::XKeyTagMethod::kAES128,
+          hls::XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 0),
+          key_uri.host() == manifest_uri.host()
+              ? hls::MediaSegment::EncryptionData::KeyLocation::kSafeOrigin
+              : hls::MediaSegment::EncryptionData::KeyLocation::kUnsafeOrigin);
     }
     return base::MakeRefCounted<hls::MediaSegment>(
-        base::Seconds(1), 0, 0, GURL("https://example.com"), std::move(init),
+        base::Seconds(1), 0, 0, manifest_uri, std::move(init),
         std::move(enc_data), ByteRangeFromTuple(byte_range), std::nullopt,
         false, false, init_mode == InitMode::kPresent, false);
   }
@@ -131,7 +131,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestReadSimpleSegment) {
   factory_->AddReadExpectation(1000, 16384, 0);
 
   network_access_->ReadMediaSegment(
-      *segment, /*read_chunked=*/false, /*include_init=*/true,
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
       base::BindOnce([&](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -153,7 +153,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestReadLargerSegment) {
   factory_->AddReadExpectation(49153, 16384, 0);
 
   network_access_->ReadMediaSegment(
-      *segment, /*read_chunked=*/false, /*include_init=*/true,
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -177,7 +177,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestReadSegmentWithInit) {
   factory_->PregenerateNextMock();
 
   network_access_->ReadMediaSegment(
-      *segment, /*read_chunked=*/false, /*include_init=*/true,
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -202,7 +202,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestReadLongerInitSegment) {
   factory_->PregenerateNextMock();
 
   network_access_->ReadMediaSegment(
-      *segment, /*read_chunked=*/false, /*include_init=*/true,
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -220,7 +220,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithSmallRange) {
   factory_->AddReadExpectation(100, 100, 100);
 
   network_access_->ReadMediaSegment(
-      *segment, /*read_chunked=*/false, /*include_init=*/true,
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
       base::BindOnce([&](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -244,7 +244,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithLargeRange) {
   factory_->AddReadExpectation(98404, 1696, 1696);
 
   network_access_->ReadMediaSegment(
-      *segment, /*read_chunked=*/false, /*include_init=*/true,
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
       base::BindOnce([&](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -262,7 +262,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentReadNoChunk) {
   factory_->AddReadExpectation(100, 16384, 16384);
 
   network_access_->ReadMediaSegment(
-      *segment, /*read_chunked=*/true, /*include_init=*/true,
+      *segment, /*read_chunked=*/true, /*include_init_segment=*/true,
       base::BindOnce([&](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
@@ -276,7 +276,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentReadNoChunk) {
 
 TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithKey) {
   auto segment = MakeSegment(std::nullopt, std::nullopt, InitMode::kAbsent,
-                             KeyMode::kPresent);
+                             "https://example.com/enc.key");
 
   // This actually has to be 16 non-zero bytes.
   auto* ds_for_keyfetch = factory_->PregenerateNextMock();
@@ -289,6 +289,8 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithKey) {
       });
   EXPECT_CALL(*ds_for_keyfetch, Read(16, SpanSizeEq(16384), _))
       .WillOnce(base::test::RunOnceCallback<2>(0));
+  EXPECT_CALL(*ds_for_keyfetch, WouldTaintOrigin())
+      .WillRepeatedly(testing::Return(true));
 
   // Then expect media content to be read.
   factory_->AddReadExpectation(0, 16384, 1000);
@@ -297,7 +299,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithKey) {
   ASSERT_NE(segment->GetEncryptionData(), nullptr);
   ASSERT_TRUE(segment->GetEncryptionData()->NeedsKeyFetch());
   network_access_->ReadMediaSegment(
-      *segment, /*read_chunked=*/false, /*include_init=*/true,
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
       base::BindOnce(
           [&](scoped_refptr<hls::MediaSegment> segment,
               HlsDataSourceProvider::ReadResult result) {
@@ -309,6 +311,45 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithKey) {
             ASSERT_FALSE(stream->CanReadMore());
             ASSERT_NE(segment->GetEncryptionData(), nullptr);
             ASSERT_FALSE(segment->GetEncryptionData()->NeedsKeyFetch());
+          },
+          segment));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithCORSKey) {
+  auto segment = MakeSegment(std::nullopt, std::nullopt, InitMode::kAbsent,
+                             "https://example.net/enc.key");
+
+  // This actually has to be 16 non-zero bytes.
+  auto* ds_for_keyfetch = factory_->PregenerateNextMock();
+  EXPECT_CALL(*ds_for_keyfetch, Initialize)
+      .WillOnce(base::test::RunOnceCallback<0>(true));
+  EXPECT_CALL(*ds_for_keyfetch, Read(0, SpanSizeEq(16384), _))
+      .WillOnce([](int64_t, base::span<uint8_t> data, DataSource::ReadCB cb) {
+        std::ranges::fill(data.first<16>(), 'x');
+        std::move(cb).Run(16);
+      });
+  EXPECT_CALL(*ds_for_keyfetch, Read(16, SpanSizeEq(16384), _))
+      .WillOnce(base::test::RunOnceCallback<2>(0));
+  EXPECT_CALL(*ds_for_keyfetch, WouldTaintOrigin())
+      .WillRepeatedly(testing::Return(true));
+
+  // Then expect media content to be read.
+  factory_->AddReadExpectation(0, 16384, 1000);
+  factory_->AddReadExpectation(1000, 16384, 0);
+
+  ASSERT_NE(segment->GetEncryptionData(), nullptr);
+  ASSERT_TRUE(segment->GetEncryptionData()->NeedsKeyFetch());
+  network_access_->ReadMediaSegment(
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
+      base::BindOnce(
+          [&](scoped_refptr<hls::MediaSegment> segment,
+              HlsDataSourceProvider::ReadResult result) {
+            // The key was hosted on example.net while the manifest is hosted
+            // on example.com. The example.net request did not provide a
+            // Access-Control-Allow-Origin header in it's request, so the use
+            // of the key is blocked, and the segment cannot be decrypted.
+            ASSERT_FALSE(result.has_value());
           },
           segment));
   task_environment_.RunUntilIdle();

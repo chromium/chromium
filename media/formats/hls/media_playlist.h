@@ -139,7 +139,7 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // `tag_recorder` is an optional metrics collection helper.
   static ParseStatus::Or<scoped_refptr<MediaPlaylist>> Parse(
       std::string_view source,
-      GURL uri,
+      GURL playlist_uri,
       types::DecimalInteger version,
       const MultivariantPlaylist* parent_playlist);
 

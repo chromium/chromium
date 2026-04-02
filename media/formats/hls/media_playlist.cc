@@ -52,7 +52,7 @@ MediaPlaylist::~MediaPlaylist() = default;
 // static
 ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     std::string_view source,
-    GURL uri,
+    GURL playlist_uri,
     types::DecimalInteger version,
     const MultivariantPlaylist* parent_playlist) {
   DCHECK(version != 0);
@@ -61,7 +61,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     return ParseStatusCode::kPlaylistHasUnsupportedVersion;
   }
 
-  if (!uri.is_valid()) {
+  if (!playlist_uri.is_valid()) {
     return ParseStatusCode::kInvalidUri;
   }
 
@@ -240,15 +240,33 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
             }
             encryption_data = nullptr;
           } else {
-            auto resource_uri = uri.Resolve(value.uri.value().Str());
+            auto declared_uri_value = value.uri.value().Str();
+            auto resource_uri = playlist_uri.Resolve(declared_uri_value);
             if (!resource_uri.is_valid()) {
               return ParseStatusCode::kInvalidUri;
             }
+            auto key_location =
+                MediaSegment::EncryptionData::KeyLocation::kUnsafeOrigin;
+            if (resource_uri.scheme() == "data") {
+              // Note that blob: is unacceptable as a safe origin since it may
+              // be populated by an opaque fetch response.
+              key_location =
+                  MediaSegment::EncryptionData::KeyLocation::kSafeOrigin;
+            } else if (!declared_uri_value.starts_with("//") &&
+                       !GURL(declared_uri_value).has_scheme()) {
+              // "Path-only" URLs are considered safe as well, since they are
+              // hosted on the same origin as the manifest in which they are
+              // declared. Note that this _not_ the same as the page security
+              // origin.
+              key_location =
+                  MediaSegment::EncryptionData::KeyLocation::kSafeOrigin;
+            }
+
             new_encryption_data = true;
             encryption_data =
                 base::MakeRefCounted<MediaSegment::EncryptionData>(
                     std::move(resource_uri), value.method, value.keyformat,
-                    value.iv);
+                    value.iv, key_location);
           }
 
           break;
@@ -262,7 +280,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           auto value = std::move(result).value();
 
           // Resolve the URI against the playlist URI
-          auto resource_uri = uri.Resolve(value.uri.Str());
+          auto resource_uri = playlist_uri.Resolve(value.uri.Str());
           if (!resource_uri.is_valid()) {
             return ParseStatusCode::kInvalidUri;
           }
@@ -356,8 +374,8 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     // `GetNextLineItem` should return either a TagItem (handled above) or a
     // UriItem.
     static_assert(std::variant_size<GetNextLineItemResult>() == 2);
-    auto segment_uri_result = ParseUri(std::get<UriItem>(std::move(item)), uri,
-                                       common_state, sub_buffer);
+    auto segment_uri_result = ParseUri(std::get<UriItem>(std::move(item)),
+                                       playlist_uri, common_state, sub_buffer);
     if (!segment_uri_result.has_value()) {
       return std::move(segment_uri_result).error();
     }
@@ -544,7 +562,7 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
 
   return base::MakeRefCounted<MediaPlaylist>(
       base::PassKey<MediaPlaylist>(),
-      CtorArgs{.uri = std::move(uri),
+      CtorArgs{.uri = std::move(playlist_uri),
                .version = version,
                .independent_segments = independent_segments,
                .target_duration = target_duration,
