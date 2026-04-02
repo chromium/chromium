@@ -905,32 +905,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(screenshot.mimeType, 'image/jpeg');
   }
 
-  async testPermissionAccess() {
-    assertDefined(this.host.getMicrophonePermissionState);
-    assertDefined(this.host.getLocationPermissionState);
-    assertDefined(this.host.getTabContextPermissionState);
-
-    const microphoneState =
-        observeSequence<boolean>(this.host.getMicrophonePermissionState());
-    const locationState =
-        observeSequence<boolean>(this.host.getLocationPermissionState());
-    const tabContextState =
-        observeSequence<boolean>(this.host.getTabContextPermissionState());
-
-    assertFalse(await microphoneState.next());
-    assertFalse(await locationState.next());
-    assertFalse(await tabContextState.next());
-
-    this.host.setMicrophonePermissionState(true);
-    assertTrue(await microphoneState.next());
-
-    this.host.setLocationPermissionState(true);
-    assertTrue(await locationState.next());
-
-    this.host.setTabContextPermissionState(true);
-    assertTrue(await tabContextState.next());
-  }
-
   async testDefaultTabContextApiIsUndefinedWhenFeatureDisabled() {
     assertTrue(this.host.getDefaultTabContextPermissionState === undefined);
   }

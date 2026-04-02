@@ -2245,15 +2245,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPermissionAccess) {
-  // Obsolete in multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest();
-  histogram_tester->ExpectUniqueSample(
-      "Glic.Sharing.ActiveTabSharingState.OnTabContextPermissionGranted",
-      ActiveTabSharingState::kActiveTabIsShared, 1);
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosedCaptioning) {
   ExecuteJsTest();
 }
@@ -2341,9 +2332,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   // Sleeping here is needed so that the calls made from the web client are
   // handled by the browser before the check below.
   sleepWithRunLoop(base::Milliseconds(100));
-  histogram_tester->ExpectUniqueSample(
-      "Glic.Sharing.ActiveTabSharingState.OnUserInputSubmitted",
-      ActiveTabSharingState::kTabContextPermissionNotGranted, 1);
 
   histogram_tester->ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
                                        true, 1);

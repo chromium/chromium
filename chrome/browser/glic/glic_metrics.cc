@@ -64,9 +64,6 @@ class DummyDelegateImpl : public GlicMetrics::Delegate {
   bool IsWindowShowing() const override { return false; }
   bool IsWindowAttached() const override { return false; }
   content::WebContents* GetFocusedWebContents() override { return nullptr; }
-  ActiveTabSharingState GetActiveTabSharingState() override {
-    return ActiveTabSharingState::kNoTabCanBeShared;
-  }
   int32_t GetNumPinnedTabs() const override { return 0; }
   std::vector<content::WebContents*> GetPinnedAndSharedWebContents() override {
     return std::vector<content::WebContents*>();
@@ -81,18 +78,6 @@ class BaseDelegate : public GlicMetrics::Delegate {
   content::WebContents* GetFocusedWebContents() override {
     FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
     return ftd.is_focus() ? ftd.focus()->GetContents() : nullptr;
-  }
-  ActiveTabSharingState GetActiveTabSharingState() override {
-    if (!pref_service_->GetBoolean(prefs::kGlicTabContextEnabled)) {
-      return ActiveTabSharingState::kTabContextPermissionNotGranted;
-    }
-    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
-    if (ftd.is_focus()) {
-      return ActiveTabSharingState::kActiveTabIsShared;
-    } else if (ftd.unfocused_tab()) {
-      return ActiveTabSharingState::kCannotShareActiveTab;
-    }
-    return ActiveTabSharingState::kNoTabCanBeShared;
   }
   int32_t GetNumPinnedTabs() const override {
     return sharing_manager_->GetNumPinnedTabs();
@@ -305,10 +290,6 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
   pref_registrar_.Add(prefs::kGlicPinnedToTabstrip,
                       base::BindRepeating(&GlicMetrics::OnPinningPrefChanged,
                                           base::Unretained(this)));
-  pref_registrar_.Add(
-      prefs::kGlicTabContextEnabled,
-      base::BindRepeating(&GlicMetrics::OnTabContextEnabledPrefChanged,
-                          base::Unretained(this)));
 }
 
 GlicMetrics::~GlicMetrics() = default;
@@ -412,9 +393,6 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
       "Glic.Session.InputSubmit.BrowserActiveState",
       browser_activity_observer_->GetBrowserActiveState());
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
-  base::UmaHistogramEnumeration(
-      "Glic.Sharing.ActiveTabSharingState.OnUserInputSubmitted",
-      delegate_->GetActiveTabSharingState());
   // Reset turn data and start populating it for the new turn being started.
   turn_ = {};
   turn_.input_submitted_time_ = base::TimeTicks::Now();
@@ -653,10 +631,6 @@ void GlicMetrics::OnGlicWindowOpenAndReady() {
   if (show_start_time_.is_null()) {
     return;
   }
-
-  base::UmaHistogramEnumeration(
-      "Glic.Sharing.ActiveTabSharingState.OnPanelOpenAndReady",
-      delegate_->GetActiveTabSharingState());
 
   // Record the presentation time of showing the glic panel in an UMA histogram.
   base::TimeDelta presentation_time = base::TimeTicks::Now() - show_start_time_;
@@ -993,18 +967,6 @@ void GlicMetrics::OnPinningPrefChanged() {
 
 void GlicMetrics::OnTabPinnedForSharing(GlicTabPinnedForSharingResult result) {
   base::UmaHistogramEnumeration("Glic.Sharing.TabPinnedForSharing", result);
-}
-
-void GlicMetrics::OnTabContextEnabledPrefChanged() {
-  bool is_panel_open = !session_start_time_.is_null();
-  bool is_enabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled);
-  if (is_panel_open && is_enabled) {
-    base::UmaHistogramEnumeration(
-        "Glic.Sharing.ActiveTabSharingState."
-        "OnTabContextPermissionGranted",
-        delegate_->GetActiveTabSharingState());
-  }
 }
 
 void GlicMetrics::RecordStartupEnablement() {

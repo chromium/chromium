@@ -74,9 +74,6 @@ class MockDelegate : public GlicMetrics::Delegate {
   content::WebContents* GetFocusedWebContents() override {
     return contents_.get();
   }
-  ActiveTabSharingState GetActiveTabSharingState() override {
-    return tab_sharing_state;
-  }
   int32_t GetNumPinnedTabs() const override { return num_pinned_tabs; }
   std::vector<content::WebContents*> GetPinnedAndSharedWebContents() override {
     return pinned_shared_tabs;
@@ -91,8 +88,6 @@ class MockDelegate : public GlicMetrics::Delegate {
 
   bool showing = false;
   bool attached = false;
-  ActiveTabSharingState tab_sharing_state =
-      ActiveTabSharingState::kActiveTabIsShared;
   int32_t num_pinned_tabs = 0;
   std::vector<content::WebContents*> pinned_shared_tabs;
 
@@ -366,9 +361,6 @@ TEST_F(GlicMetricsTest, Basic) {
       "Glic.Session.InputSubmit.BrowserActiveState", 5 /*kBrowserHidden*/, 1);
   histogram_tester().ExpectUniqueSample(
       "Glic.Session.ResponseStart.BrowserActiveState", 5 /*kBrowserHidden*/, 1);
-  histogram_tester().ExpectUniqueSample(
-      "Glic.Sharing.ActiveTabSharingState.OnUserInputSubmitted",
-      ActiveTabSharingState::kActiveTabIsShared, 1);
   EXPECT_THAT(
       histogram_tester().GetAllSamplesForPrefix("Glic.Response.StartTime"),
       IsEmpty());
@@ -428,7 +420,6 @@ TEST_F(GlicMetricsTest, FreUserInputEntrypointRecorded) {
 TEST_F(GlicMetricsTest, ResponseStartTime_WithFocusedTab) {
   delegate()->showing = true;
   delegate()->attached = true;
-  delegate()->tab_sharing_state = ActiveTabSharingState::kActiveTabIsShared;
   InitializeTestWebContents();
   delegate()->SetFocusedWebContents(test_web_contents());
 
@@ -452,8 +443,6 @@ TEST_F(GlicMetricsTest, ResponseStartTime_WithFocusedTab) {
 TEST_F(GlicMetricsTest, ResponseStartTime_WithPinnedAndSharedTab) {
   delegate()->showing = true;
   delegate()->attached = true;
-  delegate()->tab_sharing_state =
-      ActiveTabSharingState::kTabContextPermissionNotGranted;
   InitializeTestWebContents();
   delegate()->AddToPinnedSharedTabs(test_web_contents());
 
@@ -1023,50 +1012,6 @@ TEST_F(GlicMetricsTest, PositionOnOpenAndClose) {
   metrics()->OnGlicWindowShown(nullptr, std::nullopt, gfx::Rect(50, 50, 0, 0));
   histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
                                        DisplayPosition::kUnknown, 2);
-}
-
-TEST_F(GlicMetricsTest, TabFocusStateReporting) {
-  delegate()->tab_sharing_state = ActiveTabSharingState::kActiveTabIsShared;
-  // Should not record samples on denying tab access or with the panel not
-  // considered open.
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, false);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, true);
-
-  // Marks the panel as starting  to open; enables OnGlicWindowOpenAndReady to
-  // record metrics.
-  metrics()->OnGlicWindowStartedOpening(/*attached=*/true,
-                                        mojom::InvocationSource::kOsButton);
-  // Records a sample of *.OnPanelOpenAndReady.
-  metrics()->OnGlicWindowOpenAndReady();
-
-  delegate()->tab_sharing_state = ActiveTabSharingState::kCannotShareActiveTab;
-  // Granting tab access records a sample of *.OnTabContextPermissionGranted.
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, false);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, true);
-  // Should not record a sample as the user is granting a different permission.
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicGeolocationEnabled, false);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicGeolocationEnabled, true);
-
-  delegate()->tab_sharing_state = ActiveTabSharingState::kNoTabCanBeShared;
-  // Records a sample of *.OnUserInputSubmitted.
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
-
-  // Marks the panel as closed.
-  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
-  // Should not record samples on denying tab access or with the panel not
-  // considered open.
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, false);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicTabContextEnabled, true);
-
-  histogram_tester().ExpectUniqueSample(
-      "Glic.Sharing.ActiveTabSharingState.OnPanelOpenAndReady",
-      ActiveTabSharingState::kActiveTabIsShared, 1);
-  histogram_tester().ExpectUniqueSample(
-      "Glic.Sharing.ActiveTabSharingState.OnTabContextPermissionGranted",
-      ActiveTabSharingState::kCannotShareActiveTab, 1);
-  histogram_tester().ExpectUniqueSample(
-      "Glic.Sharing.ActiveTabSharingState.OnUserInputSubmitted",
-      ActiveTabSharingState::kNoTabCanBeShared, 1);
 }
 
 TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnce) {
