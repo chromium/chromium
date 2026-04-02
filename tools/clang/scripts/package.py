@@ -344,6 +344,9 @@ def main():
     want.update([
         # pylint: disable=line-too-long
 
+        # Required for use_debug_fissions=true to not break symbolization on swarming.
+        'bin/llvm-dwp',
+
         # Add llvm-objcopy for partition extraction on Android.
         'bin/llvm-objcopy',
 
