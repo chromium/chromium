@@ -28,7 +28,7 @@ namespace {
 
 bool g_job_priority_boosting = false;
 
-BASE_FEATURE(kJobPriorityBoosting, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kJobPriorityBoosting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Capped to allow assigning task_ids from a bitfield.
 constexpr size_t kMaxWorkersPerJob = 32;
