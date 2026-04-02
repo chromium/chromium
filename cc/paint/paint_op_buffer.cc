@@ -585,8 +585,7 @@ void PaintOpBuffer::UpdateSaveLayerBounds(size_t offset, const SkRect& bounds) {
       break;
     case SaveLayerFiltersOp::kType:
       CHECK_LE(offset + sizeof(SaveLayerFiltersOp), used_);
-      // Do not update the bounds. They are only used for backdrop filter
-      // as a clip for the filtered area, and must remain unchanged.
+      static_cast<SaveLayerFiltersOp*>(op)->bounds = bounds;
       break;
     default:
       NOTREACHED();
