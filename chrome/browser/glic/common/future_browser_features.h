@@ -45,14 +45,6 @@ inline bool IsActive(BrowserWindowInterface* browser_window) {
 #endif
 }
 
-inline bool IsDeleteScheduled(BrowserWindowInterface* browser_window) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-  return browser_window->GetBrowserForMigrationOnly()->is_delete_scheduled();
-#else
-  return false;
-#endif
-}
-
 inline base::WeakPtr<BrowserWindowInterface> GetBrowserWindowInterfaceWeakPtr(
     BrowserWindowInterface* browser_window) {
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL

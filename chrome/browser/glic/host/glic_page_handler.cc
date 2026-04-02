@@ -302,7 +302,7 @@ class ActiveStateCalculator : public PanelStateObserver {
     // attached_browser is always null in Multi-instance, and ANDROID implies
     // Multi-instance.
 #if !BUILDFLAG(IS_ANDROID)
-    if (attached_browser_ && !IsDeleteScheduled(attached_browser_)) {
+    if (attached_browser_ && !attached_browser_->IsDeleteScheduled()) {
       attached_browser_subscriptions_.push_back(
           attached_browser_->RegisterDidBecomeActive(base::BindRepeating(
               &ActiveStateCalculator::AttachedBrowserActiveChanged,
@@ -325,17 +325,23 @@ class ActiveStateCalculator : public PanelStateObserver {
       return false;
     }
     // TODO(b:444463509): Implement better calculation.
+
+#if !BUILDFLAG(IS_ANDROID)
     if (GlicEnabling::IsMultiInstanceEnabled()) {
       return true;
     }
     if (!attached_browser_) {
       return true;
     }
-    if (IsDeleteScheduled(attached_browser_)) {
+    if (attached_browser_->IsDeleteScheduled()) {
       return false;
     }
 
     return glic::IsActive(attached_browser_);
+#else
+    // MultiInstance is always enabled on Android.
+    return true;
+#endif
   }
 
   base::OneShotTimer calc_timer_;
