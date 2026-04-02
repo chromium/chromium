@@ -178,6 +178,10 @@ class EntityDataManager
   // the availability has changed.
   void SetReauthAvailability(bool reauth_available);
 
+  std::optional<bool> GetReauthAvailability() const {
+    return reauth_availability_;
+  }
+
   const GeoIpCountryCode& GetVariationCountryCode() const;
 
   base::WeakPtr<EntityDataManager> GetWeakPtr() {

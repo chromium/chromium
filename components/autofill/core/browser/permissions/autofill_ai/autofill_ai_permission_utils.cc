@@ -463,6 +463,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 // are satisfied.
 [[nodiscard]] bool SatisfiesMiscellaneousRequirements(
     bool is_off_the_record,
+    bool supports_reauth,
     bool has_entity_data_saved,
     const GeoIpCountryCode& country_code,
     AutofillAiAction action,
@@ -502,6 +503,35 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
         return false;
       }
       break;
+    case AutofillAiAction::kAddLocalEntityInstanceInSettings:
+    case AutofillAiAction::kCrowdsourcingVote:
+    case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
+    case AutofillAiAction::kImport:
+    case AutofillAiAction::kIphForOptIn:
+    case AutofillAiAction::kListEntityInstancesInSettings:
+    case AutofillAiAction::kLogToMqls:
+    case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kEnableOrDisable:
+    case AutofillAiAction::kServerClassificationModel:
+    case AutofillAiAction::kFilling:
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
+      break;
+  }
+
+  // Re-auth availability.
+  switch (action) {
+    case AutofillAiAction::kImportToWallet:
+      CHECK(entity_type) << "An entity type is required to check if an entity "
+                            "can be upstreamed";
+      // Importing Wallet private passes is only supported on devices with
+      // re-auth.
+      if (!supports_reauth &&
+          IsMaskedStorageSupported(*entity_type,
+                                   EntityInstance::RecordType::kServerWallet)) {
+        return false;
+      }
+      break;
+    case AutofillAiAction::kWalletDataSharingPromotion:
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
@@ -598,9 +628,10 @@ bool MayPerformAutofillAiAction(
     return false;
   }
 
-  return SatisfiesMiscellaneousRequirements(is_off_the_record,
-                                            has_entity_data_saved, country_code,
-                                            action, entity_type, debug_message);
+  // If the re-auth availability is unknown, error on the side of caution.
+  return SatisfiesMiscellaneousRequirements(
+      is_off_the_record, edm->GetReauthAvailability().value_or(false),
+      has_entity_data_saved, country_code, action, entity_type, debug_message);
 }
 
 bool GetAutofillAiOptInStatus(const AutofillClient& client) {

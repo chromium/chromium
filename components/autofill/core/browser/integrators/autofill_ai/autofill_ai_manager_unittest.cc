@@ -484,6 +484,7 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
   AutofillAiManagerImportFormTest() {
     autofill_client().set_wallet_pass_access_manager(
         std::make_unique<NiceMock<MockWalletPassAccessManager>>());
+    edm().SetReauthAvailability(true);
   }
 
   static constexpr char kDefaultUrl[] = "https://example.com";

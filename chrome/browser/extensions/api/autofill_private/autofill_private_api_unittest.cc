@@ -608,8 +608,10 @@ class AutofillPrivateApiSavePrivatePassToWalletTest
   void SetUpOnMainThread() override {
     AutofillPrivateApiBrowserTest::SetUpOnMainThread();
 
-    autofill_client()->set_entity_data_manager(
-        autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
+    autofill::EntityDataManager* edm =
+        autofill::AutofillEntityDataManagerFactory::GetForProfile(profile());
+    edm->SetReauthAvailability(true);
+    autofill_client()->set_entity_data_manager(edm);
     autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
     autofill_client()->SetVariationConfigCountryCode(
         autofill::GeoIpCountryCode("US"));
