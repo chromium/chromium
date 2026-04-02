@@ -24,16 +24,17 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -54,7 +55,7 @@ import java.util.function.Supplier;
 /** Integration tests for {@link TabContextMenuItemDelegate}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "This class runs tests that create new activities.")
 public class TabContextMenuItemDelegateTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -129,7 +130,7 @@ public class TabContextMenuItemDelegateTest {
         createContextMenuForCurrentTab();
 
         // Open a new window when there is only one existing window.
-        ChromeTabbedActivity activity =
+        ChromeTabbedActivity secondActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
                         Stage.RESUMED,
@@ -139,11 +140,9 @@ public class TabContextMenuItemDelegateTest {
                                         new Referrer("about:blank", 0),
                                         /* isIncognito= */ false,
                                         /* preferNew= */ false));
-        mExtraTabbedActivities.add(activity);
-        assertFalse(
-                "Window management dialog should not be visible with one window.",
-                mModalDialogManager.isShowing());
+        mExtraTabbedActivities.add(secondActivity);
 
+        // Don't show instance picker dialog when there is only one other window.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContextMenuDelegate.openInOtherWindow(
@@ -152,7 +151,27 @@ public class TabContextMenuItemDelegateTest {
                             /* isIncognito= */ false,
                             /* preferNew= */ false);
                 });
-        assertTrue("Window management dialog should be visible.", mModalDialogManager.isShowing());
+        assertFalse(
+                "Dialog should not be visible when there is only one other window.",
+                mModalDialogManager.isShowing());
+
+        // Create a third window. The instance picker dialog should be shown when there are at least
+        // two other windows.
+        ChromeTabbedActivity thirdActivity =
+                MultiWindowTestHelper.createNewChromeTabbedActivity(
+                        mActivityTestRule.getActivity());
+        mExtraTabbedActivities.add(thirdActivity);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContextMenuDelegate.openInOtherWindow(
+                            new GURL("about:blank"),
+                            new Referrer("about:blank", 0),
+                            /* isIncognito= */ false,
+                            /* preferNew= */ false);
+                });
+        assertTrue(
+                "Dialog should be visible when there are at least two other windows.",
+                mModalDialogManager.isShowing());
     }
 
     @Test

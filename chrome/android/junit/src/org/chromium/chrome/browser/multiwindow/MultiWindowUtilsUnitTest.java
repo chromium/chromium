@@ -1169,6 +1169,20 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
+    public void testGetLastAccessedWindowIdExcludingSelf() {
+        MultiWindowTestUtils.enableMultiInstance();
+        writeInstanceInfo(INSTANCE_ID_0, URL_1, 3, 0, TASK_ID_5);
+        writeInstanceInfo(INSTANCE_ID_1, URL_2, 2, 0, TASK_ID_6);
+        writeInstanceInfo(INSTANCE_ID_2, URL_3, 1, 0, INVALID_TASK_ID);
+
+        Assert.assertEquals(
+                "The last accessed active window ID excluding the current id should be returned.",
+                INSTANCE_ID_1,
+                MultiWindowUtils.getLastAccessedWindowIdExcludingSelf(
+                        INSTANCE_ID_0, PersistedInstanceType.ACTIVE));
+    }
+
+    @Test
     public void testInstanceCreationLimitMessage() {
         MultiWindowUtils.setMaxInstancesForTesting(3);
         MessageDispatcher messageDispatcher = mock(MessageDispatcher.class);
@@ -1400,6 +1414,7 @@ public class MultiWindowUtilsUnitTest {
         ChromeMultiInstancePersistentStore.writeLastAccessedTime(instanceId);
         ChromeMultiInstancePersistentStore.writeTabCount(instanceId, tabCount, incognitoTabCount);
         ChromeMultiInstancePersistentStore.writeTaskId(instanceId, taskId);
+        if (taskId != -1) MultiWindowUtils.addAppTaskIdForTesting(taskId);
         ChromeMultiInstancePersistentStore.writeProfileType(instanceId, profileType);
     }
 

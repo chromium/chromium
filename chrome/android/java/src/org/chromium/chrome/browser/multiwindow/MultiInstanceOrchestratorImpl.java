@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -454,38 +455,53 @@ import java.util.Map;
                     /* preferNew= */ true);
         }
 
-        if (isTargetIncognitoWindow) {
-            // Launch the URL in the last accessed incognito window.
-            Activity destActivity =
-                    MultiWindowUtils.getForegroundWindowActivityWithProfileType(
-                            sourceActivity, /* incognito= */ true);
-            if (destActivity != null) {
-                launchUrlInOtherWindow(
-                        sourceActivity,
-                        /* isIncognitoWindow= */ true,
-                        loadUrlParams,
-                        parentTabId,
-                        destActivity,
-                        /* preferNew= */ false);
-                return true;
+        // At this point, we have established that there is at least one other active window of the
+        // target profile type.
+        // We want to present the instance picker dialog for the user to select a target window but
+        // this is not supported in the following scenarios:
+        // 1. The target window is an incognito window.
+        // 2. The source activity does not have an associated MultiInstanceManager instance, likely
+        // because it is finishing or is not a ChromeTabbedActivity.
+        // 3. There is exactly one eligible target window.
+        // In these scenarios, implicitly open the url in the last accessed window of the target
+        // profile type.
+        if (isTargetIncognitoWindow || instanceCount == 1 || multiInstanceManager == null) {
+            int currentInstanceId =
+                    sourceActivity instanceof ChromeTabbedActivity cta
+                            ? cta.getWindowId()
+                            : INVALID_WINDOW_ID;
+            int lastAccessedWindowId =
+                    MultiWindowUtils.getLastAccessedWindowIdExcludingSelf(
+                            currentInstanceId, targetInstanceType);
+            assert lastAccessedWindowId != INVALID_WINDOW_ID
+                    : "Last accessed window id for the target instance type should be valid.";
+            Activity destActivity = MultiWindowUtils.getActivityById(lastAccessedWindowId);
+            if (destActivity == null) {
+                // This means that although the last accessed window is active with a live task, the
+                // activity for it is destroyed.
+                // TODO (crbug.com/495856301): Handle URL launches for windows with destroyed
+                // activities.
+                return false;
             }
-            return false;
+            return launchUrlInOtherWindow(
+                    sourceActivity,
+                    isTargetIncognitoWindow,
+                    loadUrlParams,
+                    parentTabId,
+                    destActivity,
+                    /* preferNew= */ false);
         }
 
-        if (multiInstanceManager != null) {
-            @StringRes int title = R.string.contextmenu_open_in_other_window;
-            multiInstanceManager.showTargetSelectorDialog(
-                    onWindowSelectedForUrlLaunch(
-                            sourceActivity,
-                            parentTabId,
-                            loadUrlParams,
-                            /* isIncognitoWindow= */ false),
-                    targetInstanceType,
-                    title);
-        }
+        @StringRes int title = R.string.contextmenu_open_in_other_window;
+        multiInstanceManager.showTargetSelectorDialog(
+                onWindowSelectedForUrlLaunch(
+                        sourceActivity, parentTabId, loadUrlParams, /* isIncognitoWindow= */ false),
+                targetInstanceType,
+                title);
         return true;
     }
 
+    @VisibleForTesting
     static Callback<InstanceInfo> onWindowSelectedForUrlLaunch(
             Activity sourceActivity,
             int parentTabId,
