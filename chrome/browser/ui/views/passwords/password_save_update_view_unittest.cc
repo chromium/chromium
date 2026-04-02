@@ -26,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -42,7 +43,8 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 
 }  // namespace
 
-class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase {
+class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase,
+                                   public testing::WithParamInterface<bool> {
  public:
   PasswordSaveUpdateViewTest();
   ~PasswordSaveUpdateViewTest() override = default;
@@ -72,14 +74,28 @@ class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase {
     return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CANCEL_BUTTON);
   }
 
+  views::MdTextButton* GetNeverButton() {
+    return IsThreeButton() ? view()->extra_view_for_testing()
+                           : view()->GetCancelButton();
+  }
+  views::MdTextButton* GetNotNowButton() {
+    return IsThreeButton() ? view()->GetCancelButton() : nullptr;
+  }
+
+  bool IsThreeButton() { return GetParam(); }
+
   password_manager::PasswordForm pending_password_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<PasswordSaveUpdateView> view_ = nullptr;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
 };
 
 PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
+  scoped_feature_list_.InitWithFeatureState(
+      features::kThreeButtonPasswordSaveDialog, IsThreeButton());
+
   ON_CALL(*feature_manager_mock(), IsAccountStorageActive)
       .WillByDefault(Return(true));
   ON_CALL(*model_delegate_mock(), GetOrigin)
@@ -117,24 +133,38 @@ void PasswordSaveUpdateViewTest::SimulateSignIn() {
       identity_manager, "test@email.com", signin::ConsentLevel::kSignin);
 }
 
-TEST_F(PasswordSaveUpdateViewTest, HasTitleAndTwoButtons) {
+TEST_P(PasswordSaveUpdateViewTest, HasTitleAndButtons) {
   CreateViewAndShow();
   EXPECT_TRUE(view()->ShouldShowWindowTitle());
   ASSERT_TRUE(view()->GetOkButton());
   EXPECT_EQ(view()->GetOkButton()->GetText(), SaveButtonCaption());
-  ASSERT_TRUE(view()->GetCancelButton());
-  EXPECT_EQ(view()->GetCancelButton()->GetText(), NeverButtonCaption());
-  EXPECT_FALSE(view()->extra_view_for_testing());
+  ASSERT_TRUE(GetNeverButton());
+  EXPECT_EQ(GetNeverButton()->GetText(), NeverButtonCaption());
+  if (IsThreeButton()) {
+    ASSERT_TRUE(GetNotNowButton());
+    EXPECT_EQ(GetNotNowButton()->GetText(), NotNowButtonCaption());
+  } else {
+    EXPECT_FALSE(view()->extra_view_for_testing());
+  }
 }
 
-TEST_F(PasswordSaveUpdateViewTest, NeverButtonClicked) {
+TEST_P(PasswordSaveUpdateViewTest, NeverButtonClicked) {
   CreateViewAndShow();
   EXPECT_CALL(*model_delegate_mock(), NeverSavePassword);
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      view()->GetCancelButton());
+  views::test::InteractionTestUtilSimulatorViews::PressButton(GetNeverButton());
 }
 
-TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
+TEST_P(PasswordSaveUpdateViewTest, NotNowButtonClicked) {
+  CreateViewAndShow();
+  if (!IsThreeButton()) {
+    GTEST_SKIP() << "NotNow button is only available in the 3-button layout";
+  }
+  EXPECT_CALL(*model_delegate_mock(), OnNotNowClicked);
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      GetNotNowButton());
+}
+
+TEST_P(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
   ON_CALL(*feature_manager_mock(), IsAccountStorageActive)
       .WillByDefault(Return(true));
 
@@ -142,7 +172,7 @@ TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
   CreateViewAndShow();
 }
 
-TEST_F(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
+TEST_P(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
   ON_CALL(*feature_manager_mock(), IsAccountStorageActive)
       .WillByDefault(Return(false));
 
@@ -151,7 +181,7 @@ TEST_F(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
 }
 
 // This is a regression test for crbug.com/1093290
-TEST_F(PasswordSaveUpdateViewTest,
+TEST_P(PasswordSaveUpdateViewTest,
        OnThemesChangedShouldNotCrashForFederatedCredentials) {
   GURL kURL("https://example.com");
   url::Origin kOrigin = url::Origin::Create(kURL);
@@ -167,7 +197,7 @@ TEST_F(PasswordSaveUpdateViewTest,
 }
 
 // This is a regression test for crbug.com/1475021
-TEST_F(PasswordSaveUpdateViewTest, SaveButtonIsDisabledWhenPasswordIsEmpty) {
+TEST_P(PasswordSaveUpdateViewTest, SaveButtonIsDisabledWhenPasswordIsEmpty) {
   CreateViewAndShow();
   const PasswordSaveUpdateView* save_bubble =
       static_cast<const PasswordSaveUpdateView*>(view());
@@ -186,43 +216,14 @@ TEST_F(PasswordSaveUpdateViewTest, SaveButtonIsDisabledWhenPasswordIsEmpty) {
       dialog_delegate->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 }
 
-class PasswordSaveThreeButtonDialogViewTest
-    : public PasswordSaveUpdateViewTest {
- public:
-  PasswordSaveThreeButtonDialogViewTest();
-  ~PasswordSaveThreeButtonDialogViewTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-PasswordSaveThreeButtonDialogViewTest::PasswordSaveThreeButtonDialogViewTest() {
-  // Enable an experiment to have the Cancel button simply dismiss the dialog,
-  // and have a third button to explicitly never save the password.
-  scoped_feature_list_.InitWithFeatureState(
-      features::kThreeButtonPasswordSaveDialog, true);
-}
-
-TEST_F(PasswordSaveThreeButtonDialogViewTest, ThreeButtonLayout) {
-  CreateViewAndShow();
-  ASSERT_TRUE(view()->GetOkButton());
-  EXPECT_EQ(view()->GetOkButton()->GetText(), SaveButtonCaption());
-  ASSERT_TRUE(view()->GetCancelButton());
-  EXPECT_EQ(view()->GetCancelButton()->GetText(), NotNowButtonCaption());
-  ASSERT_TRUE(view()->extra_view_for_testing());
-  EXPECT_EQ(view()->extra_view_for_testing()->GetText(), NeverButtonCaption());
-}
-
-TEST_F(PasswordSaveThreeButtonDialogViewTest, ThreeButtonLayoutNotNowClicked) {
-  CreateViewAndShow();
-  EXPECT_CALL(*model_delegate_mock(), OnNotNowClicked);
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      view()->GetCancelButton());
-}
-
-TEST_F(PasswordSaveThreeButtonDialogViewTest, ThreeButtonLayoutNeverClicked) {
-  CreateViewAndShow();
-  EXPECT_CALL(*model_delegate_mock(), NeverSavePassword);
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      view()->extra_view_for_testing());
-}
+// These tests are parameterized to run in the original two-button layout,
+// and the newer three-button variant.  Three-button is now the default, but
+// the original version still runs for a small percentage of users, so
+// maintain test coverage on both variants.  If a new UI variant is introduced,
+// the parameter can be changed to an enum or similar.
+INSTANTIATE_TEST_SUITE_P(All,
+                         PasswordSaveUpdateViewTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "ThreeButton" : "TwoButton";
+                         });
