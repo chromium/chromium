@@ -192,12 +192,10 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                         R.string.button_new_incognito_tab,
                         R.drawable.new_tab_icon);
         mEnabledNewTabButtonData =
-                new DelegateButtonData(
-                        newTabButtonData,
-                        () -> {
-                            newTabButtonClickListener.onClick(null);
-                        });
-        mDisabledNewTabButtonData = new DelegateButtonData(newTabButtonData, null);
+                new DelegateButtonData.Builder(newTabButtonData)
+                        .setOnPress(newTabButtonClickListener::onClick)
+                        .build();
+        mDisabledNewTabButtonData = new DelegateButtonData.Builder(newTabButtonData).build();
 
         if (incognitoReauthControllerSupplier != null) {
             mCallbackController = new CallbackController();

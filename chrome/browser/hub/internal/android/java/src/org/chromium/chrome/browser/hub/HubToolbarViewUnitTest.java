@@ -13,7 +13,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
@@ -112,7 +111,7 @@ public class HubToolbarViewUnitTest {
 
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    @Mock Runnable mOnButton;
+    private final CallbackHelper mOnButtonHelper = new CallbackHelper();
     @Mock Callback<PaneButtonLookup> mPaneButtonLookupCallback;
     @Mock private Pane mPane;
 
@@ -194,7 +193,9 @@ public class HubToolbarViewUnitTest {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
                         R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add_24dp);
-        return new DelegateButtonData(displayButtonData, mOnButton);
+        return new DelegateButtonData.Builder(displayButtonData)
+                .setOnPress(view -> mOnButtonHelper.notifyCalled())
+                .build();
     }
 
     @Test
@@ -216,22 +217,22 @@ public class HubToolbarViewUnitTest {
         FullButtonData fullButtonData = makeTestButtonData();
         mPropertyModel.set(
                 PANE_SWITCHER_BUTTON_DATA, Arrays.asList(fullButtonData, fullButtonData));
-        verifyNoInteractions(mOnButton);
+        assertEquals(0, mOnButtonHelper.getCallCount());
 
         mPropertyModel.set(PANE_SWITCHER_INDEX, 1);
-        verifyNoInteractions(mOnButton);
+        assertEquals(0, mOnButtonHelper.getCallCount());
 
         mPaneSwitcher.getTabAt(1).select();
-        verifyNoInteractions(mOnButton);
+        assertEquals(0, mOnButtonHelper.getCallCount());
 
         mPaneSwitcher.getTabAt(0).select();
-        verify(mOnButton).run();
+        assertEquals(1, mOnButtonHelper.getCallCount());
 
         mPaneSwitcher.getTabAt(0).select();
-        verify(mOnButton).run();
+        assertEquals(1, mOnButtonHelper.getCallCount());
 
         mPaneSwitcher.getTabAt(1).select();
-        verify(mOnButton, times(2)).run();
+        assertEquals(2, mOnButtonHelper.getCallCount());
     }
 
     @Test
@@ -280,7 +281,10 @@ public class HubToolbarViewUnitTest {
                         R.string.button_new_incognito_tab,
                         R.string.button_new_incognito_tab,
                         R.drawable.ic_incognito);
-        FullButtonData newButtonData1 = new DelegateButtonData(newDisplayButtonData, mOnButton);
+        FullButtonData newButtonData1 =
+                new DelegateButtonData.Builder(newDisplayButtonData)
+                        .setOnPress(view -> mOnButtonHelper.notifyCalled())
+                        .build();
         FullButtonData newButtonData2 = makeTestButtonData();
         List<FullButtonData> updatedButtonData = Arrays.asList(newButtonData1, newButtonData2);
 

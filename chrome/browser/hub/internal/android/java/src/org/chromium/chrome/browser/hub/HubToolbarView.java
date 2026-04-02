@@ -565,7 +565,7 @@ public class HubToolbarView extends LinearLayout {
             @Override
             public void onTabSelected(Tab tab) {
                 if (!mBlockTabSelectionCallback) {
-                    assumeNonNull(buttonDataList.get(tab.getPosition()).getOnPressRunnable()).run();
+                    buttonDataList.get(tab.getPosition()).onPress(tab.view);
                 }
             }
 

@@ -141,6 +141,7 @@ android_library("unit_device_javatests") {
     ":java",
     ":java_resources",
     "//base:base_java_test_support",
+    "//base:callback_java",
     "//base:supplier_java",
     "//base:tasks_java",
     "//chrome/browser/back_press/android:java",
