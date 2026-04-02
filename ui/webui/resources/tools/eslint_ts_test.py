@@ -82,7 +82,9 @@ class EslintTsTest(unittest.TestCase):
         "--config_base",
         os.path.relpath(config_base, self._out_dir).replace(os.sep, "/"),
         "--tsconfig",
-        os.path.relpath(tsconfig, self._out_dir).replace(os.sep, "/"),
+        os.path.relpath(
+            os.path.join(self._in_folder, 'tsconfig.json'),
+            _HERE_DIR).replace(os.sep, "/"),
         "--custom_loader_script",
         custom_loader,
         "--in_files",

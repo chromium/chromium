@@ -51,7 +51,7 @@ template("eslint_ts") {
              "--config_base",
              rebase_path(config_base, target_gen_dir),
              "--tsconfig",
-             rebase_path(tsconfig, target_gen_dir),
+             rebase_path(tsconfig, root_build_dir),
              "--custom_loader_script",
              rebase_path("//ui/webui/resources/tools/eslint/custom_loader.mjs",
                          root_build_dir),

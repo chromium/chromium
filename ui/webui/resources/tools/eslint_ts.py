@@ -17,9 +17,7 @@ sys.path.append(_NODE_PATH)
 import node
 import node_modules
 
-_ESLINT_CONFIG_TEMPLATE = """import path from 'path';
-
-import {defaultConfig, %(extraConfigs)s} from '%(config_base)s';
+_ESLINT_CONFIG_TEMPLATE = """import {defaultConfig, %(extraConfigs)s} from '%(config_base)s';
 
 export default [
   ...defaultConfig,
@@ -27,7 +25,7 @@ export default [
   {
     languageOptions: {
       parserOptions: {
-        'project': [path.join(import.meta.dirname, './%(tsconfig)s')],
+        'project': ['%(tsconfig)s'],
       },
     },
   },
