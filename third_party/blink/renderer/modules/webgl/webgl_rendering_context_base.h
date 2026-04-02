@@ -2036,8 +2036,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // into a CanvasResource. Returns the resource if the copy succeeded;
   // otherwise returns nullptr.
   scoped_refptr<CanvasResource> CopyRenderingResultsFromDrawingBufferToResource(
-      SourceDrawingBuffer source_buffer,
-      bool only_if_fresh_content = false);
+      SourceDrawingBuffer source_buffer);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
       WebGLTexture*,

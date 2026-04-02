@@ -1645,11 +1645,33 @@ bool WebGLRenderingContextBase::PushFrame() {
     }
   }
 
+  // The above call to ExportCanvasResource() might have resulted in the context
+  // getting destroyed, so we need to recheck.
+  if (isContextLost() || !GetDrawingBuffer()) {
+    return false;
+  }
+
   // Note: we push a frame only if (a) there is fresh content to produce and
   // (b) we successfully produced that content.
-  if (scoped_refptr<CanvasResource> resource =
-          CopyRenderingResultsFromDrawingBufferToResource(
-              kBackBuffer, /*only_if_fresh_content=*/true)) {
+  scoped_refptr<CanvasResource> resource = nullptr;
+  cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
+
+  if (resource_provider_.get() &&
+      resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
+    resource_provider_.reset();
+    Host()->DiscardResources();
+  }
+
+  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
+    if (resource_provider_has_content_for_frame_push_) {
+      // `resource_provider_` already has the current contents.
+      resource = resource_provider_->ProduceCanvasResource();
+    }
+  } else {
+    resource = CopyRenderingResultsFromDrawingBufferToResource(kBackBuffer);
+  }
+
+  if (resource) {
     submitted_frame = Host()->PushFrame(std::move(resource));
     resource_provider_has_content_for_frame_push_ = false;
   }
@@ -1972,6 +1994,19 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     return ExportLowLatencyCanvasResource(source_buffer);
   }
 
+  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
+
+  if (resource_provider_.get() &&
+      resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
+    resource_provider_.reset();
+    Host()->DiscardResources();
+  }
+
+  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
+    // `resource_provider_` already has the current contents.
+    return resource_provider_->ProduceCanvasResource();
+  }
+
   return CopyRenderingResultsFromDrawingBufferToResource(source_buffer);
 }
 
@@ -2042,36 +2077,10 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
 
 scoped_refptr<CanvasResource>
 WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
-    SourceDrawingBuffer source_buffer,
-    bool only_if_fresh_content) {
+    SourceDrawingBuffer source_buffer) {
   TRACE_EVENT0("blink",
                "WebGLRenderingContextBase::"
                "CopyRenderingResultsFromDrawingBufferToResource");
-
-  if (isContextLost() || !GetDrawingBuffer()) {
-    return nullptr;
-  }
-
-  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
-
-  if (resource_provider_.get() &&
-      resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
-    resource_provider_.reset();
-    Host()->DiscardResources();
-  }
-
-  // The host's ResourceProvider is purged to save memory when the tab
-  // is backgrounded.
-
-  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
-    if (only_if_fresh_content &&
-        !resource_provider_has_content_for_frame_push_) {
-      return nullptr;
-    }
-    // `resource_provider_` already has the current contents, so it can can be
-    // used by the caller as-is.
-    return resource_provider_->ProduceCanvasResource();
-  }
 
   CanvasNon2DResourceProviderSharedImage* resource_provider =
       GetSharedImageResourceProvider();
