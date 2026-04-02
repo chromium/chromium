@@ -153,6 +153,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.distribution = UIStackViewDistributionFillEqually;
   stackView.spacing = kStackViewSpacing;
+  stackView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
 
   UIView* view = self.view;
   [view addSubview:stackView];
