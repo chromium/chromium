@@ -1213,9 +1213,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                           kDefaultUsername, kDefaultSite)]
       performAction:grey_tap()];
 
-  // Close the dialog by tapping on the Password Details table.
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
-      performAction:grey_tap()];
+  // Close the dialog by tapping outside the popover window.
+  [ChromeEarlGreyUI
+      dismissByTappingOnTheWindowOfPopover:BatchDeleteConfirmationButton()];
 
   // Check that the current view is still the detail view.
   [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
@@ -1228,8 +1228,12 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Go back to the list view and verify that the password is still in the
   // list.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:NavigationBarDoneButton()];
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:NavigationBarBackButton()];
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
