@@ -28,9 +28,9 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
   SetProperty(views::kElementIdentifierKey,
               kVerticalTabStripBottomContainerElementId);
 
-  collapsed_state_changed_subscription_ =
-      state_controller->RegisterOnCollapseChanged(base::BindRepeating(
-          &VerticalTabStripBottomContainer::OnCollapsedStateChanged,
+  collapsed_state_will_change_subscription_ =
+      state_controller->RegisterOnCollapseWillChange(base::BindRepeating(
+          &VerticalTabStripBottomContainer::OnCollapsedStateWillChange,
           base::Unretained(this)));
 
   new_tab_button_ = AddChildButtonFor(kActionNewTab);
@@ -108,35 +108,31 @@ void VerticalTabStripBottomContainer::ShowContextMenuForViewImpl(
   }
 }
 
-void VerticalTabStripBottomContainer::OnCollapsedStateChanged(
-    tabs::VerticalTabStripStateController* controller) {
-  UpdateButtonStyles(controller);
+void VerticalTabStripBottomContainer::OnCollapsedStateWillChange(
+    bool collapsed) {
+  UpdateButtonStyles(collapsed);
 }
 
-void VerticalTabStripBottomContainer::UpdateButtonStyles(
-    tabs::VerticalTabStripStateController* controller) {
-  bool is_collapsed = controller->IsCollapsed();
-
-  auto orientation = is_collapsed ? views::LayoutOrientation::kVertical
-                                  : views::LayoutOrientation::kHorizontal;
+void VerticalTabStripBottomContainer::UpdateButtonStyles(bool collapsed) {
+  auto orientation = collapsed ? views::LayoutOrientation::kVertical
+                               : views::LayoutOrientation::kHorizontal;
 
   // Setting button's layout based on collapsed state
   SetOrientation(orientation);
-  SetCrossAxisAlignment(is_collapsed ? views::LayoutAlignment::kStretch
-                                     : views::LayoutAlignment::kStart);
+  SetCrossAxisAlignment(collapsed ? views::LayoutAlignment::kStretch
+                                  : views::LayoutAlignment::kStart);
 
   new_tab_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
           orientation, views::MinimumFlexSizeRule::kScaleToMinimum,
-          is_collapsed ? views::MaximumFlexSizeRule::kPreferred
-                       : views::MaximumFlexSizeRule::kUnbounded,
+          collapsed ? views::MaximumFlexSizeRule::kPreferred
+                    : views::MaximumFlexSizeRule::kUnbounded,
           false, views::MinimumFlexSizeRule::kPreferred));
 
   new_tab_button_->SetInsets(GetLayoutInsets(
-      is_collapsed
-          ? LayoutInset::VERTICAL_TAB_STRIP_BOTTOM_BUTTON_COLLAPSED
-          : LayoutInset::VERTICAL_TAB_STRIP_BOTTOM_BUTTON_UNCOLLAPSED));
+      collapsed ? LayoutInset::VERTICAL_TAB_STRIP_BOTTOM_BUTTON_COLLAPSED
+                : LayoutInset::VERTICAL_TAB_STRIP_BOTTOM_BUTTON_UNCOLLAPSED));
 }
 
 BEGIN_METADATA(VerticalTabStripBottomContainer)

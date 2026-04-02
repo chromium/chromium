@@ -371,6 +371,12 @@ bool VerticalTabStripController::IsCollapsed() const {
   return state_controller && state_controller->IsCollapsed();
 }
 
+bool VerticalTabStripController::IsCollapsedOrCollapsing() const {
+  const tabs::VerticalTabStripStateController* state_controller =
+      tabs::VerticalTabStripStateController::From(browser_view_->browser());
+  return state_controller && state_controller->IsCollapsedOrCollapsing();
+}
+
 tab_groups::TabGroupSyncService*
 VerticalTabStripController::GetTabGroupSyncService() {
   return tab_groups::TabGroupSyncServiceFactory::GetForProfile(

@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
@@ -280,9 +279,8 @@ void VerticalSplitTabView::UpdateHovered(bool hovered) {
   SchedulePaint();
 }
 
-void VerticalSplitTabView::OnCollapsedStateChanged(
-    tabs::VerticalTabStripStateController* controller) {
-  collapsed_ = controller->IsCollapsed();
+void VerticalSplitTabView::OnCollapsedStateChanged(bool collapsed) {
+  collapsed_ = collapsed;
 }
 
 std::unique_ptr<views::View>

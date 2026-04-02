@@ -941,7 +941,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
 IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
                        MAYBE_DragToDetachIntoNewWindowWithVerticalTabsState) {
   const int kInitialWidth = 250;
-  vertical_tab_strip_state_controller()->SetCollapsed(true);
+  vertical_tab_strip_state_controller()->RequestCollapse(true);
   vertical_tab_strip_state_controller()->SetUncollapsedWidth(kInitialWidth);
 
   RunTestSequence(

@@ -74,6 +74,7 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
                                        views::View* anchor_view,
                                        bool stop_context_menu_propagation);
   bool IsCollapsed() const;
+  bool IsCollapsedOrCollapsing() const;
 
   tab_groups::TabGroupSyncService* GetTabGroupSyncService();
 

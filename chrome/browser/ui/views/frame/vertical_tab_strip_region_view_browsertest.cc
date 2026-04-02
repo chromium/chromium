@@ -113,15 +113,17 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        SeparatorVisibilityChangesWithCollapsedState) {
   auto* tabs_separator = region_view()->tabs_separator_for_testing();
 
-  state_controller()->SetCollapsed(true);
-  EXPECT_TRUE(state_controller()->IsCollapsed());
+  state_controller()->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return state_controller()->IsCollapsed(); }));
   ui_test_utils::ViewVisibilityWaiter(tabs_separator, false).Wait();
 
   AppendPinnedTab();
   ui_test_utils::ViewVisibilityWaiter(tabs_separator, true).Wait();
 
-  state_controller()->SetCollapsed(false);
-  EXPECT_FALSE(state_controller()->IsCollapsed());
+  state_controller()->RequestCollapse(false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !state_controller()->IsCollapsed(); }));
   ui_test_utils::ViewVisibilityWaiter(tabs_separator, false).Wait();
 }
 
@@ -225,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, MAYBE_ResizeViewBigger) {
   const int initial_width = VerticalTabStripRegionView::kCollapsedWidth;
 
   // Start this test from the collapsed state.
-  state_controller()->SetCollapsed(true);
+  state_controller()->RequestCollapse(true);
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
   WaitForBoundsToMatchPreferredWidth();
 

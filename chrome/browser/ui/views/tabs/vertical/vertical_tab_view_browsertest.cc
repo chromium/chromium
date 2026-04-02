@@ -473,13 +473,16 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonVisibilityCollapsed) {
       base::test::RunUntil([&]() { return !close_button->GetVisible(); }));
 
   // Collapse the tab strip.
-  tabs::VerticalTabStripStateController::From(browser())->SetCollapsed(true);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return tab_view->collapsed_for_testing(); }));
+  tabs::VerticalTabStripStateController::From(browser())->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !BrowserAnimationController::From(browser())->IsAnimating(
+        TabStripAnimations::kVerticalTabStrip);
+  }));
 
   // After collapsing the tab strip, the close button should be hidden because
   // the tab is not hovered.
-  EXPECT_FALSE(close_button->GetVisible());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !close_button->GetVisible(); }));
 
   ui::test::EventGenerator event_generator(
       views::GetRootWindow(browser()->GetBrowserView().GetWidget()),
@@ -505,9 +508,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest,
   TabCloseButton* close_button = tab_view->close_button_for_testing();
 
   // Collapse the tab strip.
-  tabs::VerticalTabStripStateController::From(browser())->SetCollapsed(true);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return tab_view->collapsed_for_testing(); }));
+  tabs::VerticalTabStripStateController::From(browser())->RequestCollapse(true);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !BrowserAnimationController::From(browser())->IsAnimating(
+        TabStripAnimations::kVerticalTabStrip);
+  }));
 
   // Now that the tab is collapsed the close button should be hidden.
   ASSERT_TRUE(
@@ -840,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewDataSharingEnabledTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDecorateOnCollapse) {
-  tabs::VerticalTabStripStateController::From(browser())->SetCollapsed(true);
+  tabs::VerticalTabStripStateController::From(browser())->RequestCollapse(true);
 
   // Wait for the collapse animation to finish and ensure the width reaches
   // kCollapsedWidth.

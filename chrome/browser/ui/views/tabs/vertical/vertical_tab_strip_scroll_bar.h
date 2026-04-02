@@ -34,8 +34,7 @@ class VerticalTabStripScrollBar : public tabs::RoundedScrollBar {
   bool ShouldHaveRightMargin() const override;
 
  private:
-  void OnCollapsedStateChanged(
-      tabs::VerticalTabStripStateController* state_controller);
+  void OnCollapsedStateChanged(bool collapsed);
 
   bool tab_strip_collapsed_ = false;
   base::CallbackListSubscription collapsed_state_changed_subscription_;

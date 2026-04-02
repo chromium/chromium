@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -252,10 +253,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreVerticalTabsInteractiveTest,
   controller->SetVerticalTabsEnabled(true);
 
   // Set Collapsed State and Uncollapsed Width.
-  controller->SetCollapsed(kIsCollapsed);
+  controller->RequestCollapse(kIsCollapsed);
   controller->SetUncollapsedWidth(kUncollapsedWidth);
 
-  ASSERT_TRUE(controller->IsCollapsed() == kIsCollapsed);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->IsCollapsed() == kIsCollapsed; }));
   ASSERT_TRUE(controller->GetUncollapsedWidth() == 200);
 
   // Quit and restore.

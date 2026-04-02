@@ -130,7 +130,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   views::ProposedLayout layouts;
   int width = 0;
   int height = kGroupHeaderVerticalMargin;
-  bool is_tab_strip_collapsed = IsTabStripCollapsed();
+  bool is_tab_strip_collapsed_or_collapsing = IsTabStripCollapsedOrCollapsing();
 
   gfx::Rect header_bounds;
   gfx::Rect group_line_bounds;
@@ -138,7 +138,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
 
   // If the tab strip is collapsed then the group line should appear on the
   // leading side of all grouped tabs and the header.
-  if (is_tab_strip_collapsed) {
+  if (is_tab_strip_collapsed_or_collapsing) {
     group_line_bounds.set_x(kGroupLineCollapsedLeadingPadding);
     group_line_bounds.set_y(height);
     header_bounds.set_x(
@@ -160,7 +160,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
 
   // If the tab strip is not collapsed then the group line is below and left
   // aligned with the header.
-  if (!is_tab_strip_collapsed) {
+  if (!is_tab_strip_collapsed_or_collapsing) {
     group_line_bounds.set_x((kTabLeadingPadding - kGroupLineWidth) / 2);
     group_line_bounds.set_y(height);
   }
@@ -179,7 +179,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
     bounds.set_y(drag_data ? drag_data->offset.y() : height);
 
     // If the tab strip is not collapsed then the groups tabs should be inset.
-    bounds.set_x(is_tab_strip_collapsed
+    bounds.set_x(is_tab_strip_collapsed_or_collapsing
                      ? GetLayoutConstant(
                            LayoutConstant::kVerticalTabStripCollapsedPadding)
                      : kTabLeadingPadding);
@@ -245,13 +245,14 @@ views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
     return nullptr;
   }
 
-  bool is_tab_strip_collapsed = IsTabStripCollapsed();
+  bool is_tab_strip_collapsed_or_collapsing = IsTabStripCollapsedOrCollapsing();
   // When the tab strip is collapsed, anchor to the group header, otherwise
   // anchor to the editor bubble button.
   views::View* anchor_view =
-      is_tab_strip_collapsed ? views::AsViewClass<views::View>(group_header_)
-                             : views::AsViewClass<views::View>(
-                                   group_header_->editor_bubble_button());
+      is_tab_strip_collapsed_or_collapsing
+          ? views::AsViewClass<views::View>(group_header_)
+          : views::AsViewClass<views::View>(
+                group_header_->editor_bubble_button());
   return collection_node_->GetController()->ShowGroupEditorBubble(
       GetTabGroupFromNode(collection_node_)->id(), anchor_view,
       stop_context_menu_propagation);
@@ -379,10 +380,10 @@ bool VerticalTabGroupView::IsCollapsed() const {
   return tab_group_visual_data_.is_collapsed();
 }
 
-bool VerticalTabGroupView::IsTabStripCollapsed() const {
+bool VerticalTabGroupView::IsTabStripCollapsedOrCollapsing() const {
   const auto* controller =
       collection_node_ ? collection_node_->GetController() : nullptr;
-  return controller && controller->IsCollapsed();
+  return controller && controller->IsCollapsedOrCollapsing();
 }
 
 views::ScrollView* VerticalTabGroupView::GetScrollViewForContainer() const {

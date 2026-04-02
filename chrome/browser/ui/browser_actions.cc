@@ -795,8 +795,8 @@ void BrowserActions::InitializeChromeMenuActions() {
                    actions::ActionInvocationContext context) {
                   auto* controller =
                       tabs::VerticalTabStripStateController::From(bwi);
-                  bool collapse = !controller->IsCollapsed();
-                  controller->SetCollapsed(collapse);
+                  bool collapse = !controller->IsCollapsedOrCollapsing();
+                  controller->RequestCollapse(collapse);
                   base::RecordAction(base::UserMetricsAction(
                       collapse
                           ? "VerticalTabs_TabStrip_ButtonToggleCollapsed"

@@ -94,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       // Verify not collapsed
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()->IsCollapsed();
+            return vertical_tab_strip_state_controller()
+                ->IsCollapsedOrCollapsing();
           },
           false),
       WaitForShow(kVerticalTabStripTopContainerElementId),
@@ -104,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       // Verify collapsed
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()->IsCollapsed();
+            return vertical_tab_strip_state_controller()
+                ->IsCollapsedOrCollapsing();
           },
           true));
 }
@@ -116,7 +118,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
   RunTestSequence(
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()->IsCollapsed();
+            return vertical_tab_strip_state_controller()
+                ->IsCollapsedOrCollapsing();
           },
           false),
       Do([&]() {
@@ -130,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       PressButton(kVerticalTabStripCollapseButtonElementId),
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()->IsCollapsed();
+            return vertical_tab_strip_state_controller()
+                ->IsCollapsedOrCollapsing();
           },
           true),
       Do([&]() {
@@ -142,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       PressButton(kVerticalTabStripCollapseButtonElementId),
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()->IsCollapsed();
+            return vertical_tab_strip_state_controller()
+                ->IsCollapsedOrCollapsing();
           },
           false),
       Do([&]() {

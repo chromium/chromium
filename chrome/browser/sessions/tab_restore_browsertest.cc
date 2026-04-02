@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -3132,8 +3133,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreVerticalTabsTest,
 
   auto* state_controller =
       tabs::VerticalTabStripStateController::From(browser());
-  state_controller->SetCollapsed(kIsCollapsed);
+  state_controller->RequestCollapse(kIsCollapsed);
   state_controller->SetUncollapsedWidth(kUncollapsedWidth);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return state_controller->IsCollapsed() == kIsCollapsed; }));
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),

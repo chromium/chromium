@@ -26,10 +26,9 @@ bool VerticalTabStripScrollBar::ShouldHaveRightMargin() const {
   return !tab_strip_collapsed_;
 }
 
-void VerticalTabStripScrollBar::OnCollapsedStateChanged(
-    tabs::VerticalTabStripStateController* state_controller) {
-  if (tab_strip_collapsed_ != state_controller->IsCollapsed()) {
-    tab_strip_collapsed_ = state_controller->IsCollapsed();
+void VerticalTabStripScrollBar::OnCollapsedStateChanged(bool collapsed) {
+  if (tab_strip_collapsed_ != collapsed) {
+    tab_strip_collapsed_ = collapsed;
     InvalidateLayout();
   }
 }

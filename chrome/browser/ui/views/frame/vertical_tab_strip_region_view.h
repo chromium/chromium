@@ -49,9 +49,11 @@ class FlexLayout;
 
 // Container for the vertical tabstrip and the other views sharing space with
 // it, excluding the caption buttons.
-class VerticalTabStripRegionView final : public TabStripRegionView,
-                                         public views::ResizeAreaDelegate,
-                                         public OmniboxTabHelper::Observer {
+class VerticalTabStripRegionView final
+    : public TabStripRegionView,
+      public views::ResizeAreaDelegate,
+      public OmniboxTabHelper::Observer,
+      public tabs::VerticalTabStripStateController::Delegate {
   METADATA_HEADER(VerticalTabStripRegionView, TabStripRegionView)
 
  public:
@@ -76,7 +78,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // TODO(crbug.com/465832180): Replace constant based width final max width for
   // view.
   static constexpr int kUncollapsedMaxWidth = 400;
-  static constexpr int kCollapsedWidth = 48;
+  static constexpr int kCollapsedWidth = 56;
   // TODO(crbug.com/465833741): Determine snapping behavior.
   static constexpr int kCollapseSnapWidth =
       (kUncollapsedMinWidth + kCollapsedWidth) / 2;
@@ -168,6 +170,13 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 
+  // tabs::VerticalTabStripStateController::Delegate
+  void SetCollapsedStateUpdatedCallback(
+      base::RepeatingCallback<void(bool)> callback) override;
+  bool IsCollapsing() override;
+  void RequestCollapse(
+      tabs::VerticalTabStripState requested_collapse_state) override;
+
   views::Separator* tabs_separator_for_testing() {
     return tab_strip_view_->GetTabsSeparator();
   }
@@ -209,9 +218,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
   void ClearTabStripView(views::View* view);
 
-  void OnCollapsedStateChanged(
-      tabs::VerticalTabStripStateController* state_controller);
-  void UpdateCollapseState(tabs::VerticalTabStripState new_state);
+  void OnCollapsedStateWillChange(bool collapsed);
+  void OnCollapsedStateChanged(bool collapsed);
 
   void UpdateColors();
 
@@ -291,6 +299,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   std::unique_ptr<TabHoverCardController> hover_card_controller_;
   std::unique_ptr<HoverTabSelector> hover_tab_selector_;
 
+  base::CallbackListSubscription collapsed_state_will_change_subscription_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
   std::optional<base::CallbackListSubscription> on_children_added_subscription_;
@@ -312,9 +321,13 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // area. This differs from the state controller in that its uncollapsed_width
   // updates throughout a drag operation, whereas the state controller only
   // updates its uncollapsed width when a drag-to-uncollapse operation ends.
-  // Additionally, the collapsed value may differ from the state controller, in
-  // which case this is the source of truth only if we are in a drag operation.
+  // Additionally, when collapsing, the target_collapse_state_ will be collapsed
+  // when the animation starts, but the state controller will only be updated
+  // when the animation ends.
   tabs::VerticalTabStripState target_collapse_state_;
+
+  base::RepeatingCallback<void(bool)>
+      update_state_controller_collapsed_callback_;
 
   base::OneShotTimer expand_on_hover_timer_;
   bool is_expanded_on_hover_ = false;

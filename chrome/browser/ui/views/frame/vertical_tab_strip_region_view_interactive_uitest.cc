@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewExpandOnHoverInteractiveUiTest,
       tabs::VerticalTabStripStateController::From(browser());
 
   controller->SetVerticalTabsEnabled(true);
-  controller->SetCollapsed(true);
+  controller->RequestCollapse(true);
   controller->SetExpandOnHoverEnabled(true);
 
   RunScheduledLayouts();
