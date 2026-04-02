@@ -2033,6 +2033,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   if (!written) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
                        "Failed to write pixels to SkCanvas");
+    return;
   }
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
