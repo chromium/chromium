@@ -1,0 +1,11 @@
+name: test msrv
+run-name: ${{ github.actor }}'s patch
+on: [push, pull_request]
+jobs:
+  msrv:
+    name: Check MSRV
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.83
+      - run: cargo check

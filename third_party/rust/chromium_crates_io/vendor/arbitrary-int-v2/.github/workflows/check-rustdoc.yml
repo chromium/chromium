@@ -1,0 +1,14 @@
+# Rustdoc has a few lints that aren't included in `cargo check`: https://doc.rust-lang.org/rustdoc/lints.html
+name: check documentation
+run-name: ${{ github.actor }}'s patch
+on: [push, pull_request]
+
+jobs:
+  check-documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo doc
+        env:
+          RUSTDOCFLAGS: "-D warnings"

@@ -1,0 +1,15 @@
+name: test bin-proto
+run-name: ${{ github.actor }}'s patch
+on: [push, pull_request]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: true
+          toolchain: nightly
+      - run: |
+          cargo test --no-default-features --features=bin-proto
+          cargo test --no-default-features --features=bin-proto,std

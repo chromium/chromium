@@ -1,0 +1,60 @@
+[package]
+name = "arbitrary-int"
+version = "2.1.1"
+edition = "2021"
+rust-version = "1.83"
+authors = ["Daniel Lehmann <danlehmannmuc@gmail.com>"]
+description = "Modern and lightweight implementation of u2, u3, u4, ..., u127."
+license = "MIT"
+repository = "https://github.com/danlehmann/arbitrary-int"
+readme = "README.md"
+keywords = ["integer", "unaligned", "misaligned"]
+categories = ["embedded", "no-std", "data-structures"]
+
+[workspace]
+members = ["fuzz"]
+
+[features]
+std = []
+
+# Feature retained for compatibility but no longer does anything. Please pin to arbitrary-int 2.0.0 if you rely on this.
+const_convert_and_const_trait_impl = []
+
+# core::fmt::Step is currently unstable and is available on nightly behind a feature gate
+step_trait = []
+
+# Supports defmt
+defmt = ["dep:defmt"]
+
+# Supports serde
+serde = ["dep:serde"]
+
+borsh = ["dep:borsh"]
+
+schemars = ["dep:schemars", "std"]
+
+# Implement traits for bytemuck
+bytemuck = ["dep:bytemuck"]
+
+# Implement traits for bin-proto
+bin-proto = ["dep:bin-proto"]
+
+# Provide a soundness promise to the compiler that the underlying value is always within range.
+# This optimizes e.g. indexing range checks when passed in an API.
+# The downside of this feature is that it involves an unsafe call to `core::hint::assert_unchecked` during `value()`.
+hint = []
+
+[dependencies]
+num-traits = { version = "0.2.19", default-features = false, optional = true }
+defmt = { version = "1", optional = true }
+serde = { version = "1.0", optional = true, default-features = false }
+borsh = { version = "1.5.1", optional = true, features = ["unstable__schema"], default-features = false }
+schemars = { version = "0.8.21", optional = true, features = ["derive"], default-features = false }
+bytemuck = { version = "1", optional = true, default-features = false }
+bin-proto = { version = "0.12.2", optional = true, default-features = false }
+
+arbitrary = { version = "1", optional = true, default-features = false }
+quickcheck = { version = "1", optional = true, default-features = false }
+
+[dev-dependencies]
+serde_test = "1.0"

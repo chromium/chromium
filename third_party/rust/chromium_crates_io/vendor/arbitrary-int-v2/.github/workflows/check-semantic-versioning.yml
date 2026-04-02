@@ -1,0 +1,18 @@
+name: check semantic versioning
+run-name: ${{ github.actor }}'s patch
+on: [push, pull_request]
+
+jobs:
+  check-semantic-versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run cargo-semver-checks
+        uses: obi1kenobi/cargo-semver-checks-action@v2
+        with:
+          # If we don't explicitly set which features to check `const_convert_and_const_trait_impl` will be used,
+          # which fails on modern compilers (which cargo-semver-checks requires).
+          # also, quickcheck was broken in 2.0.0, so we don't want that either.
+          feature-group: "only-explicit-features"
+          features: "std,step_trait,defmt,serde,borsh,schemars,arbitrary,num-traits"

@@ -1,0 +1,11 @@
+Name: arbitrary-int
+URL: https://crates.io/crates/arbitrary-int
+Version: 2.1.1
+Revision: be712fcfcd987ab76cabc750a83f600cb054c80c
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/arbitrary-int-v2/LICENSE.txt
+Shipped: yes
+Security Critical: yes
+
+Description: Modern and lightweight implementation of u2, u3, u4, ..., u127.

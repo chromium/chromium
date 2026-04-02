@@ -62,6 +62,11 @@ version = "1.0.102"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "arbitrary-int"
+version = "2.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "array-init"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -179,6 +184,7 @@ dependencies = [
  "aho-corasick",
  "antlr4rust",
  "anyhow",
+ "arbitrary-int",
  "base64",
  "bitflags 2.11.0",
  "bytemuck",

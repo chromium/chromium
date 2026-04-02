@@ -1,0 +1,14 @@
+name: check formatting
+run-name: ${{ github.actor }}'s patch
+on: [push, pull_request]
+
+jobs:
+  check-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+      - name: rustfmt
+        uses: actions-rust-lang/rustfmt@v1
