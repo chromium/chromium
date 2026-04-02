@@ -2728,9 +2728,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
 TEST_F(ContextualTasksComposeboxHandlerTest,
        ClearFiles_BlockAutoSuggestedTabs) {
   GURL url("https://example.com");
-  auto tab_info = searchbox::mojom::TabInfo::New();
-  tab_info->url = url;
-  tab_info->title = "Example";
+  auto create_tab_info = [&]() {
+    auto info = std::make_unique<contextual_tasks::SuggestedTabInfo>();
+    info->url = url;
+    info->title = u"Example";
+    return info;
+  };
 
   // 1. Initially, the suggestion should be allowed.
   EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
@@ -2739,7 +2742,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
             << "Expected a non-null pointer for received_info.";
       });
 
-  handler_->UpdateSuggestedTabContext(tab_info.Clone());
+  handler_->UpdateSuggestedTabContext(create_tab_info());
 
   searchbox_page_receiver_.FlushForTesting();
   EXPECT_TRUE(handler_->has_suggested_tab_context());
@@ -2756,10 +2759,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
         EXPECT_TRUE(received_info.is_null())
             << "Expected a null pointer for received_info.";
       });
-  auto tab_info2 = searchbox::mojom::TabInfo::New();
-  tab_info2->url = url;
-  tab_info2->title = "Example";
-  handler_->UpdateSuggestedTabContext(tab_info2.Clone());
+  handler_->UpdateSuggestedTabContext(create_tab_info());
 
   searchbox_page_receiver_.FlushForTesting();
   EXPECT_FALSE(handler_->has_suggested_tab_context());
@@ -2767,9 +2767,12 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
 TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
   GURL url("https://example.com");
-  auto tab_info = searchbox::mojom::TabInfo::New();
-  tab_info->url = url;
-  tab_info->title = "Example";
+  auto create_tab_info = [&]() {
+    auto info = std::make_unique<contextual_tasks::SuggestedTabInfo>();
+    info->url = url;
+    info->title = u"Example";
+    return info;
+  };
 
   // 1. Initially, the suggestion should be allowed.
   EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
@@ -2778,7 +2781,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
             << "Expected a non-null pointer for received_info.";
       });
 
-  handler_->UpdateSuggestedTabContext(tab_info.Clone());
+  handler_->UpdateSuggestedTabContext(create_tab_info());
 
   searchbox_page_receiver_.FlushForTesting();
   EXPECT_TRUE(handler_->has_suggested_tab_context());
@@ -2795,7 +2798,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
             << "Expected a null pointer for received_info.";
       });
 
-  handler_->UpdateSuggestedTabContext(tab_info.Clone());
+  handler_->UpdateSuggestedTabContext(create_tab_info());
 
   searchbox_page_receiver_.FlushForTesting();
   EXPECT_FALSE(handler_->has_suggested_tab_context());
@@ -2825,7 +2828,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
             << "Expected a non-null pointer for received_info.";
         EXPECT_EQ(received_info->url, url);
       });
-  handler_->UpdateSuggestedTabContext(tab_info.Clone());
+  handler_->UpdateSuggestedTabContext(create_tab_info());
 
   searchbox_page_receiver_.FlushForTesting();
   EXPECT_TRUE(handler_->has_suggested_tab_context());
@@ -2833,8 +2836,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
 
 TEST_F(ContextualTasksComposeboxHandlerTest, ResetBlocklistedSuggestions) {
   GURL url("https://example.com");
-  auto tab_info = searchbox::mojom::TabInfo::New();
-  tab_info->url = url;
+  auto create_tab_info = [&]() {
+    auto info = std::make_unique<contextual_tasks::SuggestedTabInfo>();
+    info->url = url;
+    return info;
+  };
 
   // 1. Blocklist the URL.
   AddTab(browser(), url);
@@ -2846,7 +2852,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ResetBlocklistedSuggestions) {
         EXPECT_TRUE(received_info.is_null())
             << "Expected a null pointer for received_info.";
       });
-  handler_->UpdateSuggestedTabContext(tab_info.Clone());
+  handler_->UpdateSuggestedTabContext(create_tab_info());
 
   searchbox_page_receiver_.FlushForTesting();
   // 3. Reset the blocklist.
@@ -2860,7 +2866,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ResetBlocklistedSuggestions) {
         EXPECT_EQ(received_info->url, url);
       });
 
-  handler_->UpdateSuggestedTabContext(tab_info.Clone());
+  handler_->UpdateSuggestedTabContext(create_tab_info());
 
   searchbox_page_receiver_.FlushForTesting();
 }

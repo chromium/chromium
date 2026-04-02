@@ -67,10 +67,11 @@ class MockContextualTasksComposeboxHandler
             std::move(get_inputstatemodel_callback)) {}
   ~MockContextualTasksComposeboxHandler() override = default;
 
-  MOCK_METHOD(void,
-              UpdateSuggestedTabContext,
-              (searchbox::mojom::TabInfoPtr tab_info),
-              (override));
+  MOCK_METHOD(
+      void,
+      UpdateSuggestedTabContext,
+      (std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab),
+      (override));
 };
 
 class MockActiveTaskContextProviderObserver
@@ -693,12 +694,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   coordinator->Close();
 
   // Define expectations on the mock handler.
-  using TabInfo = searchbox::mojom::TabInfo;
+  using SuggestedTabInfo = contextual_tasks::SuggestedTabInfo;
 
   // Expectations are set before running the sequence.
   // This should trigger UpdateSuggestedTabContext with valid tab info.
-  EXPECT_CALL(*mock_handler,
-              UpdateSuggestedTabContext(Pointee(Field(&TabInfo::url, foo))))
+  EXPECT_CALL(*mock_handler, UpdateSuggestedTabContext(
+                                 Pointee(Field(&SuggestedTabInfo::url, foo))))
       .Times(1);
 
   RunTestSequence(
@@ -713,9 +714,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         Mock::VerifyAndClearExpectations(mock_handler);
         // Set next expectation. Because the other tab has a chrome:// URL,
         // `UpdateSuggestedTabContext` will be called with a nullptr.
-        searchbox::mojom::TabInfoPtr null_tab_info;
-        EXPECT_CALL(*mock_handler,
-                    UpdateSuggestedTabContext(IsNullSuggestedTabContext()))
+        EXPECT_CALL(*mock_handler, UpdateSuggestedTabContext(testing::IsNull()))
             .Times(1);
         return true;
       }),

@@ -34,6 +34,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
+#include "contextual_tasks_composebox_handler_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
@@ -42,7 +43,6 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #endif
 
@@ -55,6 +55,7 @@ class WebContentsObserver;
 }  // namespace content
 
 namespace contextual_tasks {
+class ContextualTasksComposeboxHandlerInterface;
 class ContextualTasksPanelController;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
@@ -63,7 +64,6 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
-class ContextualTasksComposeboxHandler;
 class ContextualTasksInternalsPageHandler;
 
 class ContextualTasksPageHandler;
@@ -235,12 +235,12 @@ class ContextualTasksUI
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
-#if !BUILDFLAG(IS_ANDROID)
   void SetComposeboxHandlerForTesting(
-      std::unique_ptr<ContextualTasksComposeboxHandler> handler) {
+      std::unique_ptr<
+          contextual_tasks::ContextualTasksComposeboxHandlerInterface>
+          handler) {
     composebox_handler_ = std::move(handler);
   }
-#endif
 
   // Shows an OAuth error dialog.
   void ShowOauthErrorDialog();
@@ -311,9 +311,10 @@ class ContextualTasksUI
 
   std::unique_ptr<ContextualTasksPageHandler> page_handler_;
 
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
+  std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
+      composebox_handler_;
 
+#if !BUILDFLAG(IS_ANDROID)
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_handler_factory_receiver_{this};
 
