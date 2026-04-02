@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/account_settings/account_setting_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace accessibility_annotator {
 namespace {
@@ -73,12 +75,21 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 
   return true;
 }
+
+// Checks whether all opt-in for `AccountSettingService` state are met.
+[[nodiscard]] bool SatisfiesOptInRequirements(
+    account_settings::AccountSettingService* account_settings) {
+  // TODO(crbug.com/494149753) Implement
+  return true;
+}
 }  // namespace
 
 AccessibilityAnnotatorEnablementServiceImpl::
     AccessibilityAnnotatorEnablementServiceImpl(
+        account_settings::AccountSettingService* account_settings_service,
         signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {}
+    : account_settings_service_(account_settings_service),
+      identity_manager_(identity_manager) {}
 
 AccessibilityAnnotatorEnablementServiceImpl::
     ~AccessibilityAnnotatorEnablementServiceImpl() = default;
@@ -101,6 +112,10 @@ AccessibilityAnnotatorEnablementServiceImpl::GetEnablementState() {
   }
 
   if (!SatisfiesAccountRequirements(identity_manager_.get())) {
+    return kDisabledNotEligible;
+  }
+
+  if (!SatisfiesOptInRequirements(account_settings_service_.get())) {
     return kDisabledNotEligible;
   }
 

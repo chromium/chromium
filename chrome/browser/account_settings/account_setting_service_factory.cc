@@ -32,6 +32,13 @@ AccountSettingServiceFactory::GetForBrowserContext(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
+// static
+account_settings::AccountSettingService*
+AccountSettingServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<account_settings::AccountSettingService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
 AccountSettingServiceFactory::AccountSettingServiceFactory()
     : ProfileKeyedServiceFactory(
           "AccountSettingService",

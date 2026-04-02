@@ -17,7 +17,7 @@ namespace accessibility_annotator {
 class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
  public:
   AccessibilityAnnotatorEnablementServiceImplTest()
-      : service_(identity_test_env_.identity_manager()) {
+      : service_(nullptr, identity_test_env_.identity_manager()) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAccessibilityAnnotator,
                               features::kAccessibilityAnnotatorFirstRun,

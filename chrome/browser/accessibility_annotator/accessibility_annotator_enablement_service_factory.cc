@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
 
+#include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service_impl.h"
@@ -35,6 +36,7 @@ AccessibilityAnnotatorEnablementServiceFactory::
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
+  DependsOn(AccountSettingServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -51,10 +53,13 @@ std::unique_ptr<KeyedService> AccessibilityAnnotatorEnablementServiceFactory::
 
   Profile* profile = Profile::FromBrowserContext(context);
 
+  account_settings::AccountSettingService* account_settings_service =
+      AccountSettingServiceFactory::GetForProfile(
+          profile->GetOriginalProfile());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
   return std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>(
-      identity_manager);
+      account_settings_service, identity_manager);
 }
 
 }  // namespace accessibility_annotator

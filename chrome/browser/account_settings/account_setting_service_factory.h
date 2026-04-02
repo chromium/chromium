@@ -8,6 +8,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
+class Profile;
+
 namespace content {
 class BrowserContext;
 }
@@ -23,6 +25,8 @@ class AccountSettingServiceFactory : public ProfileKeyedServiceFactory {
   static AccountSettingServiceFactory* GetInstance();
   static account_settings::AccountSettingService* GetForBrowserContext(
       content::BrowserContext* context);
+  static account_settings::AccountSettingService* GetForProfile(
+      Profile* profile);
 
  private:
   friend base::NoDestructor<AccountSettingServiceFactory>;

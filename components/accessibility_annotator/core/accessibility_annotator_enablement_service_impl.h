@@ -8,7 +8,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+
+namespace account_settings {
+class AccountSettingService;
+}  // namespace account_settings
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace accessibility_annotator {
 
@@ -16,6 +23,7 @@ class AccessibilityAnnotatorEnablementServiceImpl
     : public AccessibilityAnnotatorEnablementService {
  public:
   explicit AccessibilityAnnotatorEnablementServiceImpl(
+      account_settings::AccountSettingService* account_settings_service,
       signin::IdentityManager* identity_manager);
   AccessibilityAnnotatorEnablementServiceImpl(
       const AccessibilityAnnotatorEnablementServiceImpl&) = delete;
@@ -29,6 +37,8 @@ class AccessibilityAnnotatorEnablementServiceImpl
   RemoteAnnotatorEnablementState GetEnablementState() override;
 
  private:
+  const raw_ptr<account_settings::AccountSettingService>
+      account_settings_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   base::ObserverList<Observer> observers_;
 };

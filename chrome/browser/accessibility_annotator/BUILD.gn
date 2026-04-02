@@ -32,6 +32,7 @@ source_set("impl") {
   ]
   deps = [
     ":accessibility_annotator",
+    "//chrome/browser/account_settings",
     "//chrome/browser/autofill",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
