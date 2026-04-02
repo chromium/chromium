@@ -58,17 +58,6 @@ BASE_FEATURE(kWebNNUseXNNPackForConstantTransposeFolding,
 using DependentOperationsMap =
     base::flat_map<OperandId, base::flat_set<OperationId>>;
 
-webnn::Pool2dKind FromMojoPool2dType(mojom::Pool2d::Kind kind) {
-  switch (kind) {
-    case mojom::Pool2d::Kind::kAveragePool2d:
-      return webnn::Pool2dKind::kAverage;
-    case mojom::Pool2d::Kind::kL2Pool2d:
-      return webnn::Pool2dKind::kL2;
-    case mojom::Pool2d::Kind::kMaxPool2d:
-      return webnn::Pool2dKind::kMax;
-  }
-}
-
 webnn::ReduceKind MojoReduceTypeToComponent(mojom::Reduce::Kind kind) {
   switch (kind) {
     case mojom::Reduce::Kind::kL1:
