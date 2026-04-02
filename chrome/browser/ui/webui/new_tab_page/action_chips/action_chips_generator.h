@@ -18,8 +18,6 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-class OptimizationGuideKeyedService;
-
 // An interface for the class responsible for generating the action chips given
 // a tab.
 class ActionChipsGenerator {
@@ -40,7 +38,6 @@ class ActionChipsGeneratorImpl : public ActionChipsGenerator {
   // ctor for testing
   explicit ActionChipsGeneratorImpl(
       const TabIdGenerator* tab_id_generator,
-      OptimizationGuideKeyedService* optimization_guide_decider,
       const AimEligibilityService* aim_eligibility_service,
       std::unique_ptr<AutocompleteProviderClient> client,
       std::unique_ptr<action_chips::RemoteSuggestionsServiceSimple>
@@ -71,7 +68,6 @@ class ActionChipsGeneratorImpl : public ActionChipsGenerator {
           ActionChipSuggestionsResult&& result);
 
   raw_ptr<const TabIdGenerator> tab_id_generator_;
-  raw_ptr<OptimizationGuideKeyedService> optimization_guide_decider_;
   raw_ptr<const AimEligibilityService> aim_eligibility_service_;
   std::unique_ptr<AutocompleteProviderClient> client_;
   std::unique_ptr<action_chips::RemoteSuggestionsServiceSimple>

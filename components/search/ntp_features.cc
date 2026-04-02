@@ -319,10 +319,6 @@ const base::FeatureParam<bool> kNtpNextClientSensitivityCheckParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextClientSensitivityCheckParam",
     false);
-const base::FeatureParam<bool> kNtpNextShowDeepDiveSuggestionsParam(
-    &ntp_features::kNtpNextFeatures,
-    "NtpNextShowDeepDiveSuggestionsParam",
-    false);
 const base::FeatureParam<bool> kNtpNextShowStaticRecentTabChipParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextShowStaticRecentTabChipParam",
