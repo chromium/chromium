@@ -12,6 +12,86 @@
 
 namespace {
 
+// OAuth2 scope to access the ChromebookEmailService API.
+constexpr char kChromebookOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromebook.email";
+// OAuth2 scope for Chrome Web Store.
+constexpr char kWebstoreOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromewebstore.readonly";
+// OAuth2 scope for push notifications.
+constexpr char kPushNotificationOAuth2Scope[] =
+    "https://www.googleapis.com/auth/notifications";
+// OAuth2 scope for web history.
+constexpr char kWebHistoryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/webhistory";
+// OAuth2 scope for app license check.
+constexpr char kLicenseCheckOAuth2Scope[] =
+    "https://www.googleapis.com/auth/applicense.bytebot";
+// OAuth2 scope for manta.
+constexpr char kMantaOAuth2Scope[] =
+    "https://www.googleapis.com/auth/mdi.aratea";
+
+constexpr char kChromeMemexOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromememex";
+
+// OAuth2 scope for DevTools GenAI features.
+constexpr char kAidaOAuth2Scope[] = "https://www.googleapis.com/auth/aida";
+
+// OAuth 2 scopes for Google Tasks API.
+// https://developers.google.com/identity/protocols/oauth2/scopes#tasks
+constexpr char kTasksReadOnlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/tasks.readonly";
+constexpr char kTasksOAuth2Scope[] = "https://www.googleapis.com/auth/tasks";
+
+// OAuth 2 scope for YouTube Music API.
+// https://developers.google.com/youtube/mediaconnect/guides/authentication#identify-access-scope
+constexpr char kYouTubeMusicOAuth2Scope[] =
+    "https://www.googleapis.com/auth/music";
+
+constexpr char kSearchResultsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/searchresults";
+
+// OAuth2 scope for DevTools Google Developer Program features.
+constexpr char kGdpOAuth2Scope[] =
+    "https://www.googleapis.com/auth/devprofiles.full_control";
+
+// OAuth 2 scopes for Google Classroom API.
+// https://developers.google.com/identity/protocols/oauth2/scopes#classroom
+constexpr char kSchoolToolsAuthScope[] =
+    "https://www.googleapis.com/auth/chromeosschooltools";
+constexpr char kClassroomReadOnlyCoursesOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.courses.readonly";
+constexpr char kClassroomReadOnlyCourseWorkSelfOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.coursework.me.readonly";
+constexpr char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly";
+constexpr char kClassroomReadOnlyRostersOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.rosters.readonly";
+constexpr char kClassroomReadOnlyCourseWorkStudentsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.coursework.students.readonly";
+constexpr char kClassroomProfileEmailOauth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.profile.emails";
+constexpr char kClassroomProfilePhotoUrlScope[] =
+    "https://www.googleapis.com/auth/classroom.profile.photos";
+constexpr char kClassroomCourseWorkMaterialsOAuthScope[] =
+    "https://www.googleapis.com/auth/classroom.courseworkmaterials";
+
+// OAuth2 scope for Private AI.
+constexpr char kPrivateAiAuthScope[] = "https://www.googleapis.com/auth/paic";
+
+constexpr char kWalletPassesOAuth2Scope[] =
+    "https://www.googleapis.com/auth/wallet_1p_passes";
+
+// OAuth2 scope for DevTools GenAI features.
+constexpr char kAiCodeOAuth2Scope[] = "https://www.googleapis.com/auth/aicode";
+
+constexpr char kAgenticPermissionOAuth2Scope[] =
+    "https://www.googleapis.com/auth/agenticpermission";
+
+// OAuth2 scope for One Time Token Service.
+constexpr char kOneTimeTokenOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chrome.passwords.onetimetoken";
+
 constexpr char kSyncName[] = "sync";
 constexpr char kWallpaperGooglePhotosFetcherName[] =
     "wallpaper_google_photos_fetcher";
@@ -214,7 +294,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kMarketingBackendConnector:
       return OAuthConsumer(
           /*name=*/kMarketingBackendConnectorName,
-          /*scopes=*/{GaiaConstants::kChromebookOAuth2Scope});
+          /*scopes=*/{kChromebookOAuth2Scope});
     case OAuthConsumerId::kPasswordSyncTokenFetcher:
       return OAuthConsumer(
           /*name=*/kPasswordSyncTokenFetcherName,
@@ -245,7 +325,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kExtensionDownloader:
       return OAuthConsumer(
           /*name=*/kExtensionDownloaderName,
-          /*scopes=*/{GaiaConstants::kWebstoreOAuth2Scope});
+          /*scopes=*/{kWebstoreOAuth2Scope});
     case OAuthConsumerId::kEnclaveManager:
       return OAuthConsumer(
           /*name=*/kEnclaveManagerName,
@@ -277,7 +357,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kPushNotification:
       return OAuthConsumer(
           /*name=*/kPushNotificationName,
-          /*scopes=*/{GaiaConstants::kPushNotificationOAuth2Scope});
+          /*scopes=*/{kPushNotificationOAuth2Scope});
     case OAuthConsumerId::kKAnonymityService:
       return OAuthConsumer(
           /*name=*/kKAnonymityServiceName,
@@ -294,7 +374,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       if (base::FeatureList::IsEnabled(kWebHistoryUseSpecificScope)) {
         return OAuthConsumer(
             /*name=*/kWebHistoryServiceName,
-            /*scopes=*/{GaiaConstants::kWebHistoryOAuth2Scope});
+            /*scopes=*/{kWebHistoryOAuth2Scope});
       } else {
         return OAuthConsumer(
             /*name=*/kWebHistoryServiceName,
@@ -408,7 +488,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kPluginVmLicenseChecker:
       return OAuthConsumer(
           /*name=*/kPluginVmLicenseCheckerName,
-          /*scopes=*/{GaiaConstants::kLicenseCheckOAuth2Scope});
+          /*scopes=*/{kLicenseCheckOAuth2Scope});
     case OAuthConsumerId::kDrivefsAuth:
       return OAuthConsumer(
           /*name=*/kDrivefsAuthName,
@@ -445,15 +525,15 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kManta:
       return OAuthConsumer(
           /*name=*/kMantaName,
-          /*scopes=*/{GaiaConstants::kMantaOAuth2Scope});
+          /*scopes=*/{kMantaOAuth2Scope});
     case OAuthConsumerId::kChromeMemex:
       return OAuthConsumer(
           /*name=*/kChromeMemexName,
-          /*scopes=*/{GaiaConstants::kChromeMemexOAuth2Scope});
+          /*scopes=*/{kChromeMemexOAuth2Scope});
     case OAuthConsumerId::kDevtoolsAida:
       return OAuthConsumer(
           /*name=*/kDevtoolsAidaName,
-          /*scopes=*/{GaiaConstants::kAidaOAuth2Scope});
+          /*scopes=*/{kAidaOAuth2Scope});
     case OAuthConsumerId::kChromeOsBabelOrca:
       return OAuthConsumer(
           /*name=*/kChromeOsBabelOrcaName,
@@ -461,7 +541,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth:
       return OAuthConsumer(
           /*name=*/kChromeOsBocaSchoolToolsAuthName,
-          /*scopes=*/{GaiaConstants::kSchoolToolsAuthScope});
+          /*scopes=*/{kSchoolToolsAuthScope});
     case OAuthConsumerId::kSharedDataPreview:
       return OAuthConsumer(
           /*name=*/kSharedDataPreviewName,
@@ -483,25 +563,22 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kAuthServiceGlanceablesClassroom:
       return OAuthConsumer(
           /*name=*/kAuthServiceGlanceablesClassroomName,
-          /*scopes=*/{
-              GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
-              GaiaConstants::kClassroomReadOnlyCourseWorkSelfOAuth2Scope,
-              GaiaConstants::
-                  kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope});
+          /*scopes=*/{kClassroomReadOnlyCoursesOAuth2Scope,
+                      kClassroomReadOnlyCourseWorkSelfOAuth2Scope,
+                      kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope});
     case OAuthConsumerId::kAuthServiceTasksClient:
       return OAuthConsumer(
           /*name=*/kAuthServiceTasksClientName,
-          /*scopes=*/{GaiaConstants::kTasksReadOnlyOAuth2Scope,
-                      GaiaConstants::kTasksOAuth2Scope});
+          /*scopes=*/{kTasksReadOnlyOAuth2Scope, kTasksOAuth2Scope});
     case OAuthConsumerId::kYouTubeMusic:
       return OAuthConsumer(
           /*name=*/kYouTubeMusicName,
-          /*scopes=*/{GaiaConstants::kYouTubeMusicOAuth2Scope});
+          /*scopes=*/{kYouTubeMusicOAuth2Scope});
     case OAuthConsumerId::kContextualTasks:
       return OAuthConsumer(
           /*name=*/kContextualTasksName,
           /*scopes=*/{contextual_tasks::ShouldUseSearchResultsScope()
-                          ? GaiaConstants::kSearchResultsOAuth2Scope
+                          ? kSearchResultsOAuth2Scope
                           : GaiaConstants::kChromeSyncOAuth2Scope,
                       GaiaConstants::kClearCutOAuth2Scope,
                       GaiaConstants::kLensOAuth2Scope});
@@ -512,7 +589,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kDevtoolsGdp:
       return OAuthConsumer(
           /*name=*/kDevtoolsGdpName,
-          /*scopes=*/{GaiaConstants::kGdpOAuth2Scope});
+          /*scopes=*/{kGdpOAuth2Scope});
     case OAuthConsumerId::kAshDriveIntegration:
       return OAuthConsumer(
           /*name=*/kAshDriveIntegrationName,
@@ -520,13 +597,12 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kAshBocaClassroomPageHandler:
       return OAuthConsumer(
           /*name=*/kAshClassroomPageHandlerName,
-          /*scopes=*/{
-              GaiaConstants::kClassroomReadOnlyRostersOAuth2Scope,
-              GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
-              GaiaConstants::kClassroomReadOnlyCourseWorkStudentsOAuth2Scope,
-              GaiaConstants::kClassroomProfileEmailOauth2Scope,
-              GaiaConstants::kClassroomProfilePhotoUrlScope,
-              GaiaConstants::kClassroomCourseWorkMaterialsOAuthScope});
+          /*scopes=*/{kClassroomReadOnlyRostersOAuth2Scope,
+                      kClassroomReadOnlyCoursesOAuth2Scope,
+                      kClassroomReadOnlyCourseWorkStudentsOAuth2Scope,
+                      kClassroomProfileEmailOauth2Scope,
+                      kClassroomProfilePhotoUrlScope,
+                      kClassroomCourseWorkMaterialsOAuthScope});
     case OAuthConsumerId::kAshScannerKeyedService:
       return OAuthConsumer(
           /*name=*/kAshScannerKeyedServiceName,
@@ -542,22 +618,22 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kPrivateAiService:
       return OAuthConsumer(
           /*name=*/kPrivateAiServiceName,
-          /*scopes=*/{GaiaConstants::kPrivateAiAuthScope});
+          /*scopes=*/{kPrivateAiAuthScope});
     case OAuthConsumerId::kWalletPasses: {
       CHECK(base::FeatureList::IsEnabled(
           wallet::features::kWalletApiPrivatePassesEnabled));
       return signin::OAuthConsumer(
           /*name=*/kWalletPassesName,
-          /*scopes=*/{GaiaConstants::kWalletPassesOAuth2Scope});
+          /*scopes=*/{kWalletPassesOAuth2Scope});
     }
     case OAuthConsumerId::kAimEligibilityService:
       return OAuthConsumer(
           /*name=*/kAimEligibilityServiceName,
-          /*scopes=*/{GaiaConstants::kSearchResultsOAuth2Scope});
+          /*scopes=*/{kSearchResultsOAuth2Scope});
     case OAuthConsumerId::kDevtoolsAiCode:
       return OAuthConsumer(
           /*name=*/kDevtoolsAiCodeName,
-          /*scopes=*/{GaiaConstants::kAiCodeOAuth2Scope});
+          /*scopes=*/{kAiCodeOAuth2Scope});
     case OAuthConsumerId::kAccessibilityAnnotator:
       // TODO(b/493530228): Use narrow scope for the accessibility annotator.
       return OAuthConsumer(
@@ -568,11 +644,11 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
         return OAuthConsumer(
             /*name=*/kActorLoginPermissionServiceName,
             /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope,
-                        GaiaConstants::kAgenticPermissionOAuth2Scope});
+                        kAgenticPermissionOAuth2Scope});
       } else {
         return OAuthConsumer(
             /*name=*/kActorLoginPermissionServiceName,
-            /*scopes=*/{GaiaConstants::kAgenticPermissionOAuth2Scope});
+            /*scopes=*/{kAgenticPermissionOAuth2Scope});
       }
     case OAuthConsumerId::kGapisService:
       return OAuthConsumer(
@@ -581,7 +657,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kOneTimeTokenService:
       return OAuthConsumer(
           /*name=*/kOneTimeTokenServiceName,
-          /*scopes=*/{GaiaConstants::kOneTimeTokenOAuth2Scope});
+          /*scopes=*/{kOneTimeTokenOAuth2Scope});
   }
 }
 
