@@ -756,8 +756,13 @@
     "name": "autofill-ai-wallet-private-passes",
     "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160
-  },
-  {
+    },
+    {
+    "name": "autofill-ai-wallet-private-passes-deep-link",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+    },
+    {
     "name": "autofill-ai-wallet-vehicle-registration",
     "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160
@@ -9478,6 +9483,11 @@
     "name": "wake-on-wifi-allowed",
     "owners": [ "yenlinlai@chromium.org", "chromeos-wifi-team@google.com" ],
     "expiry_milestone": 95
+  },
+  {
+    "name": "wallet-api-private-passes-enabled",
+    "owners": [ "brunobraga@google.com", "chudakov@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "wallet-service-use-sandbox",

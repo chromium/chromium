@@ -12969,6 +12969,8 @@ from previous Chrome versions.
   <int value="-355278724" label="CorbAllowlistAlsoAppliesToOorCors:disabled"/>
   <int value="-355005246" label="CaptureModeAudioMixing:enabled"/>
   <int value="-354783358" label="NTPSaveToOffline:disabled"/>
+  <int value="-354021780"
+      label="AutofillAiWalletPrivatePassesDeepLink:enabled"/>
   <int value="-353182790" label="ConsistentOmniboxGeolocation:disabled"/>
   <int value="-353180213" label="DevicePosture:disabled"/>
   <int value="-352731236" label="DIPS:enabled"/>
@@ -13173,6 +13175,7 @@ from previous Chrome versions.
   <int value="-292450031"
       label="EnableWebUsbOnExtensionServiceWorker:disabled"/>
   <int value="-291936879" label="UsernameFirstFlowFilling:disabled"/>
+  <int value="-291806711" label="WalletApiPrivatePassesEnabled:enabled"/>
   <int value="-291747397" label="ForceDisableStackedTabs:enabled"/>
   <int value="-291221380" label="SmartLockUIRevamp:disabled"/>
   <int value="-290802952" label="OmniboxOnDeviceTailModel:enabled"/>
@@ -13377,6 +13380,8 @@ from previous Chrome versions.
   <int value="-220829663" label="TimeOfDayScreenSaver:disabled"/>
   <int value="-220599034" label="UsePdfCompositorServiceForPrint:enabled"/>
   <int value="-220298483" label="ImeOptionsInSettings:enabled"/>
+  <int value="-219700064"
+      label="AutofillAiWalletPrivatePassesDeepLink:disabled"/>
   <int value="-218873486" label="BookmarkTriggerForPrefetch:enabled"/>
   <int value="-218843425" label="auto-framing-override"/>
   <int value="-217930860" label="EnableAutomaticSnooze:disabled"/>
@@ -16731,6 +16736,7 @@ from previous Chrome versions.
   <int value="904437796" label="OmniboxBlurWithEscape:disabled"/>
   <int value="904441371" label="LocalNetworkAccessChecksWebRTC:disabled"/>
   <int value="904811479" label="query-tiles-enable-trending"/>
+  <int value="904886824" label="WalletApiPrivatePassesEnabled:disabled"/>
   <int value="905739808" label="GlobalMediaControlsUpdatedUI:disabled"/>
   <int value="905852983" label="ReadAnythingLineFocus:disabled"/>
   <int value="907051864" label="UseMultiPlaneFormatForHardwareVideo:disabled"/>
@@ -17478,6 +17484,7 @@ from previous Chrome versions.
   <int value="1164299747" label="PartialSplit:disabled"/>
   <int value="1164377197" label="SwipingFromLeftEdgeToGoBack:enabled"/>
   <int value="1164460660" label="AutofillEnableVirtualCard:enabled"/>
+  <int value="1164593042" label="WalletApiPrivatePassesEnabled:Debug"/>
   <int value="1165682330" label="AutofillSaveAndFillVPA:disabled"/>
   <int value="1165691812" label="CCTDestroyTabWhenModelIsEmpty:disabled"/>
   <int value="1165828757" label="kAutofillEnableOffersInDownstream:disabled"/>

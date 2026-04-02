@@ -822,6 +822,12 @@ inline constexpr char kAutofillAiWalletPrivatePassesName[] =
 inline constexpr char kAutofillAiWalletPrivatePassesDescription[] =
     "Enables Autofill AI support for private passes from Google Wallet.";
 
+inline constexpr char kAutofillAiWalletPrivatePassesDeepLinkName[] =
+    "Autofill AI Google Wallet private passes deep link";
+inline constexpr char kAutofillAiWalletPrivatePassesDeepLinkDescription[] =
+    "Enables Autofill AI support for deep linking to private passes from "
+    "Google Wallet.";
+
 inline constexpr char kAutofillAiWalletVehicleRegistrationName[] =
     "Autofill AI Google Wallet vehicle registration";
 inline constexpr char kAutofillAiWalletVehicleRegistrationDescription[] =
@@ -4546,6 +4552,11 @@ inline constexpr char kGlobalVaapiLockName[] =
 inline constexpr char kGlobalVaapiLockDescription[] =
     "Enable or disable the global VA-API lock for platforms and paths that "
     "support controlling this.";
+
+inline constexpr char kWalletApiPrivatePassesEnabledName[] =
+    "Wallet API Private Passes";
+inline constexpr char kWalletApiPrivatePassesEnabledDescription[] =
+    "Enables the Wallet API for private passes.";
 
 inline constexpr char kWalletServiceUseSandboxName[] =
     "Use Google Payments sandbox servers";

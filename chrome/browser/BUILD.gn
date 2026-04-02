@@ -7811,6 +7811,7 @@ group("browser_public_dependencies") {
     "//components/system_cpu",
     "//components/url_deduplication",
     "//components/user_education/common",
+    "//components/wallet/core/common:features",
     "//components/webapps/browser",
     "//content/public/browser",
     "//ipc",

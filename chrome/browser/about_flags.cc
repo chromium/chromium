@@ -201,6 +201,7 @@
 #include "components/visited_url_ranking/public/features.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "components/webapps/browser/features.h"
 #include "components/webui/flags/feature_entry.h"
 #include "components/webui/flags/feature_entry_macros.h"
@@ -4656,6 +4657,13 @@ const FeatureEntry::Choice kSymphoniaAudioDecodingChoices[] = {
      "SymphoniaVorbisDecoding"}};
 #endif
 
+const FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
+    {"wallet_pass_save_url", "https://wallet1ppasses.pa.googleapis.com"}};
+
+const FeatureEntry::FeatureVariation
+    kWalletApiPrivatePassesEnabledVariations[] = {
+        {"Debug", kWalletApiPrivatePassesUrl, nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -5215,6 +5223,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowAutofillSignaturesName,
      flag_descriptions::kShowAutofillSignaturesDescription, kOsAll,
      SINGLE_VALUE_TYPE(autofill::switches::kShowAutofillSignatures)},
+    {"wallet-api-private-passes-enabled",
+     flag_descriptions::kWalletApiPrivatePassesEnabledName,
+     flag_descriptions::kWalletApiPrivatePassesEnabledDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         wallet::features::kWalletApiPrivatePassesEnabled,
+         kWalletApiPrivatePassesEnabledVariations,
+         "WalletApiPrivatePassesEnabled")},
+
     {"wallet-service-use-sandbox",
      flag_descriptions::kWalletServiceUseSandboxName,
      flag_descriptions::kWalletServiceUseSandboxDescription,
@@ -12612,6 +12628,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillAiWalletPrivatePassesName,
      flag_descriptions::kAutofillAiWalletPrivatePassesDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWalletPrivatePasses)},
+
+    {"autofill-ai-wallet-private-passes-deep-link",
+     flag_descriptions::kAutofillAiWalletPrivatePassesDeepLinkName,
+     flag_descriptions::kAutofillAiWalletPrivatePassesDeepLinkDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAiWalletPrivatePassesDeepLink)},
 
     {"autofill-ai-wallet-vehicle-registration",
      flag_descriptions::kAutofillAiWalletVehicleRegistrationName,
