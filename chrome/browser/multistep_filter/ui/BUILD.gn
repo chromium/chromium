@@ -29,6 +29,7 @@ source_set("ui") {
       "//components/tabs:public",
       "//content/public/browser",
       "//ui/base",
+      "//ui/strings",
       "//url",
     ]
   }

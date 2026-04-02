@@ -6,25 +6,22 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/tabs/public/mock_tab_interface.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
@@ -68,6 +65,15 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
                    navigation_handle_callback),
               (override));
 };
+
+std::vector<FilterAttributeUiLabel> DefaultAttributes() {
+  return {FilterAttributeUiLabel(
+              FilterSuggestionCandidateAttribute("color", u"Color"),
+              FilterAttribute("color", "red")),
+          FilterAttributeUiLabel(
+              FilterSuggestionCandidateAttribute("size", u"Size"),
+              FilterAttribute("size", "large"))};
+}
 
 UrlFilterSuggestion CreateDummySuggestion(
     const GURL& url,
@@ -127,7 +133,8 @@ TEST_F(FilterUiControllerTest, FromReturnsNullIfNotFound) {
 
 TEST_F(FilterUiControllerTest, SuggestionCallbackGeneratesSuggestion) {
   GURL url("https://example.com");
-  UrlFilterSuggestion suggestion = CreateDummySuggestion(url);
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(url, DefaultAttributes());
 
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
   controller_->OnSuggestionGenerated(suggestion);
@@ -141,7 +148,8 @@ TEST_F(FilterUiControllerTest, SuggestionCallbackIgnoresNullopt) {
 
 TEST_F(FilterUiControllerTest, ClearSuggestion) {
   GURL url("https://example.com");
-  UrlFilterSuggestion suggestion = CreateDummySuggestion(url);
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(url, DefaultAttributes());
 
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
   controller_->OnSuggestionGenerated(suggestion);
@@ -163,14 +171,15 @@ TEST_F(FilterUiControllerTest, ShowSuggestionUiWithNullBrowserWindowInterface) {
 
   // Should not crash.
   controller->OnSuggestionGenerated(
-      CreateDummySuggestion(GURL("https://example.com")));
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes()));
 }
 
 TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForDismissedHost) {
   GURL source_url("https://example.com/source");
   GURL target_url("https://example.com/target");
 
-  UrlFilterSuggestion suggestion = CreateDummySuggestion(target_url);
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(target_url, DefaultAttributes());
 
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(source_url);
@@ -196,7 +205,8 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForEtldPlusOne) {
   GURL source_url("https://sub.example.com/source");
   GURL other_url("https://other.example.com/other");
   GURL target_url("https://target.com");
-  UrlFilterSuggestion suggestion = CreateDummySuggestion(target_url);
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(target_url, DefaultAttributes());
 
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(source_url);
@@ -221,7 +231,8 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForEtldPlusOne) {
 TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForLocalhost) {
   GURL source_url("http://localhost:8080/source");
   GURL target_url("http://localhost:8080/target");
-  UrlFilterSuggestion suggestion = CreateDummySuggestion(target_url);
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(target_url, DefaultAttributes());
 
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(source_url);
@@ -240,9 +251,11 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForLocalhost) {
 
 TEST_F(FilterUiControllerTest, DismissalDoesNotClearNewSuggestion) {
   GURL url_a("https://a.com");
-  UrlFilterSuggestion suggestion_a = CreateDummySuggestion(url_a);
+  UrlFilterSuggestion suggestion_a =
+      CreateDummySuggestion(url_a, DefaultAttributes());
   GURL url_b("https://b.com");
-  UrlFilterSuggestion suggestion_b = CreateDummySuggestion(url_b);
+  UrlFilterSuggestion suggestion_b =
+      CreateDummySuggestion(url_b, DefaultAttributes());
 
   // 1. Suggestion A is generated.
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion_a)));
@@ -267,7 +280,8 @@ TEST_F(FilterUiControllerTest, ApplySuggestion) {
   controller_->ApplySuggestion();
 
   // Should do nothing if the URL is empty.
-  UrlFilterSuggestion empty_url_suggestion = CreateDummySuggestion(GURL());
+  UrlFilterSuggestion empty_url_suggestion =
+      CreateDummySuggestion(GURL(), DefaultAttributes());
   EXPECT_CALL(*controller_,
               ShowSuggestionUi(testing::Eq(empty_url_suggestion)));
   controller_->OnSuggestionGenerated(empty_url_suggestion);
@@ -275,7 +289,8 @@ TEST_F(FilterUiControllerTest, ApplySuggestion) {
 
   // Should navigate to the suggestion URL.
   GURL url("https://example.com");
-  UrlFilterSuggestion suggestion = CreateDummySuggestion(url);
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(url, DefaultAttributes());
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
   controller_->OnSuggestionGenerated(suggestion);
 
@@ -334,16 +349,18 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSubsumedSuggestions) {
 
   // 1. Identical URL should be suppressed.
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
-  controller_->OnSuggestionGenerated(CreateDummySuggestion(current_url));
+  controller_->OnSuggestionGenerated(
+      CreateDummySuggestion(current_url, DefaultAttributes()));
 
   // 2. Subset of parameters should be suppressed.
   GURL redundant_url("https://example.com/search?q=foo");
-  controller_->OnSuggestionGenerated(CreateDummySuggestion(redundant_url));
+  controller_->OnSuggestionGenerated(
+      CreateDummySuggestion(redundant_url, DefaultAttributes()));
 
   // 3. Different base URL should NOT be suppressed even if parameters match.
   GURL different_base_url("https://example.com/other?q=foo&filter=bar");
   UrlFilterSuggestion different_base_suggestion =
-      CreateDummySuggestion(different_base_url);
+      CreateDummySuggestion(different_base_url, DefaultAttributes());
   EXPECT_CALL(*controller_,
               ShowSuggestionUi(testing::Eq(different_base_suggestion)));
   controller_->OnSuggestionGenerated(different_base_suggestion);
@@ -351,7 +368,7 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSubsumedSuggestions) {
   // 4. Additional parameters should NOT be suppressed.
   GURL new_filter_url("https://example.com/search?q=foo&filter=bar&sort=new");
   UrlFilterSuggestion new_filter_suggestion =
-      CreateDummySuggestion(new_filter_url);
+      CreateDummySuggestion(new_filter_url, DefaultAttributes());
   EXPECT_CALL(*controller_,
               ShowSuggestionUi(testing::Eq(new_filter_suggestion)));
   controller_->OnSuggestionGenerated(new_filter_suggestion);
@@ -359,10 +376,71 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSubsumedSuggestions) {
   // 5. Different parameter values should NOT be suppressed.
   GURL different_value_url("https://example.com/search?q=baz&filter=bar");
   UrlFilterSuggestion different_value_suggestion =
-      CreateDummySuggestion(different_value_url);
+      CreateDummySuggestion(different_value_url, DefaultAttributes());
   EXPECT_CALL(*controller_,
               ShowSuggestionUi(testing::Eq(different_value_suggestion)));
   controller_->OnSuggestionGenerated(different_value_suggestion);
+}
+
+TEST_F(FilterUiControllerTest, GetSuggestionUiData_Recent) {
+  base::Time now = base::Time::Now();
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  suggestion.extraction_timestamp = now - base::Hours(2);
+  suggestion.source_domain = u"example.com";
+
+  FilterUiController::SuggestionUiData data =
+      controller_->GetSuggestionUiData(suggestion, now);
+
+  EXPECT_EQ(data.toast_id, ToastId::kMultistepFilterSuggestionRecent);
+  ASSERT_EQ(data.replacement_params.size(), 3u);
+  EXPECT_EQ(data.replacement_params[0], u"2");
+  EXPECT_EQ(data.replacement_params[1], u"example.com");
+  EXPECT_EQ(data.replacement_params[2], u"red, large");
+}
+
+TEST_F(FilterUiControllerTest, GetSuggestionUiData_Days) {
+  base::Time now = base::Time::Now();
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  suggestion.extraction_timestamp = now - base::Days(5);
+
+  FilterUiController::SuggestionUiData data =
+      controller_->GetSuggestionUiData(suggestion, now);
+
+  EXPECT_EQ(data.toast_id, ToastId::kMultistepFilterSuggestion);
+  ASSERT_EQ(data.replacement_params.size(), 3u);
+  EXPECT_EQ(data.replacement_params[0], u"2");
+  EXPECT_EQ(data.replacement_params[1],
+            l10n_util::GetPluralStringFUTF16(IDS_TIME_DAYS, 5));
+  EXPECT_EQ(data.replacement_params[2], u"red, large");
+}
+
+TEST_F(FilterUiControllerTest, GetSuggestionUiData_Months) {
+  base::Time now = base::Time::Now();
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+
+  // 44 days should round down to 1 month.
+  suggestion.extraction_timestamp = now - base::Days(44);
+  FilterUiController::SuggestionUiData data_44 =
+      controller_->GetSuggestionUiData(suggestion, now);
+  EXPECT_EQ(data_44.replacement_params[1],
+            l10n_util::GetPluralStringFUTF16(IDS_TIME_MONTHS, 1));
+
+  // 45 days should round up to 2 months.
+  suggestion.extraction_timestamp = now - base::Days(45);
+  FilterUiController::SuggestionUiData data_45 =
+      controller_->GetSuggestionUiData(suggestion, now);
+  EXPECT_EQ(data_45.replacement_params[1],
+            l10n_util::GetPluralStringFUTF16(IDS_TIME_MONTHS, 2));
+
+  // 75 days should round up to 3 months.
+  suggestion.extraction_timestamp = now - base::Days(75);
+  FilterUiController::SuggestionUiData data_75 =
+      controller_->GetSuggestionUiData(suggestion, now);
+  EXPECT_EQ(data_75.replacement_params[1],
+            l10n_util::GetPluralStringFUTF16(IDS_TIME_MONTHS, 3));
 }
 
 }  // namespace multistep_filter

@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -27,6 +28,24 @@ namespace multistep_filter {
 class FilterUiController : public tabs::ContentsObservingTabFeature {
  public:
   DECLARE_USER_DATA(FilterUiController);
+
+  // Information needed to show a suggestion toast.
+  struct SuggestionUiData {
+    SuggestionUiData(ToastId toast_id,
+                     std::vector<std::u16string> replacement_params);
+    SuggestionUiData(const SuggestionUiData&);
+    SuggestionUiData& operator=(const SuggestionUiData&);
+    ~SuggestionUiData();
+
+    friend bool operator==(const SuggestionUiData&,
+                           const SuggestionUiData&) = default;
+
+    // The ID of the toast to show.
+    ToastId toast_id;
+
+    // The string parameters to replace in the toast body text.
+    std::vector<std::u16string> replacement_params;
+  };
 
   static FilterUiController* From(tabs::TabInterface* tab);
 
@@ -47,6 +66,10 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
 
   // Returns true if suggestions should be suppressed for the given URL.
   virtual bool ShouldSuppressSuggestions(const GURL& url);
+
+  // Returns the UI data for the given `suggestion` and `time`.
+  SuggestionUiData GetSuggestionUiData(const UrlFilterSuggestion& suggestion,
+                                       base::Time now) const;
 
  protected:
   // Shows the UI for the given suggestion.
