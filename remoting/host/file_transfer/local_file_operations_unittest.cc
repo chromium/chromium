@@ -147,8 +147,8 @@ TEST_F(LocalFileOperationsTest, WritesThreeChunks) {
   std::string actual_file_data;
   ASSERT_TRUE(base::ReadFileToString(TestDir().Append(kTestFilename),
                                      &actual_file_data));
-  ASSERT_EQ(ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree),
-            ByteArrayFrom(actual_file_data));
+  ASSERT_EQ(ByteArrayFrom(actual_file_data),
+            ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree));
 }
 
 // Verifies that a file with a small last chunk can be written successfully.
@@ -164,9 +164,9 @@ TEST_F(LocalFileOperationsTest, WritesSmallTail) {
   std::string actual_file_data;
   ASSERT_TRUE(base::ReadFileToString(TestDir().Append(kTestFilename),
                                      &actual_file_data));
-  ASSERT_EQ(ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree,
-                          kTestDataSmallTail),
-            ByteArrayFrom(actual_file_data));
+  ASSERT_EQ(ByteArrayFrom(actual_file_data),
+            ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree,
+                          kTestDataSmallTail));
 }
 
 // Verifies that LocalFileOperations will write to a file named "file (1).txt"
@@ -193,15 +193,15 @@ TEST_F(LocalFileOperationsTest, RenamesFileIfExists) {
   std::string actual_file_data_one;
   EXPECT_TRUE(base::ReadFileToString(TestDir().Append(kTestFilename),
                                      &actual_file_data_one));
-  EXPECT_EQ(kTestDataOne, ByteArrayFrom(actual_file_data_one));
+  EXPECT_EQ(ByteArrayFrom(actual_file_data_one), kTestDataOne);
   std::string actual_file_data_two;
   EXPECT_TRUE(base::ReadFileToString(TestDir().Append(kTestFilenameSecondary),
                                      &actual_file_data_two));
-  EXPECT_EQ(kTestDataTwo, ByteArrayFrom(actual_file_data_two));
+  EXPECT_EQ(ByteArrayFrom(actual_file_data_two), kTestDataTwo);
   std::string actual_file_data_three;
   EXPECT_TRUE(base::ReadFileToString(TestDir().Append(kTestFilenameTertiary),
                                      &actual_file_data_three));
-  EXPECT_EQ(kTestDataThree, ByteArrayFrom(actual_file_data_three));
+  EXPECT_EQ(ByteArrayFrom(actual_file_data_three), kTestDataThree);
 }
 
 // Verifies that dropping early deletes the temporary file.
@@ -246,17 +246,17 @@ TEST_F(LocalFileOperationsTest, OpensReader) {
 
   FakeFileChooser::SetResult(path);
   std::optional<FileOperations::Reader::OpenResult> open_result;
-  ASSERT_EQ(FileOperations::kCreated, reader->state());
+  ASSERT_EQ(reader->state(), FileOperations::kCreated);
   reader->Open(BindLambda([&](FileOperations::Reader::OpenResult result) {
     open_result = std::move(result);
   }));
-  ASSERT_EQ(FileOperations::kBusy, reader->state());
+  ASSERT_EQ(reader->state(), FileOperations::kBusy);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(FileOperations::kReady, reader->state());
-  ASSERT_TRUE(open_result);
+  EXPECT_EQ(reader->state(), FileOperations::kReady);
+  ASSERT_TRUE(open_result.has_value());
   ASSERT_TRUE(*open_result);
-  EXPECT_EQ(kTestFilename, reader->filename());
-  EXPECT_EQ(contents.size(), reader->size());
+  EXPECT_EQ(reader->filename(), kTestFilename);
+  EXPECT_EQ(reader->size(), contents.size());
 }
 
 // Verifies that a file can be successfully read in three chunks.
@@ -275,7 +275,8 @@ TEST_F(LocalFileOperationsTest, ReadsThreeChunks) {
     open_result = std::move(result);
   }));
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(open_result && *open_result);
+  ASSERT_TRUE(open_result.has_value());
+  ASSERT_TRUE(*open_result);
 
   for (const auto& chunk : {kTestDataOne, kTestDataTwo, kTestDataThree}) {
     std::optional<FileOperations::Reader::ReadResult> read_result;
@@ -284,12 +285,12 @@ TEST_F(LocalFileOperationsTest, ReadsThreeChunks) {
         BindLambda([&](FileOperations::Reader::ReadResult result) {
           read_result = std::move(result);
         }));
-    ASSERT_EQ(FileOperations::kBusy, reader->state());
+    ASSERT_EQ(reader->state(), FileOperations::kBusy);
     task_environment_.RunUntilIdle();
-    ASSERT_EQ(FileOperations::kReady, reader->state());
-    ASSERT_TRUE(read_result);
+    ASSERT_EQ(reader->state(), FileOperations::kReady);
+    ASSERT_TRUE(read_result.has_value());
     ASSERT_TRUE(*read_result);
-    EXPECT_EQ(chunk, **read_result);
+    EXPECT_EQ(**read_result, chunk);
   }
 }
 
@@ -318,9 +319,10 @@ TEST_F(LocalFileOperationsTest, ReaderHandlesEof) {
         read_result = std::move(result);
       }));
   task_environment_.RunUntilIdle();
-  ASSERT_EQ(FileOperations::kReady, reader->state());
-  ASSERT_TRUE(read_result && *read_result);
-  EXPECT_EQ(contents, **read_result);
+  ASSERT_EQ(reader->state(), FileOperations::kReady);
+  ASSERT_TRUE(read_result.has_value());
+  ASSERT_TRUE(*read_result);
+  EXPECT_EQ(**read_result, contents);
 
   read_result.reset();
   reader->ReadChunk(5,
@@ -328,9 +330,10 @@ TEST_F(LocalFileOperationsTest, ReaderHandlesEof) {
                       read_result = std::move(result);
                     }));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(FileOperations::kComplete, reader->state());
-  ASSERT_TRUE(read_result && *read_result);
-  EXPECT_EQ(std::size_t{0}, (*read_result)->size());
+  EXPECT_EQ(reader->state(), FileOperations::kComplete);
+  ASSERT_TRUE(read_result.has_value());
+  ASSERT_TRUE(*read_result);
+  EXPECT_EQ((*read_result)->size(), std::size_t{0});
 }
 
 // Verifies cancellation is propagated.
@@ -345,11 +348,11 @@ TEST_F(LocalFileOperationsTest, ReaderCancels) {
     open_result = std::move(result);
   }));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(FileOperations::kFailed, reader->state());
+  EXPECT_EQ(reader->state(), FileOperations::kFailed);
   ASSERT_TRUE(open_result);
   ASSERT_FALSE(*open_result);
-  EXPECT_EQ(protocol::FileTransfer_Error_Type_CANCELED,
-            open_result->error().type());
+  EXPECT_EQ(open_result->error().type(),
+            protocol::FileTransfer_Error_Type_CANCELED);
 }
 
 // Verifies failure when file doesn't exist.
@@ -364,7 +367,7 @@ TEST_F(LocalFileOperationsTest, FileNotFound) {
     open_result = std::move(result);
   }));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(FileOperations::kFailed, reader->state());
+  EXPECT_EQ(reader->state(), FileOperations::kFailed);
   ASSERT_TRUE(open_result);
   ASSERT_FALSE(*open_result);
 }

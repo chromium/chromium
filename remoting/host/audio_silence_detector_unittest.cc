@@ -33,7 +33,7 @@ void TestSilenceDetector(AudioSilenceDetector* target,
   }
 
   // Check that the silence was detected if it was expected.
-  EXPECT_EQ(silence_expected, silence_started);
+  EXPECT_EQ(silence_started, silence_expected);
 
   if (silence_expected) {
     // Check that silence threshold is between 0.5 and 2 seconds.

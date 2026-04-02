@@ -220,7 +220,7 @@ TEST_F(AudioHelperChromeOsImplTest, SuccessfulStartWithPackets) {
       [&]() { return captured_audio_packets_.size() == 1; }));
 
   const auto& packet = captured_audio_packets_[0];
-  EXPECT_EQ(AudioPacket::ENCODING_RAW, packet->encoding());
+  EXPECT_EQ(packet->encoding(), AudioPacket::ENCODING_RAW);
   EXPECT_EQ(AudioPacket::SAMPLING_RATE_48000, packet->sampling_rate());
   EXPECT_EQ(AudioPacket::BYTES_PER_SAMPLE_2, packet->bytes_per_sample());
   EXPECT_EQ(AudioPacket::CHANNELS_STEREO, packet->channels());

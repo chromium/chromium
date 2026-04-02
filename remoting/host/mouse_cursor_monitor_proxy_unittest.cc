@@ -109,10 +109,10 @@ void MouseCursorMonitorProxyTest::OnMouseCursor(
     webrtc::MouseCursor* mouse_cursor) {
   DCHECK(task_environment_.GetMainThreadTaskRunner()->BelongsToCurrentThread());
 
-  EXPECT_EQ(kCursorWidth, mouse_cursor->image()->size().width());
-  EXPECT_EQ(kCursorHeight, mouse_cursor->image()->size().height());
-  EXPECT_EQ(kHotspotX, mouse_cursor->hotspot().x());
-  EXPECT_EQ(kHotspotY, mouse_cursor->hotspot().y());
+  EXPECT_EQ(mouse_cursor->image()->size().width(), kCursorWidth);
+  EXPECT_EQ(mouse_cursor->image()->size().height(), kCursorHeight);
+  EXPECT_EQ(mouse_cursor->hotspot().x(), kHotspotX);
+  EXPECT_EQ(mouse_cursor->hotspot().y(), kHotspotY);
   delete mouse_cursor;
 
   future_.SetValue();

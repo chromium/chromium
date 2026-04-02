@@ -98,16 +98,17 @@ class MouseShapePumpTest : public testing::Test {
 void MouseShapePumpTest::SetCursorShape(
     const protocol::CursorShapeInfo& cursor_shape) {
   EXPECT_TRUE(cursor_shape.has_width());
-  EXPECT_EQ(kCursorWidth, cursor_shape.width());
+  EXPECT_EQ(cursor_shape.width(), kCursorWidth);
   EXPECT_TRUE(cursor_shape.has_height());
-  EXPECT_EQ(kCursorHeight, cursor_shape.height());
+  EXPECT_EQ(cursor_shape.height(), kCursorHeight);
   EXPECT_TRUE(cursor_shape.has_hotspot_x());
-  EXPECT_EQ(kHotspotX, cursor_shape.hotspot_x());
+  EXPECT_EQ(cursor_shape.hotspot_x(), kHotspotX);
   EXPECT_TRUE(cursor_shape.has_hotspot_y());
-  EXPECT_EQ(kHotspotY, cursor_shape.hotspot_y());
+  EXPECT_EQ(cursor_shape.hotspot_y(), kHotspotY);
   EXPECT_TRUE(cursor_shape.has_data());
-  EXPECT_EQ(kCursorWidth * kCursorHeight * webrtc::DesktopFrame::kBytesPerPixel,
-            static_cast<int>(cursor_shape.data().size()));
+  EXPECT_EQ(
+      static_cast<int>(cursor_shape.data().size()),
+      kCursorWidth * kCursorHeight * webrtc::DesktopFrame::kBytesPerPixel);
 }
 
 // This test mocks MouseCursorMonitor and ClientStub to verify that the

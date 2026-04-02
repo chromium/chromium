@@ -462,9 +462,9 @@ TEST_F(ChromotingHostTest, IncomingSessionAccepted) {
   base::Location rejection_location;
   host_->OnIncomingSession(session_unowned1_.release(), &response,
                            &rejection_reason, &rejection_location);
-  EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+  EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
   EXPECT_TRUE(rejection_reason.empty());
-  EXPECT_EQ(nullptr, rejection_location.program_counter());
+  EXPECT_EQ(rejection_location.program_counter(), nullptr);
 
   EXPECT_CALL(*session, Close(_, _, _))
       .WillOnce(InvokeWithoutArgs(
@@ -498,9 +498,9 @@ TEST_F(ChromotingHostTest, SessionAcceptedWhenSecondarySessionManagerExists) {
   base::Location rejection_location;
   host_->OnIncomingSession(session_unowned1_.release(), &response,
                            &rejection_reason, &rejection_location);
-  EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+  EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
   EXPECT_TRUE(rejection_reason.empty());
-  EXPECT_EQ(nullptr, rejection_location.program_counter());
+  EXPECT_EQ(rejection_location.program_counter(), nullptr);
 
   EXPECT_CALL(*session, Close(_, _, _))
       .WillOnce(InvokeWithoutArgs(
@@ -533,9 +533,9 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
     // Simulate the incoming connection.
     host_->OnIncomingSession(session.release(), &response, &rejection_reason,
                              &rejection_location);
-    EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+    EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
     EXPECT_TRUE(rejection_reason.empty());
-    EXPECT_EQ(nullptr, rejection_location.program_counter());
+    EXPECT_EQ(rejection_location.program_counter(), nullptr);
     // Begin authentication; this will increase the backoff count, and since
     // OnSessionAuthenticated is never called, the host should only allow
     // kNumFailuresIgnored + 1 connections before beginning the backoff.
@@ -546,9 +546,9 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
   // As this is connection kNumFailuresIgnored + 2, it should be rejected.
   host_->OnIncomingSession(session_unowned2_.get(), &response,
                            &rejection_reason, &rejection_location);
-  EXPECT_EQ(protocol::SessionManager::OVERLOAD, response);
+  EXPECT_EQ(response, protocol::SessionManager::OVERLOAD);
   EXPECT_FALSE(rejection_reason.empty());
-  EXPECT_NE(nullptr, rejection_location.program_counter());
+  EXPECT_NE(rejection_location.program_counter(), nullptr);
   EXPECT_EQ(host_->client_sessions_for_tests().size(), kNumFailuresIgnored + 1);
 
   // Shut down host while objects owned by this test are still in scope.
@@ -580,9 +580,9 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
     // Simulate the incoming connection.
     host_->OnIncomingSession(session.release(), &response, &rejection_reason,
                              &rejection_location);
-    EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+    EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
     EXPECT_TRUE(rejection_reason.empty());
-    EXPECT_EQ(nullptr, rejection_location.program_counter());
+    EXPECT_EQ(rejection_location.program_counter(), nullptr);
     // Begin authentication; this will increase the backoff count
     host_->OnSessionAuthenticating(
         host_->client_sessions_for_tests().begin()->second.get());
@@ -609,9 +609,9 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
       }));
   host_->OnIncomingSession(session.release(), &response, &rejection_reason,
                            &rejection_location);
-  EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+  EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
   EXPECT_TRUE(rejection_reason.empty());
-  EXPECT_EQ(nullptr, rejection_location.program_counter());
+  EXPECT_EQ(rejection_location.program_counter(), nullptr);
 
   // Shut down host while objects owned by this test are still in scope.
   ShutdownHost();

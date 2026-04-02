@@ -79,7 +79,7 @@ TEST_F(GDBusConnectionRefTest, MethodCall) {
 
   for (std::size_t i = 0; i < 3; ++i) {
     EXPECT_TRUE(futures[i].Get().has_value());
-    EXPECT_EQ(kMessages[i], get<0>(futures[i].Get().value()));
+    EXPECT_EQ(get<0>(futures[i].Get().value()), kMessages[i]);
   }
 }
 
@@ -101,12 +101,12 @@ TEST_F(GDBusConnectionRefTest, GetProperty) {
       service_name_.c_str(), kObjectPath, methods_value.GetCallback());
 
   ASSERT_TRUE(name_value.Get().has_value());
-  EXPECT_EQ("TestService", name_value.Get().value());
+  EXPECT_EQ(name_value.Get().value(), "TestService");
 
   ASSERT_TRUE(methods_value.Get().has_value());
-  EXPECT_EQ((std::vector<std::string>{"Echo", "SlowEcho", "AsyncEcho",
-                                      "BrokenMethod"}),
-            methods_value.Get().value());
+  EXPECT_EQ(methods_value.Get().value(),
+            (std::vector<std::string>{"Echo", "SlowEcho", "AsyncEcho",
+                                      "BrokenMethod"}));
 }
 
 TEST_F(GDBusConnectionRefTest, SetProperty) {
@@ -132,9 +132,9 @@ TEST_F(GDBusConnectionRefTest, SetProperty) {
   EXPECT_TRUE(set_complete.Get().has_value());
   auto [interface_name, changed_properties, invalidated_properties] =
       change_signal.Take();
-  EXPECT_EQ(test_interface::Name::kInterfaceName, interface_name.string_view());
-  EXPECT_EQ(GVariantRef<"v">::From(gvariant::Boxed(value)),
-            changed_properties.LookUp(test_interface::Name::kPropertyName));
+  EXPECT_EQ(interface_name.string_view(), test_interface::Name::kInterfaceName);
+  EXPECT_EQ(changed_properties.LookUp(test_interface::Name::kPropertyName),
+            GVariantRef<"v">::From(gvariant::Boxed(value)));
 }
 
 TEST_F(GDBusConnectionRefTest, SignalSubscribe) {
@@ -157,10 +157,10 @@ TEST_F(GDBusConnectionRefTest, SignalSubscribe) {
   PingBus();
 
   test_service_.SendTestSignal("message1");
-  EXPECT_EQ("message1", get<0>(signal_future.Take()));
+  EXPECT_EQ(get<0>(signal_future.Take()), "message1");
 
   test_service_.SendTestSignal("message2");
-  EXPECT_EQ("message2", get<0>(signal_future.Take()));
+  EXPECT_EQ(get<0>(signal_future.Take()), "message2");
 }
 
 TEST_F(GDBusConnectionRefTest, DropSubscription) {
@@ -172,7 +172,7 @@ TEST_F(GDBusConnectionRefTest, DropSubscription) {
   PingBus();
 
   test_service_.SendTestSignal("message1");
-  EXPECT_EQ("message1", get<0>(signal_future.Take()));
+  EXPECT_EQ(get<0>(signal_future.Take()), "message1");
 
   // Create a new subscription at root and drop original subscription.
   signal_subscription = connection_.SignalSubscribe<test_interface::Test>(
@@ -184,7 +184,7 @@ TEST_F(GDBusConnectionRefTest, DropSubscription) {
   // the root object will match the new subscription.
   test_service_.SendTestSignal("message2");
   test_service_.SendTestSignalFromRoot("message3");
-  EXPECT_EQ("message3", get<0>(signal_future.Take()));
+  EXPECT_EQ(get<0>(signal_future.Take()), "message3");
 }
 
 TEST_F(GDBusConnectionRefTest, SubscribeAll) {
@@ -205,11 +205,11 @@ TEST_F(GDBusConnectionRefTest, SubscribeAll) {
   {
     auto [sender, object_path, interface_name, signal_name, arguments] =
         signal_future.Take();
-    EXPECT_EQ(connection_name, sender);
-    EXPECT_EQ(kObjectPath, object_path);
-    EXPECT_EQ(test_interface::Test::kInterfaceName, interface_name);
-    EXPECT_EQ(test_interface::Test::kSignalName, signal_name);
-    EXPECT_EQ(GVariantRef<>::From(std::tuple("message1")), arguments);
+    EXPECT_EQ(sender, connection_name);
+    EXPECT_EQ(object_path, kObjectPath);
+    EXPECT_EQ(interface_name, test_interface::Test::kInterfaceName);
+    EXPECT_EQ(signal_name, test_interface::Test::kSignalName);
+    EXPECT_EQ(arguments, GVariantRef<>::From(std::tuple("message1")));
   }
 
   test_service_.SendTestSignalFromRoot("message2");
@@ -217,11 +217,11 @@ TEST_F(GDBusConnectionRefTest, SubscribeAll) {
   {
     auto [sender, object_path, interface_name, signal_name, arguments] =
         signal_future.Take();
-    EXPECT_EQ(connection_name, sender);
-    EXPECT_EQ(gvariant::ObjectPathCStr("/"), object_path);
-    EXPECT_EQ(test_interface::Test::kInterfaceName, interface_name);
-    EXPECT_EQ(test_interface::Test::kSignalName, signal_name);
-    EXPECT_EQ(GVariantRef<>::From(std::tuple("message2")), arguments);
+    EXPECT_EQ(sender, connection_name);
+    EXPECT_EQ(object_path, gvariant::ObjectPathCStr("/"));
+    EXPECT_EQ(interface_name, test_interface::Test::kInterfaceName);
+    EXPECT_EQ(signal_name, test_interface::Test::kSignalName);
+    EXPECT_EQ(arguments, GVariantRef<>::From(std::tuple("message2")));
   }
 
   const char* prop_value = "value3";
@@ -231,19 +231,19 @@ TEST_F(GDBusConnectionRefTest, SubscribeAll) {
   {
     auto [sender, object_path, interface_name, signal_name, arguments] =
         signal_future.Take();
-    EXPECT_EQ(connection_name, sender);
-    EXPECT_EQ(kObjectPath, object_path);
+    EXPECT_EQ(sender, connection_name);
+    EXPECT_EQ(object_path, kObjectPath);
     EXPECT_EQ(
-        org_freedesktop_DBus_Properties::PropertiesChanged::kInterfaceName,
-        interface_name);
-    EXPECT_EQ(org_freedesktop_DBus_Properties::PropertiesChanged::kSignalName,
-              signal_name);
+        interface_name,
+        org_freedesktop_DBus_Properties::PropertiesChanged::kInterfaceName);
+    EXPECT_EQ(signal_name,
+              org_freedesktop_DBus_Properties::PropertiesChanged::kSignalName);
     auto typed_args =
         GVariantRef<org_freedesktop_DBus_Properties::PropertiesChanged::kType>::
             TryFrom(arguments);
     ASSERT_TRUE(typed_args.has_value());
-    EXPECT_EQ(GVariantRef<"v">::From(gvariant::Boxed(prop_value)),
-              typed_args->get<1>().LookUp(test_interface::Name::kPropertyName));
+    EXPECT_EQ(typed_args->get<1>().LookUp(test_interface::Name::kPropertyName),
+              GVariantRef<"v">::From(gvariant::Boxed(prop_value)));
   }
 }
 

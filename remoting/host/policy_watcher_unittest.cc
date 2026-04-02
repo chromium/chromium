@@ -769,7 +769,7 @@ TEST_F(PolicyWatcherTest, GetEffectivePoliciesError) {
   SetPolicies(nat_one_);
   StartWatching();
   base::DictValue effective_policies = policy_watcher_->GetEffectivePolicies();
-  ASSERT_EQ(0u, effective_policies.size());
+  ASSERT_EQ(effective_policies.size(), 0u);
 }
 
 TEST_F(PolicyWatcherTest, GetPlatformPolicies) {
@@ -780,9 +780,9 @@ TEST_F(PolicyWatcherTest, GetPlatformPolicies) {
               OnPolicyUpdatePtr(IsPolicies(&nat_false_)));
 
   StartWatching();
-  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies().size());
+  ASSERT_EQ(policy_watcher_->GetPlatformPolicies().size(), 0u);
   SetPolicies(nat_false_);
-  ASSERT_EQ(1u, policy_watcher_->GetPlatformPolicies().size());
+  ASSERT_EQ(policy_watcher_->GetPlatformPolicies().size(), 1u);
 }
 
 TEST_F(PolicyWatcherTest, GetPlatformPoliciesMultipleOverrides) {
@@ -797,13 +797,13 @@ TEST_F(PolicyWatcherTest, GetPlatformPoliciesMultipleOverrides) {
               OnPolicyUpdatePtr(IsPolicies(&nat_true_domain_empty_)));
 
   StartWatching();
-  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies().size());
+  ASSERT_EQ(policy_watcher_->GetPlatformPolicies().size(), 0u);
   SetPolicies(domain_full_);
-  ASSERT_EQ(1u, policy_watcher_->GetPlatformPolicies().size());
+  ASSERT_EQ(policy_watcher_->GetPlatformPolicies().size(), 1u);
   SetPolicies(nat_false_domain_full_);
-  ASSERT_EQ(2u, policy_watcher_->GetPlatformPolicies().size());
+  ASSERT_EQ(policy_watcher_->GetPlatformPolicies().size(), 2u);
   SetPolicies(nat_true_domain_empty_);
-  ASSERT_EQ(2u, policy_watcher_->GetPlatformPolicies().size());
+  ASSERT_EQ(policy_watcher_->GetPlatformPolicies().size(), 2u);
 }
 
 TEST_F(PolicyWatcherTest, GetPlatformPoliciesError) {
@@ -811,7 +811,7 @@ TEST_F(PolicyWatcherTest, GetPlatformPoliciesError) {
 
   SetPolicies(nat_one_);
   StartWatching();
-  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies().size());
+  ASSERT_EQ(policy_watcher_->GetPlatformPolicies().size(), 0u);
 }
 
 }  // namespace remoting

@@ -135,7 +135,7 @@ TEST_F(NativeMessagingReaderTest, SingleGoodMessage) {
   ASSERT_TRUE(message_->is_dict());
   std::optional<int> result = message_->GetDict().FindInt("foo");
   ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(42, result);
+  ASSERT_EQ(result, 42);
 }
 
 TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
@@ -156,7 +156,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_TRUE(message_->is_dict());
     std::optional<int> result = message_->GetDict().FindInt("foo");
     ASSERT_TRUE(result.has_value());
-    ASSERT_EQ(42, result);
+    ASSERT_EQ(result, 42);
   }
 
   {
@@ -167,7 +167,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_TRUE(message_->is_dict());
     std::optional<int> result = message_->GetDict().FindInt("bar");
     ASSERT_TRUE(result.has_value());
-    ASSERT_EQ(43, result);
+    ASSERT_EQ(result, 43);
   }
 
   {
@@ -178,7 +178,7 @@ TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
     ASSERT_TRUE(message_->is_dict());
     std::optional<int> result = message_->GetDict().FindInt("baz");
     ASSERT_TRUE(result.has_value());
-    ASSERT_EQ(44, result);
+    ASSERT_EQ(result, 44);
   }
 }
 

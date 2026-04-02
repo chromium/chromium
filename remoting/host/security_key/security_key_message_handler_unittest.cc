@@ -125,10 +125,10 @@ TEST_F(SecurityKeyMessageHandlerTest,
                                                std::string()));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::CONNECT_RESPONSE,
-            writer_weak_ptr_->last_message_type());
-  ASSERT_EQ(std::string(1, kConnectResponseActiveSession),
-            writer_weak_ptr_->last_message_payload());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::CONNECT_RESPONSE);
+  ASSERT_EQ(writer_weak_ptr_->last_message_payload(),
+            std::string(1, kConnectResponseActiveSession));
 }
 
 TEST_F(SecurityKeyMessageHandlerTest,
@@ -157,8 +157,8 @@ TEST_F(SecurityKeyMessageHandlerTest,
                                                std::string()));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::CONNECT_ERROR,
-            writer_weak_ptr_->last_message_type());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::CONNECT_ERROR);
   ASSERT_FALSE(writer_weak_ptr_->last_message_payload().empty());
 }
 
@@ -171,10 +171,10 @@ TEST_F(SecurityKeyMessageHandlerTest, ProcessConnectMessage_NoSessionExists) {
                                                std::string()));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::CONNECT_RESPONSE,
-            writer_weak_ptr_->last_message_type());
-  ASSERT_EQ(std::string(1, kConnectResponseNoSession),
-            writer_weak_ptr_->last_message_payload());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::CONNECT_RESPONSE);
+  ASSERT_EQ(writer_weak_ptr_->last_message_payload(),
+            std::string(1, kConnectResponseNoSession));
 }
 
 TEST_F(SecurityKeyMessageHandlerTest, ProcessConnectMessage_IncorrectPayload) {
@@ -186,8 +186,8 @@ TEST_F(SecurityKeyMessageHandlerTest, ProcessConnectMessage_IncorrectPayload) {
                                                "Invalid request payload"));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::CONNECT_ERROR,
-            writer_weak_ptr_->last_message_type());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::CONNECT_ERROR);
   ASSERT_FALSE(writer_weak_ptr_->last_message_payload().empty());
 }
 
@@ -203,8 +203,8 @@ TEST_F(SecurityKeyMessageHandlerTest,
                                                request_payload));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::REQUEST_RESPONSE,
-            writer_weak_ptr_->last_message_type());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::REQUEST_RESPONSE);
   ASSERT_EQ(response_payload, writer_weak_ptr_->last_message_payload());
 }
 
@@ -236,8 +236,8 @@ TEST_F(SecurityKeyMessageHandlerTest,
                                                request_payload));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::REQUEST_ERROR,
-            writer_weak_ptr_->last_message_type());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::REQUEST_ERROR);
   ASSERT_FALSE(writer_weak_ptr_->last_message_payload().empty());
 }
 
@@ -253,8 +253,8 @@ TEST_F(SecurityKeyMessageHandlerTest,
                                                request_payload));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::REQUEST_ERROR,
-            writer_weak_ptr_->last_message_type());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::REQUEST_ERROR);
   ASSERT_FALSE(writer_weak_ptr_->last_message_payload().empty());
 }
 
@@ -270,8 +270,8 @@ TEST_F(SecurityKeyMessageHandlerTest,
                                                request_payload));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::REQUEST_ERROR,
-            writer_weak_ptr_->last_message_type());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::REQUEST_ERROR);
   ASSERT_FALSE(writer_weak_ptr_->last_message_payload().empty());
 }
 
@@ -282,8 +282,8 @@ TEST_F(SecurityKeyMessageHandlerTest, ProcessRequestMessage_InvalidPayload) {
                                                invalid_payload));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::REQUEST_ERROR,
-            writer_weak_ptr_->last_message_type());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::REQUEST_ERROR);
   ASSERT_FALSE(writer_weak_ptr_->last_message_payload().empty());
 }
 
@@ -293,8 +293,8 @@ TEST_F(SecurityKeyMessageHandlerTest, ProcessUnknownMessage) {
           SecurityKeyMessageType::UNKNOWN_ERROR, std::string()));
   WaitForOperationComplete();
 
-  ASSERT_EQ(SecurityKeyMessageType::UNKNOWN_COMMAND,
-            writer_weak_ptr_->last_message_type());
+  ASSERT_EQ(writer_weak_ptr_->last_message_type(),
+            SecurityKeyMessageType::UNKNOWN_COMMAND);
 }
 
 }  // namespace remoting

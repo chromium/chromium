@@ -14,7 +14,7 @@ class PinHashTest : public testing::Test {};
 
 TEST_F(PinHashTest, KnownHashValue) {
   std::string hash = MakeHostPinHash("Host ID", "1234");
-  ASSERT_EQ("hmac:bk6RVRFLpLO89mr4QPHSg8CemUUtI90r2F0VfvTmWLI=", hash);
+  ASSERT_EQ(hash, "hmac:bk6RVRFLpLO89mr4QPHSg8CemUUtI90r2F0VfvTmWLI=");
 }
 
 TEST_F(PinHashTest, VerifyHostPinHash) {

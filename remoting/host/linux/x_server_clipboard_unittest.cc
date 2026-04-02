@@ -111,19 +111,19 @@ TEST_F(XServerClipboardTest, DISABLED_CopyPaste) {
   // send then receive, and client2_ will receive then send).
   client1_.SetClipboardData("Text1");
   PumpXEvents();
-  EXPECT_EQ("Text1", client2_.clipboard_data());
+  EXPECT_EQ(client2_.clipboard_data(), "Text1");
 
   client1_.SetClipboardData("Text2");
   PumpXEvents();
-  EXPECT_EQ("Text2", client2_.clipboard_data());
+  EXPECT_EQ(client2_.clipboard_data(), "Text2");
 
   client2_.SetClipboardData("Text3");
   PumpXEvents();
-  EXPECT_EQ("Text3", client1_.clipboard_data());
+  EXPECT_EQ(client1_.clipboard_data(), "Text3");
 
   client2_.SetClipboardData("Text4");
   PumpXEvents();
-  EXPECT_EQ("Text4", client1_.clipboard_data());
+  EXPECT_EQ(client1_.clipboard_data(), "Text4");
 }
 
 }  // namespace remoting

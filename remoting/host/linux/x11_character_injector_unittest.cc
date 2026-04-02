@@ -71,7 +71,7 @@ FakeX11Keyboard::FakeX11Keyboard(
 FakeX11Keyboard::~FakeX11Keyboard() {
   EXPECT_TRUE(expected_code_point_sequence_.empty());
   for (const auto& pair : keycode_mapping_) {
-    EXPECT_EQ(0u, pair.second.code_point);
+    EXPECT_EQ(pair.second.code_point, 0u);
   }
 }
 
@@ -91,7 +91,7 @@ void FakeX11Keyboard::PressKey(uint32_t keycode, uint32_t modifiers) {
   auto position = keycode_mapping_.find(keycode);
   ASSERT_NE(position, keycode_mapping_.end());
   MappingInfo& info = position->second;
-  EXPECT_EQ(expected_code_point, info.code_point);
+  EXPECT_EQ(info.code_point, expected_code_point);
   info.reusable_at = base::TimeTicks::Now() + kKeycodeReuseDuration;
   expected_code_point_sequence_.pop_front();
   if (expected_code_point_sequence_.empty() && keypress_finished_callback_) {

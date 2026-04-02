@@ -43,38 +43,38 @@ TEST_F(BackoffTimerTest, Basic) {
                       base::BindRepeating(&BackoffTimerTest::IncrementCounter,
                                           base::Unretained(this)));
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(0, counter());
+  ASSERT_EQ(counter(), 0);
 
   // The backoff timer always immediately fires without delay.
   AssertNextDelayAndFastForwardBy(base::TimeDelta());
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(1, counter());
+  ASSERT_EQ(counter(), 1);
 
   // The next delay is equal to the initial delay.
   AssertNextDelayAndFastForwardBy(initial_delay);
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(2, counter());
+  ASSERT_EQ(counter(), 2);
 
   // The next delay is doubled.
   AssertNextDelayAndFastForwardBy(2 * initial_delay);
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(3, counter());
+  ASSERT_EQ(counter(), 3);
 
   // The next delay is doubled again.
   AssertNextDelayAndFastForwardBy(4 * initial_delay);
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(4, counter());
+  ASSERT_EQ(counter(), 4);
 
   // The next delay is clamped to the max delay. Otherwise, it would exceed it.
   ASSERT_GT(8 * initial_delay, max_delay);
   AssertNextDelayAndFastForwardBy(max_delay);
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(5, counter());
+  ASSERT_EQ(counter(), 5);
 
   // The delay remains constant at the max delay.
   AssertNextDelayAndFastForwardBy(max_delay);
   ASSERT_TRUE(backoff_timer.IsRunning());
-  ASSERT_EQ(6, counter());
+  ASSERT_EQ(counter(), 6);
 
   backoff_timer.Stop();
   ASSERT_FALSE(backoff_timer.IsRunning());

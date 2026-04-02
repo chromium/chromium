@@ -108,7 +108,7 @@ void SecurityKeyMessageWriterImplTest::WriteMessageToOutput(
 
   SecurityKeyMessageType type =
       SecurityKeyMessage::MessageTypeFromValue(message_result_[4]);
-  ASSERT_EQ(kTestMessageType, type);
+  ASSERT_EQ(type, kTestMessageType);
 
   if (payload.size()) {
     ASSERT_EQ(message_result_.substr(5), payload);
@@ -148,7 +148,7 @@ TEST_F(SecurityKeyMessageWriterImplTest, WriteMultipleMessages) {
     int length;
     ASSERT_TRUE(
         read_file_.ReadAtCurrentPosAndCheck(base::byte_span_from_ref(length)));
-    ASSERT_EQ(SecurityKeyMessage::kMessageTypeSizeBytes, length);
+    ASSERT_EQ(length, SecurityKeyMessage::kMessageTypeSizeBytes);
 
     // Retrieve and verify the message type.
     std::string message_type(length, '\0');
@@ -158,9 +158,9 @@ TEST_F(SecurityKeyMessageWriterImplTest, WriteMultipleMessages) {
     SecurityKeyMessageType type =
         SecurityKeyMessage::MessageTypeFromValue(message_type[0]);
     if (i % 2 == 0) {
-      ASSERT_EQ(SecurityKeyMessageType::CONNECT, type);
+      ASSERT_EQ(type, SecurityKeyMessageType::CONNECT);
     } else {
-      ASSERT_EQ(SecurityKeyMessageType::REQUEST, type);
+      ASSERT_EQ(type, SecurityKeyMessageType::REQUEST);
     }
   }
 

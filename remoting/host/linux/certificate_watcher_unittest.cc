@@ -109,59 +109,59 @@ class CertificateWatcherTest : public testing::Test {
 };
 
 TEST_F(CertificateWatcherTest, OneTouch) {
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   Start();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   TouchFile(kCertFileName);
   RunLoop();
-  EXPECT_EQ(1, restart_count_);
+  EXPECT_EQ(restart_count_, 1);
 }
 
 TEST_F(CertificateWatcherTest, OneTouchAppend) {
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   TouchFileTask(kKeyFileName);
   Start();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   TouchFile(kKeyFileName);  // Appends to existing file.
   RunLoop();
-  EXPECT_EQ(1, restart_count_);
+  EXPECT_EQ(restart_count_, 1);
 }
 
 TEST_F(CertificateWatcherTest, InhibitDeferRestart) {
   Start();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   Connect();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   TouchFile(kPKCSFileName);
   RunAndWait();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   Disconnect();
   RunLoop();
-  EXPECT_EQ(1, restart_count_);
+  EXPECT_EQ(restart_count_, 1);
 }
 
 TEST_F(CertificateWatcherTest, UninhibitAndRestart) {
   Start();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   Connect();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   Disconnect();
   RunAndWait();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   TouchFile(kCertFileName);
   RunLoop();
-  EXPECT_EQ(1, restart_count_);
+  EXPECT_EQ(restart_count_, 1);
 }
 
 TEST_F(CertificateWatcherTest, TouchOtherFile) {
   // The watcher should not trigger if changes are made that don't affect the
   // NSS DB contents.
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   Start();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
   TouchFile(kOtherFileName);
   RunAndWait();
-  EXPECT_EQ(0, restart_count_);
+  EXPECT_EQ(restart_count_, 0);
 }
 
 }  // namespace remoting

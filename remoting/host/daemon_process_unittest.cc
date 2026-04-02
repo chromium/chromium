@@ -211,7 +211,7 @@ TEST_F(DaemonProcessTest, OpenClose) {
 
   int id = terminal_id_++;
   daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
-  EXPECT_EQ(1u, desktop_sessions().size());
+  EXPECT_EQ(desktop_sessions().size(), 1u);
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
   daemon_process_->CloseDesktopSession(id);
@@ -227,7 +227,7 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
 
   int id = terminal_id_++;
   daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
-  EXPECT_EQ(1u, desktop_sessions().size());
+  EXPECT_EQ(desktop_sessions().size(), 1u);
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
   daemon_process_->CloseDesktopSession(id);
@@ -245,7 +245,7 @@ TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
 
   int id = terminal_id_++;
   daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
-  EXPECT_EQ(1u, desktop_sessions().size());
+  EXPECT_EQ(desktop_sessions().size(), 1u);
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
   daemon_process_->CloseDesktopSession(id);
@@ -271,7 +271,7 @@ TEST_F(DaemonProcessTest, InvalidDisconnectTerminal) {
 
   daemon_process_->CloseDesktopSession(id);
   EXPECT_TRUE(desktop_sessions().empty());
-  EXPECT_EQ(0, terminal_id_);
+  EXPECT_EQ(terminal_id_, 0);
 }
 
 // Tries to open an invalid terminal ID and expects the network process to be
@@ -288,12 +288,12 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
 
   int id = terminal_id_++;
   daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
-  EXPECT_EQ(1u, desktop_sessions().size());
+  EXPECT_EQ(desktop_sessions().size(), 1u);
   EXPECT_EQ(id, desktop_sessions().front()->id());
 
   daemon_process_->CreateDesktopSession(id, CreateSessionOptions());
   EXPECT_TRUE(desktop_sessions().empty());
-  EXPECT_EQ(0, terminal_id_);
+  EXPECT_EQ(terminal_id_, 0);
 }
 
 }  // namespace remoting

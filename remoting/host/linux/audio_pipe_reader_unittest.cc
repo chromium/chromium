@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -52,15 +53,15 @@ class AudioPipeReaderTest : public testing::Test,
   }
 
   void CreatePipe() {
-    ASSERT_EQ(0, mkfifo(pipe_path_.value().c_str(), 0600));
-    output_.reset(new base::File(
-        pipe_path_, base::File::FLAG_OPEN | base::File::FLAG_WRITE));
+    ASSERT_EQ(mkfifo(pipe_path_.value().c_str(), 0600), 0);
+    output_ = std::make_unique<base::File>(
+        pipe_path_, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
     ASSERT_TRUE(output_->IsValid());
   }
 
   void DeletePipe() {
     output_.reset();
-    ASSERT_EQ(0, unlink(pipe_path_.value().c_str()));
+    ASSERT_EQ(unlink(pipe_path_.value().c_str()), 0);
   }
 
   void WaitForInput(int num_bytes) {
@@ -102,7 +103,7 @@ TEST_F(AudioPipeReaderTest, CreateAndDestroyPipe) {
   ASSERT_NO_FATAL_FAILURE(WriteAndWait("abcd"));
   ASSERT_NO_FATAL_FAILURE(DeletePipe());
 
-  EXPECT_EQ("ABCDabcd", read_data_);
+  EXPECT_EQ(read_data_, "ABCDabcd");
 }
 
 // Verifies that the reader reads at the right speed.
@@ -118,7 +119,7 @@ TEST_F(AudioPipeReaderTest, Pacing) {
   ASSERT_NO_FATAL_FAILURE(WriteAndWait(test_data));
   base::TimeDelta time_passed = base::TimeTicks::Now() - start_time;
 
-  EXPECT_EQ(test_data, read_data_);
+  EXPECT_EQ(read_data_, test_data);
   EXPECT_GE(time_passed, base::Milliseconds(500));
 }
 

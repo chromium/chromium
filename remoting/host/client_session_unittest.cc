@@ -572,17 +572,17 @@ TEST_F(ClientSessionTest, DisableInputs) {
   client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
 
-  EXPECT_EQ(2U, mouse_events_.size());
+  EXPECT_EQ(mouse_events_.size(), 2U);
   EXPECT_THAT(mouse_events_[0], EqualsMouseMoveEvent(100, 101));
   EXPECT_THAT(mouse_events_[1], EqualsMouseMoveEvent(300, 301));
 
-  EXPECT_EQ(4U, key_events_.size());
+  EXPECT_EQ(key_events_.size(), 4U);
   EXPECT_THAT(key_events_[0], EqualsKeyEvent(1, true));
   EXPECT_THAT(key_events_[1], EqualsKeyEvent(1, false));
   EXPECT_THAT(key_events_[2], EqualsKeyEvent(3, true));
   EXPECT_THAT(key_events_[3], EqualsKeyEvent(3, false));
 
-  EXPECT_EQ(2U, clipboard_events_.size());
+  EXPECT_EQ(clipboard_events_.size(), 2U);
   EXPECT_THAT(clipboard_events_[0],
               EqualsClipboardEvent(kMimeTypeTextUtf8, "a"));
   EXPECT_THAT(clipboard_events_[1],
@@ -611,14 +611,14 @@ TEST_F(ClientSessionTest, InputAllowedFromRemotePolicy) {
   client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
 
-  EXPECT_EQ(1U, mouse_events_.size());
+  EXPECT_EQ(mouse_events_.size(), 1U);
   EXPECT_THAT(mouse_events_[0], EqualsMouseMoveEvent(100, 101));
 
-  EXPECT_EQ(2U, key_events_.size());
+  EXPECT_EQ(key_events_.size(), 2U);
   EXPECT_THAT(key_events_[0], EqualsKeyEvent(1, true));
   EXPECT_THAT(key_events_[1], EqualsKeyEvent(1, false));
 
-  EXPECT_EQ(1U, clipboard_events_.size());
+  EXPECT_EQ(clipboard_events_.size(), 1U);
   EXPECT_THAT(clipboard_events_[0],
               EqualsClipboardEvent(kMimeTypeTextUtf8, "a"));
 }
@@ -645,9 +645,9 @@ TEST_F(ClientSessionTest, InputDisabledFromRemotePolicy) {
   client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
 
-  EXPECT_EQ(0U, mouse_events_.size());
-  EXPECT_EQ(0U, key_events_.size());
-  EXPECT_EQ(0U, clipboard_events_.size());
+  EXPECT_EQ(mouse_events_.size(), 0U);
+  EXPECT_EQ(key_events_.size(), 0U);
+  EXPECT_EQ(clipboard_events_.size(), 0U);
 }
 
 TEST_F(ClientSessionTest, LocalInputTest) {
@@ -678,7 +678,7 @@ TEST_F(ClientSessionTest, LocalInputTest) {
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(300, 301));
 
   // Verify that we've received correct set of mouse events.
-  ASSERT_EQ(2U, mouse_events_.size());
+  ASSERT_EQ(mouse_events_.size(), 2U);
   EXPECT_THAT(mouse_events_[0], EqualsMouseMoveEvent(100, 101));
   EXPECT_THAT(mouse_events_[1], EqualsMouseMoveEvent(200, 201));
 
@@ -723,13 +723,13 @@ TEST_F(ClientSessionTest, RestoreEventState) {
   client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
 
-  EXPECT_EQ(2U, mouse_events_.size());
+  EXPECT_EQ(mouse_events_.size(), 2U);
   EXPECT_THAT(mouse_events_[0],
               EqualsMouseButtonEvent(protocol::MouseEvent::BUTTON_LEFT, true));
   EXPECT_THAT(mouse_events_[1],
               EqualsMouseButtonEvent(protocol::MouseEvent::BUTTON_LEFT, false));
 
-  EXPECT_EQ(4U, key_events_.size());
+  EXPECT_EQ(key_events_.size(), 4U);
   EXPECT_THAT(key_events_[0], EqualsKeyEvent(1, true));
   EXPECT_THAT(key_events_[1], EqualsKeyEvent(2, true));
   EXPECT_THAT(key_events_[2], EqualsKeyEvent(1, false));
@@ -765,7 +765,7 @@ TEST_F(ClientSessionTest, ClampMouseEvents) {
       connection_->input_stub()->InjectMouseEvent(
           MakeMouseMoveEvent(input_x[i], input_y[j]));
 
-      EXPECT_EQ(1U, mouse_events_.size());
+      EXPECT_EQ(mouse_events_.size(), 1U);
       EXPECT_THAT(mouse_events_[0],
                   EqualsMouseMoveEvent(expected_x[i], expected_y[j]));
     }

@@ -105,15 +105,15 @@ TEST_F(EventTraceDataTest, LogMessage) {
 
   EventTraceData data = EventTraceData::Create(&event_trace_);
 
-  EXPECT_EQ(logging::LOG_MESSAGE, data.event_type);
-  EXPECT_EQ(logging::LOGGING_WARNING, data.severity);
-  EXPECT_EQ(kProcessId, data.process_id);
-  EXPECT_EQ(kThreadId, data.thread_id);
-  EXPECT_STREQ(kTestLogMessage, data.message.c_str());
+  EXPECT_EQ(data.event_type, logging::LOG_MESSAGE);
+  EXPECT_EQ(data.severity, logging::LOGGING_WARNING);
+  EXPECT_EQ(data.process_id, kProcessId);
+  EXPECT_EQ(data.thread_id, kThreadId);
+  EXPECT_STREQ(data.message.c_str(), kTestLogMessage);
 
   // File and line data should not be filled in for this log message type.
-  EXPECT_EQ(std::string(), data.file_name);
-  EXPECT_EQ(0, data.line);
+  EXPECT_EQ(data.file_name, std::string());
+  EXPECT_EQ(data.line, 0);
 }
 
 TEST_F(EventTraceDataTest, LogFullMessage) {
@@ -121,14 +121,14 @@ TEST_F(EventTraceDataTest, LogFullMessage) {
 
   EventTraceData data = EventTraceData::Create(&event_trace_);
 
-  EXPECT_EQ(logging::LOG_MESSAGE_FULL, data.event_type);
-  EXPECT_EQ(logging::LOGGING_WARNING, data.severity);
-  EXPECT_EQ(kWarning, EventTraceData::SeverityToString(data.severity));
-  EXPECT_EQ(kProcessId, data.process_id);
-  EXPECT_EQ(kThreadId, data.thread_id);
-  EXPECT_EQ(kLineNumber, data.line);
-  EXPECT_STREQ(kFileName, data.file_name.c_str());
-  EXPECT_STREQ(kTestLogMessage, data.message.c_str());
+  EXPECT_EQ(data.event_type, logging::LOG_MESSAGE_FULL);
+  EXPECT_EQ(data.severity, logging::LOGGING_WARNING);
+  EXPECT_EQ(EventTraceData::SeverityToString(data.severity), kWarning);
+  EXPECT_EQ(data.process_id, kProcessId);
+  EXPECT_EQ(data.thread_id, kThreadId);
+  EXPECT_EQ(data.line, kLineNumber);
+  EXPECT_STREQ(data.file_name.c_str(), kFileName);
+  EXPECT_STREQ(data.message.c_str(), kTestLogMessage);
 }
 
 }  // namespace remoting

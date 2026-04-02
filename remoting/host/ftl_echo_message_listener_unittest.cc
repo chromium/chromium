@@ -107,10 +107,10 @@ TEST_F(FtlEchoMessageListenerTest, EchoRequestFromOwnerHandled) {
         std::string registration_id;
         EXPECT_TRUE(
             destination_address.GetFtlInfo(&username, &registration_id));
-        EXPECT_EQ(kOwnerEmail, username);
-        EXPECT_EQ(kRegistrationId, registration_id);
+        EXPECT_EQ(username, kOwnerEmail);
+        EXPECT_EQ(registration_id, kRegistrationId);
         EXPECT_TRUE(message.has_echo());
-        EXPECT_EQ(kEchoMessagePayload, message.echo().message());
+        EXPECT_EQ(message.echo().message(), kEchoMessagePayload);
 
         run_loop.Quit();
         return true;
@@ -148,7 +148,7 @@ TEST_F(FtlEchoMessageListenerTest, SuperLongMessageIsTruncated) {
   base::RunLoop run_loop;
   EXPECT_CALL(signal_strategy_, SendFtlMessage(_, _))
       .WillOnce([&](Unused, ftl::ChromotingMessage&& message) -> bool {
-        EXPECT_EQ(kTruncatedMessagePayload, message.echo().message());
+        EXPECT_EQ(message.echo().message(), kTruncatedMessagePayload);
 
         run_loop.Quit();
         return true;

@@ -55,16 +55,16 @@ class FtlSignalingConnectorTest : public testing::Test {
 TEST_F(FtlSignalingConnectorTest, StartAndSucceed) {
   signaling_connector_->Start();
   task_environment_.FastForwardUntilNoTasksRemain();
-  ASSERT_EQ(SignalStrategy::CONNECTING, signal_strategy_.GetState());
+  ASSERT_EQ(signal_strategy_.GetState(), SignalStrategy::CONNECTING);
   signal_strategy_.ProceedConnect();
-  ASSERT_EQ(SignalStrategy::CONNECTED, signal_strategy_.GetState());
+  ASSERT_EQ(signal_strategy_.GetState(), SignalStrategy::CONNECTED);
   ASSERT_TRUE(GetBackoffResetTimer().IsRunning());
 }
 
 TEST_F(FtlSignalingConnectorTest, StartAndAuthFailed) {
   signaling_connector_->Start();
   task_environment_.FastForwardUntilNoTasksRemain();
-  ASSERT_EQ(SignalStrategy::CONNECTING, signal_strategy_.GetState());
+  ASSERT_EQ(signal_strategy_.GetState(), SignalStrategy::CONNECTING);
 
   signal_strategy_.SetIsSignInError(true);
   signal_strategy_.SetError(SignalStrategy::AUTHENTICATION_FAILED);
@@ -74,59 +74,59 @@ TEST_F(FtlSignalingConnectorTest, StartAndAuthFailed) {
 }
 
 TEST_F(FtlSignalingConnectorTest, StartAndFailedThenRetryAndSucceeded) {
-  ASSERT_EQ(0, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 0);
   signaling_connector_->Start();
   task_environment_.FastForwardUntilNoTasksRemain();
-  ASSERT_EQ(SignalStrategy::CONNECTING, signal_strategy_.GetState());
+  ASSERT_EQ(signal_strategy_.GetState(), SignalStrategy::CONNECTING);
 
   signal_strategy_.SetError(SignalStrategy::NETWORK_ERROR);
   signal_strategy_.Disconnect();
-  ASSERT_EQ(1, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 1);
 
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
-  ASSERT_EQ(SignalStrategy::CONNECTING, signal_strategy_.GetState());
+  ASSERT_EQ(signal_strategy_.GetState(), SignalStrategy::CONNECTING);
   signal_strategy_.ProceedConnect();
 
   // Failure count is not reset immediately.
-  ASSERT_EQ(1, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 1);
 
   // Failure count is eventually reset to 0.
   task_environment_.FastForwardUntilNoTasksRemain();
-  ASSERT_EQ(0, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 0);
 }
 
 TEST_F(FtlSignalingConnectorTest,
        StartAndImmediatelyDisconnected_RetryWithBackoff) {
-  ASSERT_EQ(0, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 0);
   signaling_connector_->Start();
   task_environment_.FastForwardUntilNoTasksRemain();
-  ASSERT_EQ(SignalStrategy::CONNECTING, signal_strategy_.GetState());
+  ASSERT_EQ(signal_strategy_.GetState(), SignalStrategy::CONNECTING);
 
   signal_strategy_.ProceedConnect();
-  ASSERT_EQ(0, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 0);
 
   signal_strategy_.Disconnect();
-  ASSERT_EQ(1, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 1);
 
   task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
-  ASSERT_EQ(SignalStrategy::CONNECTING, signal_strategy_.GetState());
+  ASSERT_EQ(signal_strategy_.GetState(), SignalStrategy::CONNECTING);
   signal_strategy_.ProceedConnect();
 
   // Failure count is not reset immediately.
-  ASSERT_EQ(1, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 1);
 
   // Failure count is eventually reset to 0.
   task_environment_.FastForwardUntilNoTasksRemain();
-  ASSERT_EQ(0, GetBackoff().failure_count());
+  ASSERT_EQ(GetBackoff().failure_count(), 0);
 }
 
 TEST_F(FtlSignalingConnectorTest, AutoConnectOnNetworkChange) {
   signaling_connector_->OnNetworkChanged(
       net::NetworkChangeNotifier::CONNECTION_ETHERNET);
   // Reconnection starts with some delay.
-  ASSERT_EQ(SignalStrategy::DISCONNECTED, signal_strategy_.GetState());
+  ASSERT_EQ(signal_strategy_.GetState(), SignalStrategy::DISCONNECTED);
   task_environment_.FastForwardUntilNoTasksRemain();
-  ASSERT_EQ(SignalStrategy::CONNECTING, signal_strategy_.GetState());
+  ASSERT_EQ(signal_strategy_.GetState(), SignalStrategy::CONNECTING);
 }
 
 }  // namespace remoting

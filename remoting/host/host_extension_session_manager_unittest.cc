@@ -89,9 +89,9 @@ TEST_F(HostExtensionSessionManagerTest, ExtensionCapabilities_AreReported) {
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   std::sort(reported_caps.begin(), reported_caps.end());
 
-  ASSERT_EQ(2U, reported_caps.size());
-  EXPECT_EQ("cap1", reported_caps[0]);
-  EXPECT_EQ("cap3", reported_caps[1]);
+  ASSERT_EQ(reported_caps.size(), 2U);
+  EXPECT_EQ(reported_caps[0], "cap1");
+  EXPECT_EQ(reported_caps[1], "cap3");
 }
 
 // Verifies that an extension is not instantiated if the client does not
@@ -115,15 +115,15 @@ TEST_F(HostExtensionSessionManagerTest,
   HostExtensionSessionManager extension_manager(extensions_,
                                                 &client_session_details_);
   extension_manager.OnNegotiatedCapabilities(&client_stub_, "cap1");
-  EXPECT_EQ(extension1_.extension_session(),
-            extension_manager.FindExtensionSession("cap1"));
+  EXPECT_EQ(extension_manager.FindExtensionSession("cap1"),
+            extension1_.extension_session());
 }
 
 TEST_F(HostExtensionSessionManagerTest,
        FindExtensionSession_ReturnsNullptrIfNegotiationHasNotCompleted) {
   HostExtensionSessionManager extension_manager(extensions_,
                                                 &client_session_details_);
-  EXPECT_EQ(nullptr, extension_manager.FindExtensionSession("cap1"));
+  EXPECT_EQ(extension_manager.FindExtensionSession("cap1"), nullptr);
 }
 
 TEST_F(HostExtensionSessionManagerTest,
@@ -131,7 +131,7 @@ TEST_F(HostExtensionSessionManagerTest,
   HostExtensionSessionManager extension_manager(extensions_,
                                                 &client_session_details_);
   extension_manager.OnNegotiatedCapabilities(&client_stub_, "cap1");
-  EXPECT_EQ(nullptr, extension_manager.FindExtensionSession("cap2"));
+  EXPECT_EQ(extension_manager.FindExtensionSession("cap2"), nullptr);
 }
 
 }  // namespace remoting

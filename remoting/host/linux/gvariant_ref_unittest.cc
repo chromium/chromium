@@ -82,21 +82,21 @@ TEST(GVariantRefTest, EncodesBasicTypes) {
 }
 
 TEST(GVariantRefTest, DecodesBasicTypes) {
-  EXPECT_EQ(true, GVariantParse<"b">("true").Into<bool>());
-  EXPECT_EQ(base::ok(std::uint8_t{124}),
-            (GVariantParse<"y", "*">("124").TryInto<std::uint8_t>()));
-  EXPECT_EQ(std::int16_t{93}, GVariantParse<"n">("93").Into<std::int16_t>());
-  EXPECT_EQ(base::ok(std::uint16_t{567}),
-            (GVariantParse<"q", "*">("567").TryInto<std::uint16_t>()));
-  EXPECT_EQ(std::int32_t{-91643},
-            GVariantParse<"i">("-91643").Into<std::int32_t>());
-  EXPECT_EQ(base::ok(std::uint32_t{7832}),
-            (GVariantParse<"u", "*">("7832").TryInto<std::uint32_t>()));
-  EXPECT_EQ(std::int64_t{9582},
-            GVariantParse<"x">("9582").Into<std::int64_t>());
-  EXPECT_EQ(base::ok(std::uint64_t{3245}),
-            (GVariantParse<"t", "*">("3245").TryInto<std::uint64_t>()));
-  EXPECT_EQ(double{72.5}, GVariantParse<"d">("72.5").Into<double>());
+  EXPECT_EQ(GVariantParse<"b">("true").Into<bool>(), true);
+  EXPECT_EQ((GVariantParse<"y", "*">("124").TryInto<std::uint8_t>()),
+            base::ok(std::uint8_t{124}));
+  EXPECT_EQ(GVariantParse<"n">("93").Into<std::int16_t>(), std::int16_t{93});
+  EXPECT_EQ((GVariantParse<"q", "*">("567").TryInto<std::uint16_t>()),
+            base::ok(std::uint16_t{567}));
+  EXPECT_EQ(GVariantParse<"i">("-91643").Into<std::int32_t>(),
+            std::int32_t{-91643});
+  EXPECT_EQ((GVariantParse<"u", "*">("7832").TryInto<std::uint32_t>()),
+            base::ok(std::uint32_t{7832}));
+  EXPECT_EQ(GVariantParse<"x">("9582").Into<std::int64_t>(),
+            std::int64_t{9582});
+  EXPECT_EQ((GVariantParse<"t", "*">("3245").TryInto<std::uint64_t>()),
+            base::ok(std::uint64_t{3245}));
+  EXPECT_EQ(GVariantParse<"d">("72.5").Into<double>(), double{72.5});
 
   EXPECT_FALSE((GVariantParse<"i", "*">("-12").TryInto<double>().has_value()));
 
@@ -108,18 +108,17 @@ TEST(GVariantRefTest, DecodesBasicTypes) {
 }
 
 TEST(GVariantRefTest, Strings) {
-  EXPECT_EQ(base::ok(GVariantParse<"s">("'Hello sailor!'")),
-            GVariantRef<>::TryFrom(std::string("Hello sailor!")));
+  EXPECT_EQ(GVariantRef<>::TryFrom(std::string("Hello sailor!")),
+            base::ok(GVariantParse<"s">("'Hello sailor!'")));
   EXPECT_EQ(GVariantParse<"s">("'Ahoy sailor!'"),
             GVariantFrom(std::string_view("Ahoy sailor!")));
   EXPECT_EQ(GVariantParse<"s">("'So long sailor!'"),
             GVariantFrom("So long sailor!"));
 
-  EXPECT_EQ(
-      base::ok(std::string("Welcome back!")),
-      (GVariantParse<"s", "*">("'Welcome back!'").TryInto<std::string>()));
-  EXPECT_EQ(std::string("Welcome back, again!"),
-            GVariantParse<"s">("'Welcome back, again!'").Into<std::string>());
+  EXPECT_EQ((GVariantParse<"s", "*">("'Welcome back!'").TryInto<std::string>()),
+            base::ok(std::string("Welcome back!")));
+  EXPECT_EQ(GVariantParse<"s">("'Welcome back, again!'").Into<std::string>(),
+            std::string("Welcome back, again!"));
 
   EXPECT_FALSE(GVariantRef<"s">::TryFrom("Invalid\x85string").has_value());
   EXPECT_FALSE(
@@ -141,21 +140,20 @@ TEST(GVariantRefTest, Optional) {
             GVariantRef<"ms">::From(std::optional<std::string_view>()));
   // Indefinite type is okay if the option contains a concrete value.
   EXPECT_EQ(
-      base::ok(GVariantParse<"mn">("just 539")),
-      GVariantRef<>::TryFrom(std::optional(GVariantFrom(std::int16_t{539}))));
+      GVariantRef<>::TryFrom(std::optional(GVariantFrom(std::int16_t{539}))),
+      base::ok(GVariantParse<"mn">("just 539")));
 
   EXPECT_EQ(
-      std::optional(std::string("apple")),
-      GVariantParse<"ms">("just 'apple'").Into<std::optional<std::string>>());
-  EXPECT_EQ(
-      std::optional<std::uint32_t>(),
-      GVariantParse<"mu">("nothing").Into<std::optional<std::uint32_t>>());
-  EXPECT_EQ(base::ok(std::optional(std::string("peach"))),
-            (GVariantParse<"ms", "*">("just 'peach'")
-                 .TryInto<std::optional<std::string>>()));
-  EXPECT_EQ(base::ok(std::optional<std::uint32_t>()),
-            (GVariantParse<"mi", "*">("nothing")
-                 .TryInto<std::optional<std::int32_t>>()));
+      GVariantParse<"ms">("just 'apple'").Into<std::optional<std::string>>(),
+      std::optional(std::string("apple")));
+  EXPECT_EQ(GVariantParse<"mu">("nothing").Into<std::optional<std::uint32_t>>(),
+            std::optional<std::uint32_t>());
+  EXPECT_EQ((GVariantParse<"ms", "*">("just 'peach'")
+                 .TryInto<std::optional<std::string>>()),
+            base::ok(std::optional(std::string("peach"))));
+  EXPECT_EQ((GVariantParse<"mi", "*">("nothing")
+                 .TryInto<std::optional<std::int32_t>>()),
+            base::ok(std::optional<std::uint32_t>()));
 
   EXPECT_FALSE((GVariantParse<"i", "*">("15")
                     .TryInto<std::optional<std::int32_t>>()
@@ -181,12 +179,12 @@ TEST(GVariantRefTest, Vector) {
   EXPECT_EQ(GVariantParse<"an">("[5, -2, 45, -367, 97, -8]"),
             GVariantFrom(std::vector<std::int16_t>{5, -2, 45, -367, 97, -8}));
 
-  EXPECT_EQ(base::ok(std::vector<double>()),
-            (GVariantParse<"ad", "*">("[]").TryInto<std::vector<double>>()));
+  EXPECT_EQ((GVariantParse<"ad", "*">("[]").TryInto<std::vector<double>>()),
+            base::ok(std::vector<double>()));
   EXPECT_EQ(
-      (std::vector<std::string>{"cabbage", "broccoli", "kale", "cauliflower"}),
       GVariantParse<"as">("['cabbage', 'broccoli', 'kale', 'cauliflower']")
-          .Into<std::vector<std::string>>());
+          .Into<std::vector<std::string>>(),
+      (std::vector<std::string>{"cabbage", "broccoli", "kale", "cauliflower"}));
 
   EXPECT_FALSE((GVariantParse<"i", "*">("7")
                     .TryInto<std::vector<std::int32_t>>()
@@ -216,13 +214,13 @@ TEST(GVariantRefTest, Map) {
             GVariantRef<"a{ib}">::From(std::map<std::int32_t, bool>{
                 {1, true}, {2, false}, {3, false}, {4, false}, {5, true}}));
 
-  EXPECT_EQ(base::ok(std::map<bool, std::uint8_t>()),
-            (GVariantParse<"a{by}", "*">("{}")
-                 .TryInto<std::map<bool, std::uint8_t>>()));
-  EXPECT_EQ(
-      (std::map<std::int32_t, double>{{1, 1}, {2, 0.5}, {4, 0.25}, {8, 0.125}}),
-      (GVariantParse<"a{id}">("{1: 1, 2: 0.5, 4: 0.25, 8: 0.125}")
-           .Into<std::map<int32_t, double>>()));
+  EXPECT_EQ((GVariantParse<"a{by}", "*">("{}")
+                 .TryInto<std::map<bool, std::uint8_t>>()),
+            base::ok(std::map<bool, std::uint8_t>()));
+  EXPECT_EQ((GVariantParse<"a{id}">("{1: 1, 2: 0.5, 4: 0.25, 8: 0.125}")
+                 .Into<std::map<int32_t, double>>()),
+            (std::map<std::int32_t, double>{
+                {1, 1}, {2, 0.5}, {4, 0.25}, {8, 0.125}}));
 
   EXPECT_FALSE((GVariantParse<"i", "*">("-3")
                     .TryInto<std::map<std::uint32_t, std::uint8_t>>()
@@ -252,12 +250,12 @@ TEST(GVariantRefTest, Pair) {
             GVariantRef<"{xt}">::From(
                 std::pair<std::int64_t, std::uint64_t>(-64, 64)));
 
-  EXPECT_EQ(base::ok(std::pair<bool, std::uint8_t>(true, 9)),
-            (GVariantParse<"{by}", "*">("{true, 9}")
-                 .TryInto<std::pair<bool, std::uint8_t>>()));
-  EXPECT_EQ((std::pair<double, std::string>(6.5, "poof")),
-            (GVariantParse<"{ds}">("{6.5, 'poof'}")
-                 .Into<std::pair<double, std::string>>()));
+  EXPECT_EQ((GVariantParse<"{by}", "*">("{true, 9}")
+                 .TryInto<std::pair<bool, std::uint8_t>>()),
+            base::ok(std::pair<bool, std::uint8_t>(true, 9)));
+  EXPECT_EQ((GVariantParse<"{ds}">("{6.5, 'poof'}")
+                 .Into<std::pair<double, std::string>>()),
+            (std::pair<double, std::string>(6.5, "poof")));
 
   EXPECT_FALSE((GVariantParse<"{uu}", "*">("{5, 7}")
                     .TryInto<std::pair<std::uint32_t, std::uint8_t>>()
@@ -281,12 +279,12 @@ TEST(GVariantRefTest, Tuple) {
             GVariantFrom(std::tuple(std::uint8_t{63}, true,
                                     std::optional(double{3.0}), "Hello!")));
 
-  EXPECT_EQ(base::ok(std::tuple()),
-            (GVariantParse<"()", "*">("()").TryInto<std::tuple<>>()));
-  EXPECT_EQ(
-      std::tuple(std::string("fancy"), false, double{-6.75}, std::int64_t{512}),
-      (GVariantParse<"(sbdx)">("('fancy', false, -6.75, 512)")
-           .Into<std::tuple<std::string, bool, double, std::int64_t>>()));
+  EXPECT_EQ((GVariantParse<"()", "*">("()").TryInto<std::tuple<>>()),
+            base::ok(std::tuple()));
+  EXPECT_EQ((GVariantParse<"(sbdx)">("('fancy', false, -6.75, 512)")
+                 .Into<std::tuple<std::string, bool, double, std::int64_t>>()),
+            std::tuple(std::string("fancy"), false, double{-6.75},
+                       std::int64_t{512}));
 
   EXPECT_FALSE((GVariantParse<"i", "*">("4")
                     .TryInto<std::tuple<std::int32_t>>()
@@ -333,19 +331,21 @@ TEST(GVariantRefTest, Variant) {
   EXPECT_EQ(GVariantParse<"ms">("just 'delicata squash'"),
             GVariantFrom(Mixed(std::in_place_index<2>, "delicata squash")));
 
-  EXPECT_EQ(Strings(std::in_place_index<1>, "eggplant"),
-            GVariantParse<"s">("'eggplant'").Into<Strings>());
+  EXPECT_EQ(GVariantParse<"s">("'eggplant'").Into<Strings>(),
+            Strings(std::in_place_index<1>, "eggplant"));
 
-  EXPECT_EQ(BasicArrays(std::in_place_index<2>, std::vector{true, false, true}),
-            GVariantParse<"ab">("[true, false, true]").Into<BasicArrays>());
-
-  EXPECT_EQ(base::ok(Mixed(std::in_place_index<0>, 12)),
-            (GVariantParse<"y", "*">("12").TryInto<Mixed>()));
-  EXPECT_EQ(Mixed(std::in_place_index<1>, 9.75),
-            GVariantParse<"d">("9.75").Into<GVariantRef<"?">>().Into<Mixed>());
   EXPECT_EQ(
-      Mixed(std::in_place_index<3>, GVariantRef<"?">::From(std::int32_t{93})),
-      GVariantParse<"i">("93").Into<Mixed>());
+      GVariantParse<"ab">("[true, false, true]").Into<BasicArrays>(),
+      BasicArrays(std::in_place_index<2>, std::vector{true, false, true}));
+
+  EXPECT_EQ((GVariantParse<"y", "*">("12").TryInto<Mixed>()),
+            base::ok(Mixed(std::in_place_index<0>, 12)));
+  EXPECT_EQ(GVariantParse<"d">("9.75").Into<GVariantRef<"?">>().Into<Mixed>(),
+            Mixed(std::in_place_index<1>, 9.75));
+  EXPECT_EQ(
+
+      GVariantParse<"i">("93").Into<Mixed>(),
+      Mixed(std::in_place_index<3>, GVariantRef<"?">::From(std::int32_t{93})));
 
   // Doesn't match type string.
   EXPECT_FALSE((GVariantParse<"i", "*">("16").TryInto<Strings>().has_value()));
@@ -369,23 +369,22 @@ TEST(GVariantRefTest, Variant) {
 }
 
 TEST(GVariantRefTest, NestedGVariantRef) {
-  EXPECT_EQ(
-      base::ok(GVariantParse<"(sb)">("('X-387', true)")),
-      GVariantRef<"(s?)">::TryFrom(std::tuple(GVariantRef<"*">::From("X-387"),
-                                              GVariantRef<"*">::From(true))));
+  EXPECT_EQ(GVariantRef<"(s?)">::TryFrom(std::tuple(
+                GVariantRef<"*">::From("X-387"), GVariantRef<"*">::From(true))),
+            base::ok(GVariantParse<"(sb)">("('X-387', true)")));
   EXPECT_EQ(GVariantParse<"i">("6"),
             GVariantRef<"?">::From(GVariantRef<"i">::From(std::int32_t{6})));
 
   auto tuple = GVariantParse<"(si)">("('Spiff', 8521)")
                    .Into<std::tuple<GVariantRef<"s">, GVariantRef<>>>();
-  EXPECT_EQ(std::string("Spiff"), std::get<0>(tuple).Into<std::string>());
-  EXPECT_EQ(base::ok(std::int32_t{8521}),
-            std::get<1>(tuple).TryInto<std::int32_t>());
-  EXPECT_EQ(base::ok(true),
-            GVariantRef<"b">::From(true)
+  EXPECT_EQ(std::get<0>(tuple).Into<std::string>(), std::string("Spiff"));
+  EXPECT_EQ(std::get<1>(tuple).TryInto<std::int32_t>(),
+            base::ok(std::int32_t{8521}));
+  EXPECT_EQ(GVariantRef<"b">::From(true)
                 .Into<GVariantRef<"?">>()
                 .TryInto<GVariantRef<"b">>()
-                .transform([](auto v) { return v.template Into<bool>(); }));
+                .transform([](auto v) { return v.template Into<bool>(); }),
+            base::ok(true));
 
   EXPECT_FALSE(
       GVariantRef<"i">::TryFrom(GVariantRef<"?">::From(std::uint8_t{45}))
@@ -420,11 +419,11 @@ TEST(GVariantRefTest, Boxed) {
   EXPECT_EQ(GVariantParse<"v">("<['chirp', 'whistle']>"),
             GVariantFrom(BoxedRef(value)));
 
-  EXPECT_EQ((Boxed<std::variant<std::uint16_t, std::string>>{"boop"}),
-            (GVariantParse<"v">("<'boop'>")
-                 .TryInto<Boxed<std::variant<std::uint16_t, std::string>>>()));
-  EXPECT_EQ(Boxed{GVariantFrom(std::int64_t{-204})},
-            GVariantParse<"v">("<int64 -204>").Into<Boxed<GVariantRef<>>>());
+  EXPECT_EQ((GVariantParse<"v">("<'boop'>")
+                 .TryInto<Boxed<std::variant<std::uint16_t, std::string>>>()),
+            (Boxed<std::variant<std::uint16_t, std::string>>{"boop"}));
+  EXPECT_EQ(GVariantParse<"v">("<int64 -204>").Into<Boxed<GVariantRef<>>>(),
+            Boxed{GVariantFrom(std::int64_t{-204})});
 
   EXPECT_FALSE((GVariantParse<"i", "*">("-27")
                     .TryInto<Boxed<std::int32_t>>()
@@ -450,8 +449,8 @@ TEST(GVariantRefTest, FilledMaybe) {
             GVariantFrom(FilledMaybeRef(value)));
 
   EXPECT_EQ(
-      base::ok(FilledMaybe{true}),
-      (GVariantParse<"mb", "*">("just true").TryInto<FilledMaybe<bool>>()));
+      (GVariantParse<"mb", "*">("just true").TryInto<FilledMaybe<bool>>()),
+      base::ok(FilledMaybe{true}));
 
   EXPECT_FALSE((GVariantParse<"u", "*">("45")
                     .TryInto<FilledMaybe<std::uint32_t>>()
@@ -488,8 +487,8 @@ TEST(GVariantRefTest, ObjectPath) {
   EXPECT_EQ(GVariantParse<"o">("'/valid/path'"),
             GVariantFrom(ObjectPathCStr(path.value())));
 
-  EXPECT_EQ(path.value(),
-            GVariantParse<"o">("'/valid/path'").Into<ObjectPath>());
+  EXPECT_EQ(GVariantParse<"o">("'/valid/path'").Into<ObjectPath>(),
+            path.value());
 
   EXPECT_EQ(GVariantParse<"o">("'/path/constant'"),
             GVariantFrom(ObjectPathCStr("/path/constant")));
@@ -509,8 +508,8 @@ TEST(GVariantRefTest, TypeSignature) {
   EXPECT_EQ(GVariantParse<"g">("'goodsig'"),
             GVariantFrom(TypeSignatureCStr(signature.value())));
 
-  EXPECT_EQ(signature.value(),
-            GVariantParse<"g">("'goodsig'").Into<TypeSignature>());
+  EXPECT_EQ(GVariantParse<"g">("'goodsig'").Into<TypeSignature>(),
+            signature.value());
 
   EXPECT_EQ(GVariantParse<"g">("'gonstsig'"),
             GVariantFrom(TypeSignatureCStr("gonstsig")));
@@ -544,14 +543,14 @@ TEST(GVariantRefTest, Destructure) {
           std::forward_as_tuple(
               c, std::forward_as_tuple(std::tie(d, e), std::tie(f, g))),
           h, std::tie(i));
-  EXPECT_EQ(1, a);
-  EXPECT_EQ(2, b);
-  EXPECT_EQ("3", c);
-  EXPECT_EQ(4, d);
-  EXPECT_EQ(5u, e);
-  EXPECT_EQ(6, f);
-  EXPECT_EQ(7u, g);
-  EXPECT_EQ(8u, h);
+  EXPECT_EQ(a, 1);
+  EXPECT_EQ(b, 2);
+  EXPECT_EQ(c, "3");
+  EXPECT_EQ(d, 4);
+  EXPECT_EQ(e, 5u);
+  EXPECT_EQ(f, 6);
+  EXPECT_EQ(g, 7u);
+  EXPECT_EQ(h, 8u);
   EXPECT_EQ(GVariantFrom(std::optional<std::uint8_t>(9)), i);
 }
 
@@ -570,15 +569,15 @@ TEST(GVariantRefTest, TryDestructure) {
                                               std::tie(d, e), std::tie(f, g))),
                                    h, std::tie(i))
                    .has_value()));
-  EXPECT_EQ(1, a);
-  EXPECT_EQ(2, b);
-  EXPECT_EQ("3", c);
-  EXPECT_EQ(4, d);
-  EXPECT_EQ(5u, e);
-  EXPECT_EQ(6, f);
-  EXPECT_EQ(7u, g);
-  EXPECT_EQ(8u, h);
-  EXPECT_EQ(9, i);
+  EXPECT_EQ(a, 1);
+  EXPECT_EQ(b, 2);
+  EXPECT_EQ(c, "3");
+  EXPECT_EQ(d, 4);
+  EXPECT_EQ(e, 5u);
+  EXPECT_EQ(f, 6);
+  EXPECT_EQ(g, 7u);
+  EXPECT_EQ(h, 8u);
+  EXPECT_EQ(i, 9);
 
   std::int16_t x;
   EXPECT_FALSE(
@@ -605,34 +604,34 @@ TEST(GVariantRefTest, Iteration) {
                 });
   EXPECT_EQ((std::vector<std::string>{"e", "d", "c", "b", "a"}), rev_result);
 
-  EXPECT_EQ(std::partial_ordering::less, variant.begin() <=> variant.end());
-  EXPECT_EQ(std::partial_ordering::equivalent,
-            variant.begin() <=> variant.begin());
-  EXPECT_EQ(5, variant.end() - variant.begin());
-  EXPECT_EQ("c", (*(variant.begin() + 2)).string_view());
-  EXPECT_EQ("c", (*(2 + variant.begin())).string_view());
-  EXPECT_EQ("d", (*(variant.end() - 2)).string_view());
+  EXPECT_EQ(variant.begin() <=> variant.end(), std::partial_ordering::less);
+  EXPECT_EQ(variant.begin() <=> variant.begin(),
+            std::partial_ordering::equivalent);
+  EXPECT_EQ(variant.end() - variant.begin(), 5);
+  EXPECT_EQ((*(variant.begin() + 2)).string_view(), "c");
+  EXPECT_EQ((*(2 + variant.begin())).string_view(), "c");
+  EXPECT_EQ((*(variant.end() - 2)).string_view(), "d");
 
   auto inc = variant.begin();
   inc += 1;
   inc += 2;
-  EXPECT_EQ("d", (*inc).string_view());
+  EXPECT_EQ((*inc).string_view(), "d");
 
   auto dec = variant.end();
   dec -= 1;
   dec -= 2;
-  EXPECT_EQ("c", (*dec).string_view());
+  EXPECT_EQ((*dec).string_view(), "c");
 
-  EXPECT_EQ("e", variant.begin()[4].string_view());
+  EXPECT_EQ(variant.begin()[4].string_view(), "e");
 }
 
 TEST(GVariantRefTest, TupleLike) {
   auto [a, b, c, d] = GVariantParse<"(iuxt)">("(1, 2, 3, 4)");
 
-  EXPECT_EQ(1, a.Into<std::int32_t>());
-  EXPECT_EQ(2u, b.Into<std::uint32_t>());
-  EXPECT_EQ(3, c.Into<std::int64_t>());
-  EXPECT_EQ(4u, d.Into<std::uint64_t>());
+  EXPECT_EQ(a.Into<std::int32_t>(), 1);
+  EXPECT_EQ(b.Into<std::uint32_t>(), 2u);
+  EXPECT_EQ(c.Into<std::int64_t>(), 3);
+  EXPECT_EQ(d.Into<std::uint64_t>(), 4u);
 }
 
 TEST(GVariantRefTest, Lookup) {
@@ -641,12 +640,12 @@ TEST(GVariantRefTest, Lookup) {
 
   EXPECT_EQ(GVariantFrom(Boxed{true}), vardict.LookUp("a"));
   EXPECT_EQ(GVariantFrom(Boxed<std::int32_t>{5}), vardict.LookUp("b"));
-  EXPECT_EQ(std::nullopt, vardict.LookUp("c"));
+  EXPECT_EQ(vardict.LookUp("c"), std::nullopt);
 
   EXPECT_EQ(GVariantFrom(false), dict2.LookUp(std::int32_t{1}));
-  EXPECT_EQ(std::nullopt, dict2.LookUp(std::int32_t{2}));
+  EXPECT_EQ(dict2.LookUp(std::int32_t{2}), std::nullopt);
   EXPECT_EQ(GVariantFrom(true), dict2.LookUp(std::int32_t{3}));
-  EXPECT_EQ(std::nullopt, dict2.LookUp(std::int32_t{4}));
+  EXPECT_EQ(dict2.LookUp(std::int32_t{4}), std::nullopt);
   EXPECT_EQ(GVariantFrom(true), dict2.LookUp(std::int32_t{5}));
 }
 

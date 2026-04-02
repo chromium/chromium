@@ -198,7 +198,7 @@ TEST_F(AudioCapturerChromeOsTest, SimulateAudioPacket) {
             capture_runner_,
             base::BindLambdaForTesting(
                 [&, quit_cb = std::move(quit_cb)]() mutable {
-                  EXPECT_EQ(1U, captured_audio_packets_.size());
+                  EXPECT_EQ(captured_audio_packets_.size(), 1U);
                   EXPECT_THAT(*expected_packet,
                               EqualsProto(*captured_audio_packets_[0]));
                   std::move(quit_cb).Run();
@@ -231,7 +231,7 @@ TEST_F(AudioCapturerChromeOsTest, SimulateError) {
                      std::make_unique<remoting::AudioPacket>(AudioPacket()))
           .Then(base::BindLambdaForTesting(
               [&, quit_cb = future.GetSequenceBoundCallback()]() mutable {
-                EXPECT_EQ(0u, captured_audio_packets_.size());
+                EXPECT_EQ(captured_audio_packets_.size(), 0u);
                 std::move(quit_cb).Run();
               })));
 

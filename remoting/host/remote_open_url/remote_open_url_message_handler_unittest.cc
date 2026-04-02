@@ -114,8 +114,8 @@ TEST_F(RemoteOpenUrlMessageHandlerTest, OpenUrl) {
   protocol::RemoteOpenUrl request_message =
       ParseMessage(fake_pipe_.sent_messages().front());
   ASSERT_TRUE(request_message.has_open_url_request());
-  ASSERT_EQ(receiver_id, request_message.open_url_request().id());
-  ASSERT_EQ("http://google.com/", request_message.open_url_request().url());
+  ASSERT_EQ(request_message.open_url_request().id(), receiver_id);
+  ASSERT_EQ(request_message.open_url_request().url(), "http://google.com/");
 }
 
 TEST_F(RemoteOpenUrlMessageHandlerTest, OpenInvalidUrl_Failure) {
@@ -128,7 +128,7 @@ TEST_F(RemoteOpenUrlMessageHandlerTest, OpenInvalidUrl_Failure) {
   OpenUrl(remote, GURL("invalid_url"), callback.Get());
   run_loop.Run();
 
-  ASSERT_EQ(0u, fake_pipe_.sent_messages().size());
+  ASSERT_EQ(fake_pipe_.sent_messages().size(), 0u);
 }
 
 TEST_F(RemoteOpenUrlMessageHandlerTest, OpenMultipleUrls) {
@@ -164,22 +164,22 @@ TEST_F(RemoteOpenUrlMessageHandlerTest, OpenMultipleUrls) {
   run_loop_2.Run();
 
   base::queue<std::string> sent_messages = fake_pipe_.sent_messages();
-  ASSERT_EQ(2u, sent_messages.size());
+  ASSERT_EQ(sent_messages.size(), 2u);
 
   protocol::RemoteOpenUrl request_message_1 =
       ParseMessage(sent_messages.front());
   ASSERT_TRUE(request_message_1.has_open_url_request());
-  ASSERT_EQ(receiver_id_1, request_message_1.open_url_request().id());
-  ASSERT_EQ("http://google.com/url1",
-            request_message_1.open_url_request().url());
+  ASSERT_EQ(request_message_1.open_url_request().id(), receiver_id_1);
+  ASSERT_EQ(request_message_1.open_url_request().url(),
+            "http://google.com/url1");
   sent_messages.pop();
 
   protocol::RemoteOpenUrl request_message_2 =
       ParseMessage(sent_messages.front());
   ASSERT_TRUE(request_message_2.has_open_url_request());
-  ASSERT_EQ(receiver_id_2, request_message_2.open_url_request().id());
-  ASSERT_EQ("http://google.com/url2",
-            request_message_2.open_url_request().url());
+  ASSERT_EQ(request_message_2.open_url_request().id(), receiver_id_2);
+  ASSERT_EQ(request_message_2.open_url_request().url(),
+            "http://google.com/url2");
 }
 
 TEST_F(RemoteOpenUrlMessageHandlerTest,
@@ -191,8 +191,8 @@ TEST_F(RemoteOpenUrlMessageHandlerTest,
   protocol::RemoteOpenUrl request_message =
       ParseMessage(fake_pipe_.sent_messages().front());
   ASSERT_TRUE(request_message.has_open_url_request());
-  ASSERT_EQ(receiver_id, request_message.open_url_request().id());
-  ASSERT_EQ("http://google.com/", request_message.open_url_request().url());
+  ASSERT_EQ(request_message.open_url_request().id(), receiver_id);
+  ASSERT_EQ(request_message.open_url_request().url(), "http://google.com/");
   ASSERT_TRUE(HasPendingCallbacks());
 
   remote.reset();

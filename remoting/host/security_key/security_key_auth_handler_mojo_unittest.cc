@@ -113,8 +113,8 @@ void SecurityKeyAuthHandlerMojoTest::EstablishIpcConnection(
 
   // Verify the internal state of the SecurityKeyAuthHandler is correct.
   ASSERT_TRUE(auth_handler_->IsValidConnectionId(expected_connection_id));
-  ASSERT_EQ(expected_connection_count,
-            auth_handler_->GetActiveConnectionCountForTest());
+  ASSERT_EQ(auth_handler_->GetActiveConnectionCountForTest(),
+            expected_connection_count);
 }
 
 void SecurityKeyAuthHandlerMojoTest::SendRequestToSecurityKeyAuthHandler(
@@ -130,13 +130,13 @@ void SecurityKeyAuthHandlerMojoTest::SendRequestToSecurityKeyAuthHandler(
 
   // Wait for the auth handler to receive the request.
   auto [received_id, received_payload] = request_future_.Take();
-  ASSERT_EQ(connection_id, received_id);
-  ASSERT_EQ(request_payload, received_payload);
+  ASSERT_EQ(received_id, connection_id);
+  ASSERT_EQ(received_payload, request_payload);
 
   // Verify the internal state of the SecurityKeyAuthHandler is still correct.
   ASSERT_TRUE(auth_handler_->IsValidConnectionId(connection_id));
-  ASSERT_EQ(expected_connection_count,
-            auth_handler_->GetActiveConnectionCountForTest());
+  ASSERT_EQ(auth_handler_->GetActiveConnectionCountForTest(),
+            expected_connection_count);
 }
 
 void SecurityKeyAuthHandlerMojoTest::SendResponseViaSecurityKeyAuthHandler(
@@ -150,12 +150,12 @@ void SecurityKeyAuthHandlerMojoTest::SendResponseViaSecurityKeyAuthHandler(
   auth_handler_->SendClientResponse(connection_id, response_payload);
 
   // Verify the security key response was received by the mojo remote.
-  ASSERT_EQ(response_payload, response_future_.Take());
+  ASSERT_EQ(response_future_.Take(), response_payload);
 
   // Verify the internal state of the SecurityKeyAuthHandler is still correct.
   ASSERT_TRUE(auth_handler_->IsValidConnectionId(connection_id));
-  ASSERT_EQ(expected_connection_count,
-            auth_handler_->GetActiveConnectionCountForTest());
+  ASSERT_EQ(auth_handler_->GetActiveConnectionCountForTest(),
+            expected_connection_count);
 }
 
 void SecurityKeyAuthHandlerMojoTest::CloseSecurityKeySessionIpcConnection(
@@ -175,8 +175,8 @@ void SecurityKeyAuthHandlerMojoTest::CloseSecurityKeySessionIpcConnection(
 
   // Verify the internal state has been updated.
   ASSERT_FALSE(auth_handler_->IsValidConnectionId(connection_id));
-  ASSERT_EQ(expected_connection_count,
-            auth_handler_->GetActiveConnectionCountForTest());
+  ASSERT_EQ(auth_handler_->GetActiveConnectionCountForTest(),
+            expected_connection_count);
 }
 
 TEST_F(SecurityKeyAuthHandlerMojoTest, HandleSingleSecurityKeyRequest) {
@@ -263,7 +263,7 @@ TEST_F(SecurityKeyAuthHandlerMojoTest, HandleSecurityKeyErrorResponse) {
   auth_handler_->SendErrorAndCloseConnection(kConnectionId1);
 
   // Verify the error response was received.
-  ASSERT_EQ(kSecurityKeyConnectionError, response_future_.Take());
+  ASSERT_EQ(response_future_.Take(), kSecurityKeyConnectionError);
 
   // Wait for the IPC disconnection.
   ASSERT_TRUE(disconnect_future_.Wait());
@@ -272,7 +272,7 @@ TEST_F(SecurityKeyAuthHandlerMojoTest, HandleSecurityKeyErrorResponse) {
   // Verify the connection was cleaned up.
   ASSERT_FALSE(remote.is_connected());
   ASSERT_FALSE(auth_handler_->IsValidConnectionId(kConnectionId1));
-  ASSERT_EQ(0u, auth_handler_->GetActiveConnectionCountForTest());
+  ASSERT_EQ(auth_handler_->GetActiveConnectionCountForTest(), 0u);
 
   // Attempt to connect again after the error.
   mojo::Remote<mojom::SecurityKeyForwarder> remote2;

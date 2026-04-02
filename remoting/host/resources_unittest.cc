@@ -40,8 +40,8 @@ TEST_F(ResourcesTest, DISABLED_ProductName) {
 #endif
 
   if (resources_available_) {
-    EXPECT_EQ(expected_product_name,
-              l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME),
+              expected_product_name);
   }
 }
 

@@ -44,7 +44,7 @@ TEST(GetKeySymsForUnicode, Map) {
     std::vector<uint32_t> expected(
         kTests[i].expected_keysyms,
         std::ranges::find(kTests[i].expected_keysyms, 0u));
-    EXPECT_EQ(expected, keysyms);
+    EXPECT_EQ(keysyms, expected);
   }
 }
 

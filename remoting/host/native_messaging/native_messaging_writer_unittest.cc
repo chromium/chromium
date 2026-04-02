@@ -51,13 +51,13 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
   auto header_read = read_file_.ReadAtCurrentPos(
       base::as_writable_byte_span(base::span_from_ref(body_length)));
   ASSERT_TRUE(header_read.has_value());
-  ASSERT_EQ(sizeof(body_length), *header_read);
+  ASSERT_EQ(*header_read, sizeof(body_length));
 
   std::string body_buffer(body_length, '\0');
   auto body_read =
       read_file_.ReadAtCurrentPos(base::as_writable_byte_span(body_buffer));
   ASSERT_TRUE(body_read.has_value());
-  ASSERT_EQ(static_cast<size_t>(body_length), *body_read);
+  ASSERT_EQ(*body_read, static_cast<size_t>(body_length));
 
   base::DictValue written = base::test::ParseJsonDict(body_buffer);
   EXPECT_EQ(message, written);
@@ -67,7 +67,7 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
   std::vector<uint8_t> eof_buffer(1);
   auto eof_read =
       read_file_.ReadAtCurrentPos(base::as_writable_byte_span(eof_buffer));
-  EXPECT_EQ(0u, eof_read.value_or(0u));
+  EXPECT_EQ(eof_read.value_or(0u), 0u);
 }
 
 TEST_F(NativeMessagingWriterTest, SecondMessage) {
@@ -84,13 +84,13 @@ TEST_F(NativeMessagingWriterTest, SecondMessage) {
     auto header_read = read_file_.ReadAtCurrentPos(
         base::as_writable_byte_span(base::span_from_ref(length)));
     ASSERT_TRUE(header_read.has_value());
-    ASSERT_EQ(sizeof(length), *header_read) << "i = " << i;
+    ASSERT_EQ(*header_read, sizeof(length)) << "i = " << i;
 
     std::string body_buffer(length, '\0');
     auto body_read =
         read_file_.ReadAtCurrentPos(base::as_writable_byte_span(body_buffer));
     ASSERT_TRUE(body_read.has_value());
-    ASSERT_EQ(static_cast<size_t>(length), *body_read) << "i = " << i;
+    ASSERT_EQ(*body_read, static_cast<size_t>(length)) << "i = " << i;
 
     // Verify message content.
     base::DictValue written = base::test::ParseJsonDict(body_buffer);

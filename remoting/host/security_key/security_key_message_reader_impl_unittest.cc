@@ -133,9 +133,9 @@ void SecurityKeyMessageReaderImplTest::WriteData(
 TEST_F(SecurityKeyMessageReaderImplTest, SingleMessageWithNoPayload) {
   WriteMessage(kTestMessageType, std::string());
   RunLoop();
-  ASSERT_EQ(1u, messages_received_.size());
-  ASSERT_EQ(kTestMessageType, messages_received_[0]->type());
-  ASSERT_EQ("", messages_received_[0]->payload());
+  ASSERT_EQ(messages_received_.size(), 1u);
+  ASSERT_EQ(messages_received_[0]->type(), kTestMessageType);
+  ASSERT_EQ(messages_received_[0]->payload(), "");
 
   CloseWriteFileAndRunLoop();
 }
@@ -144,9 +144,9 @@ TEST_F(SecurityKeyMessageReaderImplTest, SingleMessageWithPayload) {
   std::string payload("I AM A VALID MESSAGE PAYLOAD!!!!!!!!!!!!!!!!!!!!!!");
   WriteMessage(kTestMessageType, payload);
   RunLoop();
-  ASSERT_EQ(1u, messages_received_.size());
-  ASSERT_EQ(kTestMessageType, messages_received_[0]->type());
-  ASSERT_EQ(payload, messages_received_[0]->payload());
+  ASSERT_EQ(messages_received_.size(), 1u);
+  ASSERT_EQ(messages_received_[0]->type(), kTestMessageType);
+  ASSERT_EQ(messages_received_[0]->payload(), payload);
 
   CloseWriteFileAndRunLoop();
 }
@@ -164,9 +164,9 @@ TEST_F(SecurityKeyMessageReaderImplTest, SingleMessageViaSingleWrite) {
   payload[4] = static_cast<char>(kTestMessageType);
   WriteData(base::as_byte_span(payload));
   RunLoop();
-  ASSERT_EQ(1u, messages_received_.size());
-  ASSERT_EQ(kTestMessageType, messages_received_[0]->type());
-  ASSERT_EQ(payload.substr(5), messages_received_[0]->payload());
+  ASSERT_EQ(messages_received_.size(), 1u);
+  ASSERT_EQ(messages_received_[0]->type(), kTestMessageType);
+  ASSERT_EQ(messages_received_[0]->payload(), payload.substr(5));
 
   CloseWriteFileAndRunLoop();
 }
@@ -187,9 +187,9 @@ TEST_F(SecurityKeyMessageReaderImplTest, SingleMessageViaMultipleWrites) {
     WriteData(base::as_byte_span(payload).subspan(i, 1u));
   }
   RunLoop();
-  ASSERT_EQ(1u, messages_received_.size());
-  ASSERT_EQ(kTestMessageType, messages_received_[0]->type());
-  ASSERT_EQ(payload.substr(5), messages_received_[0]->payload());
+  ASSERT_EQ(messages_received_.size(), 1u);
+  ASSERT_EQ(messages_received_[0]->type(), kTestMessageType);
+  ASSERT_EQ(messages_received_[0]->payload(), payload.substr(5));
 
   CloseWriteFileAndRunLoop();
 }
@@ -200,16 +200,16 @@ TEST_F(SecurityKeyMessageReaderImplTest, SingleMessageWithLargePayload) {
                       'Y');
   WriteMessage(kTestMessageType, payload);
   RunLoop();
-  ASSERT_EQ(1u, messages_received_.size());
-  ASSERT_EQ(kTestMessageType, messages_received_[0]->type());
-  ASSERT_EQ(payload, messages_received_[0]->payload());
+  ASSERT_EQ(messages_received_.size(), 1u);
+  ASSERT_EQ(messages_received_[0]->type(), kTestMessageType);
+  ASSERT_EQ(messages_received_[0]->payload(), payload);
 
   CloseWriteFileAndRunLoop();
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, EmptyFile) {
   CloseWriteFileAndRunLoop();
-  ASSERT_EQ(0u, messages_received_.size());
+  ASSERT_EQ(messages_received_.size(), 0u);
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, InvalidMessageLength) {
@@ -217,28 +217,28 @@ TEST_F(SecurityKeyMessageReaderImplTest, InvalidMessageLength) {
   ASSERT_FALSE(SecurityKeyMessage::IsValidMessageSize(length));
   WriteData(base::byte_span_from_ref(length));
   CloseWriteFileAndRunLoop();
-  ASSERT_EQ(0u, messages_received_.size());
+  ASSERT_EQ(messages_received_.size(), 0u);
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, ShortHeader) {
   // Write only 3 bytes - the message length header is supposed to be 4 bytes.
   WriteData(base::as_byte_span(std::string_view("xxx")));
   CloseWriteFileAndRunLoop();
-  ASSERT_EQ(0u, messages_received_.size());
+  ASSERT_EQ(messages_received_.size(), 0u);
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, ZeroLengthMessage) {
   uint32_t length = 0;
   WriteData(base::byte_span_from_ref(length));
   CloseWriteFileAndRunLoop();
-  ASSERT_EQ(0u, messages_received_.size());
+  ASSERT_EQ(messages_received_.size(), 0u);
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, MissingControlCode) {
   uint32_t length = 1;
   WriteData(base::byte_span_from_ref(length));
   CloseWriteFileAndRunLoop();
-  ASSERT_EQ(0u, messages_received_.size());
+  ASSERT_EQ(messages_received_.size(), 0u);
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, MissingPayload) {
@@ -248,7 +248,7 @@ TEST_F(SecurityKeyMessageReaderImplTest, MissingPayload) {
   char test_control_code = static_cast<char>(kTestMessageType);
   WriteData(base::byte_span_from_ref(test_control_code));
   CloseWriteFileAndRunLoop();
-  ASSERT_EQ(0u, messages_received_.size());
+  ASSERT_EQ(messages_received_.size(), 0u);
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, MultipleMessages) {
@@ -259,13 +259,13 @@ TEST_F(SecurityKeyMessageReaderImplTest, MultipleMessages) {
   for (size_t i = 0; i < payloads.size(); i++) {
     WriteMessage(kTestMessageType, payloads[i]);
     RunLoop();
-    ASSERT_EQ(i + 1, messages_received_.size());
+    ASSERT_EQ(messages_received_.size(), i + 1);
   }
   CloseWriteFileAndRunLoop();
 
   for (size_t i = 0; i < payloads.size(); i++) {
-    ASSERT_EQ(kTestMessageType, messages_received_[i]->type());
-    ASSERT_EQ(payloads[i], messages_received_[i]->payload());
+    ASSERT_EQ(messages_received_[i]->type(), kTestMessageType);
+    ASSERT_EQ(messages_received_[i]->payload(), payloads[i]);
   }
 }
 
