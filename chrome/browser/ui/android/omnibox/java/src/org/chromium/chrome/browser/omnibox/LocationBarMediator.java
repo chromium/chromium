@@ -1723,11 +1723,25 @@ class LocationBarMediator
         return hasText && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
     }
 
+    /**
+     * @return Whether the Omnibox is focused on a desktop. Lens and mic buttons should be
+     *     suppressed if the Omnibox is focused and the device is in desktop mode.
+     */
+    private boolean isUrlBarFocusedOnDesktop() {
+        if (!mUrlHasFocus && !mIsUrlFocusChangeInProgress && !mUrlFocusedWithoutAnimations) {
+            return false;
+        }
+        return OmniboxFeatures.isDesktopMode();
+    }
+
     @VisibleForTesting
     boolean shouldShowMicButton() {
         if (mCurrentInput != null && !mCurrentInput.isConventionalRequestType()) return false;
 
         if (isUrlBarFocusedWithUserInput()) return false;
+
+        if (isUrlBarFocusedOnDesktop()) return false;
+
         if (!mNativeInitialized
                 || mVoiceRecognitionHandler == null
                 || !mVoiceRecognitionHandler.isVoiceSearchEnabled()
@@ -1752,6 +1766,8 @@ class LocationBarMediator
         if (mCurrentInput != null && !mCurrentInput.isConventionalRequestType()) return false;
 
         if (isUrlBarFocusedWithUserInput()) return false;
+
+        if (isUrlBarFocusedOnDesktop()) return false;
 
         // When this method is called on UI inflation, return false as the native is not ready.
         if (!mNativeInitialized) {
