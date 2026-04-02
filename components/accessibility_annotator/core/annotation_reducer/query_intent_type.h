@@ -49,7 +49,7 @@ enum class QueryIntentType {
   kShipmentFull,
   kShipmentTrackingNumber,
   kShipmentAssociatedOrderId,
-  kShipmentDeliveryZipCode,
+  kShipmentDeliveryAddress,
   kShipmentCarrierName,
   kShipmentCarrierDomain,
   kShipmentEstimatedDeliveryDate,

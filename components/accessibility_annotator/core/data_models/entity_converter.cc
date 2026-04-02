@@ -64,8 +64,8 @@ Shipment ConvertShipment(
   if (proto_shipment.associated_order_ids_size() > 0) {
     shipment.associated_order_id = proto_shipment.associated_order_ids(0);
   }
-  if (proto_shipment.has_delivery_zip_code()) {
-    shipment.delivery_zip_code = proto_shipment.delivery_zip_code();
+  if (proto_shipment.has_delivery_address()) {
+    shipment.delivery_address = proto_shipment.delivery_address();
   }
   if (proto_shipment.has_carrier_name()) {
     shipment.carrier_name = proto_shipment.carrier_name();

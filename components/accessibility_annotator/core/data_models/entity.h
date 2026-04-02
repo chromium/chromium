@@ -84,7 +84,7 @@ struct Shipment {
 
   std::string tracking_number;
   std::string associated_order_id;
-  std::string delivery_zip_code;
+  std::string delivery_address;
   std::string carrier_name;
   GURL carrier_domain;
   std::optional<Date> estimated_delivery_date;

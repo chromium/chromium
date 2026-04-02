@@ -436,7 +436,7 @@ std::u16string GetEntryTypeNameForI18n(aa::QueryIntentType type) {
     case aa::QueryIntentType::kOrderGrandTotal:
     case aa::QueryIntentType::kShipmentTrackingNumber:
     case aa::QueryIntentType::kShipmentAssociatedOrderId:
-    case aa::QueryIntentType::kShipmentDeliveryZipCode:
+    case aa::QueryIntentType::kShipmentDeliveryAddress:
     case aa::QueryIntentType::kShipmentCarrierName:
     case aa::QueryIntentType::kShipmentCarrierDomain:
     case aa::QueryIntentType::kShipmentEstimatedDeliveryDate: {

@@ -99,11 +99,11 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     case accessibility_annotator::QueryIntentType::kIbanNickname:
     case accessibility_annotator::QueryIntentType::
         kFlightReservationArrivalDate:
-    // TODO(crbug.com/484094746): Map `delivery_zip_code` to
-    // `kShipmentDeliveryZipCode`. Since `delivery_zip_code` is a
+    // TODO(crbug.com/484094746): Map `delivery_address` to
+    // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
     // `std::string`, it's unclear how we can process this (here and in
     // general).
-    case accessibility_annotator::QueryIntentType::kShipmentDeliveryZipCode:
+    case accessibility_annotator::QueryIntentType::kShipmentDeliveryAddress:
       return std::nullopt;
   }
 

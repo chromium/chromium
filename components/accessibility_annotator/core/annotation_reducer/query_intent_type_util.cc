@@ -191,7 +191,7 @@ bool IsFullQueryIntentType(QueryIntentType intent_type) {
     case QueryIntentType::kFlightReservationArrivalDate:
     case QueryIntentType::kShipmentTrackingNumber:
     case QueryIntentType::kShipmentAssociatedOrderId:
-    case QueryIntentType::kShipmentDeliveryZipCode:
+    case QueryIntentType::kShipmentDeliveryAddress:
     case QueryIntentType::kShipmentCarrierName:
     case QueryIntentType::kShipmentCarrierDomain:
     case QueryIntentType::kShipmentEstimatedDeliveryDate:
@@ -447,8 +447,8 @@ AttributeResult GetShipmentAttributeResult(const Shipment& shipment,
   AddAttributeValue(shipment.associated_order_id,
                     QueryIntentType::kShipmentAssociatedOrderId, map,
                     &shipment_full);
-  AddAttributeValue(shipment.delivery_zip_code,
-                    QueryIntentType::kShipmentDeliveryZipCode, map,
+  AddAttributeValue(shipment.delivery_address,
+                    QueryIntentType::kShipmentDeliveryAddress, map,
                     &shipment_full);
   AddAttributeValue(shipment.carrier_name,
                     QueryIntentType::kShipmentCarrierName, map, &shipment_full);
@@ -538,7 +538,7 @@ EntityTypeEnumSet GetEntityTypesForQueryIntentType(
     case QueryIntentType::kShipmentFull:
     case QueryIntentType::kShipmentTrackingNumber:
     case QueryIntentType::kShipmentAssociatedOrderId:
-    case QueryIntentType::kShipmentDeliveryZipCode:
+    case QueryIntentType::kShipmentDeliveryAddress:
     case QueryIntentType::kShipmentCarrierName:
     case QueryIntentType::kShipmentCarrierDomain:
     case QueryIntentType::kShipmentEstimatedDeliveryDate:

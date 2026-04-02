@@ -210,8 +210,8 @@ TEST_F(QueryClassifierTest, EntityAttributeIntents) {
             QueryIntentType::kShipmentTrackingNumber);
   EXPECT_EQ(RunClassifier(u"associated order id").intent,
             QueryIntentType::kShipmentAssociatedOrderId);
-  EXPECT_EQ(RunClassifier(u"shipping zip code").intent,
-            QueryIntentType::kShipmentDeliveryZipCode);
+  EXPECT_EQ(RunClassifier(u"shipping address").intent,
+            QueryIntentType::kShipmentDeliveryAddress);
   EXPECT_EQ(RunClassifier(u"carrier name").intent,
             QueryIntentType::kShipmentCarrierName);
   EXPECT_EQ(RunClassifier(u"carrier website").intent,

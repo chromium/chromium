@@ -200,7 +200,7 @@ TEST(FromAccessibilityAnnotatorTest, EntityConversion_Shipment) {
   aa::Shipment s;
   s.tracking_number = "238947234597";
   s.associated_order_id = "#shonet34234";
-  s.delivery_zip_code = "234987";
+  s.delivery_address = "Foostreet 123, 234987 Bar, USA";
   s.carrier_name = "Bar";
   s.carrier_domain = GURL("https://bar.com");
   s.estimated_delivery_date = aa::Date{.day = 31, .month = 7, .year = 2030};

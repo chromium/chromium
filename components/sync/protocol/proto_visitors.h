@@ -2353,10 +2353,10 @@ VISIT_PROTO_FIELDS(
     const sync_pb::AccessibilityAnnotationSpecifics::Shipment& proto) {
   VISIT(tracking_number);
   VISIT_REP(associated_order_ids);
+  VISIT(delivery_address);
   VISIT(carrier_name);
   VISIT(carrier_domain);
   VISIT(estimated_delivery_date);
-  VISIT(delivery_zip_code);
 }
 
 VISIT_PROTO_FIELDS(

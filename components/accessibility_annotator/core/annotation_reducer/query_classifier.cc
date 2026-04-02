@@ -209,8 +209,8 @@ void KeywordQueryClassify(std::u16string_view query,
   try_match(QueryIntentType::kShipmentTrackingNumber, u"tracking number");
   try_match(QueryIntentType::kShipmentAssociatedOrderId, u"associated order id",
             u"shipment order");
-  try_match(QueryIntentType::kShipmentDeliveryZipCode, u"delivery zip code",
-            u"shipping zip code");
+  try_match(QueryIntentType::kShipmentDeliveryAddress, u"delivery address",
+            u"shipping address");
   try_match(QueryIntentType::kShipmentCarrierName, u"carrier name",
             u"shipping company", u"shipper name");
   try_match(QueryIntentType::kShipmentCarrierDomain, u"carrier domain",
