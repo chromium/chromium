@@ -740,8 +740,13 @@ ImageBitmap* WebGLRenderingContextBase::TransferToImageBitmapBase(
     return nullptr;
   }
 
-  return MakeGarbageCollected<ImageBitmap>(
-      GetDrawingBuffer()->TransferToStaticBitmapImage());
+  auto image = GetDrawingBuffer()->TransferToStaticBitmapImage();
+
+  // Per spec, the drawing buffer must be cleared after transferToImageBitmap(),
+  // regardless of preserveDrawingBuffer.
+  GetDrawingBuffer()->RequireExplicitBufferClear();
+
+  return MakeGarbageCollected<ImageBitmap>(std::move(image));
 }
 
 void WebGLRenderingContextBase::drawingBufferStorage(GLenum sizedformat,

@@ -330,11 +330,17 @@ bool DrawingBuffer::BufferClearNeeded() const {
 }
 
 void DrawingBuffer::SetBufferClearNeeded(bool flag) {
-  if (preserve_drawing_buffer_ == kDiscard) {
-    buffer_clear_needed_ = flag;
+  if (flag) {
+    if (preserve_drawing_buffer_ == kDiscard) {
+      buffer_clear_needed_ = true;
+    }
   } else {
-    DCHECK(!buffer_clear_needed_);
+    buffer_clear_needed_ = false;
   }
+}
+
+void DrawingBuffer::RequireExplicitBufferClear() {
+  buffer_clear_needed_ = true;
 }
 
 gpu::gles2::GLES2Interface* DrawingBuffer::ContextGL() {

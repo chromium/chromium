@@ -213,6 +213,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool MarkContentsChanged();
 
   void SetBufferClearNeeded(bool);
+  void RequireExplicitBufferClear();
   bool BufferClearNeeded() const;
 
   void SetIsInHiddenPage(bool);

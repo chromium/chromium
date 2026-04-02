@@ -399,9 +399,6 @@ crbug.com/486945330 conformance/glsl/misc/shader-with-double-underscore.html [ F
 crbug.com/487128735 [ android android-pixel-2 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/487128735 [ android android-pixel-4 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 
-# Failing new updated tests
-crbug.com/406187744 conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
-
 
 # Failing on most platforms. Only runs with passthrough.
 crbug.com/1175371 [ angle-opengles chromeos mesa_ge_21.0 passthrough target-cpu-64 ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]

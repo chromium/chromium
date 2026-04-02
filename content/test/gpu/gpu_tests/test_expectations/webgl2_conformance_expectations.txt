@@ -520,8 +520,6 @@ crbug.com/487128735 [ android android-pixel-4 passthrough ] conformance/extensio
 crbug.com/angleproject/42267266 [ passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 
 # Failing new updated tests
-crbug.com/406187744 conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
-crbug.com/406187744 conformance2/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
 crbug.com/1131224 [ angle-d3d11 desktop no-asan passthrough release win ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
