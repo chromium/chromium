@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -36,18 +39,31 @@ using desktop_to_mobile_promos::PromoType;
 // Test suite for the desktop-to-iOS promo bubbles.
 class IOSPromoBubbleBrowserTest
     : public InteractiveBrowserTest,
-      public testing::WithParamInterface<PromoType> {
+      public testing::WithParamInterface<std::tuple<PromoType, bool>> {
  public:
   IOSPromoBubbleBrowserTest() = default;
   ~IOSPromoBubbleBrowserTest() override = default;
 
   void SetUp() override {
     // Enable the non-IPH features.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kMobilePromoOnDesktopWithReminder,
-          {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
-         {sync_preferences::features::kEnableCrossDevicePrefTracker, {}}},
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kMobilePromoOnDesktopWithReminder,
+         {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
+        {sync_preferences::features::kEnableCrossDevicePrefTracker, {}}};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (IsWalletBrandingV2Enabled()) {
+      enabled_features.push_back(
+          {autofill::features::kAutofillEnableWalletBranding, {}});
+      enabled_features.push_back(
+          {autofill::features::kAutofillEnableWalletBrandingV2, {}});
+    } else {
+      disabled_features.emplace_back(
+          autofill::features::kAutofillEnableWalletBrandingV2);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
 
     // Enable the IPH features.
     scoped_iph_feature_list_.InitAndEnableFeatures(
@@ -69,8 +85,8 @@ class IOSPromoBubbleBrowserTest
       ToolbarButtonProvider* button_provider =
           browser_view->toolbar_button_provider();
 
-      PromoType promo_type = GetParam();
-      views::BubbleAnchor anchor;
+      PromoType promo_type = GetPromoType();
+      views::BubbleAnchor anchor = nullptr;
       views::Button* highlighted_button = nullptr;
       std::optional<ui::ElementIdentifier> highlighted_element;
 
@@ -118,13 +134,16 @@ class IOSPromoBubbleBrowserTest
     });
   }
 
+  PromoType GetPromoType() { return std::get<0>(GetParam()); }
+  bool IsWalletBrandingV2Enabled() { return std::get<1>(GetParam()); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   feature_engagement::test::ScopedIphFeatureList scoped_iph_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode) {
-  if (GetParam() == PromoType::kAddress) {
+  if (GetPromoType() == PromoType::kAddress) {
     GTEST_SKIP() << "kAutofillAddress is migrated, use ShowQRCode_NoPageAction instead.";
   }
 
@@ -137,7 +156,7 @@ IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode) {
 }
 
 IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode_NoPageAction) {
-  if (GetParam() != PromoType::kAddress) {
+  if (GetPromoType() != PromoType::kAddress) {
     GTEST_SKIP() << "Test is only for DesktopToIOSPromoType::kAddress.";
   }
 
@@ -158,7 +177,8 @@ IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode_NoPageAction) {
 #define MAYBE_ShowReminder ShowReminder
 #endif
 IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, MAYBE_ShowReminder) {
-  if (GetParam() == PromoType::kAddress || GetParam() == PromoType::kPayment) {
+  if (GetPromoType() == PromoType::kAddress ||
+      GetPromoType() == PromoType::kPayment) {
     GTEST_SKIP() << "Reminder bubble not supported for this promo type.";
   }
 
@@ -170,10 +190,12 @@ IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, MAYBE_ShowReminder) {
       Screenshot(kIOSPromoBubbleElementId, "Reminder", kScreenshotBaselineCL));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         IOSPromoBubbleBrowserTest,
-                         testing::Values(PromoType::kPassword,
-                                         PromoType::kAddress,
-                                         PromoType::kPayment,
-                                         PromoType::kEnhancedBrowsing,
-                                         PromoType::kLens));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IOSPromoBubbleBrowserTest,
+    testing::Combine(testing::Values(PromoType::kPassword,
+                                     PromoType::kAddress,
+                                     PromoType::kPayment,
+                                     PromoType::kEnhancedBrowsing,
+                                     PromoType::kLens),
+                     testing::Bool()));

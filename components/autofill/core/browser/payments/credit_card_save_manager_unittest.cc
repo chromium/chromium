@@ -5218,6 +5218,51 @@ TEST_F(CreditCardSaveManagerTest,
 
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_VerifyCvcStorageIsPresentInClientBehaviorSignals) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding,
+                            features::kAutofillEnableWalletBrandingV2},
+      /*disabled_features=*/{});
+
+  // Create, fill and submit an address form in order to establish a recent
+  // profile which can be selected for the upload request.
+  FormData address_form = CreateTestAddressFormData();
+  FormsSeen(std::vector<FormData>(1, address_form));
+  ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
+  FormSubmitted(address_form);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, and submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  // Confirm that upload happened and that no experiment flag state was sent in
+  // the request.
+  EXPECT_CALL(payments_autofill_client(), ShowSaveCreditCardLocally).Times(0);
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_TRUE(credit_card_save_manager().CreditCardWasUploaded());
+  EXPECT_THAT(payments_network_interface().client_behavior_signals_in_request(),
+              UnorderedElementsAre(
+                  ClientBehaviorConstants::kShowAccountEmailInLegalMessage,
+                  ClientBehaviorConstants::kOfferingToSaveCvc));
+}
+
+TEST_F(
+    CreditCardSaveManagerTest,
+    UploadCreditCard_VerifyCvcStorageIsPresentInClientBehaviorSignals_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBrandingV2);
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -5249,6 +5294,7 @@ TEST_F(CreditCardSaveManagerTest,
       payments_network_interface().client_behavior_signals_in_request(),
       UnorderedElementsAre(ClientBehaviorConstants::kOfferingToSaveCvc));
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(CreditCardSaveManagerTest,

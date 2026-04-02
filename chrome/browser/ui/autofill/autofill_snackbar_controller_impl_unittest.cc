@@ -227,8 +227,10 @@ TEST_F(AutofillSnackbarControllerImplTest,
 
 TEST_F(AutofillSnackbarControllerImplTest,
        SaveCardSuccessMessageAndActionButtonText_WalletBrandingEnabled) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableWalletBranding);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
 
   controller()->Show(AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
 
