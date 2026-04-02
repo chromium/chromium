@@ -1104,7 +1104,8 @@ void BrowserAccessibilityManagerAndroid::
   if (!wcax) {
     return;
   }
-  if (wcax->HasFakeAndroidCache()) {
+  if (base::FeatureList::IsEnabled(
+          features::kAccessibilityRequestScopedContentChangedEvents)) {
     wcax->ValidateA11yCacheForExperiment();
   }
 }

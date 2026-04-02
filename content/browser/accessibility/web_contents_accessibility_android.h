@@ -60,20 +60,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
     : public WebContentsAccessibility,
       public ui::AXNodeIdDelegate {
  public:
+  explicit WebContentsAccessibilityAndroid(WebContents* web_contents);
+  explicit WebContentsAccessibilityAndroid(int64_t ax_tree_update_ptr);
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& obj,
-      WebContents* web_contents,
-      const base::android::JavaRef<jobject>& jaccessibility_node_info_builder,
-      const base::android::JavaRef<jobject>& jaccessibility_fake_android_cache);
-  WebContentsAccessibilityAndroid(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& obj,
-      int64_t ax_tree_update_ptr,
-      const base::android::JavaRef<jobject>& jaccessibility_node_info_builder);
-  WebContentsAccessibilityAndroid(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& obj,
       const base::android::JavaRef<jobject>& jassist_data_builder,
       WebContents* web_contents);
 
@@ -346,6 +336,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Note: This cache is only meant for common strings that might be shared
   //       across many nodes (e.g. role or role description), which have a
   //       finite number of possibilities. Do not use it for page content.
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env) const;
+
   const base::android::ScopedJavaGlobalRef<jstring>& GetCanonicalJNIString(
       JNIEnv* env,
       std::string_view str) {
@@ -405,8 +397,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // from BrowserAccessibilityManagerAndroid.
   BrowserAccessibilityAndroid* GetAccessibilityFocus() const;
 
-  // Returns true if the fake android cache is enabled by checking its pointer.
-  bool HasFakeAndroidCache() const;
   void HandlePageLoaded(int32_t unique_id);
   // If |set_subtree_changed| is true, the TYPE_WINDOW_CONTENT_CHANGED event
   // will signal that this change is affecting its underlying subtree.
@@ -567,11 +557,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       const std::optional<
           absl::flat_hash_map<std::string, AXStyleData::RangePairs>>& attrs,
       int* ranges_count);
-
-  // A weak reference to the Java WebContentsAccessibilityAndroid object.
-  JavaObjectWeakGlobalRef java_ref_;
-  JavaObjectWeakGlobalRef java_anib_ref_;
-  JavaObjectWeakGlobalRef java_fake_android_cache_ref_;
 
   // A weak reference to the AssistData tree builder which will only be
   // instantiated after a request from the Android framework.
