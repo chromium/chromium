@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
@@ -18,7 +18,7 @@ namespace multistep_filter {
 // Helper class for testing `MultistepFilterService`.
 class MultistepFilterServiceTestApi {
  public:
-  explicit MultistepFilterServiceTestApi(MultistepFilterService* service)
+  explicit MultistepFilterServiceTestApi(MultistepFilterService& service)
       : service_(service) {}
 
   MultistepFilterServiceTestApi(const MultistepFilterServiceTestApi&) = delete;
@@ -36,12 +36,16 @@ class MultistepFilterServiceTestApi {
         std::move(filter_suggestion_generator);
   }
 
+  void SetObserverForTest(MultistepFilterService::ObserverForTest* observer) {
+    service_->observer_for_test_ = observer;
+  }
+
  private:
-  raw_ptr<MultistepFilterService> service_;
+  raw_ref<MultistepFilterService> service_;
 };
 
 inline MultistepFilterServiceTestApi test_api(MultistepFilterService& service) {
-  return MultistepFilterServiceTestApi(&service);
+  return MultistepFilterServiceTestApi(service);
 }
 
 }  // namespace multistep_filter

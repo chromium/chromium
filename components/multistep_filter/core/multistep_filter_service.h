@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
@@ -36,6 +37,15 @@ class FilterSuggestionGenerator;
 // related components like the FilterSuggestionGenerator.
 class MultistepFilterService : public KeyedService {
  public:
+  class ObserverForTest {
+   public:
+    virtual ~ObserverForTest() = default;
+    virtual void OnExtractionFinished(
+        std::optional<base::Uuid> annotation_id) = 0;
+    virtual void OnSuggestionGenerated(
+        std::optional<UrlFilterSuggestion> suggestion) = 0;
+  };
+
   MultistepFilterService(
       std::unique_ptr<AnnotationIndexClient> annotation_index_client,
       std::unique_ptr<FilterStore> filter_store,
@@ -60,9 +70,18 @@ class MultistepFilterService : public KeyedService {
  private:
   friend class MultistepFilterServiceTestApi;
 
+  // Callback for when an annotation is extracted.
+  void OnExtractionFinished(std::optional<base::Uuid> annotation_id);
+
+  // Callback for when a suggestion is generated.
+  void OnSuggestionGenerated(base::WeakPtr<MultistepFilterUiDelegate> delegate,
+                             std::optional<UrlFilterSuggestion> suggestion);
+
   // Returns true if the user is currently signed in. The Multistep Filter
   // feature is only available for signed-in users.
   bool IsUserSignedIn() const;
+
+  raw_ptr<ObserverForTest> observer_for_test_ = nullptr;
 
   // Client used to interact with the `SiteAutomationIndexServer` on the server
   // side.

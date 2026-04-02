@@ -4,6 +4,13 @@
 
 #include "components/multistep_filter/core/multistep_filter_service.h"
 
+#include <memory>
+#include <optional>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/uuid.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
@@ -35,7 +42,11 @@ MultistepFilterService::~MultistepFilterService() = default;
 void MultistepFilterService::ExtractAnnotation(const GURL& url) {
   // Extract filter annotations for signed-in users only.
   if (IsUserSignedIn() && IsUrlAllowed(url)) {
-    filter_extractor_->ExtractAnnotationFromUrl(url);
+    filter_extractor_->ExtractAnnotationFromUrl(
+        url, base::BindOnce(&MultistepFilterService::OnExtractionFinished,
+                            base::Unretained(this)));
+  } else {
+    OnExtractionFinished(std::nullopt);
   }
 }
 
@@ -47,17 +58,35 @@ void MultistepFilterService::GenerateFilterSuggestions(
   }
 
   if (delegate->ShouldSuppressSuggestions(url)) {
-    delegate->OnSuggestionGenerated(std::nullopt);
+    OnSuggestionGenerated(delegate, std::nullopt);
     return;
   }
 
   // Generate filter suggestions for signed-in users only.
   if (IsUserSignedIn() && IsUrlAllowed(url)) {
     filter_suggestion_generator_->GenerateSuggestion(
-        url, base::BindOnce(&MultistepFilterUiDelegate::OnSuggestionGenerated,
-                            delegate));
+        url, base::BindOnce(&MultistepFilterService::OnSuggestionGenerated,
+                            base::Unretained(this), delegate));
   } else {
-    delegate->OnSuggestionGenerated(std::nullopt);
+    OnSuggestionGenerated(delegate, std::nullopt);
+  }
+}
+
+void MultistepFilterService::OnExtractionFinished(
+    std::optional<base::Uuid> annotation_id) {
+  if (observer_for_test_) {
+    observer_for_test_->OnExtractionFinished(annotation_id);
+  }
+}
+
+void MultistepFilterService::OnSuggestionGenerated(
+    base::WeakPtr<MultistepFilterUiDelegate> delegate,
+    std::optional<UrlFilterSuggestion> suggestion) {
+  if (observer_for_test_) {
+    observer_for_test_->OnSuggestionGenerated(suggestion);
+  }
+  if (delegate) {
+    delegate->OnSuggestionGenerated(suggestion);
   }
 }
 

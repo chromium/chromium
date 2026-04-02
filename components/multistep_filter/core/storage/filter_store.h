@@ -32,13 +32,14 @@ class FilterStore {
   FilterStore(const FilterStore&) = delete;
   FilterStore& operator=(const FilterStore&) = delete;
 
-  ~FilterStore();
+  // Virtual for testing.
+  virtual ~FilterStore();
 
   // Asynchronously stores a new annotation in the background database.
   // The callback is called with true if the operation was successful, false
-  // otherwise.
-  void StoreAnnotation(const FilterAnnotation& annotation,
-                       base::OnceCallback<void(bool)> callback);
+  // otherwise. Virtual for testing.
+  virtual void StoreAnnotation(const FilterAnnotation& annotation,
+                               base::OnceCallback<void(bool)> callback);
 
   // Asynchronously retrieves annotations for a specific task type.
   // The callback is guaranteed to run safely on the calling sequence (UI

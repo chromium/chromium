@@ -4,12 +4,17 @@
 
 #include "components/multistep_filter/core/multistep_filter_service.h"
 
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
@@ -33,7 +38,11 @@ class MockFilterExtractor : public FilterExtractor {
   MockFilterExtractor(AnnotationIndexClient& annotation_index_client,
                       FilterStore& filter_store)
       : FilterExtractor(annotation_index_client, filter_store) {}
-  MOCK_METHOD(void, ExtractAnnotationFromUrl, (const GURL& url), (override));
+  MOCK_METHOD(void,
+              ExtractAnnotationFromUrl,
+              (const GURL& url,
+               base::OnceCallback<void(std::optional<base::Uuid>)> callback),
+              (override));
 };
 
 class MockFilterSuggestionGenerator : public FilterSuggestionGenerator {
@@ -117,7 +126,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation) {
   CreateService();
   const GURL kUrl("http://example.com");
 
-  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(kUrl));
+  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(kUrl, _));
 
   service_->ExtractAnnotation(kUrl);
 }
