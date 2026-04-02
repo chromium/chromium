@@ -496,6 +496,7 @@ crbug.com/452924810 [ win11 qualcomm-0x36334330 angle-vulkan ] conformance/exten
 
 ## Win / Intel / D3D9
 crbug.com/395934162 [ angle-d3d9 intel-0x4680 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
+crbug.com/498951069 [ angle-d3d9 intel-0x9bc5 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
 
 ####################
 # Mac failures     #
