@@ -391,8 +391,6 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
 
   histogram_tester().ExpectTotalCount("Glic.Response.StopTime", 1);
-  histogram_tester().ExpectUniqueSample("Glic.Session.Open.BrowserActiveState",
-                                        5 /*kBrowserHidden*/, 1);
   EXPECT_THAT(
       histogram_tester().GetAllSamplesForPrefix("Glic.Response.StartTime"),
       UnorderedElementsAre(
@@ -1121,6 +1119,10 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndDismissed) {
       user_action_tester().GetActionCount("Glic.Fre.Dismissed.Onboarding"), 1);
   histogram_tester().ExpectTotalCount("Glic.Fre.TotalTime.Dismissed.Onboarding",
                                       1);
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.Entrypoint",
+                                        mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Dismissed.Entrypoint",
+                                        mojom::InvocationSource::kOsButton, 1);
 }
 
 TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndAccepted) {
@@ -1141,6 +1143,11 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndAccepted) {
   metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   EXPECT_EQ(
       user_action_tester().GetActionCount("Glic.Fre.Dismissed.Onboarding"), 0);
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.Entrypoint",
+                                        mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Accept.Entrypoint",
+                                        mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectTotalCount("Glic.Fre.Dismissed.Entrypoint", 0);
 }
 
 TEST_F(GlicMetricsTrustFirstOnboardingTest, NotShownIfConsented) {
