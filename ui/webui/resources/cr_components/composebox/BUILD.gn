@@ -37,6 +37,8 @@ build_webui("build") {
     "composebox_match.html.ts",
     "composebox_match.ts",
     "composebox_proxy.ts",
+    "composebox_submit.html.ts",
+    "composebox_submit.ts",
     "composebox_submit_button.html.ts",
     "composebox_tab_favicon.ts",
     "composebox_tool_chip.html.ts",
@@ -64,6 +66,7 @@ build_webui("build") {
   ]
   css_files = [
     "composebox.css",
+    "composebox_submit.css",
     "composebox_dropdown.css",
     "composebox_input.css",
     "composebox_lens_search.css",
