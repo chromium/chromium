@@ -28,9 +28,13 @@ const net::BackoffEntry::Policy
 };
 
 PasswordSyncTokenCheckersCollection::PasswordSyncTokenCheckersCollection(
-    PrefService* local_state)
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : local_state_(CHECK_DEREF(local_state)),
-      sync_token_retry_backoff_(&kFetchTokenRetryBackoffPolicy) {}
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      sync_token_retry_backoff_(&kFetchTokenRetryBackoffPolicy) {
+  CHECK(shared_url_loader_factory_);
+}
 
 PasswordSyncTokenCheckersCollection::~PasswordSyncTokenCheckersCollection() =
     default;
@@ -50,9 +54,9 @@ void PasswordSyncTokenCheckersCollection::StartPasswordSyncCheckers(
     if (sync_token && !sync_token->empty() &&
         !sync_token_checkers_.contains(*sync_token)) {
       sync_token_checkers_.insert(
-          {*sync_token,
-           std::make_unique<PasswordSyncTokenLoginChecker>(
-               user->GetAccountId(), *sync_token, &sync_token_retry_backoff_)});
+          {*sync_token, std::make_unique<PasswordSyncTokenLoginChecker>(
+                            shared_url_loader_factory_, user->GetAccountId(),
+                            *sync_token, &sync_token_retry_backoff_)});
       if (observer)
         sync_token_checkers_[*sync_token]->AddObserver(observer);
       sync_token_checkers_[*sync_token]->AddObserver(this);

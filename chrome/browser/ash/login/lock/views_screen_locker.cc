@@ -58,10 +58,13 @@ ViewsScreenLocker::ViewsScreenLocker()
   PrefService* local_state = g_browser_process->local_state();
   ApplicationLocaleStorage* application_locale_storage =
       g_browser_process->GetFeatures()->application_locale_storage();
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
   policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   user_selection_screen_ = std::make_unique<ChromeUserSelectionScreen>(
-      local_state, application_locale_storage, browser_policy_connector_ash,
+      local_state, application_locale_storage,
+      std::move(shared_url_loader_factory), browser_policy_connector_ash,
       DisplayedScreen::LOCK_SCREEN);
 }
 

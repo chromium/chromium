@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -17,6 +18,10 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "components/account_id/account_id.h"
 #include "net/base/backoff_entry.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -33,9 +38,11 @@ class PasswordSyncTokenLoginChecker
     virtual void OnInvalidSyncToken(const AccountId& account_id) = 0;
   };
 
-  explicit PasswordSyncTokenLoginChecker(const AccountId& account_id,
-                                         const std::string& sync_token,
-                                         net::BackoffEntry* retry_backoff);
+  PasswordSyncTokenLoginChecker(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      const AccountId& account_id,
+      const std::string& sync_token,
+      net::BackoffEntry* retry_backoff);
   ~PasswordSyncTokenLoginChecker() override;
 
   PasswordSyncTokenLoginChecker(const PasswordSyncTokenLoginChecker&) = delete;
@@ -69,6 +76,9 @@ class PasswordSyncTokenLoginChecker
   // Recheck after given |delay|.
   void RecheckAfter(base::TimeDelta delay);
   void NotifyObservers();
+
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   base::ObserverList<Observer> observer_list_;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;

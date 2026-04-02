@@ -38,10 +38,12 @@ namespace ash {
 ChromeUserSelectionScreen::ChromeUserSelectionScreen(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     DisplayedScreen display_type)
     : UserSelectionScreen(local_state,
                           application_locale_storage,
+                          std::move(shared_url_loader_factory),
                           browser_policy_connector_ash,
                           display_type) {
   device_local_account_policy_service_ =

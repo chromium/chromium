@@ -17,6 +17,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/base/backoff_entry.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -35,8 +37,9 @@ class PasswordSyncTokenLoginCheckerTest : public testing::Test {
  protected:
   PasswordSyncTokenLoginCheckerTest();
 
-  void CreatePasswordSyncTokenLoginChecker();
-  void DestroyPasswordSyncTokenLoginChecker();
+  void SetUp() override;
+  void TearDown() override;
+
   void OnTokenVerified(bool is_verified);
 
   const AccountId saml_login_account_id_ =
@@ -45,6 +48,8 @@ class PasswordSyncTokenLoginCheckerTest : public testing::Test {
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
   std::unique_ptr<net::BackoffEntry> sync_token_retry_backoff_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
@@ -61,14 +66,17 @@ PasswordSyncTokenLoginCheckerTest::PasswordSyncTokenLoginCheckerTest() {
   fake_user_manager_->SwitchActiveUser(saml_login_account_id_);
 }
 
-void PasswordSyncTokenLoginCheckerTest::CreatePasswordSyncTokenLoginChecker() {
-  DestroyPasswordSyncTokenLoginChecker();
+void PasswordSyncTokenLoginCheckerTest::SetUp() {
+  TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+      test_url_loader_factory_.GetSafeWeakWrapper());
   checker_ = std::make_unique<PasswordSyncTokenLoginChecker>(
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
       saml_login_account_id_, kSyncToken, sync_token_retry_backoff_.get());
 }
 
-void PasswordSyncTokenLoginCheckerTest::DestroyPasswordSyncTokenLoginChecker() {
+void PasswordSyncTokenLoginCheckerTest::TearDown() {
   checker_.reset();
+  TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
 }
 
 void PasswordSyncTokenLoginCheckerTest::OnTokenVerified(bool is_verified) {
@@ -76,7 +84,6 @@ void PasswordSyncTokenLoginCheckerTest::OnTokenVerified(bool is_verified) {
 }
 
 TEST_F(PasswordSyncTokenLoginCheckerTest, SyncTokenValid) {
-  CreatePasswordSyncTokenLoginChecker();
   checker_->CheckForPasswordNotInSync();
   OnTokenVerified(true);
   EXPECT_FALSE(fake_user_manager_->FindUser(saml_login_account_id_)
@@ -86,7 +93,6 @@ TEST_F(PasswordSyncTokenLoginCheckerTest, SyncTokenValid) {
 }
 
 TEST_F(PasswordSyncTokenLoginCheckerTest, SyncTokenInvalid) {
-  CreatePasswordSyncTokenLoginChecker();
   checker_->CheckForPasswordNotInSync();
   OnTokenVerified(false);
   EXPECT_TRUE(fake_user_manager_->FindUser(saml_login_account_id_)
@@ -97,7 +103,6 @@ TEST_F(PasswordSyncTokenLoginCheckerTest, SyncTokenInvalid) {
 
 TEST_F(PasswordSyncTokenLoginCheckerTest, ValidateSyncTokenHistogram) {
   base::HistogramTester histogram_tester;
-  CreatePasswordSyncTokenLoginChecker();
   checker_->RecordTokenPollingStart();
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.SAML.InSessionPasswordSyncEvent", 1, 1);

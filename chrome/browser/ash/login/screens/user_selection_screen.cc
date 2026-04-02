@@ -485,12 +485,16 @@ class UserSelectionScreen::TpmLockedChecker {
 UserSelectionScreen::UserSelectionScreen(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     DisplayedScreen display_type)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       display_type_(display_type) {
+  CHECK(shared_url_loader_factory_);
+
   session_manager::SessionManager::Get()->AddObserver(this);
   if (display_type_ != DisplayedScreen::SIGN_IN_SCREEN) {
     return;
@@ -544,7 +548,7 @@ void UserSelectionScreen::Init(const user_manager::UserList& users) {
     online_signin_notifier_->CheckForPolicyEnforcedOnlineSignin();
     sync_token_checkers_ =
         std::make_unique<PasswordSyncTokenCheckersCollection>(
-            &local_state_.get());
+            &local_state_.get(), shared_url_loader_factory_);
     sync_token_checkers_->StartPasswordSyncCheckers(users, this);
   } else {
     sync_token_checkers_.reset();

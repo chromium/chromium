@@ -195,12 +195,13 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
     bool update_geolocation_usage_allowed)
     : LoginDisplayHostCommon(local_state,
                              application_locale_storage,
-                             std::move(shared_url_loader_factory),
+                             shared_url_loader_factory,
                              browser_policy_connector_ash,
                              update_geolocation_usage_allowed),
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
           local_state,
           application_locale_storage,
+          std::move(shared_url_loader_factory),
           browser_policy_connector_ash,
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),

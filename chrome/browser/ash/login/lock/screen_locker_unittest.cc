@@ -47,6 +47,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
@@ -84,6 +86,9 @@ class ScreenLockerUnitTest : public testing::Test {
 
     // Initialize SessionControllerClientImpl and dependencies:
     LoginState::Initialize();
+
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
 
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
@@ -133,6 +138,8 @@ class ScreenLockerUnitTest : public testing::Test {
     fake_user_manager_.Reset();
     base::RunLoop().RunUntilIdle();
 
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
+
     LoginState::Shutdown();
     SessionManagerClient::Shutdown();
     bluez::BluezDBusManager::Shutdown();
@@ -171,6 +178,8 @@ class ScreenLockerUnitTest : public testing::Test {
 
   // Needed for main loop and posting async tasks.
   content::BrowserTaskEnvironment task_environment_;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
   // * MojoSystemInfoDispatcher dependencies:
   ScopedTestingCrosSettings scoped_testing_cros_settings_;

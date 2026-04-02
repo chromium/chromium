@@ -10,12 +10,17 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "net/base/backoff_entry.h"
 
 class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -29,7 +34,10 @@ class PasswordSyncTokenCheckersCollection
   static const net::BackoffEntry::Policy kFetchTokenRetryBackoffPolicy;
 
   // `local_state` must be non-null and must outlive `this`.
-  explicit PasswordSyncTokenCheckersCollection(PrefService* local_state);
+  // `shared_url_loader_factory` must be non-null.
+  PasswordSyncTokenCheckersCollection(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   ~PasswordSyncTokenCheckersCollection() override;
 
   PasswordSyncTokenCheckersCollection(
@@ -49,6 +57,8 @@ class PasswordSyncTokenCheckersCollection
   friend class PasswordSyncTokenLoginCheckerTest;
 
   const raw_ref<PrefService> local_state_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   std::unordered_map<std::string,
                      std::unique_ptr<PasswordSyncTokenLoginChecker>>
