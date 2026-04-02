@@ -2383,6 +2383,9 @@
   <message name="IDS_SETTINGS_SEARCH_MANAGE_EXTENSION" desc="Text displayed for a button that allows the user to manage a Chrome extension">
     Manage extension
   </message>
+  <message name="IDS_SETTINGS_SEARCH_NO_SITE_SHORTCUTS" desc="Text displayed when there are no site shortcuts present in the subsection.">
+    No site shortcuts found
+  </message>
   <message name="IDS_SETTINGS_SEARCH_NO_FEATURE_SHORTCUTS" desc="Text displayed when there are no feature or extension shortcuts available in the subsection.">
     No feature or extension shortcuts found
   </message>

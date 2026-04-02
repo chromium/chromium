@@ -182,6 +182,7 @@ build_webui("build") {
     "search_page/search_engines_page.ts",
     "search_page/search_page.ts",
     "search_page/search_page_index.ts",
+    "search_page/site_shortcuts_page.ts",
     "settings_main/settings_main.ts",
     "settings_menu/settings_menu.ts",
     "settings_page/settings_section.ts",

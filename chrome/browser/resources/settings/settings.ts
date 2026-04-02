@@ -143,6 +143,7 @@ export {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl, SearchEnginesInteract
 export type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_page/search_engines_browser_proxy.js';
 export {SettingsSearchPageElement} from './search_page/search_page.js';
 export {SettingsSearchPageIndexElement} from './search_page/search_page_index.js';
+export {SiteShortcutsPageElement} from './search_page/site_shortcuts_page.js';
 export {getSearchManager, SearchRequest, setSearchManagerForTesting, showBubble} from './search_settings.js';
 export type {SearchManager} from './search_settings.js';
 export {SettingsMainElement} from './settings_main/settings_main.js';

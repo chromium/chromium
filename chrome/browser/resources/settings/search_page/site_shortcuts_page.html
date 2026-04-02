@@ -1,0 +1,101 @@
+<style include="cr-shared-style settings-shared">
+  .expand-row {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .expand-row > .text-content-group {
+    margin-inline-end: auto;
+  }
+
+  #addSearchEngine {
+    margin-inline-start: var(--cr-icon-button-margin-start);
+  }
+
+  cr-expand-button.cr-row {
+    align-items: flex-start;
+  }
+
+  cr-expand-button::part(icon) {
+    margin-inline-start: 0;
+    margin-top: 10px;
+  }
+
+  .no-shortcuts-found {
+    padding: 8px 20px;
+  }
+</style>
+<settings-section page-title="$i18n{searchSiteShortcuts}">
+  <!-- Active site shortcuts -->
+  <cr-expand-button id="activeShortcutsRow"
+      expanded="{{activeShortcutsExpanded_}}" class="cr-row first">
+    <div class="expand-row">
+      <div class="text-content-group">
+        $i18n{searchSiteShortcutsActiveShortcuts}
+        <div class="secondary">
+          $i18n{searchSiteShortcutsActiveShortcutsExplanation}
+        </div>
+      </div>
+      <cr-button id="addSearchEngine"
+          class="secondary-button header-aligned-button"
+          aria-label="$i18n{searchEnginesAddButtonAriaLabel}"
+          on-click="onAddSearchEngineClick_"
+          hidden="[[!activeShortcutsExpanded_]]">
+        $i18n{add}
+      </cr-button>
+      <div class="separator"></div>
+    </div>
+  </cr-expand-button>
+  <cr-collapse opened="[[activeShortcutsExpanded_]]">
+    <settings-search-engines-list
+        id="activeShortcutsList"
+        hidden="[[!activeShortcuts.length]]"
+        engines="[[activeShortcuts]]" show-shortcut>
+    </settings-search-engines-list>
+    <div id="noActiveShortcutsFound" class="no-shortcuts-found"
+        hidden="[[activeShortcuts.length]]">
+      $i18n{searchNoSiteShortcutsFound}
+    </div>
+  </cr-collapse>
+
+  <!-- Inactive site shortcuts -->
+  <cr-expand-button id="inactiveShortcutsRow"
+      expanded="{{inactiveShortcutsExpanded_}}" class="cr-row">
+    <div class="expand-row">
+      <div class="text-content-group">
+        $i18n{searchSiteShortcutsInactiveShortcuts}
+        <div class="secondary">
+          $i18n{searchSiteShortcutsInactiveShortcutsExplanation}
+        </div>
+      </div>
+      <div class="separator"></div>
+    </div>
+  </cr-expand-button>
+  <cr-collapse opened="[[inactiveShortcutsExpanded_]]">
+    <settings-search-engines-list
+        id="inactiveShortcutsList"
+        hidden="[[!inactiveShortcuts.length]]"
+        engines="[[inactiveShortcuts]]" show-shortcut>
+    </settings-search-engines-list>
+    <div id="noInactiveShortcutsFound" class="no-shortcuts-found"
+        hidden="[[inactiveShortcuts.length]]">
+      $i18n{searchNoSiteShortcutsFound}
+    </div>
+  </cr-collapse>
+</settings-section>
+
+<!-- Dialogs -->
+<template is="dom-if" if="[[showEditDialog_]]" restamp>
+  <settings-search-engine-edit-dialog model="[[dialogModel_]]"
+      on-close="onCloseEditDialog_">
+  </settings-search-engine-edit-dialog>
+</template>
+
+<template is="dom-if" if="[[showDeleteConfirmationDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="deleteConfirmDialog"
+      title-text="$i18n{searchEnginesDeleteConfirmationTitle}"
+      body-text="$i18n{searchEnginesDeleteConfirmationDescriptionForPolicy}"
+      confirm-text="$i18n{delete}"
+      on-close="onCloseDeleteConfirmationDialog_">
+  </settings-simple-confirmation-dialog>
+</template>

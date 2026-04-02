@@ -100,11 +100,13 @@ suite('SearchPageIndexWithSearchSettingsUpdate', function() {
     }
 
     assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
-    assertActiveViews(['parent', 'featureShortcuts', 'keyboardShortcut']);
+    assertActiveViews(
+        ['parent', 'siteShortcuts', 'featureShortcuts', 'keyboardShortcut']);
 
     Router.getInstance().navigateTo(routes.SEARCH);
     await microtasksFinished();
-    assertActiveViews(['parent', 'featureShortcuts', 'keyboardShortcut']);
+    assertActiveViews(
+        ['parent', 'siteShortcuts', 'featureShortcuts', 'keyboardShortcut']);
   });
 
   // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
@@ -120,14 +122,22 @@ suite('SearchPageIndexWithSearchSettingsUpdate', function() {
       }
     }
 
-    // Results in keyboard shortcut and feature shortcuts
-    let result = await index.searchContents('Keyboard key');
+    // Results only in site shortcuts
+    let result = await index.searchContents('sites and search engines');
     assertFalse(result.canceled);
-    assertEquals(2, result.matchCount);
+    assertEquals(1, result.matchCount);
     assertFalse(result.wasClearSearch);
-    assertVisibleViews(/*visible=*/['keyboardShortcut', 'featureShortcuts'],
+    assertVisibleViews(/*visible=*/['siteShortcuts'],
                        /*hidden=*/['parent']);
 
+    // Results in site shortcuts, feature shortcuts and keyboard shortcut
+    result = await index.searchContents('Keyboard key');
+    assertFalse(result.canceled);
+    assertEquals(3, result.matchCount);
+    assertFalse(result.wasClearSearch);
+    assertVisibleViews(
+        /*visible=*/['siteShortcuts', 'featureShortcuts', 'keyboardShortcut'],
+        /*hidden=*/['parent']);
     // Results only in feature shortcuts
     result = await index.searchContents('feature and extension shortcuts');
     assertFalse(result.canceled);

@@ -156,6 +156,7 @@ build_webui_tests("build") {
     "site_list_entry_test.ts",
     "site_list_test.ts",
     "site_settings_page_test.ts",
+    "site_shortcuts_page_test.ts",
     "sound_page_test.ts",
     "speed_page_test.ts",
     "startup_urls_page_test.ts",
@@ -261,6 +262,9 @@ build_webui_tests("build") {
     # that tests work both in optimize_webui=true/false modes.
     "chrome://settings/privacy_sandbox/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/settings/tsc/privacy_sandbox/*",
+            target_gen_dir),
+    "chrome://settings/search_page/site_shortcuts_page.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/settings/tsc/search_page/site_shortcuts_page.d.ts",
             target_gen_dir),
     "chrome://settings/search_page/feature_shortcuts_page.js|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/settings/tsc/search_page/feature_shortcuts_page.d.ts",
