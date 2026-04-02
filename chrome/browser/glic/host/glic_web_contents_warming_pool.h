@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
@@ -15,6 +16,9 @@
 class Profile;
 
 namespace glic {
+
+BASE_DECLARE_FEATURE(kGlicReloadWebContentsAfterExpiry);
+
 class WebUIContentsContainer;
 
 // A pool for pre-warming Glic WebContents.
@@ -45,6 +49,15 @@ class GlicWebContentsWarmingPool {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmingPoolStatus)
 
+  // LINT.IfChange(GlicReloadAfterExpiryStatus)
+  enum class ReloadAfterExpiryStatus {
+    kReloaded = 0,
+    kNotReloadedFeatureDisabled = 1,
+    kNotReloadedLimitReached = 2,
+    kMaxValue = kNotReloadedLimitReached,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicReloadAfterExpiryStatus)
+
   bool HasWarmedContainerForTesting() const;
   base::OneShotTimer& GetDelayTimerForTesting() { return delay_timer_; }
   WebUIContentsContainer* GetWarmedContainerForTesting() const;
@@ -67,6 +80,7 @@ class GlicWebContentsWarmingPool {
   // Timer for resource cleanup.
   base::OneShotDelayedBackgroundTimer expiry_timer_;
   std::unique_ptr<Metrics> metrics_;
+  int reload_count_ = 0;
 };
 
 }  // namespace glic

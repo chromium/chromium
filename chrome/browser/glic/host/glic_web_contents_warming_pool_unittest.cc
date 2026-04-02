@@ -60,6 +60,8 @@ class GlicWebContentsWarmingPoolTest : public testing::Test {
 
  protected:
   using WarmingPoolStatus = GlicWebContentsWarmingPool::WarmingPoolStatus;
+  using ReloadAfterExpiryStatus =
+      GlicWebContentsWarmingPool::ReloadAfterExpiryStatus;
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -120,6 +122,9 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerTriggersDelayedWarming) {
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerRecordsExpiredStatus) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(kGlicReloadWebContentsAfterExpiry);
+
   base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
@@ -134,6 +139,60 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerRecordsExpiredStatus) {
   EXPECT_TRUE(warming_pool.TakeContainer());
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kExpired, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.WarmingPool.ReloadAfterExpiry",
+      ReloadAfterExpiryStatus::kNotReloadedFeatureDisabled, 1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReloadsAfterExpiry) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  warming_pool.EnsurePreload();
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // Let the container expire.
+  task_environment_.FastForwardBy(
+      features::kGlicWebContentsWarmingPoolExpiryDelay.Get());
+
+  // With the feature enabled (default), it should have reloaded.
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  std::unique_ptr<WebUIContentsContainer> container =
+      warming_pool.TakeContainer();
+  EXPECT_TRUE(container);
+
+  // HitStatus should be kHit because it was reloaded, not Cold or Expired.
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kHit, 1);
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.ReloadAfterExpiry",
+                                      ReloadAfterExpiryStatus::kReloaded, 1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerLimitsReloadCount) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  warming_pool.EnsurePreload();
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // Default limit is 4. Fast forward 4 times to use up all reloads.
+  for (int i = 0; i < 4; ++i) {
+    task_environment_.FastForwardBy(
+        features::kGlicWebContentsWarmingPoolExpiryDelay.Get());
+    EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+  }
+
+  // 5th expiry should exceed the limit.
+  task_environment_.FastForwardBy(
+      features::kGlicWebContentsWarmingPoolExpiryDelay.Get());
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.ReloadAfterExpiry",
+                                     ReloadAfterExpiryStatus::kReloaded, 4);
+  histogram_tester.ExpectBucketCount(
+      "Glic.WarmingPool.ReloadAfterExpiry",
+      ReloadAfterExpiryStatus::kNotReloadedLimitReached, 1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReplacesCrashedContainer) {

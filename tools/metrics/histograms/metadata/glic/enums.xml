@@ -612,6 +612,16 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Disallowed by remote other"/>
 </enum>
 
+<!-- LINT.IfChange(GlicReloadAfterExpiryStatus) -->
+
+<enum name="GlicReloadAfterExpiryStatus">
+  <int value="0" label="Reloaded"/>
+  <int value="1" label="Not reloaded: Feature disabled"/>
+  <int value="2" label="Not reloaded: Limit reached"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:ReloadAfterExpiryStatus) -->
+
 <!-- LINT.IfChange(GlicRequestEvent) -->
 
 <enum name="GlicRequestEvent">

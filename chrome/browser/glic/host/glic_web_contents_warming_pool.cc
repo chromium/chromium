@@ -14,6 +14,13 @@
 #include "content/public/browser/web_contents.h"
 
 namespace glic {
+
+BASE_FEATURE(kGlicReloadWebContentsAfterExpiry,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kGlicMaxReloadCount{
+    &kGlicReloadWebContentsAfterExpiry, "max_reload_count", 4};
+
 namespace {
 constexpr base::TimeDelta kDelayTooLong = base::Days(7);
 }
@@ -21,6 +28,11 @@ constexpr base::TimeDelta kDelayTooLong = base::Days(7);
 class GlicWebContentsWarmingPool::Metrics {
  public:
   void OnContainerExpired() { was_expired_ = true; }
+
+  void OnReloadAfterExpiry(
+      GlicWebContentsWarmingPool::ReloadAfterExpiryStatus status) {
+    base::UmaHistogramEnumeration("Glic.WarmingPool.ReloadAfterExpiry", status);
+  }
 
   void OnWarmedContentCreated() {
     warmed_container_creation_time_ = base::TimeTicks::Now();
@@ -83,6 +95,7 @@ GlicWebContentsWarmingPool::TakeContainer() {
     expiry_timer_.Stop();
   }
   metrics_->RecordTakeContainerStatus(warmed_container_);
+  reload_count_ = 0;
 
   EnsurePreload();
   std::unique_ptr<WebUIContentsContainer> result = std::move(warmed_container_);
@@ -117,6 +130,25 @@ void GlicWebContentsWarmingPool::OnContainerExpired() {
   if (warmed_container_) {
     metrics_->OnContainerExpired();
     Clear();
+    // This only happens if there was a warmed contents at the time of expiry.
+    // If the warmed contents had been removed because of memory pressure or
+    // some other mechanism, we wouldn't rewarm.
+    if (base::FeatureList::IsEnabled(kGlicReloadWebContentsAfterExpiry)) {
+      if (reload_count_ < kGlicMaxReloadCount.Get()) {
+        reload_count_++;
+        metrics_->OnReloadAfterExpiry(
+            GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::kReloaded);
+        EnsurePreload();
+      } else {
+        metrics_->OnReloadAfterExpiry(
+            GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::
+                kNotReloadedLimitReached);
+      }
+    } else {
+      metrics_->OnReloadAfterExpiry(
+          GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::
+              kNotReloadedFeatureDisabled);
+    }
   }
 }
 
