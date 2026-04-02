@@ -614,7 +614,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7352651011704765696">Niečo sa pokazilo</translation>
 <translation id="7386878009611068389">Ak chceš zvýšiť svoju bezpečnosť na internete pomocou vybraných možností tvojho rodiča, prepni na profil Chrome, v ktorom máš už prihlásený účet <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="7398801000654795464">Do prehliadača Chrome ste boli prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Ak sa chcete prihlásiť znova, použite rovnaký účet.</translation>
+<translation id="7398801000654795464">Do prehliadača Chrome ste boli prihlásení ako <ph name="USER_EMAIL_ADDRESS" />. Ak sa chcete prihlásiť znova, použite rovnaký účet.</translation>
 <translation id="7412494426921990001">Kliknite na Ponuku Chrome</translation>
 <translation id="7419819959108735624">Vyberte niečo na vyhľadávanie pomocou funkcie Google Lens</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{K 1 zariadeniu USB malo prístup jedno alebo viac rozšírení pre Chrome}=1{K 1 zariadeniu USB má prístup jedno alebo viac rozšírení pre Chrome}few{K # zariadeniam USB má prístup jedno alebo viac rozšírení pre Chrome}many{# USB devices are being accessed by one or more Chrome extensions}other{K # zariadeniam USB má prístup jedno alebo viac rozšírení pre Chrome}}</translation>
@@ -668,7 +668,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7792336732117553384">Spravovať profily Chromu</translation>
 <translation id="7801699035218095297">Google Chrome sa pokúša kopírovať heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="7804364787702057554">Váš účet v Chrome</translation>
-<translation id="7808348361785373670">Odstrániť z prehliadača Chrome...</translation>
+<translation id="7808348361785373670">Odstrániť z Chromu...</translation>
 <translation id="7827099906024714326">Než sa niektoré údaje uložia do vášho účtu Google a začnú používať vo všetkých zariadeniach, musí Chrome overiť vašu totožnosť. Ak sa teraz odhlásite, tieto údaje budú odstránené.</translation>
 <translation id="7832314606810669113">Ak chcete mať záložky a ďalší obsah vo všetkých svojich zariadeniach, prihláste sa do Chromu. Táto záložka bude uložená vo vašom účte Google, keď sa prihlásite.</translation>
 <translation id="7845233973568007926">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať počítač.</translation>
