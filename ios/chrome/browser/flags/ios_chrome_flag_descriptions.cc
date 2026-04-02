@@ -85,6 +85,10 @@ const char kAutofillAiCreateEntityDataManagerName[] =
 const char kAutofillAiCreateEntityDataManagerDescription[] =
     "Enables Autofill AI Create Entity Data Manager.";
 
+const char kAutofillAiDedupeEntitiesName[] = "Autofill AI dedupe entities";
+const char kAutofillAiDedupeEntitiesDescription[] =
+    "Enables periodic deduplication of Autofill AI entities.";
+
 const char kAutofillAiReauthRequiredName[] = "Autofill AI Reauth Required";
 const char kAutofillAiReauthRequiredDescription[] =
     "Enables Autofill AI Reauth Required.";
@@ -1615,6 +1619,10 @@ const char kSyncAutofillValuableMetadataName[] =
     "Sync autofill valuable metadata";
 const char kSyncAutofillValuableMetadataDescription[] =
     "Enables syncing valuable metadata for autofill to the server.";
+
+const char kSyncAutofillValuableName[] = "Sync autofill valuable";
+const char kSyncAutofillValuableDescription[] =
+    "Enables syncing valuable for autofill to the server.";
 
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =

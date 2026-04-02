@@ -71,6 +71,9 @@ extern const char kAutofillAcrossIframesDescription[];
 extern const char kAutofillAiCreateEntityDataManagerName[];
 extern const char kAutofillAiCreateEntityDataManagerDescription[];
 
+extern const char kAutofillAiDedupeEntitiesName[];
+extern const char kAutofillAiDedupeEntitiesDescription[];
+
 extern const char kAutofillAiReauthRequiredName[];
 extern const char kAutofillAiReauthRequiredDescription[];
 
@@ -987,6 +990,9 @@ extern const char kSyncAccountSettingsDescription[];
 
 extern const char kSyncAutofillValuableMetadataName[];
 extern const char kSyncAutofillValuableMetadataDescription[];
+
+extern const char kSyncAutofillValuableName[];
+extern const char kSyncAutofillValuableDescription[];
 
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];

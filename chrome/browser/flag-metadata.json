@@ -8722,6 +8722,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "sync-autofill-valuable",
+    "owners": [ "sugoi@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "sync-autofill-valuable-metadata",
     "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160
