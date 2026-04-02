@@ -317,7 +317,10 @@ def _GetLcovFilePath():
       LCOV_FILE_NAME)
 
 
-def _CreateCoverageProfileDataForTargets(targets, commands, jobs_count=None):
+def _CreateCoverageProfileDataForTargets(targets,
+                                         commands,
+                                         jobs_count=None,
+                                         no_compile=False):
   """Builds and runs target to generate the coverage profile data.
 
   Args:
@@ -325,11 +328,14 @@ def _CreateCoverageProfileDataForTargets(targets, commands, jobs_count=None):
     commands: A list of commands used to run the targets.
     jobs_count: Number of jobs to run in parallel for building. If None, a
                 default value is derived based on CPUs availability.
+    no_compile: If True, skips the compilation step and assumes the targets
+                are already built with the necessary instrumentation.
 
   Returns:
     A relative path to the generated profdata file.
   """
-  _BuildTargets(targets, jobs_count)
+  if not no_compile:
+    _BuildTargets(targets, jobs_count, no_compile)
   target_profdata_file_paths = _GetTargetProfDataPathsByExecutingCommands(
       targets, commands)
   coverage_profdata_file_path = (
@@ -1110,6 +1116,11 @@ def _ParseCommandArguments():
       'specified using the -c/--command option, then the order of targets and '
       'commands must match, otherwise coverage generation will fail.')
 
+  arg_parser.add_argument(
+      '--no-compile',
+      action='store_true',
+      help='Skip compile targets step. Script expects targets to have been'
+      'built beforehand')
   args = arg_parser.parse_args()
   return args
 
@@ -1165,7 +1176,7 @@ def Main():
   if args.web_tests:
     commands = [_GetCommandForWebTests(args.targets, args.web_tests)]
     profdata_file_path = _CreateCoverageProfileDataForTargets(
-        args.targets, commands, args.jobs)
+        args.targets, commands, args.jobs, args.no_compile)
     binary_paths = [_GetBinaryPathForWebTests()]
   elif args.command:
     for i in range(len(args.command)):
@@ -1177,7 +1188,7 @@ def Main():
     # create a list of binary paths from parsing commands.
     _VerifyTargetExecutablesAreInBuildDirectory(args.command)
     profdata_file_path = _CreateCoverageProfileDataForTargets(
-        args.targets, args.command, args.jobs)
+        args.targets, args.command, args.jobs, args.no_compile)
     binary_paths = [_GetBinaryPath(command) for command in args.command]
   else:
     # An input prof-data file(s) is already provided.
