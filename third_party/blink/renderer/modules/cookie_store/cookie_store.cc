@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -46,6 +47,17 @@
 namespace blink {
 
 namespace {
+
+bool IsHttpWhitespace(UChar c) {
+  return c == ' ' || c == '\t';
+}
+
+String StripHttpWhitespace(const String& str) {
+  if (!RuntimeEnabledFeatures::CookieStoreAPIWhitespaceStrippingEnabled()) {
+    return str;
+  }
+  return str.StripWhiteSpace(IsHttpWhitespace);
+}
 
 // Returns null if and only if an exception is thrown.
 network::mojom::blink::CookieManagerGetOptionsPtr ToBackendOptions(
@@ -57,7 +69,7 @@ network::mojom::blink::CookieManagerGetOptionsPtr ToBackendOptions(
   backend_options->match_type = network::mojom::blink::CookieMatchType::EQUALS;
 
   if (options->hasName()) {
-    backend_options->name = options->name();
+    backend_options->name = StripHttpWhitespace(options->name());
   } else {
     // No name provided. Use a filter that matches all cookies. This overrides
     // a user-provided matchType.
@@ -75,8 +87,8 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
     const CookieInit* options,
     ExceptionState& exception_state,
     ExecutionContext* execution_context) {
-  const String& name = options->name();
-  const String& value = options->value();
+  const String name = StripHttpWhitespace(options->name());
+  const String value = StripHttpWhitespace(options->value());
   if (name.empty() && value.contains('=')) {
     exception_state.ThrowTypeError(
         "Cookie value cannot contain '=' if the name is empty");
@@ -414,9 +426,10 @@ ScriptPromise<IDLUndefined> CookieStore::Delete(
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
+  const String stripped_name = StripHttpWhitespace(name);
   CookieInit* set_options = CookieInit::Create();
-  set_options->setName(name);
-  set_options->setValue(name.empty() ? "deleted" : "");
+  set_options->setName(stripped_name);
+  set_options->setValue(stripped_name.empty() ? "deleted" : "");
   set_options->setExpires(0);
   return DoWrite(script_state, set_options, exception_state);
 }
@@ -425,9 +438,10 @@ ScriptPromise<IDLUndefined> CookieStore::Delete(
     ScriptState* script_state,
     const CookieStoreDeleteOptions* options,
     ExceptionState& exception_state) {
+  const String stripped_name = StripHttpWhitespace(options->name());
   CookieInit* set_options = CookieInit::Create();
-  set_options->setName(options->name());
-  set_options->setValue(options->name().empty() ? "deleted" : "");
+  set_options->setName(stripped_name);
+  set_options->setValue(stripped_name.empty() ? "deleted" : "");
   set_options->setExpires(0);
   set_options->setDomain(options->domain());
   set_options->setPath(options->path());

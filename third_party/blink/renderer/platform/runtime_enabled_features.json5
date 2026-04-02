@@ -1382,6 +1382,12 @@
       status: "stable",
     },
     {
+      // Feature flag for stripping \t and space from Cookie names and values.
+      // https://crbug.com/437345480
+      name: "CookieStoreAPIWhitespaceStripping",
+      status: "stable",
+    },
+    {
       name: "CoopRestrictProperties",
       origin_trial_feature_name: "CoopRestrictProperties",
       base_feature: "none",
