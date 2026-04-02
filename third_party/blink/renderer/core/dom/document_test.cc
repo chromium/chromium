@@ -50,7 +50,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_config.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizer_sanitizerconfig_sanitizerpresets.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespace_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespacewithattributes_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -2252,5 +2259,44 @@ TEST_F(DocumentTest, PaymentLinkHandling_MultiplePaymentLink) {
       payments::facilitated::mojom::blink::PaymentLinkHandler::Name_, {});
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(DocumentTest, ParseHTMLSanitizerException) {
+  // This is a regression test for https://crbug.com/496524586.
+
+  // SanitizerConfig equivalent to: {elements: ["div"], removeElements: ["div"]}
+  SanitizerConfig* config = SanitizerConfig::Create();
+  config->setElements({MakeGarbageCollected<
+      V8UnionSanitizerElementNamespaceWithAttributesOrString>("div")});
+  config->setRemoveElements(
+      {MakeGarbageCollected<V8UnionSanitizerElementNamespaceOrString>("div")});
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    SetHTMLOptions* options = MakeGarbageCollected<SetHTMLOptions>();
+    options->setSanitizer(
+        MakeGarbageCollected<
+            V8UnionSanitizerOrSanitizerConfigOrSanitizerPresets>(config));
+    Document* doc =
+        Document::parseHTML(GetDocument().GetExecutionContext(), "test string",
+                            options, exception_state);
+    EXPECT_EQ(doc, nullptr);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    SetHTMLUnsafeOptions* options =
+        MakeGarbageCollected<SetHTMLUnsafeOptions>();
+    options->setSanitizer(
+        MakeGarbageCollected<
+            V8UnionSanitizerOrSanitizerConfigOrSanitizerPresets>(config));
+    Document* doc = Document::parseHTMLUnsafe(
+        GetDocument().GetExecutionContext(),
+        MakeGarbageCollected<V8UnionStringOrTrustedHTML>("test string"),
+        options, exception_state);
+    EXPECT_EQ(doc, nullptr);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+}
 
 }  // namespace blink

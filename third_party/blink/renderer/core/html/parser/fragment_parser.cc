@@ -253,6 +253,9 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
                                    exception_state);
   }
 
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
   return fragment;
 }
 

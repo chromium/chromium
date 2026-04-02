@@ -68,8 +68,8 @@ void SanitizerAPI::SanitizeInternal(Sanitizer::Mode mode,
 
   const Sanitizer* sanitizer =
       SanitizerFromOptions(options, mode, exception_state);
-
   if (exception_state.HadException()) {
+    root_element->setTextContent("");
     return;
   }
 

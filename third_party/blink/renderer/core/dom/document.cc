@@ -10178,6 +10178,9 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                  /*context_element*/ doc, /*root_element*/ doc,
                                  FragmentParserOptions(options),
                                  exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
   return doc;
 }
 
@@ -10192,6 +10195,9 @@ Document* Document::parseHTML(ExecutionContext* context,
                                  /*context_element*/ doc, /*root_element*/ doc,
                                  FragmentParserOptions(options),
                                  exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
   return doc;
 }
 
