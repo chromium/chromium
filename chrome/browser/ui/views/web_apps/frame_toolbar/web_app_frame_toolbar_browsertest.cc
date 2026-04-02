@@ -2539,9 +2539,18 @@ IN_PROC_BROWSER_TEST_F(
   CheckCanResize(true, true);
 }
 
+// TODO(https://crbug.com/498907676) This test is flaky on Mac.
+// TODO(https://crbug.com/498769559) This test is flaky on Wayland.
+#if BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
+#define MAYBE_MinimizeAndRestoreWindowWithApi \
+  DISABLED_MinimizeAndRestoreWindowWithApi
+#else
+#define MAYBE_MinimizeAndRestoreWindowWithApi MinimizeAndRestoreWindowWithApi
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MinimizeAndRestoreWindowWithApi) {
+    MAYBE_MinimizeAndRestoreWindowWithApi) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
@@ -2577,7 +2586,7 @@ IN_PROC_BROWSER_TEST_F(
   RestoreAndVerify(web_contents, "normal");
 }
 
-// TODO(https://crbug.com/458599317) The test doesn't work correctly on Mac
+// TODO(https://crbug.com/458599317) The test doesn't work correctly on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MaximizeMinimizeAndRestoreWindowWithApi \
   DISABLED_MaximizeMinimizeAndRestoreWindowWithApi
@@ -2602,9 +2611,17 @@ IN_PROC_BROWSER_TEST_F(
   RestoreAndVerify(web_contents, "normal");
 }
 
+// TODO(https://crbug.com/498907676) This test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FullscreenAndRestoreWindowWithApi \
+  DISABLED_FullscreenAndRestoreWindowWithApi
+#else
+#define MAYBE_FullscreenAndRestoreWindowWithApi \
+  FullscreenAndRestoreWindowWithApi
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    FullscreenAndRestoreWindowWithApi) {
+    MAYBE_FullscreenAndRestoreWindowWithApi) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
@@ -2615,7 +2632,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(https://crbug.com/458599317) Maximizing fullscreen window doesn't work
 // correctly on Mac
-#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/498769559) This test is flaky on Wayland.
+#if BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
 #define MAYBE_FullscreenMaximizeAndRestoreWindowWithApi \
   DISABLED_FullscreenMaximizeAndRestoreWindowWithApi
 #else
@@ -2662,9 +2681,17 @@ IN_PROC_BROWSER_TEST_F(
   RestoreAndVerify(web_contents, "normal");
 }
 
+// TODO(https://crbug.com/498907676) This test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DisplayStateMediaQueryEventListenersCalled \
+  DISABLED_DisplayStateMediaQueryEventListenersCalled
+#else
+#define MAYBE_DisplayStateMediaQueryEventListenersCalled \
+  DisplayStateMediaQueryEventListenersCalled
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    DisplayStateMediaQueryEventListenersCalled) {
+    MAYBE_DisplayStateMediaQueryEventListenersCalled) {
   InstallAndLaunchWebApp();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
   auto setup_media_query_event =
@@ -2725,10 +2752,18 @@ IN_PROC_BROWSER_TEST_F(
                   "Second window.minimize() was rejected.")));
 }
 
+// TODO(https://crbug.com/498769559) This test is flaky on Wayland.
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#define MAYBE_WindowSetResizableDoNotBlockResizingWebApis \
+  DISABLED_WindowSetResizableDoNotBlockResizingWebApis
+#else
+#define MAYBE_WindowSetResizableDoNotBlockResizingWebApis \
+  WindowSetResizableDoNotBlockResizingWebApis
+#endif
 // windows.setResizable API should block only user-initiated requests
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableDoNotBlockResizingWebApis) {
+    MAYBE_WindowSetResizableDoNotBlockResizingWebApis) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
 
@@ -2800,9 +2835,17 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
+// TODO(https://crbug.com/498769559) This test is flaky on Wayland.
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#define MAYBE_WindowSetResizableDoNotBlockFullscreenWebAPI \
+  DISABLED_WindowSetResizableDoNotBlockFullscreenWebAPI
+#else
+#define MAYBE_WindowSetResizableDoNotBlockFullscreenWebAPI \
+  WindowSetResizableDoNotBlockFullscreenWebAPI
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableDoNotBlockFullscreenWebAPI) {
+    MAYBE_WindowSetResizableDoNotBlockFullscreenWebAPI) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* browser_view = helper()->browser_view();
@@ -2820,10 +2863,20 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(browser_view->IsFullscreen());
 }
 
+// TODO(https://crbug.com/498907676) This test is flaky on Mac.
+// TODO(https://crbug.com/498769559) This test is flaky on Wayland.
+#if BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND))
+#define MAYBE_WindowSetResizableDoNotBlockExitingFullscreen \
+  DISABLED_WindowSetResizableDoNotBlockExitingFullscreen
+#else
+#define MAYBE_WindowSetResizableDoNotBlockExitingFullscreen \
+  WindowSetResizableDoNotBlockExitingFullscreen
+#endif
 // Ensure user is not trapped in the fullscreen mode
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableDoNotBlockExitingFullscreen) {
+    MAYBE_WindowSetResizableDoNotBlockExitingFullscreen) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* browser_view = helper()->browser_view();
