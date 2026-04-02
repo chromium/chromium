@@ -1298,9 +1298,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
       "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
       PreClassificationCheckResult::CLASSIFY, 1);
   histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification", false,
-      1);
-  histogram_tester.ExpectBucketCount(
       "SBClientPhishing.IntelligentScanOngoingOnNewPreclassification", false,
       1);
 }
@@ -1331,9 +1328,6 @@ TEST_F(ClientSideDetectionHostTest,
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
       PreClassificationCheckResult::CLASSIFY, 1);
-  histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification", false,
-      1);
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.IntelligentScanOngoingOnNewPreclassification", false,
       1);
@@ -4164,14 +4158,7 @@ class ClientSideDetectionHostScamDetectionTest
         expected_request_type, 1);
     if (is_intelligent_scan_available) {
       histogram_tester_.ExpectUniqueSample(
-          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
-          is_intelligent_scan_available.value(), 1);
-      histogram_tester_.ExpectUniqueSample(
           "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime",
-          is_intelligent_scan_available.value(), 1);
-      histogram_tester_.ExpectUniqueSample(
-          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
-              GetRequestTypeName(expected_request_type),
           is_intelligent_scan_available.value(), 1);
       histogram_tester_.ExpectUniqueSample(
           "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime." +
@@ -4179,13 +4166,7 @@ class ClientSideDetectionHostScamDetectionTest
           is_intelligent_scan_available.value(), 1);
     } else {
       histogram_tester_.ExpectTotalCount(
-          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", 0);
-      histogram_tester_.ExpectTotalCount(
           "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime", 0);
-      histogram_tester_.ExpectTotalCount(
-          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
-              GetRequestTypeName(expected_request_type),
-          0);
       histogram_tester_.ExpectTotalCount(
           "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime." +
               GetRequestTypeName(expected_request_type),
@@ -4193,15 +4174,10 @@ class ClientSideDetectionHostScamDetectionTest
     }
     if (model_has_successful_response.has_value()) {
       histogram_tester_.ExpectUniqueSample(
-          "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
-          model_has_successful_response.value(), 1);
-      histogram_tester_.ExpectUniqueSample(
           "SBClientPhishing.IntelligentScanHasSuccessfulResponse." +
               GetRequestTypeName(expected_request_type),
           model_has_successful_response.value(), 1);
     } else {
-      histogram_tester_.ExpectTotalCount(
-          "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", 0);
       histogram_tester_.ExpectTotalCount(
           "SBClientPhishing.IntelligentScanHasSuccessfulResponse." +
               GetRequestTypeName(expected_request_type),

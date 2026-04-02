@@ -1301,12 +1301,6 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   is_csd_running_ = true;
 
   bool intelligent_scan_ongoing = intelligent_scan_id_.has_value();
-  // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
-  // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
-  // new histograms.
-  base::UmaHistogramBoolean(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification",
-      intelligent_scan_ongoing);
   base::UmaHistogramBoolean(
       "SBClientPhishing.IntelligentScanOngoingOnNewPreclassification",
       intelligent_scan_ongoing);
@@ -1813,19 +1807,8 @@ void ClientSideDetectionHost::MaybeStartIntelligentScanForScamDetection(
     bool intelligent_scan_eligible =
         IntelligentScanDelegate::IsIntelligentScanAvailable(model_type);
 
-    // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
-    // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
-    // new histograms.
-    base::UmaHistogramBoolean(
-        "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
-        intelligent_scan_eligible);
     base::UmaHistogramBoolean(
         "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime",
-        intelligent_scan_eligible);
-    base::UmaHistogramBoolean(
-        base::StrCat(
-            {"SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime.",
-             GetRequestTypeName(verdict->client_side_detection_type())}),
         intelligent_scan_eligible);
     base::UmaHistogramBoolean(
         base::StrCat(
@@ -1871,17 +1854,8 @@ void ClientSideDetectionHost::OnInnerTextComplete(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
     std::string inner_text) {
-  // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
-  // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
-  // new histograms.
-  base::UmaHistogramCounts100000("SBClientPhishing.OnDeviceModelInnerTextSize",
-                                 inner_text.size());
   base::UmaHistogramCounts100000(
       "SBClientPhishing.IntelligentScanInnerTextSize", inner_text.size());
-  base::UmaHistogramCounts100000(
-      base::StrCat({"SBClientPhishing.OnDeviceModelInnerTextSize.",
-                    GetRequestTypeName(verdict->client_side_detection_type())}),
-      inner_text.size());
   base::UmaHistogramCounts100000(
       base::StrCat({"SBClientPhishing.IntelligentScanInnerTextSize.",
                     GetRequestTypeName(verdict->client_side_detection_type())}),
@@ -1919,18 +1893,8 @@ void ClientSideDetectionHost::OnIntelligentScanDone(
       ClientSideDetectionEvent::kIntelligentScanComplete,
       verdict->client_side_detection_type());
   intelligent_scan_id_.reset();
-  // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
-  // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
-  // new histograms.
-  base::UmaHistogramBoolean(
-      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
-      response.execution_success);
   base::UmaHistogramBoolean(
       "SBClientPhishing.IntelligentScanHasSuccessfulResponse",
-      response.execution_success);
-  base::UmaHistogramBoolean(
-      base::StrCat({"SBClientPhishing.OnDeviceModelHasSuccessfulResponse.",
-                    GetRequestTypeName(verdict->client_side_detection_type())}),
       response.execution_success);
   base::UmaHistogramBoolean(
       base::StrCat({"SBClientPhishing.IntelligentScanHasSuccessfulResponse.",

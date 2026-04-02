@@ -926,24 +926,6 @@ useful for Chirp alerts (go/crca-alerts). -->
       variants="ClientSideDetectionIntelligentScanRequestType"/>
 </histogram>
 
-<histogram
-    name="SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime{IntelligentScanRequestType}"
-    enum="BooleanSuccess" expires_after="2026-09-06">
-  <owner>andysjlim@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the on device model is available at the time of inquiry.
-    This is logged in the service class at the start of the inquiry function
-    call requested by {IntelligentScanRequestType}.
-
-    TODO(crbug.com/462643935): Remove this histogram once the new
-    IsIntelligentScanAvailableAtInquiryTime histogram is in Stable. Also update
-    chirp alerts to use the new histogram.
-  </summary>
-  <token key="IntelligentScanRequestType"
-      variants="ClientSideDetectionIntelligentScanRequestType"/>
-</histogram>
-
 <histogram name="SBClientPhishing.IsOnDeviceModelAvailableOnSessionCreation"
     enum="BooleanSuccess" expires_after="2026-08-06">
   <owner>xinghuilu@chromium.org</owner>
@@ -1141,45 +1123,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram
-    name="SBClientPhishing.OnDeviceModelHasSuccessfulResponse{IntelligentScanRequestType}"
-    enum="BooleanSuccess" expires_after="2026-09-06">
-  <owner>andysjlim@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the on device model inquiry has a successful response. This
-    is logged in the callback after the inquiry call in the host class that was
-    requested by {IntelligentScanRequestType}.
-
-    TODO(crbug.com/462643935): Remove this histogram once the new
-    IntelligentScanHasSuccessfulResponse histogram is in Stable. Also update
-    chirp alerts to use the new histogram.
-  </summary>
-  <token key="IntelligentScanRequestType"
-      variants="ClientSideDetectionIntelligentScanRequestType"/>
-</histogram>
-
-<histogram
-    name="SBClientPhishing.OnDeviceModelInnerTextSize{IntelligentScanRequestType}"
-    units="bytes" expires_after="2026-09-20">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the size (in bytes) of the inner text extracted from the page when the
-    on device model is inquired. We can use this histogram to inform the size of
-    the context window we need. Note that to convert bytes to tokens, we need to
-    estimate the number of letters in a word and the number of tokens in a word.
-    This is logged when the model is inquired and requested by
-    {IntelligentScanRequestType}.
-
-    TODO(crbug.com/462643935): Remove this histogram once the new
-    IntelligentScanInnerTextSize histogram is in Stable. Also update chirp
-    alerts to use the new histogram.
-  </summary>
-  <token key="IntelligentScanRequestType"
-      variants="ClientSideDetectionIntelligentScanRequestType"/>
-</histogram>
-
 <histogram name="SBClientPhishing.OnDeviceModelResponseParseSuccess"
     enum="BooleanSuccess" expires_after="2026-08-09">
   <owner>andysjlim@chromium.org</owner>
@@ -1198,23 +1141,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Records whether or not the on-device model session was alive when the
     delegate is shutting down.
-  </summary>
-</histogram>
-
-<histogram
-    name="SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification"
-    enum="BooleanExists" expires_after="2026-08-23">
-  <owner>andysjlim@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether or not the on-device model session was alive when a new
-    preclassification happens. This is logged when a new request happens through
-    a new preclassification check and the current existing session will be
-    destroyed.
-
-    TODO(crbug.com/462643935): Remove this histogram once the new
-    IntelligentScanOngoingOnNewPreclassification histogram is in Stable. Also
-    update chirp alerts to use the new histogram.
   </summary>
 </histogram>
 
