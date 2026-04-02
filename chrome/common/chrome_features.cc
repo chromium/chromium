@@ -1797,12 +1797,6 @@ BASE_FEATURE(kWebUIBackForwardButton, base::FEATURE_DISABLED_BY_DEFAULT);
 // from chrome://webui-toolbar.top-chrome.
 // crbug.com/474061420
 BASE_FEATURE(kWebUIPinnedToolbarActions, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, location bar RHS content settings icons will be replaced with
-// WebUI loaded from chrome://webui-toolbar.top-chrome.
-// crbug.com/489109708
-BASE_FEATURE(kWebUIContentSettingsIcons, base::FEATURE_DISABLED_BY_DEFAULT);
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables the User-Agent override fix for SearchPrefetch. This will work only
