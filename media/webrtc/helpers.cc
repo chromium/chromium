@@ -144,10 +144,8 @@ CreateWebRtcAudioProcessingModule(
   apm_config.echo_canceller.enabled = settings.echo_cancellation;
   ConfigAutomaticGainControl(settings, apm_config);
 
+  webrtc::BuiltinAudioProcessingBuilder apm_builder(apm_config);
   base::TimeDelta added_delay;
-  webrtc::EchoCanceller3Config aec3_config;
-  webrtc::EchoCanceller3Config multichannel_aec3_config =
-      webrtc::EchoCanceller3Config::CreateDefaultMultichannelConfig();
   std::unique_ptr<webrtc::NeuralResidualEchoEstimator> echo_estimator;
 
   // Fuchsia does not use the optimization guide.
@@ -158,11 +156,7 @@ CreateWebRtcAudioProcessingModule(
     optimization_guide::TFLiteOpResolver op_resolver;
     echo_estimator = webrtc::CreateNeuralResidualEchoEstimator(
         residual_echo_estimator_model, &op_resolver);
-    if (echo_estimator) {
-      aec3_config = echo_estimator->GetConfiguration(/*multi_channel=*/false);
-      multichannel_aec3_config =
-          echo_estimator->GetConfiguration(/*multi_channel=*/true);
-    } else {
+    if (!echo_estimator) {
       LOG(ERROR) << "Failed to initialize neural residual echo estimator.";
     }
   }
@@ -172,6 +166,9 @@ CreateWebRtcAudioProcessingModule(
   if (settings.use_loopback_aec_reference) {
     added_delay = media::GetAecAddedDelay();
     int num_filters = media::GetAecDelayNumFilters();
+    webrtc::EchoCanceller3Config aec3_config;
+    webrtc::EchoCanceller3Config multichannel_aec3_config =
+        webrtc::EchoCanceller3Config::CreateDefaultMultichannelConfig();
     // If we are using system loopback as AEC reference, we delay the capture
     // signal so that the reference signal arrives before the capture signal.
     // AEC considers the delay to be provided at 16 kHz sample rate.
@@ -181,11 +178,10 @@ CreateWebRtcAudioProcessingModule(
     multichannel_aec3_config.delay.fixed_capture_delay_samples =
         aec3_config.delay.fixed_capture_delay_samples;
     multichannel_aec3_config.delay.num_filters = aec3_config.delay.num_filters;
+    apm_builder.SetEchoCancellerConfig(aec3_config, multichannel_aec3_config);
   }
 #endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
 
-  webrtc::BuiltinAudioProcessingBuilder apm_builder(apm_config);
-  apm_builder.SetEchoCancellerConfig(aec3_config, multichannel_aec3_config);
   apm_builder.SetNeuralResidualEchoEstimator(std::move(echo_estimator));
   return {apm_builder.Build(WebRtcEnvironment()), added_delay};
 }
