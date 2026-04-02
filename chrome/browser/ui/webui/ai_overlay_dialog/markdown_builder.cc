@@ -136,6 +136,8 @@ bool ShouldRedactNode(const ContentNode& node) {
 
 }  // namespace
 
+namespace ttc {
+
 MarkdownBuilder::WalkState::WalkState() = default;
 MarkdownBuilder::WalkState::~WalkState() = default;
 
@@ -568,3 +570,5 @@ std::string MarkdownBuilder::JoinLines() {
   }
   return ss.str();
 }
+
+}  // namespace ttc

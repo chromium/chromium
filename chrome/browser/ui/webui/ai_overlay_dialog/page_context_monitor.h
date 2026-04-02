@@ -13,6 +13,8 @@
 
 class BrowserWindowInterface;
 
+namespace ttc {
+
 // Responsible for monitors for changes in the given window's active tab. Will
 // signal the page_handler whenever the tab changes and schedules a fetch page
 // context.
@@ -43,5 +45,7 @@ class PageContextMonitor : public content::WebContentsObserver {
 
   base::WeakPtrFactory<PageContextMonitor> weak_ptr_factory_{this};
 };
+
+}  // namespace ttc
 
 #endif  // CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_PAGE_CONTEXT_MONITOR_H_

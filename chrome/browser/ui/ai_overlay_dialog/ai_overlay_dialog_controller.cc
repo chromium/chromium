@@ -29,6 +29,8 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+namespace ttc {
+
 DEFINE_USER_DATA(AiOverlayDialogController);
 
 // static
@@ -142,3 +144,5 @@ void AiOverlayDialogController::ResizeDueToAutoResize(
     overlay_web_view->SetPreferredSize(new_size);
   }
 }
+
+}  // namespace ttc

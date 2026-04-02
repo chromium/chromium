@@ -360,7 +360,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
     if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
       ai_overlay_dialog_controller_ =
-          GetUserDataFactory().CreateInstance<AiOverlayDialogController>(
+          GetUserDataFactory().CreateInstance<ttc::AiOverlayDialogController>(
               *browser, browser);
     }
 

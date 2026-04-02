@@ -15,6 +15,8 @@
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "url/gurl.h"
 
+namespace ttc {
+
 namespace {
 
 class MarkdownBuilderBrowserTest : public InProcessBrowserTest {
@@ -200,3 +202,5 @@ IN_PROC_BROWSER_TEST_F(MarkdownBuilderBrowserTest, Links) {
 }
 
 }  // namespace
+
+}  // namespace ttc

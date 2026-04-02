@@ -12,6 +12,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+namespace ttc {
+
 class AiOverlayDialogWebUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
   AiOverlayDialogWebUIBrowserTest() {
@@ -37,3 +39,5 @@ class AiOverlayDialogWebUIBrowserTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(AiOverlayDialogWebUIBrowserTest, Persona) {
   RunTest("ai_overlay_dialog/persona_test.js", "mocha.run()");
 }
+
+}  // namespace ttc

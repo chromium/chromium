@@ -30,6 +30,8 @@
 #include "chrome/grit/ai_overlay_dialog_untrusted_resources.h"
 #include "chrome/grit/ai_overlay_dialog_untrusted_resources_map.h"
 
+namespace ttc {
+
 AiOverlayDialogUntrustedUIConfig::AiOverlayDialogUntrustedUIConfig()
     : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
                          chrome::kChromeUIAiOverlayDialogUntrustedHost) {}
@@ -108,3 +110,5 @@ void AiOverlayDialogUntrustedUI::CreatePageHandler(
   page_context_monitor_ =
       std::make_unique<PageContextMonitor>(*bwi, *page_handler_);
 }
+
+}  // namespace ttc

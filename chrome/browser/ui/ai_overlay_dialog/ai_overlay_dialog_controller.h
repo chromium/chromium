@@ -16,6 +16,8 @@ class WebView;
 
 class HostContentSettingsMap;
 
+namespace ttc {
+
 class AiOverlayDialogController : public content::WebContentsDelegate {
  public:
   DECLARE_USER_DATA(AiOverlayDialogController);
@@ -60,5 +62,7 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
 
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 };
+
+}  // namespace ttc
 
 #endif  // CHROME_BROWSER_UI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_CONTROLLER_H_

@@ -66,6 +66,8 @@ std::optional<base::TimeDelta> ParseTimecode(const std::string& timecode) {
 
 }  // namespace
 
+namespace ttc {
+
 AiOverlayTools::AiOverlayTools(
     mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
     BrowserWindowInterface* browser)
@@ -354,3 +356,5 @@ void AiOverlayTools::SeekToTimestamp(const std::string& timecode,
     std::move(callback).Run(base::unexpected("No active media session"));
   }
 }
+
+}  // namespace ttc

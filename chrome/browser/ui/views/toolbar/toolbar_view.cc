@@ -556,7 +556,7 @@ void ToolbarView::Init() {
 
   if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
     if (base::FeatureList::IsEnabled(features::kAiOverlayDialog) &&
-        AiOverlayDialogController::From(browser_)) {
+        ttc::AiOverlayDialogController::From(browser_)) {
       actions::ActionItem* action_item =
           actions::ActionManager::Get().FindAction(
               kActionShowAiOverlayDialog, browser_->browser_window_features()

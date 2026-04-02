@@ -51,7 +51,7 @@ void RegisterChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(
       std::make_unique<lens::LensSidePanelUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
-      std::make_unique<AiOverlayDialogUntrustedUIConfig>());
+      std::make_unique<ttc::AiOverlayDialogUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<ReadAnythingUIUntrustedConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<DataSharingUIConfig>());

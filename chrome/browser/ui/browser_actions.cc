@@ -1540,7 +1540,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  if (auto* controller = AiOverlayDialogController::From(bwi)) {
+                  if (auto* controller =
+                          ttc::AiOverlayDialogController::From(bwi)) {
                     controller->ToggleOverlay();
                   }
                 },

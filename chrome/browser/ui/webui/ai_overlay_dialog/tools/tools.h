@@ -17,6 +17,8 @@
 
 class BrowserWindowInterface;
 
+namespace ttc {
+
 class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
  public:
   AiOverlayTools(
@@ -78,5 +80,7 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
   content::WeakDocumentPtr annotation_document_;
   mojo::Remote<blink::mojom::AnnotationAgentContainer> annotation_container_;
 };
+
+}  // namespace ttc
 
 #endif  // CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_TOOLS_TOOLS_H_

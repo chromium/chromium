@@ -11,6 +11,8 @@
 #include "base/memory/raw_ref.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
+namespace ttc {
+
 // Converts optimization_guide::proto::AnnotatedPageContent into a markdown
 // representation. This class is roughly derived from Glic's APC to Markdown
 // generator.
@@ -101,5 +103,7 @@ class MarkdownBuilder {
       page_content_;
   WalkState walk_state_;
 };
+
+}  // namespace ttc
 
 #endif  // CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_MARKDOWN_BUILDER_H_

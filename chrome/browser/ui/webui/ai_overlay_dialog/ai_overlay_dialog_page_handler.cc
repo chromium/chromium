@@ -78,6 +78,8 @@ class AnimatedIconSource : public gfx::CanvasImageSource {
 
 }  // namespace
 
+namespace ttc {
+
 AiOverlayDialogPageHandler::AiOverlayDialogPageHandler(
     mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver,
     mojo::PendingRemote<ai_overlay_dialog::mojom::Page> remote,
@@ -173,3 +175,5 @@ void AiOverlayDialogPageHandler::UpdateCurrentPageContext(
 
   page_->UpdateCurrentPageContext(base::UTF16ToUTF8(title), content);
 }
+
+}  // namespace ttc

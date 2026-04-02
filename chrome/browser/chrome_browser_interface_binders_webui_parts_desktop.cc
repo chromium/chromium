@@ -729,7 +729,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
   }
 
   if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
-    registry.ForWebUI<AiOverlayDialogUntrustedUI>()
+    registry.ForWebUI<ttc::AiOverlayDialogUntrustedUI>()
         .Add<ai_overlay_dialog::mojom::PageHandlerFactory>();
   }
 }

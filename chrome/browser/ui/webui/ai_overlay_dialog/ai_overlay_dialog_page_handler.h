@@ -21,7 +21,7 @@ namespace actions {
 class ActionItem;
 }
 
-
+namespace ttc {
 
 class AiOverlayDialogPageHandler
     : public ai_overlay_dialog::mojom::PageHandler {
@@ -48,5 +48,7 @@ class AiOverlayDialogPageHandler
   raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<actions::ActionItem> overlay_action_item_ = nullptr;
 };
+
+}  // namespace ttc
 
 #endif  // CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_PAGE_HANDLER_H_

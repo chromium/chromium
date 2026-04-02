@@ -12,6 +12,8 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
+namespace ttc {
+
 static constexpr int kTruncateThresholdBytes = 30000;
 
 using page_content_annotations::PageContentScreenshotServiceFactory;
@@ -107,3 +109,5 @@ void PageContextMonitor::OnFetchComplete(
                                             markdown_content_truncated);
   }
 }
+
+}  // namespace ttc

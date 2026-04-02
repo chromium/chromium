@@ -89,7 +89,6 @@ class TabSearchToolbarButtonController;
 class TabListBridge;
 class TabStripModel;
 class TabStripServiceFeature;
-class AiOverlayDialogController;
 class ToastController;
 class ToastService;
 class TranslateBubbleController;
@@ -219,6 +218,10 @@ class OmniboxPopupCloser;
 namespace skills {
 class SkillsUiWindowController;
 }  // namespace skills
+
+namespace ttc {
+class AiOverlayDialogController;
+}  // namespace ttc
 
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop.
@@ -594,7 +597,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<tab_groups::SessionServiceTabGroupSyncObserver>
       session_service_tab_group_sync_observer_;
 
-  std::unique_ptr<AiOverlayDialogController> ai_overlay_dialog_controller_;
+  std::unique_ptr<ttc::AiOverlayDialogController> ai_overlay_dialog_controller_;
 
   std::unique_ptr<ToastService> toast_service_;
 
