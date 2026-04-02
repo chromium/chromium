@@ -181,7 +181,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     // Assert.
     const href = await windowProxy.whenCalled('navigate');
-    assertEquals(href, `${googleBaseUrl}/search?q=hello+world&gs_ivs=1`);
+    assertEquals(
+        href, `${googleBaseUrl}/search?q=hello+world&gs_ivs=1&sourceid=chrome`);
     assertFalse(
         voiceSearchOverlay.$.micContainer.classList.contains('listening'));
     assertFalse(

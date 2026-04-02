@@ -402,6 +402,7 @@ export class VoiceSearchOverlayElement extends CrLitElement {
     searchParams.append('q', this.finalResult_);
     // Add a parameter to indicate that this request is a voice search.
     searchParams.append('gs_ivs', '1');
+    searchParams.append('sourceid', 'chrome');
     // Build the query URL.
     const queryUrl =
         new URL('/search', loadTimeData.getString('googleBaseUrl'));
