@@ -11,7 +11,6 @@
 // LINT.IfChange(NtpPromoIdentifiers)
 inline constexpr char kNtpCustomizationPromoId[] = "Customization";
 inline constexpr char kNtpExtensionsPromoId[] = "Extensions";
-inline constexpr char kNtpSignInPromoId[] = "SignIn";
 // LINT.ThenChange(//tools/metrics/histograms/metadata/user_education/histograms.xml:NtpPromoIdentifiers)
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_NTP_PROMO_IDENTIFIERS_H_

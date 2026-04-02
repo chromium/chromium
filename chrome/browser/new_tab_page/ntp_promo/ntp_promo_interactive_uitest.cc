@@ -177,8 +177,7 @@ class NtpPromoUiTest
 
   void InstallTestPromo(Eligibility eligibility) {
     ClearRegisteredPromos();
-    RegisterTestPromo(kTestPromoName, eligibility,
-                      IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS);
+    RegisterTestPromo(kTestPromoName, eligibility, IDS_NTP_CUSTOMIZATION_PROMO);
   }
 
   auto WaitForPromoIcon(
@@ -206,7 +205,7 @@ class NtpPromoUiTest
   auto VerifyTestPromoText() {
     return CheckJsResultAt(
                kNtpElementId, kPathToPromo + kPromoTextId, "el => el.innerText",
-               l10n_util::GetStringUTF8(IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS))
+               l10n_util::GetStringUTF8(IDS_NTP_CUSTOMIZATION_PROMO))
         .AddDescriptionPrefix(__func__);
   }
 
@@ -333,35 +332,6 @@ IN_PROC_BROWSER_TEST_F(NtpPromoWithModuleUiTest, ModuleDisabled) {
                   EnsureNotVisible(kNtpElementId, kPathToModules),
                   CheckShowMetrics(ShowNtpPromosResult::kShown));
 }
-
-// Tests in this block rely on the fact that the top priority promotion is
-// signin - except on ChromeOS, where there is no signin flow. So do not build
-// or run these tests on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
-
-IN_PROC_BROWSER_TEST_F(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
-  ClearRegisteredPromosExcept(kNtpSignInPromoId);
-  RunTestSequence(
-      InstrumentTab(kNtpElementId),
-      NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-      WaitForPromoVisible(kSignInIconName),
-
-      // Since bots cannot navigate to actual pages, we can't use
-      // WaitForWebContentsNavigation() or the like. Instead, verify that the
-      // browser *tries* to navigate to the account login page.
-      PollViewProperty(kLocationBarTextValue, kOmniboxElementId,
-                       &OmniboxViewViews::GetText),
-      // Click the promo button; this should navigate the current page.
-      ClickPromo(),
-      WaitForState(kLocationBarTextValue,
-                   OptionalStringContains(u"accounts.google.com")),
-      // The NTP tab should navigate, rather than opening a new tab.
-      CheckOneTabOpen());
-
-  // TODD(https://crbug.com/433607240): Check model, histograms.
-}
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpExtensionsPromoId);
@@ -501,14 +471,13 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
     // Override promo text to very long (and short) strings, to exercise the
     // promos growing to fit (nor not shrinking unexpectedly).
     auto& bundle = ui::ResourceBundle::GetSharedInstance();
-    bundle.OverrideLocaleStringResource(IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS,
+    bundle.OverrideLocaleStringResource(IDS_NTP_CUSTOMIZATION_PROMO,
                                         kLongPromoText);
   }
 
   // Use fake promos for control over exactly what is shown.
   ClearRegisteredPromos();
-  RegisterTestPromo("1", Eligibility::kEligible,
-                    IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS);
+  RegisterTestPromo("1", Eligibility::kEligible, IDS_NTP_CUSTOMIZATION_PROMO);
 
   RunTestSequence(
       InstrumentTab(kNtpElementId),

@@ -1233,9 +1233,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_NTP_MOBILE_PROMO_PASSWORDS_TITLE" desc="Title of the NTP promo that promotes Chrome on mobile for passwords.">
           Get the Chrome app to save passwords on the go
         </message>
-        <message name="IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS" desc="The text shown in the body of the New Tab Page sign in promotion">
-          Sign in to Chrome to get your passwords, bookmarks, and more on all your devices
-        </message>
       </if>
 
       <!-- Customize Chrome Auto Promo Strings -->

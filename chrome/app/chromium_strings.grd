@@ -1260,9 +1260,6 @@ Chromium is unable to recover your settings.
         <message name="IDS_NTP_MOBILE_PROMO_PASSWORDS_TITLE" desc="Title of the NTP promo that promotes the browser on mobile for passwords.">
           Get the Chromium app to save passwords on the go
         </message>
-        <message name="IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS" desc="The text shown in the body of the New Tab Page sign in promotion">
-          Sign in to Chromium to get your passwords, bookmarks, and more on all your devices
-        </message>
       </if>
 
       <!-- Customize Chrome Auto Promo Strings -->

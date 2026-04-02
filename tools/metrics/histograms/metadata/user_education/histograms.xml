@@ -81,7 +81,6 @@ chromium-metrics-reviews@google.com.
 <variants name="NtpPromoIdentifier">
   <variant name="Customization" summary="Customize Chrome promo"/>
   <variant name="Extensions" summary="Extensions promo"/>
-  <variant name="SignIn" summary="Sign-In promo"/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/user_education/ntp_promo_identifiers.h:NtpPromoIdentifiers) -->
