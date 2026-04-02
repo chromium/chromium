@@ -852,11 +852,6 @@ public class RootUiCoordinator
             mToolbarManager = null;
         }
 
-        if (mOmniboxChipManager != null) {
-            mOmniboxChipManager.destroy();
-            mOmniboxChipManager = null;
-        }
-
         if (mAdaptiveToolbarUiCoordinator != null) {
             mAdaptiveToolbarUiCoordinator.destroy();
             mAdaptiveToolbarUiCoordinator = null;
