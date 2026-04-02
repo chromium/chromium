@@ -20,14 +20,17 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 class FindsOptInBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final Runnable mOnBackPress;
+    private final Runnable mOnDestroy;
     private final NonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier;
 
     FindsOptInBottomSheetContent(
             View contentView,
             Runnable onBackPress,
+            Runnable onDestroy,
             NonNullObservableSupplier<Boolean> backPressStateChangedSupplier) {
         mContentView = contentView;
         mOnBackPress = onBackPress;
+        mOnDestroy = onDestroy;
         mBackPressStateChangedSupplier = backPressStateChangedSupplier;
     }
 
@@ -44,11 +47,14 @@ class FindsOptInBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
-        return 0;
+        View scrollView = mContentView.findViewById(R.id.scroll_view);
+        return scrollView != null ? scrollView.getScrollY() : 0;
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mOnDestroy.run();
+    }
 
     @Override
     public int getPriority() {

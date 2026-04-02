@@ -17,7 +17,10 @@ import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.provider.Settings;
+import android.view.View;
+import android.view.ViewGroup;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,6 +45,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ViewUtils;
 
 /** Unit tests for {@link FindsOptInCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -194,5 +198,53 @@ public class FindsOptInCoordinatorUnitTest {
         // Verify preference is set via UserPrefs
         verify(mPrefService).setBoolean(FindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
         watcher.assertExpected();
+    }
+
+    @Test
+    public void testScaleBottomSheetLottieAnimationByHeight_TargetWidthSmallerThanMaxWidth() {
+        Configuration configuration = new Configuration();
+        configuration.screenHeightDp = 1000;
+        configuration.screenWidthDp = 1000; // Large width so targetWidth < maxWidth
+
+        mCoordinator.scaleBottomSheetLottieAnimationByHeight(configuration);
+
+        View animationView =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.finds_opt_in_lottie_animation);
+        ViewGroup.LayoutParams layoutParams = animationView.getLayoutParams();
+
+        int screenHeightPixels = ViewUtils.dpToPx(mActivity, 1000);
+        int maxHeight =
+                Math.round(screenHeightPixels * FindsOptInCoordinator.LOTTIE_MAX_HEIGHT_RATIO);
+        int expectedWidth =
+                Math.round(maxHeight * FindsOptInCoordinator.LOTTIE_INTRINSIC_ASPECT_RATIO);
+
+        assertEquals(expectedWidth, layoutParams.width);
+    }
+
+    @Test
+    public void testScaleBottomSheetLottieAnimationByHeight_TargetWidthLimitedByMaxWidth() {
+        Configuration configuration = new Configuration();
+        configuration.screenHeightDp = 1000;
+        configuration.screenWidthDp = 100; // Small width so targetWidth > maxWidth
+
+        mCoordinator.scaleBottomSheetLottieAnimationByHeight(configuration);
+
+        View animationView =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.finds_opt_in_lottie_animation);
+        ViewGroup.LayoutParams layoutParams = animationView.getLayoutParams();
+
+        int screenWidthPixels = ViewUtils.dpToPx(mActivity, 100);
+        int horizontalMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.chrome_finds_opt_in_bottom_sheet_horizontal_margin);
+        int maxWidth = screenWidthPixels - (horizontalMargin * 2);
+
+        assertEquals(maxWidth, layoutParams.width);
     }
 }

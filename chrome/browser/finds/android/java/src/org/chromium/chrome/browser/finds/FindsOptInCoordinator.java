@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.finds;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -29,17 +32,27 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Coordinator for the Finds opt-in bottom sheet. */
 @NullMarked
 public class FindsOptInCoordinator {
+    @VisibleForTesting public static final float LOTTIE_MAX_HEIGHT_RATIO = 0.30f;
+
+    @VisibleForTesting
+    // Matches ratio defined in finds_opt_in_lottie_animation.
+    static final float LOTTIE_INTRINSIC_ASPECT_RATIO = 325.0f / 257.0f;
+
     private final Context mContext;
     private final Profile mProfile;
     private final BottomSheetController mBottomSheetController;
     private final SnackbarManager mSnackbarManager;
     private final FindsOptInBottomSheetContent mSheetContent;
     private final BottomSheetObserver mBottomSheetObserver;
+    private final ComponentCallbacks mComponentCallbacks;
+    private final View mContentView;
+    private final View mAnimationView;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
             ObservableSuppliers.createNonNull(false);
 
@@ -59,21 +72,41 @@ public class FindsOptInCoordinator {
         mBottomSheetController = bottomSheetController;
         mSnackbarManager = snackbarManager;
 
-        View contentView =
-                LayoutInflater.from(context)
+        mContentView =
+                LayoutInflater.from(mContext)
                         .inflate(R.layout.chrome_finds_opt_in_bottom_sheet, /* root= */ null);
+        mAnimationView = mContentView.findViewById(R.id.finds_opt_in_lottie_animation);
+
+        mComponentCallbacks =
+                new ComponentCallbacks() {
+                    @Override
+                    public void onConfigurationChanged(Configuration configuration) {
+                        // When orientation changes, recalculate Lottie animation height.
+                        scaleBottomSheetLottieAnimationByHeight(configuration);
+                    }
+
+                    @Override
+                    public void onLowMemory() {}
+                };
+        // Initialize the Lottie animation's dimensions for the current screen configuration.
+        mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
+        mContext.registerComponentCallbacks(mComponentCallbacks);
+
         mSheetContent =
                 new FindsOptInBottomSheetContent(
-                        contentView, this::onBackPressed, mBackPressStateChangedSupplier);
+                        mContentView,
+                        this::onBackPressed,
+                        this::destroy,
+                        mBackPressStateChangedSupplier);
 
-        ButtonCompat positiveButtonView = contentView.findViewById(R.id.opt_in_positive_button);
+        ButtonCompat positiveButtonView = mContentView.findViewById(R.id.opt_in_positive_button);
         positiveButtonView.setOnClickListener(
                 (view) -> {
                     onOptInAccepted();
                     dismiss();
                 });
 
-        ButtonCompat negativeButtonView = contentView.findViewById(R.id.opt_in_negative_button);
+        ButtonCompat negativeButtonView = mContentView.findViewById(R.id.opt_in_negative_button);
         negativeButtonView.setOnClickListener(
                 (view) -> {
                     onOptInDeclined();
@@ -84,12 +117,18 @@ public class FindsOptInCoordinator {
                 new EmptyBottomSheetObserver() {
                     @Override
                     public void onSheetOpened(@StateChangeReason int reason) {
+                        if (mBottomSheetController.getCurrentSheetContent() != mSheetContent) {
+                            return;
+                        }
                         super.onSheetOpened(reason);
                         mBackPressStateChangedSupplier.set(true);
                     }
 
                     @Override
                     public void onSheetClosed(@StateChangeReason int reason) {
+                        if (mBottomSheetController.getCurrentSheetContent() != mSheetContent) {
+                            return;
+                        }
                         super.onSheetClosed(reason);
                         mBackPressStateChangedSupplier.set(false);
                     }
@@ -168,6 +207,7 @@ public class FindsOptInCoordinator {
 
     public void destroy() {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
+        mContext.unregisterComponentCallbacks(mComponentCallbacks);
     }
 
     /** Shows the Chrome Finds opt-in bottom sheet. */
@@ -177,11 +217,39 @@ public class FindsOptInCoordinator {
         FindsMetrics.recordOptInShown();
     }
 
+    View getContentViewForTesting() {
+        return mContentView;
+    }
+
     private void onBackPressed() {
         dismiss();
     }
 
     private void dismiss() {
         mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
+    }
+
+    @VisibleForTesting
+    void scaleBottomSheetLottieAnimationByHeight(Configuration configuration) {
+        int screenHeightPixels = ViewUtils.dpToPx(mContext, configuration.screenHeightDp);
+        ViewGroup.LayoutParams layoutParams = mAnimationView.getLayoutParams();
+
+        // Calculate the maximum allowed height.
+        int maxHeight = Math.round(screenHeightPixels * LOTTIE_MAX_HEIGHT_RATIO);
+
+        // Calculate the required width to achieve the target maxHeight based on the
+        // Lottie animation's intrinsic aspect ratio.
+        int targetWidth = Math.round(maxHeight * LOTTIE_INTRINSIC_ASPECT_RATIO);
+
+        // Ensure the animation doesn't exceed the screen width minus horizontal margins.
+        int screenWidthPixels = ViewUtils.dpToPx(mContext, configuration.screenWidthDp);
+        int horizontalMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.chrome_finds_opt_in_bottom_sheet_horizontal_margin);
+        int maxWidth = screenWidthPixels - (horizontalMargin * 2);
+
+        layoutParams.width = Math.min(targetWidth, maxWidth);
+        mAnimationView.setLayoutParams(layoutParams);
     }
 }
