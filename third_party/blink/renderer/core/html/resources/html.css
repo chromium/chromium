@@ -2426,6 +2426,7 @@ select optgroup optgroup {
 [overscrollcontainer="overlay"] {
   -internal-overscroll-area: overlay;
 }
+[overscrollarea],
 :-internal-overscroll-target {
   -internal-overscroll-position: auto;
 }

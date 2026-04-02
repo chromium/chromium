@@ -128,6 +128,20 @@ TEST_F(OverscrollAreaTrackerTest, AddOverscrollAreaOneChild) {
   }
 }
 
+TEST_F(OverscrollAreaTrackerTest, OverscrollAreaAttribute) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea></div>
+    </div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* area_tracker = OverscrollAreaTrackerById("container");
+  ASSERT_TRUE(area_tracker);
+  Element* menu = GetDocument().getElementById(AtomicString("menu"));
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
+}
+
 TEST_F(OverscrollAreaTrackerTest, EmptyCommandForIsNotValid) {
   SetInnerHTML(R"HTML(
     <div id="container" overscrollcontainer>
