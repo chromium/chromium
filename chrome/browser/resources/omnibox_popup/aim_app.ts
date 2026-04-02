@@ -91,8 +91,6 @@ export class OmniboxAimAppElement extends CrLitElement {
         });
 
     this.focusInput_();
-
-    this.setupLocalizedLinkListener();
   }
 
   override disconnectedCallback() {
@@ -111,17 +109,6 @@ export class OmniboxAimAppElement extends CrLitElement {
       return 'Compact';
     }
     return this.searchboxLayoutMode_;
-  }
-
-  // As links do not navigate in the omnibox as they do in normal
-  // web ui pages, set up a listener to open the link in the current
-  // tab.
-  private setupLocalizedLinkListener() {
-    const link = this.$.composebox.shadowRoot.querySelector('localized-link')
-                     ?.shadowRoot!.querySelector('#container a');
-    if (link) {
-      link.addEventListener('click', this.onLinkClick_.bind(this));
-    }
   }
 
   protected onContextMenuEntrypointClick_(
@@ -183,12 +170,6 @@ export class OmniboxAimAppElement extends CrLitElement {
   protected onComposeboxSubmit_() {
     this.$.composebox.clearAllInputs(/* querySubmitted= */ true,
                                      /* shouldBlockAutoSuggestedTabs= */ false);
-  }
-
-  private onLinkClick_(e: Event) {
-    e.preventDefault();
-    const href = (e.currentTarget as HTMLAnchorElement).href;
-    this.pageHandler_.navigateCurrentTab(href);
   }
 
   setSearchboxLayoutModeForTesting(mode: string) {

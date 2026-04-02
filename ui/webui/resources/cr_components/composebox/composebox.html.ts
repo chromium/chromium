@@ -155,7 +155,8 @@ export function getHtml(this: ComposeboxElement) {
       && this.suggestionActivityEnabled ? html`
     <div id="suggestionActivity">
       <localized-link
-        .localizedString="${this.i18nAdvanced('suggestionActivityLink')}">
+        .localizedString="${this.i18nAdvanced('suggestionActivityLink')}"
+        @link-clicked="${this.onLinkClicked_}">
       </localized-link>
     </div>
   `: ''}

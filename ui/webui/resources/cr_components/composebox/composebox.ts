@@ -1128,6 +1128,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
+  protected onLinkClicked_(e: CustomEvent<{ event: Event }>) {
+    // Manually handle navigation to support WebView environments where default
+    // link clicks may be ignored.
+    e.detail.event.preventDefault();
+    const href = (e.detail.event.currentTarget as HTMLAnchorElement).href;
+    if (href) {
+      this.pageHandler_.navigateUrl(href);
+    }
+  }
+
   protected onCancelClick_() {
     if (this.hasContent()) {
       this.resetModes();

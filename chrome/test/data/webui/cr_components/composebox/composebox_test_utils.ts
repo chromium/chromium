@@ -27,7 +27,7 @@ type Constructor<T> = new (...args: any[]) => T;
 type Installer<T> = (instance: T) => void;
 
 export function installMock<T extends object>(
-    clazz: Constructor<T>, installer?: Installer<T>): TestMock<T> {
+    clazz: Constructor<T>, installer?: Installer<T>): T&TestMock<T> {
   installer = installer ||
       (clazz as unknown as {setInstance: Installer<T>}).setInstance;
   const mock = TestMock.fromClass(clazz);

@@ -21,9 +21,6 @@ interface PageHandler {
   // goes through this path as C++/Views code is responsible for presentation.
   RequestClose();
 
-  // Called to open URLs in AIM such as the suggestion activity link.
-  NavigateCurrentTab(url.mojom.Url url);
-
   // Opens context menu.
   ShowContextMenu(gfx.mojom.Point point);
 };
