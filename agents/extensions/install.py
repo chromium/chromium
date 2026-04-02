@@ -146,7 +146,7 @@ def _print_extensions_table(data: dict[str, ExtensionInfo]) -> None:
 def get_installed_extensions(
         gemini_cmd: list[str]) -> dict[str, ExtensionInfo]:
     """Returns a dictionary of installed extensions."""
-    result = subprocess.run(gemini_cmd + ['extensions', 'list'],
+    result = subprocess.run(gemini_cmd + ['extensions', 'list', '--debug'],
                             capture_output=True,
                             text=True,
                             check=True)
