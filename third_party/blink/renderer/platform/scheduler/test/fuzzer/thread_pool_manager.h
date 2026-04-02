@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequence_manager/time_domain.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -26,28 +25,31 @@ class ThreadManager;
 
 // Used by the SequenceManagerFuzzerProcessor to manage threads and synchronize
 // their clocks.
-class PLATFORM_EXPORT ThreadPoolManager : public TimeDomain {
+class PLATFORM_EXPORT ThreadPoolManager {
   USING_FAST_MALLOC(ThreadPoolManager);
 
  public:
-  explicit ThreadPoolManager(SequenceManagerFuzzerProcessor* processor,
-                             base::TimeTicks initial_time);
-  ~ThreadPoolManager() override;
+  explicit ThreadPoolManager(SequenceManagerFuzzerProcessor* processor);
+  ~ThreadPoolManager();
 
   // |initial_time| is the time in which the thread is created.
   void CreateThread(
       const google::protobuf::RepeatedPtrField<
-          SequenceManagerTestDescription::Action>& initial_thread_actions);
+          SequenceManagerTestDescription::Action>& initial_thread_actions,
+      base::TimeTicks initial_time);
 
-  // TimeDomain implementation:
-  base::TimeTicks NowTicks() const override;
-  bool MaybeFastForwardToWakeUp(std::optional<WakeUp> next_wake_up,
-                                bool quit_when_idle_requested) override;
-  const char* GetName() const override { return "MockTimeDomain"; }
+  // Advances the mock tick clock of all the threads synchronously.
+  // Note that this doesn't guarantee advancing the thread's clock to |time|.
+  // The clock is advanced to the minimum desired time of all the owned threads.
+  void AdvanceClockSynchronouslyToTime(ThreadManager* thread_manager,
+                                       base::TimeTicks time);
 
-  // Advances the mock tick clock of all the threads synchronously, until it
-  // reaches `time`.
-  void AdvanceClockSynchronouslyToTime(base::TimeTicks time);
+  // Advances the mock tick clock of all the threads synchronously.
+  // Note that this doesn't guarantee advancing the thread's clock by the next
+  // pending task delay. The clock is advanced to the minimum desired time of
+  // all the owned threads.
+  void AdvanceClockSynchronouslyByPendingTaskDelay(
+      ThreadManager* thread_manager);
 
   // Used by a thread to notify the thread manager that it is done executing the
   // thread actions passed to ThreadPoolManager::CreateThread.
@@ -85,21 +87,28 @@ class PLATFORM_EXPORT ThreadPoolManager : public TimeDomain {
   void ThreadReadyToComputeTime();
 
   // Helper function used by AdvanceClockSynchronouslyToTime and
-  // MaybeFastForwardToWakeUp to advance the thread's clock to |next_time_|.
-  // Note that this function waits until all threads have voted on the value of
-  // |next_time_|.
-  void AdvanceClockSynchronouslyImpl() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  // AdvanceClockSynchronouslyByPendingTaskDelay to advance the thread's clock
+  // to |next_time_|. Note that this function waits until all threads have
+  // voted on the value of |next_time_|.
+  void AdvanceThreadClock(ThreadManager* thread_manager);
 
   // Owner of this class.
   const raw_ptr<SequenceManagerFuzzerProcessor> processor_;
 
   // Used to protect all the members below.
-  mutable Lock lock_;
+  Lock lock_;
 
   // Used to synchronize virtual time across all threads.
-  base::TimeTicks next_time_ GUARDED_BY(lock_);
+  base::TimeTicks next_time_;
 
-  base::TimeTicks now_ GUARDED_BY(lock_);
+  // Condition to ensure that all threads have their desired next time
+  // computed, and thus the global |next_time_| can be computed as their
+  // minimum value.
+  ConditionVariable ready_to_compute_time_;
+
+  // Condition that |next_time_| is computed and that all threads can advance
+  // their clock to |next_time_|.
+  ConditionVariable ready_to_advance_time_;
 
   // Condition that all threads are done and the program is ready to
   // terminate.
@@ -110,34 +119,37 @@ class PLATFORM_EXPORT ThreadPoolManager : public TimeDomain {
   // thread starts running.
   ConditionVariable ready_to_execute_threads_;
 
-  // Condition that |next_time_| is computed and that all threads can advance
-  // their clock to |next_time_|.
-  ConditionVariable ready_to_advance_time_;
+  // A round starts by all of the threads waiting to compute their desired
+  // next time and ends by all of them advancing their clocks.
+  ConditionVariable ready_for_next_round_;
 
-  // Number of threads ready to advance the clock and run the next round.
-  uint64_t threads_waiting_to_advance_time_ GUARDED_BY(lock_){0};
+  uint64_t threads_waiting_to_compute_time_;
+  uint64_t threads_waiting_to_advance_time_;
+
+  // Number of threads done advancing their clocks and are ready for the next
+  // round.
+  uint64_t threads_ready_for_next_round_;
 
   // Number of threads done executing their sequence of actions.
-  uint64_t threads_ready_to_terminate_ GUARDED_BY(lock_){0};
+  uint64_t threads_ready_to_terminate_;
 
-  // Step used as barrier generation, incremented each time
-  // AdvanceClockSynchronouslyImpl() is reached by all threads.
-  uint64_t barrier_step_ GUARDED_BY(lock_){0};
+  // Used to notify the condition |ready_for_next_round_|.
+  bool all_threads_ready_;
 
   // Used to notify the condition |ready_to_start_threads_|.
-  bool initial_threads_created_ GUARDED_BY(lock_);
+  bool initial_threads_created_;
 
   // Threads that are being managed/synchronized. For unit testing purposes,
   // make sure not to create threads at the same time (if the ordering matters)
   // since in this case the order will not be deterministic.
-  blink::Vector<std::unique_ptr<SimpleThread>> threads_ GUARDED_BY(lock_);
+  blink::Vector<std::unique_ptr<SimpleThread>> threads_;
 
   // ThreadManager instances associated to the managed threads. Values are not
   // stored in any particular order and there might not exist a manager for all
   // managed threads at any point in time (SimpleThread instances are created
   // before their corresponding ThreadManager, as this must happen on the actual
   // thread).
-  blink::Vector<ThreadManager*> thread_managers_ GUARDED_BY(lock_);
+  blink::Vector<ThreadManager*> thread_managers_;
 };
 
 }  // namespace sequence_manager

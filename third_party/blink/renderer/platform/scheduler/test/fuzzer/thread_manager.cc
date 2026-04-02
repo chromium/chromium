@@ -3,8 +3,6 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
-#include "base/message_loop/message_pump.h"
-#include "base/run_loop.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
@@ -52,27 +50,48 @@ blink::scheduler::TaskPriority ToTaskQueuePriority(
 
 }  // namespace
 
-ThreadManager::ThreadManager(SequenceManagerFuzzerProcessor* processor)
+ThreadManager::ThreadManager(base::TimeTicks initial_time,
+                             SequenceManagerFuzzerProcessor* processor)
     : processor_(processor) {
   DCHECK(processor_);
 
-  manager_ = CreateSequenceManagerOnCurrentThreadWithPump(
-      MessagePump::Create(MessagePumpType::DEFAULT),
+  test_task_runner_ = WrapRefCounted(
+      new TestMockTimeTaskRunner(TestMockTimeTaskRunner::Type::kBoundToThread));
+
+  DCHECK(!(initial_time - base::TimeTicks()).is_zero())
+      << "A zero clock is not allowed as empty base::TimeTicks have a special "
+         "value "
+         "(i.e. base::TimeTicks::is_null())";
+
+  test_task_runner_->AdvanceMockTickClock(initial_time - base::TimeTicks());
+
+  manager_ = SequenceManagerForTest::Create(
+      nullptr, SingleThreadTaskRunner::GetCurrentDefault(),
+      test_task_runner_->GetMockTickClock(),
       SequenceManager::Settings::Builder()
           .SetPrioritySettings(::blink::scheduler::CreatePrioritySettings())
           .Build());
-  manager_->SetTimeDomain(processor_->thread_pool_manager());
 
   TaskQueue::Spec spec = TaskQueue::Spec(QueueName::DEFAULT_TQ);
   task_queues_.emplace_back(
       MakeRefCounted<TaskQueueWithVoters>(manager_->CreateTaskQueue(spec)));
-  manager_->SetDefaultTaskRunner(task_queues_.back()->queue->task_runner());
 }
 
 ThreadManager::~ThreadManager() = default;
 
 base::TimeTicks ThreadManager::NowTicks() {
-  return manager_->NowTicks();
+  return test_task_runner_->GetMockTickClock()->NowTicks();
+}
+
+base::TimeDelta ThreadManager::NextPendingTaskDelay() {
+  return std::max(base::Milliseconds(0),
+                  test_task_runner_->NextPendingTaskDelay());
+}
+
+void ThreadManager::AdvanceMockTickClock(base::TimeDelta delta) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  return test_task_runner_->AdvanceMockTickClock(delta);
 }
 
 void ThreadManager::ExecuteThread(
@@ -81,12 +100,14 @@ void ThreadManager::ExecuteThread(
   for (const auto& initial_thread_action : initial_thread_actions) {
     RunAction(initial_thread_action);
   }
-  // Synchronize all threads after initial action.
-  processor_->thread_pool_manager()->AdvanceClockSynchronouslyToTime(
-      NowTicks());
+
+  while (NowTicks() < base::TimeTicks::Max()) {
+    RunLoop().RunUntilIdle();
+    processor_->thread_pool_manager()
+        ->AdvanceClockSynchronouslyByPendingTaskDelay(this);
+  }
 
   RunLoop().RunUntilIdle();
-
   processor_->thread_pool_manager()->ThreadDone();
 }
 
@@ -134,7 +155,7 @@ void ThreadManager::ExecuteCreateThreadAction(
                                   NowTicks());
 
   processor_->thread_pool_manager()->CreateThread(
-      action.initial_thread_actions());
+      action.initial_thread_actions(), NowTicks());
 }
 
 void ThreadManager::ExecuteCreateTaskQueueAction(
@@ -357,13 +378,20 @@ void ThreadManager::ExecuteTask(
     RunAction(task_action);
   }
 
-  base::TimeTicks next_time =
-      start_time + base::Milliseconds(task.duration_ms());
+  base::TimeTicks end_time = NowTicks();
 
-  processor_->thread_pool_manager()->AdvanceClockSynchronouslyToTime(next_time);
+  base::TimeTicks next_time =
+      start_time +
+      std::max(base::TimeDelta(), base::Milliseconds(task.duration_ms()) -
+                                      (end_time - start_time));
+
+  while (NowTicks() != next_time) {
+    processor_->thread_pool_manager()->AdvanceClockSynchronouslyToTime(
+        this, next_time);
+  }
 
   processor_->LogTaskForTesting(&ordered_tasks_, task.task_id(), start_time,
-                                next_time);
+                                NowTicks());
 }
 
 void ThreadManager::DeleteTask(Task* task) {
