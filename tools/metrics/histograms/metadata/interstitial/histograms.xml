@@ -59,6 +59,10 @@ chromium-metrics-reviews@google.com.
       summary="scam detection verdict 1"/>
   <variant name=".scam_experiment_verdict_2"
       summary="scam detection verdict 2"/>
+  <variant name=".scam_experiment_verdict_3"
+      summary="scam detection verdict 3"/>
+  <variant name=".scam_experiment_verdict_4"
+      summary="scam detection verdict 4"/>
 </variants>
 
 <variants name="SecurityInterstitialSBWithSourceType">

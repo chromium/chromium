@@ -291,6 +291,10 @@ safe_browsing::ThreatSubtype GetThreatSubtype(
       return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1;
     case IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2:
       return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2;
+    case IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_3:
+      return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_3;
+    case IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_4:
+      return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_4;
     case IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT:
       return safe_browsing::ThreatSubtype::
           SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT;

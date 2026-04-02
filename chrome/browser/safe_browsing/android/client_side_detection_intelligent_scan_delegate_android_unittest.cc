@@ -251,6 +251,13 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_TRUE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
   EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_3));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_4));
+  // Undefined verdict doesn't show warning.
+  EXPECT_FALSE(
+      delegate_->ShouldShowScamWarning(static_cast<IntelligentScanVerdict>(6)));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
   // Do not show warnings if the enum value is unknown.
   EXPECT_FALSE(delegate_->ShouldShowScamWarning(
@@ -986,6 +993,10 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningDisabled,
   EXPECT_TRUE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
   EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_3));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_4));
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
 }
 
@@ -1010,6 +1021,10 @@ TEST_F(
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
   EXPECT_FALSE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_3));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_4));
   EXPECT_FALSE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
 }

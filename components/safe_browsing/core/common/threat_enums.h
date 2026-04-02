@@ -36,6 +36,10 @@ enum class ThreatSubtype {
   SCAM_EXPERIMENT_VERDICT_1,
   // Scam experiment verdict 2
   SCAM_EXPERIMENT_VERDICT_2,
+  // Scam experiment verdict 3
+  SCAM_EXPERIMENT_VERDICT_3,
+  // Scam experiment verdict 4
+  SCAM_EXPERIMENT_VERDICT_4,
   // Scam experiment catch all enforcement
   SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT,
 };
