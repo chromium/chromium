@@ -28,9 +28,11 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS_FIXED;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISMISS_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.STYLE;
@@ -402,6 +404,120 @@ public class KeyboardAccessoryControllerTest {
         // Hiding the accessory should also remove actions.
         mCoordinator.dismiss();
         assertThat(mModel.get(BAR_ITEMS).size(), is(1));
+    }
+
+    @Test
+    public void testSuggestionSelectionUpdatesViewState() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
+
+        AutofillSuggestion suggestion1 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Loading Suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setFeatureForIph("")
+                        .setShowLoadingOnAcceptance(true)
+                        .build();
+
+        AutofillSuggestion suggestion2 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Other Suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setFeatureForIph("")
+                        .setShowLoadingOnAcceptance(false)
+                        .build();
+
+        mCoordinator.setSuggestions(List.of(suggestion1, suggestion2), mMockAutofillDelegate);
+
+        List<ActionBarItem> barItems = flattenItemGroups();
+        assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.ENABLED));
+        assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.ENABLED));
+
+        // Simulate a click on the first suggestion.
+        barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
+
+        barItems = flattenItemGroups();
+        assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.LOADING));
+        assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.DEACTIVATED));
+    }
+
+    @Test
+    public void testSuggestionSelectionWithoutLoadingKeepsViewStateEnabled() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
+
+        AutofillSuggestion suggestion1 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Regular Suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setFeatureForIph("")
+                        .setShowLoadingOnAcceptance(false)
+                        .build();
+
+        AutofillSuggestion suggestion2 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Other Suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setFeatureForIph("")
+                        .setShowLoadingOnAcceptance(false)
+                        .build();
+
+        mCoordinator.setSuggestions(List.of(suggestion1, suggestion2), mMockAutofillDelegate);
+
+        List<ActionBarItem> barItems = flattenItemGroups();
+        assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.ENABLED));
+        assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.ENABLED));
+
+        // Simulate a click on the first suggestion, which does not require loading.
+        barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
+
+        // The ViewState should remain ENABLED because showLoadingUIOnSuggestion is not called.
+        barItems = flattenItemGroups();
+        assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.ENABLED));
+        assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.ENABLED));
+    }
+
+    @Test
+    public void testSuggestionSelectionUpdatesSheetOpenerViewState() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
+
+        AutofillSuggestion suggestion1 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Loading Suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setFeatureForIph("")
+                        .setShowLoadingOnAcceptance(true)
+                        .build();
+
+        mCoordinator.setSuggestions(List.of(suggestion1), mMockAutofillDelegate);
+
+        SheetOpenerBarItem sheetOpener = (SheetOpenerBarItem) mModel.get(SHEET_OPENER_ITEM);
+        assertThat(sheetOpener.getViewState(), is(ActionBarItem.ViewState.ENABLED));
+
+        List<ActionBarItem> barItems = flattenItemGroups();
+        // Simulate a click on the first suggestion.
+        barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
+
+        assertThat(sheetOpener.getViewState(), is(ActionBarItem.ViewState.DEACTIVATED));
+    }
+
+    @Test
+    public void testDismissResetsViewState() {
+        mCoordinator.show();
+
+        SheetOpenerBarItem sheetOpener = (SheetOpenerBarItem) mModel.get(SHEET_OPENER_ITEM);
+        DismissBarItem dismissItem = (DismissBarItem) mModel.get(DISMISS_ITEM);
+
+        sheetOpener.setViewState(ActionBarItem.ViewState.DEACTIVATED);
+        dismissItem.setViewState(ActionBarItem.ViewState.DEACTIVATED);
+
+        mCoordinator.dismiss();
+
+        assertThat(sheetOpener.getViewState(), is(ActionBarItem.ViewState.ENABLED));
+        assertThat(dismissItem.getViewState(), is(ActionBarItem.ViewState.ENABLED));
     }
 
     @Test

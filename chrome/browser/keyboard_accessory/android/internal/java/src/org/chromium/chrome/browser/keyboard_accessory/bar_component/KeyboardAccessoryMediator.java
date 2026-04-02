@@ -51,6 +51,7 @@ import org.chromium.components.autofill.FillingProduct;
 import org.chromium.components.autofill.FillingProductBridge;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
@@ -290,7 +291,9 @@ class KeyboardAccessoryMediator
             if (!shouldShowSuggestion(suggestion)) continue;
             barItems.add(
                     new AutofillBarItem(
-                            suggestion, createAutofillAction(delegate, position), mProfile));
+                            suggestion,
+                            createAutofillAction(delegate, position, suggestion),
+                            mProfile));
         }
 
         // Annotates the first suggestion in with an in-product help bubble. For password
@@ -324,15 +327,33 @@ class KeyboardAccessoryMediator
         return barItems;
     }
 
-    private Action createAutofillAction(AutofillDelegate delegate, int pos) {
+    private Action createAutofillAction(
+            AutofillDelegate delegate, int pos, AutofillSuggestion suggestion) {
         return new Action(
                 AccessoryAction.AUTOFILL_SUGGESTION,
                 result -> {
                     ManualFillingMetricsRecorder.recordActionSelected(
                             AccessoryAction.AUTOFILL_SUGGESTION);
+                    if (suggestion.showLoadingOnAcceptance()) {
+                        showLoadingUIOnSuggestion(suggestion);
+                    }
                     delegate.suggestionSelected(pos);
                 },
                 result -> delegate.deleteSuggestion(pos));
+    }
+
+    private void updateListState(
+            ListModel<BarItem> list, @Nullable AutofillSuggestion clickedSuggestion) {
+        for (int i = 0; i < list.size(); i++) {
+            BarItem barItem = list.get(i);
+            barItem.updateStateOnItemSelection(clickedSuggestion);
+            list.update(i, barItem);
+        }
+    }
+
+    private void showLoadingUIOnSuggestion(AutofillSuggestion clickedSuggestion) {
+        updateListState(mModel.get(BAR_ITEMS), clickedSuggestion);
+        updateListState(mModel.get(BAR_ITEMS_FIXED), null);
     }
 
     private @BarItem.Type int toBarItemType(@AccessoryAction int accessoryAction) {
@@ -364,6 +385,12 @@ class KeyboardAccessoryMediator
     void dismiss() {
         mTabSwitcher.closeActiveTab();
         mModel.set(VISIBLE, false);
+        if (mModel.get(SHEET_OPENER_ITEM) != null) {
+            mModel.get(SHEET_OPENER_ITEM).setViewState(ActionBarItem.ViewState.ENABLED);
+        }
+        if (mModel.get(DISMISS_ITEM) != null) {
+            mModel.get(DISMISS_ITEM).setViewState(ActionBarItem.ViewState.ENABLED);
+        }
         if (!(mHasFilteredTouchEvent == null || mHasFilteredTouchEvent)) {
             // Log the metric if the accessory received touch events, but none of them were
             // filtered.

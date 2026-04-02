@@ -157,6 +157,13 @@ class KeyboardAccessoryProperties {
         }
 
         /**
+         * Updates the state of this item when a suggestion is selected.
+         *
+         * @param clickedSuggestion The suggestion that was clicked, or null if none.
+         */
+        void updateStateOnItemSelection(@Nullable AutofillSuggestion clickedSuggestion) {}
+
+        /**
          * If this {@link BarItem} is a instance of {@link ActionBarItem}, returns itself in a list.
          * Otherwise, returns a list of {@link ActionBarItem} contained in this group.
          */
@@ -173,6 +180,13 @@ class KeyboardAccessoryProperties {
         GroupBarItem(List<ActionBarItem> actionBarItems) {
             super(Type.GROUP);
             mActionBarItems = actionBarItems;
+        }
+
+        @Override
+        void updateStateOnItemSelection(@Nullable AutofillSuggestion clickedSuggestion) {
+            for (ActionBarItem item : mActionBarItems) {
+                item.updateStateOnItemSelection(clickedSuggestion);
+            }
         }
 
         @Override
@@ -209,6 +223,11 @@ class KeyboardAccessoryProperties {
             super(type);
             mAction = action;
             mCaptionId = captionId;
+        }
+
+        @Override
+        void updateStateOnItemSelection(@Nullable AutofillSuggestion clickedSuggestion) {
+            setViewState(ViewState.DEACTIVATED);
         }
 
         /** Sets the transient interactive state of the view. */
@@ -289,6 +308,12 @@ class KeyboardAccessoryProperties {
         AutofillBarItem(AutofillSuggestion suggestion, Action action, Profile profile) {
             super(getBarItemType(suggestion, profile), action, 0);
             mSuggestion = suggestion;
+        }
+
+        @Override
+        void updateStateOnItemSelection(@Nullable AutofillSuggestion clickedSuggestion) {
+            boolean isClicked = clickedSuggestion != null && mSuggestion.equals(clickedSuggestion);
+            setViewState(isClicked ? ViewState.LOADING : ViewState.DEACTIVATED);
         }
 
         AutofillSuggestion getSuggestion() {
