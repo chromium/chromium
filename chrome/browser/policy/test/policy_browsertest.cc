@@ -18,6 +18,7 @@
 // complicated and requires custom policy handler, we recommend to test the
 // handler separately.
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -221,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(BlockMouseEventPolicyTest,
   // Indicate that the session started 2 hours ago and no user activity has
   // occurred yet.
   g_browser_process->local_state()->SetInt64(
-      prefs::kSessionStartTime,
+      ash::prefs::kSessionStartTime,
       (base::Time::Now() - base::Hours(2)).ToInternalValue());
 }
 
@@ -250,10 +251,10 @@ IN_PROC_BROWSER_TEST_F(BlockMouseEventPolicyTest,
 IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_WaitForInitialUserActivitySatisfied) {
   // Indicate that initial user activity in this session occurred 2 hours ago.
   g_browser_process->local_state()->SetInt64(
-      prefs::kSessionStartTime,
+      ash::prefs::kSessionStartTime,
       (base::Time::Now() - base::Hours(2)).ToInternalValue());
-  g_browser_process->local_state()->SetBoolean(prefs::kSessionUserActivitySeen,
-                                               true);
+  g_browser_process->local_state()->SetBoolean(
+      ash::prefs::kSessionUserActivitySeen, true);
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, WaitForInitialUserActivitySatisfied) {

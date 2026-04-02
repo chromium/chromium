@@ -25,7 +25,6 @@
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/session/test_session_controller.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -518,9 +517,10 @@ TEST_F(SessionControllerClientImplTest, SessionLengthLimit) {
   const base::TimeDelta length_limit = base::Hours(1);
   const base::Time start_time = base::Time::Now();
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
-  local_state->SetInteger(prefs::kSessionLengthLimit,
+  local_state->SetInteger(ash::prefs::kSessionLengthLimit,
                           length_limit.InMilliseconds());
-  local_state->SetInt64(prefs::kSessionStartTime, start_time.ToInternalValue());
+  local_state->SetInt64(ash::prefs::kSessionStartTime,
+                        start_time.ToInternalValue());
   EXPECT_EQ(length_limit, session_controller.last_session_length_limit());
   EXPECT_EQ(start_time, session_controller.last_session_start_time());
 }

@@ -110,7 +110,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -2161,7 +2160,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
                             ->SetClockForTesting(&clock);
 
   // Ensure the SessionLengthLimit is updated.
-  LocalStateValueWaiter(prefs::kSessionLengthLimit,
+  LocalStateValueWaiter(ash::prefs::kSessionLengthLimit,
                         base::Value(kThreeHoursInMs))
       .Wait();
 
@@ -2185,7 +2184,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
     broker->core()->client()->FetchPolicy(PolicyFetchReason::kTest);
   }
   // Ensure the SessionLengthLimit is updated.
-  LocalStateValueWaiter(prefs::kSessionLengthLimit, base::Value(kTwoHoursInMs))
+  LocalStateValueWaiter(ash::prefs::kSessionLengthLimit,
+                        base::Value(kTwoHoursInMs))
       .Wait();
 
   // The session is terminated.

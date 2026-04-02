@@ -2789,6 +2789,42 @@ inline constexpr char kFrozenUpdateNotificationDismissed[] =
     "ash.frozen_update.notification_dismissed";
 
 //-----------------------------------------------------------------------------
+// User session related Prefs
+//-----------------------------------------------------------------------------
+
+// A preference of the last user session length.
+inline constexpr char kLastSessionLength[] = "session.last_session_length";
+
+// A preference of the last user session type. It is used with the
+// kLastSessionLength pref below to store the last user session info
+// on shutdown so that it could be reported on the next run.
+inline constexpr char kLastSessionType[] = "session.last_session_type";
+
+// Holds the maximum session time in milliseconds. If this pref is set, the
+// user is logged out when the maximum session time is reached. The user is
+// informed about the remaining time by a countdown timer shown in the ash
+// system tray.
+inline constexpr char kSessionLengthLimit[] = "session.length_limit";
+
+// A preference to keep track of the session start time. If the session length
+// limit is configured to start running after initial user activity has been
+// observed, the pref is set after the first user activity in a session.
+// Otherwise, it is set immediately after session start. The pref is used to
+// restore the session start time after browser crashes. The time is expressed
+// as the serialization obtained from base::Time::ToInternalValue().
+inline constexpr char kSessionStartTime[] = "session.start_time";
+
+// A boolean pref indicating whether user activity has been observed in the
+// current session already. The pref is used to restore information about user
+// activity after browser crashes.
+inline constexpr char kSessionUserActivitySeen[] = "session.user_activity_seen";
+
+// Whether the session length limit should start running only after the first
+// user activity has been observed in a session.
+inline constexpr char kSessionWaitForInitialUserActivity[] =
+    "session.wait_for_initial_user_activity";
+
+//-----------------------------------------------------------------------------
 // Kiosk related Prefs
 //-----------------------------------------------------------------------------
 

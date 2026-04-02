@@ -6,12 +6,12 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -31,8 +31,8 @@ const int kSessionLengthLimitMaxMs = 24 * 60 * 60 * 1000; // 24 hours.
 // static
 void SessionLengthLimiter::RegisterPrefs(PrefRegistrySimple* registry) {
   session_manager::SessionStartTimeTracker::RegisterPrefs(registry);
-  registry->RegisterInt64Pref(prefs::kSessionStartTime, 0);
-  registry->RegisterIntegerPref(prefs::kSessionLengthLimit, 0);
+  registry->RegisterInt64Pref(ash::prefs::kSessionStartTime, 0);
+  registry->RegisterIntegerPref(ash::prefs::kSessionLengthLimit, 0);
 }
 
 SessionLengthLimiter::SessionLengthLimiter(
@@ -52,7 +52,7 @@ SessionLengthLimiter::SessionLengthLimiter(
 
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
-      prefs::kSessionLengthLimit,
+      ash::prefs::kSessionLengthLimit,
       base::BindRepeating(&SessionLengthLimiter::UpdateLimit,
                           base::Unretained(this)));
 
@@ -99,8 +99,8 @@ void SessionLengthLimiter::UpdateLimit() {
 
   // If no session length limit is set, do not start a timer.
   const PrefService::Preference* session_length_limit_pref =
-      pref_change_registrar_.prefs()->
-          FindPreference(prefs::kSessionLengthLimit);
+      pref_change_registrar_.prefs()->FindPreference(
+          ash::prefs::kSessionLengthLimit);
   if (session_length_limit_pref->IsDefaultValue() ||
       !session_length_limit_pref->GetValue()->is_int()) {
     return;

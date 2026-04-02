@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
@@ -159,11 +158,11 @@ SessionControllerClientImpl::SessionControllerClientImpl(
   local_state_registrar_ = std::make_unique<PrefChangeRegistrar>();
   local_state_registrar_->Init(&local_state);
   local_state_registrar_->Add(
-      prefs::kSessionStartTime,
+      ash::prefs::kSessionStartTime,
       base::BindRepeating(&SessionControllerClientImpl::SendSessionLengthLimit,
                           base::Unretained(this)));
   local_state_registrar_->Add(
-      prefs::kSessionLengthLimit,
+      ash::prefs::kSessionLengthLimit,
       base::BindRepeating(&SessionControllerClientImpl::SendSessionLengthLimit,
                           base::Unretained(this)));
   DCHECK(!g_session_controller_client_instance);
@@ -682,15 +681,15 @@ void SessionControllerClientImpl::SendUserSessionOrder() {
 void SessionControllerClientImpl::SendSessionLengthLimit() {
   const PrefService* local_state = local_state_registrar_->prefs();
   base::TimeDelta session_length_limit;
-  if (local_state->HasPrefPath(prefs::kSessionLengthLimit)) {
+  if (local_state->HasPrefPath(ash::prefs::kSessionLengthLimit)) {
     session_length_limit = base::Milliseconds(
-        std::clamp(local_state->GetInteger(prefs::kSessionLengthLimit),
+        std::clamp(local_state->GetInteger(ash::prefs::kSessionLengthLimit),
                    kSessionLengthLimitMinMs, kSessionLengthLimitMaxMs));
   }
   base::Time session_start_time;
-  if (local_state->HasPrefPath(prefs::kSessionStartTime)) {
+  if (local_state->HasPrefPath(ash::prefs::kSessionStartTime)) {
     session_start_time = base::Time::FromInternalValue(
-        local_state->GetInt64(prefs::kSessionStartTime));
+        local_state->GetInt64(ash::prefs::kSessionStartTime));
   }
 
   policy::off_hours::DeviceOffHoursController* off_hours_controller =

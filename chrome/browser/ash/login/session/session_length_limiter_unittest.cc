@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -18,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -160,54 +160,54 @@ void SessionLengthLimiterTest::TearDown() {
 
 void SessionLengthLimiterTest::SetSessionUserActivitySeenPref(
     bool user_activity_seen) {
-  local_state().SetUserPref(prefs::kSessionUserActivitySeen,
+  local_state().SetUserPref(ash::prefs::kSessionUserActivitySeen,
                             std::make_unique<base::Value>(user_activity_seen));
 }
 
 void SessionLengthLimiterTest::ClearSessionUserActivitySeenPref() {
-  local_state().ClearPref(prefs::kSessionUserActivitySeen);
+  local_state().ClearPref(ash::prefs::kSessionUserActivitySeen);
 }
 
 bool SessionLengthLimiterTest::IsSessionUserActivitySeenPrefSet() {
-  return local_state().HasPrefPath(prefs::kSessionUserActivitySeen);
+  return local_state().HasPrefPath(ash::prefs::kSessionUserActivitySeen);
 }
 
 bool SessionLengthLimiterTest::GetSessionUserActivitySeenPref() {
   EXPECT_TRUE(IsSessionUserActivitySeenPrefSet());
-  return local_state().GetBoolean(prefs::kSessionUserActivitySeen);
+  return local_state().GetBoolean(ash::prefs::kSessionUserActivitySeen);
 }
 
 void SessionLengthLimiterTest::SetSessionStartTimePref(
     const base::Time& session_start_time) {
-  local_state().SetUserPref(prefs::kSessionStartTime,
+  local_state().SetUserPref(ash::prefs::kSessionStartTime,
                             std::make_unique<base::Value>(base::NumberToString(
                                 session_start_time.ToInternalValue())));
 }
 
 void SessionLengthLimiterTest::ClearSessionStartTimePref() {
-  local_state().ClearPref(prefs::kSessionStartTime);
+  local_state().ClearPref(ash::prefs::kSessionStartTime);
 }
 
 bool SessionLengthLimiterTest::IsSessionStartTimePrefSet() {
-  return local_state().HasPrefPath(prefs::kSessionStartTime);
+  return local_state().HasPrefPath(ash::prefs::kSessionStartTime);
 }
 
 base::Time SessionLengthLimiterTest::GetSessionStartTimePref() {
   EXPECT_TRUE(IsSessionStartTimePrefSet());
   return base::Time::FromInternalValue(
-      local_state().GetInt64(prefs::kSessionStartTime));
+      local_state().GetInt64(ash::prefs::kSessionStartTime));
 }
 
 void SessionLengthLimiterTest::SetSessionLengthLimitPref(
     const base::TimeDelta& session_length_limit) {
-  local_state().SetUserPref(prefs::kSessionLengthLimit,
+  local_state().SetUserPref(ash::prefs::kSessionLengthLimit,
                             std::make_unique<base::Value>(static_cast<int>(
                                 session_length_limit.InMilliseconds())));
   UpdateSessionStartTimeIfWaitingForUserActivity();
 }
 
 void SessionLengthLimiterTest::ClearSessionLengthLimitPref() {
-  local_state().RemoveUserPref(prefs::kSessionLengthLimit);
+  local_state().RemoveUserPref(ash::prefs::kSessionLengthLimit);
   UpdateSessionStartTimeIfWaitingForUserActivity();
 }
 
@@ -215,7 +215,7 @@ void SessionLengthLimiterTest::SetWaitForInitialUserActivityPref(
     bool wait_for_initial_user_activity) {
   UpdateSessionStartTimeIfWaitingForUserActivity();
   local_state().SetUserPref(
-      prefs::kSessionWaitForInitialUserActivity,
+      ash::prefs::kSessionWaitForInitialUserActivity,
       std::make_unique<base::Value>(wait_for_initial_user_activity));
 }
 
@@ -228,7 +228,8 @@ void SessionLengthLimiterTest::SimulateUserActivity() {
 void SessionLengthLimiterTest::
     UpdateSessionStartTimeIfWaitingForUserActivity() {
   if (!user_activity_seen_ &&
-      local_state().GetBoolean(prefs::kSessionWaitForInitialUserActivity)) {
+      local_state().GetBoolean(
+          ash::prefs::kSessionWaitForInitialUserActivity)) {
     session_start_time_ = runner_->Now();
   }
 }
