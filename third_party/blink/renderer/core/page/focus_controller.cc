@@ -802,11 +802,11 @@ class ScopedFocusNavigation {
   HeapHashMap<Member<const Element>, Member<const Element>>
       focusgroup_segment_entry_cache_;
 
-  // Lazily cached arrow-key handler root for the focused element. The focused
-  // element does not change during a single navigation pass, so this value
-  // is stable for the lifetime of this ScopedFocusNavigation instance.
+  // Lazily cached directional-key handler root for the focused element. The
+  // focused element does not change during a single navigation pass, so this
+  // value is stable for the lifetime of this ScopedFocusNavigation instance.
   // std::nullopt means not yet computed; the inner pointer may be nullptr.
-  std::optional<const Element*> focused_arrow_key_handler_root_;
+  std::optional<const Element*> focused_directional_key_handler_root_;
 };
 
 ScopedFocusNavigation::ScopedFocusNavigation(
@@ -822,14 +822,13 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
     return false;
   }
 
-  // Compute the focused arrow key handler root once per navigation pass.
-  if (!focused_arrow_key_handler_root_.has_value()) {
-    focused_arrow_key_handler_root_ =
-        FocusgroupControllerUtils::GetArrowKeyHandlerRootForFocusedElement(
-            element.GetDocument());
+  // Compute the focused directional key handler root once per navigation pass.
+  if (!focused_directional_key_handler_root_.has_value()) {
+    focused_directional_key_handler_root_ = FocusgroupControllerUtils::
+        GetDirectionalKeyHandlerRootForFocusedElement(element.GetDocument());
   }
-  const Element* focused_arrow_key_handler_root =
-      *focused_arrow_key_handler_root_;
+  const Element* focused_directional_key_handler_root =
+      *focused_directional_key_handler_root_;
 
   // When an element is in an excluded subtree (explicitly via
   // focusgroup="none"), treat it as not a focusgroup item for sequential
@@ -879,17 +878,17 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
     focusgroup_segment_entry_cache_.insert(segment_first_item, segment_entry);
   }
 
-  // When the focused element is an arrow key handler root in the same
+  // When the focused element is a directional key handler root in the same
   // focusgroup, treat this candidate as the entry so Tab lands on it
   // rather than skipping to the 'normal' segment entry element.
   if (segment_entry != &element) {
-    if (focused_arrow_key_handler_root &&
-        focused_arrow_key_handler_root != &element &&
+    if (focused_directional_key_handler_root &&
+        focused_directional_key_handler_root != &element &&
         FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(
-            focused_arrow_key_handler_root) == focusgroup_owner) {
-      // Focus is on (or within) an arrow key handler in the same focusgroup.
-      // Treat this candidate as the entry so Tab lands on it rather than
-      // skipping to the 'normal' segment entry element.
+            focused_directional_key_handler_root) == focusgroup_owner) {
+      // Focus is on (or within) a directional key handler in the same
+      // focusgroup. Treat this candidate as the entry so Tab lands on it
+      // rather than skipping to the 'normal' segment entry element.
       return false;
     }
   }

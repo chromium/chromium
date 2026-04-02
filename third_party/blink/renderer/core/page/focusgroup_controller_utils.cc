@@ -439,11 +439,12 @@ bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
   return IsA<LayoutTableCell>(element->GetLayoutObject());
 }
 
-bool FocusgroupControllerUtils::IsInArrowKeyHandler(const Element* element) {
-  return GetArrowKeyHandlerRoot(element) != nullptr;
+bool FocusgroupControllerUtils::IsInDirectionalKeyHandler(
+    const Element* element) {
+  return GetDirectionalKeyHandlerRoot(element) != nullptr;
 }
 
-bool FocusgroupControllerUtils::IsInArrowKeyHandler(
+bool FocusgroupControllerUtils::IsInDirectionalKeyHandler(
     const Element& element,
     FocusgroupDirection direction) {
   if (!RuntimeEnabledFeatures::FocusgroupEnabled(
@@ -473,7 +474,7 @@ bool FocusgroupControllerUtils::IsInArrowKeyHandler(
     return false;
   }
 
-  // Walk up to find an arrow key handler that uses the navigation axis.
+  // Walk up to find a directional key handler that uses the navigation axis.
   const Element* current = &element;
   while (current && current != owner) {
     FocusgroupFlags native_axes = current->NativeArrowKeyAxes();
@@ -486,7 +487,7 @@ bool FocusgroupControllerUtils::IsInArrowKeyHandler(
   return false;
 }
 
-const Element* FocusgroupControllerUtils::GetArrowKeyHandlerRoot(
+const Element* FocusgroupControllerUtils::GetDirectionalKeyHandlerRoot(
     const Element* element) {
   if (!element) {
     return nullptr;
@@ -529,13 +530,13 @@ const Element* FocusgroupControllerUtils::GetArrowKeyHandlerRoot(
 
 // static
 const Element*
-FocusgroupControllerUtils::GetArrowKeyHandlerRootForFocusedElement(
+FocusgroupControllerUtils::GetDirectionalKeyHandlerRootForFocusedElement(
     const Document& document) {
   const Element* focused = document.FocusedElement();
   if (!focused) {
     return nullptr;
   }
-  return GetArrowKeyHandlerRoot(focused);
+  return GetDirectionalKeyHandlerRoot(focused);
 }
 
 bool FocusgroupControllerUtils::IsEntryElementForFocusgroupSegment(

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/focusgroup_controller_utils.h"
 #include "third_party/blink/renderer/core/page/grid_focusgroup_structure_info.h"
@@ -24,12 +25,25 @@ namespace blink {
 using utils = FocusgroupControllerUtils;
 
 // static
+bool FocusgroupController::HandleKeyboardEvent(KeyboardEvent* event,
+                                               const LocalFrame* frame) {
+  CHECK(frame);
+  CHECK(frame->DomWindow());
+  ExecutionContext* context = frame->DomWindow()->GetExecutionContext();
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context)) {
+    return false;
+  }
+  return HandleArrowKeyboardEvent(event, frame) ||
+         HandleHomeEndKeyboardEvent(event, frame);
+}
+
+// static
 bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
                                                     const LocalFrame* frame) {
-  DCHECK(frame);
-  DCHECK(frame->DomWindow());
+  CHECK(frame);
+  CHECK(frame->DomWindow());
   ExecutionContext* context = frame->DomWindow()->GetExecutionContext();
-  DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
+  CHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
 
   if (!frame->GetDocument())
     return false;
@@ -59,11 +73,73 @@ bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
   // scroll containers don't consume arrow key events; they scroll but allow
   // the event to propagate. This check is necessary to prevent focusgroup
   // navigation from interfering with native scrolling.
-  if (utils::IsInArrowKeyHandler(*focused, direction)) {
+  if (utils::IsInDirectionalKeyHandler(*focused, direction)) {
     return false;
   }
 
   return Advance(focused, direction);
+}
+
+// static
+bool FocusgroupController::HandleHomeEndKeyboardEvent(KeyboardEvent* event,
+                                                      const LocalFrame* frame) {
+  CHECK(frame);
+  CHECK(frame->DomWindow());
+  ExecutionContext* context = frame->DomWindow()->GetExecutionContext();
+  CHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
+
+  if (!frame->GetDocument()) {
+    return false;
+  }
+
+  Element* focused = frame->GetDocument()->FocusedElement();
+  if (!focused || focused != event->RawTarget()) {
+    return false;
+  }
+
+  const AtomicString key(event->key());
+  bool is_home = (key == keywords::kHome);
+  bool is_end = (key == keywords::kEnd);
+  if (!is_home && !is_end) {
+    return false;
+  }
+
+  // Home/End with modifier keys should not trigger focusgroup navigation
+  // (e.g., Ctrl+Home scrolls to the document start).
+  if (event->ctrlKey() || event->metaKey() || event->shiftKey() ||
+      event->altKey()) {
+    return false;
+  }
+
+  // If the focused element is inside a directional key handler (e.g., text
+  // input), do not intercept Home/End — those keys have native behavior there.
+  if (utils::IsInDirectionalKeyHandler(focused)) {
+    return false;
+  }
+
+  Element* owner =
+      utils::FindNearestFocusgroupAncestor(focused, FocusgroupType::kLinear);
+  if (!owner) {
+    return false;
+  }
+  if (!utils::IsFocusgroupItemWithOwner(focused, owner)) {
+    return false;
+  }
+
+  FocusgroupItemPosition position =
+      is_home ? FocusgroupItemPosition::kFirst : FocusgroupItemPosition::kLast;
+  Element* target = utils::FocusgroupItemWithin(owner, position);
+  if (!target || target == focused) {
+    return false;
+  }
+
+  // The direction is used only to determine FocusType (forward vs backward)
+  // for the focus system. Home/End are axis-independent, so the inline/block
+  // distinction does not matter here.
+  FocusgroupDirection direction = is_home ? FocusgroupDirection::kBackwardInline
+                                          : FocusgroupDirection::kForwardInline;
+  Focus(target, direction);
+  return true;
 }
 
 // static

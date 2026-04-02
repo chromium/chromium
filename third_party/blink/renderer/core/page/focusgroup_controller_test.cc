@@ -61,6 +61,30 @@ class FocusgroupControllerTest : public PageTestBase {
     SendEvent(KeyDownEvent(ui::DomKey::TAB, target, WebInputEvent::kShiftKey));
   }
 
+  void SendHome(Element* target) {
+    SendEvent(KeyDownEvent(ui::DomKey::HOME, target));
+  }
+
+  void SendEnd(Element* target) {
+    SendEvent(KeyDownEvent(ui::DomKey::END, target));
+  }
+
+  void SendArrowRight(Element* target) {
+    SendEvent(KeyDownEvent(ui::DomKey::ARROW_RIGHT, target));
+  }
+
+  void SendArrowLeft(Element* target) {
+    SendEvent(KeyDownEvent(ui::DomKey::ARROW_LEFT, target));
+  }
+
+  void SendArrowDown(Element* target) {
+    SendEvent(KeyDownEvent(ui::DomKey::ARROW_DOWN, target));
+  }
+
+  void SendArrowUp(Element* target) {
+    SendEvent(KeyDownEvent(ui::DomKey::ARROW_UP, target));
+  }
+
  private:
   void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
@@ -2475,8 +2499,7 @@ TEST_F(FocusgroupControllerTest, FocusgroupWithSelect) {
   // Arrow key can navigate TO the select (entry works).
   btn1->Focus();
   ASSERT_EQ(GetDocument().FocusedElement(), btn1);
-  auto* right_event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, btn1);
-  SendEvent(right_event);
+  SendArrowRight(btn1);
   EXPECT_EQ(GetDocument().FocusedElement(), sel1)
       << "Arrow right should navigate to select (entry allowed)";
 
@@ -2975,7 +2998,7 @@ TEST_F(FocusgroupControllerTest,
 
 // Tab from a <video controls> element inside a focusgroup should escape to
 // the adjacent item. Video with controls reports kInline+kBlock via
-// NativeArrowKeyAxes, making it an arrow key handler.
+// NativeArrowKeyAxes, making it a directional key handler.
 TEST_F(FocusgroupControllerTest, FocusgroupTabEscapeFromVideoControls) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div focusgroup="toolbar inline">
@@ -2994,8 +3017,7 @@ TEST_F(FocusgroupControllerTest, FocusgroupTabEscapeFromVideoControls) {
   a->Focus();
   ASSERT_EQ(GetDocument().FocusedElement(), a);
 
-  auto* right_event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, a);
-  SendEvent(right_event);
+  SendArrowRight(a);
   ASSERT_EQ(GetDocument().FocusedElement(), vid)
       << "Arrow right should navigate to video";
 
@@ -3026,8 +3048,7 @@ TEST_F(FocusgroupControllerTest, FocusgroupTabEscapeFromAudioControls) {
   a->Focus();
   ASSERT_EQ(GetDocument().FocusedElement(), a);
 
-  auto* right_event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, a);
-  SendEvent(right_event);
+  SendArrowRight(a);
   ASSERT_EQ(GetDocument().FocusedElement(), aud)
       << "Arrow right should navigate to audio";
 
@@ -3073,8 +3094,7 @@ TEST_F(FocusgroupControllerTest, FocusgroupTabEscapeFromDateInput) {
   a->Focus();
   ASSERT_EQ(GetDocument().FocusedElement(), a);
 
-  auto* right_event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, a);
-  SendEvent(right_event);
+  SendArrowRight(a);
   ASSERT_EQ(GetDocument().FocusedElement(), dt)
       << "Arrow right should navigate to date input";
 
@@ -3117,8 +3137,7 @@ TEST_F(FocusgroupControllerTest, FocusgroupTabEscapeFromTextarea) {
   a->Focus();
   ASSERT_EQ(GetDocument().FocusedElement(), a);
 
-  auto* right_event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, a);
-  SendEvent(right_event);
+  SendArrowRight(a);
   ASSERT_EQ(GetDocument().FocusedElement(), ta)
       << "Arrow right should navigate to textarea";
 
@@ -3156,8 +3175,7 @@ TEST_F(FocusgroupControllerTest, FocusgroupWithRadio) {
   // Arrow key can navigate TO the radio button (entry works).
   btn1->Focus();
   ASSERT_EQ(GetDocument().FocusedElement(), btn1);
-  auto* right_event = KeyDownEvent(ui::DomKey::ARROW_RIGHT, btn1);
-  SendEvent(right_event);
+  SendArrowRight(btn1);
   EXPECT_EQ(GetDocument().FocusedElement(), r1)
       << "Arrow right should navigate to radio (entry allowed)";
 
@@ -3241,6 +3259,334 @@ TEST_F(FocusgroupControllerTest, FocusgroupWithUncheckedRadioTab) {
       << "Tab must not escape the focusgroup entirely";
   EXPECT_EQ(GetDocument().FocusedElement(), r2)
       << "Tab from unchecked radio should go to next adjacent item";
+}
+
+// --- Home/End key tests ---
+
+// Home moves focus to the first item in a linear focusgroup.
+TEST_F(FocusgroupControllerTest, HomeMovesToFirstItem) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=A type="button">A</button>
+      <button id=B type="button">B</button>
+      <button id=C type="button">C</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetElementById("A");
+  auto* c = GetElementById("C");
+  ASSERT_TRUE(a && c);
+
+  c->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), c);
+
+  SendHome(c);
+  EXPECT_EQ(GetDocument().FocusedElement(), a)
+      << "Home should move focus to first item";
+}
+
+// End moves focus to the last item in a linear focusgroup.
+TEST_F(FocusgroupControllerTest, EndMovesToLastItem) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=A type="button">A</button>
+      <button id=B type="button">B</button>
+      <button id=C type="button">C</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetElementById("A");
+  auto* c = GetElementById("C");
+  ASSERT_TRUE(a && c);
+
+  a->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), a);
+
+  SendEnd(a);
+  EXPECT_EQ(GetDocument().FocusedElement(), c)
+      << "End should move focus to last item";
+}
+
+// Home/End are no-ops when already on the first/last item.
+TEST_F(FocusgroupControllerTest, HomeEndNoOpAtBoundary) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=A type="button">A</button>
+      <button id=B type="button">B</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetElementById("A");
+  auto* b = GetElementById("B");
+  ASSERT_TRUE(a && b);
+
+  // Home from first item stays on first item.
+  a->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), a);
+  SendHome(a);
+  EXPECT_EQ(GetDocument().FocusedElement(), a)
+      << "Home from first item should be a no-op";
+
+  // End from last item stays on last item.
+  b->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), b);
+  SendEnd(b);
+  EXPECT_EQ(GetDocument().FocusedElement(), b)
+      << "End from last item should be a no-op";
+}
+
+// Home/End skip opted-out subtrees (focusgroup="none").
+TEST_F(FocusgroupControllerTest, HomeEndSkipOptedOut) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=A type="button">A</button>
+      <div focusgroup="none">
+        <button id=skip type="button">Skip</button>
+      </div>
+      <button id=B type="button">B</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetElementById("A");
+  auto* b = GetElementById("B");
+  ASSERT_TRUE(a && b);
+
+  b->Focus();
+  SendHome(b);
+  EXPECT_EQ(GetDocument().FocusedElement(), a)
+      << "Home should skip opted-out subtree";
+
+  a->Focus();
+  SendEnd(a);
+  EXPECT_EQ(GetDocument().FocusedElement(), b)
+      << "End should skip opted-out subtree";
+}
+
+// Home/End navigate within the inner nested focusgroup, not the outer.
+TEST_F(FocusgroupControllerTest, HomeEndNestedFocusgroup) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=o1 type="button">o1</button>
+      <div focusgroup="toolbar inline" tabindex="0">
+        <button id=i1 type="button">i1</button>
+        <button id=i2 type="button">i2</button>
+        <button id=i3 type="button">i3</button>
+      </div>
+      <button id=o2 type="button">o2</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* i1 = GetElementById("i1");
+  auto* i3 = GetElementById("i3");
+  ASSERT_TRUE(i1 && i3);
+
+  i3->Focus();
+  SendHome(i3);
+  EXPECT_EQ(GetDocument().FocusedElement(), i1)
+      << "Home should stay within inner focusgroup";
+
+  SendEnd(i1);
+  EXPECT_EQ(GetDocument().FocusedElement(), i3)
+      << "End should stay within inner focusgroup";
+}
+
+// Home/End with modifier keys (Ctrl, Alt) should not trigger focusgroup
+// navigation — these combinations have native browser behavior.
+TEST_F(FocusgroupControllerTest, HomeEndWithModifiersIgnored) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=A type="button">A</button>
+      <button id=B type="button">B</button>
+      <button id=C type="button">C</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* b = GetElementById("B");
+  ASSERT_TRUE(b);
+
+  b->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), b);
+
+  auto* ctrl_home =
+      KeyDownEvent(ui::DomKey::HOME, b, WebInputEvent::kControlKey);
+  SendEvent(ctrl_home);
+  EXPECT_EQ(GetDocument().FocusedElement(), b)
+      << "Ctrl+Home should not trigger focusgroup navigation";
+
+  auto* shift_home =
+      KeyDownEvent(ui::DomKey::HOME, b, WebInputEvent::kShiftKey);
+  SendEvent(shift_home);
+  EXPECT_EQ(GetDocument().FocusedElement(), b)
+      << "Shift+Home should not trigger focusgroup navigation";
+
+  auto* alt_end = KeyDownEvent(ui::DomKey::END, b, WebInputEvent::kAltKey);
+  SendEvent(alt_end);
+  EXPECT_EQ(GetDocument().FocusedElement(), b)
+      << "Alt+End should not trigger focusgroup navigation";
+}
+
+// Home/End work in block-only focusgroups (axis-independent).
+TEST_F(FocusgroupControllerTest, HomeEndBlockAxis) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="menu block">
+      <button id=A type="button">A</button>
+      <button id=B type="button">B</button>
+      <button id=C type="button">C</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetElementById("A");
+  auto* c = GetElementById("C");
+  ASSERT_TRUE(a && c);
+
+  c->Focus();
+  SendHome(c);
+  EXPECT_EQ(GetDocument().FocusedElement(), a)
+      << "Home should work in block-only focusgroup";
+
+  SendEnd(a);
+  EXPECT_EQ(GetDocument().FocusedElement(), c)
+      << "End should work in block-only focusgroup";
+}
+
+// Home/End ignore focusgroupstart — always go to actual first/last.
+TEST_F(FocusgroupControllerTest, HomeEndIgnoreFocusgroupstart) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline nomemory">
+      <button id=A type="button">A</button>
+      <button id=B type="button" focusgroupstart>B</button>
+      <button id=C type="button">C</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetElementById("A");
+  auto* c = GetElementById("C");
+  ASSERT_TRUE(a && c);
+
+  c->Focus();
+  SendHome(c);
+  EXPECT_EQ(GetDocument().FocusedElement(), a)
+      << "Home should go to first item, ignoring focusgroupstart";
+}
+
+// Home/End are blocked inside directional key handlers (e.g., text input).
+TEST_F(FocusgroupControllerTest, HomeEndBlockedInDirectionalKeyHandler) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=A type="button">A</button>
+      <input id=txt type="text" value="hello">
+      <button id=B type="button">B</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* txt = GetElementById("txt");
+  ASSERT_TRUE(txt);
+
+  txt->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), txt);
+
+  SendHome(txt);
+  EXPECT_EQ(GetDocument().FocusedElement(), txt)
+      << "Home inside text input should not trigger focusgroup navigation";
+
+  SendEnd(txt);
+  EXPECT_EQ(GetDocument().FocusedElement(), txt)
+      << "End inside text input should not trigger focusgroup navigation";
+}
+
+// Home/End in a single-item focusgroup are no-ops (target == focused).
+TEST_F(FocusgroupControllerTest, HomeEndSingleItemNoOp) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=A type="button">A</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetElementById("A");
+  ASSERT_TRUE(a);
+
+  a->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), a);
+
+  SendHome(a);
+  EXPECT_EQ(GetDocument().FocusedElement(), a)
+      << "Home in single-item focusgroup should be a no-op";
+
+  SendEnd(a);
+  EXPECT_EQ(GetDocument().FocusedElement(), a)
+      << "End in single-item focusgroup should be a no-op";
+}
+
+// Home/End do not trigger in grid focusgroups (only linear).
+TEST_F(FocusgroupControllerTest, HomeEndIgnoredInGridFocusgroup) {
+  ScopedFocusgroupGridForTest grid_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <table focusgroup="grid">
+      <tr>
+        <td id=c1 tabindex=0>1</td>
+        <td id=c2 tabindex=0>2</td>
+      </tr>
+      <tr>
+        <td id=c3 tabindex=0>3</td>
+        <td id=c4 tabindex=0>4</td>
+      </tr>
+    </table>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* c2 = GetElementById("c2");
+  ASSERT_TRUE(c2);
+
+  c2->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), c2);
+
+  SendHome(c2);
+  EXPECT_EQ(GetDocument().FocusedElement(), c2)
+      << "Home should not navigate in grid focusgroup";
+
+  SendEnd(c2);
+  EXPECT_EQ(GetDocument().FocusedElement(), c2)
+      << "End should not navigate in grid focusgroup";
+}
+
+// Home/End are ignored when focus was already moved by a script handler
+// (focused element != event target).
+TEST_F(FocusgroupControllerTest, HomeEndIgnoredWhenFocusAlreadyMoved) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=A type="button">A</button>
+      <button id=B type="button">B</button>
+      <button id=C type="button">C</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetElementById("A");
+  auto* c = GetElementById("C");
+  ASSERT_TRUE(a && c);
+
+  // Focus C, but create the event with target A (simulating a script that
+  // moved focus during the key handler before default handling runs).
+  c->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), c);
+
+  SendHome(a);
+  EXPECT_EQ(GetDocument().FocusedElement(), c)
+      << "Home should not navigate when focus was already moved";
+
+  SendEnd(a);
+  EXPECT_EQ(GetDocument().FocusedElement(), c)
+      << "End should not navigate when focus was already moved";
 }
 
 }  // namespace blink

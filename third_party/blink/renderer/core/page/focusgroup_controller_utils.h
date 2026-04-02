@@ -198,31 +198,32 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // focusgroup="none".
   static bool IsInExplicitlyOptedOutSubtree(const Element* element);
 
-  // Returns true if |element| is itself a native arrow key handler or is
+  // Returns true if |element| is itself a native directional key handler or is
   // within a subtree rooted at one for its nearest ancestor focusgroup owner.
-  // Native arrow key handlers are interactive controls whose built-in arrow
+  // Native directional key handlers are interactive controls whose built-in
   // key behavior should take precedence over focusgroup navigation (e.g. text
   // inputs, textareas, select controls, contenteditable regions, focusable
   // scroll containers, media elements with controls, and frame elements).
   // Elements with author-defined script handlers are not considered here.
-  // When this returns true, focusgroup arrow navigation should not run while
+  // When this returns true, focusgroup navigation should not run while
   // focus is within the handler element.
-  static bool IsInArrowKeyHandler(const Element* element);
+  static bool IsInDirectionalKeyHandler(const Element* element);
 
-  // Returns true if |element| is in a native arrow key handler that handles
-  // the specified |direction|. This allows per-axis detection, e.g., a
+  // Returns true if |element| is in a native directional key handler that
+  // handles the specified |direction|. This allows per-axis detection, e.g., a
   // horizontal-only scroll container only handles inline (left/right)
   // navigation, not block (up/down) navigation.
-  static bool IsInArrowKeyHandler(const Element& element,
-                                  FocusgroupDirection direction);
+  static bool IsInDirectionalKeyHandler(const Element& element,
+                                        FocusgroupDirection direction);
 
-  // Returns the nearest ancestor (or self) that is a native arrow key handler
-  // for |element|'s nearest focusgroup owner, or nullptr if none exists.
-  static const Element* GetArrowKeyHandlerRoot(const Element* element);
+  // Returns the nearest ancestor (or self) that is a native directional key
+  // handler for |element|'s nearest focusgroup owner, or nullptr if none
+  // exists.
+  static const Element* GetDirectionalKeyHandlerRoot(const Element* element);
 
-  // If the document's currently focused element is within an arrow key handler
-  // subtree, returns the handler root. Otherwise returns nullptr.
-  static const Element* GetArrowKeyHandlerRootForFocusedElement(
+  // If the document's currently focused element is within a directional key
+  // handler subtree, returns the handler root. Otherwise returns nullptr.
+  static const Element* GetDirectionalKeyHandlerRootForFocusedElement(
       const Document& document);
 
   // Returns true if |element| itself is an excluded subtree root, i.e., it

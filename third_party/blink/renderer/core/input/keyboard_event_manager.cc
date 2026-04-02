@@ -438,9 +438,7 @@ void KeyboardEventManager::DefaultKeyboardEventHandler(
       // TODO(bokan): Cleanup magic numbers once https://crbug.com/949766 lands.
       DefaultImeSubmitHandler(event);
     } else {
-      // TODO(bokan): Seems odd to call the default _arrow_ event handler on
-      // events that aren't necessarily arrow keys.
-      DefaultArrowEventHandler(event, possible_focused_node);
+      DefaultNavigationKeyEventHandler(event, possible_focused_node);
     }
   } else if (event->type() == event_type_names::kKeypress) {
     frame_->GetEditor().HandleKeyboardEvent(event);
@@ -502,7 +500,7 @@ void KeyboardEventManager::DefaultSpaceEventHandler(
   }
 }
 
-void KeyboardEventManager::DefaultArrowEventHandler(
+void KeyboardEventManager::DefaultNavigationKeyEventHandler(
     KeyboardEvent* event,
     Node* possible_focused_node) {
   DCHECK_EQ(event->type(), event_type_names::kKeydown);
@@ -511,9 +509,7 @@ void KeyboardEventManager::DefaultArrowEventHandler(
   if (!page)
     return;
 
-  ExecutionContext* context = frame_->GetDocument()->GetExecutionContext();
-  if (RuntimeEnabledFeatures::FocusgroupEnabled(context) &&
-      FocusgroupController::HandleArrowKeyboardEvent(event, frame_)) {
+  if (FocusgroupController::HandleKeyboardEvent(event, frame_)) {
     event->SetDefaultHandled();
     return;
   }

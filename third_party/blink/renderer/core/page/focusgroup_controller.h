@@ -21,8 +21,12 @@ class CORE_EXPORT FocusgroupController {
   STATIC_ONLY(FocusgroupController);
 
  public:
+  static bool HandleKeyboardEvent(KeyboardEvent* event,
+                                  const LocalFrame* frame);
   static bool HandleArrowKeyboardEvent(KeyboardEvent* event,
                                        const LocalFrame* frame);
+  static bool HandleHomeEndKeyboardEvent(KeyboardEvent* event,
+                                         const LocalFrame* frame);
 
  private:
   // Entry point into Focusgroup advancement. Returns true if the key press
