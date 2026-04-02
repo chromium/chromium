@@ -308,7 +308,7 @@ class HashRealTimeService : public KeyedService {
       int net_error,
       int http_error,
       std::unique_ptr<std::string> response_body,
-      const std::vector<std::string>& requested_hash_prefixes) const;
+      const std::vector<std::string>& requested_hash_prefixes);
 
   // Tries to parse the |response_body| into a |SearchHashesResponse|, and
   // returns either the response proto or an |OperationOutcome| with details on
@@ -365,6 +365,14 @@ class HashRealTimeService : public KeyedService {
 
   // Helper object that manages backoff state.
   std::unique_ptr<BackoffOperator> backoff_operator_;
+
+  // Details about the operation outcome when the service entered backoff mode.
+  struct BackoffDetails {
+    OperationOutcome operation_outcome;
+    int net_error;
+    int response_code;
+  };
+  std::optional<BackoffDetails> outcome_details_when_entered_backoff_;
 
   // Indicates whether |Shutdown| has been called. If so, |StartLookup| returns
   // early.

@@ -1781,6 +1781,32 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.HPRT.BackoffEnabled.Network.Result.WhenEnteredBackoff"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-10-02">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Response or error codes from SafeBrowsing hash-prefix real-time lookups when
+    the service is in backoff mode. This is the network result that was present
+    when we entered backoff mode. Logged when a lookup check is attempted while
+    in backoff.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.HPRT.BackoffEnabled.OperationOutcome.WhenEnteredBackoff"
+    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2026-10-02">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the operation outcome for hash-prefix real-time lookups when the
+    service is in backoff mode. This is the operation outcome that was present
+    when we entered backoff mode. Logged when a lookup check is attempted while
+    in backoff.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.BackoffState" enum="BooleanBackoff"
     expires_after="2027-02-05">
   <owner>thefrog@chromium.org</owner>
@@ -2173,6 +2199,16 @@ useful for Chirp alerts (go/crca-alerts). -->
     found in the local cache, if the lookup doesn't run because the service is
     in backoff mode, if the lookup doesn't run because the OHTTP key can't be
     fetched, or after the lookup network request returns.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.OperationOutcome.WhenEnteringBackoff"
+    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2026-10-02">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the operation outcome for hash-prefix real-time lookups when
+    entering backoff mode.
   </summary>
 </histogram>
 

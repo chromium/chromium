@@ -311,6 +311,14 @@ void HashRealTimeService::StartLookupInternal(
   bool in_backoff = backoff_operator_->IsInBackoffMode();
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.BackoffState", in_backoff);
   if (in_backoff) {
+    CHECK(outcome_details_when_entered_backoff_.has_value());
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.HPRT.BackoffEnabled.OperationOutcome.WhenEnteredBackoff",
+        outcome_details_when_entered_backoff_->operation_outcome);
+    RecordHttpResponseOrErrorCode(
+        "SafeBrowsing.HPRT.BackoffEnabled.Network.Result.WhenEnteredBackoff",
+        outcome_details_when_entered_backoff_->net_error,
+        outcome_details_when_entered_backoff_->response_code);
     lookup_completer->CompleteLookup(/*is_lookup_successful=*/false,
                                      /*sb_threat_type=*/std::nullopt,
                                      OperationOutcome::kServiceInBackoffMode);
@@ -489,18 +497,24 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
     int net_error,
     int response_code,
     std::unique_ptr<std::string> response_body,
-    const std::vector<std::string>& requested_hash_prefixes) const {
+    const std::vector<std::string>& requested_hash_prefixes) {
   auto response =
       ParseResponse(net_error, response_code, std::move(response_body),
                     requested_hash_prefixes);
   if (response.has_value()) {
     backoff_operator_->ReportSuccess();
+    outcome_details_when_entered_backoff_.reset();
   } else if (response.error() != OperationOutcome::kRetriableError) {
     bool newly_in_backoff_mode = backoff_operator_->ReportError();
     if (newly_in_backoff_mode) {
       RecordHttpResponseOrErrorCode(
           "SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff", net_error,
           response_code);
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.HPRT.OperationOutcome.WhenEnteringBackoff",
+          response.error());
+      outcome_details_when_entered_backoff_ = {response.error(), net_error,
+                                               response_code};
     }
   }
   return response;
