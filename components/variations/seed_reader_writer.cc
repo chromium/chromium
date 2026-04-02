@@ -81,8 +81,10 @@ bool Compress(std::string_view uncompressed_data,
 }
 
 base::expected<std::string, LoadSeedResult> Uncompress(
-    std::string_view compressed_data) {
+    std::string_view compressed_data,
+    std::string_view histogram_suffix) {
   std::string uncompressed_contents;
+  const base::TimeTicks start_time = base::TimeTicks::Now();
 #if USE_ZSTD_FOR_SEEDS
   auto uncompressed_buff_size =
       ZSTD_getFrameContentSize(compressed_data.data(), compressed_data.size());
@@ -119,16 +121,26 @@ base::expected<std::string, LoadSeedResult> Uncompress(
     return base::unexpected(LoadSeedResult::kCorruptGzip);
   }
 #endif  // USE_ZSTD_FOR_SEEDS
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"Variations.SeedFile.DecompressionTime.", histogram_suffix}),
+      base::TimeTicks::Now() - start_time);
   return uncompressed_contents;
 }
 
 // Serializes, compresses, and returns the compressed seed info used during
 // write to disk. Will be run asynchronously on a background thread.
-std::optional<std::string> DoSerialize(StoredSeedInfo seed_info) {
+std::optional<std::string> DoSerialize(StoredSeedInfo seed_info,
+                                       std::string histogram_suffix) {
+  std::string uncompressed_data = seed_info.SerializeAsString();
   std::string compressed_seed_info;
-  if (!Compress(seed_info.SerializeAsString(), &compressed_seed_info)) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  if (!Compress(uncompressed_data, &compressed_seed_info)) {
     return std::nullopt;
   }
+  base::UmaHistogramTimes(
+      base::StrCat({"Variations.SeedFile.CompressionTime.", histogram_suffix}),
+      base::TimeTicks::Now() - start_time);
   return compressed_seed_info;
 }
 
@@ -239,7 +251,8 @@ bool ShouldStoreWithoutProcessing(std::string_view seed_data) {
 
 base::expected<StoredSeedInfo, LoadSeedResult> ReadSeedInfoFromFile(
     base::FilePath file_path,
-    bool check_missing_seed_file) {
+    bool check_missing_seed_file,
+    std::string_view histogram_suffix) {
   if (check_missing_seed_file && !base::PathExists(file_path)) {
     return base::unexpected(LoadSeedResult::kFileNotFound);
   }
@@ -250,7 +263,7 @@ base::expected<StoredSeedInfo, LoadSeedResult> ReadSeedInfoFromFile(
   if (seed_file_data.empty()) {
     return base::unexpected(LoadSeedResult::kEmpty);
   }
-  auto uncompress_result = Uncompress(seed_file_data);
+  auto uncompress_result = Uncompress(seed_file_data, histogram_suffix);
   if (!uncompress_result.has_value()) {
     return base::unexpected(uncompress_result.error());
   }
@@ -632,7 +645,7 @@ std::string SeedReaderWriter::CompressForSeedFileForTesting(
 bool SeedReaderWriter::UncompressFromSeedFileForTesting(
     std::string_view compressed_contents,
     std::string* uncompressed_contents) {
-  auto result = Uncompress(compressed_contents);
+  auto result = Uncompress(compressed_contents, /*histogram_suffix=*/"Test");
   if (result.has_value()) {
     *uncompressed_contents = std::move(result.value());
   }
@@ -667,7 +680,7 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
                                              std::move(call_clear_seed_cb));
   // TODO(crbug.com/370539202): Potentially use std::move instead of copy if we
   // are able to move seed data out of memory before the write completes.
-  return base::BindOnce(&DoSerialize, stored_seed_info_);
+  return base::BindOnce(&DoSerialize, stored_seed_info_, histogram_suffix_);
 }
 
 bool SeedReaderWriter::ShouldClearSeedDataFromMemory() {
@@ -772,8 +785,8 @@ void SeedReaderWriter::DeleteOldSeedFile() {
 void SeedReaderWriter::ReadSeedFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SeedSource seed_source = SeedSource::kNoSource;
-  const auto read_seed_info_result =
-      ReadSeedInfoFromFile(seed_writer_->path(), check_missing_seed_file_);
+  const auto read_seed_info_result = ReadSeedInfoFromFile(
+      seed_writer_->path(), check_missing_seed_file_, histogram_suffix_);
   base::UmaHistogramEnumeration(
       base::StrCat({"Variations.SeedFileReadResult.", histogram_suffix_}),
       read_seed_info_result.error_or(LoadSeedResult::kSuccess));
@@ -1028,7 +1041,7 @@ void SeedReaderWriter::GetSeedDataFromSeedFile(
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadSeedInfoFromFile, seed_writer_->path(),
-                     check_missing_seed_file_),
+                     check_missing_seed_file_, histogram_suffix_),
       std::move(read_file_cb));
 }
 

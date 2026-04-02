@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SeedFile">
+  <variant name="Latest" summary="latest seed file"/>
+  <variant name="Safe" summary="safe seed file"/>
+</variants>
+
 <histogram name="Variations.AppliedSeed.Size" units="bytes"
     expires_after="2026-09-10">
   <owner>caitlinfischer@google.com</owner>
@@ -572,6 +577,26 @@ chromium-metrics-reviews@google.com.
     The respective metric for Android's is Variations.FirstRun.SeedFetchTime.
 
     Note: This expired in May 2025 and was revived in M143.
+  </summary>
+</histogram>
+
+<histogram name="Variations.SeedFile.CompressionTime.{SeedFile}" units="ms"
+    expires_after="2027-04-01">
+  <owner>rcanoaparicio@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The time it takes to compress the {SeedFile} info before writing it to disk.
+    Recorded on a background thread every time a seed is written to disk.
+  </summary>
+</histogram>
+
+<histogram name="Variations.SeedFile.DecompressionTime.{SeedFile}" units="ms"
+    expires_after="2027-04-01">
+  <owner>rcanoaparicio@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The time it takes to decompress the {SeedFile} info after reading it from
+    disk. Recorded on a background thread every time a seed is read from disk.
   </summary>
 </histogram>
 
