@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +20,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_PRECISE_LOCATION_SETTING_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED;
 
+import android.Manifest;
 import android.content.Context;
 
 import androidx.fragment.app.FragmentManager;
@@ -33,6 +35,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -226,5 +230,29 @@ public class GlicSettingsUnitTest {
         GlicSettings fragment = launchFragment();
         ChromeSwitchPreference preference = fragment.findPreference(prefName);
         assertEquals(initialState, preference.isChecked());
+    }
+
+    @Test
+    public void testStartupSync_PermissionDenied() {
+        when(mPrefServiceMock.getBoolean("glic.geolocation_enabled")).thenReturn(true);
+        Shadows.shadowOf(RuntimeEnvironment.getApplication())
+                .denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
+
+        GlicSettings fragment = launchFragment();
+
+        // Verifies startup validation does NOT turn it off
+        verify(mPrefServiceMock, never()).setBoolean("glic.geolocation_enabled", false);
+        ChromeSwitchPreference locationPref = fragment.findPreference("permissions_location");
+        assertEquals(true, locationPref.isChecked());
+    }
+
+    @Test
+    public void testOnPreferenceChange_FinePermission() {
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference locationPref = fragment.findPreference("permissions_location");
+
+        // Simulate toggle On
+        locationPref.getOnPreferenceChangeListener().onPreferenceChange(locationPref, true);
+        verify(mPrefServiceMock).setBoolean("glic.geolocation_enabled", true);
     }
 }
