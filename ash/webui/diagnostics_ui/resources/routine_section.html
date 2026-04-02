@@ -56,6 +56,9 @@
   .routine-section-container {
     display: flex;
     flex-direction: column;
+    /* Ensure assistive tech reads children in CSS order when
+       a parent overrides visual order via ::part() + order. */
+    reading-flow: flex-visual;
   }
 
   .routine-status-container {
@@ -75,7 +78,8 @@
     padding-inline-start: 6px;
   }
 
-  #toggleReportButton {
+  #toggleReportButton,
+  #toggleDetailsButton {
     margin-inline-end: 8px;
   }
 
@@ -87,6 +91,26 @@
     margin-bottom: 16px;
     margin-top: 12px;
     padding-inline: 20px;
+  }
+
+  :host-context(body.jelly-enabled) .detail-message {
+    font: var(--cros-body-2-font);
+  }
+
+  .details-list {
+    /* Cap at ~5 detail lines (13px font + line spacing) to keep the
+       run/stop controls visible without scrolling. */
+    max-height: 150px;
+    overflow-y: auto;
+    margin: 20px 0;
+  }
+
+  .detail-message {
+    color: var(--cros-text-color-primary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
+    white-space: pre-wrap;
   }
 </style>
 <div class="routine-section-container container-spacing"
@@ -118,6 +142,10 @@
           hidden="[[isResultButtonHidden(executionStatus, routines.*)]]">
         [[getReportToggleButtonText(opened)]]
       </cr-button>
+      <cr-button id="toggleDetailsButton" on-click="onToggleDetailsClicked"
+          hidden$="[[isDetailsButtonHidden(showRoutineDetails, detailMessagesHTML.*)]]">
+        [[getDetailsToggleButtonText(detailsOpened)]]
+      </cr-button>
       <cr-button id="runTestsButton"
           hidden$="[[isRunTestsButtonHidden(testSuiteStatus,
               executionStatus)]]"
@@ -145,5 +173,16 @@
         hidden$="[[isLearnMoreButtonHidden(isLoggedIn, hideRoutineStatus)]]">
       [[i18n('learnMore')]]
     </cr-button>
+  </iron-collapse>
+  <!-- Detail messages are TrustedHTML produced by sanitizeInnerHtml()
+       from plain-text blocks supplied via RoutineResultInfo.details. -->
+  <iron-collapse id="detailsCollapse" opened="{{detailsOpened}}">
+    <template is="dom-if" if="[[hasDetailMessages(detailMessagesHTML.*)]]" restamp>
+      <div class="details-list grey-container">
+        <template is="dom-repeat" items="[[detailMessagesHTML]]">
+          <div class="detail-message" inner-h-t-m-l="[[item]]"></div>
+        </template>
+      </div>
+    </template>
   </iron-collapse>
 </div>

@@ -1394,6 +1394,12 @@
         <message name="IDS_DIAGNOSTICS_SEE_REPORT_TEXT" desc="The text for the button that shows the test summary report">
           See report
         </message>
+        <message name="IDS_DIAGNOSTICS_HIDE_TEST_DETAILS_TEXT" desc="The text for the button that hides the test details panel.">
+          Hide details
+        </message>
+        <message name="IDS_DIAGNOSTICS_SEE_TEST_DETAILS_TEXT" desc="The text for the button that shows the test details panel with detailed diagnostic output.">
+          Show details
+        </message>
         <message name="IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT" desc="The text that shows the name of a test.">
           <ph name="TEST_NAME">$1<ex>Stress</ex></ph> test
         </message>
