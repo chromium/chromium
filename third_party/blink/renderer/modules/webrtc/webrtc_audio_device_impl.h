@@ -169,10 +169,15 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // before it goes away.
   PlayoutDataSinkList playout_sinks_ GUARDED_BY(lock_);
 
+  // Protects |audio_transport_callback_| from being modified while it is in use
+  // by the audio render thread.
+  mutable base::Lock audio_transport_callback_lock_;
+
   // Weak reference to the audio callback.
   // The webrtc client defines |audio_transport_callback_| by calling
   // RegisterAudioCallback().
-  raw_ptr<webrtc::AudioTransport, DanglingUntriaged> audio_transport_callback_;
+  raw_ptr<webrtc::AudioTransport> audio_transport_callback_
+      GUARDED_BY(audio_transport_callback_lock_);
 
   // Cached value of the current audio delay on the output/renderer side.
   base::TimeDelta output_delay_ GUARDED_BY(lock_);

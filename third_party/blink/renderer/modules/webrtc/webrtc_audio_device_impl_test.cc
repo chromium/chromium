@@ -74,9 +74,9 @@ const media::AudioParameters kAudioParameters =
 class WebRtcAudioDeviceImplTest : public testing::Test {
  public:
   WebRtcAudioDeviceImplTest()
-      : audio_device_(
-            new webrtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>()),
-        audio_transport_(new MockAudioTransport()) {
+      : audio_transport_(new MockAudioTransport()),
+        audio_device_(
+            new webrtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>()) {
     audio_device_module()->Init();
     audio_device_module()->RegisterAudioCallback(audio_transport_.get());
   }
@@ -89,8 +89,8 @@ class WebRtcAudioDeviceImplTest : public testing::Test {
   }
 
   test::TaskEnvironment task_environment_;
-  scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device_;
   std::unique_ptr<MockAudioTransport> audio_transport_;
+  scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device_;
 };
 
 // Verify that stats are accumulated during calls to RenderData and are

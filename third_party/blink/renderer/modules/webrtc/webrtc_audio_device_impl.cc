@@ -93,7 +93,6 @@ void WebRtcAudioDeviceImpl::RenderData(
       audio_bus->Zero();
       return;
     }
-    DCHECK(audio_transport_callback_);
     // Store the reported audio delay locally.
     output_delay_ = audio_delay;
   }
@@ -114,9 +113,14 @@ void WebRtcAudioDeviceImpl::RenderData(
 
   TRACE_EVENT_BEGIN1("audio", "VoE::PullRenderData", "frames",
                      frames_per_10_ms);
-  audio_transport_callback_->PullRenderData(
-      kBytesPerSample * 8, sample_rate, audio_bus->channels(), frames_per_10_ms,
-      audio_data, &elapsed_time_ms, &ntp_time_ms);
+  {
+    base::AutoLock callback_lock(audio_transport_callback_lock_);
+    if (audio_transport_callback_) {
+      audio_transport_callback_->PullRenderData(
+          kBytesPerSample * 8, sample_rate, audio_bus->channels(),
+          frames_per_10_ms, audio_data, &elapsed_time_ms, &ntp_time_ms);
+    }
+  }
   TRACE_EVENT_END2("audio", "VoE::PullRenderData", "elapsed_time_ms",
                    elapsed_time_ms, "ntp_time_ms", ntp_time_ms);
   if (elapsed_time_ms >= 0) {
@@ -179,6 +183,7 @@ int32_t WebRtcAudioDeviceImpl::RegisterAudioCallback(
   DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   SendLogMessage(base::StringPrintf("%s()", __func__));
   base::AutoLock lock(lock_);
+  base::AutoLock callback_lock(audio_transport_callback_lock_);
   DCHECK_EQ(!audio_transport_callback_, !!audio_callback);
   audio_transport_callback_ = audio_callback;
   return 0;
@@ -252,6 +257,7 @@ int32_t WebRtcAudioDeviceImpl::StartPlayout() {
   DVLOG(1) << "WebRtcAudioDeviceImpl::StartPlayout()";
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   base::AutoLock auto_lock(lock_);
+  base::AutoLock callback_lock(audio_transport_callback_lock_);
   if (!audio_transport_callback_) {
     LOG(ERROR) << "Audio transport is missing";
     return 0;
@@ -291,6 +297,7 @@ int32_t WebRtcAudioDeviceImpl::StartRecording() {
   DCHECK(initialized_);
   SendLogMessage(base::StringPrintf("%s()", __func__));
   base::AutoLock auto_lock(lock_);
+  base::AutoLock callback_lock(audio_transport_callback_lock_);
   if (!audio_transport_callback_) {
     LOG(ERROR) << "Audio transport is missing";
     return -1;
