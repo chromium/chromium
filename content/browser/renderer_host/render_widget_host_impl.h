@@ -449,6 +449,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
           frame_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::FrameWidget> frame_widget);
 
+  // Bind to a non-associated pipe. Provided for MojoJS testing.
+  void BindFrameWidgetHostReceiver(
+      mojo::PendingReceiver<blink::mojom::FrameWidgetHost> receiver);
+
   // The Bind*Interfaces() methods are called before creating the renderer-side
   // Widget object, and RendererWidgetCreated() is called afterward. At that
   // point the bound mojo interfaces are connected to the renderer Widget. The
@@ -1580,6 +1584,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // can be used to send messages directly to blink.
   mojo::AssociatedReceiver<blink::mojom::FrameWidgetHost>
       blink_frame_widget_host_receiver_{this};
+  // Non-associated pipe provided for MojoJS testing.
+  mojo::Receiver<blink::mojom::FrameWidgetHost> frame_widget_host_receiver_{
+      this};
   mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget_;
 
   // If this is initialized with a popup this member will be valid and

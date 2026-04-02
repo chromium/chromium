@@ -726,6 +726,14 @@ void RenderWidgetHostImpl::BindFrameWidgetInterfaces(
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 }
 
+void RenderWidgetHostImpl::BindFrameWidgetHostReceiver(
+    mojo::PendingReceiver<blink::mojom::FrameWidgetHost> receiver) {
+  frame_widget_host_receiver_.reset();
+  frame_widget_host_receiver_.Bind(
+      std::move(receiver),
+      GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
+}
+
 void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
   CHECK(GetProcess()->IsInitializedAndNotDead());
 
