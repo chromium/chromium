@@ -24,6 +24,7 @@ MAX_WAIT_TIME_TO_DELETE_RUNTIME = 60  # 60 seconds
 
 SIMULATOR_DEFAULT_PATH = os.path.expanduser(
     '~/Library/Developer/CoreSimulator/Devices')
+SIMULATOR_CACHE_PATH = os.path.expanduser(' ~/Library/Developer/SimulatorCache')
 
 # TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
 IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
@@ -185,13 +186,14 @@ def get_simulator_runtime_by_platform_and_version(simulators,
                                            (version, runtimes))
 
 
-def get_simulator_runtime_by_device_udid(simulator_udid):
+def get_simulator_runtime_by_device_udid(simulator_udid, path=None):
   """Gets simulator runtime based on simulator UDID.
 
   Args:
     simulator_udid: (str) UDID of a simulator.
+    path: path to simulator directory, passed to --set option of xcrun simctl
   """
-  simulator_list = get_simulator_list()['devices']
+  simulator_list = get_simulator_list(path)['devices']
   for runtime, simulators in simulator_list.items():
     for device in simulators:
       if simulator_udid == device['udid']:
@@ -203,14 +205,15 @@ def get_simulator_runtime_by_device_udid(simulator_udid):
 
 def get_simulator_udids_by_platform_and_version(platform,
                                                 version,
-                                                out_dir=None):
+                                                out_dir=None,
+                                                path=None):
   """Gets list of simulators UDID based on platform name and iOS version.
 
     Args:
       platform: (str) A platform name, e.g. "iPhone 11"
       version: (str) A version name, e.g. "13.2.2"
   """
-  simulators = get_simulator_list()
+  simulators = get_simulator_list(path=path)
   devices = simulators['devices']
   sdk_id = get_simulator_runtime_by_platform_and_version(
       simulators, platform, version, out_dir)
@@ -253,9 +256,9 @@ def _create_device_by_platform_and_version(platform, version, path=None):
     LOGGER.info('Created simulator in first attempt with UDID: %s', udid)
     # Sometimes above command fails to create a simulator. Verify it and retry
     # once if first attempt failed.
-    if not is_device_with_udid_simulator(udid):
+    if not is_device_with_udid_simulator(udid, path=path):
       # Try to delete once to avoid duplicate in case of race condition.
-      delete_simulator_by_udid(udid)
+      delete_simulator_by_udid(udid, path=path)
       udid = subprocess.check_output(
           _compose_simctl_cmd(['create', name, device_type, runtime],
                               path)).decode('utf-8').rstrip()
@@ -276,12 +279,106 @@ def create_device_by_platform_and_version(platform, version, use_cache=False):
         in the cache.
   """
   if not use_cache:
+    LOGGER.info("Simulator caching not enabled. Creating disposable simulator "
+                "in the default set.")
     return _create_device_by_platform_and_version(platform, version)
+
+  # Ensure Cache Path Exists
+  os.makedirs(SIMULATOR_CACHE_PATH, exist_ok=True)
+
+  LOGGER.info(f"Simulator caching is enabled. "
+              f"Checking if a {version} {platform} simulator is in cache")
+  cache_udids = get_simulator_udids_by_platform_and_version(
+      platform, version, path=SIMULATOR_CACHE_PATH)
+
+  if cache_udids:
+    LOGGER.info("Simulator found in cache. Cloning into default set")
+    return clone_simulator_by_udid(
+        cache_udids[0],
+        _compose_simulator_name(platform, version),
+        path=SIMULATOR_CACHE_PATH,
+        dest_path=SIMULATOR_DEFAULT_PATH)
+
+  LOGGER.info("Simulator not found in cache, attempting to create")
+
+  max_attempts = 2
+  for attempt in range(max_attempts):
+    udid = _create_device_by_platform_and_version(
+        platform, version, path=SIMULATOR_CACHE_PATH)
+
+    # Run first boot of the simulator to ensure that costly data migrations
+    # have completed, then shutdown simulator so it can be cloned for future
+    # use.
+    if ensure_simulator_fully_booted(udid, path=SIMULATOR_CACHE_PATH):
+      shutdown_simulator_by_udid(udid, path=SIMULATOR_CACHE_PATH)
+      LOGGER.info(
+          f"Attempt {attempt} to create simulator and boot it succeeded. "
+          f"Cloning simulator into the default set.")
+      return clone_simulator_by_udid(
+          udid,
+          _compose_simulator_name(platform, version),
+          path=SIMULATOR_CACHE_PATH,
+          dest_path=SIMULATOR_DEFAULT_PATH,
+      )
+    LOGGER.info(f"Attempt {attempt} to create simulator in cache failed.")
+    shutdown_simulator_by_udid(udid, path=SIMULATOR_CACHE_PATH)
+    delete_simulator_by_udid(udid, path=SIMULATOR_CACHE_PATH)
   else:
-    raise NotImplementedError("Cacheing behavior not yet implemented.")
+    LOGGER.info(
+        f"Unable to create cached simulator in {max_attempts} attempts. "
+        f"Creating a disposable simulator in default set.")
+
+    return _create_device_by_platform_and_version(platform, version)
 
 
-def delete_simulator_by_udid(udid):
+def clone_simulator_by_udid(udid: str,
+                            name: str,
+                            path: str = None,
+                            dest_path: str = None):
+  """Clones given simulator located at path into dest_path.
+
+  Args:
+    udid: (str) UDID of simulator to clone.
+    name (str) name to give to the newly cloned simulator.
+    path: (str) Path where the source simulator is located.
+    dest_path: (str) Path to place the clone of the simulator. If not provided
+      will default to xcrun simctl clone's default behavior which is to create
+      the clone in the same path as the source simulator.
+
+  Returns:
+    UDID of newly cloned simulator
+  """
+
+  command = _compose_simctl_cmd(['clone', udid, name], path=path)
+
+  if dest_path:
+    command += [dest_path]
+
+  return subprocess.check_output(command).decode('utf-8').strip()
+
+
+def shutdown_simulator_by_udid(udid: str, path: str = None):
+  """Shuts down a simulator by its udid
+
+  Args:
+    udid: (str) UDID of simulator
+    path: (str) path of the simulator
+  """
+  for _, devices in get_simulator_list(path)['devices'].items():
+    for device in devices:
+      if device['udid'] != udid:
+        continue
+      try:
+        LOGGER.info('Shutdown simulator %s ', device)
+        if device['state'] != 'Shutdown':
+          subprocess.check_call(
+              _compose_simctl_cmd(['shutdown', device['udid']], path))
+        break
+      except subprocess.CalledProcessError as ex:
+        LOGGER.error('Shutdown failed %s ', ex)
+
+
+def delete_simulator_by_udid(udid, path: str = None):
   """Deletes simulator by its udid.
 
   Args:
@@ -289,8 +386,9 @@ def delete_simulator_by_udid(udid):
   """
   LOGGER.info('Deleting simulator %s', udid)
   try:
-    subprocess.check_output(['xcrun', 'simctl', 'delete', udid],
-                            stderr=subprocess.STDOUT).decode('utf-8')
+    subprocess.check_output(
+        _compose_simctl_cmd(['delete', udid], path=path),
+        stderr=subprocess.STDOUT).decode('utf-8')
     is_device_with_udid_simulator.cache_clear()
   except subprocess.CalledProcessError as e:
     # Logging error instead of throwing so we don't cause failures in case
@@ -305,17 +403,8 @@ def wipe_simulator_by_udid(udid):
   Args:
     udid: (str) UDID of simulator.
   """
-  for _, devices in get_simulator_list()['devices'].items():
-    for device in devices:
-      if device['udid'] != udid:
-        continue
-      try:
-        LOGGER.info('Shutdown simulator %s ', device)
-        if device['state'] != 'Shutdown':
-          subprocess.check_call(['xcrun', 'simctl', 'shutdown', device['udid']])
-      except subprocess.CalledProcessError as ex:
-        LOGGER.error('Shutdown failed %s ', ex)
-      subprocess.check_call(['xcrun', 'simctl', 'erase', device['udid']])
+  shutdown_simulator_by_udid(udid)
+  subprocess.check_call(['xcrun', 'simctl', 'erase', udid])
 
 
 def get_home_directory(platform, version):
@@ -394,7 +483,7 @@ def ensure_simulator_fully_booted(sim_udid: str, path=None, num_attempts=1):
   Returns:
     True if the simulator was successfully booted, false otherwise.
   """
-  if not is_device_with_udid_simulator(sim_udid):
+  if not is_device_with_udid_simulator(sim_udid, path=path):
     raise test_runner.SimulatorNotFoundError(
         f"Not found simulator with UDID: {sim_udid}")
 
@@ -404,7 +493,7 @@ def ensure_simulator_fully_booted(sim_udid: str, path=None, num_attempts=1):
       sim_udid,
       '-bd',
   ], path)
-  runtime = get_simulator_runtime_by_device_udid(sim_udid)
+  runtime = get_simulator_runtime_by_device_udid(sim_udid, path=path)
   for boot_attempt in range(num_attempts):
     try:
       update_dyld_shared_cache(runtime)
@@ -437,13 +526,15 @@ def get_app_data_directory(app_bundle_id, sim_udid):
 
 
 @functools.cache
-def is_device_with_udid_simulator(device_udid):
+def is_device_with_udid_simulator(device_udid, path: str = None):
   """Checks whether a device with udid is simulator or not.
 
   Args:
     device_udid: (str) UDID of a device.
+    path: (str) path to simulator directory, passed to --set option
+      of xcrun simctl.
   """
-  simulator_list = get_simulator_list()['devices']
+  simulator_list = get_simulator_list(path=path)['devices']
   for _, simulators in simulator_list.items():
     for device in simulators:
       if device_udid == device['udid']:
@@ -716,6 +807,7 @@ def delete_least_recently_used_simulator_runtimes(
           'Runtime %s should be deleted due to exceeding max runtime count %s',
           value, max_to_keep)
       delete_simulator_runtime(runtime_id, True)
+      remove_stale_simulators_from_cache()
 
 
 def delete_stale_simulator_runtimes():
@@ -731,6 +823,60 @@ def delete_stale_simulator_runtimes():
     if value['state'] == "Unusable":
       LOGGER.debug('Runtime %s should be deleted due to stale state', value)
       delete_simulator_runtime(runtime_id, True)
+      remove_stale_simulators_from_cache()
+
+
+def remove_stale_simulators_from_cache():
+  """Removes stale simulators from the cache.
+
+  Once a simulator runtime has been removed the simulators in the cache that use
+  that runtime will be marked as unavailable. This function should run
+  periodically to clean up disk space.
+  """
+
+  if os.path.isdir(SIMULATOR_CACHE_PATH):
+    subprocess.check_call(
+        _compose_simctl_cmd(['delete', 'unavailable'],
+                            path=SIMULATOR_CACHE_PATH))
+    is_device_with_udid_simulator.cache_clear()
+
+
+def shutdown_all_simulators(path=None):
+  """Shutdown all simulator devices.
+
+  Args:
+    path: (str) A path to the directory containing the simulators.
+  """
+  try:
+    subprocess.check_call(_compose_simctl_cmd(['shutdown', 'all'], path))
+  except subprocess.CalledProcessError as e:
+    LOGGER.error('Failed to shutdown all simulators. Error: %s' % e.output)
+
+
+def delete_all_simulators(path=None):
+  """Deletes all simulator devices.
+
+  Args:
+    path: (str) A path to the directory containing the simulators.
+  """
+  try:
+    subprocess.check_call(_compose_simctl_cmd(['delete', 'all'], path))
+  except subprocess.CalledProcessError as e:
+    LOGGER.error('Failed to delete all simulators. Error: %s' % e.output)
+  finally:
+    is_device_with_udid_simulator.cache_clear()
+
+
+def erase_all_simulators(path=None):
+  """Erases all simulator devices.
+
+  Args:
+    path: (str) A path to the directory containing the simulators.
+  """
+  try:
+    subprocess.check_call(_compose_simctl_cmd(['erase', 'all'], path))
+  except subprocess.CalledProcessError as e:
+    LOGGER.error('Failed to erase all simulators. Error: %s' % e.output)
 
 
 def disable_hardware_keyboard(udid: str) -> None:

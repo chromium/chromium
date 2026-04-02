@@ -831,7 +831,6 @@ class SimulatorTestRunner(TestRunner):
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""
     self.remove_proxy_settings()
-    self.wipe_simulator()
     self.wipe_derived_data()
     self.disable_hw_keyboard()
     self.kill_simulators()

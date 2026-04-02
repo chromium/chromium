@@ -535,6 +535,121 @@ class GetiOSSimUtil(test_runner_test.TestCase):
         'com.apple.CoreSimulator.SimRuntime.iOS-13-2'
     ], subprocess_mock.call_args[0][0])
 
+  @mock.patch.object(iossim_util, 'delete_simulator_by_udid', autospec=True)
+  @mock.patch.object(iossim_util, 'shutdown_simulator_by_udid', autospec=True)
+  @mock.patch.object(
+      iossim_util, 'ensure_simulator_fully_booted', autospec=True)
+  @mock.patch.object(
+      iossim_util, '_create_device_by_platform_and_version', autospec=True)
+  @mock.patch.object(iossim_util, 'clone_simulator_by_udid', autospec=True)
+  @mock.patch.object(
+      iossim_util, 'get_simulator_udids_by_platform_and_version', autospec=True)
+  @mock.patch('os.makedirs', autospec=True)
+  def test_create_device_by_platform_and_version_with_cache(
+      self, mock_makedirs, mock_get_simulator_udids_by_platform_and_version,
+      mock_clone_simulator_by_udid, mock_create_device_by_platform_and_version,
+      mock_ensure_simulator_fully_booted, mock_shutdown_simulator_by_udid,
+      mock_delete_simulator_by_udid, _, _2):
+    """Tests logic creating a new simulator when caching is enabled"""
+
+    def _reset_mocks():
+      mock_makedirs.reset_mock()
+      mock_get_simulator_udids_by_platform_and_version.reset_mock()
+      mock_clone_simulator_by_udid.reset_mock()
+      mock_create_device_by_platform_and_version.reset_mock()
+      mock_ensure_simulator_fully_booted.reset_mock()
+      mock_shutdown_simulator_by_udid.reset_mock()
+      mock_delete_simulator_by_udid.reset_mock()
+
+    ### Simulator exists in Cache
+    mock_get_simulator_udids_by_platform_and_version.return_value = ['UDID']
+    mock_clone_simulator_by_udid.return_value = 'clone-UDID'
+
+    result = iossim_util.create_device_by_platform_and_version(
+        'iPhone 11', '13.2.2', use_cache=True)
+    self.assertEqual(result, 'clone-UDID')
+    mock_makedirs.assert_called_with(
+        iossim_util.SIMULATOR_CACHE_PATH, exist_ok=True)
+    mock_get_simulator_udids_by_platform_and_version.assert_called_with(
+        'iPhone 11', '13.2.2', path=iossim_util.SIMULATOR_CACHE_PATH)
+    mock_clone_simulator_by_udid.assert_called_with(
+        'UDID',
+        'iPhone 11 13.2.2 test simulator',
+        path=iossim_util.SIMULATOR_CACHE_PATH,
+        dest_path=iossim_util.SIMULATOR_DEFAULT_PATH)
+    _reset_mocks
+
+    ### Simulator does not exist in Cache
+    mock_get_simulator_udids_by_platform_and_version.return_value = []
+    mock_create_device_by_platform_and_version.return_value = 'UDID'
+    mock_ensure_simulator_fully_booted.return_value = True
+    mock_clone_simulator_by_udid.return_value = 'clone-UDID'
+
+    result = iossim_util.create_device_by_platform_and_version(
+        'iPhone 11', '13.2.2', use_cache=True)
+    self.assertEqual(result, 'clone-UDID')
+    mock_makedirs.assert_called_with(
+        iossim_util.SIMULATOR_CACHE_PATH, exist_ok=True)
+    mock_get_simulator_udids_by_platform_and_version.assert_called_with(
+        'iPhone 11', '13.2.2', path=iossim_util.SIMULATOR_CACHE_PATH)
+    mock_create_device_by_platform_and_version.assert_called_with(
+        'iPhone 11', '13.2.2', path=iossim_util.SIMULATOR_CACHE_PATH)
+    mock_ensure_simulator_fully_booted.assert_called_with(
+        'UDID', path=iossim_util.SIMULATOR_CACHE_PATH)
+    mock_shutdown_simulator_by_udid.assert_called_with(
+        'UDID', path=iossim_util.SIMULATOR_CACHE_PATH)
+    mock_clone_simulator_by_udid.assert_called_with(
+        'UDID',
+        'iPhone 11 13.2.2 test simulator',
+        path=iossim_util.SIMULATOR_CACHE_PATH,
+        dest_path=iossim_util.SIMULATOR_DEFAULT_PATH)
+    _reset_mocks()
+
+    ### Failure to launch simulator, default back to no caching
+    mock_get_simulator_udids_by_platform_and_version.return_value = []
+    mock_create_device_by_platform_and_version.return_value = 'UDID'
+    mock_ensure_simulator_fully_booted.return_value = False
+
+    result = iossim_util.create_device_by_platform_and_version(
+        'iPhone 11', '13.2.2', use_cache=True)
+    self.assertEqual(result, 'UDID')
+    mock_makedirs.assert_called_with(
+        iossim_util.SIMULATOR_CACHE_PATH, exist_ok=True)
+    mock_get_simulator_udids_by_platform_and_version.assert_called_with(
+        'iPhone 11', '13.2.2', path=iossim_util.SIMULATOR_CACHE_PATH)
+    mock_ensure_simulator_fully_booted.assert_called_with(
+        'UDID', path=iossim_util.SIMULATOR_CACHE_PATH)
+    mock_shutdown_simulator_by_udid.assert_called_with(
+        'UDID', path=iossim_util.SIMULATOR_CACHE_PATH)
+    mock_delete_simulator_by_udid.assert_called_with(
+        'UDID', path=iossim_util.SIMULATOR_CACHE_PATH)
+    mock_create_device_by_platform_and_version.assert_called_with(
+        'iPhone 11', '13.2.2')
+
+  @mock.patch('subprocess.check_output', autospec=True)
+  def test_clone_simulator_by_udid(self, subprocess_mock, _, _2):
+    """Ensures simctl command is correct."""
+    subprocess_mock.return_value = b'CLONE_UDID'
+    self.assertEqual(
+        iossim_util.clone_simulator_by_udid('UDID',
+                                            'iPhone 11 13.2.2 test simulator'),
+        'CLONE_UDID')
+    subprocess_mock.assert_called_with(
+        ['xcrun', 'simctl', 'clone', 'UDID', 'iPhone 11 13.2.2 test simulator'])
+
+    subprocess_mock.reset_mock()
+
+    self.assertEqual(
+        iossim_util.clone_simulator_by_udid(
+            'UDID',
+            'iPhone 11 13.2.2 test simulator',
+            path='/src',
+            dest_path='/dest'), 'CLONE_UDID')
+    subprocess_mock.assert_called_with([
+        'xcrun', 'simctl', '--set', '/src', 'clone', 'UDID',
+        'iPhone 11 13.2.2 test simulator', '/dest'
+    ])
+
   @mock.patch.object(
       iossim_util, 'is_device_with_udid_simulator', autospec=True)
   @mock.patch('subprocess.check_output', autospec=True)
@@ -547,12 +662,15 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     is_simulator_mock.cache_clear.assert_called_with()
 
   @mock.patch('subprocess.check_call', autospec=True)
-  def test_wipe_simulator_by_platform_and_version(self, subprocess_mock, _, _2):
+  @mock.patch.object(iossim_util, 'shutdown_simulator_by_udid', autospec=True)
+  def test_wipe_simulator_by_platform_and_version(self, mock_shutdown,
+                                                  subprocess_mock, _, _2):
     """Ensures that command is correct."""
     iossim_util.wipe_simulator_by_udid('A4E66321-177A-450A-9BA1-488D85B7278E')
     self.assertEqual(
         ['xcrun', 'simctl', 'erase', 'A4E66321-177A-450A-9BA1-488D85B7278E'],
         subprocess_mock.call_args[0][0])
+    mock_shutdown.assert_called_with('A4E66321-177A-450A-9BA1-488D85B7278E')
 
   @mock.patch('subprocess.check_output', autospec=True)
   def test_get_home_directory(self, subprocess_mock, _, _2):
@@ -722,6 +840,18 @@ class GetiOSSimUtil(test_runner_test.TestCase):
       ]
 
       self.assertEqual(mock_delete_simulator_runtime.call_count, 1)
+
+  @mock.patch('os.path.isdir')
+  @mock.patch('subprocess.check_call')
+  def test_remove_stale_simulators_from_cache(self, mock_check_call, mock_isdir,
+                                              _, _2):
+    mock_isdir.return_value = True
+    iossim_util.remove_stale_simulators_from_cache()
+    mock_isdir.assert_called_once_with(iossim_util.SIMULATOR_CACHE_PATH)
+    mock_check_call.assert_called_once_with([
+        'xcrun', 'simctl', '--set', iossim_util.SIMULATOR_CACHE_PATH, 'delete',
+        'unavailable'
+    ])
 
   @mock.patch('subprocess.check_call')
   def test_update_dyld_shared_cache(self, mock_check_call, _, _2):

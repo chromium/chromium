@@ -228,7 +228,8 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
         clones=1,
         retries=3,
         readline_timeout=180,
-        exception_checker=None)
+        exception_checker=None,
+        test_runner=mock.MagicMock())
     overall_result = launch_command.launch()
     self.assertFalse(overall_result.crashed)
     self.assertEqual(len(overall_result.all_test_names()), 2)
@@ -250,7 +251,8 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
         clones=1,
         retries=3,
         readline_timeout=180,
-        exception_checker=None)
+        exception_checker=None,
+        test_runner=mock.MagicMock())
     launch_command.launch()
     xcodebuild_runner.LaunchCommand(
         egtests,
@@ -258,7 +260,8 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
         clones=1,
         retries=3,
         readline_timeout=180,
-        exception_checker=None)
+        exception_checker=None,
+        test_runner=mock.MagicMock())
     self.assertEqual(1, len(mock_collect_results.mock_calls))
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
@@ -281,7 +284,8 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
         clones=1,
         retries=3,
         readline_timeout=180,
-        exception_checker=None)
+        exception_checker=None,
+        test_runner=mock.MagicMock())
     overall_result = launch_command.launch()
     self.assertEqual(len(overall_result.all_test_names()), 2)
     self.assertEqual(overall_result.expected_tests(),
@@ -302,7 +306,8 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
         clones=1,
         retries=3,
         readline_timeout=180,
-        exception_checker=None)
+        exception_checker=None,
+        test_runner=mock.MagicMock())
     overall_result = launch_command.launch()
     self.assertEqual(len(overall_result.all_test_names()), 0)
     self.assertEqual(overall_result.expected_tests(), set([]))
@@ -326,7 +331,8 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
         retries=3,
         readline_timeout=180,
         test_plugin_service=mock_plugin_service,
-        exception_checker=None)
+        exception_checker=None,
+        test_runner=mock.MagicMock())
     launch_command.launch()
     xcodebuild_runner.LaunchCommand(
         egtests,
@@ -334,7 +340,8 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
         clones=1,
         retries=3,
         readline_timeout=180,
-        exception_checker=None)
+        exception_checker=None,
+        test_runner=mock.MagicMock())
     self.assertEqual(1, len(mock_collect_results.mock_calls))
     mock_plugin_service.reset.assert_called_once_with()
 

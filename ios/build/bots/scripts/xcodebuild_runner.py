@@ -13,6 +13,7 @@ import subprocess
 import sys
 import time
 from typing import Tuple, List, Optional
+import weakref
 
 import constants
 import iossim_util
@@ -53,52 +54,6 @@ def _tests_decided_at_runtime(app_name):
   return any(fragment in app_name for fragment in suite_name_fragments)
 
 
-def erase_all_simulators(path=None):
-  """Erases all simulator devices.
-
-  Args:
-    path: (str) A path with simulators
-  """
-  command = ['xcrun', 'simctl']
-  if path:
-    command += ['--set', path]
-    LOGGER.info('Erasing all simulators from folder %s.' % path)
-  else:
-    LOGGER.info('Erasing all simulators.')
-
-  try:
-    subprocess.check_call(command + ['erase', 'all'])
-  except subprocess.CalledProcessError as e:
-    # Logging error instead of throwing so we don't cause failures in case
-    # this was indeed failing to clean up.
-    message = 'Failed to erase all simulators. Error: %s' % e.output
-    LOGGER.error(message)
-
-
-def shutdown_all_simulators(path=None):
-  """Shutdown all simulator devices.
-
-  Fix for DVTCoreSimulatorAdditionsErrorDomain error.
-
-  Args:
-    path: (str) A path with simulators
-  """
-  command = ['xcrun', 'simctl']
-  if path:
-    command += ['--set', path]
-    LOGGER.info('Shutdown all simulators from folder %s.' % path)
-  else:
-    LOGGER.info('Shutdown all simulators.')
-
-  try:
-    subprocess.check_call(command + ['shutdown', 'all'])
-  except subprocess.CalledProcessError as e:
-    # Logging error instead of throwing so we don't cause failures in case
-    # this was indeed failing to clean up.
-    message = 'Failed to shutdown all simulators. Error: %s' % e.output
-    LOGGER.error(message)
-
-
 def terminate_process(proc):
   """Terminates the process.
 
@@ -123,12 +78,13 @@ class LaunchCommand(object):
                retries,
                readline_timeout,
                exception_checker,
+               test_runner,
                out_dir=os.path.basename(os.getcwd()),
                use_clang_coverage=False,
                env=None,
                test_plugin_service=None,
                cert_path=None,
-               erase_simulators=True):
+               ensure_fresh_simulators=True):
     """Initialize launch command.
 
     Args:
@@ -139,13 +95,15 @@ class LaunchCommand(object):
         have output (in seconds).
       exception_checker: (ExceptionChecker) Checks logs for possible infra
         issues and raises them as exceptions.
+      test_runner: (SimulatorParallelTestRunner) The test runner this
+        LaunchCommand belongs to.
       retries: (int) A number of retries.
       out_dir: (str) A folder in which xcodebuild will generate test output.
         By default it is a current directory.
       env: (dict) Environment variables.
       cert_path: (str) A path for cert to install.
-      erase_simulators: (bool) Whether to erase all simulators before all
-        tests launch or not.
+      ensure_fresh_simulators: (bool) Whether to ensure all simulators have a
+        fresh state before running tests.
 
     Raises:
       AppNotFoundError: At incorrect egtests_app parameter type.
@@ -163,8 +121,9 @@ class LaunchCommand(object):
     self.env = env
     self.test_plugin_service = test_plugin_service
     self.cert_path = cert_path
-    self.erase_simulators = erase_simulators
+    self.ensure_fresh_simulators = ensure_fresh_simulators
     self.exception_checker = exception_checker
+    self.test_runner = test_runner
 
   def launch_attempt(self, cmd):
     """Launch a process and do logging simultaneously.
@@ -200,11 +159,8 @@ class LaunchCommand(object):
         self.test_plugin_service.reset()
       # Erase all simulators per each attempt
       if iossim_util.is_device_with_udid_simulator(self.udid):
-        if self.erase_simulators:
-          shutdown_all_simulators()
-          shutdown_all_simulators(XTDEVICE_FOLDER)
-          erase_all_simulators()
-          erase_all_simulators(XTDEVICE_FOLDER)
+        if self.ensure_fresh_simulators and attempt > 0:
+          self.udid = self.test_runner.ensure_fresh_simulator_state()
           # kill all running simulators to prevent possible memory leaks
           test_runner.SimulatorTestRunner.kill_simulators()
         if self.cert_path:
@@ -511,7 +467,9 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
                             self.use_clang_coverage),
         env=self.get_launch_env(),
         test_plugin_service=self.test_plugin_service,
-        exception_checker=self.exception_checker)
+        exception_checker=self.exception_checker,
+        test_runner=weakref.proxy(self),  # avoid reference cycle
+    )
 
     try:
       overall_result = launch_command.launch()
@@ -573,6 +531,33 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
               not (tests_selected_at_runtime and overall_result.crashed))
     finally:
       self.tear_down()
+
+  def ensure_fresh_simulator_state(self) -> str:
+    """Ensures that the simulator is in a fresh state.
+
+    Returns:
+      The UDID of the fresh simulator. In the case of cache being used, a new
+        fresh clone with a new UDID may be created. If caching is not enabled,
+        the existing simulator will be wiped back to a fresh state returning its
+        UDID.
+    """
+    # Clean xcode managed simulator clones
+    iossim_util.shutdown_all_simulators(XTDEVICE_FOLDER)
+    iossim_util.delete_all_simulators(XTDEVICE_FOLDER)
+
+    if self.use_simulator_cache:
+      # delete current simulator
+      iossim_util.delete_simulator_by_udid(self.udid)
+      # create new simulator & update UDID
+      self.udid = iossim_util.get_simulator(self.platform, self.version,
+                                            self.out_dir,
+                                            self.use_simulator_cache)
+      return self.udid
+
+    # wipe existing simulator
+    iossim_util.wipe_simulator_by_udid(self.udid)
+    return self.udid
+
 
   def tear_down(self):
     if self.test_plugin_service:
