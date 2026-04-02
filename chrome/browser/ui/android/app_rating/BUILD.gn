@@ -2,7 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+
+if (enable_chrome_android_internal) {
+  android_aar_prebuilt("play_review_aar_internal_java") {
+    aar_path = "//third_party/android_deps/autorolled/cipd/libs/com_google_android_play_review/review.aar"
+    info_path = "//third_party/android_deps/autorolled/committed/libs/com_google_android_play_review/com_google_android_play_review.info"
+
+    # Skip core_common_java to avoid resource collisions with clank's internal playcore.
+    deps = [
+      "$google_play_services_package:google_play_services_basement_java",
+      "$google_play_services_package:google_play_services_tasks_java",
+    ]
+  }
+
+  java_group("play_review_aar_for_clank_java") {
+    deps = [ ":play_review_aar_internal_java" ]
+  }
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/app_rating/AppRatingManager.java",
@@ -35,9 +54,13 @@ android_library("impl_java") {
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//build/android:build_java",
-    "//third_party/android_deps:com_google_android_play_review_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  if (enable_chrome_android_internal) {
+    deps += [ ":play_review_aar_for_clank_java" ]
+  } else {
+    deps += [ "//third_party/android_deps:com_google_android_play_review_java" ]
+  }
 }
 
 robolectric_library("junit") {
@@ -61,7 +84,6 @@ robolectric_library("junit") {
     "//components/segmentation_platform/public:public_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
-    "//third_party/android_deps:com_google_android_play_review_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -69,4 +91,9 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
+  if (enable_chrome_android_internal) {
+    deps += [ ":play_review_aar_for_clank_java" ]
+  } else {
+    deps += [ "//third_party/android_deps:com_google_android_play_review_java" ]
+  }
 }
