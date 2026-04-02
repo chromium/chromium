@@ -487,6 +487,9 @@ extern const char kIOSChooseFromDriveDescription[];
 extern const char kIOSChooseFromDriveSignedOutName[];
 extern const char kIOSChooseFromDriveSignedOutDescription[];
 
+extern const char kIOSCobaltDeveloperModeName[];
+extern const char kIOSCobaltDeveloperModeDescription[];
+
 extern const char kIOSCobaltName[];
 extern const char kIOSCobaltDescription[];
 

@@ -5671,6 +5671,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "ios-cobalt-developer-mode",
+    "owners": [ "qpubert@google.com", "erahmaoui@google.com", "bling-squid-squad@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ios-custom-file-upload-menu",
     "owners": [ "qpubert@google.com", "bling-squid-squad@google.com" ],
     "expiry_milestone": 150

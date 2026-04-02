@@ -133,9 +133,13 @@ BASE_DECLARE_FEATURE(kNetErrorFromErrorChainKillSwitch);
 
 // Feature flag to enable Cobalt on iOS.
 BASE_DECLARE_FEATURE(kIOSCobalt);
+// Feature flag to enable the developer mode of Cobalt on iOS.
+BASE_DECLARE_FEATURE(kIOSCobaltDeveloperMode);
 
 // Returns whether Cobalt is enabled on iOS.
 bool IsCobaltEnabled();
+// Returns whether the developer mode of Cobalt is enabled on iOS.
+bool IsCobaltDeveloperModeEnabled();
 
 // Feature flag to enable the workaround for SecTrust evaluation inconsistency.
 // TODO(crbug.com/485184282): Remove this flag once it's confirmed that the

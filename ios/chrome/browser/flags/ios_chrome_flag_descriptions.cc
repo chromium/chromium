@@ -777,6 +777,10 @@ const char kIOSChooseFromDriveSignedOutName[] = "Choose from Drive Signed Out";
 const char kIOSChooseFromDriveSignedOutDescription[] =
     "Enables the Choose from Drive feature to signed out users.";
 
+const char kIOSCobaltDeveloperModeName[] = "IOS Cobalt Developer Mode";
+const char kIOSCobaltDeveloperModeDescription[] =
+    "Enables the developer mode of the Cobalt feature on iOS.";
+
 const char kIOSCobaltName[] = "IOS Cobalt";
 const char kIOSCobaltDescription[] = "Enables the Cobalt feature on iOS.";
 

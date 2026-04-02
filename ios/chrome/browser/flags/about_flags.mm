@@ -2738,6 +2738,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"gemini-client-migration", flag_descriptions::kGeminiClientMigrationName,
      flag_descriptions::kGeminiClientMigrationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiClientMigration)},
+    {"ios-cobalt-developer-mode",
+     flag_descriptions::kIOSCobaltDeveloperModeName,
+     flag_descriptions::kIOSCobaltDeveloperModeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kIOSCobaltDeveloperMode)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
