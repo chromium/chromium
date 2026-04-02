@@ -173,7 +173,12 @@ void AutofillAiImportDataControllerImpl::OnGoToWalletLinkClicked() {
   if (BrowserWindowInterface* browser =
           chrome::FindBrowserWithTab(web_contents())) {
     reopen_bubble_when_web_contents_becomes_visible_ = true;
-    ShowSingletonTab(browser, GURL(chrome::kWalletPassesPageURL));
+    const EntityInstance& new_entity = GetSaveUpdateState().new_entity;
+    bool is_private_pass =
+        IsMaskedStorageSupported(new_entity.type(), new_entity.record_type());
+    ShowSingletonTab(
+        browser, GURL(is_private_pass ? chrome::kWalletPrivatePassHelpCenterURL
+                                      : chrome::kWalletPassesPageURL));
   }
 }
 

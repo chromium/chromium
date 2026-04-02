@@ -611,6 +611,10 @@ inline constexpr char kWallpaperSearchLearnMorePageURL[] =
 inline constexpr char kWalletPassesPageURL[] =
     "https://wallet.google.com/wallet/passes";
 
+// The help center article URL on using Wallet private passes across Google.
+inline constexpr char kWalletPrivatePassHelpCenterURL[] =
+    "https://support.google.com/wallet?p=private_use_across_google";
+
 // The URL for the "Learn more" link in the enterprise disclaimer for managed
 // profile in the Signin Intercept bubble.
 inline constexpr char kSigninInterceptManagedDisclaimerLearnMoreURL[] =
