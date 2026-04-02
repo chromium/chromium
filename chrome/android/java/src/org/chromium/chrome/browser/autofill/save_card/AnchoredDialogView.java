@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -26,28 +27,50 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
  */
 @NullMarked
 class AnchoredDialogView {
+    private static class PopupHolder {
+        private final Context mContext;
+        private @MonotonicNonNull PopupWindow mPopup;
+
+        PopupHolder(Context context) {
+            mContext = context;
+        }
+
+        PopupWindow getOrCreate() {
+            if (mPopup == null) {
+                mPopup = new PopupWindow(mContext);
+
+                Resources resources = mContext.getResources();
+
+                mPopup.setFocusable(true);
+                mPopup.setTouchModal(false);
+                mPopup.setElevation(
+                        resources.getDimensionPixelSize(R.dimen.anchored_dialog_elevation));
+                mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+                mPopup.setWindowLayoutType(WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL);
+                mPopup.setBackgroundDrawable(
+                        mContext.getDrawable(R.drawable.default_popup_menu_bg));
+                mPopup.setAnimationStyle(R.style.PopupWindowAnimFade);
+                mPopup.setOutsideTouchable(true);
+                mPopup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+                mPopup.setWidth(resources.getDimensionPixelSize(R.dimen.anchored_dialog_width));
+            }
+            return mPopup;
+        }
+
+        @Nullable PopupWindow getIfExisting() {
+            return mPopup;
+        }
+    }
+
     private final Context mContext;
-    private final PopupWindow mPopup;
+    private final PopupHolder mPopupHolder;
     private @Nullable BottomSheetContent mContent;
-    private @Nullable View mContainerView;
+    private @MonotonicNonNull View mContainerView;
     private int mOffsetY;
 
     AnchoredDialogView(Context context) {
         mContext = context;
-        mPopup = new PopupWindow(mContext);
-
-        Resources resources = context.getResources();
-
-        mPopup.setFocusable(true);
-        mPopup.setTouchModal(false);
-        mPopup.setElevation(resources.getDimensionPixelSize(R.dimen.anchored_dialog_elevation));
-        mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
-        mPopup.setWindowLayoutType(WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL);
-        mPopup.setBackgroundDrawable(mContext.getDrawable(R.drawable.default_popup_menu_bg));
-        mPopup.setAnimationStyle(R.style.PopupWindowAnimFade);
-        mPopup.setOutsideTouchable(true);
-        mPopup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mPopup.setWidth(resources.getDimensionPixelSize(R.dimen.anchored_dialog_width));
+        mPopupHolder = new PopupHolder(mContext);
     }
 
     @Nullable BottomSheetContent getContent() {
@@ -56,7 +79,9 @@ class AnchoredDialogView {
 
     void setContent(@Nullable BottomSheetContent content) {
         mContent = content;
-        mPopup.setContentView(mContent == null ? null : mContent.getContentView());
+        mPopupHolder
+                .getOrCreate()
+                .setContentView(mContent == null ? null : mContent.getContentView());
     }
 
     void setContainerView(View view) {
@@ -64,7 +89,7 @@ class AnchoredDialogView {
     }
 
     void setOnDismissListener(OnDismissListener listener) {
-        mPopup.setOnDismissListener(listener);
+        mPopupHolder.getOrCreate().setOnDismissListener(listener);
     }
 
     void setOffsetY(int offset) {
@@ -73,11 +98,18 @@ class AnchoredDialogView {
 
     void show() {
         assertNonNull(mContainerView);
+
         int margin = mContext.getResources().getDimensionPixelSize(R.dimen.anchored_dialog_margin);
-        mPopup.showAtLocation(mContainerView, Gravity.TOP | Gravity.END, margin, mOffsetY + margin);
+        mPopupHolder
+                .getOrCreate()
+                .showAtLocation(
+                        mContainerView, Gravity.TOP | Gravity.END, margin, mOffsetY + margin);
     }
 
     void hide() {
-        mPopup.dismiss();
+        PopupWindow popup = mPopupHolder.getIfExisting();
+        if (popup != null) {
+            popup.dismiss();
+        }
     }
 }
