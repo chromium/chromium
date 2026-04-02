@@ -910,6 +910,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         super.initializeToolbar();
+
+        if (AndroidSidePanelEnabledFn.isEnabled()) {
+            mToolbarManager.setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
+        }
     }
 
     @Override

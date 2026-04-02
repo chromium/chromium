@@ -1518,7 +1518,9 @@ public class CompositorViewHolder extends FrameLayout
 
     /**
      * Sets the {@link OneshotSupplier} for {@link SideUiStateProvider}. Will only be called if the
-     * related feature flag is enabled.
+     * EnableAndroidSidePanel feature flag is enabled.
+     *
+     * <p>TODO(crbug.com/493289413): Update JavaDoc after feature is launched.
      *
      * @param sideUiStateProviderSupplier The {@link OneshotSupplier} for {@link
      *     SideUiStateProvider}.

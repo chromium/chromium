@@ -198,6 +198,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
@@ -405,6 +407,9 @@ public class ToolbarManager
             mTabStripTransitionDelegateSupplier = new OneshotSupplierImpl<>();
 
     private @Nullable TabGroupUiOneshotSupplier mTabGroupUiOneshotSupplier;
+
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
+    private @Nullable SideUiObserver mSideUiObserver;
 
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
@@ -1823,6 +1828,34 @@ public class ToolbarManager
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
 
+    /**
+     * Sets the supplier for the {@link SideUiStateProvider}. Will only be called if the
+     * EnableAndroidSidePanel feature flag is enabled.
+     *
+     * <p>TODO(crbug.com/493289413): Update JavaDoc after feature is launched.
+     *
+     * @param sideUiStateProviderSupplier The {@link OneshotSupplier} for {@link
+     *     SideUiStateProvider}.
+     */
+    public void setSideUiStateProviderSupplier(
+            OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
+        sideUiStateProviderSupplier.onAvailable(this::setSideUiStateProvider);
+    }
+
+    private void setSideUiStateProvider(SideUiStateProvider sideUiStateProvider) {
+        if (mSideUiStateProvider != null && mSideUiObserver != null) {
+            mSideUiStateProvider.removeObserver(mSideUiObserver);
+        }
+
+        mSideUiStateProvider = sideUiStateProvider;
+
+        mSideUiObserver =
+                (sideUiSpecs) -> {
+                    mControlContainer.onSideUiSpecsChanged(sideUiSpecs);
+                };
+        mSideUiStateProvider.addObserver(mSideUiObserver);
+    }
+
     private boolean shouldSuppressToolbarLongPress() {
         return mOmniboxFocusStateSupplier.get()
                 || (mToolbarPositionController != null
@@ -2835,6 +2868,10 @@ public class ToolbarManager
         if (mCustomTabCount != null) {
             mCustomTabCount.destroy();
             mCustomTabCount = null;
+        }
+
+        if (mSideUiStateProvider != null && mSideUiObserver != null) {
+            mSideUiStateProvider.removeObserver(mSideUiObserver);
         }
 
         mTabObscuringHandler.removeObserver(this);
