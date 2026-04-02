@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.media;
 
+import android.graphics.Bitmap;
+
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -12,6 +16,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,8 +37,26 @@ public class MediaCapturePickerTabObserver implements AllTabObserver.Observer {
 
     /** A delegate to receive events about tabs. */
     public interface Delegate extends AllTabObserver.Observer {
-        /** Called when a pickable tab is updated. */
-        void onTabUpdated(Tab tab);
+        /**
+         * Called when a pickable tab is updated. To be replaced by the fine-grained update methods.
+         */
+        @Deprecated
+        default void onTabUpdated(Tab tab) {}
+
+        /** Called when a pickable tab's title is updated. */
+        default void onTabTitleUpdated(Tab tab) {
+            onTabUpdated(tab);
+        }
+
+        /** Called when a pickable tab's icon is updated. */
+        default void onTabIconUpdated(Tab tab, @Nullable Bitmap icon) {
+            onTabUpdated(tab);
+        }
+
+        /** Called when a pickable tab's content is updated. */
+        default void onTabContentUpdated(Tab tab) {
+            onTabUpdated(tab);
+        }
 
         @Override
         void onTabAdded(Tab tab);
@@ -51,24 +74,30 @@ public class MediaCapturePickerTabObserver implements AllTabObserver.Observer {
     private final TabObserver mTabObserver =
             new EmptyTabObserver() {
                 @Override
-                public void onContentChanged(Tab tab) {
-                    maybeUpdatePickableTab(tab);
+                public void onTitleUpdated(Tab tab) {
+                    maybeUpdatePickableTab(tab, mObserverDelegate::onTabTitleUpdated);
                 }
 
                 @Override
-                public void onTitleUpdated(Tab tab) {
-                    maybeUpdatePickableTab(tab);
+                public void onFaviconUpdated(
+                        Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
+                    maybeUpdatePickableTab(tab, (t) -> mObserverDelegate.onTabIconUpdated(t, icon));
                 }
 
                 @Override
                 public void onUrlUpdated(Tab tab) {
-                    maybeUpdatePickableTab(tab);
+                    maybeUpdatePickableTab(tab, mObserverDelegate::onTabContentUpdated);
+                }
+
+                @Override
+                public void onContentChanged(Tab tab) {
+                    maybeUpdatePickableTab(tab, mObserverDelegate::onTabContentUpdated);
                 }
 
                 @Override
                 public void onDidFinishNavigationInPrimaryMainFrame(
                         Tab tab, NavigationHandle navigation) {
-                    maybeUpdatePickableTab(tab);
+                    maybeUpdatePickableTab(tab, mObserverDelegate::onTabContentUpdated);
                 }
             };
 
@@ -89,16 +118,20 @@ public class MediaCapturePickerTabObserver implements AllTabObserver.Observer {
         mPickableTabs.clear();
     }
 
-    private void maybeUpdatePickableTab(Tab tab) {
+    private void maybeUpdatePickableTab(Tab tab, Callback<Tab> updateAction) {
         if (isTabPickable(tab)) {
             if (mPickableTabs.add(tab)) {
                 mObserverDelegate.onTabAdded(tab);
             } else {
-                mObserverDelegate.onTabUpdated(tab);
+                updateAction.onResult(tab);
             }
         } else {
             if (mPickableTabs.remove(tab)) mObserverDelegate.onTabRemoved(tab);
         }
+    }
+
+    private void maybeUpdatePickableTab(Tab tab) {
+        maybeUpdatePickableTab(tab, mObserverDelegate::onTabUpdated);
     }
 
     private boolean isTabPickable(Tab tab) {

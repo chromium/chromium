@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.media.ui;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -195,7 +197,20 @@ public class MediaCapturePickerTabObserverTest {
         verify(tab).addObserver(tabObserverCaptor.capture());
 
         final TabObserver tabObserver = tabObserverCaptor.getValue();
+
         tabObserver.onTitleUpdated(tab);
-        verify(mObserverDelegate).onTabUpdated(tab);
+        verify(mObserverDelegate).onTabTitleUpdated(tab);
+
+        tabObserver.onFaviconUpdated(tab, null, null);
+        verify(mObserverDelegate).onTabIconUpdated(eq(tab), any());
+
+        tabObserver.onUrlUpdated(tab);
+        verify(mObserverDelegate).onTabContentUpdated(tab);
+
+        tabObserver.onContentChanged(tab);
+        verify(mObserverDelegate, times(2)).onTabContentUpdated(tab);
+
+        tabObserver.onDidFinishNavigationInPrimaryMainFrame(tab, null);
+        verify(mObserverDelegate, times(3)).onTabContentUpdated(tab);
     }
 }
