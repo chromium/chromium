@@ -15,8 +15,10 @@ NSString* const kToolNavigate = @"Navigate";
 NSString* const kToolClick = @"Click";
 NSString* const kToolHistoryBack = @"History Back";
 NSString* const kToolHistoryForward = @"History Forward";
+NSString* const kToolType = @"Type";
 
-NSSet* const kWebActuationTools = [NSSet setWithObjects:kToolClick, nil];
+NSSet* const kWebActuationTools =
+    [NSSet setWithObjects:kToolClick, kToolType, nil];
 }  // namespace
 
 @interface AIPrototypingActorViewController () <UITextViewDelegate> {
@@ -406,7 +408,19 @@ NSSet* const kWebActuationTools = [NSSet setWithObjects:kToolClick, nil];
     kToolHistoryForward : @{
       @"ui" : @[ _tabIdContainer, _jsonContainer ],
       @"template" : @{@"forward" : @{@"tab_id" : @(0)}}
-    }
+    },
+    kToolType : @{
+      @"ui" : @[ _tabIdContainer, _frameIdContainer, _jsonContainer ],
+      @"template" : @{
+        @"type" : @{
+          @"tab_id" : @(0),
+          @"target" : @{@"coordinate" : @{@"x" : @(200), @"y" : @(200)}},
+          @"text" : @"Foobarbaz",
+          @"follow_by_enter" : @(NO),
+          @"mode" : @(1),
+        }
+      }
+    },
   };
 
   _toolPickerButton.menu = [self createToolPickerMenu];

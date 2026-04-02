@@ -20,6 +20,7 @@ enum class ActionType {
   kClick,
   kHistoryBack,
   kHistoryForward,
+  kType,
 };
 
 // Based on the field names in
@@ -36,6 +37,9 @@ ActionType GetActionType(const std::string& key) {
   }
   if (key == "forward") {
     return ActionType::kHistoryForward;
+  }
+  if (key == "type") {
+    return ActionType::kType;
   }
   return ActionType::kUnknown;
 }
@@ -127,6 +131,30 @@ bool MapClickAction(const base::DictValue& dict,
   return click->ByteSizeLong() > 0;
 }
 
+bool MapTypeAction(const base::DictValue& dict,
+                   optimization_guide::proto::Action* action) {
+  auto* type = action->mutable_type();
+  if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
+    type->set_tab_id(*tab_id);
+  }
+  if (const base::DictValue* target = dict.FindDict("target")) {
+    MapActionTarget(*target, type->mutable_target());
+  }
+  if (const std::string* text = dict.FindString("text")) {
+    type->set_text(*text);
+  }
+  if (std::optional<int> mode = dict.FindInt("mode")) {
+    if (optimization_guide::proto::TypeAction_TypeMode_IsValid(*mode)) {
+      type->set_mode(
+          static_cast<optimization_guide::proto::TypeAction_TypeMode>(*mode));
+    }
+  }
+  if (std::optional<bool> follow_by_enter = dict.FindBool("follow_by_enter")) {
+    type->set_follow_by_enter(*follow_by_enter);
+  }
+  return type->ByteSizeLong() > 0;
+}
+
 }  // namespace
 
 bool ParseActionFromDict(const base::DictValue& dict,
@@ -153,6 +181,8 @@ bool ParseActionFromDict(const base::DictValue& dict,
       return MapHistoryBackAction(value.GetDict(), action);
     case ActionType::kHistoryForward:
       return MapHistoryForwardAction(value.GetDict(), action);
+    case ActionType::kType:
+      return MapTypeAction(value.GetDict(), action);
     case ActionType::kUnknown:
       return false;
   }
