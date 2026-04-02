@@ -40,6 +40,7 @@ source_set("utils") {
     ":browser",
     "//base",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
   ]
 }
 

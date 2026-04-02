@@ -16,6 +16,10 @@ namespace browser_list_utils {
 // exists, it returns `nullptr`.
 Browser* GetMostActiveSceneBrowser(BrowserList* browser_list);
 
+// Returns the currently visible browser (either incognito or regular) of one of
+// the foreground active scene.
+Browser* GetVisibleBrowser(BrowserList* browser_list);
+
 }  // namespace browser_list_utils
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_UTILS_H_

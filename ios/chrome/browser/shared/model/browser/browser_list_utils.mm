@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
 namespace browser_list_utils {
 
@@ -30,6 +33,26 @@ Browser* GetMostActiveSceneBrowser(BrowserList* browser_list) {
     }
   }
   return most_active_browser;
+}
+
+Browser* GetVisibleBrowser(BrowserList* browser_list) {
+  std::set<Browser*> browsers =
+      browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
+  for (Browser* browser : browsers) {
+    SceneState* scene_state = browser->GetSceneState();
+    if (scene_state.activationLevel == SceneActivationLevelForegroundActive) {
+      Browser* current_browser =
+          scene_state.browserProviderInterface.currentBrowserProvider.browser;
+      if (!current_browser) {
+        continue;
+      }
+      const Browser::Type type = current_browser->type();
+      CHECK(type == Browser::Type::kRegular ||
+            type == Browser::Type::kIncognito);
+      return current_browser;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace browser_list_utils
