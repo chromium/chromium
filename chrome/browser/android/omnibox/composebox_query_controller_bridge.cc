@@ -117,20 +117,7 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
     return;
   }
 
-  if (OmniboxFieldTrial::kOmniboxShowModelPicker.Get()) {
-    AimEligibilityService* aim_service =
-        AimEligibilityServiceFactory::GetForProfile(profile);
-    const omnibox::SearchboxConfig* config_ptr =
-        aim_service->GetSearchboxConfig();
-    input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
-        *session_handle_, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
-        GURL(), profile_ ? profile_->IsOffTheRecord() : false);
-    input_state_subscription_ =
-        input_state_model_->subscribe(base::BindRepeating(
-            &ComposeboxQueryControllerBridge::OnInputStateChanged,
-            weak_ptr_factory_.GetWeakPtr()));
-    input_state_model_->Initialize();
-  }
+  InitializeInputStateModel();
 
   contextual_tasks::ContextualTasksService* tasks_service =
       contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
@@ -622,6 +609,44 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
 
   Java_ComposeboxQueryControllerBridge_onInputStateChanged(env, java_obj_,
                                                            j_input_state);
+}
+
+void ComposeboxQueryControllerBridge::ResetInputStateModel() {
+  input_state_model_.reset();
+}
+
+void ComposeboxQueryControllerBridge::ResetBlocklistedSuggestions() {
+  // TODO(crbug.com/493281303): Implement this.
+}
+
+void ComposeboxQueryControllerBridge::UpdateSuggestedTabContext(
+    std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab) {
+  // TODO(crbug.com/493281303): Implement this.
+}
+
+void ComposeboxQueryControllerBridge::OnTaskChanged() {
+  // TODO(crbug.com/493281303): Implement this.
+}
+
+void ComposeboxQueryControllerBridge::InitializeInputStateModel() {
+  if (OmniboxFieldTrial::kOmniboxShowModelPicker.Get()) {
+    AimEligibilityService* aim_service =
+        AimEligibilityServiceFactory::GetForProfile(profile_);
+    const omnibox::SearchboxConfig* config_ptr =
+        aim_service->GetSearchboxConfig();
+    input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
+        *session_handle_, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
+        GURL(), profile_ ? profile_->IsOffTheRecord() : false);
+    input_state_subscription_ =
+        input_state_model_->subscribe(base::BindRepeating(
+            &ComposeboxQueryControllerBridge::OnInputStateChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+    input_state_model_->Initialize();
+  }
+}
+
+bool ComposeboxQueryControllerBridge::has_suggested_tab_context() const {
+  return false;
 }
 
 DEFINE_JNI(ComposeboxQueryControllerBridge)

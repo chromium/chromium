@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/input_state_model.h"
@@ -33,6 +34,7 @@ class GURL;
 
 class ComposeboxQueryControllerBridge
     : public ComposeboxQueryController::ContextUploadStatusObserver,
+      public contextual_tasks::ContextualTasksComposeboxHandlerInterface,
       public contextual_tasks::QueryContextualizer::Delegate {
  public:
   explicit ComposeboxQueryControllerBridge(
@@ -91,6 +93,16 @@ class ComposeboxQueryControllerBridge
   size_t GetAttachmentCount() const;
 
   base::WeakPtr<ComposeboxQueryControllerBridge> AsWeakPtr();
+
+  // contextual_tasks::ContextualTasksComposeboxHandlerInterface:
+  void ResetInputStateModel() override;
+  void ResetBlocklistedSuggestions() override;
+  void UpdateSuggestedTabContext(
+      std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab)
+      override;
+  void OnTaskChanged() override;
+  void InitializeInputStateModel() override;
+  bool has_suggested_tab_context() const override;
 
   // contextual_tasks::QueryContextualizer::Delegate:
   GURL GetTabUrl(contextual_tasks::QueryContextualizer::TabId id) override;
