@@ -154,6 +154,7 @@ void SetUsbInfo(metrics::PrinterEventProto* event,
   event->set_usb_model_id(ppd_search_data.usb_product_id);
   event->set_usb_printer_manufacturer(ppd_search_data.usb_manufacturer);
   event->set_usb_printer_model(ppd_search_data.usb_model);
+  event->set_device_id(ppd_search_data.printer_id.raw_id());
 }
 
 // Add information to the |event| that only network printers have.

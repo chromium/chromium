@@ -21,6 +21,7 @@ constexpr int kVendorId = 0x3241;
 constexpr int kProductId = 0x1337;
 constexpr char kUsbManufacturer[] = "Usb MakesPrinters";
 constexpr char kUsbModel[] = "Printer ModelName";
+constexpr char kDeviceId[] = "USB DeviceId";
 
 constexpr char kMakeAndModel[] = "Chromium RazLazer X4321er";
 constexpr char kEffectiveMakeAndModel[] = "Generic PostScript";
@@ -287,6 +288,7 @@ TEST_F(PrinterEventTrackerTest, InstalledUsbPrinter) {
   ppd_search_data.usb_product_id = kProductId,
   ppd_search_data.usb_manufacturer = kUsbManufacturer,
   ppd_search_data.usb_model = kUsbModel,
+  ppd_search_data.printer_id.set_raw_id(kDeviceId),
 
   tracker_.RecordUsbPrinterInstalled(ppd_reference, ppd_search_data,
                                      PrinterEventTracker::SetupMode::kUser);
@@ -300,6 +302,7 @@ TEST_F(PrinterEventTrackerTest, InstalledUsbPrinter) {
   EXPECT_EQ(kProductId, record.usb_model_id());
   EXPECT_EQ(kUsbManufacturer, record.usb_printer_manufacturer());
   EXPECT_EQ(kUsbModel, record.usb_printer_model());
+  EXPECT_EQ(kDeviceId, record.device_id());
 
   EXPECT_EQ(kEffectiveMakeAndModel, record.ppd_identifier());
   EXPECT_FALSE(record.user_ppd());
@@ -342,6 +345,7 @@ TEST_F(PrinterEventTrackerTest, AbandonedUsbPrinter) {
   ppd_search_data.usb_product_id = kProductId;
   ppd_search_data.usb_manufacturer = kUsbManufacturer;
   ppd_search_data.usb_model = kUsbModel;
+  ppd_search_data.printer_id.set_raw_id(kDeviceId);
 
   tracker_.RecordUsbSetupAbandoned(ppd_search_data);
 
@@ -354,6 +358,7 @@ TEST_F(PrinterEventTrackerTest, AbandonedUsbPrinter) {
   EXPECT_EQ(kProductId, record.usb_model_id());
   EXPECT_EQ(kUsbManufacturer, record.usb_printer_manufacturer());
   EXPECT_EQ(kUsbModel, record.usb_printer_model());
+  EXPECT_EQ(kDeviceId, record.device_id());
 
   EXPECT_FALSE(record.has_user_ppd());
   EXPECT_FALSE(record.has_ppd_identifier());
