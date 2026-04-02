@@ -5,5 +5,7 @@ This is a testharness.js-based test.
   assert_equals: expected "audio" but got ""
 [FAIL] Link preload "as" value for "json" should be "json".
   assert_equals: expected "json" but got ""
+[FAIL] Link preload "as" value for "text" should be "text".
+  assert_equals: expected "text" but got ""
 Harness: the test ran to completion.
 

@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] link rel=modulepreload with text doesn't re-fetch when imported
+  promise_test: Unhandled rejection with value: object "[object Event]"
+[FAIL] link rel=modulepreload for a text module with syntax error will still load
+  promise_test: Unhandled rejection with value: object "[object Event]"
+[FAIL] link rel=modulepreload with text and matching media
+  promise_test: Unhandled rejection with value: object "[object Event]"
+[FAIL] link rel=modulepreload with text and non-matching media
+  promise_test: Unhandled rejection with value: object "[object Event]"
+[FAIL] link rel=modulepreload with text and empty media
+  promise_test: Unhandled rejection with value: object "[object Event]"
+[FAIL] multiple text link rel=modulepreload with same href
+  promise_test: Unhandled rejection with value: object "[object Event]"
+Harness: the test ran to completion.
+

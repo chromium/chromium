@@ -1,0 +1,38 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: "text" is not a valid module type.
+[FAIL] sec-fetch-site - Same origin
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Cross-site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Same site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Cross-Site -> Same Origin
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Cross-Site -> Same-Site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Cross-Site -> Cross-Site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Same-Origin -> Same Origin
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Same-Origin -> Same-Site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Same-Origin -> Cross-Site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Same-Site -> Same Origin
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Same-Site -> Same-Site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Same-Site -> Cross-Site
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+Harness: the test ran to completion.
+

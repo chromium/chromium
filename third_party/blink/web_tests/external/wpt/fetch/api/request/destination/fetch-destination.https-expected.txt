@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] AudioWorklet module fetches with a "audioworklet" Request.destination
   promise_test: Unhandled rejection with value: object "AbortError: Unable to load a worklet's module."
+[FAIL] Import declaration with `type: "text"` fetches with a "text" Request.destination
+  promise_test: Unhandled rejection with value: "Uncaught TypeError: \\"text\\" is not a valid module type."
 Harness: the test ran to completion.
 

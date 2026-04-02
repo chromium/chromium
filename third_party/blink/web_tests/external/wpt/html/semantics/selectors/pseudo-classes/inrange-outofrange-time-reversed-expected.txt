@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] ':in-range' matches time inputs whose value is within a reversed range (>= min OR <= max)
+  assert_array_equals: lengths differ, expected array [Element node <input type="time" min="21:00:00" max="03:00:00" value="2..., Element node <input type="time" min="21:00:00" max="03:00:00" value="0..., Element node <input type="time" min="21:00:00" max="03:00:00" value="2..., Element node <input type="time" min="21:00:00" max="03:00:00" value="0...] length 4, got [] length 0
+[FAIL] ':out-of-range' matches time inputs whose value is in the gap of a reversed range (> max AND < min)
+  assert_array_equals: lengths differ, expected array [Element node <input type="time" min="21:00:00" max="03:00:00" value="1..., Element node <input type="time" min="21:00:00" max="03:00:00" value="0..., Element node <input type="time" min="21:00:00" max="03:00:00" value="2...] length 3, got [Element node <input type="time" min="21:00:00" max="03:00:00" value="2..., Element node <input type="time" min="21:00:00" max="03:00:00" value="0..., Element node <input type="time" min="21:00:00" max="03:00:00" value="2..., Element node <input type="time" min="21:00:00" max="03:00:00" value="0..., Element node <input type="time" min="21:00:00" max="03:00:00" value="1..., Element node <input type="time" min="21:00:00" max="03:00:00" value="0..., Element node <input type="time" min="21:00:00" max="03:00:00" value="2...] length 7
+[FAIL] Dynamic update from out-of-range to in-range in a reversed time range
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

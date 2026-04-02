@@ -2797,7 +2797,31 @@ crbug.com/494341371 [ Linux ] external/wpt/html/cross-origin-opener-policy/ifram
 # Flakily fails due to cookie leakage between unrelated tests
 crbug.com/438309773 external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Crash Failure Pass ]
 
+external/wpt/paint-timing/fcp-only/fcp-broken-image.html [ Failure ]
+
+# [159563:1:0402/082414.321404:FATAL:third_party/blink/renderer/core/layout/block_layout_algorithm.cc:2590] DCHECK failed: layout_result->IsSelfCollapsing() == is_self_collapsing (0 vs. 1).
+virtual/fragmented-oof-in-cb/external/wpt/css/css-break/firefox-bug-2021187-crash.html [ Crash ]
+
+# UUID in `*-expected.txt`
+external/wpt/fetch/metadata/text.https.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
+external/wpt/content-security-policy/connect-src/connect-src-text-import-blocked.sub.html [ Timeout ]
+external/wpt/css/css-anchor-position/position-area-alignment-inset-001.html [ Failure ]
+external/wpt/css/css-conditional/container-queries/multiple-conditions-001.html [ Failure ]
+external/wpt/css/css-conditional/container-queries/query-style-color.html [ Failure ]
+[ Win ] external/wpt/css/css-device-adapt/viewport-clamp-initial-scale-to-max.tentative.html [ Pass Timeout ]
+external/wpt/css/css-transforms/animation/rotate-explicit-and-implicit-keyframes.html [ Failure ]
+external/wpt/html/rendering/the-details-element/details-content-pseudo-attr.html [ Failure ]
+[ Win ] external/wpt/svg/animations/smil-clock-value-out-of-range-minutes.html [ Pass Timeout ]
+external/wpt/svg/text/reftests/textpath-side-003.svg [ Failure ]
+external/wpt/svg/text/reftests/textpath-side-005.svg [ Failure ]
+external/wpt/webdriver/tests/bidi/browser/set_client_window_state/invalid.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browser/set_client_window_state/rect_state.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browser/set_client_window_state/state.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browser/set_client_window_state/stress.py [ Failure ]
+virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/rotate-explicit-and-implicit-keyframes.html [ Failure ]
+virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-position/position-area-alignment-inset-001.html [ Failure ]
 crbug.com/497404481 [ Android ] external/wpt/webdriver/tests/classic/find_element/user_prompts.py [ Failure ]
 crbug.com/497404481 [ Android ] external/wpt/webdriver/tests/classic/take_screenshot/user_prompts.py [ Failure ]
 crbug.com/497145619 external/wpt/credential-management/credentialscontainer-get-basics.https.html [ Timeout ]

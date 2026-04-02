@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: "text" is not a valid module type.
+[FAIL] sec-fetch-site - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-mode - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-dest - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-user - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access - Not sent to non-trustworthy same-origin destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access - Not sent to non-trustworthy same-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-storage-access - Not sent to non-trustworthy cross-site destination
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - HTTPS downgrade (header not sent)
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - HTTPS upgrade
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+[FAIL] sec-fetch-site - HTTPS downgrade-upgrade
+  promise_test: Unhandled rejection with value: object "Error: Failed to query for recorded headers."
+Harness: the test ran to completion.
+

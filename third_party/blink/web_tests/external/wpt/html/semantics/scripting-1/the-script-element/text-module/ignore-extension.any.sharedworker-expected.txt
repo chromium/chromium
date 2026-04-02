@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Extension: file
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] Extension: file.js
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] Extension: file.json
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] Extension: file.txt
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+Harness: the test ran to completion.
+

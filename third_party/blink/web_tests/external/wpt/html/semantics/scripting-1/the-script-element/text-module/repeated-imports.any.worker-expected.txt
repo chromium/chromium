@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Importing a specifier that previously failed due to an incorrect type attribute can succeed if the correct attribute is later given
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] Importing a specifier that previously succeeded with the correct type attribute should fail if the incorrect attribute is later given
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] Two modules of different type with the same specifier can load if the server changes its responses (first text, then JS)
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] If an import previously succeeded for a given specifier/type attribute pair, future uses of that pair should yield the same result
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] Two modules of different type with the same specifier can load if the server changes its responses (first JS, then text)
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] If an import previously succeeded for a given specifier with no type attribute, future uses of the same values should yield the same result
+  assert_equals: expected "hello" but got "world"
+Harness: the test ran to completion.
+

@@ -201,7 +201,6 @@ external/wpt/html/semantics/forms/constraints/tooLong-input-tel-delete-manual.ht
 external/wpt/html/semantics/forms/constraints/tooLong-input-text-delete-manual.html [ Skip ]
 external/wpt/html/semantics/forms/constraints/tooLong-input-url-delete-manual.html [ Skip ]
 external/wpt/html/semantics/forms/constraints/tooLong-textarea-delete-manual.html [ Skip ]
-external/wpt/html/semantics/forms/the-input-element/file-manual.html [ Skip ]
 external/wpt/html/semantics/forms/the-input-element/maxlength-manual.html [ Skip ]
 external/wpt/html/semantics/forms/the-textarea-element/textarea-select-event-manual.html [ Skip ]
 external/wpt/html/semantics/grouping-content/the-li-element/grouping-li-novalue-manual.html [ Skip ]

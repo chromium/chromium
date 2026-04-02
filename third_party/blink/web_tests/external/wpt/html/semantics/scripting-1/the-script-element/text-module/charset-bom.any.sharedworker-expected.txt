@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] UTF-8 BOM should be stripped when decoding text module script
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] UTF-16BE with BOM should be parsed as UTF-8
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+[FAIL] UTF-16LE with BOM should be parsed as UTF-8
+  promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
+Harness: the test ran to completion.
+

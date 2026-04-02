@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] invalid tabindex attribute does not make the element focusable
-  assert_equals: <math href=#> should be focusable expected Element node <math href="#" data-focusable="true"></math> but got Element node <body><math></math>\n<math href="#" data-focusable="true">...
+  assert_equals: <a href=#> should be focusable expected Element node <a href="#" data-focusable="true"></a> but got Element node <body><math data-focusable="false"></math>\n<math href="#"...
 Harness: the test ran to completion.
 
