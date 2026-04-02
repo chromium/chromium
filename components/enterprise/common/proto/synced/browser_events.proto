@@ -24,6 +24,7 @@ enum EventResult {
   EVENT_RESULT_DATA_MASKED = 6;
   EVENT_RESULT_DATA_UNMASKED = 7;
   EVENT_RESULT_FORCED_SAVE_TO_CLOUD = 8;
+  EVENT_RESULT_CANCELLED_BY_USER = 9;
 }
 
 // The reporting target of the events.
@@ -893,6 +894,7 @@ message UnscannedFileEvent {
     SERVICE_UNAVAILABLE = 7;
     TOO_MANY_REQUESTS = 8;
     TIMEOUT = 9;
+    USER_CANCELLED = 10;
   }
 
   UnscannedReason unscanned_reason = 18;
