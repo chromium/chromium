@@ -252,6 +252,7 @@ def fuzz_target_builder(
         use_component_build = True,
         chromium_extra_apply_configs = [],
         clusterfuzz_archive_name_prefix = None,
+        clusterfuzz_archive_schema_version = None,
         clusterfuzz_archive_subdir = None,
         clusterfuzz_ios_targets_only = None,
         clusterfuzz_v8_targets_only = None,
@@ -278,6 +279,9 @@ def fuzz_target_builder(
 
     if clusterfuzz_v8_targets_only != None:
         properties["v8_targets_only"] = clusterfuzz_v8_targets_only
+
+    if clusterfuzz_archive_schema_version != None:
+        properties["archive_schema_version"] = clusterfuzz_archive_schema_version
 
     # Creating a dict in this manner will result in an error if a named
     # argument we provide collides with a value already specified in `kwargs`,
@@ -923,6 +927,25 @@ libfuzzer_linux_asan_builder(
         "enable_asan_backup_ref_ptr_v2",
     ],
     max_concurrent_invocations = 4,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+)
+
+# TODO(496589592): Deprecate this builder once archives using schema v1 are
+# tested and confirmed to work as intended on ClusterFuzz.
+libfuzzer_linux_asan_builder(
+    name = "Libfuzzer Upload Linux ASan Schema v1",
+    description_html = "This builder uploads linux libfuzzer fuzzers with archive schema v1, for x64 using ASan",
+    gardener_rotations = args.ignore_default(None),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 64,
+    clusterfuzz_archive_name_prefix = "libfuzzer-schema-v1",
+    clusterfuzz_archive_schema_version = 1,
+    clusterfuzz_archive_subdir = "asan-schema-v1",
+    console_short_name = "linux-schema-v1",
+    execution_timeout = 4 * time.hour,
+    gn_extra_configs = [
+        "mojo_fuzzer",
+    ],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 

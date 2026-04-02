@@ -282,6 +282,7 @@
     "Libfuzzer Upload Chrome OS ASan": "ci/Libfuzzer Upload Chrome OS ASan/gn-args.json",
     "Libfuzzer Upload Linux ASan": "ci/Libfuzzer Upload Linux ASan/gn-args.json",
     "Libfuzzer Upload Linux ASan Debug": "ci/Libfuzzer Upload Linux ASan Debug/gn-args.json",
+    "Libfuzzer Upload Linux ASan Schema v1": "ci/Libfuzzer Upload Linux ASan Schema v1/gn-args.json",
     "Libfuzzer Upload Linux ASanBrpV2": "ci/Libfuzzer Upload Linux ASanBrpV2/gn-args.json",
     "Libfuzzer Upload Linux MSan": "ci/Libfuzzer Upload Linux MSan/gn-args.json",
     "Libfuzzer Upload Linux UBSan": "ci/Libfuzzer Upload Linux UBSan/gn-args.json",
