@@ -71,20 +71,3 @@
   animation-duration: inherit;
   animation-fill-mode: inherit;
 }
-
-@keyframes -ua-view-transition-fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes -ua-view-transition-fade-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes -ua-mix-blend-mode-plus-lighter {
-  from { mix-blend-mode: plus-lighter }
-  to { mix-blend-mode: plus-lighter }
-}
