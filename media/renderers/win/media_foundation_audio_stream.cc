@@ -57,11 +57,6 @@ HRESULT MediaFoundationAudioStream::Create(
   return S_OK;
 }
 
-bool MediaFoundationAudioStream::IsEncrypted() const {
-  AudioDecoderConfig audio_config = demuxer_stream_->audio_decoder_config();
-  return audio_config.is_encrypted();
-}
-
 HRESULT MediaFoundationAudioStream::GetMediaType(
     IMFMediaType** media_type_out) {
   AudioDecoderConfig decoder_config = demuxer_stream_->audio_decoder_config();

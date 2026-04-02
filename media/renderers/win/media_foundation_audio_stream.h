@@ -25,7 +25,6 @@ class MediaFoundationAudioStream : public MediaFoundationStreamWrapper {
                         DemuxerStream* demuxer_stream,
                         std::unique_ptr<MediaLog> media_log,
                         MediaFoundationStreamWrapper** stream_out);
-  bool IsEncrypted() const override;
   HRESULT GetMediaType(IMFMediaType** media_type_out) override;
 };
 

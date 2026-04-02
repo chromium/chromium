@@ -79,7 +79,7 @@ class MEDIA_EXPORT MediaFoundationStreamWrapper
   // TODO: revisting inheritance and potentially replacing it with composition.
 
   // The stream is encrypted or not.
-  virtual bool IsEncrypted() const = 0;
+  bool IsEncrypted() const;
   // Let derived class to adjust the IMFSample if necessary.
   virtual HRESULT TransformSample(Microsoft::WRL::ComPtr<IMFSample>& sample);
   // Allow derived class to tell us if we can send MEStreamFormatChanged to MF.
@@ -145,7 +145,7 @@ class MEDIA_EXPORT MediaFoundationStreamWrapper
 
   // Need exclusive access to some members between calls from MF threadpool
   // thread and calling thread from Chromium media stack.
-  base::Lock lock_;
+  mutable base::Lock lock_;
 
   // Indicates whether the stream is selected in the MF pipeline.
   bool selected_ GUARDED_BY(lock_) = false;
@@ -208,6 +208,8 @@ class MEDIA_EXPORT MediaFoundationStreamWrapper
       GUARDED_BY(lock_);
 
   bool encryption_type_reported_ = false;
+
+  bool is_encrypted_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationStreamWrapper> weak_factory_{this};

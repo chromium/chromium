@@ -23,8 +23,6 @@ class MediaFoundationVideoStream : public MediaFoundationStreamWrapper {
                         std::unique_ptr<MediaLog> media_log,
                         MediaFoundationStreamWrapper** stream_out);
 
-  bool IsEncrypted() const override;
-
  protected:
   HRESULT GetMediaType(IMFMediaType** media_type_out) override;
 };

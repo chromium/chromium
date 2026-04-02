@@ -352,11 +352,6 @@ HRESULT MediaFoundationVideoStream::Create(
   return S_OK;
 }
 
-bool MediaFoundationVideoStream::IsEncrypted() const {
-  VideoDecoderConfig decoder_config = demuxer_stream_->video_decoder_config();
-  return decoder_config.is_encrypted();
-}
-
 HRESULT MediaFoundationVideoStream::GetMediaType(
     IMFMediaType** media_type_out) {
   VideoDecoderConfig decoder_config = demuxer_stream_->video_decoder_config();
