@@ -163,8 +163,7 @@ void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue& args) {
       identity_manager->GetAccountsInCookieJar();
   if (accounts_in_cookie_jar.AreAccountsFresh()) {
     about_signin_internals->OnAccountsInCookieUpdated(
-        accounts_in_cookie_jar,
-        GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+        accounts_in_cookie_jar, GoogleServiceAuthError::AuthErrorNone());
   }
 }
 
