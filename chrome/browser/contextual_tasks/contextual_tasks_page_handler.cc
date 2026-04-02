@@ -275,7 +275,7 @@ void ContextualTasksPageHandler::OpenMyActivityUi() {
                          web_ui_controller_->GetBrowser());
 }
 
-void ContextualTasksPageHandler::OpenHelpUi() {
+void ContextualTasksPageHandler::OpenFeedbackUi() {
   if (skip_feedback_ui_for_testing_) {
     return;
   }

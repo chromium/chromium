@@ -285,7 +285,7 @@ suite('TopToolbarTest', () => {
       const helpButton = buttons[2];
       assertTrue(!!helpButton);
       helpButton.click();
-      await proxy.handler.whenCalled('openHelpUi');
+      await proxy.handler.whenCalled('openFeedbackUi');
     });
 
     test('shows 3 tab icons without number for 3 tabs', async () => {

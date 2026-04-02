@@ -186,7 +186,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'onImageClickedFromSourcesMenu',
       'onTabClickedFromSourcesMenu',
       'onWebviewMessage',
-      'openHelpUi',
+      'openFeedbackUi',
       'openMyActivityUi',
       'openOnboardingHelpUi',
       'openUrl',
@@ -278,8 +278,8 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     this.methodCalled('openMyActivityUi');
   }
 
-  openHelpUi() {
-    this.methodCalled('openHelpUi');
+  openFeedbackUi() {
+    this.methodCalled('openFeedbackUi');
   }
 
   openOnboardingHelpUi() {

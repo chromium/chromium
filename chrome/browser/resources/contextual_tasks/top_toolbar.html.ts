@@ -94,7 +94,7 @@ export function getHtml(this: TopToolbarElement) {
 </if>
         $i18n{myActivity}
       </button>
-      <button class="dropdown-item" @click="${this.onHelpClick_}">
+      <button class="dropdown-item" @click="${this.onFeedbackClick_}">
         <cr-icon icon="contextual_tasks:feedback"></cr-icon>
         $i18n{feedback}
       </button>

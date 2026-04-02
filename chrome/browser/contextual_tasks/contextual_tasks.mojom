@@ -107,8 +107,8 @@ interface PageHandler {
   // Opens the My Activity page in a new tab.
   OpenMyActivityUi();
 
-  // Opens the Help page in a new tab.
-  OpenHelpUi();
+  // Opens the Feedback page in a new tab.
+  OpenFeedbackUi();
 
   // Opens the onboarding help page in a new tab.
   OpenOnboardingHelpUi();

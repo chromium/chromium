@@ -691,9 +691,9 @@ TEST_F(ContextualTasksPageHandlerTest, OpenMyActivityUi) {
   page_handler_->OpenMyActivityUi();
 }
 
-TEST_F(ContextualTasksPageHandlerTest, OpenHelpUi) {
+TEST_F(ContextualTasksPageHandlerTest, OpenFeedbackUi) {
   // Smoke test to ensure it doesn't crash.
-  page_handler_->OpenHelpUi();
+  page_handler_->OpenFeedbackUi();
 }
 
 TEST_F(ContextualTasksPageHandlerTest, OpenOnboardingHelpUi) {

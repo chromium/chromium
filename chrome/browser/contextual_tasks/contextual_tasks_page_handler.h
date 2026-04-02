@@ -59,7 +59,7 @@ class ContextualTasksPageHandler
   void ShowThreadHistory() override;
   void IsShownInTab(IsShownInTabCallback callback) override;
   void OpenMyActivityUi() override;
-  void OpenHelpUi() override;
+  void OpenFeedbackUi() override;
   void OpenOnboardingHelpUi() override;
   void OpenUrl(const GURL& url, WindowOpenDisposition disposition) override;
   void MoveTaskUiToNewTab() override;

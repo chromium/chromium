@@ -172,13 +172,13 @@ export class TopToolbarElement extends CrLitElement {
     this.browserProxy_.handler.openMyActivityUi();
   }
 
-  protected onHelpClick_() {
+  protected onFeedbackClick_() {
     this.$.menu.get().close();
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.OpenHelp');
     chrome.metricsPrivate.recordBoolean(
         'ContextualTasks.WebUI.UserAction.OpenHelp', true);
-    this.browserProxy_.handler.openHelpUi();
+    this.browserProxy_.handler.openFeedbackUi();
   }
 
   protected onReopenTabsReopenClick_() {
