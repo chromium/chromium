@@ -21,6 +21,7 @@
 #include "components/media_effects/test/scoped_media_device_info.h"
 #include "content/public/browser/audio_service.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/localized_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -288,6 +289,7 @@ TEST_F(MicCoordinatorTest, DefaultMicHandling) {
   ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
 }
 
+#if BUILDFLAG(IS_WIN)
 TEST_F(MicCoordinatorTest, CommunicationsMicHandling) {
   EXPECT_EQ(GetComboboxModel().GetItemCount(), 0u);
 
@@ -301,8 +303,12 @@ TEST_F(MicCoordinatorTest, CommunicationsMicHandling) {
   ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   // The virtual communication device should be included because there's no
   // mapping for the real system default device.
+  const std::string kLocalizedCommunicationDeviceName = base::StringPrintf(
+      "%s - %s",
+      GetLocalizedStringUTF8(media::COMMUNICATIONS_AUDIO_DEVICE_NAME),
+      kCommunicationsDeviceName);
   EXPECT_THAT(GetComboboxItems(),
-              ElementsAre(kCommunicationsDeviceName, kDeviceName));
+              ElementsAre(kLocalizedCommunicationDeviceName, kDeviceName));
   EXPECT_THAT(GetComboboxSecondaryTexts(),
               ElementsAre(std::string{}, std::string{}));
   on_input_stream_id_future_.Clear();
@@ -317,6 +323,24 @@ TEST_F(MicCoordinatorTest, CommunicationsMicHandling) {
 
   coordinator_.reset();
   ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
+}
+#endif
+
+TEST_F(MicCoordinatorTest, SanitizeAirPodsDeviceName) {
+  EXPECT_EQ(GetComboboxModel().GetItemCount(), 0u);
+
+  constexpr char kAirPods[] = "AirPods (Bluetooth)";
+  constexpr char kSanitizedAirPods[] = "AirPods";
+
+  // Add airPods mic.
+  ASSERT_TRUE(AddFakeInputDevice({kAirPods, kDeviceId, kGroupId}));
+
+  // AirPods device name should be sanitized.
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kSanitizedAirPods));
+  on_input_stream_id_future_.Clear();
+
+  coordinator_.reset();
+  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/1);
 }
 
 TEST_F(MicCoordinatorTest, UpdateDevicePreferenceRanking) {

@@ -242,6 +242,24 @@ TEST_F(MediaDevicesSelectionHandlerTest,
       {kUsbDevice, kExpectedDefaultDevice, kIntegratedDevice}, kUsbDevice));
 }
 
+TEST_F(MediaDevicesSelectionHandlerTest, SanitizeAirPodsDeviceName) {
+  const media::AudioDeviceDescription kAirpods{
+      /*display_name=*/"AirPods (Bluetooth)",
+      /*unique_id=*/"airpods_id",
+      /*group_id=*/"airpods_group_id"};
+
+  fake_audio_service_.AddFakeInputDevice(kAirpods);
+
+  ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kMic));
+
+  media::AudioDeviceDescription sanitizedAirpods = kAirpods;
+  sanitizedAirpods.device_name = "AirPods";
+
+  // Verify that the airPods device name has been sanitized.
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyUpdateDevicesMenu({sanitizedAirpods}, sanitizedAirpods));
+}
+
 TEST_F(MediaDevicesSelectionHandlerTest, InitializeCaptureDevices_Camera) {
   const media::VideoCaptureDeviceDescriptor kIntegratedDevice{
       /*display_name=*/"Integrated Device",

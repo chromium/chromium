@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "content/public/browser/audio_service.h"
+#include "media/audio/audio_device_description.h"
 
 MicMediator::MicMediator(PrefService& prefs,
                          DevicesChangedCallback devices_changed_callback)
@@ -49,6 +50,7 @@ void MicMediator::OnAudioDevicesChanged(
   // Copy into a mutable vector in order to be re-ordered by
   // `PreferenceRankDeviceInfos`.
   auto infos = device_infos.value();
+  media::AudioDeviceDescription::LocalizeDeviceDescriptions(&infos);
   media_prefs::PreferenceRankAudioDeviceInfos(*prefs_, infos);
   devices_changed_callback_.Run(infos);
 }

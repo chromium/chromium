@@ -88,6 +88,8 @@ void MediaDevicesSelectionHandler::OnAudioDevicesChanged(
   PrefService* prefs = profile_->GetPrefs();
   audio_device_infos_ =
       devices.value_or(std::vector<media::AudioDeviceDescription>{});
+  media::AudioDeviceDescription::LocalizeDeviceDescriptions(
+      &audio_device_infos_);
   media_prefs::PreferenceRankAudioDeviceInfos(*prefs, audio_device_infos_);
   UpdateDevicesMenu(audio_device_infos_);
 }
