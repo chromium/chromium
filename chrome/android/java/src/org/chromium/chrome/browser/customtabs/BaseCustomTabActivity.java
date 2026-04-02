@@ -1411,7 +1411,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     public Supplier<BottomSheetController> getBottomSheetController() {
-        return mRootUiCoordinator::getBottomSheetController;
+        return mRootUiCoordinator.getBottomSheetControllerSupplier();
     }
 
     @Override

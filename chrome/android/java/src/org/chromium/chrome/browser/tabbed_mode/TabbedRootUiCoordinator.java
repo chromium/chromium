@@ -638,7 +638,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new DataSharingTabManager(
                         mTabModelSelectorSupplier,
                         dataSharingTabGroupsDelegate,
-                        this::getBottomSheetController,
+                        getBottomSheetControllerSupplier(),
                         mShareDelegateSupplier,
                         mWindowAndroid,
                         mActivity.getResources(),
@@ -953,7 +953,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         Profile profile = tab.getProfile();
         mNavigationSheet =
                 NavigationSheet.create(
-                        tab.getContentView(), mActivity, this::getBottomSheetController, profile);
+                        tab.getContentView(),
+                        mActivity,
+                        getBottomSheetControllerSupplier(),
+                        profile);
         mNavigationSheet.setDelegate(
                 new TabbedSheetDelegate(
                         tab,

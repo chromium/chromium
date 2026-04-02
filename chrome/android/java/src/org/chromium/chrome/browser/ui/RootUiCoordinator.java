@@ -332,8 +332,8 @@ public class RootUiCoordinator
     private @Nullable ModalDialogManagerObserver mModalDialogManagerObserver;
 
     private @Nullable BottomSheetManager mBottomSheetManager;
-    private @Nullable ManagedBottomSheetController mBottomSheetController;
-
+    private final SettableMonotonicObservableSupplier<ManagedBottomSheetController>
+            mBottomSheetControllerSupplier = ObservableSuppliers.createMonotonic();
     private final ToolbarActionModeCallback mActionModeControllerCallback;
     private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -899,12 +899,14 @@ public class RootUiCoordinator
         }
 
         if (mBottomSheetManager != null) mBottomSheetManager.onDestroy();
-        if (mBottomSheetController != null) {
+
+        ManagedBottomSheetController bottomSheetController = getBottomSheetController();
+        if (bottomSheetController != null) {
             if (mBottomSheetObserver != null) {
-                mBottomSheetController.removeObserver(mBottomSheetObserver);
+                bottomSheetController.removeObserver(mBottomSheetObserver);
             }
-            BottomSheetControllerFactory.detach(mBottomSheetController);
-            mBottomSheetController.destroy();
+            BottomSheetControllerFactory.detach(bottomSheetController);
+            bottomSheetController.destroy();
         }
 
         ScrimManager scrimManager = mScrimManagerSupplier.get();
@@ -1187,7 +1189,7 @@ public class RootUiCoordinator
                             mActivity.getWindow().getDecorView(),
                             mActivityTabProvider,
                             tabCreator,
-                            getBottomSheetController(),
+                            assertNonNull(getBottomSheetController()),
                             contextMenuPopulatorFactory));
         }
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
@@ -1197,7 +1199,7 @@ public class RootUiCoordinator
                         mProfileSupplier,
                         tabModelSelector.getModel(/* incognito= */ false),
                         tabModelSelector.getModel(/* incognito= */ true),
-                        getBottomSheetController(),
+                        assertNonNull(getBottomSheetController()),
                         mBottomControlsStacker,
                         mLayoutManagerSupplier,
                         mWindowAndroid,
@@ -1225,7 +1227,7 @@ public class RootUiCoordinator
             mReaderModeBottomSheetManager =
                     new ReaderModeBottomSheetManager(
                             mActivity,
-                            getBottomSheetController(),
+                            assertNonNull(getBottomSheetController()),
                             mActivityTabProvider,
                             mBrowserControlsManager,
                             mTopUiThemeColorProvider);
@@ -1304,7 +1306,7 @@ public class RootUiCoordinator
         manager.initialize(
                 mActivity.findViewById(android.R.id.content),
                 mLayoutManager,
-                getBottomSheetController(),
+                assertNonNull(getBottomSheetController()),
                 mCompositorViewHolderSupplier.get(),
                 toolbarHeightDp,
                 mToolbarManager,
@@ -1467,7 +1469,7 @@ public class RootUiCoordinator
                         mActivityTabProvider,
                         mLayoutStateProviderOneShotSupplier,
                         mModalDialogManagerSupplier,
-                        getBottomSheetController(),
+                        assertNonNull(getBottomSheetController()),
                         mActivityLifecycleDispatcher,
                         mMessageDispatcher);
         mMessageDispatcher.setDelegate(mMessageQueueMediator);
@@ -1491,7 +1493,7 @@ public class RootUiCoordinator
                                         new WebSigninBridge.Factory()),
                                 mDeviceLockActivityLauncherSupplier.get(),
                                 profileSupplier,
-                                this::getBottomSheetController,
+                                getBottomSheetControllerSupplier().asNonNull(),
                                 mModalDialogManagerSupplier.get(),
                                 mSnackbarManagerSupplier.get(),
                                 SigninAccessPoint.WEB_SIGNIN));
@@ -1540,7 +1542,7 @@ public class RootUiCoordinator
                     new MerchantTrustSignalsCoordinator(
                             mActivity,
                             mWindowAndroid,
-                            getBottomSheetController(),
+                            assertNonNull(getBottomSheetController()),
                             mActivity.getWindow().getDecorView(),
                             MessageDispatcherProvider.from(mWindowAndroid),
                             mActivityTabProvider.asObservable(),
@@ -1817,7 +1819,7 @@ public class RootUiCoordinator
                     createAdaptiveToolbarBehavior(trackerSupplier),
                     mActivityLifecycleDispatcher,
                     mTabModelSelectorSupplier,
-                    getBottomSheetController(),
+                    assertNonNull(getBottomSheetController()),
                     SupplierUtils.asNonNull(mSnackbarManagerSupplier),
                     mTabBookmarkerSupplier,
                     mProfileSupplier,
@@ -1921,7 +1923,7 @@ public class RootUiCoordinator
                             mStatusBarColorController,
                             mAppMenuDelegate,
                             mActivityLifecycleDispatcher,
-                            mBottomSheetController,
+                            assertNonNull(getBottomSheetController()),
                             getDataSharingTabManager(),
                             mTabContentManagerSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
@@ -2199,7 +2201,7 @@ public class RootUiCoordinator
 
         // TODO(crbug.com/40135255): Initialize after inflation so we don't need to pass in view
         // suppliers.
-        mBottomSheetController =
+        ManagedBottomSheetController bottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         mScrimManagerSupplier,
                         mActivity.getWindow(),
@@ -2217,13 +2219,14 @@ public class RootUiCoordinator
                                     : edgeToEdgeController.getBottomInset();
                         },
                         getDesktopWindowStateManager());
+        mBottomSheetControllerSupplier.set(bottomSheetController);
         BottomSheetControllerFactory.setExceptionReporter(
                 ChromePureJavaExceptionReporter::reportJavaException);
-        BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
+        BottomSheetControllerFactory.attach(mWindowAndroid, getBottomSheetController());
 
         mBottomSheetManager =
                 new BottomSheetManager(
-                        mBottomSheetController,
+                        bottomSheetController,
                         mActivityTabProvider,
                         mBrowserControlsManager,
                         mExpandedBottomSheetHelper,
@@ -2235,7 +2238,7 @@ public class RootUiCoordinator
         assert mBackPressManager != null
                 && !mBackPressManager.has(BackPressHandler.Type.BOTTOM_SHEET);
         BackPressHandler bottomSheetBackPressHandler =
-                mBottomSheetController.getBottomSheetBackPressHandler();
+                bottomSheetController.getBottomSheetBackPressHandler();
         if (bottomSheetBackPressHandler != null) {
             mBackPressManager.addHandler(
                     bottomSheetBackPressHandler, BackPressHandler.Type.BOTTOM_SHEET);
@@ -2335,9 +2338,18 @@ public class RootUiCoordinator
         return mTabObscuringHandlerSupplier.get();
     }
 
-    /** @return The {@link BottomSheetController} for this activity. */
-    public ManagedBottomSheetController getBottomSheetController() {
-        return mBottomSheetController;
+    /** Returns the {@link BottomSheetController} for this activity. */
+    public @Nullable ManagedBottomSheetController getBottomSheetController() {
+        return mBottomSheetControllerSupplier.get();
+    }
+
+    /** Returns the {@link BottomSheetController} Supplier for this activity. */
+    @SuppressWarnings("unchecked")
+    public MonotonicObservableSupplier<BottomSheetController> getBottomSheetControllerSupplier() {
+        // This cast is ok since we're removing "Settable", and the Supplier's value actual type
+        // will remain ManagedBottomSheetController.
+        return (MonotonicObservableSupplier<BottomSheetController>)
+                (MonotonicObservableSupplier<?>) mBottomSheetControllerSupplier;
     }
 
     /**
@@ -2396,7 +2408,9 @@ public class RootUiCoordinator
      * while a Bottom Sheet feature is in action.
      */
     private void initBottomSheetObserver() {
-        if (mBottomSheetController == null) return;
+        ManagedBottomSheetController bottomSheetController = mBottomSheetControllerSupplier.get();
+        if (bottomSheetController == null) return;
+
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
                     private boolean mOpened;
@@ -2426,7 +2440,7 @@ public class RootUiCoordinator
                         }
                     }
                 };
-        mBottomSheetController.addObserver(mBottomSheetObserver);
+        bottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     /** Initialize logic for hiding page zoom slider when snackbar is showing */
@@ -2563,7 +2577,7 @@ public class RootUiCoordinator
                 mActivity,
                 mProfileSupplier.get(),
                 mTabCreatorManagerSupplier.get(),
-                getBottomSheetController(),
+                assertNonNull(getBottomSheetController()),
                 gtsTabListModelSizeSupplier,
                 scrollGTSToRestoredTabsCallback,
                 mModalDialogManagerSupplier);

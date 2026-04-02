@@ -380,7 +380,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 profile,
                 IdentityServicesProvider.get().getIdentityManager(profile),
                 SigninAndHistorySyncActivityLauncherImpl.get(),
-                this::getBottomSheetController,
+                getBottomSheetControllerSupplier(),
                 mModalDialogManagerSupplier.get(),
                 mSnackbarManagerSupplier.get(),
                 (signinDelegate, accountId, lastShownTime, mimData, onClose) -> {

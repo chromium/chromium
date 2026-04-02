@@ -732,7 +732,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     new TabBookmarker(
                             this,
                             mBookmarkModelSupplier,
-                            mRootUiCoordinator::getBottomSheetController,
+                            mRootUiCoordinator.getBottomSheetControllerSupplier(),
                             this::getSnackbarManager,
                             new BookmarkManagerOpenerImpl(),
                             () ->

@@ -332,6 +332,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 .thenReturn(coordinatorMock);
         SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(launcherMock);
 
+        mBaseCustomTabRootUiCoordinator.onPreInflationStartup();
         mBaseCustomTabRootUiCoordinator.initProfileDependentFeatures(mProfile);
 
         Assert.assertEquals(
