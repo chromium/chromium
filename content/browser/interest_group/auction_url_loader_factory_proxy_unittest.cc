@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -31,7 +32,9 @@
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -351,7 +354,26 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
     // Check method, body and content-type for POST requests.
     if (request.method == net::HttpRequestHeaders::kPostMethod) {
       EXPECT_EQ(observed_request.method, net::HttpRequestHeaders::kPostMethod);
-      EXPECT_EQ(request.request_body, observed_request.request_body);
+      ASSERT_EQ(!!request.request_body, !!observed_request.request_body);
+      // If there's a request body, both bodies should both have a single
+      // matching element of type kBytes.
+      if (request.request_body) {
+        const auto& request_elements = *request.request_body->elements();
+        const auto& observed_elements =
+            *observed_request.request_body->elements();
+        ASSERT_EQ(request_elements.size(), 1u);
+        ASSERT_EQ(observed_elements.size(), 1u);
+        ASSERT_EQ(request_elements.front().type(),
+                  network::DataElement::Tag::kBytes);
+        ASSERT_EQ(observed_elements.front().type(),
+                  network::DataElement::Tag::kBytes);
+        EXPECT_EQ(request_elements.front()
+                      .As<network::DataElementBytes>()
+                      .AsStringPiece(),
+                  observed_elements.front()
+                      .As<network::DataElementBytes>()
+                      .AsStringPiece());
+      }
       if (request.headers.GetHeader(net::HttpRequestHeaders::kContentType)
               .has_value()) {
         EXPECT_EQ(
@@ -574,6 +596,24 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, Basic) {
                    ExpectedResponse::kReject);
     TryMakeRequest("https://host.test/", std::nullopt,
                    ExpectedResponse::kReject);
+
+    // Methods other than GET should be rejected for non-signals URLs. Method
+    // logic for signals URLs is checked further down.
+    network::ResourceRequest request;
+    request.url = GURL(kScriptUrl);
+    request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                              kAcceptJavascript);
+    request.method = net::HttpRequestHeaders::kPostMethod;
+    TryMakeRequest(request, ExpectedResponse::kReject);
+    request.method = net::HttpRequestHeaders::kHeadMethod;
+    TryMakeRequest(request, ExpectedResponse::kReject);
+
+    request.url = GURL(kWasmUrl);
+    request.headers.SetHeader(net::HttpRequestHeaders::kAccept, kAcceptWasm);
+    request.method = net::HttpRequestHeaders::kPostMethod;
+    TryMakeRequest(request, ExpectedResponse::kReject);
+    request.method = net::HttpRequestHeaders::kHeadMethod;
+    TryMakeRequest(request, ExpectedResponse::kReject);
   }
 }
 
@@ -748,15 +788,46 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, TrustedSignalsUrl) {
         "https://host.test/trusted_signals?hostname=top.test&keys=%23%26%3D",
         kAcceptJson, ExpectedResponse::kAllow);
 
-    // Valid Trusted Signals KVv2 POST request
+    // Valid Trusted Signals KVv2 POST request.
     network::ResourceRequest request;
     request.method = net::HttpRequestHeaders::kPostMethod;
+    request.request_body = network::ResourceRequestBody::CreateFromCopyOfBytes(
+        base::as_byte_span("1234"));
     request.url = GURL(kTrustedSignalsBaseUrl);
     request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
                               kAcceptAdAuctionTrustedSignals);
     request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
                               kAdAuctionTrustedSignalsContentType);
     TryMakeRequest(request, ExpectedResponse::kAllow);
+
+    // Methods other than GET and POST are rejected.
+    request.method = net::HttpRequestHeaders::kPutMethod;
+    TryMakeRequest(request, ExpectedResponse::kReject);
+    request.method = net::HttpRequestHeaders::kHeadMethod;
+    TryMakeRequest(request, ExpectedResponse::kReject);
+    // Restore method.
+    request.method = net::HttpRequestHeaders::kPostMethod;
+
+    // Uploads with multiple elements should be rejected. This isn't too
+    // important, but need to make sure they don't crash.
+    request.request_body->AppendCopyOfBytes(base::as_byte_span("5678"));
+    TryMakeRequest(request, ExpectedResponse::kReject);
+
+    // Empty uploads should be rejected. This case is mostly to make sure they
+    // don't result in crashes.
+    request.request_body = base::MakeRefCounted<network::ResourceRequestBody>();
+    TryMakeRequest(request, ExpectedResponse::kReject);
+
+    // Uploads of files should be rejected. There's no code wired up to actually
+    // read the file, so don't need a path to a real file.
+    request.request_body->AppendFileRange(
+        base::FilePath(), /*offset=*/0u, /*length=*/2u,
+        /*expected_modification_time=*/base::Time());
+    TryMakeRequest(request, ExpectedResponse::kReject);
+
+    // Restore the upload body.
+    request.request_body = network::ResourceRequestBody::CreateFromCopyOfBytes(
+        base::as_byte_span("1234"));
 
     // Invalid Trusted Signals KVv2 POST request with mismatched base url.
     request.url = GURL("https://host.test/trusted_signals?");
