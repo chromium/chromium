@@ -6358,7 +6358,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5727" label="V8Origin_FromURL_Method"/>
   <int value="5728" label="V8Origin_Parse_Method"/>
   <int value="5729" label="ExtendedTextMetrics"/>
-  <int value="5730" label="UseCssSizingProperties"/>
+  <int value="5730" label="OBSOLETE_UseCssSizingProperties"/>
   <int value="5731" label="SharedStorageAPIAll"/>
   <int value="5732" label="GamepadRawInputChangeEventListener"/>
   <int value="5733" label="LetterSpacingWithMargin"/>

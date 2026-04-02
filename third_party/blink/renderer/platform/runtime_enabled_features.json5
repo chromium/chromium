@@ -1171,10 +1171,6 @@
       status: "stable",
     },
     {
-      name: "CollectWidthAndHeightAsPresentationAttributesForUse",
-      status: "stable",
-    },
-    {
       name: "CollectWidthAndHeightAsStylesForNestedSvg",
       status: "stable",
     },
@@ -6693,10 +6689,6 @@
     {
       name: "WidthAndHeightAsPresentationAttributesOnNestedSvg",
       // Disabled due to web compat issues, see https://crbug.com/449170647.
-      status: "experimental",
-    },
-    {
-      name: "WidthAndHeightStylePropertiesOnUseAndSymbol",
       status: "experimental",
     },
     {
