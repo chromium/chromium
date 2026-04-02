@@ -888,7 +888,17 @@ void HTMLOptionElement::ChooseOptionForCombobox(HTMLInputElement& input,
                                                 HTMLDataListElement& datalist) {
   CHECK(RuntimeEnabledFeatures::CustomizableComboboxEnabled());
   CHECK_EQ(input.DataList(), &datalist);
-  input.SetValue(datalist.ActiveOption()->DisplayLabel(),
+
+  // TODO(crbug.com/453705243): This code which decides which attributes have
+  // precedence over others should probably be shared with the appearance:auto
+  // code. The appearance:auto logic is in GetDataListOptions in form_autofill_util.cc.
+  String value_to_commit = FastHasAttribute(html_names::kValueAttr)
+                               ? FastGetAttribute(html_names::kValueAttr)
+                               : CollectOptionInnerText()
+                                     .StripWhiteSpace(IsHTMLSpace<UChar>)
+                                     .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+
+  input.SetValue(value_to_commit,
                  TextFieldEventBehavior::kDispatchInputAndChangeEvent,
                  TextControlSetValueSelection::kSetSelectionToEnd,
                  WebAutofillState::kNotFilled);

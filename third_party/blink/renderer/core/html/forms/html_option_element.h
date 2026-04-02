@@ -149,9 +149,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void ChooseOption(Event&);
 
   // Helper to choose the option for customizable combobox event handling in
-  // DefaultEventHandler. It sets the value of the input element to the
-  // DisplayLabel of this option and fires the input and change events on the
-  // input.
+  // DefaultEventHandler. It sets the value of the input element to the value or
+  // contents of this option and fires the input and change events on the input.
   void ChooseOptionForCombobox(HTMLInputElement&, HTMLDataListElement&);
 
   // Gets and sets whether this element matches the :filtered pseudo-class.
