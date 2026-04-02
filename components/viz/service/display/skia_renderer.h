@@ -6,12 +6,14 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_SKIA_RENDERER_H_
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -70,7 +72,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       bool create_if_necessary) override;
   void SetDelegatedInkMetadata(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
-  gfx::Rect GetCurrentFramebufferDamage() const override;
+  gfx::Rect GetCurrentFramebufferDamage(
+      const AggregatedRenderPassId& render_pass_id) const override;
   void Reshape(const OutputSurface::ReshapeParams& reshape_params) override;
   void EnsureMinNumberOfBuffers(int n) override;
 #if BUILDFLAG(IS_OZONE)
@@ -275,9 +278,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
                       gpu::Mailbox mailbox,
                       bool is_root,
                       bool is_scanout,
-                      bool scanout_dcomp_surface);
-    RenderPassBacking(const RenderPassBacking&);
-    RenderPassBacking& operator=(const RenderPassBacking&);
+                      bool scanout_dcomp_surface,
+                      std::unique_ptr<BufferQueue> buffer_queue);
+    RenderPassBacking(RenderPassBacking&&);
+    RenderPassBacking& operator=(RenderPassBacking&&);
+    ~RenderPassBacking();
 
     gfx::Size size;
     bool generate_mipmap = false;
@@ -291,6 +296,9 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     // This is the rect that has been drawn to this backing. It starts out as
     // empty and is expanded as drawing operations are made to this backing.
     gfx::Rect drawn_rect;
+    // BufferQueue used to allocate and manage buffers for this render pass.
+    // It is only used when the render pass is eligible for scanout.
+    std::unique_ptr<BufferQueue> buffer_queue;
   };
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
@@ -301,8 +309,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   // Returns a |RenderPassBacking| whose mailbox can be scheduled directly as an
   // overlay.
-  std::optional<SkiaRenderer::RenderPassBacking>
-  GetRenderPassBackingForDirectScanout(
+  const SkiaRenderer::RenderPassBacking* GetRenderPassBackingForDirectScanout(
       const AggregatedRenderPassId& render_pass_id) const;
 
   RenderPassOverlayParams* GetOrCreateRenderPassOverlayBacking(
@@ -548,9 +555,36 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   bool UsingSkiaForDelegatedInk() const;
   uint32_t debug_tint_modulate_count_ = 0;
 
-  // Used to get mailboxes for the root render pass when
-  // capabilities().renderer_allocates_images = true.
-  std::unique_ptr<BufferQueue> buffer_queue_;
+  std::unique_ptr<BufferQueue> CreateBufferQueue();
+
+  // Returns the BufferQueue for the given render pass, or nullptr if none
+  // exists. For root render passes this returns root_buffer_queue_; for
+  // non-root passes it returns the backing's buffer_queue.
+  BufferQueue* GetRenderPassBufferQueue(
+      const AggregatedRenderPassId& render_pass_id) const;
+
+  // Whether the renderer allocates BufferQueue-backed images for all scanout
+  // render passes, not just the root.
+  bool use_buffer_queue_for_non_root_passes_ = false;
+
+  // The BufferQueue used to allocate and manage buffers for the root render
+  // pass when |use_buffer_queue_for_root_| is true. Non-root render passes
+  // store their own BufferQueue in RenderPassBacking::buffer_queue instead.
+  // This is omitted from the render pass backing because Display expects
+  // the root framebuffer to live longer than the root render pass - for
+  // example, when the root render pass is changing and `SwapBuffersComplete`
+  // is called.
+  std::unique_ptr<BufferQueue> root_buffer_queue_;
+
+  // Tracks which non-root render pass buffer queues had SwapBuffers() called
+  // for each frame, so that SwapBuffersComplete() can be called on exactly
+  // the right queues. This is necessary because SwapBuffers and
+  // SwapBuffersComplete ordering is independent: a render pass backing may not
+  // exist during one frame's SwapBuffers but be created before that frame's
+  // SwapBuffersComplete arrives. The root buffer queue lives on the
+  // SkiaRenderer directly and does not require tracking in this manner.
+  base::circular_deque<base::flat_set<AggregatedRenderPassId>>
+      pending_render_pass_buffer_queue_swaps_;
 
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
