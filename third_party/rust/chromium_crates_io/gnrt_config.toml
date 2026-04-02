@@ -111,6 +111,10 @@ removed_librs_template = "removed_lib.rs.hbs"
 remove_crates = []
 root = "chromium"
 
+[crate.addr2line]
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = true }
+
 [crate.adler2.extra_kv]
 allow_unsafe = false
 
@@ -149,6 +153,11 @@ allow_unsafe = true
 
 [crate.autocfg.extra_kv]
 allow_unsafe = false
+
+[crate.backtrace]
+group = 'test'
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = true }
 
 [crate.base64.extra_kv]
 allow_unsafe = false
@@ -296,6 +305,10 @@ allow_unsafe = true
 allow_unsafe = true
 
 [crate.getrandom]
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = true }
+
+[crate.gimli]
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
@@ -522,6 +535,10 @@ allow_unsafe = false
 [crate.num-traits]
 # Configures the has_total_cmp feature, not necessary
 remove_build_rs = true
+extra_kv = { allow_unsafe = true }
+
+[crate.object]
+allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.once_cell]

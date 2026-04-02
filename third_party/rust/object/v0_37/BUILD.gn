@@ -1,0 +1,166 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "object"
+  epoch = "0.37"
+  enabled = !is_win
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/archive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/build/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/build/elf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/build/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/build/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/build/table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/elf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/endian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/macho.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/pe.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/pod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/any.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/archive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/coff/comdat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/coff/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/coff/import.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/coff/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/coff/relocation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/coff/section.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/coff/symbol.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/attributes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/comdat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/compression.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/dynamic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/hash.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/note.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/relocation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/section.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/segment.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/symbol.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/elf/version.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/gnu_compression.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/macho/dyld_cache.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/macho/fat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/macho/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/macho/load_command.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/macho/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/macho/relocation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/macho/section.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/macho/segment.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/macho/symbol.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/pe/data_directory.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/pe/export.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/pe/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/pe/import.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/pe/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/pe/relocation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/pe/resource.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/pe/rich.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/pe/section.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/read_cache.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/read_ref.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/util.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/wasm.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/xcoff/comdat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/xcoff/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/xcoff/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/xcoff/relocation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/xcoff/section.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/xcoff/segment.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/read/xcoff/symbol.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/coff/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/coff/object.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/coff/writer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/elf/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/elf/object.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/elf/writer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/macho.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/pe.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/util.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/write/xcoff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/object-v0_37/src/xcoff.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_name = "object"
+  cargo_pkg_description =
+      "A unified interface for reading and writing object file formats."
+  cargo_pkg_repository = "https://github.com/gimli-rs/object"
+  cargo_pkg_version = "0.37.3"
+
+  allow_unsafe = true
+
+  deps = []
+  if (!is_win) {
+    deps += [ "//third_party/rust/memchr/v2:lib" ]
+  }
+  features = [
+    "archive",
+    "coff",
+    "elf",
+    "macho",
+    "pe",
+    "read_core",
+    "unaligned",
+    "xcoff",
+  ]
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/object-v0_37/build.rs"
+  build_sources =
+      [ "//third_party/rust/chromium_crates_io/vendor/object-v0_37/build.rs" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  testonly = true
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

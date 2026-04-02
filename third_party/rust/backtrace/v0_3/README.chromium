@@ -1,0 +1,12 @@
+Name: backtrace
+URL: https://crates.io/crates/backtrace
+Version: 0.3.76
+Revision: 775f6a1ba62e7d35a1fac76e64c61d9d4687b5f2
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/backtrace-v0_3/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: A library to acquire a stack trace (backtrace) at runtime in a Rust program.
+

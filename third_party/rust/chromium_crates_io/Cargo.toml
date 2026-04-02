@@ -21,6 +21,7 @@ aho-corasick = "1.1.4" #TODO(crbug.com/496920769): Remove once libafl is added a
 antlr4rust = "0.5.2"
 anyhow = "1.0.98"
 arbitrary-int = "2.1.1" #TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
+backtrace = "0.3.76" #TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 base64 = "0.22"
 bitflags = "2"
 bytes = "1"

@@ -1,0 +1,11 @@
+Name: addr2line
+URL: https://crates.io/crates/addr2line
+Version: 0.25.1
+Revision: f02db009deb9b441818afa49cb1b17453c1e4243
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/addr2line-v0_25/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: A cross-platform symbolication library written in Rust, using `gimli`
