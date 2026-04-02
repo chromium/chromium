@@ -74,7 +74,8 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
   UtilityProcessHost::Start(std::move(utility_options),
                             std::make_unique<UtilityProcessClient>(
                                 service_interface_name, service_options.site,
-                                std::move(service_options.process_callback)));
+                                std::move(service_options.process_callback),
+                                std::move(service_options.observer)));
 }
 
 }  // namespace
@@ -92,6 +93,11 @@ void ServiceProcessHost::AddObserver(Observer* observer) {
 // static
 void ServiceProcessHost::RemoveObserver(Observer* observer) {
   GetServiceProcessTracker().RemoveObserver(observer);
+}
+
+// static
+void ServiceProcessHost::ClearInstanceObserver(Observer* observer) {
+  GetServiceProcessTracker().ClearInstanceObserver(observer);
 }
 
 // static

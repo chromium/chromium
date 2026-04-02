@@ -59,6 +59,15 @@ ServiceProcessHost::Options& ServiceProcessHost::Options::WithProcessCallback(
   return *this;
 }
 
+ServiceProcessHost::Options& ServiceProcessHost::Options::WithObserver(
+    base::WeakPtr<Observer> obs) {
+  CHECK(!observer) << "Only one per-instance observer may be registered. "
+                      "Use a service-specific manager to fan out to multiple "
+                      "observers.";
+  observer = std::move(obs);
+  return *this;
+}
+
 #if BUILDFLAG(IS_WIN)
 ServiceProcessHost::Options&
 ServiceProcessHost::Options::WithPreloadedLibraries(

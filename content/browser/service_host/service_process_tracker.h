@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "content/browser/service_host/utility_process_host.h"
@@ -29,9 +30,12 @@ class ServiceProcessTracker {
 
   ~ServiceProcessTracker();
 
-  ServiceProcessInfo AddProcess(base::Process process,
-                                const std::optional<GURL>& site,
-                                const std::string& service_interface_name);
+  // Registers a new service process with an optional per-instance observer.
+  ServiceProcessInfo AddProcess(
+      base::Process process,
+      const std::optional<GURL>& site,
+      const std::string& service_interface_name,
+      base::WeakPtr<ServiceProcessHost::Observer> observer);
 
   void NotifyTerminated(ServiceProcessId id);
 
@@ -42,6 +46,10 @@ class ServiceProcessTracker {
 
   void RemoveObserver(ServiceProcessHost::Observer* observer);
 
+  // Clears any per-instance observer matching |observer| across all tracked
+  // processes.
+  void ClearInstanceObserver(ServiceProcessHost::Observer* observer);
+
   std::vector<ServiceProcessInfo> GetProcesses();
 
  private:
@@ -51,7 +59,11 @@ class ServiceProcessTracker {
 
   std::map<ServiceProcessId, ServiceProcessInfo> processes_;
 
-  // Observers are owned and used exclusively on the UI thread.
+  // Per-instance observers, keyed by ServiceProcessId.
+  std::map<ServiceProcessId, base::WeakPtr<ServiceProcessHost::Observer>>
+      instance_observers_;
+
+  // Global observers, used exclusively on the UI thread.
   base::ObserverList<ServiceProcessHost::Observer> observers_;
 };
 

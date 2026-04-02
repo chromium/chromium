@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
@@ -70,6 +71,9 @@ inline sandbox::mojom::Sandbox GetServiceSandboxType() {
 //
 class CONTENT_EXPORT ServiceProcessHost {
  public:
+  // Forward declaration for use in Options.
+  class Observer;
+
   struct CONTENT_EXPORT Options {
     Options();
     ~Options();
@@ -98,6 +102,15 @@ class CONTENT_EXPORT ServiceProcessHost {
     // launched. Will be on UI thread.
     Options& WithProcessCallback(
         base::OnceCallback<void(const base::Process&)>);
+
+    // Specifies a per-instance observer to be notified of lifecycle events
+    // for this specific service process only. May only be called once per
+    // Options instance — CHECK-fails if called again. To fan out to multiple
+    // observers, use a service-specific manager class. The caller must provide
+    // a WeakPtr to ensure memory safety — if the observer is destroyed before
+    // the service process terminates, notifications are silently skipped.
+    // Will be called on the UI thread.
+    Options& WithObserver(base::WeakPtr<Observer> observer);
 
 #if BUILDFLAG(IS_WIN)
     // Specifies libraries to preload before the sandbox is locked down. Paths
@@ -128,15 +141,17 @@ class CONTENT_EXPORT ServiceProcessHost {
     std::optional<int> child_flags;
     std::vector<std::string> extra_switches;
     base::OnceCallback<void(const base::Process&)> process_callback;
+    base::WeakPtr<Observer> observer;
 #if BUILDFLAG(IS_WIN)
     std::vector<base::FilePath> preload_libraries;
 #endif  // BUILDFLAG(IS_WIN)
     std::optional<bool> allow_gpu_client;
   };
 
-  // An interface which can be implemented and registered/unregistered with
-  // |Add/RemoveObserver()| below to watch for all service process creation and
-  // and termination events globally. Methods are always called from the UI
+  // An interface which can be implemented and used with
+  // |Add/RemoveObserver()| to watch for all service process creation and
+  // termination events globally, or with |Options::WithObserver()| for
+  // per-instance lifecycle observation. Methods are always called from the
   // UI thread.
   class CONTENT_EXPORT Observer : public base::CheckedObserver {
    public:
@@ -197,6 +212,12 @@ class CONTENT_EXPORT ServiceProcessHost {
   // Removes a registered observer. This must be called some time before
   // |*observer| is destroyed and must be called from the UI thread only.
   static void RemoveObserver(Observer* observer);
+
+  // Clears any per-instance observer registrations matching |observer|.
+  // Provided for explicit cleanup in observer destructors. Not strictly
+  // required since WeakPtr handles safety, but avoids stale entries.
+  // Must be called from the UI thread only.
+  static void ClearInstanceObserver(Observer* observer);
 
  private:
   // Launches a new service process and asks it to bind a receiver for the

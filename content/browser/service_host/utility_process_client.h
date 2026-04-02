@@ -9,8 +9,10 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "content/browser/service_host/utility_process_host.h"
+#include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
 #include "url/gurl.h"
 
@@ -24,7 +26,8 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   UtilityProcessClient(
       const std::string& service_interface_name,
       const std::optional<GURL>& site,
-      base::OnceCallback<void(const base::Process&)> process_callback);
+      base::OnceCallback<void(const base::Process&)> process_callback,
+      base::WeakPtr<ServiceProcessHost::Observer> observer);
 
   UtilityProcessClient(const UtilityProcessClient&) = delete;
   UtilityProcessClient& operator=(const UtilityProcessClient&) = delete;
@@ -44,8 +47,11 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   // Optional site GURL for per-site utility processes.
   const std::optional<GURL> site_;
 
+  // Held temporarily until OnProcessLaunched, then transferred to tracker.
   base::OnceCallback<void(const base::Process&)> process_callback_;
-  std::optional<ServiceProcessInfo> process_info_;
+  base::WeakPtr<ServiceProcessHost::Observer> observer_;
+
+  std::optional<ServiceProcessId> service_process_id_;
 };
 }  // namespace content
 
