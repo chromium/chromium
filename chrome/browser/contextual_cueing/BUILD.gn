@@ -27,9 +27,11 @@ source_set("impl") {
 
   deps = [
     ":contextual_cueing",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
   ]
 }

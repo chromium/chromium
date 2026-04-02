@@ -37,6 +37,24 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed Category Classification">
     Tab was active but the page was not classified as a category we support.
   </int>
+  <int value="3" label="Model execution not available">
+    Tab was active and the page was classified as a category we support, but the
+    model execution was not available.
+  </int>
+  <int value="4" label="Model execution failed">
+    Tab was active and the page was classified as a category we support, but the
+    model execution failed.
+  </int>
+  <int value="5"
+      label="Model execution succeeded but response was not parseable">
+    Tab was active and the page was classified as a category we support, and the
+    model execution succeeded but the response was not parseable.
+  </int>
+  <int value="6"
+      label="Model execution succeeded and cue was successfully generated">
+    Tab was active and the page was classified as a category we support, and the
+    model execution succeeded and the cue was successfully generated.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_controller.h:ContextualCueingDecision) -->
