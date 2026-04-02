@@ -34,6 +34,7 @@ build_webui("build") {
     "audio_processor.ts",
     "audio_utils.ts",
     "conversation.ts",
+    "journal.ts",
     "logging.ts",
     "page_context_manager.ts",
     "persona.ts",

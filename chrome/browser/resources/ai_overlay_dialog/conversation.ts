@@ -7,10 +7,12 @@ import {assert} from '//resources/js/assert.js';
 import type {PageCallbackRouter} from './ai_overlay_dialog.mojom-webui.js';
 import {ApiSession} from './api_session.js';
 import type {ApiSessionConfig, ApiSessionDelegate, Tool, ToolCall} from './api_session.js';
+import {Journal} from './journal.js';
 import {debugLog, DebugLogTag, log} from './logging.js';
-import type {PageContext} from './page_context_manager.js';
-import {PageContextManager} from './page_context_manager.js';
-import {buildSystemInstruction} from './persona.js';
+import type {PageContext, PageContextChangeEvent} from './page_context_manager.js';
+import {PageContextChangeType, PageContextManager} from './page_context_manager.js';
+import {buildSystemInstruction, formatPageVisitHistory, formatTranscript} from './persona.js';
+
 
 const FILE = 'Conversation';
 import type {AiOverlayToolsRemote} from './tools.mojom-webui.js';
@@ -23,6 +25,7 @@ import {ToolExecutor} from './tools/tool_executor.js';
 export interface Persona {
   id: string;
   name: string;
+  nicknames: string[];
   persona: string;
   voice: string;
 }
@@ -69,8 +72,9 @@ export class Conversation implements ApiSessionDelegate {
   private readonly uiDelegate: UiDelegate;
   private readonly toolExecutor: ToolExecutor;
   private readonly pageContextManager: PageContextManager =
-      new PageContextManager(() => this.didUpdatePageContent());
+      new PageContextManager();
   private readonly config: ConversationConfig;
+  private readonly journal: Journal = new Journal(this.pageContextManager);
 
   private session: ApiSession|null = null;
   private toolDefinitions: Tool[] = [];
@@ -88,15 +92,19 @@ export class Conversation implements ApiSessionDelegate {
     this.uiDelegate = uiDelegate;
     this.toolExecutor = new ToolExecutor(toolsRemote);
 
+    this.pageContextManager.registerListener((event) => {
+      this.onPageContextChange(event);
+    });
+
     if (initialPageContext) {
-      this.pageContextManager.didChangePage(
+      this.pageContextManager.createNewPageContext(
           initialPageContext.url, initialPageContext.title,
           initialPageContext.content);
     }
 
     router.didChangePage.addListener(
         (url: string, title: string|null, content: string|null) =>
-            this.pageContextManager.didChangePage(url, title, content));
+            this.pageContextManager.createNewPageContext(url, title, content));
     router.updateCurrentPageContext.addListener(
         (title: string, content: string) =>
             this.pageContextManager.updateCurrentPageContext(title, content));
@@ -126,8 +134,10 @@ export class Conversation implements ApiSessionDelegate {
 
     if (isInput) {
       this.currentInput += text;
+      this.journal.updateCurrentTurn(text, undefined);
     } else {
       this.currentOutput += text;
+      this.journal.updateCurrentTurn(undefined, text);
 
       this.uiDelegate.sendToUI({
         type: 'outputTranscription',
@@ -139,6 +149,7 @@ export class Conversation implements ApiSessionDelegate {
   onTurnComplete() {
     this.currentInput = '';
     this.currentOutput = '';
+    this.journal.completeTurn();
   }
 
   interrupt() {
@@ -250,9 +261,16 @@ export class Conversation implements ApiSessionDelegate {
     assert(!this.session);
 
     const context = this.pageContextManager.pageContext;
+
+    const turns = this.journal.getTurnEntries();
+    const pages = this.journal.getPageVisitEntries();
+
+    const transcript = formatTranscript(turns, this.config.persona.name);
+    const pageHistory = formatPageVisitHistory(pages);
+
     const systemInstruction = buildSystemInstruction(
-        this.config, context?.title ?? '', context?.url || '',
-        context?.content ?? undefined);
+        this.config, context?.url || '', context?.title ?? '',
+        context?.content ?? '', transcript, pageHistory);
 
     debugLog(FILE, DebugLogTag.SYSTEM_INSTRUCTION, systemInstruction);
 
@@ -268,15 +286,20 @@ export class Conversation implements ApiSessionDelegate {
     await this.session.connect();
   }
 
-  private didUpdatePageContent() {
+  private onPageContextChange(event: PageContextChangeEvent) {
     if (!this.connected) {
       return;
     }
 
-    assert(this.session);
-    this.session.stop();
-    this.session = null;
+    const newPageContentBecameAvailable =
+        (event.type === PageContextChangeType.NEW_PAGE ||
+         !event.oldContext?.hasHadContent) &&
+        event.newContext.hasHadContent;
 
-    this.createNewApiSession();
+    if (newPageContentBecameAvailable && !!this.session) {
+      this.session.stop();
+      this.session = null;
+      this.createNewApiSession();
+    }
   }
 }

@@ -5,6 +5,7 @@
 import {assert} from '//resources/js/assert.js';
 
 import type {ConversationConfig} from './conversation.js';
+import type {PersistedPageContext, Turn} from './journal.js';
 
 /**
  * Processes the template for conditional blocks in the format:
@@ -112,21 +113,38 @@ export function processTemplate(
   });
 }
 
+export function formatTranscript(turns: Turn[], personaName: string): string {
+  return turns.filter(turn => turn.isComplete)
+      .map(turn => {
+        return `User: ${turn.inputTranscript}\n${personaName}: ${
+            turn.outputTranscript}`;
+      })
+      .join('\n');
+}
+
+export function formatPageVisitHistory(pages: PersistedPageContext[]): string {
+  return pages
+      .map((page, index) => {
+        return `${index + 1}. [${page.title || 'Untitled'}](${page.url})`;
+      })
+      .join('\n');
+}
+
 export function buildSystemInstruction(
-    config: ConversationConfig, url: string, title?: string,
-    pageContent?: string): string {
+    config: ConversationConfig, url: string, title: string, pageContent: string,
+    transcript: string, pageHistory: string): string {
   const data: Record<string, any> = {
     persona: config.persona.persona,
-    title: title ?? '',
+    title: title,
     url: url,
-    pageHistory: null,
-    conversation: null,
-    nameList: '',
+    pageHistory: pageHistory,
+    conversation: transcript,
+    nameList: config.persona.nicknames,
     isYT: false,
     isQuizlet: false,
     compressed: false,
     tabLines: '',
-    truncatedPageContent: pageContent ?? '',
+    truncatedPageContent: pageContent,
   };
 
   const template = config.system_instruction;

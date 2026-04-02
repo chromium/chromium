@@ -129,8 +129,9 @@ export class AppElement extends CrLitElement {
     // Start listening for page context updates immediately to ensure we catch
     // any initial updates before the Conversation is initialized.
     const didChangePageId = this.pageCallbackRouter.didChangePage.addListener(
-        (url: string, title: string|null, content: string|null) =>
-            this.initialPageContext = {url, title, content});
+        (url: string, title: string|null,
+         content: string|null) => this.initialPageContext =
+            {url, title, content, hasHadContent: (content?.length ?? 0) > 0});
     const updateContextId =
         this.pageCallbackRouter.updateCurrentPageContext.addListener(
             (title: string, content: string) => {
