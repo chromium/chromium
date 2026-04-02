@@ -87,7 +87,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
           client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void ForceClose(storage::BucketId bucket_id,
-                  storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
   void StartMetadataRecording(storage::BucketId bucket_id,
                               StartMetadataRecordingCallback callback) override;
@@ -180,7 +179,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
 
   void ForceClose(const storage::BucketLocator& bucket_locator,
-                  storage::mojom::ForceCloseReason reason,
+                  bool delete_bucket_data,
                   base::OnceClosure callback);
 
   // Always run immediately before destruction. `purge_origins` owns `this` and

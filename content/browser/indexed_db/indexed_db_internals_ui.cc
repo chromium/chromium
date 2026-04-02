@@ -222,7 +222,7 @@ void IndexedDBInternalsUI::DownloadBucketData(
   }
 
   control->ForceClose(
-      bucket_id, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+      bucket_id,
       base::BindOnce(
           [](base::WeakPtr<IndexedDBInternalsUI> handler,
              storage::BucketId bucket_id,
@@ -250,13 +250,8 @@ void IndexedDBInternalsUI::ForceClose(storage::BucketId bucket_id,
     return;
   }
 
-  control->ForceClose(
-      bucket_id, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
-      base::BindOnce(
-          [](ForceCloseCallback callback) {
-            std::move(callback).Run(std::nullopt);
-          },
-          std::move(callback)));
+  control->ForceClose(bucket_id,
+                      base::BindOnce(std::move(callback), std::nullopt));
 }
 
 void IndexedDBInternalsUI::StartMetadataRecording(

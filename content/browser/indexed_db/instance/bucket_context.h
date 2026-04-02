@@ -202,7 +202,7 @@ class CONTENT_EXPORT BucketContext
   // connections to renderers. When `doom` is true, the directories containing
   // data will also be deleted. Normally, in-memory bucket contexts never close.
   // If this is called with `doom` set to true, they will close.
-  void ForceClose(bool doom, const std::string& message);
+  void ForceClose(bool doom);
 
   // Starts capturing state data for indexeddb-internals. The data will be
   // returned the next time `StopMetadataRecording()` is invoked.
@@ -364,6 +364,8 @@ class CONTENT_EXPORT BucketContext
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote;
   };
+
+  void DoForceClose(bool doom, const std::string& message);
 
   Database* CreateAndAddDatabase(const std::u16string& name);
 

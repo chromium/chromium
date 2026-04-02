@@ -1731,9 +1731,11 @@ TEST_P(IndexedDBTest, CloseSequenceStarts) {
                       /*expected_backing_store_exists=*/true);
   EXPECT_TRUE(bucket_context->IsClosing());
 
-  context_->ForceClose(bucket_locator.id, {}, base::DoNothing());
-  VerifyBucketContextWaitIfNeeded(bucket_locator,
-                                  /*expected_context_exists=*/false);
+  base::RunLoop run_loop;
+  context_->ForceClose(bucket_locator.id, run_loop.QuitClosure());
+  run_loop.Run();
+  VerifyBucketContext(bucket_locator,
+                      /*expected_context_exists=*/false);
   EXPECT_FALSE(bucket_context);
 }
 
@@ -1927,26 +1929,23 @@ TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
   EXPECT_TRUE(context_->BucketContextExists(bucket_locator));
   EXPECT_FALSE(bucket_context->IsClosing());
 
-  context_->ForceClose(
-      bucket_locator.id,
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
-      base::DoNothing());
-  // Verify the in-memory factory sticks around. Since it would be destroyed
-  // asynchronously, there's no reliable point in time to verify that
-  // destruction *hasn't* happened, so just wait a bit before verifying.
-  RunPostedTasks();
-  RunPostedTasks();
-  RunPostedTasks();
+  // Verify the in-memory factory sticks around on ForceClose.
+  {
+    base::RunLoop run_loop;
+    context_->ForceClose(bucket_locator.id, run_loop.QuitClosure());
+    run_loop.Run();
+    RunPostedTasks(bucket_locator);
+    VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
+                        /*expected_backing_store_exists=*/true);
+  }
 
-  VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
-                      /*expected_backing_store_exists=*/true);
-
-  context_->ForceClose(
-      bucket_locator.id,
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
-      base::DoNothing());
-  VerifyBucketContextWaitIfNeeded(bucket_locator,
-                                  /*expected_context_exists=*/false);
+  // Verify the in-memory factory does NOT stick around on DeleteBucketData.
+  {
+    base::test::TestFuture<blink::mojom::QuotaStatusCode> result;
+    context_->DeleteBucketData(bucket_locator, result.GetCallback());
+    EXPECT_EQ(result.Get(), blink::mojom::QuotaStatusCode::kOk);
+    VerifyBucketContext(bucket_locator, /*expected_context_exists=*/false);
+  }
 }
 
 TEST_P(IndexedDBTest, TooLongOrigin) {
@@ -1976,8 +1975,7 @@ TEST_P(IndexedDBTest, FactoryForceClose) {
   base::WeakPtr<BucketContext> bucket_context = InitBucketContext();
   BucketLocator bucket_locator = bucket_context->bucket_locator();
 
-  bucket_context->ForceClose(
-      /*doom=*/false, "The database is force-closed for testing.");
+  bucket_context->ForceClose(/*doom=*/false);
   // Weak pointer is immediately invalidated.
   EXPECT_FALSE(bucket_context);
 
@@ -2408,7 +2406,7 @@ TEST_P(IndexedDBTest, UpdatePriorityAfterForceClose) {
   mojo::AssociatedRemote<blink::mojom::IDBDatabase> connection(
       std::move(pending_database));
   // Simulate force closing the context while `UpdatePriority` is in flight.
-  context_->ForceClose(bucket_info.id, {}, base::DoNothing());
+  context_->ForceClose(bucket_info.id, base::DoNothing());
   // Call this second in the unit test context to simulate losing the race.
   connection->UpdatePriority(1);
   connection.FlushForTesting();
@@ -2719,10 +2717,7 @@ TEST_P(IndexedDBTestWithBucketType, DataLoss) {
     // version. Without this step, the same `BackingStore` is reused because
     // it's kept around for 2 seconds after the last connection is dropped.
     base::RunLoop run_loop2;
-    context_->ForceClose(
-        bucket_locator.id,
-        storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE,
-        run_loop2.QuitClosure());
+    context_->ForceClose(bucket_locator.id, run_loop2.QuitClosure());
     run_loop2.Run();
   }
 
@@ -2806,7 +2801,7 @@ class IndexedDBTestForSqliteMigration
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
       CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
-      bucket_context->ForceClose(/*doom=*/false, "testing");
+      bucket_context->ForceClose(/*doom=*/false);
       base::FilePath current_file_path = GetLevelDbCurrentFilePath(bucket_info);
       ASSERT_TRUE(base::PathExists(current_file_path));
       ASSERT_TRUE(base::DeleteFile(current_file_path));
@@ -2820,7 +2815,7 @@ class IndexedDBTestForSqliteMigration
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
       CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
-      bucket_context->ForceClose(/*doom=*/false, "testing");
+      bucket_context->ForceClose(/*doom=*/false);
       base::FilePath current_file_path = GetLevelDbCurrentFilePath(bucket_info);
       ASSERT_TRUE(base::PathExists(current_file_path));
       // Delete everything except the CURRENT file.
@@ -2843,7 +2838,7 @@ class IndexedDBTestForSqliteMigration
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
       CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
-      bucket_context->ForceClose(/*doom=*/false, "testing");
+      bucket_context->ForceClose(/*doom=*/false);
       // Corrupt the MANIFEST-* files.
       base::FileEnumerator enumerator(
           GetFilePathForTesting(bucket_info.ToBucketLocator()),
@@ -3302,10 +3297,7 @@ TEST_P(IndexedDBTest, ForceCloseWithQueuedDelete) {
                                   kDatabaseName, /*force_close=*/false);
 
   base::RunLoop force_close_loop;
-  context_->ForceClose(
-      bucket_locator.id,
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE,
-      force_close_loop.QuitClosure());
+  context_->ForceClose(bucket_locator.id, force_close_loop.QuitClosure());
   force_close_loop.Run();
 }
 

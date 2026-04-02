@@ -292,20 +292,6 @@ void FinishGetAllBucketsDetails(
   std::move(callback).Run(std::move(origins));
 }
 
-std::string GetForceCloseReasonString(storage::mojom::ForceCloseReason reason) {
-  // TODO(crbug.com/410456906): make these messages more meaningful.
-  switch (reason) {
-    case storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN:
-      return "Force close delete origin";
-    case storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE:
-      return "Force close backing store failure";
-    case storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE:
-      return "Unknown";
-    default:
-      NOTREACHED();
-  }
-}
-
 }  // namespace
 
 IndexedDBContextImpl::IndexedDBContextImpl(
@@ -448,7 +434,7 @@ void IndexedDBContextImpl::DeleteBucketData(const BucketLocator& bucket_locator,
   DCHECK(!callback.is_null());
   ForceClose(
       bucket_locator,
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
+      /*delete_bucket_data=*/true,
       base::BindOnce(&IndexedDBContextImpl::DidForceCloseForDeleteBucketData,
                      weak_factory_.GetWeakPtr(), bucket_locator,
                      std::move(callback)));
@@ -479,33 +465,31 @@ void IndexedDBContextImpl::DidForceCloseForDeleteBucketData(
 }
 
 void IndexedDBContextImpl::ForceClose(storage::BucketId bucket_id,
-                                      storage::mojom::ForceCloseReason reason,
                                       base::OnceClosure closure) {
   std::optional<BucketLocator> bucket_locator = LookUpBucket(bucket_id);
   if (bucket_locator) {
-    ForceClose(*bucket_locator, reason, std::move(closure));
+    ForceClose(*bucket_locator, /*delete_bucket_data=*/false,
+               std::move(closure));
   } else if (closure) {
     std::move(closure).Run();
   }
 }
 
 void IndexedDBContextImpl::ForceClose(const storage::BucketLocator& bucket,
-                                      storage::mojom::ForceCloseReason reason,
+                                      bool delete_bucket_data,
                                       base::OnceClosure closure) {
-  const bool doom =
-      reason == storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN;
   auto iter = bucket_contexts_.find(bucket);
   if (iter != bucket_contexts_.end()) {
     if (closure) {
       iter->second.AsyncCall(&BucketContext::ForceClose)
-          .WithArgs(doom, GetForceCloseReasonString(reason))
+          .WithArgs(delete_bucket_data)
           .Then(std::move(closure));
     } else {
       iter->second.AsyncCall(&BucketContext::ForceClose)
-          .WithArgs(doom, GetForceCloseReasonString(reason));
+          .WithArgs(delete_bucket_data);
     }
   } else {
-    if (doom) {
+    if (delete_bucket_data) {
       std::ranges::for_each(GetStoragePaths(bucket),
                             &base::DeletePathRecursively);
     }
@@ -869,8 +853,7 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
   // `bucket_contexts_` while it's being iterated.
   weak_factory_.InvalidateWeakPtrs();
   for (auto& [_, context] : bucket_contexts_) {
-    context.AsyncCall(&BucketContext::ForceClose)
-        .WithArgs(/*doom=*/false, "IndexedDBContext is destructed.");
+    context.AsyncCall(&BucketContext::ForceClose).WithArgs(/*doom=*/false);
   }
   bucket_contexts_.clear();
   task_runner_limiters_.clear();
@@ -917,9 +900,7 @@ void IndexedDBContextImpl::PurgeOrigins() {
     }
 
     if (delete_bucket) {
-      ForceClose(bucket_locator,
-                 storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
-                 {});
+      ForceClose(bucket_locator, /*delete_bucket_data=*/true, {});
     }
   }
 }

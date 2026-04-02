@@ -341,12 +341,18 @@ uint64_t BucketContext::ReadUsageFromDisk(
                    data_path.Append(GetBlobStoreFileName(bucket_locator)));
 }
 
-void BucketContext::ForceClose(bool doom, const std::string& message) {
+void BucketContext::ForceClose(bool doom) {
+  DoForceClose(doom, doom ? "Force close delete origin" : "Unknown");
+}
+
+void BucketContext::DoForceClose(bool doom, const std::string& message) {
+  DCHECK_EQ(message, SanitizeErrorMessage(message));
+
   if (backing_store()) {
     backing_store()->OnForceClosing();
   }
   for (auto& [_, db] : databases_) {
-    db->ForceCloseConnectionsAndCancelRequests(SanitizeErrorMessage(message));
+    db->ForceCloseConnectionsAndCancelRequests(message);
     CHECK(db->CanBeDestroyed());
   }
   databases_.clear();
@@ -1054,7 +1060,7 @@ void BucketContext::HandleBackingStoreCorruption(
       base::BindOnce(&level_db::BackingStore::HandleCorruption, data_path_,
                      bucket_locator(), sanitized_error_message);
 
-  ForceClose(/*doom=*/false, sanitized_error_message);
+  DoForceClose(/*doom=*/false, sanitized_error_message);
   // In order to successfully delete the corrupted DB, the open handle must
   // first be closed.
   ResetBackingStore();
@@ -1069,13 +1075,12 @@ void BucketContext::OnDatabaseError(Database* database,
                                     const std::string& message) {
   CHECK(!status.ok());
 
-  LOG(ERROR) << " got status " << status.ToString();
   if (status.IsIOError()) {
     quota_manager_proxy_->OnClientWriteFailed(bucket_info_.storage_key);
   }
 
   const std::string error_message =
-      message.empty() ? status.ToString() : message;
+      SanitizeErrorMessage(message.empty() ? status.ToString() : message);
   if (IsUsingSqlite()) {
     // Unlike in the LevelDB case, an error in one database doesn't indicate a
     // problem with the entire bucket, so we just `ForceClose` the one
@@ -1091,7 +1096,7 @@ void BucketContext::OnDatabaseError(Database* database,
       HandleBackingStoreCorruption(error_message);
       return;
     }
-    ForceClose(/*doom=*/false, error_message);
+    DoForceClose(/*doom=*/false, error_message);
   }
 }
 

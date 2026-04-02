@@ -339,8 +339,7 @@ TEST_P(TransactionTest, TimeoutWithPriorities) {
 
     // Clean up for the next iteration.
     db_ = nullptr;
-    bucket_context()->ForceClose(false,
-                                 "The database is force-closed for testing.");
+    bucket_context()->ForceClose(false);
     RunPostedTasks();
     EXPECT_FALSE(bucket_context_);
     SetUpBucketContext();

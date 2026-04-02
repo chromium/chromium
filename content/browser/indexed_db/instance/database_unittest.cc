@@ -39,8 +39,6 @@ using blink::IndexedDBIndexKeys;
 namespace content::indexed_db {
 
 namespace {
-constexpr char kTestForceCloseMessage[] =
-    "The database's connection is force-closed.";
 
 ACTION_TEMPLATE(MoveArgPointee,
                 HAS_1_TEMPLATE_PARAMS(int, k),
@@ -139,7 +137,7 @@ TEST_P(DatabaseTest, ForcedClose) {
   EXPECT_CALL(request, Error);
   EXPECT_CALL(database_callbacks, ForcedClose)
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  bucket_context_->ForceClose(false, kTestForceCloseMessage);
+  bucket_context_->ForceClose(false);
   run_loop.Run();
 }
 
@@ -208,7 +206,7 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 1UL);
   db_ = nullptr;
 
-  bucket_context_->ForceClose(false, kTestForceCloseMessage);
+  bucket_context_->ForceClose(false);
   delete_loop.Run();
 
   // Wait for various mock expectations.
