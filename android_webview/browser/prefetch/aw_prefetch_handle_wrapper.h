@@ -44,7 +44,7 @@ class AwPrefetchHandleWrapper final
   AwPrefetchHandleWrapper(
       const GURL& url,
       std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
-      std::unique_ptr<content::PrePrefetchHandle> preprefetch_handle);
+      std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle);
   ~AwPrefetchHandleWrapper() override;
 
   AwPrefetchHandleWrapper(const AwPrefetchHandleWrapper&) = delete;
@@ -66,7 +66,7 @@ class AwPrefetchHandleWrapper final
   std::unique_ptr<content::PrefetchHandle> prefetch_handle_;
 
   // Can be destructed on any thread.
-  const std::unique_ptr<content::PrePrefetchHandle> preprefetch_handle_;
+  const std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle_;
 };
 
 }  // namespace android_webview

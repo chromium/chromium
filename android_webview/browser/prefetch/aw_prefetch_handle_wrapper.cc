@@ -22,10 +22,10 @@ AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
 AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
     const GURL& url,
     std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
-    std::unique_ptr<content::PrePrefetchHandle> preprefetch_handle)
+    std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle)
     : url_(url),
       expected_no_vary_search_(std::move(expected_no_vary_search)),
-      preprefetch_handle_(std::move(preprefetch_handle)) {}
+      pre_prefetch_handle_(std::move(pre_prefetch_handle)) {}
 
 AwPrefetchHandleWrapper::~AwPrefetchHandleWrapper() {
   if (prefetch_handle_) {
