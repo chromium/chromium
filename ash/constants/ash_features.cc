@@ -1786,7 +1786,7 @@ BASE_FEATURE(kDemoModeSecondaryGoogleAccountSigninAllowedFalse,
 BASE_FEATURE(kSendDeviceInfoToDemoServer, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether or not to show the notification based on experiment.
-BASE_FEATURE(kShowFrozenUpdateNotification, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShowFrozenUpdateNotification, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Uses experimental component version for smart dim.
 BASE_FEATURE(kSmartDimExperimentalComponent, base::FEATURE_DISABLED_BY_DEFAULT);

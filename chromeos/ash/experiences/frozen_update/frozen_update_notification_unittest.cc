@@ -123,12 +123,17 @@ class FrozenUpdateNotificationFeatureDisabledTest
     // Ensure this is treated as a reven device.
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         ash::switches::kRevenBranding);
+
+    // Force the feature off.
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kShowFrozenUpdateNotification);
   }
 
   ~FrozenUpdateNotificationFeatureDisabledTest() override = default;
 
  protected:
   base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FrozenUpdateNotificationTest, TestNoMatchNoNotification) {
