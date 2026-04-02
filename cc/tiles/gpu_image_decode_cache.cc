@@ -315,44 +315,6 @@ bool DrawAndScaleImageYUV(
   return true;
 }
 
-// We use this below, instead of just a std::unique_ptr, so that we can run
-// a Finch experiment to check the impact of not using discardable memory on the
-// GPU decode path.
-class HeapDiscardableMemory : public base::DiscardableMemory {
- public:
-  explicit HeapDiscardableMemory(size_t size)
-      : memory_(base::HeapArray<char>::Uninit(size)), size_(size) {}
-  ~HeapDiscardableMemory() override = default;
-  [[nodiscard]] bool Lock() override {
-    // Locking only succeeds when we have not yet discarded the memory (i.e. if
-    // we have never called |Unlock()|.)
-    return !memory_.empty();
-  }
-  void Unlock() override { Discard(); }
-  void* data() const override {
-    DCHECK(!memory_.empty());
-    return const_cast<char*>(memory_.data());
-  }
-  void DiscardForTesting() override { Discard(); }
-  base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
-      const char* name,
-      base::trace_event::ProcessMemoryDump* pmd) const override {
-    auto* dump = pmd->CreateAllocatorDump(name);
-    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                    base::trace_event::MemoryAllocatorDump::kUnitsBytes, size_);
-    return dump;
-  }
-
- private:
-  void Discard() {
-    memory_ = base::HeapArray<char>();
-    size_ = 0;
-  }
-
-  base::HeapArray<char> memory_;
-  size_t size_;
-};
-
 std::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
     const DrawImage& draw_image,
     AuxImage aux_image,
@@ -2030,17 +1992,11 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
       const auto info = image_data->GetImageInfo(aux_image);
 
       // Allocate the backing memory for the decode.
-      std::unique_ptr<base::DiscardableMemory> backing_memory;
-      if (base::FeatureList::IsEnabled(
-              features::kNoDiscardableMemoryForGpuDecodePath)) {
-        backing_memory = std::make_unique<HeapDiscardableMemory>(info.size);
-      } else {
-        auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
-        backing_memory =
-            allocator->AllocateLockedDiscardableMemoryWithRetryOrDie(
-                info.size, base::BindOnce(&GpuImageDecodeCache::ClearCache,
-                                          base::Unretained(this)));
-      }
+      auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
+      std::unique_ptr<base::DiscardableMemory> backing_memory =
+          allocator->AllocateLockedDiscardableMemoryWithRetryOrDie(
+              info.size, base::BindOnce(&GpuImageDecodeCache::ClearCache,
+                                        base::Unretained(this)));
 
       // Do the decode.
       if (info.yuva.has_value()) {

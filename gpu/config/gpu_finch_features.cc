@@ -420,11 +420,6 @@ BASE_FEATURE(kSkiaGraphiteDawnUseD3D12, base::FEATURE_DISABLED_BY_DEFAULT);
 // kSkiaGraphiteDawnUsePersistentCache.
 BASE_FEATURE(kGpuPersistentCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabling this will make the GPU decode path use a mock implementation of
-// discardable memory.
-BASE_FEATURE(kNoDiscardableMemoryForGpuDecodePath,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use a 100-command limit before forcing context switch per command buffer
 // instead of 20.
 BASE_FEATURE(kIncreasedCmdBufferParseSlice, base::FEATURE_DISABLED_BY_DEFAULT);
