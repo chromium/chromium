@@ -5,6 +5,8 @@
 #ifndef MEDIA_RENDERERS_VIDEO_FRAME_SHARED_IMAGE_CACHE_H_
 #define MEDIA_RENDERERS_VIDEO_FRAME_SHARED_IMAGE_CACHE_H_
 
+#include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
 
@@ -18,6 +20,10 @@ class RasterContextProvider;
 }  // namespace viz
 
 namespace media {
+
+// Delay before a cached resource is deleted.
+inline constexpr base::TimeDelta kTemporaryResourceDeletionDelay =
+    base::Seconds(3);
 
 class MEDIA_EXPORT VideoFrameSharedImageCache {
  public:
@@ -83,6 +89,10 @@ class MEDIA_EXPORT VideoFrameSharedImageCache {
   // This allows to makes sure that on shared image destruction, we wait on
   // previous raster/gles tasks to be completed properly.
   gpu::SyncToken sync_token_;
+
+  base::RetainingOneShotTimer cache_deleting_timer_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media

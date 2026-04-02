@@ -15,13 +15,20 @@
 
 namespace media {
 
-VideoFrameSharedImageCache::VideoFrameSharedImageCache() = default;
+VideoFrameSharedImageCache::VideoFrameSharedImageCache()
+    : cache_deleting_timer_(
+          FROM_HERE,
+          kTemporaryResourceDeletionDelay,
+          base::BindRepeating(&VideoFrameSharedImageCache::ReleaseCachedData,
+                              base::Unretained(this))) {}
 
 VideoFrameSharedImageCache::~VideoFrameSharedImageCache() {
   ReleaseCachedData();
 }
 
 void VideoFrameSharedImageCache::ReleaseCachedData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cache_deleting_timer_.Stop();
   // Don't destroy shared image we don't own.
   if (!shared_image_) {
     return;
@@ -56,6 +63,9 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
     const viz::SharedImageFormat& format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cache_deleting_timer_.Reset();
+
   if (shared_image_ && provider_ == raster_context_provider) {
     // Return the cached shared image if it is the same video frame.
     if (video_frame_id_ == video_frame->unique_id()) {
@@ -92,7 +102,9 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
 
 void VideoFrameSharedImageCache::UpdateSyncToken(
     const gpu::SyncToken& sync_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_token_ = sync_token;
+  cache_deleting_timer_.Reset();
 }
 
 VideoFrameSharedImageCache::CachedData::CachedData(

@@ -247,10 +247,6 @@ gpu::SyncToken ConvertYuvVideoFrameToRgbSharedImage(
   return ri_sync_token;
 }
 
-// This class keeps the last image drawn.
-// We delete the temporary resource if it is not used for 3 seconds.
-const int kTemporaryResourceDeletionDelay = 3;  // Seconds;
-
 template <typename T>
 base::span<T> CastSpan(base::span<uint8_t> span) {
   CHECK_EQ(span.size() % sizeof(T), 0u);
@@ -883,11 +879,7 @@ class VideoTextureBacking : public cc::TextureBacking {
 };
 
 PaintCanvasVideoRenderer::PaintCanvasVideoRenderer()
-    : cache_deleting_timer_(FROM_HERE,
-                            base::Seconds(kTemporaryResourceDeletionDelay),
-                            this,
-                            &PaintCanvasVideoRenderer::ResetCache),
-      renderer_stable_id_(cc::PaintImage::GetNextId()) {}
+    : renderer_stable_id_(cc::PaintImage::GetNextId()) {}
 
 PaintCanvasVideoRenderer::~PaintCanvasVideoRenderer() = default;
 
@@ -1481,8 +1473,6 @@ bool PaintCanvasVideoRenderer::
 
   // We do not need to synchronize video frame read here since it's already
   // taken care of earlier.
-  // Kick off a timer to release the cache.
-  cache_deleting_timer_.Reset();
   return true;
 }
 
@@ -1581,8 +1571,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // data we used was CPU-side to begin with. If there were any textures, we
   // didn't use them.
 
-  // Kick off a timer to release the cache.
-  cache_deleting_timer_.Reset();
   return true;
 }
 
@@ -1674,8 +1662,10 @@ void PaintCanvasVideoRenderer::ResetCache() {
   // call SharedImageInterface::Flush explicitly.
 }
 
-PaintCanvasVideoRenderer::Cache::Cache(VideoFrame::ID frame_id)
-    : frame_id(frame_id) {}
+PaintCanvasVideoRenderer::Cache::Cache(VideoFrame::ID frame_id,
+                                       base::RepeatingClosure on_expire)
+    : frame_id(frame_id),
+      timer(FROM_HERE, kTemporaryResourceDeletionDelay, std::move(on_expire)) {}
 
 PaintCanvasVideoRenderer::Cache::~Cache() = default;
 
@@ -1684,13 +1674,18 @@ bool PaintCanvasVideoRenderer::Cache::Recycle() {
   return texture_backing->unique();
 }
 
+void PaintCanvasVideoRenderer::OnCacheExpired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cache_.reset();
+}
+
 bool PaintCanvasVideoRenderer::UpdateLastImage(
     scoped_refptr<VideoFrame> video_frame,
     viz::RasterContextProvider* raster_context_provider) {
   // Check for a cache hit.
   if (cache_ && video_frame->unique_id() == cache_->frame_id &&
       cache_->paint_image) {
-    cache_deleting_timer_.Reset();
+    cache_->timer.Reset();
     return true;
   }
 
@@ -1725,7 +1720,10 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       // on a single service-side texture causes a DCHECK to fire.
       cache_->texture_backing->clear_access();
     } else {
-      cache_.emplace(video_frame->unique_id());
+      cache_.emplace(
+          video_frame->unique_id(),
+          base::BindRepeating(&PaintCanvasVideoRenderer::OnCacheExpired,
+                              base::Unretained(this)));
       cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
           raster_context_provider, video_frame->coded_size(),
           video_frame->CompatRGBColorSpace());
@@ -1744,7 +1742,10 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
                                             cc::PaintImage::GetNextContentId());
     cache_->texture_backing->BeginAccess(ri);
   } else {
-    cache_.emplace(video_frame->unique_id());
+    cache_.emplace(
+        video_frame->unique_id(),
+        base::BindRepeating(&PaintCanvasVideoRenderer::OnCacheExpired,
+                            base::Unretained(this)));
     paint_image_builder.set_paint_image_generator(
         sk_make_sp<VideoImageGenerator>(video_frame));
   }
@@ -1755,7 +1756,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     cache_.reset();
     return false;
   }
-  cache_deleting_timer_.Reset();
+  cache_->timer.Reset();
   return true;
 }
 
