@@ -18,6 +18,22 @@ extern const CGFloat kMorphingMediumBottomCornerRadius;
 // Maximum alpha for the background dimming view.
 extern const CGFloat kMaxBackgroundDimmingAlpha;
 
+// Constants for the Assistant Side Panel.
+extern const CGFloat kAssistantSidePanelMaxWidth;
+extern const CGFloat kAssistantSidePanelWidthMultiplier;
+
+// Animation constants for the Assistant Sheet.
+extern const NSTimeInterval kAssistantSheetSpringDuration;
+extern const CGFloat kAssistantSheetSpringDamping;
+extern const CGFloat kAssistantSheetMomentumProjectionSeconds;
+
+// Returns true if the layout traits dictate presenting the Assistant as a side
+// panel. This requires the iPad idiom AND the regular horizontal size class.
+bool IsSidePanelLayout(UITraitCollection* trait_collection);
+
+// Returns true if the layout is currently iPhone landscape.
+bool IsIPhoneLandscapeLayout(UITraitCollection* trait_collection);
+
 // Encapsulates the dynamically computed styling properties with sub-pixel
 // precision.
 struct ContainerMorphingConstraints {

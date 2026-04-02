@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_animator.h"
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_animatable.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_provider.h"
 
 namespace {
 // Animation constants.
@@ -25,6 +26,74 @@ constexpr CGFloat kTranslationMargin = 20.0;
             (UIViewController<AssistantContainerAnimatable>*)viewController
               completion:(void (^)(void))completion {
   [self animate:viewController presentation:NO completion:completion];
+}
+
+- (void)animateSidePanelPresentation:
+            (UIViewController<AssistantContainerAnimatable>*)viewController
+                  baseViewController:
+                      (UIViewController<AssistantContainerProvider>*)
+                          baseViewController
+                          completion:(void (^)(void))completion {
+  UIView* assistantView = viewController.view;
+  if (!assistantView) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  [baseViewController.view layoutIfNeeded];
+  CGFloat width = assistantView.frame.size.width;
+
+  [baseViewController updateAssistantContainerOffset:-width];
+
+  [UIView animateWithDuration:kAnimationDuration
+      delay:0
+      usingSpringWithDamping:kSpringDamping
+      initialSpringVelocity:0
+      options:0
+      animations:^{
+        [baseViewController updateAssistantContainerOffset:0];
+      }
+      completion:^(BOOL finished) {
+        if (completion) {
+          completion();
+        }
+      }];
+}
+
+- (void)animateSidePanelDismissal:
+            (UIViewController<AssistantContainerAnimatable>*)viewController
+               baseViewController:
+                   (UIViewController<AssistantContainerProvider>*)
+                       baseViewController
+                       completion:(void (^)(void))completion {
+  UIView* assistantView = viewController.view;
+  if (!assistantView) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  [baseViewController.view layoutIfNeeded];
+  CGFloat width = assistantView.frame.size.width;
+
+  [baseViewController updateAssistantContainerOffset:0];
+
+  [UIView animateWithDuration:kAnimationDuration
+      delay:0
+      usingSpringWithDamping:kSpringDamping
+      initialSpringVelocity:0
+      options:0
+      animations:^{
+        [baseViewController updateAssistantContainerOffset:-width];
+      }
+      completion:^(BOOL finished) {
+        if (completion) {
+          completion();
+        }
+      }];
 }
 
 #pragma mark - Private

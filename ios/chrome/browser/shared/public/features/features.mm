@@ -930,6 +930,9 @@ const char kAssistantContainerMediumDetentPercentParam[] =
     "AssistantMediumDetentPercent";
 
 bool IsAssistantContainerEnabled() {
+  if (IsAssistantSidePanelEnabled()) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kAssistantContainer);
 }
 
@@ -1015,7 +1018,7 @@ BASE_FEATURE(kShareInVerbatimMatch, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseSceneViewController, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsUseSceneViewControllerEnabled() {
-  if (IsChromeNextIaEnabled()) {
+  if (IsChromeNextIaEnabled() || IsAssistantSidePanelEnabled()) {
     return true;
   }
   return base::FeatureList::IsEnabled(kUseSceneViewController);

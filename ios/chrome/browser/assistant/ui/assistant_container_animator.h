@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol AssistantContainerAnimatable;
+@protocol AssistantContainerProvider;
 
 @interface AssistantContainerAnimator : NSObject
 
@@ -20,6 +21,22 @@
 - (void)animateDismissal:
             (UIViewController<AssistantContainerAnimatable>*)viewController
               completion:(void (^)(void))completion;
+
+// Animates the presentation of the assistant container side panel.
+- (void)animateSidePanelPresentation:
+            (UIViewController<AssistantContainerAnimatable>*)viewController
+                  baseViewController:
+                      (UIViewController<AssistantContainerProvider>*)
+                          baseViewController
+                          completion:(void (^)(void))completion;
+
+// Animates the dismissal of the assistant container side panel.
+- (void)animateSidePanelDismissal:
+            (UIViewController<AssistantContainerAnimatable>*)viewController
+               baseViewController:
+                   (UIViewController<AssistantContainerProvider>*)
+                       baseViewController
+                       completion:(void (^)(void))completion;
 
 @end
 

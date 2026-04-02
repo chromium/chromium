@@ -7,6 +7,9 @@
 #import <algorithm>
 #import <cmath>
 
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+
 namespace {
 
 // Constants used for the container resizing animation.
@@ -19,6 +22,23 @@ const CGFloat kMorphingMediumMargin = 5.0;
 const CGFloat kMorphingBaseCornerRadius = 36.0;
 const CGFloat kMorphingMediumBottomCornerRadius = 44.0;
 const CGFloat kMaxBackgroundDimmingAlpha = 0.11;
+
+const CGFloat kAssistantSidePanelMaxWidth = 400.0;
+const CGFloat kAssistantSidePanelWidthMultiplier = 1.0 / 3.0;
+
+const NSTimeInterval kAssistantSheetSpringDuration = 0.3;
+const CGFloat kAssistantSheetSpringDamping = 0.85;
+const CGFloat kAssistantSheetMomentumProjectionSeconds = 0.2;
+
+bool IsSidePanelLayout(UITraitCollection* trait_collection) {
+  return IsAssistantSidePanelEnabled() &&
+         IsRegularXRegularSizeClass(trait_collection);
+}
+
+bool IsIPhoneLandscapeLayout(UITraitCollection* trait_collection) {
+  return trait_collection.userInterfaceIdiom == UIUserInterfaceIdiomPhone &&
+         trait_collection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+}
 
 NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
   CGFloat float_offset = static_cast<CGFloat>(offset);

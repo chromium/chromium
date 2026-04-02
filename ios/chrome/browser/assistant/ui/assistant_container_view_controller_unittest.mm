@@ -53,13 +53,19 @@ class AssistantContainerViewControllerTest : public PlatformTest {
         initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
     window_.frame = CGRectMake(0, 0, 320, 580);
     window_.backgroundColor = [UIColor whiteColor];
-    [window_ makeKeyAndVisible];  // Ensure it behaves like a real window
-    [window_ addSubview:view_controller_.view];
 
-    // Constraint to window bounds to ensure MaxY is valid for maxHeight
-    // calculation.
+    UIViewController* rootVC = [[UIViewController alloc] init];
+    rootVC.view.frame = window_.bounds;
+
+    [rootVC addChildViewController:view_controller_];
+    [rootVC.view addSubview:view_controller_.view];
+    [view_controller_ didMoveToParentViewController:rootVC];
+
     view_controller_.view.translatesAutoresizingMaskIntoConstraints = NO;
-    AddSameConstraints(view_controller_.view, window_);
+    AddSameConstraints(view_controller_.view, rootVC.view);
+
+    window_.rootViewController = rootVC;
+    [window_ makeKeyAndVisible];
 
     // Trigger loadView and viewDidLoad.
     [window_ layoutIfNeeded];

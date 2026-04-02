@@ -7,6 +7,9 @@
 #import "base/check.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_presentation_context.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/scene/ui/app_container_view.h"
 #import "ios/chrome/browser/scene/ui/scene_view.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
@@ -18,16 +21,30 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @interface SceneViewController () <SceneViewDelegate>
+
 @end
 
 @implementation SceneViewController {
   // The app bar.
   UIViewController* _appBar;
+  // The assistant container view controller.
+  AssistantContainerViewController* _assistantContainerViewController;
+
   // The view containing the app (the part outside the app bar).
   UIView* _appContentView;
+
+  // The Assistant constraints.
+  NSArray<NSLayoutConstraint*>* _baseAssistantConstraints;
+  NSArray<NSLayoutConstraint*>* _activeAssistantConstraints;
+  NSArray<NSLayoutConstraint*>* _assistantSheetConstraints;
+  NSArray<NSLayoutConstraint*>* _assistantPanelConstraints;
+  NSLayoutConstraint* _assistantLeadingConstraint;
+
+  // App bar constraints.
   NSArray<NSLayoutConstraint*>* _portraitConstraints;
   NSArray<NSLayoutConstraint*>* _landscapeLeftConstraints;
   NSArray<NSLayoutConstraint*>* _landscapeRightConstraints;
+
   // The last fullscreen progress value received.
   CGFloat _fullscreenProgress;
 }
@@ -60,9 +77,15 @@
   _appContentView.frame = view.bounds;
   [self.layoutGuideCenter referenceView:_appContentView
                               underName:kAppContentGuide];
-  if (!IsChromeNextIaEnabled()) {
+
+  if (!IsChromeNextIaEnabled() && !IsAssistantSidePanelEnabled()) {
     AddSameConstraints(_appContentView, view);
   }
+
+  [self
+      registerForTraitChanges:
+          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
+                   withAction:@selector(updateAssistantLayout)];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -74,7 +97,7 @@
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        [weakSelf updateLayoutForAppBar];
+        [weakSelf updateLayoutForViews];
       }
                       completion:nil];
 }
@@ -105,7 +128,7 @@
       [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
 
   if (!IsFullscreenRefactoringEnabled()) {
-    [self updateLayoutForAppBar];
+    [self updateLayoutForViews];
     return;
   }
 
@@ -135,13 +158,14 @@
     [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
   ];
 
-  [self updateLayoutForAppBar];
+  [self updateLayoutForViews];
 }
 
 #pragma mark - SceneViewDelegate
 
 - (void)sceneViewDidMoveToWindow:(SceneView*)sceneView {
-  [self updateLayoutForAppBar];
+  [self updateLayoutForViews];
+  [self updateAssistantLayout];
 }
 
 #pragma mark - FullscreenUIElement
@@ -152,7 +176,7 @@
     return;
   }
   _fullscreenProgress = progress;
-  [self updateLayoutForAppBar];
+  [self updateLayoutForViews];
 }
 
 #pragma mark - UIViewController
@@ -169,44 +193,99 @@
                             }];
 }
 
+#pragma mark - AssistantContainerProvider
+
+- (void)addAssistantContainerViewController:
+    (AssistantContainerViewController*)assistantContainerViewController {
+  CHECK(assistantContainerViewController);
+  CHECK(!_assistantContainerViewController);
+
+  _assistantContainerViewController = assistantContainerViewController;
+
+  [self addChildViewController:_assistantContainerViewController];
+  [self.view addSubview:_assistantContainerViewController.view];
+  [_assistantContainerViewController didMoveToParentViewController:self];
+
+  [self updateAssistantLayout];
+}
+
+- (void)removeAssistantContainerViewController {
+  if (!_assistantContainerViewController) {
+    return;
+  }
+
+  _assistantSheetConstraints = nil;
+  _assistantPanelConstraints = nil;
+  [_assistantContainerViewController willMoveToParentViewController:nil];
+  [_assistantContainerViewController.view removeFromSuperview];
+  [_assistantContainerViewController removeFromParentViewController];
+  _assistantContainerViewController = nil;
+
+  [self updateAssistantLayout];
+}
+
+- (void)updateAssistantContainerOffset:(CGFloat)offset {
+  _assistantLeadingConstraint.constant = offset;
+  [self.view layoutIfNeeded];
+  [self updateLayoutForViews];
+}
+
 #pragma mark - Private
 
+// Updates the active assistant constraints for the current active layout.
+- (void)updateAssistantLayout {
+  if (!IsAssistantSidePanelEnabled() || !self.view.window) {
+    return;
+  }
 
-// Updates the layout to adapt to screen changes.
-- (void)updateLayoutForAppBar {
+  [NSLayoutConstraint deactivateConstraints:_activeAssistantConstraints];
+  _activeAssistantConstraints = nil;
+
+  if (!_assistantContainerViewController) {
+    _assistantLeadingConstraint = nil;
+    [self setupDefaultConstraints];
+    _activeAssistantConstraints = _baseAssistantConstraints;
+    [NSLayoutConstraint activateConstraints:_activeAssistantConstraints];
+    return;
+  }
+
+  UIView* assistantView = _assistantContainerViewController.view;
+  assistantView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [self setupAssistantPanelConstraints:assistantView];
+  [self setupAssistantSheetConstraints:assistantView];
+
+  if (IsSidePanelLayout(self.traitCollection)) {
+    _assistantContainerViewController.presentationContext =
+        AssistantPresentationContext::kPanel;
+    _activeAssistantConstraints = _assistantPanelConstraints;
+  } else {
+    _assistantContainerViewController.presentationContext =
+        AssistantPresentationContext::kSheet;
+    _activeAssistantConstraints = _assistantSheetConstraints;
+  }
+
+  [NSLayoutConstraint activateConstraints:_activeAssistantConstraints];
+}
+
+// Updates the layout of the scene views depending on the active layout strategy
+// (Constraints vs. Frames).
+- (void)updateLayoutForViews {
+  if (IsFullscreenRefactoringEnabled()) {
+    [self applyConstraintsForLayout];
+  } else {
+    [self applyFrameForLayout];
+  }
+}
+
+// Applies Auto Layout constraints to views.
+- (void)applyConstraintsForLayout {
+  UIView* view = self.view;
   if (!_appBar) {
     return;
   }
-
-  AppBarPosition position = AppBarPositionForView(self.view);
+  AppBarPosition position = AppBarPositionForView(view);
   if (position == AppBarPosition::kNone) {
-    return;
-  }
-
-  if (!IsFullscreenRefactoringEnabled()) {
-    CGRect frame = self.view.bounds;
-    UIEdgeInsets insets = UIEdgeInsetsZero;
-    switch (position) {
-      case AppBarPosition::kLeft:
-        insets = UIEdgeInsetsMake(0, kAppBarHeight, 0, 0);
-        break;
-
-      case AppBarPosition::kRight:
-        insets = UIEdgeInsetsMake(0, 0, 0, kAppBarHeight);
-        break;
-
-      case AppBarPosition::kBottom: {
-        CGFloat appBarHeight =
-            kAppBarHeightFullscreen -
-            _fullscreenProgress * (kAppBarHeightFullscreen - kAppBarHeight);
-        insets = UIEdgeInsetsMake(0, 0, appBarHeight, 0);
-        break;
-      }
-
-      default:
-        break;
-    }
-    _appContentView.frame = UIEdgeInsetsInsetRect(frame, insets);
     return;
   }
 
@@ -231,7 +310,63 @@
       break;
   }
 
-  [self.view layoutIfNeeded];
+  [view layoutIfNeeded];
+}
+
+// Applies manual frames to views by combining insets from App Bar and Side
+// Panel features.
+- (void)applyFrameForLayout {
+  CGRect frame = self.view.bounds;
+  UIEdgeInsets insets = [self appBarInsets];
+  insets.left += [self sidePanelLeftInset];
+
+  _appContentView.frame = UIEdgeInsetsInsetRect(frame, insets);
+}
+
+// Calculates insets for the App Bar.
+- (UIEdgeInsets)appBarInsets {
+  if (!_appBar) {
+    return UIEdgeInsetsZero;
+  }
+  AppBarPosition position = AppBarPositionForView(self.view);
+  if (position == AppBarPosition::kNone) {
+    return UIEdgeInsetsZero;
+  }
+
+  UIEdgeInsets insets = UIEdgeInsetsZero;
+  switch (position) {
+    case AppBarPosition::kLeft:
+      insets.left += kAppBarHeight;
+      break;
+
+    case AppBarPosition::kRight:
+      insets.right += kAppBarHeight;
+      break;
+
+    case AppBarPosition::kBottom: {
+      CGFloat appBarHeight =
+          kAppBarHeightFullscreen -
+          _fullscreenProgress * (kAppBarHeightFullscreen - kAppBarHeight);
+      insets.bottom += appBarHeight;
+      break;
+    }
+
+    default:
+      break;
+  }
+  return insets;
+}
+
+// Calculates left inset for the Assistant Side Panel.
+- (CGFloat)sidePanelLeftInset {
+  if (!IsSidePanelLayout(self.traitCollection) ||
+      !_assistantContainerViewController) {
+    return 0;
+  }
+
+  CGFloat width = _assistantContainerViewController.view.bounds.size.width +
+                  _assistantLeadingConstraint.constant;
+  return MAX(0, width);
 }
 
 // Helper method for dismissal block when attempting to show the Gemini floaty
@@ -246,6 +381,94 @@
     return;
   }
   [self.delegate sceneViewControllerShowGeminiFloatyIfInvoked:self];
+}
+
+// Sets up default constraints when no assistant is present.
+- (void)setupDefaultConstraints {
+  if (_baseAssistantConstraints) {
+    return;
+  }
+  _baseAssistantConstraints = @[];
+  if (IsFullscreenRefactoringEnabled()) {
+    UIView* view = self.view;
+    _baseAssistantConstraints = @[
+      [_appContentView.leadingAnchor
+          constraintEqualToAnchor:view.leadingAnchor],
+      [_appContentView.trailingAnchor
+          constraintEqualToAnchor:view.trailingAnchor],
+      [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
+      [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+    ];
+  }
+}
+
+// Sets up panel constraints for iPad side panel layout.
+- (void)setupAssistantPanelConstraints:(UIView*)assistantView {
+  if (_assistantPanelConstraints) {
+    return;
+  }
+  UIView* view = self.view;
+  _assistantLeadingConstraint =
+      [assistantView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor];
+
+  NSArray* panelConstraints = @[
+    _assistantLeadingConstraint,
+    [assistantView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    [assistantView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+    [assistantView.widthAnchor
+        constraintEqualToAnchor:view.widthAnchor
+                     multiplier:kAssistantSidePanelWidthMultiplier],
+    [assistantView.widthAnchor
+        constraintLessThanOrEqualToConstant:kAssistantSidePanelMaxWidth],
+  ];
+
+  _assistantPanelConstraints = panelConstraints;
+  if (IsFullscreenRefactoringEnabled()) {
+    _assistantPanelConstraints =
+        [panelConstraints arrayByAddingObjectsFromArray:@[
+          [_appContentView.leadingAnchor
+              constraintEqualToAnchor:assistantView.trailingAnchor],
+          [_appContentView.trailingAnchor
+              constraintEqualToAnchor:view.trailingAnchor],
+          [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
+          [_appContentView.bottomAnchor
+              constraintEqualToAnchor:view.bottomAnchor],
+        ]];
+  }
+}
+
+// Sets up sheet constraints for bottom sheet layout.
+- (void)setupAssistantSheetConstraints:(UIView*)assistantView {
+  if (_assistantSheetConstraints) {
+    return;
+  }
+  UIView* view = self.view;
+  NSLayoutConstraint* bottomConstraint =
+      [assistantView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor];
+  // Lowering priority allows `AssistantContainerViewController` to override
+  // the bottom constraint.
+  bottomConstraint.priority = UILayoutPriorityDefaultHigh;
+
+  NSArray* sheetConstraints = @[
+    [assistantView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
+    [assistantView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor],
+    [assistantView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    bottomConstraint,
+  ];
+
+  _assistantSheetConstraints = sheetConstraints;
+  if (IsFullscreenRefactoringEnabled()) {
+    _assistantSheetConstraints =
+        [sheetConstraints arrayByAddingObjectsFromArray:@[
+          [_appContentView.leadingAnchor
+              constraintEqualToAnchor:view.leadingAnchor],
+          [_appContentView.trailingAnchor
+              constraintEqualToAnchor:view.trailingAnchor],
+          [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
+          [_appContentView.bottomAnchor
+              constraintEqualToAnchor:view.bottomAnchor],
+        ]];
+  }
 }
 
 @end

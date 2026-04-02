@@ -9,16 +9,7 @@
 
 enum class AssistantContainerDetent : NSInteger;
 @class AssistantContainerViewController;
-
-// Describes the presentation context of the Assistant Container.
-enum class AssistantPresentationContext {
-  // Standard compact-width presentation (e.g., iPhone portrait).
-  // The container behaves as a traditional bottom sheet.
-  kSheet,
-  // Regular-width presentation (e.g., iPad full screen).
-  // The container is presented as a side panel.
-  kPanel,
-};
+enum class AssistantPresentationContext;
 
 // Delegate for the Assistant Container to notify embedders of state changes.
 @protocol AssistantContainerDelegate <NSObject>

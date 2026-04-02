@@ -20,24 +20,20 @@
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
 // The height assigned to a detent that isn't in the list.
 constexpr NSInteger kInvalidDetentHeight = -1;
 
-// Constants used for the container resizing animation.
-constexpr CGFloat kSpringDuration = 0.3;
-constexpr CGFloat kSpringDamping = 0.85;
-constexpr CGFloat kMomentumProjectionSeconds = 0.2;
-
 // The height of the top area that responds to the pan gesture.
 constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
-// The maximum width of the container on iPad devices.
-constexpr CGFloat kMaxWidthRegularSizeClass = 700.0;
-// The multiplier for the width of the container relative to the parent view.
-constexpr CGFloat kWidthMultiplierRegularSizeClass = 2.0 / 3.0;
+// The maximum width of the sheet container on iPad devices.
+constexpr CGFloat kAssistantSheetMaxWidth = 700.0;
+// The multiplier for the width of the sheet container relative to its parent.
+constexpr CGFloat kAssistantSheetWidthMultiplier = 2.0 / 3.0;
 
 // The absolute minimum padding between the top of the container and the top of
 // the screen if no safe area insets exist (e.g. iPad full screen, iPhone
@@ -49,19 +45,6 @@ constexpr CGFloat kFullscreenMinimizationThreshold = 0.50;
 
 // Default percentage for the medium detent.
 constexpr NSInteger kDefaultMediumDetentPercentage = 50;
-
-// Returns YES if the layout should be adapted for iPad.
-BOOL IsiPadLayout(UITraitCollection* trait_collection) {
-  return trait_collection.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
-         trait_collection.horizontalSizeClass ==
-             UIUserInterfaceSizeClassRegular;
-}
-
-// Returns YES if the layout is currently iPhone landscape.
-BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
-  return trait_collection.userInterfaceIdiom == UIUserInterfaceIdiomPhone &&
-         trait_collection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-}
 
 // Returns the height for the medium detent, taking into account the
 // experimental setting percentage.
@@ -78,41 +61,37 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 @end
 
 @implementation AssistantContainerViewController {
+  // The view that holds the child view controller.
+  AssistantContainerView* _assistantContainerView;
+  // Background dimming view for transitions to large detent.
+  UIView* _dimmingView;
+
   // Layout constraints for the container.
   NSLayoutConstraint* _heightConstraint;
   NSLayoutConstraint* _leadingConstraint;
   NSLayoutConstraint* _trailingConstraint;
-  NSLayoutConstraint* _bottomConstraint;
+  NSLayoutConstraint* _outerBottomConstraint;
+  NSLayoutConstraint* _innerBottomConstraint;
 
   // Layout constraints for width-restricted contexts (iPad/Landscape).
   NSArray<NSLayoutConstraint*>* _widthRestrictedConstraints;
-
-  // Constraints pinning the container to the parent view.
-  NSArray<NSLayoutConstraint*>* _parentConstraints;
-
-  // Background dimming view for transitions to large detent.
-  UIView* _dimmingView;
-
-  // The view that holds the child view controller.
-  AssistantContainerView* _assistantContainerView;
+  // Constraints pinning the container to the parent view for side panel.
+  NSArray<NSLayoutConstraint*>* _sidePanelConstraints;
 
   // State storage for configuration before view load.
   UIViewController* _childViewController;
-
-  // Gesture recognizer for resizing the container.
-  UIPanGestureRecognizer* _headerPanGesture;
+  // Cached map of calculated heights for the active detents.
+  std::map<AssistantContainerDetent, NSInteger> _detentHeights;
+  // Tracks the active detent to prevent redundant delegate callbacks and layout
+  // loops.
+  std::optional<AssistantContainerDetent> _activeDetent;
   // The height of the container when the gesture started.
   CGFloat _initialConstraintHeight;
   // Whether the view has appeared.
   BOOL _hasAppeared;
 
-  // Cached map of calculated heights for the active detents.
-  std::map<AssistantContainerDetent, NSInteger> _detentHeights;
-
-  // Tracks the active detent to prevent redundant delegate callbacks and layout
-  // loops.
-  std::optional<AssistantContainerDetent> _activeDetent;
-
+  // Gesture recognizer for resizing the container.
+  UIPanGestureRecognizer* _headerPanGesture;
   // Observer for the fullscreen controller.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 }
@@ -147,14 +126,16 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView* view = self.view;
+  view.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self setUpGestures];
 
   [self
       registerForTraitChanges:
           @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
-                   withAction:@selector(updateLayoutForCurrentTraitCollection)];
+                   withAction:@selector
+                   (updatePresentationContextFromTraitCollection)];
 
   // Apply pending configuration.
   if (_childViewController) {
@@ -176,24 +157,35 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   // Pin the container inside the wrapper, these constraints mutate during
   // morphing.
   _leadingConstraint = [_assistantContainerView.leadingAnchor
-      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor];
+      constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor];
   _trailingConstraint = [_assistantContainerView.trailingAnchor
-      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor];
+      constraintEqualToAnchor:view.safeAreaLayoutGuide.trailingAnchor];
+
+  NSLayoutConstraint* proportionalWidthConstraint =
+      [_assistantContainerView.widthAnchor
+          constraintEqualToAnchor:view.widthAnchor
+                       multiplier:kAssistantSheetWidthMultiplier];
+  proportionalWidthConstraint.priority = UILayoutPriorityRequired - 1;
 
   // Set up width-restricted constraints, inactive by default.
   _widthRestrictedConstraints = @[
     [_assistantContainerView.centerXAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.centerXAnchor],
+    proportionalWidthConstraint,
     [_assistantContainerView.widthAnchor
-        constraintEqualToAnchor:self.view.widthAnchor
-                     multiplier:kWidthMultiplierRegularSizeClass],
-    [_assistantContainerView.widthAnchor
-        constraintLessThanOrEqualToConstant:kMaxWidthRegularSizeClass]
+        constraintLessThanOrEqualToConstant:kAssistantSheetMaxWidth]
   ];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
+  if (_innerBottomConstraint) {
+    [NSLayoutConstraint deactivateConstraints:@[
+      _innerBottomConstraint, _outerBottomConstraint
+    ]];
+    _innerBottomConstraint = nil;
+    _outerBottomConstraint = nil;
+  }
   if (parent) {
     [self layoutInParentView:parent.view];
   }
@@ -294,6 +286,31 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
 #pragma mark - Properties
 
+- (void)setPresentationContext:
+    (AssistantPresentationContext)presentationContext {
+  if (_presentationContext == presentationContext) {
+    return;
+  }
+  _presentationContext = presentationContext;
+
+  if ([self.delegate respondsToSelector:@selector(assistantContainer:
+                                                    didChangeContext:)]) {
+    [self.delegate assistantContainer:self
+                     didChangeContext:presentationContext];
+  }
+
+  if (presentationContext == AssistantPresentationContext::kSheet &&
+      _activeDetent.has_value()) {
+    if ([self.delegate respondsToSelector:@selector(assistantContainer:
+                                                       didChangeDetent:)]) {
+      [self.delegate assistantContainer:self
+                        didChangeDetent:_activeDetent.value()];
+    }
+  }
+
+  [self applyLayoutForPresentationContext];
+}
+
 - (void)setDelegate:(id<AssistantContainerDelegate>)delegate {
   if (_delegate == delegate) {
     return;
@@ -379,13 +396,18 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
+  if (_presentationContext == AssistantPresentationContext::kPanel) {
+    self.view.alpha = 1.0;
+    return;
+  }
+
   self.view.alpha = MIN(1.0, progress / kFullscreenMinimizationThreshold);
 
   AssistantContainerDetent smallestDetent = _detents.front();
   if (progress <= kFullscreenMinimizationThreshold &&
       _activeDetent != smallestDetent) {
     [self animateToDetent:smallestDetent
-                 duration:kSpringDuration
+                 duration:kAssistantSheetSpringDuration
                     curve:UIViewAnimationCurveEaseInOut];
   }
 }
@@ -419,7 +441,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   ContainerMorphingConstraints constraints = CalculateMorphingConstraints(
       height, minimizedHeight, mediumHeight, largeHeight);
 
-  if (IsiPadLayout(self.traitCollection)) {
+  if (IsRegularXRegularSizeClass(self.traitCollection)) {
     // iPad floating sheet always has 4 rounded corners and a bottom margin.
     constraints.top_corner_radius = kMorphingBaseCornerRadius;
     constraints.bottom_corner_radius = kMorphingBaseCornerRadius;
@@ -429,7 +451,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   _heightConstraint.constant = constraints.actual_height;
   _leadingConstraint.constant = constraints.side_margin;
   _trailingConstraint.constant = -constraints.side_margin;
-  _bottomConstraint.constant = -constraints.bottom_margin;
+  _innerBottomConstraint.constant = -constraints.bottom_margin;
   [_assistantContainerView
       updateTopCornerRadius:constraints.top_corner_radius
          bottomCornerRadius:constraints.bottom_corner_radius];
@@ -514,7 +536,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
       _activeDetent.value() == maxDetent ? minDetent : maxDetent;
 
   [self animateToDetent:targetDetent
-               duration:kSpringDuration
+               duration:kAssistantSheetSpringDuration
                   curve:UIViewAnimationCurveEaseInOut];
 }
 
@@ -559,7 +581,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   }
 
   [self animateToDetent:detent
-               duration:kSpringDuration
+               duration:kAssistantSheetSpringDuration
                   curve:UIViewAnimationCurveEaseInOut];
 }
 
@@ -668,8 +690,8 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   NSInteger minDistance = NSIntegerMax;
 
   // Project height based on velocity to simulate momentum.
-  NSInteger projectedHeight =
-      round(currentHeight - (velocity.y * kMomentumProjectionSeconds));
+  NSInteger projectedHeight = round(
+      currentHeight - (velocity.y * kAssistantSheetMomentumProjectionSeconds));
 
   for (AssistantContainerDetent detent : self.detents) {
     NSInteger val = _detentHeights[detent];
@@ -739,6 +761,11 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   CGFloat maxAvailableHeight = self.view.frame.size.height;
   CGFloat safeAreaTop = self.view.safeAreaInsets.top;
 
+  // Fallback to window safe area if view safe area is not yet available.
+  if (safeAreaTop == 0 && self.view.window) {
+    safeAreaTop = self.view.window.safeAreaInsets.top;
+  }
+
   CGFloat topInset = MAX(safeAreaTop, kMinTopPadding);
 
   return round(maxAvailableHeight - topInset);
@@ -750,10 +777,6 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
     return;
   }
 
-  if (_parentConstraints) {
-    [NSLayoutConstraint deactivateConstraints:_parentConstraints];
-  }
-
   NSLayoutYAxisAnchor* bottomAnchor = nil;
   if (self.anchorView) {
     bottomAnchor = self.anchorView.topAnchor;
@@ -763,33 +786,99 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
     bottomAnchor = parentView.safeAreaLayoutGuide.bottomAnchor;
   }
 
-  // Pin the wrapper to the parent view.
-  _parentConstraints = @[
-    [self.view.topAnchor constraintEqualToAnchor:parentView.topAnchor],
-    [self.view.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor],
-    [self.view.trailingAnchor
-        constraintEqualToAnchor:parentView.trailingAnchor],
-    [self.view.bottomAnchor constraintEqualToAnchor:bottomAnchor],
-  ];
-  [NSLayoutConstraint activateConstraints:_parentConstraints];
+  UIView* view = self.view;
 
   // Anchor the container directly to the dynamic bottom anchor.
-  if (!_bottomConstraint) {
-    _bottomConstraint = [_assistantContainerView.bottomAnchor
-        constraintEqualToAnchor:bottomAnchor];
-    _bottomConstraint.active = YES;
+  if (!_innerBottomConstraint) {
+    _innerBottomConstraint = [_assistantContainerView.bottomAnchor
+        constraintEqualToAnchor:view.bottomAnchor];
+    _outerBottomConstraint =
+        [view.bottomAnchor constraintEqualToAnchor:bottomAnchor];
+
+    [NSLayoutConstraint activateConstraints:@[
+      _outerBottomConstraint, _innerBottomConstraint
+    ]];
   }
 
   // Trigger initial adaptive layout once the view is successfully in the
   // hierarchy.
-  [self updateLayoutForCurrentTraitCollection];
+  [self updatePresentationContextFromTraitCollection];
 }
 
-// Updates layout constants and constraints based on the current trait
-// collection.
-- (void)updateLayoutForCurrentTraitCollection {
-  if (IsiPadLayout(self.traitCollection) ||
-      IsiPhoneLandscapeLayout(self.traitCollection)) {
+// Updates the presentation context based on the current trait collection.
+- (void)updatePresentationContextFromTraitCollection {
+  if (!self.view.window) {
+    return;
+  }
+
+  AssistantPresentationContext targetContext =
+      IsSidePanelLayout(self.traitCollection)
+          ? AssistantPresentationContext::kPanel
+          : AssistantPresentationContext::kSheet;
+
+  if (_presentationContext != targetContext) {
+    self.presentationContext = targetContext;
+  } else if (_presentationContext == AssistantPresentationContext::kSheet) {
+    // Re-evaluate sheet constraints on pure trait changes.
+    [self applySheetLayoutConstraints];
+  }
+}
+
+// Configures the constraints for the panel layout.
+- (void)applyPanelLayoutConstraints {
+  UIView* view = self.view;
+
+  [NSLayoutConstraint deactivateConstraints:_widthRestrictedConstraints];
+  [NSLayoutConstraint deactivateConstraints:@[
+    _leadingConstraint, _trailingConstraint, _innerBottomConstraint,
+    _outerBottomConstraint, _heightConstraint
+  ]];
+
+  if (!_sidePanelConstraints) {
+    _sidePanelConstraints = @[
+      [_assistantContainerView.leadingAnchor
+          constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor],
+      [_assistantContainerView.trailingAnchor
+          constraintEqualToAnchor:view.safeAreaLayoutGuide.trailingAnchor],
+      [_assistantContainerView.topAnchor
+          constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor],
+      [_assistantContainerView.bottomAnchor
+          constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor]
+    ];
+  }
+  [NSLayoutConstraint activateConstraints:_sidePanelConstraints];
+
+  _headerPanGesture.enabled = NO;
+  _dimmingView.hidden = YES;
+  _assistantContainerView.grabberButton.hidden = YES;
+}
+
+// Applies the constraints and view states for the current presentation context.
+- (void)applyLayoutForPresentationContext {
+  if (_presentationContext == AssistantPresentationContext::kPanel) {
+    [self applyPanelLayoutConstraints];
+    return;
+  }
+
+  // Sheet layout.
+  [self applySheetLayoutConstraints];
+}
+
+// Configures the constraints for the sheet layout.
+- (void)applySheetLayoutConstraints {
+  UIView* view = self.view;
+
+  [NSLayoutConstraint deactivateConstraints:_sidePanelConstraints];
+  [NSLayoutConstraint activateConstraints:@[
+    _outerBottomConstraint, _innerBottomConstraint, _heightConstraint
+  ]];
+
+  _headerPanGesture.enabled = YES;
+  _dimmingView.hidden = NO;
+  _assistantContainerView.grabberButton.hidden = NO;
+
+  if (IsRegularXRegularSizeClass(self.traitCollection) ||
+      IsIPhoneLandscapeLayout(self.traitCollection)) {
     [NSLayoutConstraint
         deactivateConstraints:@[ _leadingConstraint, _trailingConstraint ]];
     [NSLayoutConstraint activateConstraints:_widthRestrictedConstraints];
@@ -799,10 +888,22 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
         activateConstraints:@[ _leadingConstraint, _trailingConstraint ]];
   }
 
+  // By only calling setNeedsLayout, we are batching all constraint changes. We
+  // allow the height calculations to finish, and UIKit will then perform a
+  // single layout pass at the end.
+  [view setNeedsLayout];
+
   [self updateDetentHeights];
+  if (_activeDetent.has_value()) {
+    _heightConstraint.constant = _detentHeights[_activeDetent.value()];
+  }
+
   [self updateHeightConstraint];
   [self updateContainerStylingForHeight:_heightConstraint.constant];
-  [self.view layoutIfNeeded];
+
+  if (_hasAppeared && !self.isAnimating) {
+    [self animateLayoutIfNeededWithInitialVelocity:0];
+  }
 }
 
 // Animates layout changes with standard spring parameters.
@@ -812,9 +913,9 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
   __weak __typeof(self) weakSelf = self;
 
-  [UIView animateWithDuration:kSpringDuration
+  [UIView animateWithDuration:kAssistantSheetSpringDuration
                         delay:0
-       usingSpringWithDamping:kSpringDamping
+       usingSpringWithDamping:kAssistantSheetSpringDamping
         initialSpringVelocity:velocity
                       options:UIViewAnimationOptionCurveEaseOut |
                               UIViewAnimationOptionBeginFromCurrentState

@@ -285,8 +285,11 @@ void OnListFamilyMembersResponse(
   }
 
   if (IsAssistantContainerEnabled()) {
+    UIViewController* baseViewController = IsAssistantSidePanelEnabled()
+                                               ? _viewController
+                                               : self.activeViewController;
     _assistantContainerCoordinator = [[AssistantContainerCoordinator alloc]
-        initWithBaseViewController:self.activeViewController
+        initWithBaseViewController:baseViewController
                            browser:_regularBrowser.get()];
     [_assistantContainerCoordinator start];
   }
