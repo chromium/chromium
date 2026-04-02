@@ -1158,6 +1158,159 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       SensitiveDirectoryResult::kAbort);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/465668234): This test is disabled on Android because
+// `NormalizeFilePath` fails for non-existent paths on Android (where
+// `/data/user/0` is a symlink to `/data/data`), causing a mismatch between the
+// normalized rule and the un-normalized checked path.
+// We add this test as a protection in case the big refactoring in
+// http://crrev.com/c/7665590 breaks the `ConfirmSensitiveEntryAccess()` logic.
+// Even without Android, it serves the purpose.
+#define MAYBE_ConfirmSensitiveEntryAccess_AllPlatformBlockedPaths \
+  DISABLED_ConfirmSensitiveEntryAccess_AllPlatformBlockedPaths
+#else
+#define MAYBE_ConfirmSensitiveEntryAccess_AllPlatformBlockedPaths \
+  ConfirmSensitiveEntryAccess_AllPlatformBlockedPaths
+#endif
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       MAYBE_ConfirmSensitiveEntryAccess_AllPlatformBlockedPaths) {
+  struct TestCase {
+    int base_path_key;
+    const base::FilePath::CharType* path;
+    bool block_all_children;
+    bool block_nested_directories;
+  };
+
+  constexpr const int kNoBasePathKey = -1;
+
+  static const TestCase kTestCases[] = {
+      // Common
+      {base::DIR_HOME, nullptr, false, false},
+      {base::DIR_USER_DESKTOP, nullptr, false, false},
+      {chrome::DIR_USER_DOCUMENTS, nullptr, false, false},
+      {chrome::DIR_DEFAULT_DOWNLOADS, nullptr, false, false},
+      {chrome::DIR_DEFAULT_DOWNLOADS_SAFE, nullptr, false, false},
+      {base::DIR_EXE, nullptr, true, false},
+      {base::DIR_MODULE, nullptr, true, false},
+      {base::DIR_ASSETS, nullptr, true, false},
+      {chrome::DIR_USER_DATA, nullptr, true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".ssh"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".gnupg"), true, false},
+
+#if BUILDFLAG(IS_WIN)
+      {base::DIR_PROGRAM_FILES, nullptr, true, false},
+      {base::DIR_PROGRAM_FILESX86, nullptr, true, false},
+      {base::DIR_PROGRAM_FILES6432, nullptr, true, false},
+      {base::DIR_WINDOWS, nullptr, true, false},
+      {base::DIR_ROAMING_APP_DATA, nullptr, true, false},
+      {base::DIR_LOCAL_APP_DATA, nullptr, true, false},
+      {base::DIR_COMMON_APP_DATA, nullptr, true, false},
+      {base::DIR_IE_INTERNET_CACHE, nullptr, false, true},
+#endif
+
+#if BUILDFLAG(IS_MAC)
+      {base::DIR_APP_DATA, nullptr, true, false},
+      {chrome::DIR_OUTER_BUNDLE, nullptr, true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL("Applications"), true, false},
+      {kNoBasePathKey, FILE_PATH_LITERAL("/Applications"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL("Library"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL("Library/CloudStorage"), false, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL("Library/Containers"), false, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"), false,
+       false},
+      {base::DIR_HOME,
+       FILE_PATH_LITERAL("Library/Mobile Documents/com~apple~CloudDocs"), false,
+       false},
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+      {kNoBasePathKey, FILE_PATH_LITERAL("/dev"), true, false},
+      {kNoBasePathKey, FILE_PATH_LITERAL("/proc"), true, false},
+      {kNoBasePathKey, FILE_PATH_LITERAL("/sys"), true, false},
+      {kNoBasePathKey, FILE_PATH_LITERAL("/boot"), true, false},
+      {kNoBasePathKey, FILE_PATH_LITERAL("/etc"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".config"), true, false},
+      {base::DIR_HOME, FILE_PATH_LITERAL(".dbus"), true, false},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+      {base::DIR_ANDROID_APP_DATA, nullptr, true, false},
+      {base::DIR_CACHE, nullptr, true, false},
+#endif
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::FilePath base_path;
+    base::ScopedTempDir case_temp_dir;
+    std::unique_ptr<base::ScopedPathOverride> path_override;
+    std::unique_ptr<ScopedHomeDirOverride> home_override_ptr;
+
+    if (test_case.base_path_key != kNoBasePathKey) {
+      ASSERT_TRUE(case_temp_dir.CreateUniqueTempDir());
+      base_path = case_temp_dir.GetPath();
+      if (test_case.base_path_key == base::DIR_HOME) {
+        home_override_ptr.reset(
+            new ScopedHomeDirOverride(OverrideHomeDir(base_path)));
+      } else {
+        path_override = std::make_unique<base::ScopedPathOverride>(
+            test_case.base_path_key, base_path, true, true);
+      }
+    } else {
+      base_path = base::FilePath(test_case.path);
+    }
+    ResetBlockPath();
+
+    base::FilePath path_to_check = base_path;
+    if (test_case.base_path_key != kNoBasePathKey && test_case.path) {
+      path_to_check = base_path.Append(test_case.path);
+    }
+
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(path_to_check),
+                  HandleType::kDirectory, UserAction::kOpen),
+              SensitiveDirectoryResult::kAbort)
+        << "Failed for " << path_to_check.value();
+
+    base::FilePath child_file = path_to_check.AppendASCII("child_file");
+    base::FilePath child_dir = path_to_check.AppendASCII("child_dir");
+
+    if (test_case.block_all_children) {
+      EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                    permission_context(), PathInfo(child_file),
+                    HandleType::kFile, UserAction::kOpen),
+                SensitiveDirectoryResult::kAbort)
+          << "Failed for " << child_file.value();
+      EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                    permission_context(), PathInfo(child_dir),
+                    HandleType::kDirectory, UserAction::kOpen),
+                SensitiveDirectoryResult::kAbort)
+          << "Failed for " << child_dir.value();
+    } else if (test_case.block_nested_directories) {
+      EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                    permission_context(), PathInfo(child_file),
+                    HandleType::kFile, UserAction::kOpen),
+                SensitiveDirectoryResult::kAllowed)
+          << "Failed for " << child_file.value();
+      EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                    permission_context(), PathInfo(child_dir),
+                    HandleType::kDirectory, UserAction::kOpen),
+                SensitiveDirectoryResult::kAbort)
+          << "Failed for " << child_dir.value();
+    } else {
+      EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                    permission_context(), PathInfo(child_file),
+                    HandleType::kFile, UserAction::kOpen),
+                SensitiveDirectoryResult::kAllowed)
+          << "Failed for " << child_file.value();
+      EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                    permission_context(), PathInfo(child_dir),
+                    HandleType::kDirectory, UserAction::kOpen),
+                SensitiveDirectoryResult::kAllowed)
+          << "Failed for " << child_dir.value();
+    }
+  }
+}
+
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        CanObtainWritePermission_ContentSettingAsk) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
