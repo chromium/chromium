@@ -497,7 +497,10 @@ source_set("interactive_ui_tests") {
 
   if (enable_dice_support) {
     sources += [ "search_ai_mode_promo_tab_helper_interactive_uitest.cc" ]
-    deps += [ ":test_support" ]
+    deps += [
+      ":test_support",
+      "//chrome/browser/ui/signin",
+    ]
   }
 
   if (!is_android) {

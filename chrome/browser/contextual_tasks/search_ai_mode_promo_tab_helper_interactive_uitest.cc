@@ -12,9 +12,14 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_signin_button_view.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -22,38 +27,46 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace contextual_tasks {
 
 namespace {
 constexpr char kGoogleHost[] = "google.com";
-constexpr char kSearchAimPath[] = "/search";
+constexpr char kSearchAimPath[] = "/ai";
 constexpr char kSearchResultRelativeUrl[] = "/tea.html";
+constexpr char kTestEmail[] = "test@gmail.com";
+constexpr char kMockContextualTaskUrl[] = "http://google.com/ai";
 
 std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  auto mock = std::make_unique<MockAimEligibilityService>(
+  auto aim_eligibility_service = std::make_unique<MockAimEligibilityService>(
       *profile->GetPrefs(), /*template_url_service=*/nullptr,
       /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr);
 
-  EXPECT_CALL(*mock, IsAimEligible()).WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock, IsCobrowseEligible())
+  EXPECT_CALL(*aim_eligibility_service, IsAimEligible())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*aim_eligibility_service, IsCobrowseEligible())
       .WillRepeatedly(testing::Return(true));
   // Mock HasAimUrlParams to return true for our special AI source page.
-  EXPECT_CALL(*mock, HasAimUrlParams(testing::_))
+  EXPECT_CALL(*aim_eligibility_service, HasAimUrlParams(testing::_))
       .WillRepeatedly([&](const GURL& url) {
         return (url.has_path() &&
                 url.path().find(kSearchAimPath) != std::string::npos);
       });
-  return mock;
+  return aim_eligibility_service;
 }
 }  // namespace
 
@@ -75,6 +88,16 @@ class SearchAiModePromoTabHelperInteractiveUiTest
         &SearchAiModePromoTabHelperInteractiveUiTest::HandleRequest,
         base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+  }
+
+  void TearDownOnMainThread() override {
+    mock_ui_service_ = nullptr;
+    identity_test_env_adaptor_.reset();
+    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -113,6 +136,8 @@ class SearchAiModePromoTabHelperInteractiveUiTest
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
     // Replace the real service with a mock one.
     ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
         context,
@@ -124,23 +149,69 @@ class SearchAiModePromoTabHelperInteractiveUiTest
         base::BindRepeating(&BuildMockAimServiceEligibilityServiceInstance));
   }
 
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_adaptor_->identity_test_env();
+  }
+
   std::unique_ptr<KeyedService> BuildMockContextualTasksUiService(
       content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
     auto mock_ui_service =
-        std::make_unique<testing::NiceMock<MockContextualTasksUiService>>();
+        std::make_unique<testing::NiceMock<MockContextualTasksUiService>>(
+            profile, ContextualTasksServiceFactory::GetForProfile(profile),
+            IdentityManagerFactory::GetForProfile(profile),
+            AimEligibilityServiceFactory::GetForProfile(profile));
+    mock_ui_service_ = mock_ui_service.get();
+    CHECK(mock_ui_service_);
 
-    // Mock mock IsAiUrl bases on the path of the url.
-    ON_CALL(*mock_ui_service, IsAiUrl(testing::_))
+    // Mock IsAiUrl based on the path of the url.
+    ON_CALL(*mock_ui_service_.get(), IsAiUrl(testing::_))
         .WillByDefault([](const GURL& url) {
           return url.path().find(kSearchAimPath) != std::string::npos;
         });
-
     return mock_ui_service;
   }
 
+  auto SignInFromActiveTab(const std::string& email) {
+    return Steps(Do([this, email]() {
+      CHECK(mock_ui_service_);
+      // After the sign-in mock the mock_ui_service_ methods to
+      // recognize a primary account.
+      ON_CALL(*mock_ui_service_.get(), IsUrlForPrimaryAccount(testing::_))
+          .WillByDefault([](const GURL& url) { return true; });
+      ON_CALL(*mock_ui_service_.get(),
+              GetThreadUrlFromTaskId(testing::_, testing::_))
+          .WillByDefault([](const base::Uuid& task_id,
+                            base::OnceCallback<void(GURL)> callback) {
+            std::move(callback).Run(GURL(kMockContextualTaskUrl));
+          });
+
+      content::WebContents* signin_contents =
+          browser()->tab_strip_model()->GetActiveWebContents();
+      // Simulate adding the account from the web.
+      AccountInfo account_info =
+          identity_test_env()->MakeAccountAvailable(email);
+
+      // Mock processing the GAIA sign-in completion.
+      // Using the signin_contents ensures the signin-in access point is
+      // correctly used.
+      std::unique_ptr<ProcessDiceHeaderDelegateImpl>
+          process_dice_header_delegate_impl =
+              ProcessDiceHeaderDelegateImpl::Create(signin_contents);
+      process_dice_header_delegate_impl->CompleteChromeSignInAfterGaiaSignin(
+          account_info);
+      // Refresh token, otherwise the contextual_task_ui_service will not
+      // intercept the post-signin navigation.
+      identity_test_env()->SetRefreshTokenForPrimaryAccount();
+    }));
+  }
+
  private:
+  raw_ptr<MockContextualTasksUiService> mock_ui_service_;
   base::test::ScopedFeatureList signin_promo_feature_list_;
   base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchAiModePromoTabHelperInteractiveUiTest,
@@ -152,14 +223,37 @@ IN_PROC_BROWSER_TEST_F(SearchAiModePromoTabHelperInteractiveUiTest,
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSourceTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSignInTabId);
 
-  RunTestSequence(
+  RunTestSequence(InAnyContext(
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
       InstrumentTab(kSourceTabId), NavigateWebContents(kSourceTabId, ai_url),
       WaitForElementVisible(kSourceTabId, DeepQuery{"#link"}),
       InstrumentNextTab(kNewTabId),
       ClickElement(kSourceTabId, DeepQuery{"#link"}),
       WaitForWebContentsNavigation(kNewTabId, result_url),
-      InAnyContext(WaitForShow(kSearchAIModeSignInPromoFrameViewId)));
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      // Promo should be visible for a non-signed-in user initially.
+      WaitForShow(kSearchAIModeSignInPromoFrameViewId),
+      // Wait for the sign-in button to be ready.
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
+      // Click the "Sign in" button from the promo.
+      InstrumentNextTab(kSignInTabId),
+      MoveMouseTo(BubbleSignInPromoSignInButtonView::kPromoSignInButton),
+      ClickMouse(),
+      // Wait for the sign-in tab to open and the promo to hide.
+      WaitForShow(kSignInTabId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  3),
+      WaitForHide(kSearchAIModeSignInPromoFrameViewId),
+      // Mimic sign-in completion.
+      SignInFromActiveTab(kTestEmail),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  3)));
 }
 
 }  // namespace contextual_tasks

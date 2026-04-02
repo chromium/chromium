@@ -16,11 +16,21 @@ MockContextualTasksUiService::MockContextualTasksUiService()
 MockContextualTasksUiService::MockContextualTasksUiService(
     Profile* profile,
     ContextualTasksService* service)
+    : MockContextualTasksUiService(profile,
+                                   service,
+                                   /*identity_manager=*/nullptr,
+                                   /*aim_eligibility_service=*/nullptr) {}
+
+MockContextualTasksUiService::MockContextualTasksUiService(
+    Profile* profile,
+    ContextualTasksService* service,
+    signin::IdentityManager* identity_manager,
+    AimEligibilityService* aim_eligibility_service)
     : ContextualTasksUiService(profile,
-                               /*delegate=*/nullptr,
+                               nullptr,
                                service,
-                               /*identity_manager=*/nullptr,
-                               /*aim_eligibility_service=*/nullptr) {}
+                               identity_manager,
+                               aim_eligibility_service) {}
 
 MockContextualTasksUiService::~MockContextualTasksUiService() = default;
 

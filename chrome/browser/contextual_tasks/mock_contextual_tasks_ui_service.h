@@ -15,6 +15,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
   MockContextualTasksUiService();
   MockContextualTasksUiService(Profile* profile,
                                ContextualTasksService* service);
+  MockContextualTasksUiService(Profile* profile,
+                               ContextualTasksService* service,
+                               signin::IdentityManager* identity_manager,
+                               AimEligibilityService* aim_eligibility_service);
   ~MockContextualTasksUiService() override;
 
   MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
@@ -51,6 +55,7 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               (const GURL&, BrowserWindowInterface*),
               (override));
   MOCK_METHOD(bool, IsAiUrl, (const GURL&), (override));
+  MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL&), (override));
   MOCK_METHOD(bool, IsPendingErrorPage, (const base::Uuid&), (override));
   MOCK_METHOD(void,
               OpenFeedbackUi,
