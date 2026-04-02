@@ -91,7 +91,10 @@ class ASH_EXPORT LoginBigUserView : public NonAccessibleView,
   LoginAuthUserView::Callbacks auth_user_callbacks_;
   LoginPublicAccountUserView::Callbacks public_account_callbacks_;
 
-  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+  // TODO(crbug.com/498586410): remove when the LoginBigUserView is
+  // no longer outliving the WallpaperController it observes.
+  base::ScopedObservation<WallpaperController,
+                          WallpaperControllerObserver>::LeakedDanglingUntriaged
       observation_{this};
 };
 
