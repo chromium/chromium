@@ -611,10 +611,6 @@ chromium-metrics-reviews@google.com.
 
     {SeedFile}
   </summary>
-  <token key="SeedFile">
-    <variant name="Latest" summary="Read outcome for latest seed file."/>
-    <variant name="Safe" summary="Read outcome for safe seed file."/>
-  </token>
 </histogram>
 
 <histogram name="Variations.SeedFileReadResult.{SeedFile}"
@@ -625,10 +621,6 @@ chromium-metrics-reviews@google.com.
     Records the result of reading the seed file. This metric is emitted only by
     clients in the seed file treatment group.
   </summary>
-  <token key="SeedFile">
-    <variant name="Latest" summary="Read result for latest seed file."/>
-    <variant name="Safe" summary="Read result for safe seed file."/>
-  </token>
 </histogram>
 
 <histogram name="Variations.SeedFileWriteEmptySeed.{SeedFile}"
@@ -641,10 +633,6 @@ chromium-metrics-reviews@google.com.
     {SeedFile}'s SeedReaderWriter if the file (a) does not exist or (b) exists
     but cannot be read.
   </summary>
-  <token key="SeedFile">
-    <variant name="Latest" summary="latest seed file"/>
-    <variant name="Safe" summary="safe seed file"/>
-  </token>
 </histogram>
 
 <histogram name="Variations.SeedFreshness" units="minutes"
@@ -739,10 +727,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the source where the seed was read from successfully.
   </summary>
-  <token key="SeedFile">
-    <variant name="Latest" summary="Read result for latest seed file."/>
-    <variant name="Safe" summary="Read result for safe seed file."/>
-  </token>
 </histogram>
 
 <histogram name="Variations.SeedStoreResult" enum="VariationsSeedStoreResult"
