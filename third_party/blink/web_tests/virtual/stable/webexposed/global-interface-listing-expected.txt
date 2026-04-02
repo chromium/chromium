@@ -4391,6 +4391,7 @@ interface HTMLMediaElement : HTMLElement
     getter duration
     getter ended
     getter error
+    getter loading
     getter loop
     getter mediaKeys
     getter muted
@@ -4430,6 +4431,7 @@ interface HTMLMediaElement : HTMLElement
     setter defaultMuted
     setter defaultPlaybackRate
     setter disableRemotePlayback
+    setter loading
     setter loop
     setter muted
     setter onencrypted

@@ -437,6 +437,7 @@ html element audio
     property ended
     property error
     property load
+    property loading
     property loop
     property mediaKeys
     property muted
@@ -1233,6 +1234,7 @@ html element video
     property getVideoPlaybackQuality
     property height
     property load
+    property loading
     property loop
     property mediaKeys
     property muted

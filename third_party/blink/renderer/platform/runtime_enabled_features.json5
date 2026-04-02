@@ -3473,7 +3473,7 @@
       // allowing lazy loading similar to images.
       // https://crbug.com/469111735
       name: "LazyLoadVideoAndAudio",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Allow triggering the word suggestion from left click.
