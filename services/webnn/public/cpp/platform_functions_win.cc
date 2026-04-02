@@ -67,6 +67,9 @@ class PlatformFunctionsWin {
       PackageDependencyLifetimeKind lifetime_kind,
       const wchar_t* lifetime_artifact,
       CreatePackageDependencyOptions options) {
+    if (!try_create_package_dependency_proc_) {
+      return {};
+    }
     ScopedWcharType package_dependency_id;
     HRESULT hr = try_create_package_dependency_proc_(
         /*user=*/nullptr, package_family_name.c_str(), min_version,
@@ -112,20 +115,24 @@ class PlatformFunctionsWin {
   PlatformFunctionsWin() {
     HMODULE kbase = ::GetModuleHandle(L"KernelBase.dll");
 
-    // This function was introduced in Windows 11 Version 21H2
+    // TryCreatePackageDependency was introduced in Windows 11 Version 21H2.
+    // If it's not present, the Dynamic Dependencies API is not available
+    // and all operations will gracefully fail.
     // https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-trycreatepackagedependency#requirements
     try_create_package_dependency_proc_ =
         reinterpret_cast<TryCreatePackageDependencyProc>(
             ::GetProcAddress(kbase, "TryCreatePackageDependency"));
-    CHECK(try_create_package_dependency_proc_);
+    if (!try_create_package_dependency_proc_) {
+      return;
+    }
 
-    // This function was introduced in Windows 11 Version 21H2
+    // If TryCreatePackageDependency is present, these must also be present
+    // as they were introduced in the same Windows version.
     // https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-addpackagedependency#requirements
     add_package_dependency_proc_ = reinterpret_cast<AddPackageDependencyProc>(
         ::GetProcAddress(kbase, "AddPackageDependency"));
     CHECK(add_package_dependency_proc_);
 
-    // This function was introduced in Windows 11 Version 21H2
     // https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-deletepackagedependency#requirements
     delete_package_dependency_proc_ =
         reinterpret_cast<DeletePackageDependencyProc>(
