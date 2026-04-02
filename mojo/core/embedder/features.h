@@ -20,6 +20,9 @@ BASE_DECLARE_FEATURE(kMojoUseEventFd);
 
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 extern const base::FeatureParam<int> kMojoUseEventFdPages;
+
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
+extern const char kSuppressEventfdUpgradeForWebview[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 

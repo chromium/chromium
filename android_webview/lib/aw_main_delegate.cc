@@ -68,6 +68,7 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/media_buildflags.h"
+#include "mojo/core/embedder/features.h"
 #include "net/base/features.h"
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "third_party/blink/public/common/features.h"
@@ -146,6 +147,10 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   // Keep data: URL support in SVGUseElement for webview until deprecation is
   // completed in the Web Platform.
   cl->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
+
+  // Opt out WebView from kMojoUseEventFd feature. TODO(crbug.com/498421592):
+  // Add support for WebView and remove this override.
+  cl->AppendSwitch(mojo::core::kSuppressEventfdUpgradeForWebview);
 
   if (cl->GetSwitchValueASCII(switches::kProcessType).empty()) {
     // Browser process (no type specified).

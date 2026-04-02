@@ -33,6 +33,9 @@ include_rules = [
   "+gpu",
   # Only this one header in media which doesn't depend on anything else.
   "+media/media_buildflags.h",
+  # TODO(crbug.com/498421592): Add support for kMojoUseEventFd in WebView and
+  # remove the override that needs this include.
+  "+mojo/core/embedder/features.h",
   "+mojo/public/cpp/bindings",
   "+net",
   "+services/network/public/cpp",

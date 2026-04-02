@@ -26,6 +26,7 @@
 #include <optional>
 
 #include "base/bits.h"
+#include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -927,6 +928,10 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
 
 // static
 bool ChannelLinux::UpgradesEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kSuppressEventfdUpgradeForWebview)) {
+    return false;
+  }
   if (!g_params_set.load()) {
     return g_use_shared_mem.load();
   }
