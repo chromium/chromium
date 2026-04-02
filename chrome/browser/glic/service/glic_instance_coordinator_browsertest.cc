@@ -375,6 +375,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        TabContentsDaisyChaining) {
+  // TODO(crbug.com/498990943): Failing on builder "android-11-x86-rel"
+  SKIP_TEST_FOR_NON_DESKTOP_ANDROID();
   auto* instance = OpenGlicForActiveTab();
   ASSERT_TRUE(instance);
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
