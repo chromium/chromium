@@ -11,6 +11,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/search_ai_mode_promo_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -48,6 +49,8 @@ constexpr char kSearchAimPath[] = "/ai";
 constexpr char kSearchResultRelativeUrl[] = "/tea.html";
 constexpr char kTestEmail[] = "test@gmail.com";
 constexpr char kMockContextualTaskUrl[] = "http://google.com/ai";
+constexpr char kEmptyResultAIMSearchUrl[] = "http://google.com/ai/empty";
+constexpr char kEmptyResultAIMSearchPath[] = "/ai/empty";
 
 std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
     content::BrowserContext* context) {
@@ -71,13 +74,24 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
 }  // namespace
 
 class SearchAiModePromoTabHelperInteractiveUiTest
-    : public InteractiveBrowserTest {
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   SearchAiModePromoTabHelperInteractiveUiTest() {
-    signin_promo_feature_list_.InitWithFeatures(
-        {switches::kEnableSearchAIModeSigninPromo,
-         contextual_tasks::kContextualTasks},
-        {});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        switches::kEnableSearchAIModeSigninPromo,
+        contextual_tasks::kContextualTasks};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam()) {
+      enabled_features.push_back(
+          contextual_tasks::kEnableLoadOriginalAIMSearchAfterSigninPromo);
+    } else {
+      disabled_features.push_back(
+          contextual_tasks::kEnableLoadOriginalAIMSearchAfterSigninPromo);
+    }
+    signin_promo_feature_list_.InitWithFeatures(enabled_features,
+                                                disabled_features);
   }
 
   void SetUpOnMainThread() override {
@@ -114,6 +128,16 @@ class SearchAiModePromoTabHelperInteractiveUiTest
   // 2) the page that the search link points to.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
+    // Mocked response for an empty AIM search page.
+    if (request.relative_url.find(kEmptyResultAIMSearchPath) !=
+        std::string::npos) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content("<!DOCTYPE html><html><body></body></html>");
+      return response;
+    }
+    // Mocked response for an AIM search page with a url.
     if (request.relative_url.find(kSearchAimPath) != std::string::npos) {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
@@ -124,6 +148,7 @@ class SearchAiModePromoTabHelperInteractiveUiTest
           "</body></html>");
       return response;
     }
+    // Mocked response for an AIM search result.
     if (request.relative_url == kSearchResultRelativeUrl) {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
@@ -169,6 +194,9 @@ class SearchAiModePromoTabHelperInteractiveUiTest
         .WillByDefault([](const GURL& url) {
           return url.path().find(kSearchAimPath) != std::string::npos;
         });
+    ON_CALL(*mock_ui_service_.get(), GetDefaultAiPageUrl()).WillByDefault([]() {
+      return GURL(kEmptyResultAIMSearchUrl);
+    });
     return mock_ui_service;
   }
 
@@ -214,7 +242,7 @@ class SearchAiModePromoTabHelperInteractiveUiTest
       identity_test_env_adaptor_;
 };
 
-IN_PROC_BROWSER_TEST_F(SearchAiModePromoTabHelperInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SearchAiModePromoTabHelperInteractiveUiTest,
                        SigninPromoShownForNonSignedInUser) {
   const GURL ai_url =
       embedded_test_server()->GetURL(kGoogleHost, kSearchAimPath);
@@ -255,5 +283,9 @@ IN_PROC_BROWSER_TEST_F(SearchAiModePromoTabHelperInteractiveUiTest,
       CheckResult([this]() { return browser()->tab_strip_model()->count(); },
                   3)));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchAiModePromoTabHelperInteractiveUiTest,
+                         testing::Bool());
 
 }  // namespace contextual_tasks

@@ -154,6 +154,9 @@ class ContextualTaskNavigationObserver
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchAiModePromoTabHelper);
 
+BASE_FEATURE(kEnableLoadOriginalAIMSearchAfterSigninPromo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 SearchAiModePromoTabHelper::SearchAiModePromoTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -175,25 +178,38 @@ void SearchAiModePromoTabHelper::TriggerCoBrowsePostSignIn() {
       !IsAIModeSearch(aim_search_web_contents_.get())) {
     return;
   }
-  content::NavigationEntry* original_entry =
-      aim_search_web_contents_->GetController().GetLastCommittedEntry();
-  aim_search_web_contents_.reset();
-
-  if (!original_entry || !target_url_.is_valid()) {
+  if (!target_url_.is_valid()) {
     SelfDestruct();
     return;
   }
-  content::NavigationController::LoadURLParams params(original_entry->GetURL());
-  params.referrer = content::Referrer(original_entry->GetReferrer().url,
-                                      original_entry->GetReferrer().policy);
-  params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
-  params.extra_headers = original_entry->GetExtraHeaders();
-  // Load the AIM experience into the current tab (previously opened url from
-  // AIM).
-  // TODO(crbug.com/494541768): Today this gives us the original query of the
-  // user, the follow up conversations are lost (expected behavior for AIM).
+
+  bool should_load_original_url = base::FeatureList::IsEnabled(
+      kEnableLoadOriginalAIMSearchAfterSigninPromo);
+  content::NavigationEntry* original_entry =
+      aim_search_web_contents_->GetController().GetLastCommittedEntry();
+  if (should_load_original_url && !original_entry) {
+    SelfDestruct();
+    return;
+  }
+  aim_search_web_contents_.reset();
+
+  // TODO(crbug.com/494541768): Today using the url from the original entry,
+  // the follow up conversations are lost (expected behavior for AIM).
   // If this is updated in the future, ensure that the new tab loads the most
   // up-to-date state that we can obtain from the AIM tab.
+  const GURL aim_url =
+      should_load_original_url
+          ? original_entry->GetURL()
+          : contextual_tasks_ui_service_->GetDefaultAiPageUrl();
+
+  content::NavigationController::LoadURLParams params(aim_url);
+  params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  if (should_load_original_url) {
+    params.referrer = content::Referrer(original_entry->GetReferrer().url,
+                                        original_entry->GetReferrer().policy);
+    params.extra_headers = original_entry->GetExtraHeaders();
+  }
+
   web_contents()->GetController().LoadURLWithParams(params);
 
   // Wait for the contextual task to be ready, then trigger the navigation to
