@@ -5,7 +5,7 @@
 //! Provides a generic syntax for Mojom types and values
 //!
 //! This module provides the ability to represent Mojom types and values as
-//! rust enums.
+//! abstract Rust values.
 
 chromium::import! {
     "//mojo/public/rust/system";
@@ -145,7 +145,7 @@ pub enum MojomWireType {
 /// This type represents an element in the body of a struct, array, or union.
 ///
 /// You should read `WireTy` as `MojomWireType` and `BitfieldTy` as
-/// `BitfieldOrdinal`. However, we need to parameterize the type because
+/// `BitfieldOrdinals`. However, we need to parameterize the type because
 /// sometimes we'll want to have references and sometimes we'll want to have
 /// owned values. In the AST, all values are owned, but during parsing/deparsing
 /// we'll sometimes need to create these on-the-fly from existing references.
@@ -336,6 +336,41 @@ impl StructuredBodyElementOwned {
             Self::Bitfield(ordinals) => StructuredBodyElement::Bitfield(ordinals),
         }
     }
+}
+
+/// Given the key and value type of a map, create an equivalent struct body.
+///
+/// Mojom maps are represented on the wire as a pair of equal-length arrays, one
+/// with the keys and one with the values. This function creates the
+/// corresponding wire type for use in parsing and deparsing.
+pub fn convert_map_ty_to_struct_fields(
+    key_type: &Arc<MojomWireType>,
+    value_type: &Arc<MojomWireType>,
+) -> [StructuredBodyElementOwned; 2] {
+    [
+        StructuredBodyElement::SingleValue(
+            0,
+            MojomWireType::Pointer {
+                nested_data_type: PackedStructuredType::Array {
+                    // This clone is cheap because it's in an Arc
+                    element_type: key_type.clone(),
+                    array_type: PackedArrayType::UnsizedArray,
+                },
+                is_nullable: false,
+            },
+        ),
+        StructuredBodyElement::SingleValue(
+            1,
+            MojomWireType::Pointer {
+                nested_data_type: PackedStructuredType::Array {
+                    // This clone is cheap because it's in an Arc
+                    element_type: value_type.clone(),
+                    array_type: PackedArrayType::UnsizedArray,
+                },
+                is_nullable: false,
+            },
+        ),
+    ]
 }
 
 /**************************************************************** */

@@ -5,6 +5,7 @@
 //! This module defines the code for deparsing (serializing) `MojomValues`. That
 //! is, it defines how to convert a `MojomValue` into a `[u8]`.
 //!
+//! See `//docs/mojo/wire_format_spec.md` for details on the wire encoding.
 //! Like the parser, the functions in this file mirror the AST structure. The
 //! "core" functionality is in `deparse_structured_body`, which is called by
 //! various more specialized functions (`deparse_struct`, `deparse_array`, etc).
@@ -327,30 +328,7 @@ fn deparse_map(
 ) -> Result<()> {
     let (keys, values) = values_map.into_iter().unzip();
     let field_values = vec![MojomValue::Array(keys), MojomValue::Array(values)];
-    let packed_fields = [
-        StructuredBodyElement::SingleValue(
-            0,
-            MojomWireType::Pointer {
-                nested_data_type: PackedStructuredType::Array {
-                    // This clone is cheap because it's in an Arc
-                    element_type: key_type.clone(),
-                    array_type: PackedArrayType::UnsizedArray,
-                },
-                is_nullable: false,
-            },
-        ),
-        StructuredBodyElement::SingleValue(
-            1,
-            MojomWireType::Pointer {
-                nested_data_type: PackedStructuredType::Array {
-                    // This clone is cheap because it's in an Arc
-                    element_type: value_type.clone(),
-                    array_type: PackedArrayType::UnsizedArray,
-                },
-                is_nullable: false,
-            },
-        ),
-    ];
+    let packed_fields = convert_map_ty_to_struct_fields(key_type, value_type);
     deparse_struct(data, field_values, &packed_fields)
 }
 

@@ -8,6 +8,8 @@
 //! module need to know the type of the data they're parsing. Their job is to
 //! take an encoded value and produce a MojomValue of the corresponding type.
 //!
+//! See `//docs/mojo/wire_format_spec.md` for details on the wire encoding.
+//!
 //! The structure of this file mirrors the AST structure: there is generally one
 //! function for each AST type. The "core" functionality is in
 //! `parse_structured_body`, which is called by various more specialized
@@ -130,8 +132,6 @@ struct NestedDataInfo<'a> {
 }
 
 /// Parse a 32-bit size as part of a struct or array header
-/// FOR_RELEASE: Maybe make a (slightly) more general parse_header function
-/// which parses this and the following 4 bytes as well.
 pub fn parse_size(
     data: &mut ParserData,
     is_array: bool,
@@ -219,7 +219,11 @@ fn parse_array(
         return parse_string(data, size_in_bytes, num_elements);
     }
 
-    // Make up dummy field names for debugging.
+    // An array body is equivalent to a struct body with `num_elements` copies of
+    // its field.
+    let array_body = crate::pack::pack_array_body(element_type, num_elements);
+
+    // We also need to provide dummy field names for debugging purposes.
     let num_tag_bitfields = if element_type.is_nullable_primitive() {
         // Nullable primitives need some bitfields at the beginning to hold
         // the tag bits; one bitfield for every 8 elements.
@@ -227,12 +231,18 @@ fn parse_array(
     } else {
         0
     };
+    // If the array elements are bools, then they are packed into bitfields, and
+    // each bitfield has a name instead of each boolean.
+    let num_named_elements =
+        if let MojomWireType::Leaf { leaf_type: PackedLeafType::Bool, .. } = &**element_type {
+            num_elements.div_ceil(8)
+        } else {
+            num_elements
+        };
     let tag_names = (0..num_tag_bitfields).map(|idx| format!("Array_Tags_{idx}"));
-    let elt_names = (0..num_elements).map(|idx| format!("Array_Element_{idx}"));
+    let elt_names = (0..num_named_elements).map(|idx| format!("Array_Element_{idx}"));
     let field_names = tag_names.chain(elt_names).collect::<Vec<_>>();
-    // An array body is equivalent to a struct body with `num_elements` copies of
-    // its field
-    let array_body = crate::pack::pack_array_body(element_type, num_elements);
+
     let (_names, parsed_fields) = parse_structured_body(
         data,
         None,
@@ -342,32 +352,7 @@ fn parse_map(
     // Maps are encoded as a struct containing a pair of arrays, one for
     // the keys and one for the corresponding values.
     let field_names = ["map_keys".to_string(), "map_values".to_string()];
-    // FOR_RELEASE: This code is duplicated in deparse_values, maybe abstract
-    // it out.
-    let fields = [
-        StructuredBodyElement::SingleValue(
-            0,
-            MojomWireType::Pointer {
-                nested_data_type: PackedStructuredType::Array {
-                    // This clone is cheap because it's in an Arc
-                    element_type: key_type.clone(),
-                    array_type: PackedArrayType::UnsizedArray,
-                },
-                is_nullable: false,
-            },
-        ),
-        StructuredBodyElement::SingleValue(
-            1,
-            MojomWireType::Pointer {
-                nested_data_type: PackedStructuredType::Array {
-                    // This clone is cheap because it's in an Arc
-                    element_type: value_type.clone(),
-                    array_type: PackedArrayType::UnsizedArray,
-                },
-                is_nullable: false,
-            },
-        ),
-    ];
+    let fields = convert_map_ty_to_struct_fields(key_type, value_type);
     let parsed_arrays = parse_struct(data, &field_names, &fields, 2)?;
     let parsed_fields = match parsed_arrays {
         MojomValue::Struct(_, fields) => fields,
@@ -443,26 +428,36 @@ fn wrap_nullable_primitive(
     }
 }
 
-/// Parse the body of a struct, array, or union, having already consumed its
-/// header to figure out its expected size and what fields it has.
+/// Parse the body of a structured data value (struct, array, or union).
 ///
-/// The enclosing_nested_data_list argument is only used for a special case
-/// involving unions. See the documentation of parse_union for details.
+/// This function is generic over the different kinds of structured data; all
+/// structured data ends up calling it. A structured data body is comprised of
+/// several different fields, which have been packed according to the packing
+/// algorithm (in pack.rs).
 ///
-/// FOR_RELEASE: This function has a lot of arguments, document them more
-/// explicitly. Also maybe explain higher up the general parsing strategy
-/// (all structured data calls this one way or another)
+/// The `fields` parameter contains the fields on the wire in the order we
+/// expect to encounter them. The `field_names` parameter contains the name of
+/// each of these fields, for debugging purposes. The `num_elements_in_value`
+/// parameter contains the number of fields we expect to have _after_ parsing,
+/// which may be smaller than the length of `fields` (e.g. because nullable
+/// primitives get split into two fields on the wire).
+///
+/// This function assumes we have already consumed and interpreted the
+/// data's header, so we know how big the body is supposed to be
+/// (`expected_size_in_bytes`).
+///
+/// The `enclosing_nested_data_list` argument is only used for a special case
+/// involving unions. See the documentation of `parse_union` for details.
 fn parse_structured_body<'a, 'b, IterT, BitfieldT>(
     data: &mut ParserData,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     expected_size_in_bytes: usize,
-    // FOR_RELEASE: See if we can put names into the iterator too
     field_names: &[String],
     fields: IterT,
     num_elements_in_value: usize,
 ) -> ParsingResult<(Vec<String>, Vec<MojomValue>)>
 where
-    BitfieldT: std::borrow::Borrow<BitfieldOrdinals>,
+    BitfieldT: std::borrow::Borrow<BitfieldOrdinals> + std::fmt::Debug,
     IterT: Iterator<Item = StructuredBodyElementRef<'a, BitfieldT>>,
 {
     // Start counting from the beginning of the header which we already parsed
@@ -481,15 +476,11 @@ where
     let mut ret_values: Vec<MojomValue> =
         (0..num_elements_in_value).map(|_| MojomValue::Invalid).collect();
 
-    for (index, struct_ref_element) in fields.enumerate() {
+    let named_fields = Itertools::zip_eq(field_names.iter(), fields);
+
+    for (name, struct_ref_element) in named_fields {
         // Make sure we're at the right alignment for this field
         skip_to_alignment(data, struct_ref_element.alignment())?;
-
-        // FOR_RELEASE: It would be nice to use zip_eq from itertools instead of
-        // pulling out the name by index, if itertools gets approved for chromium
-        let name = field_names
-            .get(index)
-            .expect("parse_structured_body: field_names should have the same length as fields");
 
         match struct_ref_element {
             StructuredBodyElement::Bitfield(ordinals) => {
