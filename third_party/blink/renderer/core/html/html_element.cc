@@ -1550,48 +1550,45 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     auto& auto_stack = original_document.PopoverAutoStack();
     auto& hint_stack = original_document.PopoverHintStack();
     HTMLDocument::PopoverStack* append_to_stack = nullptr;
-    auto focus_behavior = HidePopoverFocusBehavior::kNone;
-    if (new_popover_is_auto) {
-      // If the new popover is an auto-popover:
-      //  - It cannot be in the hint stack (hints only), so close the entire
-      //    hint stack.
-      //  - If the new auto has an ancestor in the auto stack, close all
-      //    popovers past that point in the auto stack. Otherwise, close the
-      //    entire auto stack.
-      //  - Set append_to_stack to the auto stack.
-      CloseEntirePopoverStack(hint_stack, focus_behavior, transition_behavior);
-      HideAllPopoversUntil(
-          FindTopmostPopoverAncestor(*this, auto_stack, invoker),
-          original_document, focus_behavior, transition_behavior);
-      append_to_stack = &auto_stack;
-    } else {
-      // If the new popover is a hint-popover:
-      //  - If the new hint has an ancestor in the hint stack:
-      //     - Close all popovers past that point in the hint stack
-      //     - Set append_to_stack to the hint stack.
-      //  - Otherwise:
-      //     - Close the entire hint stack
-      //     - If the new hint has an ancestor in the auto stack:
-      //        - close all popovers past that point in the auto stack
-      //        - Set append_to_stack to the auto stack.
-      //     - Otherwise set append_to_stack to the hint stack.
-      //  - Add the new hint to append_to_stack.
-      if (auto* ancestor =
-              FindTopmostPopoverAncestor(*this, hint_stack, invoker)) {
-        HideAllPopoversUntil(ancestor, original_document, focus_behavior,
-                             transition_behavior);
-        append_to_stack = &hint_stack;
-      } else {
-        CloseEntirePopoverStack(hint_stack, focus_behavior,
-                                transition_behavior);
-        if (auto* auto_ancestor =
-                FindTopmostPopoverAncestor(*this, auto_stack, invoker)) {
-          HideAllPopoversUntil(auto_ancestor, original_document, focus_behavior,
-                               transition_behavior);
-          append_to_stack = &auto_stack;
-        } else {
-          append_to_stack = &hint_stack;
+    auto check_popover_validity = [&](const char* exception_message) -> bool {
+      if (PopoverType() != original_type) {
+        if (exception_state) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError, exception_message);
         }
+        return false;
+      }
+      if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
+                          /*include_event_handler_text=*/true,
+                          &original_document)) {
+        return false;
+      }
+      return true;
+    };
+
+    auto focus_behavior = HidePopoverFocusBehavior::kNone;
+    if (const HTMLElement* hint_ancestor_to_keep =
+            (original_type == PopoverValueType::kHint)
+                ? FindTopmostPopoverAncestor(*this, hint_stack, invoker)
+                : nullptr) {
+      HideAllPopoversUntil(hint_ancestor_to_keep, original_document,
+                           focus_behavior, transition_behavior);
+      append_to_stack = &hint_stack;
+    } else {
+      CloseEntirePopoverStack(hint_stack, focus_behavior, transition_behavior);
+      if (!check_popover_validity(
+              "The value of the popover attribute was changed while hiding "
+              "hint popovers.")) {
+        return;
+      }
+      auto* auto_ancestor =
+          FindTopmostPopoverAncestor(*this, auto_stack, invoker);
+      if (original_type == PopoverValueType::kAuto || auto_ancestor) {
+        HideAllPopoversUntil(auto_ancestor, original_document, focus_behavior,
+                             transition_behavior);
+        append_to_stack = &auto_stack;
+      } else {
+        append_to_stack = &hint_stack;
       }
     }
     CHECK(append_to_stack);
@@ -1599,18 +1596,9 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     // The 'beforetoggle' event handlers could have changed this popover, e.g.
     // by changing its type, removing it from the document, moving it to
     // another document, or calling showPopover().
-    if (PopoverType() != original_type) {
-      if (exception_state) {
-        exception_state->ThrowDOMException(
-            DOMExceptionCode::kInvalidStateError,
-            "The value of the popover attribute was changed while hiding the "
-            "popover.");
-      }
-      return;
-    }
-    if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
-                        /*include_event_handler_text=*/true,
-                        &original_document)) {
+    if (!check_popover_validity(
+            "The value of the popover attribute was changed while hiding "
+            "popovers.")) {
       return;
     }
 
