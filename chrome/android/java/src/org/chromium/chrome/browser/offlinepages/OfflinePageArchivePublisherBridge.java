@@ -10,6 +10,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.FileUtils;
+import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 import android.text.format.DateUtils;
 
@@ -27,8 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
  * Since the {@link AndroidDownloadManager} can only be accessed from Java, this bridge will
@@ -110,6 +110,7 @@ public class OfflinePageArchivePublisherBridge {
 
     /**
      * This is a pass through to the {@link AndroidDownloadManager} function of the same name.
+     *
      * @param ids An array of download IDs to be removed from the download manager.
      * @return the number of IDs that were removed.
      */
@@ -136,8 +137,6 @@ public class OfflinePageArchivePublisherBridge {
      * Adds an archive to the downloads collection on Android Q+. Preferred alternative to
      * addCompletedDownload for Android Q and later.
      *
-     * <p>TODO(iwells): Remove reflection once API level 29 is supported.
-     *
      * @param page Offline page to be published.
      * @return Content URI referring to the published page.
      */
@@ -145,37 +144,20 @@ public class OfflinePageArchivePublisherBridge {
     @VisibleForTesting
     public static @JniType("std::string") String publishArchiveToDownloadsCollection(
             OfflinePageItem page) {
-        final String isPending = "is_pending"; // MediaStore.IS_PENDING
-
         // Collect all fields for creating intermediate URI.
         final long now = System.currentTimeMillis() / 1000;
         ContentValues pendingValues = new ContentValues();
         pendingValues.put(MediaColumns.DATE_ADDED, now);
         pendingValues.put(MediaColumns.DATE_MODIFIED, now);
-        pendingValues.put(isPending, 1);
-        pendingValues.put("download_uri", page.getUrl()); // MediaStore.DownloadColumns.DOWNLOAD_URI
+        pendingValues.put(MediaColumns.IS_PENDING, 1);
+        pendingValues.put(MediaStore.DownloadColumns.DOWNLOAD_URI, page.getUrl());
+        pendingValues.put(MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
 
-        Uri externalDownloadUri;
-        try {
-            // Class android.provider.MediaStore.Downloads added in API level 29.
-            Class<?> downloadsClazz = Class.forName("android.provider.MediaStore$Downloads");
-            Field externalUriField = downloadsClazz.getDeclaredField("EXTERNAL_CONTENT_URI");
-            externalDownloadUri = (Uri) externalUriField.get(null);
-            Field directoryField;
-            try {
-                directoryField = MediaColumns.class.getDeclaredField("RELATIVE_PATH");
-            } catch (NoSuchFieldException e) {
-                directoryField = MediaColumns.class.getDeclaredField("PRIMARY_DIRECTORY");
-            }
-            pendingValues.put((String) directoryField.get(null), Environment.DIRECTORY_DOWNLOADS);
-        } catch (Exception e) {
-            Log.i(TAG, "Unable to set pending download fields.", e);
-            return "";
-        }
+        Uri externalDownloadUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
 
         // Pending URI will expire after 3 days.
         long newExpirationTime = (System.currentTimeMillis() + 3 * DateUtils.DAY_IN_MILLIS) / 1000;
-        pendingValues.put("date_expires", newExpirationTime);
+        pendingValues.put(MediaColumns.DATE_EXPIRES, newExpirationTime);
 
         // Create intermediate URI.
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
@@ -186,18 +168,10 @@ public class OfflinePageArchivePublisherBridge {
         }
 
         // Copy archive to intermediate URI.
-        try {
-            // Class android.os.FileUtils added in API level 29.
-            Class<?> fileUtilsClazz = Class.forName("android.os.FileUtils");
-            Method copyMethod =
-                    fileUtilsClazz.getMethod("copy", InputStream.class, OutputStream.class);
-
-            OutputStream out = contentResolver.openOutputStream(intermediateUri);
+        try (InputStream in = new FileInputStream(page.getFilePath());
+                OutputStream out = contentResolver.openOutputStream(intermediateUri)) {
             assert out != null;
-            InputStream in = new FileInputStream(page.getFilePath());
-            copyMethod.invoke(null, in, out);
-            in.close();
-            out.close();
+            FileUtils.copy(in, out);
         } catch (Exception e) {
             Log.i(
                     TAG,
@@ -214,8 +188,8 @@ public class OfflinePageArchivePublisherBridge {
 
         // Set display name, MIME type, and pending -> false.
         final ContentValues publishValues = new ContentValues();
-        publishValues.put(isPending, 0);
-        publishValues.putNull("date_expires");
+        publishValues.put(MediaColumns.IS_PENDING, 0);
+        publishValues.putNull(MediaColumns.DATE_EXPIRES);
         publishValues.put(MediaColumns.DISPLAY_NAME, page.getTitle());
         publishValues.put(MediaColumns.MIME_TYPE, "multipart/related");
         if (!updateContentResolver(
