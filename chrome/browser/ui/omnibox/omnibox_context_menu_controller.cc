@@ -874,7 +874,9 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           it != tool_for_command_id_.end()) {
         if (composebox_handler) {
           composebox_handler->SetActiveToolMode(it->second);
+          composebox_handler->RecordToolSelectionAction(it->second);
         }
+
         base::UmaHistogramEnumeration(sliced_prefix,
                                       CommandIdToEnum(it->first));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
@@ -886,6 +888,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           it != model_for_command_id_.end()) {
         if (composebox_handler) {
           composebox_handler->SetActiveModelMode(it->second);
+          composebox_handler->RecordModelSelectionAction(it->second);
         }
         if (is_aim_popup_open && omnibox_popup_ui &&
             omnibox_popup_ui->popup_aim_handler()) {
@@ -919,7 +922,10 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         if (composebox_handler) {
           composebox_handler->SetActiveToolMode(
               omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+          composebox_handler->RecordToolSelectionAction(
+              omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
         }
+
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
@@ -928,7 +934,10 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         if (composebox_handler) {
           composebox_handler->SetActiveToolMode(
               omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+          composebox_handler->RecordToolSelectionAction(
+              omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
         }
+
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
@@ -937,7 +946,10 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         if (composebox_handler) {
           composebox_handler->SetActiveToolMode(
               omnibox::ToolMode::TOOL_MODE_CANVAS);
+          composebox_handler->RecordToolSelectionAction(
+              omnibox::ToolMode::TOOL_MODE_CANVAS);
         }
+
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
