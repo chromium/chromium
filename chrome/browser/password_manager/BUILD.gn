@@ -4,8 +4,55 @@
 
 import("//build/config/chrome_build.gni")
 
-group("password_manager") {
+source_set("password_manager") {
+  sources = []
+  deps = []
+  if (is_mac) {
+    sources += [
+      "password_manager_util_mac.h",
+      "password_manager_util_mac.mm",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "password_manager_util_win.cc",
+      "password_manager_util_win.h",
+    ]
+    deps += [ "//chrome/app:branded_strings" ]
+  }
+
   public_deps = [ "//chrome/browser/password_manager/factories" ]
+
+  deps += [
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/autofill/core/browser",
+    "//components/optimization_guide/core",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/prefs",
+    "//content/public/browser",
+    "//ui/gfx",
+  ]
+
+  if (is_mac) {
+    frameworks = [
+      "Security.framework",
+      "Foundation.framework",
+    ]
+    deps += [
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+    ]
+  }
+
+  if (is_win) {
+    deps += [
+      "//ui/aura",
+      "//ui/views",
+    ]
+  }
 }
 
 if (!is_android) {

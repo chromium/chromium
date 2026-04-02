@@ -28,7 +28,6 @@
 #include "base/win/ntsecapi_shim.h"
 #include "base/win/win_util.h"
 #include "base/win/wincred_shim.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -280,8 +279,7 @@ bool CheckBlankPasswordWithPrefs(const WCHAR* username,
 }
 
 // Wrapper around CheckBlankPasswordWithPrefs to be called on UI thread.
-bool CheckBlankPassword(const WCHAR* username) {
-  PrefService* local_state = g_browser_process->local_state();
+bool CheckBlankPassword(const WCHAR* username, PrefService* local_state) {
   PasswordCheckPrefs prefs;
   prefs.Read(local_state);
   bool result = CheckBlankPasswordWithPrefs(username, &prefs);
@@ -291,18 +289,21 @@ bool CheckBlankPassword(const WCHAR* username) {
 
 // Returns true if there is device authentication present on the machine, false
 // otherwise.
-bool DeviceAuthenticationPresent(const WCHAR* username) {
+bool DeviceAuthenticationPresent(const WCHAR* username,
+                                 PrefService* local_state) {
   // If the machine is domain-joined, we should not check whether the password
   // is blank and we should assume there is a password and thus there is device
   // authentication present. Otherwise, if there is a non-blank password, also
   // return that there is device authentication present.
-  return base::win::IsEnrolledToDomain() || !CheckBlankPassword(username);
+  return base::win::IsEnrolledToDomain() ||
+         !CheckBlankPassword(username, local_state);
 }
 
 }  // namespace
 
 bool AuthenticateUser(gfx::NativeWindow window,
-                      const std::u16string& password_prompt) {
+                      const std::u16string& password_prompt,
+                      PrefService* local_state) {
   bool retval = false;
   WCHAR cur_username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
   DWORD cur_username_length = std::size(cur_username);
@@ -316,7 +317,7 @@ bool AuthenticateUser(gfx::NativeWindow window,
 
   // If there is no device authentication set up on the machine, then
   // automatically authenticate the user.
-  if (!DeviceAuthenticationPresent(cur_username)) {
+  if (!DeviceAuthenticationPresent(cur_username, local_state)) {
     return true;
   }
 
@@ -375,7 +376,7 @@ bool AuthenticateUser(gfx::NativeWindow window,
   return retval;
 }
 
-bool CanAuthenticateWithScreenLock() {
+bool CanAuthenticateWithScreenLock(PrefService* local_state) {
   WCHAR cur_username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
   DWORD cur_username_length = std::size(cur_username);
   if (!GetUserNameEx(NameSamCompatible, cur_username, &cur_username_length)) {
@@ -383,7 +384,7 @@ bool CanAuthenticateWithScreenLock() {
     return false;
   }
 
-  return DeviceAuthenticationPresent(cur_username);
+  return DeviceAuthenticationPresent(cur_username, local_state);
 }
 
 }  // namespace password_manager_util_win

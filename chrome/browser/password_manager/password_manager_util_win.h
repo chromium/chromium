@@ -7,18 +7,21 @@
 
 #include "ui/gfx/native_ui_types.h"
 
+class PrefService;
+
 namespace password_manager_util_win {
 
 // Attempts to (re-)authenticate the user of the OS account. Returns true if
 // the user was successfully authenticated, or if authentication was not
 // possible. Populates the user facing prompt with `password_prompt` message.
 bool AuthenticateUser(gfx::NativeWindow window,
-                      const std::u16string& password_prompt);
+                      const std::u16string& password_prompt,
+                      PrefService* local_state);
 
 // Returns true if we can authenticate with screen lock, false otherwise. If we
 // can not retrieve a username for the device, we will treat that as being
 // unable to authenticate with device unlock.
-bool CanAuthenticateWithScreenLock();
+bool CanAuthenticateWithScreenLock(PrefService* local_state);
 
 }  // namespace password_manager_util_win
 

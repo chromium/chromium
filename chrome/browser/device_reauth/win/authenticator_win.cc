@@ -34,11 +34,13 @@
 #include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_types.h"
 #include "base/win/windows_version.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/views/win/hwnd_util.h"
 
@@ -190,7 +192,7 @@ void AuthenticateWithLegacyApi(const std::u16string& message,
   base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&password_manager_util_win::AuthenticateUser, window,
-                     message),
+                     message, g_browser_process->local_state()),
       std::move(result_callback));
 }
 
@@ -393,5 +395,6 @@ void AuthenticatorWin::CheckIfBiometricsAvailable(
 }
 
 bool AuthenticatorWin::CanAuthenticateWithScreenLock() {
-  return password_manager_util_win::CanAuthenticateWithScreenLock();
+  return password_manager_util_win::CanAuthenticateWithScreenLock(
+      g_browser_process->local_state());
 }
