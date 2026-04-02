@@ -112,6 +112,8 @@ class FormStructure {
 
   // This enum defines the behavior of RetrieveFromCache, which needs to adapt
   // to the reason for retrieving data from the cache.
+  // TODO(crbug.com/456719060): Remove after cleaning up
+  // `kAutofillOptimizeCacheUpdates`.
   enum class RetrieveFromCacheReason {
     // kFormCacheUpdateWithoutParsing and kFormCacheUpdateAfterParsing refer to
     // the process of parsing the form and/or storing the result in
@@ -184,6 +186,8 @@ class FormStructure {
   // FormData object that the renderer sent to the browser and copies relevant
   // information from a `cached_form` to `*this`. Depending on the passed
   // `reason`, a different subset of data can be copied.
+  // TODO(crbug.com/456719060): Remove after cleaning up
+  // `kAutofillOptimizeCacheUpdates`.
   void RetrieveFromCache(const FormStructure& cached_form,
                          RetrieveFromCacheReason reason);
 
