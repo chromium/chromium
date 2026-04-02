@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FILE_SYSTEM_ACCESS_CHROME_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -147,26 +148,45 @@ class ChromeFileSystemAccessPermissionContext
     kInitialized
   };
 
-  // Describes a rule for blocking a directory, which can be
-  // - constructed dynamically based on the profile path
-  // - provided by the caller
-  // - or constructed statically during `UpdateBlockPaths()`.
+  // Specifies how the path in `BlockPath` should be interpreted and matched
+  // against requested paths.
+  enum class BlockPathType {
+    // Blocks the exact absolute `{path}`.
+    kAbsolute,
+    // Blocks `{base_path}/{path}` (where `{base_path}` is resolved from a
+    // base_path_key).
+    kRelative,
+    // Blocks paths that end with `{path}`.
+    kSuffix
+  };
+
+  // These two structs are the wrapper for the path and the BlockType.
+  struct RawBlockPathRule {
+    const base::FilePath::CharType* path;
+    BlockType type;
+  };
+
   struct BlockPathRule {
     base::FilePath path;
     BlockType type;
   };
 
-  // Describes a rule for blocking a directory, but the file path will be
-  // determined during the check time when profile path is provided.
-  struct ProfileBasedBlockPathRule {
-    // Path that will be appended to the profile path.
+  // Describes a rule for blocking a directory, but the file path is only used
+  // to perform a suffix matching of the candidate paths, i.e. it may match
+  // multiple different paths.
+  struct SuffixBlockPathRule {
     const base::FilePath::CharType* path;
     BlockType type;
   };
 
-  // Contains two lists of the block rules: one for `BlockPathRule`s which has
-  // the path set and normalized, and another for `ProfileBasedBlockPathRule`s
-  // which can only be determined when performing the checks.
+  // Contains three lists of the block rules:
+  // - `block_path_rules_` contains the file path which is constructed after
+  //   appending to the base path and/or normazation if needed.
+  // - `profile_based_block_path_rules_` contains the file paths which will be
+  //   determined during the check time when profile path is provided.
+  // - `suffix_block_path_rules_` contains the file paths that is going to be
+  //   used for a suffix matching. e.g. `.git` will match all the `*/.git`
+  //   paths.
   class BlockPathRules {
    public:
     BlockPathRules();
@@ -174,20 +194,50 @@ class ChromeFileSystemAccessPermissionContext
     BlockPathRules(const BlockPathRules& other);
     BlockPathRules& operator=(const BlockPathRules& other);
 
+    // The vectors of rules for blocking a directory.
     std::vector<BlockPathRule> block_path_rules_;
-    std::vector<ProfileBasedBlockPathRule> profile_based_block_path_rules_;
+    std::vector<RawBlockPathRule> profile_based_block_path_rules_;
+    std::vector<RawBlockPathRule> suffix_block_path_rules_;
   };
 
   struct BlockPath {
-    // base::BasePathKey value (or one of the platform specific extensions to
-    // it) for a path that should be blocked. Specify kNoBasePathKey if |path|
-    // should be used instead.
-    int base_path_key;
-    // Explicit path to block instead of using |base_path_key|. Set to nullptr
-    // to use |base_path_key| on its own. If both |base_path_key| and |path| are
-    // set, |path| is treated relative to the path |base_path_key| resolves to.
+    // `base::BasePathKey` value (or one of the platform specific extensions to
+    // it) for a path that should be blocked. This is only set when the
+    // `block_path_type` is `kRelative`.
+    std::optional<int> base_path_key;
+    // If `block_path_type` is `kRelative`, this is the relative path appended
+    // to the path from `base_path_key`.
+    // If `block_path_type` is `kAbsolute`, this is the absolute path to block.
+    // If `block_path_type` is `kSuffix`, this it the fraction that is used to
+    // construct the path suffix.
     const base::FilePath::CharType* path;
-    BlockType type;
+    BlockType block_type;
+    BlockPathType block_path_type;
+
+    static constexpr BlockPath CreateAbsolute(
+        const base::FilePath::CharType* path,
+        BlockType block_type) {
+      return {std::nullopt, path, block_type, BlockPathType::kAbsolute};
+    }
+
+    static constexpr BlockPath CreateRelative(int base_path_key,
+                                              BlockType block_type) {
+      return {base_path_key, /*path=*/nullptr, block_type,
+              BlockPathType::kRelative};
+    }
+
+    static constexpr BlockPath CreateRelative(
+        int base_path_key,
+        const base::FilePath::CharType* path,
+        BlockType block_type) {
+      return {base_path_key, path, block_type, BlockPathType::kRelative};
+    }
+
+    static constexpr BlockPath CreateSuffix(
+        const base::FilePath::CharType* path,
+        BlockType block_type) {
+      return {std::nullopt, path, block_type, BlockPathType::kSuffix};
+    }
   };
 
   explicit ChromeFileSystemAccessPermissionContext(
