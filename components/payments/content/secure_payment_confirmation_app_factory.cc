@@ -252,17 +252,11 @@ void SecurePaymentConfirmationAppFactory::
   if (!request->authenticator ||
       (!is_available && !base::FeatureList::IsEnabled(
                             ::features::kSecurePaymentConfirmationDebug))) {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kSecurePaymentConfirmationUxRefresh)) {
-      // Skip getting matching credential IDs since the authenticator is not
-      // available.
-      OnRetrievedCredentials(
-          std::move(request),
-          std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>());
-      return;
-    }
-
-    request->delegate->OnDoneCreatingPaymentApps();
+    // Skip getting matching credential IDs since the authenticator is not
+    // available.
+    OnRetrievedCredentials(
+        std::move(request),
+        std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>());
     return;
   }
 
@@ -468,15 +462,7 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
     request->mojo_request->instrument->icon = GURL();
   }
 
-  bool skip_spc_app_creation = !request->delegate->GetSpec();
-  bool has_authenticator_and_credential =
-      request->authenticator && request->credential;
-  skip_spc_app_creation =
-      skip_spc_app_creation ||
-      (!has_authenticator_and_credential &&
-       !base::FeatureList::IsEnabled(
-           blink::features::kSecurePaymentConfirmationUxRefresh));
-  if (skip_spc_app_creation) {
+  if (!request->delegate->GetSpec()) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -500,8 +486,6 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   }
 
   if (!request->authenticator || !request->credential) {
-    CHECK(base::FeatureList::IsEnabled(
-        blink::features::kSecurePaymentConfirmationUxRefresh));
     // In the case of no authenticator or credentials, we still create the
     // SecurePaymentConfirmationApp, which holds the information to be shown
     // in the fallback UX.

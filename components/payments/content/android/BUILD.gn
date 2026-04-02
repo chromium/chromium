@@ -88,7 +88,6 @@ generate_jni("jni_headers") {
 
 android_resources("minimal_java_resources") {
   sources = [
-    "//components/payments/content/android/minimal_java_res/drawable-night/save_card.xml",
     "//components/payments/content/android/minimal_java_res/drawable/credit_card.xml",
     "//components/payments/content/android/minimal_java_res/drawable/google_pay.xml",
     "//components/payments/content/android/minimal_java_res/drawable/googlepay_pill.xml",
@@ -98,7 +97,6 @@ android_resources("minimal_java_resources") {
     "//components/payments/content/android/minimal_java_res/drawable/payments_item_background_rounded.xml",
     "//components/payments/content/android/minimal_java_res/drawable/payments_item_background_rounded_down.xml",
     "//components/payments/content/android/minimal_java_res/drawable/payments_item_background_rounded_up.xml",
-    "//components/payments/content/android/minimal_java_res/drawable/save_card.xml",
     "//components/payments/content/android/minimal_java_res/drawable/storefront_icon.xml",
     "//components/payments/content/android/minimal_java_res/layout/payments_item.xml",
     "//components/payments/content/android/minimal_java_res/values-night/colors.xml",

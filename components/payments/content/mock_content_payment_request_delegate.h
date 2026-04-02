@@ -55,21 +55,12 @@ class MockContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
               (GetTwaPackageNameCallback callback),
               (override, const));
   MOCK_METHOD(PaymentRequestDialog*, GetDialogForTesting, (), (override));
-  MOCK_METHOD(SecurePaymentConfirmationNoCreds*,
-              GetNoMatchingCredentialsDialogForTesting,
-              (),
-              (override));
+
   MOCK_METHOD(const base::WeakPtr<PaymentUIObserver>,
               GetPaymentUIObserver,
               (),
               (override, const));
-  MOCK_METHOD(void,
-              ShowNoMatchingPaymentCredentialDialog,
-              (const std::u16string& merchant_name,
-               const std::string& rp_id,
-               base::OnceClosure response_callback,
-               base::OnceClosure opt_out_callback),
-              (override));
+
   MOCK_METHOD(std::optional<base::UnguessableToken>,
               GetChromeOSTWAInstanceId,
               (),

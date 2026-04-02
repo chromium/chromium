@@ -12,7 +12,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.components.autofill.EditableOption;
@@ -21,10 +20,7 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.NativeObserverForTest;
 import org.chromium.components.payments.PaymentUiServiceTestInterface;
-import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationController;
-import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationNoMatchingCredController;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentItem;
 
@@ -328,61 +324,18 @@ public class PaymentRequestTestBridge {
 
     @CalledByNative
     private static boolean closeDialogForTest() {
-        if (ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
-            SecurePaymentConfirmationController controller = getSecurePaymentConfirmation();
-            if (controller != null) return controller.cancelForTest();
-        } else {
-            SecurePaymentConfirmationAuthnController authnUi =
-                    getSecurePaymentConfirmationAuthnUi();
-            if (authnUi != null) return authnUi.cancelForTest();
-
-            SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
-                    getSecurePaymentConfirmationNoMatchingCredUi();
-            if (noMatchingUi != null) {
-                noMatchingUi.closeForTest();
-                return true;
-            }
-        }
+        SecurePaymentConfirmationController controller = getSecurePaymentConfirmation();
+        if (controller != null) return controller.cancelForTest();
 
         return sUiService == null || sUiService.closeDialogForTest();
     }
 
     @CalledByNative
     private static boolean clickSecurePaymentConfirmationOptOutForTest() {
-        if (ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
-            SecurePaymentConfirmationController controller = getSecurePaymentConfirmation();
-            if (controller != null) return controller.optOutForTest();
-        } else {
-            SecurePaymentConfirmationAuthnController authnUi =
-                    getSecurePaymentConfirmationAuthnUi();
-            if (authnUi != null) return authnUi.optOutForTest();
-            SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
-                    getSecurePaymentConfirmationNoMatchingCredUi();
-            if (noMatchingUi != null) return noMatchingUi.optOutForTest();
-        }
+        SecurePaymentConfirmationController controller = getSecurePaymentConfirmation();
+        if (controller != null) return controller.optOutForTest();
 
         return false;
-    }
-
-    @Nullable
-    private static SecurePaymentConfirmationAuthnController getSecurePaymentConfirmationAuthnUi() {
-        ChromePaymentRequestService chromeService =
-                (ChromePaymentRequestService)
-                        PaymentRequestService.getBrowserPaymentRequestForTesting();
-        return chromeService != null
-                ? chromeService.getSecurePaymentConfirmationAuthnUiForTesting()
-                : null;
-    }
-
-    @Nullable
-    private static SecurePaymentConfirmationNoMatchingCredController
-            getSecurePaymentConfirmationNoMatchingCredUi() {
-        ChromePaymentRequestService chromeService =
-                (ChromePaymentRequestService)
-                        PaymentRequestService.getBrowserPaymentRequestForTesting();
-        return chromeService != null
-                ? chromeService.getSecurePaymentConfirmationNoMatchingCredUiForTesting()
-                : null;
     }
 
     @Nullable

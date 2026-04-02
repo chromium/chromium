@@ -184,14 +184,8 @@ void SecurePaymentConfirmationController::OnCancel() {
     base::UmaHistogramEnumeration(kFallbackOutcomeHistogramName,
                                   SecurePaymentRequestOutcome::kCancel);
   } else {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kSecurePaymentConfirmationUxRefresh)) {
-      base::UmaHistogramEnumeration(kTransactionOutcomeHistogramName,
-                                    SecurePaymentRequestOutcome::kCancel);
-    } else {
-      base::UmaHistogramEnumeration(kTransactionOutcomeHistogramName,
-                                    SecurePaymentRequestOutcome::kAnotherWay);
-    }
+    base::UmaHistogramEnumeration(kTransactionOutcomeHistogramName,
+                                  SecurePaymentRequestOutcome::kCancel);
   }
 
   is_dialog_showing_ = false;
@@ -276,151 +270,84 @@ void SecurePaymentConfirmationController::
   SecurePaymentConfirmationApp* app =
       static_cast<SecurePaymentConfirmationApp*>(
           request_->state()->selected_app());
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationUxRefresh)) {
-    is_error_dialog_ = app->IsErrorDialog();
+  is_error_dialog_ = app->IsErrorDialog();
 
-    model_.set_header_logos(app->GetPaymentEntitiesLogos());
+  model_.set_header_logos(app->GetPaymentEntitiesLogos());
 
-    std::optional<std::string>& payee_name =
-        request_->spec()
-            ->method_data()
-            .front()
-            ->secure_payment_confirmation->payee_name;
-    if (payee_name.has_value()) {
-      model_.set_merchant_name(
-          std::optional<std::u16string>(base::UTF8ToUTF16(payee_name.value())));
-    }
-    std::optional<url::Origin>& origin =
-        request_->spec()
-            ->method_data()
-            .front()
-            ->secure_payment_confirmation->payee_origin;
-    if (origin.has_value()) {
-      model_.set_merchant_origin(std::optional<std::u16string>(
-          url_formatter::FormatUrlForSecurityDisplay(
-              origin.value().GetURL(),
-              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
-    }
+  std::optional<std::string>& payee_name =
+      request_->spec()
+          ->method_data()
+          .front()
+          ->secure_payment_confirmation->payee_name;
+  if (payee_name.has_value()) {
+    model_.set_merchant_name(
+        std::optional<std::u16string>(base::UTF8ToUTF16(payee_name.value())));
+  }
+  std::optional<url::Origin>& origin =
+      request_->spec()
+          ->method_data()
+          .front()
+          ->secure_payment_confirmation->payee_origin;
+  if (origin.has_value()) {
+    model_.set_merchant_origin(std::optional<std::u16string>(
+        url_formatter::FormatUrlForSecurityDisplay(
+            origin.value().GetURL(),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
+  }
 
-    model_.set_instrument_value(app->GetLabel());
-    model_.set_instrument_details_value(app->GetSublabel());
-    model_.set_instrument_icon(app->icon_bitmap());
+  model_.set_instrument_value(app->GetLabel());
+  model_.set_instrument_details_value(app->GetSublabel());
+  model_.set_instrument_icon(app->icon_bitmap());
 
-    const mojom::PaymentItemPtr& total = request_->spec()->GetTotal(app);
-    std::u16string total_value = base::UTF8ToUTF16(total->amount->currency);
-    model_.set_total_value(base::StrCat(
-        {base::UTF8ToUTF16(total->amount->currency), u" ",
-         CurrencyFormatter(total->amount->currency,
-                           request_->state()->GetApplicationLocale())
-             .Format(total->amount->value)}));
+  const mojom::PaymentItemPtr& total = request_->spec()->GetTotal(app);
+  std::u16string total_value = base::UTF8ToUTF16(total->amount->currency);
+  model_.set_total_value(
+      base::StrCat({base::UTF8ToUTF16(total->amount->currency), u" ",
+                    CurrencyFormatter(total->amount->currency,
+                                      request_->state()->GetApplicationLocale())
+                        .Format(total->amount->value)}));
 
-    model_.set_progress_bar_visible(false);
+  model_.set_progress_bar_visible(false);
 
-    model_.set_opt_out_visible(request_->spec()
-                                   ->method_data()
-                                   .front()
-                                   ->secure_payment_confirmation->show_opt_out);
-    model_.set_opt_out_label(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_TEXT));
-    model_.set_opt_out_authenticator_label(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_AUTHENTICATOR_TEXT));
-    model_.set_opt_out_link_label(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_TEXT));
-    model_.set_relying_party_id(
-        base::UTF8ToUTF16(request_->spec()
-                              ->method_data()
-                              .front()
-                              ->secure_payment_confirmation->rp_id));
+  model_.set_opt_out_visible(request_->spec()
+                                 ->method_data()
+                                 .front()
+                                 ->secure_payment_confirmation->show_opt_out);
+  model_.set_opt_out_label(
+      l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_TEXT));
+  model_.set_opt_out_authenticator_label(l10n_util::GetStringUTF16(
+      IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_AUTHENTICATOR_TEXT));
+  model_.set_opt_out_link_label(l10n_util::GetStringUTF16(
+      IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_TEXT));
+  model_.set_relying_party_id(
+      base::UTF8ToUTF16(request_->spec()
+                            ->method_data()
+                            .front()
+                            ->secure_payment_confirmation->rp_id));
 
-    model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
+  model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
 
-    model_.set_footer_label(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_TEXT));
-    model_.set_footer_link_label(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_LINK_TEXT));
+  model_.set_footer_label(
+      l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_TEXT));
+  model_.set_footer_link_label(l10n_util::GetStringUTF16(
+      IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_LINK_TEXT));
 
-    if (is_error_dialog_) {
-      model_.set_title(l10n_util::GetStringUTF16(
-          IDS_SECURE_PAYMENT_CONFIRMATION_INFORM_ONLY_TITLE));
-      model_.set_footer_visible(false);
-      model_.set_verify_button_label(l10n_util::GetStringUTF16(
-          IDS_SECURE_PAYMENT_CONFIRMATION_CONFIRM_BUTTON_LABEL));
-    } else {
-      model_.set_title(
-          l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_TITLE));
-      model_.set_footer_visible(true);
-      model_.set_verify_button_label(l10n_util::GetStringUTF16(
-          IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL));
-    }
-
-    view_ = SecurePaymentConfirmationView::Create(
-        request_->state()->GetPaymentRequestDelegate()->GetPaymentUIObserver());
+  if (is_error_dialog_) {
+    model_.set_title(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_INFORM_ONLY_TITLE));
+    model_.set_footer_visible(false);
+    model_.set_verify_button_label(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_CONFIRM_BUTTON_LABEL));
   } else {
+    model_.set_title(
+        l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_TITLE));
+    model_.set_footer_visible(true);
     model_.set_verify_button_label(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL));
-    model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
-    model_.set_progress_bar_visible(false);
-
-    model_.set_title(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE));
-
-    model_.set_merchant_label(
-        l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));
-    std::optional<std::string>& payee_name =
-        request_->spec()
-            ->method_data()
-            .front()
-            ->secure_payment_confirmation->payee_name;
-    if (payee_name.has_value()) {
-      model_.set_merchant_name(
-          std::optional<std::u16string>(base::UTF8ToUTF16(payee_name.value())));
-    }
-    std::optional<url::Origin>& origin =
-        request_->spec()
-            ->method_data()
-            .front()
-            ->secure_payment_confirmation->payee_origin;
-    if (origin.has_value()) {
-      model_.set_merchant_origin(std::optional<std::u16string>(
-          url_formatter::FormatUrlForSecurityDisplay(
-              origin.value().GetURL(),
-              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
-    }
-
-    model_.set_instrument_label(l10n_util::GetStringUTF16(
-        IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
-    model_.set_instrument_value(app->GetLabel());
-    model_.set_instrument_icon(app->icon_bitmap());
-
-    model_.set_total_label(
-        l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL));
-    const mojom::PaymentItemPtr& total = request_->spec()->GetTotal(app);
-    std::u16string total_value = base::UTF8ToUTF16(total->amount->currency);
-    model_.set_total_value(base::StrCat(
-        {base::UTF8ToUTF16(total->amount->currency), u" ",
-         CurrencyFormatter(total->amount->currency,
-                           request_->state()->GetApplicationLocale())
-             .Format(total->amount->value)}));
-
-    model_.set_opt_out_visible(request_->spec()
-                                   ->method_data()
-                                   .front()
-                                   ->secure_payment_confirmation->show_opt_out);
-    model_.set_opt_out_label(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL));
-    model_.set_opt_out_link_label(l10n_util::GetStringUTF16(
-        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL));
-
-    model_.set_relying_party_id(
-        base::UTF8ToUTF16(request_->spec()
-                              ->method_data()
-                              .front()
-                              ->secure_payment_confirmation->rp_id));
-
-    view_ = SecurePaymentConfirmationView::Create(
-        request_->state()->GetPaymentRequestDelegate()->GetPaymentUIObserver());
   }
+
+  view_ = SecurePaymentConfirmationView::Create(
+      request_->state()->GetPaymentRequestDelegate()->GetPaymentUIObserver());
 
   view_->ShowDialog(
       request_->web_contents(), model_.GetWeakPtr(),
@@ -443,12 +370,7 @@ void SecurePaymentConfirmationController::
       OnConfirm();
       break;
     case SPCTransactionMode::kAutoAuthAnotherWay:
-      if (base::FeatureList::IsEnabled(
-              blink::features::kSecurePaymentConfirmationUxRefresh)) {
-        OnAnotherWay();
-      } else {
-        OnCancel();
-      }
+      OnAnotherWay();
       break;
     case SPCTransactionMode::kAutoReject:
       OnCancel();

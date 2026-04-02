@@ -44,17 +44,11 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
   model.set_title(title);
   EXPECT_EQ(title, model.title());
 
-  model.set_merchant_label(merchant_label);
-  EXPECT_EQ(merchant_label, model.merchant_label());
-
   model.set_merchant_name(merchant_name);
   EXPECT_EQ(merchant_name, model.merchant_name());
 
   model.set_merchant_origin(merchant_origin);
   EXPECT_EQ(merchant_origin, model.merchant_origin());
-
-  model.set_instrument_label(instrument_label);
-  EXPECT_EQ(instrument_label, model.instrument_label());
 
   model.set_instrument_value(instrument_value);
   EXPECT_EQ(instrument_value, model.instrument_value());
@@ -64,9 +58,6 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
 
   model.set_instrument_icon(&instrument_icon);
   EXPECT_EQ(&instrument_icon, model.instrument_icon());
-
-  model.set_total_label(total_label);
-  EXPECT_EQ(total_label, model.total_label());
 
   model.set_total_value(total_value);
   EXPECT_EQ(total_value, model.total_value());

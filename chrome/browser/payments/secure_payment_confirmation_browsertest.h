@@ -51,7 +51,6 @@ class SecurePaymentConfirmationTest
   bool database_write_responded_ = false;
   bool confirm_payment_ = false;
   bool close_dialog_on_error_ = false;
-  bool accept_dialog_on_error_ = false;
 
  protected:
   base::HistogramTester histogram_tester_;

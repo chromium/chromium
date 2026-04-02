@@ -59,6 +59,7 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
     /** There is only a single model/view for SPC items so only a single item type is needed. */
     private static final int SPC_ITEM_TYPE = 0;
 
+    // LINT.IfChange(SecurePaymentRequestOutcome)
     @IntDef({
         SpcResponseStatus.UNKNOWN,
         SpcResponseStatus.ACCEPT,
@@ -75,6 +76,8 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
         int OPT_OUT = 4;
         int COUNT = 5;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:SecurePaymentRequestOutcome)
 
     private final SecurePaymentConfirmationBottomSheetContent mContent;
     private final SecurePaymentConfirmationView mView;

@@ -24,7 +24,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
 import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -867,9 +866,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    @EnableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)
-    public void
-            disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenUxRefreshEnabled() {
+    public void disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason() {
         PaymentRequestService service =
                 defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build();
 
@@ -877,22 +874,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
 
         assertErrorAndReason(ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
-    }
-
-    @Test
-    @Feature({"Payments"})
-    @DisableFeatures(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)
-    public void
-            disconnectFromClientWithDebugMessage_userCancelPaymentErrorReason_whenUxRefreshDisabled() {
-        PaymentRequestService service =
-                defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build();
-
-        service.disconnectFromClientWithDebugMessage(
-                ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
-
-        assertErrorAndReason(
-                ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                PaymentErrorReason.NOT_ALLOWED_ERROR);
     }
 
     @Test

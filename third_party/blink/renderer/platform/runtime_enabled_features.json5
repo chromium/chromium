@@ -5019,18 +5019,6 @@
       base_feature: "none",
     },
     {
-      // Implements new UX for SPC including new output states, payment
-      // instrument details and payment entities logos.
-      name: "SecurePaymentConfirmationUxRefresh",
-      status: {
-        "Android": "stable",
-        "Mac": "stable",
-        "Win": "stable",
-        "iOS": "",
-        "default": "test",
-      },
-    },
-    {
       // SelectAudioOutput API
       // https://chromestatus.com/feature/5164535504437248
       name: "SelectAudioOutput",

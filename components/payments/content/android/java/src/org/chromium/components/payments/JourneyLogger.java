@@ -170,11 +170,6 @@ public class JourneyLogger {
         }
     }
 
-    /** Records that the No Matching Credentials UX was shown to the user. */
-    public void setNoMatchingCredentialsShown() {
-        JourneyLoggerJni.get().setNoMatchingCredentialsShown(mJourneyLoggerAndroid);
-    }
-
     /**
      * Records that the payment request has entered the given checkout step.
      *
@@ -231,8 +226,6 @@ public class JourneyLogger {
         void setAborted(long nativeJourneyLoggerAndroid, int reason);
 
         void setNotShown(long nativeJourneyLoggerAndroid);
-
-        void setNoMatchingCredentialsShown(long nativeJourneyLoggerAndroid);
 
         void recordCheckoutStep(long nativeJourneyLoggerAndroid, int step);
 

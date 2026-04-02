@@ -35,7 +35,6 @@
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_dialog.h"
 #include "components/payments/content/secure_payment_confirmation_controller.h"
-#include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "components/payments/content/ssl_validity_checker.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/payment_prefs.h"
@@ -83,20 +82,6 @@ bool FrameSupportsPayments(content::RenderFrameHost* rfh) {
              network::mojom::PermissionsPolicyFeature::kPayment);
 }
 
-base::OnceClosure ChainSpcFallbackOutcomeLogToCallback(
-    SecurePaymentRequestOutcome outcome,
-    base::OnceClosure callback) {
-  return callback.is_null()
-             ? std::move(callback)
-             : base::BindOnce(
-                   [](SecurePaymentRequestOutcome outcome) {
-                     base::UmaHistogramEnumeration(
-                         "SecurePaymentRequest.Fallback.Outcome", outcome);
-                   },
-                   outcome)
-                   .Then(std::move(callback));
-}
-
 }  // namespace
 
 ChromePaymentRequestDelegate::ChromePaymentRequestDelegate(
@@ -142,14 +127,6 @@ void ChromePaymentRequestDelegate::CloseDialog() {
   // The shown_dialog_ may have been an SPC dialog, in which case we own the
   // object directly and need to clean it up here.
   spc_dialog_.reset();
-
-  // The 'no-credentials' dialog for SPC is currently handled separately from
-  // spc_dialog_ (and shown_dialog_), and so needs to separately be closed and
-  // cleaned up.
-  if (spc_no_creds_dialog_) {
-    spc_no_creds_dialog_->CloseDialog();
-    spc_no_creds_dialog_.reset();
-  }
 }
 
 void ChromePaymentRequestDelegate::ShowErrorMessage() {
@@ -236,29 +213,6 @@ bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
   return browser && browser->GetWindow() && browser->GetWindow()->IsActive();
 }
 
-void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
-    const std::u16string& merchant_name,
-    const std::string& rp_id,
-    base::OnceClosure response_callback,
-    base::OnceClosure opt_out_callback) {
-  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!FrameSupportsPayments(rfh))
-    return;
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
-    return;
-
-  spc_no_creds_dialog_ = SecurePaymentConfirmationNoCreds::Create();
-  spc_no_creds_dialog_->ShowDialog(
-      web_contents, merchant_name, rp_id,
-      ChainSpcFallbackOutcomeLogToCallback(
-          SecurePaymentRequestOutcome::kAnotherWay,
-          std::move(response_callback)),
-      ChainSpcFallbackOutcomeLogToCallback(SecurePaymentRequestOutcome::kOptOut,
-                                           std::move(opt_out_callback)));
-}
-
 content::RenderFrameHost* ChromePaymentRequestDelegate::GetRenderFrameHost()
     const {
   return content::RenderFrameHost::FromID(frame_routing_id_);
@@ -329,11 +283,6 @@ void ChromePaymentRequestDelegate::GetTwaPackageName(
 
 PaymentRequestDialog* ChromePaymentRequestDelegate::GetDialogForTesting() {
   return shown_dialog_.get();
-}
-
-SecurePaymentConfirmationNoCreds*
-ChromePaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
-  return spc_no_creds_dialog_.get();
 }
 
 std::optional<base::UnguessableToken>

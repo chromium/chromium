@@ -719,8 +719,6 @@ class SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest
                                            std::move(icon_sizes)));
   }
 
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kSecurePaymentConfirmationUxRefresh};
 };
 
 Matcher<const SkBitmap*> IsSkBitmapWithHeight(int height) {
@@ -851,17 +849,11 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
 #endif  // !BUILDFLAG(IS_IOS)
 
 
-class SecurePaymentConfirmationAppFactoryUxRefreshTest
-    : public SecurePaymentConfirmationAppFactoryTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kSecurePaymentConfirmationUxRefresh};
-};
 
 // Test that the SecurePaymentConfirmationApp can be created even when there is
 // no user-verify platform authenticator available. This will ultimately create
 // a fallback experience for the user.
-TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
        Fallback_NoUserVerifyingPlatformAuthenticator) {
   auto method_data = mojom::PaymentMethodData::New();
   method_data->supported_method = "secure-payment-confirmation";
@@ -902,8 +894,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
 
 // Test that the SecurePaymentConfirmationApp can be created without credentials
 // for the fallback flow, with HasEnrolledInstrument false.
-TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
-       Fallback_NoCredentials) {
+TEST_F(SecurePaymentConfirmationAppFactoryTest, Fallback_NoCredentials) {
   auto method_data = mojom::PaymentMethodData::New();
   method_data->supported_method = "secure-payment-confirmation";
   method_data->secure_payment_confirmation =
@@ -937,10 +928,10 @@ TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
 }
 
 // Test that a the app is not created when the PaymentRequestSpec becomes null
-// just prior to downloads finishing.
+// just prior to downloads finishing and without credentials.
 TEST_F(
-    SecurePaymentConfirmationAppFactoryUxRefreshTest,
-    SecureConfirmationPaymentRequest_WhenMissingPaymentRequestSpecDuringDownload) {
+    SecurePaymentConfirmationAppFactoryTest,
+    SecureConfirmationPaymentRequest_WhenMissingPaymentRequestSpecDuringDownload_NoCredentials) {
   url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
   auto method_data = mojom::PaymentMethodData::New();
   method_data->supported_method = "secure-payment-confirmation";

@@ -207,11 +207,6 @@ void JourneyLogger::SetNotShown() {
   RecordJourneyStatsHistograms(COMPLETION_STATUS_COULD_NOT_SHOW);
 }
 
-void JourneyLogger::SetNoMatchingCredentialsShown() {
-  SetShown();
-  SetEvent2Occurred(Event2::kNoMatchingCredentials);
-}
-
 void JourneyLogger::RecordCheckoutStep(CheckoutFunnelStep step) {
   base::UmaHistogramEnumeration("PaymentRequest.CheckoutFunnel", step);
 }

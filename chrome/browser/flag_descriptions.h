@@ -4060,12 +4060,6 @@ inline constexpr char kSecurePaymentConfirmationBrowserBoundKeysDescription[] =
     "This flag enables an additional browser-bound signature in secure payment "
     "confirmation in PaymentRequest and for WebAuthn payment credentials.";
 
-inline constexpr char kSecurePaymentConfirmationUxRefreshName[] =
-    "Secure Payment Confirmation UX Refresh";
-inline constexpr char kSecurePaymentConfirmationUxRefreshDescription[] =
-    "This flag enables new UX in the secure payment confirmation dialog "
-    "including new output states, payment instrument details and payment "
-    "entities logos.";
 
 inline constexpr char kSegmentationSurveyPageName[] =
     "Segmentation survey internals page and model";

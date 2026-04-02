@@ -46,7 +46,7 @@
     <message name="IDS_PAYMENTS_ORDER_SUMMARY_LABEL" desc="The title of the section that shows the summary of the order, including names and prices of individual line items, i.e. the bill. Sentence-cased." formatter_data="android_java">
       Order summary
     </message>
-    <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME" desc="The name of the Payment Method section in the Payment Sheet of the Payment Request dialog. Sentence-cased." formatter_data="android_java">
+    <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME" desc="The name of the Payment Method section in the Payment Sheet of the Payment Request dialog. Sentence-cased.">
       Payment
     </message>
     <message name="IDS_PAYMENT_REQUEST_CONTACT_INFO_SECTION_NAME" desc="The name of the Contact Info section in the Payment Sheet of the Payment Request dialog. Sentence-cased.">
@@ -507,20 +507,20 @@
 
   <if expr="not is_android">
     <!-- TODO: 471015510 - Android's footer and opt-out text should be updated to use this. -->
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_TEXT" desc="Footnote on a secure payment confirmation dialog that explains what will happen next and provides a link to verify by another way." formatter_data="android_java">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_TEXT" desc="Footnote on a secure payment confirmation dialog that explains what will happen next and provides a link to verify by another way.">
       Unlock your screen in the next step, typically using your fingerprint. You can also <ph name="LINK_TEXT">$1<ex>verify another way</ex></ph>.
     </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_LINK_TEXT" desc="Footnote on a secure payment confirmation dialog that explains what will happen next and provides a link to verify by another way." formatter_data="android_java">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE_LINK_TEXT" desc="Footnote on a secure payment confirmation dialog that explains what will happen next and provides a link to verify by another way.">
       verify another way
     </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_TEXT" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes authenticator type and link text that they can click to request that the provider deletes their data." formatter_data="android_java">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_TEXT" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes authenticator type and link text that they can click to request that the provider deletes their data.">
       You chose to verify with <ph name="AUTHENTICATOR">$1<ex>an authenticator device</ex></ph> on sites that use <ph name="PROVIDER_ORIGIN">$2<ex>example.com</ex></ph>. This provider may have stored information about how you pay, which you can <ph name="LINK_TEXT">$3<ex>ask to have deleted</ex></ph>.
     </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_TEXT" desc="Link text on a part of a longer text string (Opt Out Text) where the user is being offered the choice to request that previously stored information on them be deleted." formatter_data="android_java">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_TEXT" desc="Link text on a part of a longer text string (Opt Out Text) where the user is being offered the choice to request that previously stored information on them be deleted.">
       ask to have deleted
     </message>
 
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="As in 'Confirm your purchase', this is the label of the affirmitive button in a payment confirmation error dialog that asks the user to confirm their identity." formatter_data="android_java">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="As in 'Confirm your purchase', this is the label of the affirmitive button in a payment confirmation error dialog that asks the user to confirm their identity.">
       Confirm
     </message>
   </if> <!-- not is_android -->
@@ -543,71 +543,6 @@
     </message>
   </if>  <!-- not is_android and not is_macosx and not is_win -->
 
-  <!-- TODO: 471015510 - Secure Payment Confirmation strings that are no longer needed after the launch of SPC UX Refresh feature -->
-  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the store name, e.g. merchant.com." formatter_data="android_java">
-    Store
-  </message>
-  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the total price, e.g. $20.00 USD." formatter_data="android_java">
-    Total
-  </message>
-  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL" desc="Part of a longer text string where the user is being offered the choice to request that previously stored information on them be deleted. The longer text string is 'This provider may have stored information about your payment method, which you can [request to be deleted].'">
-    request to be deleted
-  </message>
-  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_TITLE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Continue', and clicking 'Continue' will open the system interface to verify their identity, for example with their fingerprint.">
-    <ph name="PROVIDER_ORIGIN">$1<ex>bank.com</ex></ph> wants to verify it's you
-  </message>
-
-  <if expr="is_android">
-    <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">
-        <ph name="URL">%1$s<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
-    </message>
-  </if> <!-- is_android -->
-
-  <if expr="not is_android">
-    <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment.">
-        <ph name="URL">$1<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
-    </message>
-  </if>
-
-  <if expr="not is_win and not is_macosx">
-    <!-- Strings that don't refer to specific platform authenticator names -->
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Continue', and clicking 'Continue' will open the system interface to verify their identity, for example with their fingerprint." formatter_data="android_java">
-        Verify your purchase
-    </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION" desc="The description string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user will verify the purchase using an OS-level system (e.g., Touch ID).">
-      Complete your purchase using your device
-    </message>
-
-    <if expr="not is_android">
-      <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes link text that they can click to request that the provider deletes their data.">
-        You chose to verify with an authenticator device on websites that use <ph name="PROVIDER_ORIGIN">$1<ex>example.com</ex></ph>. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT">$2<ex>request to be deleted</ex></ph>.
-      </message>
-    </if>
-  </if> <!-- not is_win and not is_macosx -->
-
-  <if expr="is_macosx">
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Touch ID fingerprint sensor.">
-        Use Touch ID to verify and complete your purchase?
-    </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION" desc="The description string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user will verify the purchase using an OS-level system (e.g., Touch ID).">
-      Complete your purchase using Touch ID
-    </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes link text that they can click to request that the provider deletes their data.">
-        You chose to verify with Touch ID on websites that use <ph name="PROVIDER_ORIGIN">$1<ex>example.com</ex></ph>. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT">$2<ex>request to be deleted</ex></ph>.
-    </message>
-  </if> <!-- is_macosx -->
-  <if expr="is_win">
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Windows Hello biometric sensor, such as fingerprint or face recognition.">
-        Use Windows Hello to verify and complete your purchase?
-    </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION" desc="The description string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user will verify the purchase using an OS-level system (e.g., Touch ID).">
-      Complete your purchase using Windows Hello
-    </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes link text that they can click to request that the provider deletes their data.">
-        You chose to verify with Windows Hello on websites that use <ph name="PROVIDER_ORIGIN">$1<ex>example.com</ex></ph>. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT">$2<ex>request to be deleted</ex></ph>.
-    </message>
-  </if>  <!-- is_win -->
-
   <!-- Secure Payment Confirmation accessibility strings -->
   <if expr="is_android">
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_DESCRIPTION" desc="Accessibility string read when the payment credential authentication bottom sheet is opened. It describes where the users can verify their purchase." formatter_data="android_java">
@@ -619,20 +554,17 @@
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_CLOSED" desc="Accessibility string read when the payment credential authentication bottom sheet is closed." formatter_data="android_java">
       Secure payment credential authentication sheet is closed
     </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_NO_MATCHING_CREDENTIAL_SHEET_DESCRIPTION" desc="Accessibility string read when the bottom sheet of no matching payment credential is opened. It describes that additional steps are needed to verify the payment." formatter_data="android_java">
-      Secure payment credential no matching credential sheet
-    </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_NO_MATCHING_CREDENTIAL_SHEET_OPENED" desc="Accessibility string read when the bottom sheet of no matching payment credential is opened." formatter_data="android_java">
-      Secure payment credential no matching credential sheet is opened
-    </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_NO_MATCHING_CREDENTIAL_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet of no matching payment credential is closed." formatter_data="android_java">
-      Secure payment credential no matching credential sheet is closed
-    </message>
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_HEADER_LOGO_PRIMARY" desc="Accessibility string for the primary header logo shown on the Secure Payment Confirmation verification or confirmation prompt. The logo is provided by the web api and intended to be the logo of an entity facilitating the Secure Payment Confirmation transaction." formatter_data="android_java">
       Primary Header Logo
     </message>
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_HEADER_LOGO_SECONDARY" desc="Accessibility string for the secondary header logo shown on the Secure Payment Confirmation verification or confirmation prompt. The logo is provided by the web api and intended to be the logo of an entity facilitating the Secure Payment Confirmation transaction." formatter_data="android_java">
       Secondary Header Logo
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL" desc="Accessibility string for the store icon shown on the Secure Payment Confirmation verification or confirmation prompt." formatter_data="android_java">
+      Store
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL" desc="Accessibility string for the total amount icon shown on the Secure Payment Confirmation verification or confirmation prompt." formatter_data="android_java">
+      Total
     </message>
   </if>  <!-- is_android -->
 </grit-part>

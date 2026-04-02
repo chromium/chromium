@@ -19,7 +19,6 @@
 #include "components/payments/content/payment_details_converter.h"
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
-#include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "components/payments/content/secure_payment_confirmation_transaction_mode.h"
 #include "components/payments/core/error_message_util.h"
 #include "components/payments/core/error_strings.h"
@@ -681,43 +680,6 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
     observer_for_testing_->OnAppListReady(weak_ptr_factory_.GetWeakPtr());
   }
 
-  // In most cases, we show the 'No Matching Payment Credential' dialog in
-  // order to preserve user privacy. An exception is failure to download the
-  // card art icon - because we download it in all cases, revealing a
-  // failure doesn't leak any information about the user to the site.
-  // The no matching credentials dialog is only shown if the SPC UX Refresh
-  // feature is not enabled.
-  // TODO: crbug.com/469745132 - Note that once the SPC UX Refresh feature is
-  // launched, the no matching credentials dialog will no longer be needed.
-  if (render_frame_host().IsActive() &&
-      spec_->IsSecurePaymentConfirmationRequested() &&
-      state()->available_apps().empty() &&
-      base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation) &&
-      error_reason != AppCreationFailureReason::ICON_DOWNLOAD_FAILED &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationUxRefresh)) {
-    journey_logger_.SetNoMatchingCredentialsShown();
-
-    auto opt_out_callback =
-        spec_->method_data().front()->secure_payment_confirmation->show_opt_out
-            ? base::BindOnce(&PaymentRequest::OnUserOptedOut,
-                             weak_ptr_factory_.GetWeakPtr())
-            : base::NullCallback();
-    delegate_->ShowNoMatchingPaymentCredentialDialog(
-        url_formatter::FormatUrlForSecurityDisplay(
-            state_->GetTopOrigin(),
-            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
-        spec_->method_data().front()->secure_payment_confirmation->rp_id,
-        base::BindOnce(&PaymentRequest::OnUserCancelled,
-                       weak_ptr_factory_.GetWeakPtr()),
-        std::move(opt_out_callback));
-
-    if (observer_for_testing_) {
-      observer_for_testing_->OnErrorDisplayed();
-    }
-
-    return;
-  }
 
   if (methods_supported) {
     if (CheckSatisfiesSkipUIConstraintsAndRecordShownState()) {
@@ -932,26 +894,11 @@ void PaymentRequest::OnUserCancelled() {
 
   RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationUxRefresh)) {
-    client_->OnError(
-        reject_show_error_reason_.value_or(
-            mojom::PaymentErrorReason::USER_CANCEL),
-        (!reject_show_error_message_.empty() ? reject_show_error_message_
-                                             : errors::kUserCancelled));
-  } else {
-    // This sends an error to the renderer, which informs the API user.
-    // If SPC flag is enabled, use NotAllowedError instead.
-    bool is_spc_enabled = spec_->IsSecurePaymentConfirmationRequested();
-    client_->OnError(
-        is_spc_enabled ? mojom::PaymentErrorReason::NOT_ALLOWED_ERROR
-                       : reject_show_error_reason_.value_or(
-                             mojom::PaymentErrorReason::USER_CANCEL),
-        is_spc_enabled
-            ? errors::kWebAuthnOperationTimedOutOrNotAllowed
-            : (!reject_show_error_message_.empty() ? reject_show_error_message_
-                                                   : errors::kUserCancelled));
-  }
+  client_->OnError(
+      reject_show_error_reason_.value_or(
+          mojom::PaymentErrorReason::USER_CANCEL),
+      (!reject_show_error_message_.empty() ? reject_show_error_message_
+                                           : errors::kUserCancelled));
 
   ResetAndDeleteThis();
 }

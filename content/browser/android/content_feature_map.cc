@@ -27,7 +27,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kAndroidSpellcheckFullApiBlink,
     &blink::features::kDevicePosture,
     &blink::features::kSecurePaymentConfirmationBrowserBoundKeys,
-    &blink::features::kSecurePaymentConfirmationUxRefresh,
     &blink::features::kViewportSegments,
     &media::kAllowDelayedAudioFocusGainAndroid,
     &input::features::kInputOnViz,

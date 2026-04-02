@@ -16,13 +16,11 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
@@ -664,33 +662,22 @@ public class PaymentRequestService
         Log.d(TAG, debugMessage);
         if (mClient != null) {
             // Secure Payment Confirmation must make it indistinguishable to the merchant page as to
-            // whether an error is caused by user aborting or lack of credentials. There are three
-            // exceptions:
-            //
+            // whether an error is caused by user wanting to authenticate in a different way
+            // (without SPC) or the lack of credentials. There are four exceptions:
             //   1. Erroring due to icon download failure; this happens before checking for
             //      credential matching and so is not a privacy leak.
             //   2. Handling the 'opt out' error - this error can be produced by both the matching
             //      and non-matching credential UXs, and so is not a privacy leak.
             //   3. Erroring due to a lack of user activation when it is not allowed.
+            //   4. Erroring due to the user wanting to cancel the entire payment transaction.
             boolean obscureRealError =
                     mSpec != null
                             && mSpec.isSecurePaymentConfirmationRequested()
                             && mRejectShowErrorReason
                                     != AppCreationFailureReason.ICON_DOWNLOAD_FAILED
                             && reason != PaymentErrorReason.USER_OPT_OUT
-                            && !mRejectShowForUserActivation;
-
-            // A new error type `USER_CANCEL` is being experimented with to communicate back to the
-            // the merchant page that the user explicitly does not wish to continue with payment.
-            // This is different from `NOT_ALLOWED_ERROR` which is used for when the user wishes to
-            // proceed with payment but either cannot OR does not want to use the passed-in
-            // credentials to do that.
-            if (obscureRealError
-                    && reason == PaymentErrorReason.USER_CANCEL
-                    && ContentFeatureMap.isEnabled(
-                            BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
-                obscureRealError = false;
-            }
+                            && !mRejectShowForUserActivation
+                            && reason != PaymentErrorReason.USER_CANCEL;
 
             mClient.onError(
                     obscureRealError ? PaymentErrorReason.NOT_ALLOWED_ERROR : reason,
@@ -942,7 +929,8 @@ public class PaymentRequestService
             // Show the 'No Matching Payment Credential' dialog to preserve user privacy.
             if (mBrowserPaymentRequest.showNoMatchingPaymentCredential()) {
                 if (sNativeObserverForTest != null) {
-                    sNativeObserverForTest.onErrorDisplayed();
+                    sNativeObserverForTest.onAppListReady(
+                            mBrowserPaymentRequest.getPaymentApps(), mSpec.getRawTotal());
                 }
                 return null;
             }
@@ -979,9 +967,6 @@ public class PaymentRequestService
     }
 
     private boolean shouldShowSecurePaymentConfirmationFallback() {
-        if (!ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
-            return false;
-        }
         assert mSpec.isSecurePaymentConfirmationRequested();
         assert mBrowserPaymentRequest != null;
         assert mBrowserPaymentRequest.getSelectedPaymentApp() != null;

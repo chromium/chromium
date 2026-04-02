@@ -232,9 +232,6 @@ class JourneyLogger {
   // Records that the Payment Request was not shown to the user.
   void SetNotShown();
 
-  // Records that the SPC No Matching Credentials UX was shown to the user.
-  void SetNoMatchingCredentialsShown();
-
   // Increments the bucket count for the given checkout step.
   void RecordCheckoutStep(CheckoutFunnelStep step);
 

@@ -32,7 +32,6 @@ class WebPaymentsWebDataService;
 class PaymentRequestDialog;
 class PaymentRequestDisplayManager;
 class PaymentUIObserver;
-class SecurePaymentConfirmationNoCreds;
 
 // The delegate for PaymentRequest that can use content.
 class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
@@ -85,18 +84,8 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
   virtual void GetTwaPackageName(GetTwaPackageNameCallback callback) const = 0;
 
   virtual PaymentRequestDialog* GetDialogForTesting() = 0;
-  virtual SecurePaymentConfirmationNoCreds*
-  GetNoMatchingCredentialsDialogForTesting() = 0;
-
   virtual const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver()
       const = 0;
-
-  virtual void ShowNoMatchingPaymentCredentialDialog(
-      const std::u16string& merchant_name,
-      const std::string& rp_id,
-      base::OnceClosure response_callback,
-      base::OnceClosure opt_out_callback) = 0;
-
   // Returns an instance id for the TWA that invokes the payment app. The
   // instance id is used to find the TWA window in the ash so that we can
   // attach the payment dialog to it. This interface should only be used

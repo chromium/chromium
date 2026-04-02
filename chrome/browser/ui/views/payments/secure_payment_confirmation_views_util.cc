@@ -32,83 +32,7 @@
 
 namespace payments {
 
-namespace {
 
-const gfx::VectorIcon& GetPlatformVectorIcon(bool dark_mode) {
-#if BUILDFLAG(IS_WIN)
-  return dark_mode ? kSecurePaymentConfirmationFaceDarkIcon
-                   : kSecurePaymentConfirmationFaceIcon;
-#else
-  return dark_mode ? kSecurePaymentConfirmationFingerprintDarkIcon
-                   : kSecurePaymentConfirmationFingerprintIcon;
-#endif
-}
-
-int GetSecurePaymentConfirmationHeaderWidth() {
-  return ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-}
-
-ui::ImageModel GetHeaderImageSkia(bool dark_mode) {
-  return ui::ImageModel::FromResourceId(dark_mode ? IDR_SAVE_CARD_DARK
-                                                  : IDR_SAVE_CARD);
-}
-
-class SecurePaymentConfirmationHeaderIconView : public NonAccessibleImageView {
-  METADATA_HEADER(SecurePaymentConfirmationHeaderIconView,
-                  NonAccessibleImageView)
-
- public:
-  explicit SecurePaymentConfirmationHeaderIconView(bool use_cart_image = false)
-      : use_cart_image_{use_cart_image} {
-    const gfx::Size header_size(
-        GetSecurePaymentConfirmationHeaderWidth(),
-        use_cart_image_ ? kShoppingCartHeaderIconHeight : kHeaderIconHeight);
-    SetPreferredSize(header_size);
-    SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-  }
-  ~SecurePaymentConfirmationHeaderIconView() override = default;
-
-  // NonAccessibleImageView:
-  void OnThemeChanged() override {
-    NonAccessibleImageView::OnThemeChanged();
-    const bool dark_mode = GetNativeTheme()->preferred_color_scheme() ==
-                           ui::NativeTheme::PreferredColorScheme::kDark;
-    SetImage(use_cart_image_ ? GetHeaderImageSkia(dark_mode)
-                             : ui::ImageModel::FromVectorIcon(
-                                   GetPlatformVectorIcon(dark_mode),
-                                   gfx::kPlaceholderColor));
-  }
-
- private:
-  bool use_cart_image_;
-};
-
-BEGIN_METADATA(SecurePaymentConfirmationHeaderIconView)
-END_METADATA
-
-}  // namespace
-
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderIcon(
-    int header_icon_id,
-    bool use_cart_image) {
-  auto image_view =
-      std::make_unique<SecurePaymentConfirmationHeaderIconView>(use_cart_image);
-  image_view->SetID(header_icon_id);
-  image_view->SetProperty(views::kMarginsKey,
-                          gfx::Insets().set_top(kHeaderIconTopPadding));
-  return image_view;
-}
-
-std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
-    const std::u16string& title) {
-  std::unique_ptr<views::Label> title_label = std::make_unique<views::Label>(
-      title, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
-  title_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-  title_label->SetLineHeight(kTitleLineHeight);
-
-  return title_label;
-}
 
 std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
     const gfx::ImageSkia& image) {
@@ -152,43 +76,5 @@ std::u16string FormatMerchantLabel(
   return merchant_name.value_or(merchant_origin.value_or(u""));
 }
 
-std::unique_ptr<views::StyledLabel> CreateSecurePaymentConfirmationOptOutView(
-    const std::u16string& relying_party_id,
-    const std::u16string& opt_out_label,
-    const std::u16string& opt_out_link_label,
-    base::RepeatingClosure on_click) {
-  // The opt-out text consists of a base label, filled in with the relying party
-  // ID and a 'call to action' link.
-  std::vector<std::u16string> subst{relying_party_id, opt_out_link_label};
-  std::vector<size_t> offsets;
-  std::u16string opt_out_text =
-      base::ReplaceStringPlaceholders(opt_out_label, subst, &offsets);
-
-  // TODO: crbug.com/441560182 - This is a temporary workaround to ensure that
-  // tests are not broken. This should be removed when the new UX Refresh view
-  // is implemented.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationUxRefresh)) {
-    DCHECK_EQ(2U, offsets.size());
-  }
-
-  views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(on_click);
-
-  return views::Builder<views::StyledLabel>()
-      .SetText(opt_out_text)
-      .SetTextContext(ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-      .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
-      .AddStyleRange(
-          gfx::Range(offsets[1], offsets[1] + opt_out_link_label.length()),
-          link_style)
-      .SetProperty(views::kMarginsKey,
-                   gfx::Insets::TLBR(
-                       kSecondarySmallTextInsets, kSecondarySmallTextInsets,
-                       kSecondarySmallTextInsets, kSecondarySmallTextInsets))
-      .SizeToFit(views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH))
-      .Build();
-}
 
 }  // namespace payments

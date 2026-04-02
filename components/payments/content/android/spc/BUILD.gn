@@ -7,15 +7,9 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnController.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnProperties.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnView.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnViewBinder.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationBottomSheetContent.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationBottomSheetObserver.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationController.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredController.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationProperties.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationView.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationViewBinder.java",
@@ -47,11 +41,9 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
-    "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnTest.java",
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationBottomSheetContentTest.java",
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationBottomSheetObserverTest.java",
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationControllerTest.java",
-    "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredTest.java",
   ]
   deps = [
     ":browser_binding_junit_test",

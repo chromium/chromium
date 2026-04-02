@@ -52,8 +52,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool IsBrowserWindowActive() const override;
   void GetTwaPackageName(GetTwaPackageNameCallback callback) const override;
   PaymentRequestDialog* GetDialogForTesting() override;
-  SecurePaymentConfirmationNoCreds* GetNoMatchingCredentialsDialogForTesting()
-      override;
+
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   const std::string& GetApplicationLocale() const override;
   bool IsOffTheRecord() const override;
@@ -73,11 +72,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   void DelayFullCardRequestCompletion();
   void CompleteFullCardRequest();
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
-  void ShowNoMatchingPaymentCredentialDialog(
-      const std::u16string& merchant_name,
-      const std::string& rp_id,
-      base::OnceClosure response_callback,
-      base::OnceClosure opt_out_callback) override;
+
   std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
       const override;
   std::string GetSecurePaymentConfirmationKeychainAccessGroup() const override;

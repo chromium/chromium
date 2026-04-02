@@ -22,7 +22,6 @@ namespace payments {
 class PaymentRequestDialog;
 class PaymentUIObserver;
 class SecurePaymentConfirmationController;
-class SecurePaymentConfirmationNoCreds;
 
 class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
  public:
@@ -51,11 +50,6 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   std::string GetAuthenticatedEmail() const override;
   PrefService* GetPrefService() override;
   bool IsBrowserWindowActive() const override;
-  void ShowNoMatchingPaymentCredentialDialog(
-      const std::u16string& merchant_name,
-      const std::string& rp_id,
-      base::OnceClosure response_callback,
-      base::OnceClosure opt_out_callback) override;
 
   // ContentPaymentRequestDelegate:
   content::RenderFrameHost* GetRenderFrameHost() const override;
@@ -71,8 +65,7 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   std::string GetInvalidSslCertificateErrorMessage() override;
   void GetTwaPackageName(GetTwaPackageNameCallback callback) const override;
   PaymentRequestDialog* GetDialogForTesting() override;
-  SecurePaymentConfirmationNoCreds* GetNoMatchingCredentialsDialogForTesting()
-      override;
+
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
   std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
       const override;
@@ -91,8 +84,6 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   content::BrowserContext* GetBrowserContextOrNull() const;
 
   std::unique_ptr<SecurePaymentConfirmationController> spc_dialog_;
-
-  std::unique_ptr<SecurePaymentConfirmationNoCreds> spc_no_creds_dialog_;
 
   const content::GlobalRenderFrameHostId frame_routing_id_;
 

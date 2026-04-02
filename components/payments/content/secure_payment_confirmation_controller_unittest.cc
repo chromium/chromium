@@ -31,9 +31,6 @@ class SecurePaymentConfirmationControllerTest
 
   SecurePaymentConfirmationControllerTest()
       : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kSecurePaymentConfirmationUxRefresh);
-
     auto delegate = std::make_unique<TestContentPaymentRequestDelegate>(
         /*task_executor=*/nullptr, &personal_data_manager_);
     delegate->set_frame_routing_id(
@@ -150,7 +147,7 @@ TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnCancel) {
 
   histogram_tester.ExpectUniqueSample(
       "SecurePaymentRequest.Transaction.Outcome",
-      SecurePaymentRequestOutcome::kAnotherWay,
+      SecurePaymentRequestOutcome::kCancel,
       /*expected_bucket_count=*/1);
 }
 
@@ -200,26 +197,5 @@ TEST_F(SecurePaymentConfirmationControllerTest,
                                       /*expected_bucket_count=*/1);
 }
 
-class SecurePaymentConfirmationControllerUxRefreshFeatureTest
-    : public SecurePaymentConfirmationControllerTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kSecurePaymentConfirmationUxRefresh};
-};
-
-TEST_F(SecurePaymentConfirmationControllerUxRefreshFeatureTest,
-       Metrics_OnCancel) {
-  base::HistogramTester histogram_tester;
-  controller()->SetIsDialogShowingForTesting(true);
-
-  CreateEventWaiter({Event::CONNECTION_TERMINATED});
-  controller()->OnCancel();
-  WaitForEvents();
-
-  histogram_tester.ExpectUniqueSample(
-      "SecurePaymentRequest.Transaction.Outcome",
-      SecurePaymentRequestOutcome::kCancel,
-      /*expected_bucket_count=*/1);
-}
 
 }  // namespace payments

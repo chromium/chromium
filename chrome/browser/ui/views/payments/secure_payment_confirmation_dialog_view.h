@@ -69,6 +69,8 @@ class SecurePaymentConfirmationDialogView
   void OnModelUpdated() override;
   void HideDialog() override;
   bool ClickOptOutForTesting() override;
+  views::View* GetOptOutViewForTesting();
+  views::View* GetFooterViewForTesting();
 
   // views::DialogDelegate:
   bool ShouldShowCloseButton() const override;

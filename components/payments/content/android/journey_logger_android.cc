@@ -108,10 +108,6 @@ void JourneyLoggerAndroid::SetNotShown(JNIEnv* env) {
   journey_logger_.SetNotShown();
 }
 
-void JourneyLoggerAndroid::SetNoMatchingCredentialsShown(JNIEnv* env) {
-  journey_logger_.SetNoMatchingCredentialsShown();
-}
-
 void JourneyLoggerAndroid::RecordCheckoutStep(JNIEnv* env, int32_t jstep) {
   journey_logger_.RecordCheckoutStep(
       static_cast<JourneyLogger::CheckoutFunnelStep>(jstep));

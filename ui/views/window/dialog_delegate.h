@@ -142,7 +142,6 @@ class GlicFreDialogView;
 namespace payments {
 class PaymentRequestDialogView;
 class SecurePaymentConfirmationDialogView;
-class SecurePaymentConfirmationNoCredsDialogView;
 }  // namespace payments
 
 namespace policy {
@@ -788,7 +787,6 @@ class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
   friend class ::glic::GlicFreDialogView;
   friend class ::payments::PaymentRequestDialogView;
   friend class ::payments::SecurePaymentConfirmationDialogView;
-  friend class ::payments::SecurePaymentConfirmationNoCredsDialogView;
   friend class ::policy::EnterpriseStartupDialogView;
   friend class ::policy::IdleDialogView;
   friend class ::policy::PolicyDialogBase;

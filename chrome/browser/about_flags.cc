@@ -11443,11 +11443,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "TouchToSearchCallout")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"enable-secure-payment-confirmation-ux-refresh",
-     flag_descriptions::kSecurePaymentConfirmationUxRefreshName,
-     flag_descriptions::kSecurePaymentConfirmationUxRefreshDescription,
-     kOsAndroid | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(blink::features::kSecurePaymentConfirmationUxRefresh)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-use-correct-display-work-area",
