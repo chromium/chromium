@@ -221,21 +221,19 @@ ReportingCacheImpl::GetV1ReportingEndpointsByOrigin() const {
       // Document endpoints should have an origin.
       DCHECK(endpoint.group_key.origin.has_value());
       auto origin = endpoint.group_key.origin.value();
-      if (result.count(origin)) {
+      if (auto [result_it, inserted] = result.try_emplace(origin); !inserted) {
         if (group_name_helper.at(origin)
                 .emplace(endpoint.group_key.group_name)
                 .second) {
           // Push the endpoint only when the insertion succeeds.
-          result.at(origin).push_back(endpoint);
+          result_it->second.push_back(endpoint);
         }
       } else {
-        std::vector<ReportingEndpoint> endpoints_for_origin;
-        endpoints_for_origin.push_back(endpoint);
-        result.emplace(origin, endpoints_for_origin);
+        result_it->second.push_back(endpoint);
 
-        base::flat_set<std::string_view> group_names;
-        group_names.emplace(endpoint.group_key.group_name);
-        group_name_helper.emplace(origin, group_names);
+        base::flat_set<std::string_view> group_names = {
+            endpoint.group_key.group_name};
+        group_name_helper.emplace(origin, std::move(group_names));
       }
     }
   }
