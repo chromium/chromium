@@ -381,13 +381,6 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
                        UiCompleteCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     TRACE_EVENT_BEGIN("actor", "UiEventDispatch");
-    if constexpr (std::is_same_v<EventT, AsyncUiEvent>) {
-      CHECK(!callback.is_null()) << "Callback not defined for AsyncUiEvent";
-    } else if constexpr (std::is_same_v<EventT, SyncUiEvent>) {
-      CHECK(callback.is_null()) << "Callback defined for SyncUiEvent";
-    } else {
-      static_assert(false, "Unknown type!");
-    }
 
     // Visit converted type to generate UiEvent sequence.
     std::variant<EventSequence<AsyncUiEvent>, EventSequence<SyncUiEvent>>
@@ -399,6 +392,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     }
     // Send events either asynchronously or synchronously.
     if constexpr (std::is_same_v<EventT, AsyncUiEvent>) {
+      CHECK(!callback.is_null()) << "Callback not defined for AsyncUiEvent";
       auto& sequence_task =
           *in_flight_tasks_
                .emplace(
@@ -418,7 +412,10 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
               std::move(callback), sequence_task.get(),
               weak_ptr_factory_.GetWeakPtr()));
     } else if constexpr (std::is_same_v<EventT, SyncUiEvent>) {
+      CHECK(callback.is_null()) << "Callback defined for SyncUiEvent";
       SendAllEvents<V>(std::move(std::get<EventSequence<SyncUiEvent>>(events)));
+    } else {
+      static_assert(false, "Unknown type!");
     }
   }
 
