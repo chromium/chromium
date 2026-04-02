@@ -4,9 +4,9 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_api_injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/testing/utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -26,18 +26,9 @@ class AndroidTabStripApiBrowserTest : public AndroidBrowserTest {
   void SetUpOnMainThread() override {
     AndroidBrowserTest::SetUpOnMainThread();
 
-    TabModel* target;
-    for (TabModel* model : TabModelList::models()) {
-      if (model->GetProfile() == GetProfile()) {
-        target = model;
-        break;
-      }
-    }
-    CHECK(target) << "could not find a tab model to construct the api with";
-
-    model_ = target;
+    model_ = &testing::GetTabModel(GetProfile());
     auto android_injector =
-        std::make_unique<tabs_api::AndroidTabStripApiInjector>(target);
+        std::make_unique<tabs_api::AndroidTabStripApiInjector>(model_);
     service_ = std::make_unique<tabs_api::TabStripServiceImpl>(
         std::move(android_injector));
   }
@@ -70,7 +61,6 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Get) {
     ASSERT_EQ(tab_strip_id,
               tab_strip_container->data->get_tab_strip()->id.Id());
     ASSERT_EQ(1u, tab_strip_container->children.size());
-
     ASSERT_EQ(base::NumberToString(
                   model_->GetAllTabs().at(0)->GetHandle().raw_value()),
               tab_strip_container->children.at(0)->data->get_tab()->id.Id());

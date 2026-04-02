@@ -13,10 +13,13 @@ source_set("android_tab_model_impl") {
     "android_tab_strip_api_injector.h",
     "android_tab_strip_model_adapter.cc",
     "android_tab_strip_model_adapter.h",
+    "android_translation_adapter.cc",
+    "android_translation_adapter.h",
   ]
 
   deps = [
     "//base",
+    "//chrome/browser/favicon",
     "//chrome/browser/ui/android/tab_model",
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
     "//chrome/browser/ui/tabs/tab_strip_api/types",
@@ -32,10 +35,14 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "android_tab_strip_api_browsertest.cc" ]
+  sources = [
+    "android_tab_strip_api_browsertest.cc",
+    "android_translation_adapter_browsertest.cc",
+  ]
 
   deps = [
     ":android_tab_model_impl",
+    "testing",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui/tabs/tab_strip_api",

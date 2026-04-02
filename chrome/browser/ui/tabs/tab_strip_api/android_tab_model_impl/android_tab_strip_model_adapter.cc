@@ -29,12 +29,17 @@ std::vector<tabs::TabHandle> AndroidTabStripModelAdapter::GetTabs() const {
 }
 
 types::TabStates AndroidTabStripModelAdapter::GetTabStates(
-    tabs::TabHandle) const {
-  NOTREACHED() << "not implemented";
+    tabs::TabHandle handle) const {
+  CHECK(handle.Get());
+  return types::TabStates{
+      .is_active = handle.Get()->IsActivated(),
+      .is_selected = handle.Get()->IsSelected(),
+  };
 }
 
 const ui::ColorProvider& AndroidTabStripModelAdapter::GetColorProvider() const {
-  NOTREACHED() << "not implemented";
+  auto& content = CHECK_DEREF(model_->GetActiveWebContents());
+  return content.GetColorProvider();
 }
 
 void AndroidTabStripModelAdapter::CloseTab(size_t tab_index) {

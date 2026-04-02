@@ -9,23 +9,16 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/translation_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_browser_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_translation_adapter.h"
 
 namespace tabs_api {
 
-base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr>
-UselessTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
-  // TODO(crbug.com/494284032): Implement more then move it out to its own
-  // class.
-  auto tab = mojom::Tab::New();
-  tab->id = tabs_api::NodeId::FromTabHandle(handle);
-  return std::move(tab);
-}
-
 AndroidTabStripApiInjector::AndroidTabStripApiInjector(TabModel* model)
     : browser_adapter_(std::make_unique<AndroidBrowserAdapterImpl>(model)),
-      tab_model_adapter_(std::make_unique<AndroidTabStripModelAdapter>(model)) {
-
-}
+      tab_model_adapter_(std::make_unique<AndroidTabStripModelAdapter>(model)),
+      translation_adapter_(
+          std::make_unique<AndroidTranslationAdapter>(model,
+                                                      *tab_model_adapter_)) {}
 
 AndroidTabStripApiInjector::~AndroidTabStripApiInjector() = default;
 
@@ -38,7 +31,7 @@ TabStripModelAdapter& AndroidTabStripApiInjector::tab_strip_model_adapter() {
 }
 
 TranslationAdapter& AndroidTabStripApiInjector::translation_adapter() {
-  return translator_;
+  return *translation_adapter_;
 }
 
 EventBridge& AndroidTabStripApiInjector::event_bridge() {

@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/event_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/platform_adapters_provider.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/translation_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_translation_adapter.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/mojom/base/error.mojom.h"
@@ -20,15 +20,7 @@ class BrowserAdapter;
 class TabStripModelAdapter;
 class AndroidBrowserAdapterImpl;
 class AndroidTabStripModelAdapter;
-
-class UselessTranslationAdapter : public TranslationAdapter {
- public:
-  UselessTranslationAdapter() = default;
-  ~UselessTranslationAdapter() override = default;
-
-  base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr> ToMojoTab(
-      tabs::TabHandle handle) override;
-};
+class AndroidTranslationAdapter;
 
 class UselessEventBridge : public EventBridge {
  public:
@@ -55,8 +47,8 @@ class AndroidTabStripApiInjector : public PlatformAdaptersProvider {
  private:
   std::unique_ptr<AndroidBrowserAdapterImpl> browser_adapter_;
   std::unique_ptr<AndroidTabStripModelAdapter> tab_model_adapter_;
+  std::unique_ptr<AndroidTranslationAdapter> translation_adapter_;
   UselessEventBridge bridge_;
-  UselessTranslationAdapter translator_;
 };
 
 }  // namespace tabs_api
