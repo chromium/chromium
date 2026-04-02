@@ -38,9 +38,7 @@ class GlicSidePanelCoordinatorAndroid
   bool IsGlicSidePanelActive() override;
 
   // context_sharing::TabBottomSheetBridge::Observer:
-  void OnClosed() override;
-  void OnSuppressed() override;
-  void OnOpened(bool is_expanded) override;
+  void OnClose() override;
 
  private:
   void Show(bool suppress_animations, bool starts_expanded);

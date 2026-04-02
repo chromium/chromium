@@ -62,25 +62,11 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
     // Delegate methods.
     @Override
     public void onBottomSheetClosed() {
-        TabBottomSheetNativeInterfaceJni.get().onClosed(mNativeTabBottomSheetBridge);
-    }
-
-    @Override
-    public void onBottomSheetSuppressed() {
-        TabBottomSheetNativeInterfaceJni.get().onSuppressed(mNativeTabBottomSheetBridge);
-    }
-
-    @Override
-    public void onBottomSheetOpened(boolean isExpanded) {
-        TabBottomSheetNativeInterfaceJni.get().onOpened(mNativeTabBottomSheetBridge, isExpanded);
+        TabBottomSheetNativeInterfaceJni.get().onClose(mNativeTabBottomSheetBridge);
     }
 
     @NativeMethods
     interface Natives {
-        void onClosed(long nativeTabBottomSheetBridge);
-
-        void onSuppressed(long nativeTabBottomSheetBridge);
-
-        void onOpened(long nativeTabBottomSheetBridge, boolean isExpanded);
+        void onClose(long nativeTabBottomSheetBridge);
     }
 }

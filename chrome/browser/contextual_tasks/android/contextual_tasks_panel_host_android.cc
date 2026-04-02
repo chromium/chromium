@@ -92,15 +92,11 @@ void ContextualTasksPanelHostAndroid::SetWebContents(
   }
 }
 
-void ContextualTasksPanelHostAndroid::OnClosed() {
+void ContextualTasksPanelHostAndroid::OnClose() {
   is_open_ = false;
   observers_.Notify(&ContextualTasksPanelHost::Observer::OnSurfaceStateChanged,
                     SurfaceState::kClosed, StateChangeReason::kUserAction);
 }
-
-void ContextualTasksPanelHostAndroid::OnSuppressed() {}
-
-void ContextualTasksPanelHostAndroid::OnOpened(bool is_expanded) {}
 
 context_sharing::TabBottomSheetBridge*
 ContextualTasksPanelHostAndroid::GetOrCreateBridge() {
