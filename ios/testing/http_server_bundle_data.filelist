@@ -45,6 +45,7 @@ data/http_server_files/new_password_and_confirmation_form_autofocus.html
 data/http_server_files/onload_replacestate_reload.html
 data/http_server_files/onload_replacestate_reload.js
 data/http_server_files/opensearch.xml
+data/http_server_files/passport_form.html
 data/http_server_files/permissions/camera_and_microphone.html
 data/http_server_files/permissions/camera_only.html
 data/http_server_files/permissions/microphone_only.html

@@ -166,6 +166,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Deletes all entities modified since the given time.
 + (void)removeEntityModifiedSince:(NSDate*)time;
 
+// Saves a Passport entity with test data.
++ (BOOL)savePassportEntity;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_APP_INTERFACE_H_

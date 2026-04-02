@@ -750,4 +750,20 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
       .GetEntityDataManager();
 }
 
++ (BOOL)savePassportEntity {
+  autofill::AutofillClient& client =
+      autofill::FakeCreditCardServer::GetAutofillClient();
+
+  autofill::EntityDataManager* entityDataManager =
+      client.GetEntityDataManager();
+
+  if (!entityDataManager) {
+    return NO;
+  }
+
+  autofill::EntityInstance entity = autofill::test::GetPassportEntityInstance();
+  entityDataManager->AddOrUpdateEntityInstance(entity);
+  return YES;
+}
+
 @end
