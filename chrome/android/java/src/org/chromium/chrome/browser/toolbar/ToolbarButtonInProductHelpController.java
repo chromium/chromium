@@ -48,6 +48,8 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class ToolbarButtonInProductHelpController {
+    public static final int PAGE_HISTORY_MIN_OFFSET = -2;
+
     private final CurrentTabObserver mPageLoadObserver;
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
@@ -107,6 +109,7 @@ public class ToolbarButtonInProductHelpController {
                                 showPriceTrackingIph(tab);
                                 showPageSummaryIph(tab);
                                 maybeShowNewTabPageThemeCustomizationIph(tab);
+                                maybeShowBackButtonIph(tab);
                             }
 
                             private void handleIphForErrorPageShown(Tab tab) {
@@ -340,6 +343,33 @@ public class ToolbarButtonInProductHelpController {
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mMenuButtonAnchorView)
                         .build());
+    }
+
+    private void maybeShowBackButtonIph(Tab tab) {
+        if (!ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()) {
+            return;
+        }
+
+        // Ensure that the tab history has at least two web pages to navigate back to.
+        boolean validPageHistory =
+                tab.getWebContents() != null
+                        && tab.getWebContents()
+                                .getNavigationController()
+                                .canGoToOffset(PAGE_HISTORY_MIN_OFFSET);
+        if (validPageHistory) {
+            mUserEducationHelper.requestShowIph(
+                    new IphCommandBuilder(
+                                    mActivity.getResources(),
+                                    FeatureConstants.THREE_DOT_MENU_BACK_BUTTON,
+                                    R.string.menu_back_button_iph_text,
+                                    R.string.menu_back_button_iph_text)
+                            .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.back_menu_id))
+                            .setOnDismissCallback(this::turnOffHighlightForMenuItem)
+                            .setAnchorView(mMenuButtonAnchorView)
+                            .setShowTextBubble(true)
+                            .setDismissOnTouch(true)
+                            .build());
+        }
     }
 
     private void turnOnHighlightForMenuItem(Integer highlightMenuItemId) {
