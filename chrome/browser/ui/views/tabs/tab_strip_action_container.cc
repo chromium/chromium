@@ -23,7 +23,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -46,6 +45,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
@@ -64,6 +64,9 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/private_ai/private_ai_service.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/error_code.h"
 #include "components/private_ai/features.h"
@@ -350,9 +353,84 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
   }
 }
 
+void TabStripActionContainer::OnTriggerAnchoredMessage(
+    std::string label,
+    std::string anchored_message_text,
+    std::optional<std::string> prompt_suggestion) {
+  if (GetIsShowingGlicActorTaskIconNudge()) {
+    return;
+  }
+
+  CHECK(glic_button_);
+
+  auto* active_tab = browser_window_interface_->GetActiveTabInterface();
+  if (!active_tab) {
+    return;
+  }
+
+  auto* tab_features = active_tab->GetTabFeatures();
+  if (!tab_features) {
+    return;
+  }
+
+  auto* controller = tab_features->page_action_controller();
+  if (!controller) {
+    return;
+  }
+
+  // Find the ActionItem for contextual cueing, registered at browser
+  // initialization in BrowserActions::InitializeBrowserActions().
+  auto* action =
+      actions::ActionManager::Get().FindAction(kActionGlicContextualCueing);
+  if (!action) {
+    return;
+  }
+
+  // Set the chip text to the cue label.
+  action->SetText(base::UTF8ToUTF16(label));
+  action->SetEnabled(true);
+  action->SetVisible(true);
+  action->SetInvokeActionCallback(base::BindRepeating(
+      [](base::WeakPtr<BrowserWindowInterface> bwi,
+         std::optional<std::string> prompt, actions::ActionItem* item,
+         actions::ActionInvocationContext context) {
+        if (!bwi) {
+          return;
+        }
+        if (auto* glic_service =
+                glic::GlicKeyedService::Get(bwi->GetProfile())) {
+          glic_service->ToggleUI(
+              bwi.get(), /*prevent_close=*/false,
+              glic::mojom::InvocationSource::kAnchoredContextualCue, prompt);
+        }
+      },
+      browser_window_interface_->GetWeakPtr(), std::move(prompt_suggestion)));
+
+  anchored_message_subscription_ =
+      controller->CreateActionItemSubscription(action);
+  controller->Show(kActionGlicContextualCueing);
+  // The secondary label becomes the anchored message bubble text.
+  controller->SetAnchoredMessageText(kActionGlicContextualCueing,
+                                     base::UTF8ToUTF16(anchored_message_text));
+  controller->ShouldShowAnchoredMessageCloseIcon(kActionGlicContextualCueing,
+                                                 true);
+  controller->ShowAnchoredMessage(kActionGlicContextualCueing);
+}
+
 void TabStripActionContainer::OnHideGlicNudgeUI() {
   CHECK(glic_button_);
   HideTabStripNudge(glic_button_);
+
+  // Also dismiss the anchored message if it was shown via the page action path.
+  anchored_message_subscription_ = {};
+  auto* active_tab = browser_window_interface_->GetActiveTabInterface();
+  if (active_tab) {
+    if (auto* tab_features = active_tab->GetTabFeatures()) {
+      if (auto* controller = tab_features->page_action_controller()) {
+        controller->Hide(kActionGlicContextualCueing);
+      }
+    }
+  }
 }
 
 bool TabStripActionContainer::GetIsShowingGlicNudge() {
