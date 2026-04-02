@@ -174,10 +174,11 @@ bool IsFieldRequired(const EntityInstance& entity_instance,
           base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
       autofill::AttributeType attrType(dateItem.attributeType);
       autofill::AttributeInstance attrInstance(attrType);
-      attrInstance.SetInfo(attrType.field_type(),
-                           AttributeValueFromNSDate(dateItem.dateValue),
-                           _locale, GetAttributeFormatString(),
-                           autofill::VerificationStatus::kNoStatus);
+      attrInstance.SetInfo(
+          attrType.field_type(),
+          AttributeValueFromNSDate(dateItem.dateValue ?: [NSDate date]),
+          _locale, GetAttributeFormatString(),
+          autofill::VerificationStatus::kNoStatus);
       attrInstance.FinalizeInfo();
       updatedAttributes.insert(std::move(attrInstance));
     }
@@ -321,6 +322,7 @@ bool IsFieldRequired(const EntityInstance& entity_instance,
 - (void)didSelectCountry:(CountryItem*)countryItem
                  forItem:(AutofillAIEntityCountryItem*)item {
   item.detailText = countryItem.text;
+  item.hasValidValueStatus = YES;
   [self.consumer updateItem:item];
 }
 

@@ -96,13 +96,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     } else if ([item isKindOfClass:[AutofillAIEntityCountryItem class]]) {
       AutofillAIEntityCountryItem* countryItem =
           base::apple::ObjCCastStrict<AutofillAIEntityCountryItem>(item);
-      if (self.tableView.editing) {
-        countryItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        countryItem.selectionStyle = UITableViewCellSelectionStyleDefault;
-      } else {
-        countryItem.accessoryType = UITableViewCellAccessoryNone;
-        countryItem.selectionStyle = UITableViewCellSelectionStyleNone;
-      }
+      [self updateAccessoryAndSelectionStyleForCountryItem:countryItem];
     } else if ([item isKindOfClass:[AutofillAIEntityEditDateItem class]]) {
       AutofillAIEntityEditDateItem* dateItem =
           base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
@@ -198,6 +192,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)updateItem:(TableViewItem*)item {
+  if ([item isKindOfClass:[AutofillAIEntityCountryItem class]]) {
+    AutofillAIEntityCountryItem* countryItem =
+        base::apple::ObjCCastStrict<AutofillAIEntityCountryItem>(item);
+    [self updateAccessoryAndSelectionStyleForCountryItem:countryItem];
+  }
   [self reconfigureCellsForItems:@[ item ]];
 }
 
@@ -437,12 +436,40 @@ typedef NS_ENUM(NSInteger, ItemType) {
       if (!itemIsValid) {
         isValid = NO;
       }
+    } else if ([item isKindOfClass:[AutofillAIEntityCountryItem class]]) {
+      AutofillAIEntityCountryItem* countryItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityCountryItem>(item);
+      BOOL isEmpty = countryItem.detailText.length <= 1;
+      BOOL isRequired =
+          [self.mutator isFieldRequired:countryItem.attributeType];
+      BOOL itemIsValid = !(isRequired && isEmpty);
+      if (countryItem.hasValidValueStatus != itemIsValid) {
+        countryItem.hasValidValueStatus = itemIsValid;
+        [itemsToReconfigure addObject:countryItem];
+      }
+      if (!itemIsValid) {
+        isValid = NO;
+      }
     }
   }
   if (itemsToReconfigure.count > 0) {
     [self reconfigureCellsForItems:itemsToReconfigure];
   }
   return isValid;
+}
+
+- (void)updateAccessoryAndSelectionStyleForCountryItem:
+    (AutofillAIEntityCountryItem*)countryItem {
+  if (self.tableView.editing) {
+    countryItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    countryItem.editingAccessoryType =
+        UITableViewCellAccessoryDisclosureIndicator;
+    countryItem.selectionStyle = UITableViewCellSelectionStyleDefault;
+  } else {
+    countryItem.accessoryType = UITableViewCellAccessoryNone;
+    countryItem.editingAccessoryType = UITableViewCellAccessoryNone;
+    countryItem.selectionStyle = UITableViewCellSelectionStyleNone;
+  }
 }
 
 @end
