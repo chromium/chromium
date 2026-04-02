@@ -131,15 +131,6 @@ class WEBVIEW_EXPORT WebView : public View,
   void EnableSizingFromWebContents(const gfx::Size& min_size,
                                    const gfx::Size& max_size);
 
-  // If provided, this View will be shown in place of the web contents
-  // when the web contents is in a crashed state. This is cleared automatically
-  // if the web contents is changed. The passed-in overlay view must be owned by
-  // the client; this method never takes ownership of it.
-  //
-  // TODO(crbug.com/40278361): This method should take ownership of
-  // `crashed_overlay_view`.
-  void SetCrashedOverlayView(View* crashed_overlay_view);
-
   // A scoped object that disconnects the webview from the accessibility tree.
   // When destroyed, it restores the previous accessibility state.
   class WEBVIEW_EXPORT ScopedAxDisconnectLock {
@@ -382,7 +373,6 @@ VIEW_BUILDER_PROPERTY(bool, FastResize)
 VIEW_BUILDER_METHOD(EnableSizingFromWebContents,
                     const gfx::Size&,
                     const gfx::Size&)
-VIEW_BUILDER_PROPERTY(View*, CrashedOverlayView)
 VIEW_BUILDER_METHOD(set_is_primary_web_contents_for_window, bool)
 VIEW_BUILDER_METHOD(set_allow_accelerators, bool)
 END_VIEW_BUILDER
