@@ -12200,7 +12200,7 @@ bool GLES2DecoderImpl::ClearCompressedTextureLevel3D(Texture* texture,
 
   GLsizei bytes_required = 0;
   if (!GetCompressedTexSizeInBytes("ClearCompressedTextureLevel3D", width,
-                                   height, 1, format, &bytes_required,
+                                   height, depth, format, &bytes_required,
                                    error_state_.get())) {
     return false;
   }
@@ -12518,8 +12518,8 @@ base::HeapArray<uint8_t> DecompressTextureData(const ContextState& state,
   auto* api = state.api();
   uint32_t output_pixel_size = GLES2Util::ComputeImageGroupSize(
       info.decompressed_format, info.decompressed_type);
-  auto decompressed_data =
-      base::HeapArray<uint8_t>::Uninit(output_pixel_size * width * height);
+  auto decompressed_data = base::HeapArray<uint8_t>::Uninit(
+      output_pixel_size * width * height * depth);
 
   // If a PBO is bound, map it to decompress the data.
   const void* input_data = data;
