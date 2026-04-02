@@ -3679,6 +3679,25 @@
             ]
         }
     ],
+    "BackForwardCacheCCNSIgnoreUnchangedCookies": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260401",
+                    "enable_features": [
+                        "BackForwardCacheCCNSIgnoreUnchangedCookies"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCacheMemoryControls": [
         {
             "platforms": [
