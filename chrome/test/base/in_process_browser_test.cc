@@ -572,6 +572,9 @@ void InProcessBrowserTest::SetUpDefaultCommandLine(
   // Do not automaximize in browser tests.
   command_line->AppendSwitch(switches::kDisableAutoMaximizeForTests);
 #endif
+
+  // Do not run the updater scheduler, which may install GoogleUpdater.
+  command_line->AppendSwitch(switches::kDisableUpdaterScheduler);
 }
 
 void InProcessBrowserTest::TearDown() {
