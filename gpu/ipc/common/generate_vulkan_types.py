@@ -283,11 +283,11 @@ struct StructTraits<gpu::mojom::%sDataView, %s> {
     if field_type == "char":
       assert array_len
       traits_header_file.write(
-"""
-  static std::string_view %s(const %s& input) {
-    return input.%s;
-  }
-""" % (field_name, name, field_name))
+f"""
+  static std::string_view {field_name}(const {name}& input) {{
+    return SafelyRetrieveStringView(base::span(input.{field_name}));
+  }}
+""")
     elif array_len:
       traits_header_file.write(
 """
@@ -430,6 +430,8 @@ def GenerateTraitsFile(traits_header_file: typing.IO,
 #ifndef GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 
+#include <algorithm>
+#include <cstddef>
 #include <string_view>
 
 #include "base/containers/span.h"
@@ -438,6 +440,18 @@ def GenerateTraitsFile(traits_header_file: typing.IO,
 #include "gpu/ipc/common/vulkan_types.mojom-shared.h"
 
 namespace mojo {
+
+template <size_t DeducedExtent>
+std::string_view SafelyRetrieveStringView(
+    base::span<const char, DeducedExtent> field) {
+  if (std::find(field.begin(), field.end(), '\\0') != field.end()) {
+    // A NUL byte exists somewhere in the run of this char array.
+    // We can safely construct a `string_view` from this.
+    return std::string_view(field.data());
+  };
+  return std::string_view(field);
+}
+
 """)
 
   traits_source_file.write(
