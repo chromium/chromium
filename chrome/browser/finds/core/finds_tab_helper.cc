@@ -105,9 +105,11 @@ void FindsTabHelper::DidFinishNavigation(
     return;
   }
 
-  CheckSRPReturnCountAndMaybeTriggerOptIn(navigation_handle);
+  if (features::kEnableSrpReturnCountOptIn.Get()) {
+    CheckSRPReturnCountAndMaybeTriggerOptIn(navigation_handle);
+  }
 
-  if (!opt_guide_service_) {
+  if (!opt_guide_service_ || !features::kEnableThemeUrlVisitCountOptIn.Get()) {
     return;
   }
 

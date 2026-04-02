@@ -59,6 +59,12 @@ extern const base::FeatureParam<int> kMaxHistoryEntries;
 // triggering the opt in.
 extern const base::FeatureParam<int> kSRPReturnCountThreshold;
 
+// The feature flag param to enable the SRP return count opt-in flow.
+extern const base::FeatureParam<bool> kEnableSrpReturnCountOptIn;
+
+// The feature flag param to enable the theme URL visit count opt-in flow.
+extern const base::FeatureParam<bool> kEnableThemeUrlVisitCountOptIn;
+
 }  // namespace finds::features
 
 #endif  // CHROME_BROWSER_FINDS_CORE_FINDS_FEATURES_H_
