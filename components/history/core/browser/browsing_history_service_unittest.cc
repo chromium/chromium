@@ -430,6 +430,18 @@ TEST_P(BrowsingHistoryServiceTest, QueryHistoryJustLocal) {
                                  std::vector<TestResult>{{kUrl1, 1, kLocal}}));
 }
 
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryWithAppIdFilter) {
+  ResetService(driver(), local_history(), sync());
+  AddHistory({{kUrl1, 1, kLocal}});
+
+  QueryOptions options;
+  options.app_id = "org.chromium.test";
+
+  EXPECT_THAT(QueryHistory(options),
+              MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                                 std::vector<TestResult>{}));
+}
+
 TEST_P(BrowsingHistoryServiceTest, EmptyQueryHistoryJustWeb) {
   ResetService(driver(), nullptr, nullptr);
   EXPECT_THAT(QueryHistory(), MatchesQueryResult(baseline_time_,

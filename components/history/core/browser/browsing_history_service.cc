@@ -872,8 +872,9 @@ void BrowsingHistoryService::ReturnResultsToDriver(
 
   QueryResultsInfo info;
   info.search_text = state->search_text;
-  info.reached_beginning =
-      !CanRetry(state->local_status) && !CanRetry(state->remote_status);
+  info.reached_beginning = !CanRetry(state->local_status) &&
+                           (!CanRetry(state->remote_status) ||
+                            state->original_options.app_id != kNoAppIdFilter);
   info.sync_timed_out = state->remote_status == TIMED_OUT;
   base::OnceClosure continuation =
       base::BindOnce(&BrowsingHistoryService::QueryHistoryInternal,
