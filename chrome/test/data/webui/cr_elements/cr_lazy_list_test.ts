@@ -111,6 +111,7 @@ class TestDocumentTargetAppElement extends CrLitElement {
   }
 
   accessor listItems: Array<{name: string}> = [];
+  accessor scrollOffset: number = 0;
 }
 
 customElements.define(

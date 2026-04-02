@@ -92,10 +92,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   static override get properties() {
     return {
-      clickedIndices_: {type: Array},
+      clickedIndices_: {type: Object},
       forceSuppressLogging: {type: Boolean},
       numCharsForQuery: {type: Number},
-      feedbackState_: {type: String},
+      feedbackState_: {type: Number},
       loadingAnswer_: {type: Boolean},
       loadingResults_: {type: Boolean},
       searchResult_: {type: Object},

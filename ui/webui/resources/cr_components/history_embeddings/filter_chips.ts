@@ -86,7 +86,7 @@ export class HistoryEmbeddingsFilterChipsElement extends
         type: Object,
       },
       selectedSuggestion: {
-        type: String,
+        type: Object,
         notify: true,
       },
       showResultsByGroup: {

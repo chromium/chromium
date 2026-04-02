@@ -61,7 +61,7 @@ export class TraceReportListElement extends CrLitElement {
     return {
       traces_: {type: Array},
       isLoading_: {type: Boolean},
-      notification: {type: Object},
+      notification_: {type: Object},
     };
   }
 
@@ -69,7 +69,8 @@ export class TraceReportListElement extends CrLitElement {
       TracesBrowserProxy.getInstance();
   protected accessor traces_: ClientTraceReport[] = [];
   protected accessor isLoading_: boolean = false;
-  protected notification_?: Readonly<Notification>;
+  protected accessor notification_: Readonly<Notification>|undefined =
+      undefined;
 
   override connectedCallback(): void {
     super.connectedCallback();

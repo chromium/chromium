@@ -50,7 +50,7 @@ export class PageFaviconElement extends CrLitElement {
       /**
        * The URL for which the favicon is shown.
        */
-      url: {type: Object},
+      url: {type: String},
 
       /**
        * Whether this visit is known to sync already. Used for the purpose of

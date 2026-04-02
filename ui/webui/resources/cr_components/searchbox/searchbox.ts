@@ -177,24 +177,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
-      /**
-       * Whether user is deleting text in the input. Used to prevent the default
-       * match from offering inline autocompletion.
-       */
-      isDeletingInput_: {type: Boolean},
-
-      /**
-       * Last state of the input (text and inline autocompletion). Updated
-       * by the user input or by the currently selected autocomplete match.
-       */
-      lastInput_: {type: Object},
-
-      /**
-       * True if user just pasted into the input. Used to prevent the default
-       * match from offering inline autocompletion.
-       */
-      pastedInInput_: {type: Boolean},
-
       /** Searchbox default icon (i.e., Google G icon or the search loupe). */
       searchboxIcon_: {type: String},
 

@@ -105,6 +105,7 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
 
   accessor disabled: boolean = false;
   accessor ironIcon: string|undefined;
+  accessor suppressRtlFlip: boolean = false;
   protected accessor multipleIcons_: boolean = false;
 
   /**

@@ -162,10 +162,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
       maxTiles_: {type: Number, state: true},
       maxVisibleTiles_: {type: Number, state: true},
       showAdd_: {type: Boolean, state: true},
-      showToastButtons_: {type: Boolean, state: true},
       maxVisibleColumnCount_: {type: Number, state: true},
       tiles_: {type: Array, state: true},
-      toastContent_: {type: String, state: true},
       toastSource_: {type: Number, state: true},
 
       expandableTilesEnabled: {type: Boolean, reflect: true},

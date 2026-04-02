@@ -26,7 +26,7 @@ export class TabFaviconElement extends CrLitElement {
   static override get properties() {
     return {
       /* The URL for which the favicon is shown. */
-      url: {type: Object},
+      url: {type: String},
       size: {type: Number},
     };
   }
