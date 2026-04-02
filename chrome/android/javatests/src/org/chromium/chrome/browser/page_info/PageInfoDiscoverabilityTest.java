@@ -260,7 +260,7 @@ public class PageInfoDiscoverabilityTest {
                                     mPageInfoIphController,
                                     sPermissionTestRule.getActivity().getWindowAndroid(),
                                     /* merchantTrustSignalsCoordinatorSupplier= */ null,
-                                    /* clickListener= */ null);
+                                    /* pageInfoAction= */ null);
                     mPermissionStatusHandler = mMediator.getPermissionStatusHandler();
                 });
     }

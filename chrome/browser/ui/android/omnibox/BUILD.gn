@@ -576,6 +576,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/multiwindow:java",
+    "//chrome/browser/ui/android/page_info:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/messages/android:java",

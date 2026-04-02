@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -107,6 +108,7 @@ public final class StatusMediatorUnitTest {
     @Mock private PrefService mPrefs;
     @Mock private Tracker mTracker;
     @Mock private OnClickListener mOnClickListener;
+    @Mock private PageInfoAction mPageInfoAction;
 
     private PermissionDialogController.Observer mPermissionObserver;
 
@@ -175,7 +177,7 @@ public final class StatusMediatorUnitTest {
                         mPageInfoIphController,
                         mWindowAndroid,
                         () -> mMerchantTrustSignalsCoordinator,
-                        mOnClickListener);
+                        mPageInfoAction);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
     }
 
@@ -818,9 +820,36 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void testStatusClickListener() {
+    public void testStatusClickListener_showPageInfo() {
+        mMediator.setUrlHasFocus(false);
+        doReturn(true).when(mLocationBarDataProvider).hasTab();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
+
+        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
+        verify(mPageInfoAction).show(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testStatusClickListener_withBackButtonPressListener() {
+        mMediator.setOnStatusIconNavigateBackButtonPress(mOnClickListener);
         mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
         verify(mOnClickListener).onClick(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testStatusClickListener_whenUrlHasFocus() {
+        mMediator.setUrlHasFocus(true);
+        doReturn(true).when(mLocationBarDataProvider).hasTab();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
+
+        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
+        verify(mPageInfoAction, never()).show(any(), any());
     }
 
     private String getIconIdentifierForTesting() {

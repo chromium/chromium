@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorInt;
@@ -30,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
@@ -44,6 +48,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.permissions.PermissionDialogController;
@@ -104,6 +109,9 @@ public class StatusMediator
     private final Handler mStoreIconHandler = new Handler();
     private final PageInfoIphController mPageInfoIphController;
     private final WindowAndroid mWindowAndroid;
+    private final PageInfoAction mPageInfoAction;
+    private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
+            this::onSiteSearchDataChanged;
 
     private boolean mUrlBarTextIsSearch = true;
 
@@ -115,8 +123,8 @@ public class StatusMediator
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable StatusIconResource mSearchEngineIcon;
     private @Nullable NullableObservableSupplier<SiteSearchData> mSiteSearchDataSupplier;
-    private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
-            this::onSiteSearchDataChanged;
+    private @Nullable OnClickListener mOnStatusIconNavigateBackButtonPress;
+
     private int mLastTabId;
     private boolean mCurrentTabCrashed;
     private Drawable mDefaultStatusBackground;
@@ -139,7 +147,6 @@ public class StatusMediator
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *     MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown, such as
      *     when called from a search activity.
-     * @param clickListener Specifies target object to receive events.
      */
     public StatusMediator(
             PropertyModel model,
@@ -154,7 +161,7 @@ public class StatusMediator
             WindowAndroid windowAndroid,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
-            OnClickListener clickListener) {
+            PageInfoAction pageInfoAction) {
         initBackgroundDrawables(context);
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -175,8 +182,9 @@ public class StatusMediator
 
         mIsTablet = isTablet;
         mShowStatusIconWhenUrlFocused = mIsTablet;
+        mPageInfoAction = pageInfoAction;
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, false);
-        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, clickListener);
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, this::onClick);
 
         mPermissionStatusHandler =
                 new PermissionStatusHandler(
@@ -802,8 +810,8 @@ public class StatusMediator
         resetEmbeddedIconHandlers();
     }
 
-    /** Notifies that the page info was opened. */
-    void onPageInfoOpened() {
+    private void openPageInfo(Tab tab) {
+        mPageInfoAction.show(tab, getPageInfoHighlight());
         mPermissionStatusHandler.onPageInfoOpened();
         resetEmbeddedIconHandlers();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -909,6 +917,13 @@ public class StatusMediator
         mModel.set(StatusProperties.SHOW_STATUS_VIEW, show);
     }
 
+    /**
+     * @param listener The custom listener that will execute when the status view is clicked.
+     */
+    void setOnStatusIconNavigateBackButtonPress(OnClickListener listener) {
+        mOnStatusIconNavigateBackButtonPress = listener;
+    }
+
     private void applyStatusIconAndTooltipProperties(
             boolean showIcon, boolean verboseStatusTextVisible) {
         boolean isHubSearch =
@@ -973,6 +988,24 @@ public class StatusMediator
                         || mShowStatusIconForSecureOrigins
                         || mPageSecurityLevel != ConnectionSecurityLevel.SECURE
                         || mIsStoreIconShowing);
+    }
+
+    private void onClick(View view) {
+        if (mOnStatusIconNavigateBackButtonPress != null) {
+            mOnStatusIconNavigateBackButtonPress.onClick(view);
+            return;
+        }
+
+        if (mUrlHasFocus) return;
+
+        if (!mLocationBarDataProvider.hasTab()
+                || assumeNonNull(mLocationBarDataProvider.getTab()).getWebContents() == null) {
+            return;
+        }
+
+        if (UrlUtilities.isNtpUrl(mLocationBarDataProvider.getCurrentGurl())) return;
+
+        openPageInfo(mLocationBarDataProvider.getTab());
     }
 
     private static boolean isPageInfoMovedToAppMenu() {
