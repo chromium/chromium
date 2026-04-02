@@ -29,6 +29,7 @@ const ArrowDown = '\uE015';
 const Space = ' ';
 const Tab = '\uE004';
 const Shift = '\uE008';
+const Backspace = '\uE003';
 
 const input = document.querySelector('input');
 const datalist = document.querySelector('datalist');
@@ -92,6 +93,33 @@ promise_test(async () => {
     'selectionStart should be set to the end of the text after choosing an option.');
   assert_equals(input.selectionEnd, 3,
     'selectionEnd should be set to the end of the text after choosing an option.');
+
+  await pressKey(ArrowDown);
+  assert_true(datalist.matches(':popover-open'),
+    'Datalist should open after pressing down arrow.');
+  datalist.hidePopover();
+  assert_false(datalist.matches(':popover-open'),
+    'Datalist should close after calling hidePopover.');
+  await pressKey(ArrowUp);
+  assert_true(datalist.matches(':popover-open'),
+    'Datalist should open after pressing up arrow.');
+  datalist.hidePopover();
+  assert_false(datalist.matches(':popover-open'),
+    'Datalist should close after calling hidePopover.');
+
+  await pressKey(Backspace);
+  assert_true(datalist.matches(':popover-open'),
+    'Datalist should open after pressing backspace.');
+  datalist.hidePopover();
+  assert_false(datalist.matches(':popover-open'),
+    'Datalist should close after calling hidePopover.');
+
+  await pressKey('e');
+  assert_true(datalist.matches(':popover-open'),
+    'Datalist should open after pressing "e".');
+  datalist.hidePopover();
+  assert_false(datalist.matches(':popover-open'),
+    'Datalist should close after calling hidePopover.');
 }, 'Keyboard behavior for customizable combobox.');
 
 // TODO(crbug.com/453705243): Add tests for these cases:
