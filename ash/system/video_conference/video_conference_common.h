@@ -105,6 +105,10 @@ struct ASH_EXPORT VideoConferenceMediaUsageStatus {
 };
 
 // Native app type used by the in-process Ash/Chrome video conference pipeline.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(VideoConferenceAppType)
 enum class VideoConferenceAppType {
   kBrowserUnknown,
   kChromeTab,
@@ -120,6 +124,7 @@ enum class VideoConferenceAppType {
   kAshCaptureMode,
   kMaxValue = kAshCaptureMode,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:VideoConferenceAppType)
 
 // Native media-app info used by the in-process Ash/Chrome video conference
 // pipeline.

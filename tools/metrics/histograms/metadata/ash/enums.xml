@@ -2826,6 +2826,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="26" label="Chrome Custom"/>
 </enum>
 
+<!-- LINT.IfChange(VideoConferenceAppType) -->
+
 <enum name="VideoConferenceAppType">
   <summary>
     Possible different app types that a running media app (which the Video
@@ -2838,7 +2840,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4" label="Web App"/>
   <int value="5" label="ARC App"/>
   <int value="6" label="App Service Unknown"/>
+  <int value="7" label="Crostini VM"/>
+  <int value="8" label="Plugin VM"/>
+  <int value="9" label="Borealis"/>
+  <int value="10" label="Ash Client Unknown"/>
+  <int value="11" label="Ash Capture Mode"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/system/video_conference/video_conference_common.h:VideoConferenceAppType) -->
 
 <enum name="WallpaperCollection">
   <int value="-1993504462" label="Native American Artists"/>
