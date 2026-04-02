@@ -645,5 +645,19 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
   EXPECT_EQ(*actual_stored_prefs, expected_stored_prefs);
 }
 
+TEST_F(PrivacySandboxNoticeStorageTest, CleanupDeprecatedNotices) {
+  // Since kDeprecatedNotices is empty by default, this verifies it doesn't
+  // crash and doesn't remove active notices.
+  SetNoticeStateFromJSON("Notice1StorageName", R"({"schema_version": 2})");
+
+  notice_storage()->CleanupDeprecatedNotices();
+
+  const base::DictValue* actual_stored_prefs =
+      prefs()
+          ->GetDict("privacy_sandbox.notices")
+          .FindDict("Notice1StorageName");
+  EXPECT_NE(nullptr, actual_stored_prefs);
+}
+
 }  // namespace
 }  // namespace privacy_sandbox

@@ -124,6 +124,9 @@ class NoticeStorage {
   // Records histograms tracking the state of all notices.
   virtual void RecordStartupHistograms() const = 0;
 
+  // Removes data for deprecated notices.
+  virtual void CleanupDeprecatedNotices() = 0;
+
   // Records a Notice Event.
   virtual void RecordEvent(const Notice& notice,
                            notice::mojom::PrivacySandboxNoticeEvent event) = 0;
@@ -143,6 +146,8 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
       std::string_view notice) const override;
 
   void RecordStartupHistograms() const override;
+
+  void CleanupDeprecatedNotices() override;
 
   void RecordEvent(const Notice& notice,
                    notice::mojom::PrivacySandboxNoticeEvent event) override;

@@ -159,6 +159,7 @@ PrivacySandboxNoticeService::PrivacySandboxNoticeService(
     notice->RefreshFulfillmentStatus(*notice_storage_);
   }
 
+  notice_storage_->CleanupDeprecatedNotices();
   EmitStartupHistograms();
 }
 

@@ -30,6 +30,8 @@ class MockNoticeStorage : public NoticeStorage {
               (const, override));
 
   MOCK_METHOD(void, RecordStartupHistograms, (), (const, override));
+
+  MOCK_METHOD(void, CleanupDeprecatedNotices, (), (override));
 };
 
 }  // namespace privacy_sandbox

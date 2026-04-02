@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/privacy_sandbox/notice/deprecated_notices.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -448,6 +449,13 @@ void PrivacySandboxNoticeStorage::RecordStartupHistograms() const {
     }
     RecordEnum("Startup.LastRecordedEvent", notice,
                notice_data->notice_events.back()->event);
+  }
+}
+
+void PrivacySandboxNoticeStorage::CleanupDeprecatedNotices() {
+  ScopedDictPrefUpdate update(pref_service_, kNoticeDataPath);
+  for (const auto& dead_notice : kDeprecatedNotices) {
+    update->Remove(dead_notice.storage_name);
   }
 }
 
