@@ -2435,21 +2435,54 @@ crbug.com/40268415 [ Debug Win11-arm64 ] external/wpt/webaudio/the-audio-api/the
 
 # Test Expectations for Chrome Android/WebView
 # Incompatible with both Chrome Android and Webview
+# SharedWorker interface
+# Although SharedWorker is enabled on all platforms, these tests still fail
+# on Android/Webview due to other platform limitations (e.g., Notification).
+crbug.com/40290702 [ Android ] external/wpt/background-fetch/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/content-index/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/cookiestore/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/dom/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/encoding/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/event-timing/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/fetch/api/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/hr-time/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/IndexedDB/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/notifications/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/payment-handler/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/performance-timeline/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/push-api/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/service-workers/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/shape-detection/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/streams/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/user-timing/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/webtransport/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Android ] external/wpt/xhr/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/background-fetch/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/content-index/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/cookiestore/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/dom/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/encoding/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/event-timing/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/fetch/api/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/hr-time/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/IndexedDB/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/notifications/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/payment-handler/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/performance-timeline/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/push-api/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/service-workers/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/shape-detection/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/streams/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/user-timing/idlharness.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/webtransport/idlharness.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 [ Webview ] external/wpt/xhr/idlharness.any.sharedworker.html [ Failure ]
 # Compute Pressure
-# SharedWorker is enabled on Android, but ComputePressure feature remains
-# disabled on Android (crbug.com/341537009).
 crbug.com/341537009 [ Android ] external/wpt/compute-pressure/idlharness.https.any.html [ Failure ]
 crbug.com/341537009 [ Android ] external/wpt/compute-pressure/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/341537009 [ Android ] external/wpt/compute-pressure/idlharness.https.any.worker.html [ Failure ]
 crbug.com/341537009 [ Webview ] external/wpt/compute-pressure/idlharness.https.any.html [ Failure ]
 crbug.com/341537009 [ Webview ] external/wpt/compute-pressure/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/341537009 [ Webview ] external/wpt/compute-pressure/idlharness.https.any.worker.html [ Failure ]
-# Notification
-# SharedWorker is enabled on Android, but NotificationConstructor is disabled
-# on Android as only persistent notifications (via ServiceWorker) are
-# supported (crbug.com/40290702).
-crbug.com/40290702 [ Android ] external/wpt/notifications/idlharness.https.any.sharedworker.html [ Failure ]
-crbug.com/40290702 [ Webview ] external/wpt/notifications/idlharness.https.any.sharedworker.html [ Failure ]
 # MediaDevices.ondevicechange
 crbug.com/671461 [ Android ] external/wpt/mediacapture-streams/idlharness.https.window.html [ Failure ]
 crbug.com/671461 [ Webview ] external/wpt/mediacapture-streams/idlharness.https.window.html [ Failure ]
