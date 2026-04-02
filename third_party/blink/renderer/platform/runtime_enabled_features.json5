@@ -3989,6 +3989,7 @@
       // for encapsulated content within <textarea> and <input> elements.
       // crbug.com/421421332
       name: "OpaqueRange",
+      origin_trial_feature_name: "OpaqueRange",
       status: "experimental",
     },
     {

@@ -423,7 +423,7 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
     CalculateAndAdjustAutoDirectionality();
   }
 
-  if (RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled(GetExecutionContext())) {
     CommitOpaqueRangeEdit();
   }
 
@@ -576,7 +576,7 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
   // perform a targeted update (e.g., setRangeText) set the skip flag to
   // suppress this pass and prevent redundant notifications or offset
   // adjustments.
-  if (RuntimeEnabledFeatures::OpaqueRangeEnabled() &&
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled(GetExecutionContext()) &&
       !ShouldSkipNextSetValueAutoDiff()) {
     CommitProgrammaticOpaqueRangeEdit(old_value, /*old_sel_start=*/0u,
                                       /*old_sel_end=*/old_value.length());

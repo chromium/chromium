@@ -631,7 +631,8 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
     SetSelectionRange(0, 0, kSelectionHasNoDirection);
 
   // Disconnect all OpaqueRanges on any type change.
-  if (previously_selectable && RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+  if (previously_selectable &&
+      RuntimeEnabledFeatures::OpaqueRangeEnabled(GetExecutionContext())) {
     DisconnectAllOpaqueRanges();
   }
 
@@ -2254,7 +2255,7 @@ OpaqueRange* HTMLInputElement::createValueRange(
     unsigned start_offset,
     unsigned end_offset,
     ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
+  CHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled(GetExecutionContext()));
   if (!InputSupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,

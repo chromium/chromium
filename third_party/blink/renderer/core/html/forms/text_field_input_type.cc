@@ -188,7 +188,9 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
   // full-value replace. If the skip flag is set (e.g. by setRangeText), this
   // automatic update is skipped since the caller issues its own targeted range
   // update.
-  if (value_changed && RuntimeEnabledFeatures::OpaqueRangeEnabled() &&
+  if (value_changed &&
+      RuntimeEnabledFeatures::OpaqueRangeEnabled(
+          GetElement().GetExecutionContext()) &&
       !GetElement().ShouldSkipNextSetValueAutoDiff()) {
     GetElement().CommitProgrammaticOpaqueRangeEdit(
         old_value, /*old_sel_start=*/0u, /*old_sel_end=*/old_value.length());
@@ -740,7 +742,8 @@ void TextFieldInputType::SubtreeHasChanged() {
   GetElement().PseudoStateChanged(CSSSelector::kPseudoInRange);
   GetElement().PseudoStateChanged(CSSSelector::kPseudoOutOfRange);
 
-  if (RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled(
+          GetElement().GetExecutionContext())) {
     GetElement().CommitOpaqueRangeEdit();
   }
 

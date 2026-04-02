@@ -36,7 +36,8 @@ OpaqueRange::OpaqueRange(Document& document,
       element_(element),
       start_offset_in_value_(start_offset),
       end_offset_in_value_(end_offset) {
-  CHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
+  CHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled(
+      document.GetExecutionContext()));
   element->RegisterOpaqueRange(this);
 }
 
@@ -65,7 +66,8 @@ Document& OpaqueRange::OwnerDocument() const {
 void OpaqueRange::UpdateOffsetsForTextChange(unsigned change_offset,
                                              unsigned deleted_count,
                                              unsigned inserted_count) {
-  DCHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
+  DCHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled(
+      owner_document_->GetExecutionContext()));
   if (!element_ || (deleted_count == 0 && inserted_count == 0)) {
     return;
   }

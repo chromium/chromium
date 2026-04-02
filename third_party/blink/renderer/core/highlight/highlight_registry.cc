@@ -66,7 +66,8 @@ bool HighlightRegistry::IsAbstractRangePaintable(AbstractRange* abstract_range,
     return false;
   }
 
-  if (RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled(
+          document->GetExecutionContext())) {
     if (auto* opaque_range = DynamicTo<OpaqueRange>(abstract_range)) {
       TextControlElement* element = opaque_range->GetElement();
       return element && element->isConnected();
@@ -142,7 +143,8 @@ void HighlightRegistry::ValidateHighlightMarkers() {
     for (const auto& abstract_range : highlight->GetRanges()) {
       if (IsAbstractRangePaintable(abstract_range, document)) {
         EphemeralRange eph_range;
-        if (RuntimeEnabledFeatures::OpaqueRangeEnabled() &&
+        if (RuntimeEnabledFeatures::OpaqueRangeEnabled(
+                document->GetExecutionContext()) &&
             abstract_range->IsOpaqueRange()) {
           auto* opaque_range = static_cast<OpaqueRange*>(abstract_range.Get());
           Range* inner_range = opaque_range->BuildValueGeometryContext();
@@ -355,8 +357,9 @@ HeapVector<Member<HighlightHitResult>> HighlightRegistry::highlightsFromPoint(
   // For form controls, hit testing may return the inner editor element instead
   // of its text node child. Walk to the first text node child if the hit node
   // is the inner editor.
-  if (RuntimeEnabledFeatures::OpaqueRangeEnabled() && !hit_node->IsTextNode() &&
-      hit_node->IsInUserAgentShadowRoot()) {
+  if (RuntimeEnabledFeatures::OpaqueRangeEnabled(
+          document->GetExecutionContext()) &&
+      !hit_node->IsTextNode() && hit_node->IsInUserAgentShadowRoot()) {
     if (auto* text_control =
             DynamicTo<TextControlElement>(hit_node->OwnerShadowHost())) {
       if (hit_node == text_control->InnerEditorElement()) {
@@ -381,7 +384,8 @@ HeapVector<Member<HighlightHitResult>> HighlightRegistry::highlightsFromPoint(
   // can't be passed in |options|.
   if (hit_node->IsInShadowTree()) {
     const bool hit_in_text_control_ua_shadow =
-        RuntimeEnabledFeatures::OpaqueRangeEnabled() &&
+        RuntimeEnabledFeatures::OpaqueRangeEnabled(
+            document->GetExecutionContext()) &&
         hit_node->IsInUserAgentShadowRoot() &&
         DynamicTo<TextControlElement>(hit_node->OwnerShadowHost());
 
@@ -430,7 +434,8 @@ HeapVector<Member<HighlightHitResult>> HighlightRegistry::highlightsFromPoint(
       // node (i.e., the range encloses a shadow tree), do not return it when
       // the hit is on a node inside that shadow tree. Only consider ranges
       // within the same tree scope as the hit node.
-      auto* opaque_range = RuntimeEnabledFeatures::OpaqueRangeEnabled()
+      auto* opaque_range = RuntimeEnabledFeatures::OpaqueRangeEnabled(
+                               document->GetExecutionContext())
                                ? DynamicTo<OpaqueRange>(abstract_range.Get())
                                : nullptr;
       if (!opaque_range && abstract_range->startContainer()->GetTreeScope() !=
