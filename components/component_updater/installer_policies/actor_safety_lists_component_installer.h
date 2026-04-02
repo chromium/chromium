@@ -1,22 +1,19 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPONENT_UPDATER_ACTOR_SAFETY_LISTS_COMPONENT_INSTALLER_H_
-#define CHROME_BROWSER_COMPONENT_UPDATER_ACTOR_SAFETY_LISTS_COMPONENT_INSTALLER_H_
+#ifndef COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_ACTOR_SAFETY_LISTS_COMPONENT_INSTALLER_H_
+#define COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_ACTOR_SAFETY_LISTS_COMPONENT_INSTALLER_H_
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace component_updater {
 
@@ -75,10 +72,13 @@ class ActorSafetyListsComponentInstallerPolicy
 };
 
 // Call once during startup to make the component update service aware of
-// the File Type Policies component.
-void RegisterActorSafetyListsComponent(ComponentUpdateService* cus,
-                                       base::OnceClosure callback);
+// the Actor Safety Lists component.
+void RegisterActorSafetyListsComponent(
+    ComponentUpdateService* cus,
+    ActorSafetyListsComponentInstallerPolicy::
+        OnActorSafetyListsComponentReadyCallback on_ready_callback,
+    base::OnceClosure callback);
 
 }  // namespace component_updater
 
-#endif  // CHROME_BROWSER_COMPONENT_UPDATER_ACTOR_SAFETY_LISTS_COMPONENT_INSTALLER_H_
+#endif  // COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_ACTOR_SAFETY_LISTS_COMPONENT_INSTALLER_H_

@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/actor_safety_lists_component_installer.h"
+#include "components/component_updater/installer_policies/actor_safety_lists_component_installer.h"
 
 #include <stdint.h>
 
@@ -20,7 +20,6 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
-#include "chrome/browser/actor/safety_list_manager.h"
 #include "components/component_updater/component_updater_paths.h"
 
 namespace {
@@ -109,8 +108,8 @@ void ActorSafetyListsComponentInstallerPolicy::ComponentReady(
 bool ActorSafetyListsComponentInstallerPolicy::VerifyInstallation(
     const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
-  // No need to actually validate the json here, since we'll do the checking
-  // in the parsing component
+  // No need to actually validate the file here, since we'll do the checking
+  // when we parse it in the callback.
   return base::PathExists(GetInstalledPath(install_dir));
 }
 
@@ -134,22 +133,18 @@ ActorSafetyListsComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-void RegisterActorSafetyListsComponent(ComponentUpdateService* cus,
-                                       base::OnceClosure callback) {
+void RegisterActorSafetyListsComponent(
+    ComponentUpdateService* cus,
+    ActorSafetyListsComponentInstallerPolicy::
+        OnActorSafetyListsComponentReadyCallback on_ready_callback,
+    base::OnceClosure callback) {
   VLOG(1) << "Registering Actor Safety Lists Component.";
   auto policy = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<ActorSafetyListsComponentInstallerPolicy>(
-          base::BindRepeating(
-              [](const std::optional<std::string>& raw_metadata) {
-                if (raw_metadata.has_value()) {
-                  actor::SafetyListManager::GetInstance()->ParseSafetyLists(
-                      *raw_metadata);
-                }
-              })));
+          std::move(on_ready_callback)));
   policy->Register(cus, std::move(callback));
 }
 
-// static
 base::FilePath
 ActorSafetyListsComponentInstallerPolicy::GetInstalledPathForTesting(
     const base::FilePath& base) {

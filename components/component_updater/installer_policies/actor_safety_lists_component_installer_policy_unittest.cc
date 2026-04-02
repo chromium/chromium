@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "chrome/browser/component_updater/actor_safety_lists_component_installer.h"
+#include "components/component_updater/installer_policies/actor_safety_lists_component_installer.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -134,7 +134,10 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest, ComponentRegistered) {
 
   EXPECT_CALL(*service, RegisterComponent(testing::_));
   base::RunLoop run_loop;
-  RegisterActorSafetyListsComponent(service.get(), run_loop.QuitClosure());
+  RegisterActorSafetyListsComponent(
+      service.get(),
+      base::BindRepeating([](const std::optional<std::string>&) {}),
+      run_loop.QuitClosure());
   run_loop.Run();
 }
 
