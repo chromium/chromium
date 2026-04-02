@@ -38,7 +38,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
-import type {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
+import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
@@ -537,6 +537,27 @@ export class SettingsAutofillAiEntriesListElement extends
 
   private get isEditingAllowedByPref_(): boolean {
     return this.allowEditingPref?.value ?? true;
+  }
+
+  private typeNameToIconName_(name: EntityTypeName): string|undefined {
+    switch (name) {
+      case EntityTypeName.kDriversLicense:
+        return 'settings20:id-card';
+      case EntityTypeName.kFlightReservation:
+        return 'settings20:travel';
+      case EntityTypeName.kKnownTravelerNumber:
+        return 'privacy20:person-check';
+      case EntityTypeName.kNationalIdCard:
+        return 'settings20:id-card';
+      case EntityTypeName.kPassport:
+        return 'settings20:passport';
+      case EntityTypeName.kRedressNumber:
+        return 'privacy20:person-check';
+      case EntityTypeName.kVehicle:
+        return 'settings20:directions-car';
+      default:
+        return undefined;
+    }
   }
 }
 

@@ -11,6 +11,10 @@
     padding-bottom: 8px;
   }
 
+  .entity-type-icon {
+    margin-inline-end: var(--cr-icon-button-margin-start);
+  }
+
   .start {
     overflow: hidden;
   }
@@ -18,6 +22,8 @@
   #entries {
     margin-block-end: 0;
     margin-block-start: 0;
+    padding-inline-start: var(--cr-section-padding);
+    padding-inline-end: var(--cr-section-padding);
   }
 
   /* TODO(crbug.com/454617005): this is a quick fix, remove */
@@ -48,6 +54,10 @@
 <ul id="entries" class="list-frame vertical-list">
   <template is="dom-repeat" items="[[entityInstances_]]">
     <li class="list-item">
+      <div class="entity-type-icon"
+          hidden$="[[!!typeNameToIconName_(item.type.typeName)]]">
+        <cr-icon icon="[[typeNameToIconName_(item.type.typeName)]]"></cr-icon>
+      </div>
       <div class="start">
         <div class="ellipses">[[item.entityInstanceLabel]]</div>
         <div class="ellipses cr-secondary-text">
