@@ -64,13 +64,13 @@ HTMLImageElement* HTMLMapElement::ImageElement() {
     // The HTMLImageElement's useMap() value includes the '#' symbol at the
     // beginning, which has to be stripped off.
     auto& image_element = To<HTMLImageElement>(*curr);
-    String use_map_name =
-        image_element.FastGetAttribute(html_names::kUsemapAttr)
-            .GetString()
-            .Substring(1);
-    if (!use_map_name.empty() &&
-        (use_map_name == name_ || use_map_name == GetIdAttribute())) {
-      return &image_element;
+    const AtomicString& use_map_name_with_hash =
+        image_element.FastGetAttribute(html_names::kUsemapAttr);
+    if (use_map_name_with_hash.length() > 1) {
+      StringView use_map_name(use_map_name_with_hash, 1);
+      if (use_map_name == name_ || use_map_name == GetIdAttribute()) {
+        return &image_element;
+      }
     }
   }
 
@@ -98,13 +98,13 @@ void HTMLMapElement::ParseAttribute(const AttributeModificationParams& params) {
       // Call base class so that hasID bit gets set.
       HTMLElement::ParseAttribute(params);
     } else {
-      String map_name = params.new_value;
-      if (!map_name.empty() && map_name[0] == '#') {
-        map_name = map_name.substr(1);
+      StringView map_name = params.new_value;
+      if (map_name.starts_with('#')) {
+        map_name.remove_prefix(1);
       }
       if (RuntimeEnabledFeatures::FixMapElementEmptyNameBugEnabled() ||
           !map_name.empty()) {
-        name_ = AtomicString(map_name);
+        name_ = map_name.ToAtomicString();
       }
     }
 
