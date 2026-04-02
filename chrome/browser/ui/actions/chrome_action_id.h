@@ -573,7 +573,8 @@
   E(kActionSidePanelShowSearchCompanion, IDC_SHOW_SEARCH_COMPANION) \
   E(kActionSidePanelShowShoppingInsights) \
   E(kActionSidePanelShowSideSearch) \
-  E(kActionSidePanelShowMerchantTrust)
+  E(kActionSidePanelShowMerchantTrust) \
+  E(kActionSidePanelShowTabsFromOtherDevices)
 
 #define TOOLBAR_PINNABLE_ACTION_IDS \
   E(kActionHome, IDC_HOME) \

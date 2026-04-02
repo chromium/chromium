@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "side_panel_tabs_from_other_devices"
+
+  static_files = [ "tabs_from_other_devices.html" ]
+
+  ts_files = [
+    "app.html.ts",
+    "app.ts",
+  ]
+
+  ts_deps = [ "//third_party/lit/v3_0:build_ts" ]
+
+  webui_context_type = "trusted"
+  generate_code_cache = enable_webui_generate_code_cache
+}

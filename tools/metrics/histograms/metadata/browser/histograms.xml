@@ -52,6 +52,8 @@ chromium-metrics-reviews@google.com.
   <variant name="OpenWithContentTransition" summary="tab to panel animation"/>
 </variants>
 
+<!-- LINT.IfChange(SidePanelEntry) -->
+
 <variants name="SidePanelEntry">
   <variant name="AboutThisSite" summary="about this site"/>
   <variant name="Assistant" summary="assistant"/>
@@ -73,8 +75,11 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadingList" summary="reading list"/>
   <variant name="ShoppingInsights" summary="shopping insights"/>
   <variant name="SideSearch" summary="side search"/>
+  <variant name="TabsFromOtherDevices" summary="tabs from other devices"/>
   <variant name="WebView" summary="web view"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/side_panel/side_panel_entry_id.h:SIDE_PANEL_ENTRY_IDS) -->
 
 <variants name="SidePanelType">
   <variant name="SidePanel" summary="content height side panel"/>

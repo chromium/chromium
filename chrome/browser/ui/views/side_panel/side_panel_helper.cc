@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -39,6 +40,13 @@ void SidePanelHelper::PopulateGlobalEntries(
     // TODO(webium): Consider supporting additional side panels beyond reading
     // list and bookmarks.
     return;
+  }
+
+  // Add tabs from other devices.
+  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported()) {
+    browser->browser_window_features()
+        ->tabs_from_other_devices_side_panel_coordinator()
+        ->CreateAndRegisterEntry(window_registry);
   }
 
   // Add history clusters.

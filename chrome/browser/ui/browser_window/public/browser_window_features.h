@@ -86,6 +86,7 @@ class SigninViewController;
 class SplitViewIphController;
 class TabMenuModelDelegate;
 class TabSearchToolbarButtonController;
+class TabsFromOtherDevicesSidePanelCoordinator;
 class TabListBridge;
 class TabStripModel;
 class TabStripServiceFeature;
@@ -404,6 +405,11 @@ class BrowserWindowFeatures {
   LocationBar* location_bar();
   const LocationBar* location_bar() const;
 
+  TabsFromOtherDevicesSidePanelCoordinator*
+  tabs_from_other_devices_side_panel_coordinator() {
+    return tabs_from_other_devices_side_panel_coordinator_.get();
+  }
+
   new_tab_footer::NewTabFooterController* new_tab_footer_controller() {
     return new_tab_footer_controller_.get();
   }
@@ -703,6 +709,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<ReadingListSidePanelCoordinator>
       reading_list_side_panel_coordinator_;
+
+  std::unique_ptr<TabsFromOtherDevicesSidePanelCoordinator>
+      tabs_from_other_devices_side_panel_coordinator_;
 
   std::unique_ptr<ProfileMenuCoordinator> profile_menu_coordinator_;
 

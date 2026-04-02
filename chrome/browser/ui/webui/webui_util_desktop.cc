@@ -24,10 +24,12 @@
 
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/grit/side_panel_bookmarks_code_cache_resources_map.h"
 #include "chrome/grit/side_panel_customize_chrome_code_cache_resources_map.h"
 #include "chrome/grit/side_panel_reading_list_code_cache_resources_map.h"
 #include "chrome/grit/side_panel_shared_code_cache_resources_map.h"
+#include "chrome/grit/side_panel_tabs_from_other_devices_code_cache_resources_map.h"
 #include "chrome/grit/webui_toolbar_code_cache_resources_map.h"
 #include "content/public/common/content_features.h"
 #include "ui/webui/resources/grit/webui_code_cache_resources_map.h"
@@ -61,6 +63,8 @@ const std::string_view* GetWebUIMetricsHostname(const GURL& webui_url) {
           {content::kChromeUIResourcesHost, "Resources"},
           {chrome::kChromeUISettingsHost, "Settings"},
           {chrome::kChromeUITabSearchHost, "TabSearch"},
+          {chrome::kChromeUITabsFromOtherDevicesSidePanelHost,
+           "TabsFromOtherDevices"},
           {chrome::kChromeUIThemeHost, "Theme"},
           {chrome::kChromeUITopChromeDomain, "TopChrome"},
       });
@@ -214,6 +218,19 @@ base::flat_map<GURL, int> GetWebUIResourceUrlToCodeCacheMap() {
     AppendWebUIResourceURLToCodeCachePairs(
         content::kChromeUIScheme, chrome::kChromeUIReadLaterHost,
         kSidePanelReadingListCodeCacheResources, url_to_code_cache_pairs);
+
+    // chrome://tabs-from-other-devices.top-chrome
+    if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported()) {
+      AppendWebUIResourceURLToCodeCachePairs(
+          content::kChromeUIScheme,
+          chrome::kChromeUITabsFromOtherDevicesSidePanelHost,
+          kSidePanelSharedCodeCacheResources, url_to_code_cache_pairs);
+      AppendWebUIResourceURLToCodeCachePairs(
+          content::kChromeUIScheme,
+          chrome::kChromeUITabsFromOtherDevicesSidePanelHost,
+          kSidePanelTabsFromOtherDevicesCodeCacheResources,
+          url_to_code_cache_pairs);
+    }
 
     // chrome://webui_toolbar.top-chrome
     if (features::IsWebUIToolbarEnabled()) {

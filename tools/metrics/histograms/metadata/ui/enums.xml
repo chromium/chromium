@@ -1039,6 +1039,7 @@ chromium-metrics-reviews@google.com.
   <int value="1797107942" label="chrome://md-settings/"/>
   <int value="1834776370" label="chrome://password-change/"/>
   <int value="1846714330" label="chrome://sanitize/"/>
+  <int value="1878438412" label="chrome://tabs-from-other-devices.top-chrome/"/>
   <int value="1887784693" label="chrome://policy/"/>
   <int value="1906728906" label="chrome://privacy-sandbox-internals/"/>
   <int value="1914132589" label="chrome-untrusted://boca-app/"/>

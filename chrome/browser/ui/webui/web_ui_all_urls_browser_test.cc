@@ -58,6 +58,9 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
   enabled_features.push_back(ash::features::kShimlessRMAOsUpdate);
   enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
 #endif
+
+  enabled_features.push_back(features::kTabsFromOtherDevicesSidePanel);
+
   feature_list_.InitWithFeatures(enabled_features, {});
 }
 

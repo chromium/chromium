@@ -87,6 +87,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/side_panel/read_anything:build_ts",
     "//chrome/browser/resources/side_panel/reading_list:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
+    "//chrome/browser/resources/side_panel/tabs_from_other_devices:build_ts",
     "//chrome/browser/resources/signin:build_ts",
     "//chrome/browser/resources/signin/batch_upload:build_ts",
     "//chrome/browser/resources/signin/history_sync_optin:build_ts",

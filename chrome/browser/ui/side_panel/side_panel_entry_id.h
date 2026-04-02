@@ -40,6 +40,8 @@
   V(kMerchantTrust, kActionSidePanelShowMerchantTrust, "MerchantTrust")       \
   V(kComments, kActionSidePanelShowComments, "Comments")                      \
   V(kGlic, kActionSidePanelShowGlic, "Glic")                                  \
+  V(kTabsFromOtherDevices, kActionSidePanelShowTabsFromOtherDevices,          \
+    "TabsFromOtherDevices")                                                   \
   /* Extensions (nothing more should be added below here) */                  \
   V(kExtension, std::nullopt, "Extension")
 

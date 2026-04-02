@@ -133,6 +133,7 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/groups/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
@@ -418,6 +419,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   reading_list_side_panel_coordinator_ =
       GetUserDataFactory().CreateInstance<ReadingListSidePanelCoordinator>(
           *browser, browser, profile, browser->GetTabStripModel());
+
+  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported()) {
+    tabs_from_other_devices_side_panel_coordinator_ =
+        std::make_unique<TabsFromOtherDevicesSidePanelCoordinator>(browser,
+                                                                   profile);
+  }
 
   bookmarks_side_panel_coordinator_ =
       std::make_unique<BookmarksSidePanelCoordinator>();

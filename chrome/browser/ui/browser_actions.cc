@@ -93,6 +93,7 @@
 #include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
+#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/groups/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
@@ -137,7 +138,6 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #endif
-
 
 namespace {
 
@@ -262,6 +262,15 @@ void BrowserActions::InitializeSidePanelActions() {
                       IDS_READ_LATER_TITLE, kReadingListIcon,
                       kActionSidePanelShowReadingList, bwi, true)
           .Build());
+  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported()) {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kTabsFromOtherDevices,
+                        IDS_SIDE_PANEL_TABS_FROM_OTHER_DEVICES_TITLE,
+                        IDS_SIDE_PANEL_TABS_FROM_OTHER_DEVICES_TITLE,
+                        kDevicesChromeRefreshIcon,
+                        kActionSidePanelShowTabsFromOtherDevices, bwi, true)
+            .Build());
+  }
   root_action_item_->AddChild(
       SidePanelAction(SidePanelEntryId::kAboutThisSite,
                       IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,

@@ -145,6 +145,7 @@ static const char* const kChromeUrls[] = {
     "chrome://system",
     "chrome://tab-search.top-chrome",
     "chrome://tab-strip-internals",
+    "chrome://tabs-from-other-devices.top-chrome",
     "chrome://terms",
     "chrome://topics-internals",
     "chrome://traces",

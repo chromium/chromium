@@ -244,6 +244,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/side_panel_read_anything_resources.pak",
         "$root_gen_dir/chrome/side_panel_reading_list_resources.pak",
         "$root_gen_dir/chrome/side_panel_shared_resources.pak",
+        "$root_gen_dir/chrome/side_panel_tabs_from_other_devices_resources.pak",
         "$root_gen_dir/chrome/signin_resources.pak",
         "$root_gen_dir/chrome/suggest_internals_resources.pak",
         "$root_gen_dir/chrome/support_tool_resources.pak",
@@ -615,6 +616,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/side_panel_customize_chrome_code_cache_resources.pak",
         "$root_gen_dir/chrome/side_panel_reading_list_code_cache_resources.pak",
         "$root_gen_dir/chrome/side_panel_shared_code_cache_resources.pak",
+        "$root_gen_dir/chrome/side_panel_tabs_from_other_devices_code_cache_resources.pak",
         "$root_gen_dir/chrome/webui_toolbar_code_cache_resources.pak",
         "$root_gen_dir/ui/webui/resources/webui_code_cache_resources.pak",
       ]
