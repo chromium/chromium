@@ -2125,8 +2125,7 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - AutoDeletionCommands
 
-- (void)presentAutoDeletionActionSheetWithDownloadTask:
-    (web::DownloadTask*)task {
+- (void)presentAutoDeletionActionSheet {
   // Do not present the action sheet if it is already being presented or the
   // DownloadManagerCoordinator is null.
   if (_autoDeletionCoordinator || !self.downloadManagerCoordinator) {
@@ -2135,8 +2134,7 @@ const char kChromeAppStoreUrl[] =
 
   _autoDeletionCoordinator = [[AutoDeletionCoordinator alloc]
       initWithBaseViewController:self.downloadManagerCoordinator.viewController
-                         browser:self.browser
-                    downloadTask:task];
+                         browser:self.browser];
   [_autoDeletionCoordinator start];
 }
 

@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/download/download_task.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -43,22 +42,10 @@ constexpr CGFloat kLargeFileSizeThreshold = 20.0;
 typedef void (^UIAlertActionHandler)(UIAlertAction* action);
 
 @implementation AutoDeletionCoordinator {
-  // The task that is downloading the web content onto the device.
-  raw_ptr<web::DownloadTask> _downloadTask;
   // The coordinator that manages the Auto-deletion action sheet.
   ActionSheetCoordinator* _actionSheetCoordinator;
   // The coordinator that manages the Auto-deletion IPH.
   AutoDeletionIPHCoordinator* _IPHCoordinator;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser
-                              downloadTask:(web::DownloadTask*)task {
-  self = [super initWithBaseViewController:baseViewController browser:browser];
-  if (self) {
-    _downloadTask = task;
-  }
-  return self;
 }
 
 - (void)start {
@@ -139,8 +126,7 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
 - (void)presentIPH {
   _IPHCoordinator = [[AutoDeletionIPHCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                    downloadTask:_downloadTask];
+                         browser:self.browser];
   [_IPHCoordinator start];
 
   // Store that the IPH has been displayed.

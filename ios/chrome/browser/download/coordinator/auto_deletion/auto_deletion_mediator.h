@@ -11,17 +11,12 @@
 
 class Browser;
 class PrefService;
-namespace web {
-class DownloadTask;
-}  // namespace web
 
 // Mediator for the Auto-deletion UI.
 @interface AutoDeletionMediator : NSObject <AutoDeletionMutator>
 
 - (instancetype)initWithLocalState:(PrefService*)localState
-                           browser:(Browser*)browser
-                      downloadTask:(web::DownloadTask*)task
-    NS_DESIGNATED_INITIALIZER;
+                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

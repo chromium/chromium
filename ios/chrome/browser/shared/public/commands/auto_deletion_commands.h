@@ -15,7 +15,7 @@ class DownloadTask;
 @protocol AutoDeletionCommands <NSObject>
 
 // Displays the Auto-deletion action sheet on the UI.
-- (void)presentAutoDeletionActionSheetWithDownloadTask:(web::DownloadTask*)task;
+- (void)presentAutoDeletionActionSheet;
 
 // Hides the Auto-deletion action sheet from the view.
 - (void)dismissAutoDeletionActionSheet;

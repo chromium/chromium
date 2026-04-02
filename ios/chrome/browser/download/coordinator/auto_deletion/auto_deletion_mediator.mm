@@ -10,25 +10,20 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/web/public/download/download_task.h"
 
 @implementation AutoDeletionMediator {
   // A pointer to the ApplicationContext::LocatState PrefService.
   raw_ptr<PrefService> _localState;
   // A pointer to the browser object.
   raw_ptr<Browser> _browser;
-  // The task that is downloading the content to the device.
-  raw_ptr<web::DownloadTask> _downloadTask;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState
-                           browser:(Browser*)browser
-                      downloadTask:(web::DownloadTask*)task {
+                           browser:(Browser*)browser {
   self = [super init];
   if (self) {
     _localState = localState;
     _browser = browser;
-    _downloadTask = task;
   }
 
   return self;
@@ -41,7 +36,7 @@
   id<AutoDeletionCommands> handler = HandlerForProtocol(
       _browser->GetCommandDispatcher(), AutoDeletionCommands);
   [handler dismissAutoDeletionActionSheet];
-  [handler presentAutoDeletionActionSheetWithDownloadTask:_downloadTask];
+  [handler presentAutoDeletionActionSheet];
 }
 
 @end

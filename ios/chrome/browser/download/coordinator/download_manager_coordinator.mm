@@ -607,8 +607,7 @@
 
   id<AutoDeletionCommands> autoDeletionHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AutoDeletionCommands);
-  [autoDeletionHandler
-      presentAutoDeletionActionSheetWithDownloadTask:_downloadTask];
+  [autoDeletionHandler presentAutoDeletionActionSheet];
 }
 
 #pragma mark - Notification callback
