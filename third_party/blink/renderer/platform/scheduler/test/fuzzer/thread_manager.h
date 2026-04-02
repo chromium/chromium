@@ -11,9 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequence_manager/test/sequence_manager_for_test.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -31,9 +30,7 @@ class PLATFORM_EXPORT ThreadManager {
   USING_FAST_MALLOC(ThreadManager);
 
  public:
-  // |initial_time| is the time in which |this| was instantiated.
-  ThreadManager(base::TimeTicks initial_time,
-                SequenceManagerFuzzerProcessor* processor);
+  explicit ThreadManager(SequenceManagerFuzzerProcessor* processor);
 
   ~ThreadManager();
 
@@ -137,11 +134,7 @@ class PLATFORM_EXPORT ThreadManager {
   // Used to protect |task_queues_| and |pending_tasks_|.
   Lock lock_;
 
-  // Bound to the thread in which this object was instantiated. Used to
-  // control the clock of the sequence manager.
-  scoped_refptr<TestMockTimeTaskRunner> test_task_runner_;
-
-  std::unique_ptr<SequenceManagerForTest> manager_;
+  std::unique_ptr<SequenceManager> manager_;
 
   // For testing purposes, this should follow the order in which queues
   // were created on the thread in which |this| was instantiated.

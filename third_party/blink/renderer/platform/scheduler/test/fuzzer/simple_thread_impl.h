@@ -26,7 +26,6 @@ class PLATFORM_EXPORT SimpleThreadImpl : public SimpleThread {
   using ThreadCallback = base::OnceCallback<void(ThreadManager*)>;
 
   SimpleThreadImpl(ThreadPoolManager* thread_pool_manager,
-                   base::TimeTicks initial_time,
                    ThreadCallback callback);
 
   ~SimpleThreadImpl() override;
@@ -37,9 +36,6 @@ class PLATFORM_EXPORT SimpleThreadImpl : public SimpleThread {
 
   // Owner of this class.
   raw_ptr<ThreadPoolManager> thread_pool_manager_ = nullptr;
-
-  // Time in which the thread is created.
-  base::TimeTicks initial_time_;
 
   // Used by the Run function to only terminate when |this| is destructed, and
   // this is used so that |thread_data_| will live as long as |this|.
