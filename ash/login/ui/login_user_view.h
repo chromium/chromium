@@ -143,9 +143,11 @@ class ASH_EXPORT LoginUserView : public views::View,
   // state.
   bool force_opaque_ = false;
 
+  // TODO(crbug.com/498579991): remove when the LoginUserView is
+  // no longer outliving the DisplayConfigurator it observes.
   base::ScopedObservation<display::DisplayConfigurator,
-                          display::DisplayConfigurator::Observer>
-      display_observation_{this};
+                          display::DisplayConfigurator::Observer>::
+      LeakedDanglingUntriaged display_observation_{this};
 };
 
 }  // namespace ash
