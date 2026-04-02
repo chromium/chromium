@@ -103,6 +103,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsManagementError) -->
 
+<!-- LINT.IfChange(SkillsPromptRefinementOutcome) -->
+
+<enum name="SkillsPromptRefinementOutcome">
+  <int value="0" label="Not Refined"/>
+  <int value="1" label="Used Refined Prompt"/>
+  <int value="2" label="Reverted and Not Used"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skill_metrics.mojom:SkillsPromptRefinementOutcome) -->
+
 <!-- LINT.IfChange(SkillsRefineResult) -->
 
 <enum name="SkillsRefineResult">

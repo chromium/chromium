@@ -29,6 +29,7 @@ import type { PropertyValues } from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type { Skill } from './skill.mojom-webui.js';
 import { SkillsDialogType, SkillSource } from './skill.mojom-webui.js';
+import { SkillsPromptRefinementOutcome } from './skill_metrics.mojom-webui.js';
 import { getCss } from './skills_dialog.css.js';
 import { getHtml } from './skills_dialog_app.html.js';
 import { SkillsDialogBrowserProxy } from './skills_dialog_browser_proxy.js';
@@ -166,6 +167,9 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
+  private undoCount_: number = 0;
+  private redoCount_: number = 0;
+  private hasUserRefined_: boolean = false;
 
   private textareaResizeObserver_: ResizeObserver | null = null;
   private dialogResizeObserver_: ResizeObserver | null = null;
@@ -399,6 +403,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   protected onUndoClick_() {
+    this.undoCount_++;
     // Undo is only enabled after a successful refinement, at which point
     // originalPrompt_ is guaranteed to be populated.
     this.skill_ = { ...this.skill_, prompt: this.originalPrompt_ };
@@ -412,6 +417,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   protected onRedoClick_() {
+    this.redoCount_++;
     this.skill_ = { ...this.skill_, prompt: this.refinedPrompt_ };
 
     this.canUndoRefine_ = true;
@@ -423,9 +429,13 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   protected onRefineClick_() {
+    this.hasUserRefined_ = true;
     if (this.isRefineLoading_) {
       return;
     }
+    this.undoCount_ = 0;
+    this.redoCount_ = 0;
+
     if (!this.originalPrompt_) {
       this.originalPrompt_ = this.skill_.prompt;
     }
@@ -484,10 +494,20 @@ export class SkillsDialogAppElement extends CrLitElement {
       }),
     };
 
-    SkillsDialogBrowserProxy.getInstance().handler.submitSkill(skill).then(
-      ({ success }) => {
-        this.hasSaveError_ = !success;
-      });
+    let refinementOutcome = SkillsPromptRefinementOutcome.kNotRefined;
+    if (this.hasUserRefined_) {
+      if (this.undoCount_ === this.redoCount_) {
+        refinementOutcome = SkillsPromptRefinementOutcome.kUsedRefinedPrompt;
+      } else if (this.undoCount_ > this.redoCount_) {
+        refinementOutcome = SkillsPromptRefinementOutcome.kRevertedAndNotUsed;
+      }
+    }
+
+    SkillsDialogBrowserProxy.getInstance()
+        .handler.submitSkill(skill, refinementOutcome)
+        .then(({success}) => {
+          this.hasSaveError_ = !success;
+        });
   }
 
   protected onCancelClick_(e: Event) {

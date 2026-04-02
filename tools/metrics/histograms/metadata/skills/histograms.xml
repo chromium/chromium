@@ -53,6 +53,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsDialogEntryPoint) -->
 
+<histogram name="Skills.Dialog.PromptRefinementOutcome"
+    enum="SkillsPromptRefinementOutcome" expires_after="2027-02-01">
+  <owner>howardcha@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records whether a user saved a skill using the refined prompt, reverted it,
+    or saved without refinement. This is tracked using undo/redo click counts at
+    the time of save.
+
+    This is a rough estimate. If the user manually edits the prompt after
+    refinement without clicking undo, it is counted as using the refined prompt
+    as it served as the base.
+  </summary>
+</histogram>
+
 <histogram name="Skills.Dialog.{DialogType}{EntryPointAndState}.Action"
     enum="SkillsDialogAction" expires_after="2027-02-01">
   <owner>michelleabreo@google.com</owner>

@@ -88,6 +88,7 @@ const skills::Skill* SkillsDialogHandler::SaveOrUpdateSkill(
 
 void SkillsDialogHandler::SubmitSkill(
     const skills::Skill& skill,
+    skills::mojom::SkillsPromptRefinementOutcome refinement_outcome,
     DialogHandler::SubmitSkillCallback callback) {
   auto wrapped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
@@ -99,6 +100,8 @@ void SkillsDialogHandler::SubmitSkill(
   if (!response) {
     return;
   }
+  RecordSkillsPromptRefinementOutcome(refinement_outcome);
+
   // TODO(crbug.com/477385216): Update to use an enum for creation mode.
   RecordSkillsDialogAction(SkillsDialogAction::kSaved, entrypoint_,
                            /*is_edit_mode=*/IsEditMode(&initial_skill_));

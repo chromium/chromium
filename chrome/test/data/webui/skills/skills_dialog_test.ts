@@ -9,6 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsDialogType, SkillSource} from 'chrome://skills/skill.mojom-webui.js';
+import {SkillsPromptRefinementOutcome} from 'chrome://skills/skill_metrics.mojom-webui.js';
 import {DialogHandlerRemote} from 'chrome://skills/skills.mojom-webui.js';
 import {AUTOCOMPLETE_MIN_CHARS, MAX_NAME_CHAR_COUNT, MAX_PROMPT_CHAR_COUNT, REFINE_SKILL_TIMEOUT_MS, WindowProxyImpl} from 'chrome://skills/skills_dialog_app.js';
 import type {SkillsDialogAppElement, WindowProxy} from 'chrome://skills/skills_dialog_app.js';
@@ -190,7 +191,9 @@ suite('SkillsDialogAppPage', function() {
     // Click the save button and verify the proxy call.
     skillsDialogApp.$.saveButton.click();
     await microtasksFinished();
-    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
+    const [submittedSkill, refinementOutcome] =
+        await dialogHandler.whenCalled('submitSkill');
+    assertEquals(SkillsPromptRefinementOutcome.kNotRefined, refinementOutcome);
     assertEquals('', submittedSkill.id);
     assertEquals(testName, submittedSkill.name);
     assertEquals(testPrompt, submittedSkill.prompt);
@@ -219,7 +222,9 @@ suite('SkillsDialogAppPage', function() {
 
     // Click the save button and verify the proxy call.
     skillsDialogApp.$.saveButton.click();
-    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
+    const [submittedSkill, refinementOutcome] =
+        await dialogHandler.whenCalled('submitSkill');
+    assertEquals(SkillsPromptRefinementOutcome.kNotRefined, refinementOutcome);
     assertEquals('', submittedSkill.id);
     assertEquals(firstPartySkill.id, submittedSkill.sourceSkillId);
     assertEquals(SkillSource.kDerivedFromFirstParty, submittedSkill.source);
@@ -245,7 +250,9 @@ suite('SkillsDialogAppPage', function() {
 
     // Click the save button and verify the proxy call.
     skillsDialogApp.$.saveButton.click();
-    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
+    const [submittedSkill, refinementOutcome] =
+        await dialogHandler.whenCalled('submitSkill');
+    assertEquals(SkillsPromptRefinementOutcome.kNotRefined, refinementOutcome);
     assertEquals(userCreatedSkill.id, submittedSkill.id);
     assertEquals(editedName, submittedSkill.name);
     assertEquals(editedPrompt, submittedSkill.prompt);
@@ -272,7 +279,9 @@ suite('SkillsDialogAppPage', function() {
 
     // Click the save button and verify the proxy call.
     skillsDialogApp.$.saveButton.click();
-    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
+    const [submittedSkill, refinementOutcome] =
+        await dialogHandler.whenCalled('submitSkill');
+    assertEquals(SkillsPromptRefinementOutcome.kNotRefined, refinementOutcome);
     assertEquals(derivedFromFirstPartySkill.id, submittedSkill.id);
     assertEquals(editedName, submittedSkill.name);
     assertEquals(editedPrompt, submittedSkill.prompt);
@@ -375,7 +384,7 @@ suite('SkillsDialogAppPage', function() {
     await updateInstructions('prompt');
 
     skillsDialogApp.$.saveButton.click();
-    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
+    const [submittedSkill] = await dialogHandler.whenCalled('submitSkill');
     assertEquals('🐶', submittedSkill.icon);
   });
 
@@ -414,7 +423,7 @@ suite('SkillsDialogAppPage', function() {
 
     // Click the save button and verify the proxy call.
     skillsDialogApp.$.saveButton.click();
-    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
+    const [submittedSkill] = await dialogHandler.whenCalled('submitSkill');
     assertEquals('⚡', submittedSkill.icon);
   });
 
@@ -494,6 +503,31 @@ suite('SkillsDialogAppPage', function() {
 
     assertTrue(skillsDialogApp.$.iconUndo.disabled);
     assertTrue(skillsDialogApp.$.iconRedo.disabled);
+  });
+
+  test('SubmitsRefinedSkillLogsOutcome', async function() {
+    await updateName('Test Name');
+    await updateInstructions('Original Prompt');
+
+    // 1. Refine
+    const refinedText = 'Refined Prompt';
+    dialogHandler.setResultFor('refineSkill', Promise.resolve({
+      refinedSkill: createSkill({prompt: refinedText}),
+    }));
+
+    skillsDialogApp.$.iconRefine.click();
+    await dialogHandler.whenCalled('refineSkill');
+    await microtasksFinished();
+
+    // 2. Submit
+    skillsDialogApp.$.saveButton.click();
+    await microtasksFinished();
+
+    const [submittedSkill, refinementOutcome] =
+        await dialogHandler.whenCalled('submitSkill');
+    assertEquals(
+        SkillsPromptRefinementOutcome.kUsedRefinedPrompt, refinementOutcome);
+    assertEquals(refinedText, submittedSkill.prompt);
   });
 
   test('RefinementDisabled', async function () {

@@ -387,7 +387,9 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsSavedAndSuccess) {
   EXPECT_CALL(mock_delegate_, OnSkillSaved("generated_fake_id")).Times(1);
   EXPECT_CALL(mock_delegate_, CloseDialog()).Times(1);
 
-  handler_->SubmitSkill(skill, callback.Get());
+  handler_->SubmitSkill(
+      skill, skills::mojom::SkillsPromptRefinementOutcome::kNotRefined,
+      callback.Get());
 
   // Metric Check
   histogram_tester_.ExpectBucketCount(
@@ -412,11 +414,27 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsUiContextLostWhenDialogClosed) {
       base::WeakPtr<MockSkillsDialogDelegate>());
 
   // Attempt to submit the skill.
-  orphan_handler->SubmitSkill(skill, callback.Get());
+  orphan_handler->SubmitSkill(
+      skill, skills::mojom::SkillsPromptRefinementOutcome::kNotRefined,
+      callback.Get());
 
   // Assert that it safely bailed out and logged the error.
   histogram_tester_.ExpectUniqueSample(
       "Skills.Save.Result", skills::SkillsSaveResult::kUiContextLost, 1);
+}
+
+TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsRefinementOutcome) {
+  skills::Skill skill;
+  skill.name = "Test Skill";
+  base::MockCallback<mojom::DialogHandler::SubmitSkillCallback> callback;
+
+  handler_->SubmitSkill(
+      skill, skills::mojom::SkillsPromptRefinementOutcome::kUsedRefinedPrompt,
+      callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Dialog.PromptRefinementOutcome",
+      skills::mojom::SkillsPromptRefinementOutcome::kUsedRefinedPrompt, 1);
 }
 
 TEST_F(SkillsDialogHandlerTest, DeleteSkill_LogsDeleted) {

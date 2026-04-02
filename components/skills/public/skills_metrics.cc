@@ -127,6 +127,12 @@ void RecordSkillsInvokeResult(SkillsInvokeResult result) {
   base::UmaHistogramEnumeration("Skills.Invoke.Result", result);
 }
 
+void RecordSkillsPromptRefinementOutcome(
+    skills::mojom::SkillsPromptRefinementOutcome outcome) {
+  base::UmaHistogramEnumeration("Skills.Dialog.PromptRefinementOutcome",
+                                outcome);
+}
+
 void RecordSkillsSaveResult(SkillsSaveResult result) {
   base::UmaHistogramEnumeration("Skills.Save.Result", result);
 }

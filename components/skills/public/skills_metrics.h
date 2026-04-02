@@ -13,6 +13,7 @@ namespace skills {
 namespace mojom {
 enum class SkillsManagementPage;
 enum class SkillsManagementAction;
+enum class SkillsPromptRefinementOutcome;
 }  // namespace mojom
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -149,6 +150,9 @@ void RecordSkillsInvokeAction(SkillsInvokeAction action);
 // invoke a skill. This is logged after the client attempts to open the
 // panel and trigger the skill execution.
 void RecordSkillsInvokeResult(SkillsInvokeResult result);
+
+void RecordSkillsPromptRefinementOutcome(
+    skills::mojom::SkillsPromptRefinementOutcome outcome);
 
 // Records the terminal outcome of an attempt to save a new skill or update
 // an existing one. This captures backend availability, database write

@@ -22,3 +22,11 @@ enum SkillsManagementAction {
   kClickedBrowseSkills = 5,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsManagementAction)
+
+// LINT.IfChange(SkillsPromptRefinementOutcome)
+enum SkillsPromptRefinementOutcome {
+  kNotRefined = 0,
+  kUsedRefinedPrompt = 1,
+  kRevertedAndNotUsed = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsPromptRefinementOutcome)

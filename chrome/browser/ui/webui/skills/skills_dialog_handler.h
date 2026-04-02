@@ -44,6 +44,7 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
   // skills::mojom::DialogHandler:
   void SubmitSkill(
       const skills::Skill& skill,
+      skills::mojom::SkillsPromptRefinementOutcome refinement_outcome,
       skills::mojom::DialogHandler::SubmitSkillCallback callback) override;
   void DeleteSkill(const std::string& skill_id) override;
   void CloseDialog() override;
