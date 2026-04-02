@@ -100,33 +100,30 @@ std::string_view ToStringView(EnrollmentConfig::Mode mode) {
 #undef CASE
 }
 
-EnrollmentConfig GetPrescribedRecoveryConfig(
+std::optional<EnrollmentConfig> GetPrescribedRecoveryConfig(
     PrefService* local_state,
     const ash::InstallAttributes& install_attributes,
     ash::system::StatisticsProvider* statistics_provider) {
-  EnrollmentConfig recovery_config;
-
-  // Regardless what mode is applicable, the enrollment domain is fixed.
-  recovery_config.management_domain = install_attributes.GetDomain();
-
   if (!local_state->GetBoolean(ash::prefs::kEnrollmentRecoveryRequired)) {
-    return recovery_config;
+    return std::nullopt;
   }
 
   if (ash::DeviceSettingsService::IsInitialized() &&
       ash::DeviceSettingsService::Get()->HasDmToken()) {
     LOG(WARNING) << "False recovery flag.";
     local_state->ClearPref(ash::prefs::kEnrollmentRecoveryRequired);
-    return recovery_config;
+    return std::nullopt;
   }
 
   LOG(WARNING) << "Enrollment recovery required according to pref.";
   const auto serial_number = statistics_provider->GetMachineID();
   if (!serial_number || serial_number->empty()) {
     LOG(WARNING) << "Postponing recovery because machine id is missing.";
-    return recovery_config;
+    return std::nullopt;
   }
 
+  EnrollmentConfig recovery_config;
+  recovery_config.management_domain = install_attributes.GetDomain();
   recovery_config.mode = EnrollmentConfig::MODE_RECOVERY;
 
   return recovery_config;
@@ -388,12 +385,18 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   DCHECK(local_state);
   DCHECK(statistics_provider);
   DCHECK(oobe_configuration);
-  // If OOBE is done and the device is enrolled, check for need to recover
-  // enrollment.
+
+  // Return enrollment recovery config if required.
+  if (std::optional<EnrollmentConfig> maybe_recovery_config =
+          GetPrescribedRecoveryConfig(local_state, install_attributes,
+                                      statistics_provider)) {
+    return maybe_recovery_config.value();
+  }
+
+  // If OOBE is done and the device is enrolled, no need to enroll.
   if (local_state->GetBoolean(ash::prefs::kOobeComplete) &&
       install_attributes.IsCloudManaged()) {
-    return GetPrescribedRecoveryConfig(local_state, install_attributes,
-                                       statistics_provider);
+    return EnrollmentConfig{};
   }
 
   const base::DictValue& device_state =
