@@ -28,6 +28,9 @@ code.
 raw_ptr<T, DisableDanglingPtrDetection> ptr_may_dangle;
 ```
 
+For more details on available traits, see
+[RawPtrTraits](../base/memory/raw_ptr.md#RawPtrTraits).
+
 The `DanglingUntriaged` option has been used to annotate pre-existing dangling
 pointers in Chrome:
 ```cpp

@@ -1,5 +1,7 @@
 # raw_ptr&lt;T&gt; (aka. MiraclePtr, aka. BackupRefPtr, aka. BRP)
 
+For the equivalent of a C++ reference, see [`raw_ref<T>`](./raw_ref.md).
+
 ## Quick rules
 
 Before telling you what `raw_ptr<T>` is, we'd like you to follow one simple
@@ -318,7 +320,10 @@ an obscure crash may occur. Those crashes often manifest themselves as SEGV or
 `RawPtrBackupRefImpl::ReleaseInternal()`, but you may also experience memory
 corruption or a silent drop of UaF protection.
 
-## Pointer Annotations
+## RawPtrTraits
+
+`raw_ptr<T, Traits>` behavior can be customized by passing traits as the second
+template parameter. Multiple traits can be combined using bitwise OR.
 
 ### The AllowPtrArithmetic trait
 
@@ -337,6 +342,23 @@ the result of specific implementation that requires it (e.g. BackupRefPtr),
 or as the result of build flags (to enforce consistency). However, we provide
 an opt-out to allow third-party code to skip this step (where possible). Use
 this trait sparingly.
+
+### Dangling Pointer Detection (`kMayDangle`)
+
+`raw_ptr` checks for dangling pointers during its lifecycle. For legacy
+patterns or architectural constraints where a pointer must outlive its pointee,
+use these `kMayDangle` aliases:
+
+- **`DisableDanglingPtrDetection`**: Known safe dangling pointers. Must be
+  documented.
+- **`DanglingUntriaged`**: Technical debt; identified but not yet triaged.
+  - **`FlakyDanglingUntriaged`**: Dangles inconsistently (e.g., in flaky
+    tests).
+  - **`AcrossTasksDanglingUntriaged`**: Higher-risk pointers that are released
+    across task boundaries.
+  - **`LeakedDanglingUntriaged`**: Pointers that are never released.
+
+For details on the detector, see [docs/dangling_ptr.md](../../docs/dangling_ptr.md).
 
 ## Recoverable compile-time problems {#Recoverable-compile-time-problems}
 
