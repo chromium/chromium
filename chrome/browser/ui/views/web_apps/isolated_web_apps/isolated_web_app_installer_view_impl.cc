@@ -662,9 +662,9 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
           [this](const IsolatedWebAppInstallerModel::
                      BundleNotAllowlistedForUserInstallationDialog&) {
             return ShowChildDialog(
-                IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
+                IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKED_USER_INSTALL_ALLOWLIST_BLOCKLIST_TITLE,
                 ui::DialogModelLabel(
-                    IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_NOT_ON_USER_INSTALL_ALLOWLIST_SUBTITLE),
+                    IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_NOT_ON_USER_INSTALL_ALLOWLIST_MESSAGE),
                 CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
                                            ui::kColorAlertMediumSeverityIcon),
                 std::nullopt);
@@ -672,9 +672,9 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
           [this](const IsolatedWebAppInstallerModel::
                      BundleBlocklistedInstallationDialog&) {
             return ShowChildDialog(
-                IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
+                IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKED_USER_INSTALL_ALLOWLIST_BLOCKLIST_TITLE,
                 ui::DialogModelLabel(
-                    IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKLISTED),
+                    IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKLISTED_MESSAGE),
                 CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
                                            ui::kColorAlertMediumSeverityIcon),
                 std::nullopt);
