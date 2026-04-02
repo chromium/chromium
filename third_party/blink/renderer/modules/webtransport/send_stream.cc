@@ -6,44 +6,10 @@
 
 #include <utility>
 
-#include "base/notreached.h"
-#include "third_party/blink/renderer/modules/webtransport/web_transport.h"
+#include "third_party/blink/renderer/modules/webtransport/outgoing_stream_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
-
-namespace {
-
-class OutgoingStreamClient final
-    : public GarbageCollected<OutgoingStreamClient>,
-      public OutgoingStream::Client {
- public:
-  OutgoingStreamClient(WebTransport* transport, uint32_t stream_id)
-      : transport_(transport), stream_id_(stream_id) {}
-
-  // OutgoingStream::Client implementation
-  void SendFin() override {
-    transport_->SendFin(stream_id_);
-  }
-
-  void ForgetStream() override { transport_->ForgetOutgoingStream(stream_id_); }
-
-  void Reset(uint8_t code) override {
-    transport_->ResetStream(stream_id_, code);
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(transport_);
-    OutgoingStream::Client::Trace(visitor);
-  }
-
- private:
-  const Member<WebTransport> transport_;
-  base::OnceClosure fin_callback_;
-  const uint32_t stream_id_;
-};
-
-}  // namespace
 
 SendStream::SendStream(ScriptState* script_state,
                        WebTransport* web_transport,

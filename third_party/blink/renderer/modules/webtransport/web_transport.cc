@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_group.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -60,6 +61,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -1669,13 +1671,27 @@ void WebTransport::OnCreateSendStreamResponse(
     return;
   }
 
-  auto* send_stream = MakeGarbageCollected<SendStream>(
-      script_state_, this, stream_id, std::move(producer));
-
+  // TODO(crbug.com/487117768): Remove old SendStream path when
+  // WebTransportSendGroup ships.
+  WritableStream* writable_stream = nullptr;
+  OutgoingStream* outgoing_stream = nullptr;
   auto* isolate = script_state_->GetIsolate();
   V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
   v8::TryCatch try_catch(isolate);
-  send_stream->Init(PassThroughException(isolate));
+  if (RuntimeEnabledFeatures::WebTransportSendGroupEnabled(
+          GetExecutionContext())) {
+    auto* send_stream = MakeGarbageCollected<WebTransportSendStream>(
+        script_state_, this, stream_id, std::move(producer));
+    send_stream->Init(PassThroughException(isolate));
+    outgoing_stream = send_stream->GetOutgoingStream();
+    writable_stream = send_stream;
+  } else {
+    auto* send_stream = MakeGarbageCollected<SendStream>(
+        script_state_, this, stream_id, std::move(producer));
+    send_stream->Init(PassThroughException(isolate));
+    outgoing_stream = send_stream->GetOutgoingStream();
+    writable_stream = send_stream;
+  }
   if (try_catch.HasCaught()) {
     resolver->Reject(try_catch.Exception());
     return;
@@ -1683,9 +1699,9 @@ void WebTransport::OnCreateSendStreamResponse(
 
   // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
   CHECK_LT(stream_id, 0xfffffffe);
-  outgoing_stream_map_.insert(stream_id, send_stream->GetOutgoingStream());
+  outgoing_stream_map_.insert(stream_id, outgoing_stream);
 
-  resolver->Resolve(send_stream);
+  resolver->Resolve(writable_stream);
 }
 
 void WebTransport::OnCreateBidirectionalStreamResponse(

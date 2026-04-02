@@ -41,6 +41,11 @@ class MODULES_EXPORT WebTransportSendGroup final : public ScriptWrappable {
   // SendGroupId when setting stream priorities.
   uint32_t group_id() const { return group_id_; }
 
+  // Returns the WebTransport that owns this group. Used by
+  // WebTransportSendStream to validate that a group belongs to the same
+  // transport as the stream.
+  WebTransport* GetTransport() const { return transport_.Get(); }
+
   void Trace(Visitor* visitor) const override;
 
  private:
