@@ -8,6 +8,7 @@
 #include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -321,6 +322,21 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return If(mask == STATX_BASIC_STATS, Error(ENOSYS))
         .Else(Error(fs_denied_errno));
   }
+
+#if defined(__NR_prlimit64)
+  if (sysno == __NR_prlimit64) {
+    // glibc falls back to prlimit64 for getrlimit() on some architectures.
+    return RestrictPrlimitToGetrlimit(current_pid);
+  }
+#endif
+
+#if defined(__NR_setitimer)
+  if (sysno == __NR_setitimer) {
+    // glibc uses setitimer(ITIMER_REAL) to implement alarm().
+    const Arg<int> which(0);
+    return If(which == ITIMER_REAL, Allow()).Else(Error(EPERM));
+  }
+#endif
 
   if (SyscallSets::IsFileSystem(sysno) ||
       SyscallSets::IsCurrentDirectory(sysno)) {
