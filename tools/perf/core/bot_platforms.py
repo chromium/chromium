@@ -136,8 +136,13 @@ class _PerfPlatform(object):
 
 class BenchmarkConfig(object):
 
-  def __init__(self, name: str) -> None:
+  def __init__(self,
+               name: str,
+               repeat: int = 1,
+               flags: tuple[str, ...] = ()) -> None:
     self.name: Final[str] = name
+    self.repeat: Final[int] = repeat
+    self.flags: Final[tuple[str, ...]] = flags
 
 
 class TelemetryConfig(BenchmarkConfig):
@@ -145,36 +150,29 @@ class TelemetryConfig(BenchmarkConfig):
   def __init__(self,
                benchmark,
                abridged: bool = False,
-               pageset_repeat_override: Optional[int] = None):
+               repeat: Optional[int] = None):
     """A configuration for a benchmark that helps decide how to shard it.
 
     Args:
       benchmark: the benchmark.Benchmark object.
       abridged: True if the benchmark should be abridged so fewer stories
         are run, and False if the whole benchmark should be run.
-      pageset_repeat_override: number of times to repeat the entire story set.
+      repeat: number of times to repeat the entire story set.
         can be None, which defaults to the benchmark default pageset_repeat.
     """
-    super().__init__(benchmark.Name())
     self.benchmark = benchmark
-    self.abridged = abridged
-    self._stories = None
-    self._exhaustive_stories = None
-    self.is_telemetry = True
-    self.pageset_repeat_override = pageset_repeat_override
+    super().__init__(benchmark.Name(), self.get_repeat(repeat))
+    self.abridged: Final[bool] = abridged
+    self._stories: Optional[tuple[str, ...]] = None
+    self._exhaustive_stories: Optional[tuple[str, ...]] = None
 
-  @property
-  def repeat(self) -> int:
-    if self.pageset_repeat_override is not None:
-      return self.pageset_repeat_override
+  def get_repeat(self, repeat: Optional[int]) -> int:
+    if repeat is not None:
+      return repeat
     return self.benchmark.options.get('pageset_repeat', 1)
 
   @property
-  def extra_flags(self):
-    return ()
-
-  @property
-  def stories(self) -> list[str]:
+  def stories(self) -> tuple[str, ...]:
     if self._stories is not None:
       return self._stories
     story_set = benchmark_utils.GetBenchmarkStorySet(self.benchmark())
@@ -183,11 +181,11 @@ class TelemetryConfig(BenchmarkConfig):
     story_filter_obj = story_filter.StoryFilter(
         abridged_story_set_tag=abridged_story_set_tag)
     stories = story_filter_obj.FilterStories(story_set)
-    self._stories = [story.name for story in stories]
+    self._stories = tuple(story.name for story in stories)
     return self._stories
 
   @property
-  def exhaustive_stories(self) -> list[str]:
+  def exhaustive_stories(self) -> tuple[str, ...]:
     if self._exhaustive_stories is not None:
       return self._exhaustive_stories
     story_set = benchmark_utils.GetBenchmarkStorySet(self.benchmark(),
@@ -197,7 +195,7 @@ class TelemetryConfig(BenchmarkConfig):
     story_filter_obj = story_filter.StoryFilter(
         abridged_story_set_tag=abridged_story_set_tag)
     stories = story_filter_obj.FilterStories(story_set)
-    self._exhaustive_stories = [story.name for story in stories]
+    self._exhaustive_stories = tuple(story.name for story in stories)
     return self._exhaustive_stories
 
 
@@ -208,16 +206,12 @@ class ExecutableConfig(BenchmarkConfig):
                path: Optional[str] = None,
                flags: tuple[str, ...] = (),
                estimated_runtime: int = 60,
-               extra_flags: tuple[str, ...] = ()):
-    super().__init__(name)
-    self.path = path or name
-    self.flags = flags or ()
-    self.extra_flags = extra_flags or ()
-    self.estimated_runtime = estimated_runtime
-    self.abridged = False
-    self.stories = [GTEST_STORY_NAME]
-    self.is_telemetry = False
-    self.repeat = 1
+               repeat: int = 1):
+    super().__init__(name, repeat, flags)
+    self.path: Final[str] = path or name
+    self.estimated_runtime: Final[int] = estimated_runtime
+    self.abridged: Final[bool] = False
+    self.stories: Final[tuple[str, ...]] = (GTEST_STORY_NAME, )
 
 
 class CrossbenchConfig(BenchmarkConfig):
@@ -225,26 +219,26 @@ class CrossbenchConfig(BenchmarkConfig):
                name: str,
                crossbench_name: str,
                estimated_runtime: int = 60,
-               stories=None,
+               stories: Optional[tuple[str]] = None,
                flags: tuple[str, ...] = (),
-               auto_enable_field_trials=True):
-    super().__init__(name)
-    self.crossbench_name = crossbench_name
-    self.estimated_runtime = estimated_runtime
-    self.stories = stories or ['default']
-    self.arguments: tuple[str, ...] = flags
-    self.repeat = 1
+               repeat: int = 1,
+               auto_enable_field_trials: bool = True):
+    flags = self._process_flags(flags, auto_enable_field_trials)
+    super().__init__(name, repeat, flags)
+    self.crossbench_name: Final[str] = crossbench_name
+    self.estimated_runtime: Final[int] = estimated_runtime
+    self.stories: Final[tuple[str, ...]] = stories or ('default', )
+
+  def _process_flags(self, flags: tuple[str, ...],
+                     auto_enable_field_trials: bool) -> tuple[str, ...]:
     if auto_enable_field_trials:
       # Somewhat hacky solution if we want to run without field trials.
-      if "--disable-field-trials" not in self.arguments and (
-          "--disable-field-trial-config" not in self.arguments):
-        self.arguments += ("--enable-field-trials", )
-    assert len(self.arguments) == len(set(
-        self.arguments)), (f"Found duplicate arguments in {self.arguments}")
-
-  @property
-  def extra_flags(self) -> tuple[str, ...]:
-    return self.arguments
+      if "--disable-field-trials" not in flags and (
+          "--disable-field-trial-config" not in flags):
+        flags += ("--enable-field-trials", )
+    assert len(flags) == len(
+        set(flags)), (f"Found duplicate arguments in {flags}")
+    return flags
 
 
 class PerfSuite(object):
@@ -315,59 +309,59 @@ def _register(name):
 @_register('sync_performance_tests')
 def _sync_performance_tests(estimated_runtime: int = 110,
                             path=None,
-                            extra_flags: tuple[str, ...] = ()):
-  flags = ('--test-launcher-jobs=1', '--test-launcher-retry-limit=0')
-  flags += extra_flags
+                            flags: tuple[str, ...] = ()):
   return ExecutableConfig('sync_performance_tests',
                           path=path,
-                          flags=flags,
-                          extra_flags=extra_flags,
+                          flags=('--test-launcher-jobs=1',
+                                 '--test-launcher-retry-limit=0', *flags),
                           estimated_runtime=estimated_runtime)
 
 
 @_register('base_perftests')
 def _base_perftests(estimated_runtime: int = 270,
                     path=None,
-                    extra_flags: tuple[str, ...] = ()):
-  flags = ('--test-launcher-jobs=1', '--test-launcher-retry-limit=0')
-  flags += extra_flags
+                    flags: tuple[str, ...] = ()):
   return ExecutableConfig('base_perftests',
                           path=path,
-                          flags=flags,
-                          extra_flags=extra_flags,
+                          flags=('--test-launcher-jobs=1',
+                                 '--test-launcher-retry-limit=0', *flags),
                           estimated_runtime=estimated_runtime)
 
 
 @_register('components_perftests')
-def _components_perftests(estimated_runtime: int = 110):
+def _components_perftests(estimated_runtime: int = 110,
+                          flags: tuple[str, ...] = ()):
   return ExecutableConfig('components_perftests',
-                          flags=('--xvfb', ),
+                          flags=('--xvfb', *flags),
                           estimated_runtime=estimated_runtime)
 
 
 @_register('dawn_perf_tests')
-def _dawn_perf_tests(estimated_runtime: int = 270):
+def _dawn_perf_tests(estimated_runtime: int = 270, flags: tuple[str, ...] = ()):
   return ExecutableConfig('dawn_perf_tests',
                           flags=('--test-launcher-jobs=1',
-                                 '--test-launcher-retry-limit=0'),
+                                 '--test-launcher-retry-limit=0', *flags),
                           estimated_runtime=estimated_runtime)
 
 
 @_register('tint_benchmark')
-def _tint_benchmark(estimated_runtime: int = 180):
+def _tint_benchmark(estimated_runtime: int = 180, flags: tuple[str, ...] = ()):
   return ExecutableConfig('tint_benchmark',
-                          flags=('--use-chrome-perf-format', ),
+                          flags=('--use-chrome-perf-format', *flags),
                           estimated_runtime=estimated_runtime)
 
 
 @_register('load_library_perf_tests')
-def _load_library_perf_tests(estimated_runtime: int = 3):
+def _load_library_perf_tests(estimated_runtime: int = 3,
+                             flags: tuple[str, ...] = ()):
   return ExecutableConfig('load_library_perf_tests',
+                          flags=flags,
                           estimated_runtime=estimated_runtime)
 
 
 @_register('performance_browser_tests')
-def _performance_browser_tests(estimated_runtime: int = 67):
+def _performance_browser_tests(estimated_runtime: int = 67,
+                               flags: tuple[str, ...] = ()):
   return ExecutableConfig(
       'performance_browser_tests',
       path='browser_tests',
@@ -382,20 +376,21 @@ def _performance_browser_tests(estimated_runtime: int = 67):
           '--test-launcher-timeout=60000',
           '--gtest_filter=*/TabCapturePerformanceTest.*:'
           '*/CastV2PerformanceTest.*',
-      ),
+          *flags),
       estimated_runtime=estimated_runtime)
 
 
 @_register('tracing_perftests')
-def _tracing_perftests(estimated_runtime: int = 5):
+def _tracing_perftests(estimated_runtime: int = 5, flags: tuple[str, ...] = ()):
   return ExecutableConfig('tracing_perftests',
+                          flags=flags,
                           estimated_runtime=estimated_runtime)
 
 
 @_register('views_perftests')
-def _views_perftests(estimated_runtime: int = 7):
+def _views_perftests(estimated_runtime: int = 7, flags: tuple[str, ...] = ()):
   return ExecutableConfig('views_perftests',
-                          flags=('--xvfb', ),
+                          flags=('--xvfb', *flags),
                           estimated_runtime=estimated_runtime)
 
 
@@ -404,7 +399,7 @@ def _web_tests_cuj(estimated_runtime: int = 10, flags: tuple[str, ...] = ()):
   return CrossbenchConfig('web_tests_cuj',
                           'speedometer_3.1',
                           estimated_runtime=estimated_runtime,
-                          flags=flags)
+                          flags=('--web-tests-cuj', '--debug', *flags))
 
 # Speedometer:
 @_register('speedometer2.0.crossbench')
@@ -467,40 +462,36 @@ def _speedometer3_crossbench(estimated_runtime: int = 60,
 def _browser_startup_crossbench(estimated_runtime: int = 60,
                                 flags: tuple[str, ...] = ()):
   """Browser startup benchmark for InitialWebUI vs Baseline."""
-  flags += (
-      '--browser-config',
-      'config/benchmark/browser_startup/browser.config.hjson',
-      '--probe-config',
-      'config/benchmark/browser_startup/probe.hjson',
-      '--page-config',
-      'config/benchmark/browser_startup/story.hjson',
-  )
-  return CrossbenchConfig('browser_startup.crossbench',
-                          'loading',
-                          estimated_runtime=estimated_runtime,
-                          flags=flags)
+  return CrossbenchConfig(
+      'browser_startup.crossbench',
+      'loading',
+      estimated_runtime=estimated_runtime,
+      flags=('--browser-config',
+             'config/benchmark/browser_startup/browser.config.hjson',
+             '--probe-config', 'config/benchmark/browser_startup/probe.hjson',
+             '--page-config', 'config/benchmark/browser_startup/story.hjson',
+             *flags))
 
 
 @_register('speedometer_main.crossbench')
 def _speedometer_main_crossbench(estimated_runtime: int = 60,
                                  flags: tuple[str, ...] = ()):
   # The latest WIP speedometer version
-  flags += ('--detailed-metrics', )
   return CrossbenchConfig('speedometer_main.crossbench',
                           'speedometer_main',
                           estimated_runtime=estimated_runtime,
-                          flags=flags)
+                          flags=('--detailed-metrics', *flags))
 
 
 @_register('speedometer3.a11y.crossbench')
 def _speedometer3_a11y_crossbench(estimated_runtime: int = 60,
                                   flags: tuple[str, ...] = ()):
   """Latest Speedometer 3 with accessibility flag enabled."""
-  flags += ('--extra-browser-args=--force-renderer-accessibility', )
-  return CrossbenchConfig('speedometer3.a11y.crossbench',
-                          'speedometer_3',
-                          estimated_runtime=estimated_runtime,
-                          flags=flags)
+  return CrossbenchConfig(
+      'speedometer3.a11y.crossbench',
+      'speedometer_3',
+      estimated_runtime=estimated_runtime,
+      flags=('--extra-browser-args=--force-renderer-accessibility', *flags))
 
 
 # MotionMark:

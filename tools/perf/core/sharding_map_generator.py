@@ -218,6 +218,7 @@ def generate_sharding_map(benchmarks_to_shard,
 
     new_benchmark_configs = collections.OrderedDict()
     for benchmark, sections in benchmark_sections.items():
+      benchmark_src_config = benchmark_name_to_config[benchmark]
       merged_sections = core.cli_utils.MergeIndexRanges(sections)
       sections_config = []
       if len(merged_sections) == 1:
@@ -234,16 +235,13 @@ def generate_sharding_map(benchmarks_to_shard,
           sections_config.append({'begin': section[0], 'end': section[1]})
         benchmark_config = {
             'sections': sections_config,
-            'abridged': benchmark_name_to_config[benchmark].abridged
         }
 
-      abridged = benchmark_name_to_config[benchmark].abridged
-      benchmark_config['abridged'] = abridged
+      benchmark_config['abridged'] = benchmark_src_config.abridged
 
-      pageset_repeat_override = benchmark_name_to_config[
-          benchmark].pageset_repeat_override
-      if pageset_repeat_override:
-        benchmark_config['pageset_repeat'] = pageset_repeat_override
+      if isinstance(benchmark_src_config, core.bot_platforms.TelemetryConfig):
+        if (repeat := benchmark_src_config.repeat) > 1:
+          benchmark_config['pageset_repeat'] = repeat
 
       new_benchmark_configs[benchmark] = benchmark_config
 
@@ -294,7 +292,7 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
     if isinstance(config, core.bot_platforms.CrossbenchConfig):
       crossbench_in_shard[b] = {
           'crossbench_name': config.crossbench_name,
-          'arguments': config.arguments,
+          'arguments': config.flags,
       }
       first_story = all_stories[b].index(benchmarks[b][0])
       last_story = all_stories[b].index(benchmarks[b][-1]) + 1
@@ -302,7 +300,7 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
         crossbench_in_shard[b]['begin'] = first_story
       if last_story != len(all_stories[b]):
         crossbench_in_shard[b]['end'] = last_story
-    elif config.is_telemetry:
+    elif isinstance(config, core.bot_platforms.TelemetryConfig):
       benchmarks_in_shard[b] = {}
       first_story = all_stories[b].index(benchmarks[b][0])
       last_story = all_stories[b].index(benchmarks[b][-1]) + 1
