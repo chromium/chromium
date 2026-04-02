@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/hover_tab_selector.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -195,6 +196,38 @@ VerticalTabStripRegionView::~VerticalTabStripRegionView() {
   if (drag_handler_) {
     auto handler = RemoveChildViewT(drag_handler_->GetDragContext());
     drag_handler_ = nullptr;
+  }
+}
+
+VerticalTabStripRegionView::ScopedExpandOnHoverLock::ScopedExpandOnHoverLock(
+    VerticalTabStripRegionView* region_view)
+    : region_view_(region_view) {
+  if (region_view_) {
+    region_view_->OnExpandOnHoverLockCreated();
+  }
+}
+
+VerticalTabStripRegionView::ScopedExpandOnHoverLock::
+    ~ScopedExpandOnHoverLock() {
+  if (region_view_) {
+    region_view_->OnExpandOnHoverLockDestroyed();
+  }
+}
+
+std::unique_ptr<VerticalTabStripRegionView::ScopedExpandOnHoverLock>
+VerticalTabStripRegionView::GetExpandOnHoverLock() {
+  return std::make_unique<ScopedExpandOnHoverLock>(this);
+}
+
+void VerticalTabStripRegionView::OnExpandOnHoverLockCreated() {
+  expand_on_hover_lock_count_++;
+}
+
+void VerticalTabStripRegionView::OnExpandOnHoverLockDestroyed() {
+  CHECK_GT(expand_on_hover_lock_count_, 0);
+  expand_on_hover_lock_count_--;
+  if (expand_on_hover_lock_count_ == 0) {
+    UpdateExpandOnHoverState();
   }
 }
 
@@ -805,8 +838,8 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
 
   on_active_tab_changed_subscription_ =
       root_node_->RegisterOnActiveTabChangedCallback(
-          base::BindRepeating(&VerticalTabStripView::OnActiveTabChanged,
-                              base::Unretained(tab_strip_view_)));
+          base::BindRepeating(&VerticalTabStripRegionView::OnActiveTabChanged,
+                              base::Unretained(this)));
 
   on_animation_update_subscription_ =
       BrowserAnimationController::From(browser_view_->browser())
@@ -824,6 +857,7 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
 void VerticalTabStripRegionView::ClearTabStripView(views::View* view) {
   on_animation_update_subscription_.reset();
   on_active_tab_changed_subscription_.reset();
+  omnibox_tab_helper_observation_.Reset();
   CHECK(tab_strip_view_);
   CHECK(tab_strip_view_ == view);
   RemoveChildViewT(std::exchange(tab_strip_view_, nullptr));
@@ -950,9 +984,9 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
   if (!state_controller_->IsExpandOnHoverEnabled()) {
     return;
   }
-  // If not collapsed, then we shouldn't be in or entering the expand on hover
-  // state.
-  if (!state_controller_->IsCollapsed()) {
+  // If not collapsed or expand on hover is locked (e.g. omnibox popup is open),
+  // then we shouldn't be in or entering the expand on hover state.
+  if (!state_controller_->IsCollapsed() || expand_on_hover_lock_count_ > 0) {
     expand_on_hover_timer_.Stop();
     is_expanded_on_hover_ = false;
     return;
@@ -991,6 +1025,34 @@ void VerticalTabStripRegionView::AnimateExpandOnHover(bool expand) {
       ->Start(TabStripAnimations::kVerticalTabStrip,
               expand ? TabStripAnimations::kExpandOnHover
                      : TabStripAnimations::kCollapseOnHover);
+}
+
+void VerticalTabStripRegionView::OnOmniboxPopupVisibilityChanged(bool is_open) {
+  if (is_open) {
+    if (!omnibox_open_lock_) {
+      omnibox_open_lock_ = GetExpandOnHoverLock();
+      UpdateExpandOnHoverState();
+    }
+  } else {
+    omnibox_open_lock_.reset();
+  }
+}
+
+void VerticalTabStripRegionView::OnActiveTabChanged(
+    const tabs::TabInterface* active_tab) {
+  omnibox_tab_helper_observation_.Reset();
+
+  if (active_tab) {
+    OmniboxTabHelper* const tab_helper =
+        OmniboxTabHelper::FromWebContents(active_tab->GetContents());
+    if (tab_helper) {
+      omnibox_tab_helper_observation_.Observe(tab_helper);
+    }
+  }
+
+  if (tab_strip_view_) {
+    tab_strip_view_->OnActiveTabChanged(active_tab);
+  }
 }
 
 void VerticalTabStripRegionView::SetLinkDropArrow(

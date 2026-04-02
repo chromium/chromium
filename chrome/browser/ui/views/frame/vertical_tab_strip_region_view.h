@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -49,11 +50,25 @@ class FlexLayout;
 // Container for the vertical tabstrip and the other views sharing space with
 // it, excluding the caption buttons.
 class VerticalTabStripRegionView final : public TabStripRegionView,
-                                         public views::ResizeAreaDelegate {
+                                         public views::ResizeAreaDelegate,
+                                         public OmniboxTabHelper::Observer {
   METADATA_HEADER(VerticalTabStripRegionView, TabStripRegionView)
 
  public:
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAnimationCompletedEvent);
+
+  class ScopedExpandOnHoverLock {
+   public:
+    explicit ScopedExpandOnHoverLock(VerticalTabStripRegionView* region_view);
+    ScopedExpandOnHoverLock(const ScopedExpandOnHoverLock&) = delete;
+    ScopedExpandOnHoverLock& operator=(const ScopedExpandOnHoverLock&) = delete;
+    ~ScopedExpandOnHoverLock();
+
+   private:
+    raw_ptr<VerticalTabStripRegionView> region_view_;
+  };
+
+  std::unique_ptr<ScopedExpandOnHoverLock> GetExpandOnHoverLock();
 
   // TODO(crbug.com/465833741): Replace constant with derived value based on
   // caption buttons.
@@ -220,6 +235,18 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void UpdateExpandOnHoverState();
   void AnimateExpandOnHover(bool expand);
 
+  void OnExpandOnHoverLockCreated();
+  void OnExpandOnHoverLockDestroyed();
+
+  // OmniboxTabHelper::Observer:
+  void OnOmniboxInputStateChanged() override {}
+  void OnOmniboxInputInProgress(bool in_progress) override {}
+  void OnOmniboxFocusChanged(OmniboxFocusState state,
+                             OmniboxFocusChangeReason reason) override {}
+  void OnOmniboxPopupVisibilityChanged(bool is_open) override;
+
+  void OnActiveTabChanged(const tabs::TabInterface* active_tab);
+
   void SetLinkDropArrow(const std::optional<BrowserRootView::DropIndex>& index);
   gfx::Rect GetLinkDropBounds(const BrowserRootView::DropIndex& drop_index,
                               DropArrow::Direction* direction);
@@ -274,6 +301,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
       on_active_tab_changed_subscription_;
   std::optional<base::CallbackListSubscription>
       on_animation_update_subscription_;
+  base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
+      omnibox_tab_helper_observation_{this};
 
   // The width of the vertical tabstrip at the beginning of the current resize
   // operation. Is std::nullopt when not resizing.
@@ -289,6 +318,9 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   base::OneShotTimer expand_on_hover_timer_;
   bool is_expanded_on_hover_ = false;
+
+  int expand_on_hover_lock_count_ = 0;
+  std::unique_ptr<ScopedExpandOnHoverLock> omnibox_open_lock_;
 
   // Used to track the time needed to create a new tab from the new tab button.
   std::optional<base::TimeTicks> new_tab_button_pressed_start_time_;

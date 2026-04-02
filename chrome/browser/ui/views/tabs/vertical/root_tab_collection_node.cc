@@ -165,6 +165,7 @@ void RootTabCollectionNode::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (tab_strip_model->closing_all()) {
+    on_active_tab_changed_callback_list_.Notify(nullptr);
     return;
   }
 

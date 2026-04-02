@@ -4,8 +4,11 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -79,6 +82,51 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
                 .size();
           },
           1));
+}
+
+// Inherits directly from InteractiveBrowserTest to avoid scoped_feature_list_
+// conflicts with VerticalTabsInteractiveTestMixin.
+class VerticalTabStripRegionViewExpandOnHoverInteractiveUiTest
+    : public InteractiveBrowserTest {
+ public:
+  VerticalTabStripRegionViewExpandOnHoverInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {tabs::kVerticalTabs, tabs::kVerticalTabsExpandOnHover}, {});
+  }
+  ~VerticalTabStripRegionViewExpandOnHoverInteractiveUiTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewExpandOnHoverInteractiveUiTest,
+                       OmniboxPopupSuppressesExpandOnHover) {
+  auto* const controller =
+      tabs::VerticalTabStripStateController::From(browser());
+
+  controller->SetVerticalTabsEnabled(true);
+  controller->SetCollapsed(true);
+  controller->SetExpandOnHoverEnabled(true);
+
+  RunScheduledLayouts();
+
+  ui::Accelerator focus_location_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_LOCATION, &focus_location_accelerator));
+
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      EnsurePresent(kVerticalTabStripTopContainerElementId),
+
+      MoveMouseTo(kVerticalTabStripTopContainerElementId),
+
+      SendAccelerator(kBrowserViewElementId, focus_location_accelerator),
+
+      // Verify that the tab strip remains unexpanded despite the mouse hover.
+      CheckViewProperty(kTabStripRegionElementId,
+                        &VerticalTabStripRegionView::is_expanded_on_hover,
+                        false));
 }
 
 }  // namespace base::test
