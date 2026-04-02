@@ -29,6 +29,7 @@ namespace optimization_guide {
 class ManifestSolutionFactory {
  public:
   enum class AssetUnavailableReason {
+    kUninitialized,
     kNotDownloaded,
     kDownloading,
     kFailed,
@@ -91,15 +92,13 @@ class ManifestSolutionFactory {
 
   ManifestSolutionFactory(Manifest manifest,
                           ModelBrokerImpl& broker_impl,
-                          on_device_model::ServiceClient& service_client);
+                          on_device_model::ServiceClient& service_client,
+                          base::OnceClosure on_init_complete);
   ~ManifestSolutionFactory();
 
   // Notifies the factory of a change in an asset's state.
   // This will may cause the factory to emit new Solutions.
-  // `on_complete` will be called after all related updates are complete.
-  void UpdateAssetState(const std::string& asset_id,
-                        AssetState new_state,
-                        base::OnceClosure on_complete);
+  void UpdateAssetState(const std::string& asset_id, AssetState new_state);
 
   // Flush all use cases and emit new solutions for any that are now available.
   void UpdateSolutions();
@@ -146,6 +145,8 @@ class ManifestSolutionFactory {
   base::flat_map<std::string, AdaptationState> adaptations_;
   base::flat_map<std::string, SafetyModelState> safety_models_;
   base::flat_map<std::string, SolutionState> solutions_;
+
+  base::RepeatingClosure on_asset_init_;
 
   base::WeakPtrFactory<ManifestSolutionFactory> weak_ptr_factory_{this};
 };

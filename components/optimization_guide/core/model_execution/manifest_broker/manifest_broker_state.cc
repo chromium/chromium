@@ -153,25 +153,21 @@ void ManifestBrokerState::EnsureInitialization(
 void ManifestBrokerState::OnManifestUpdated() {
   TRACE_EVENT("optimization_guide", "ManifestBrokerState::OnManifestUpdated");
   CHECK(manifest_monitor_.manifest().has_value());
-
   // Init will complete the first time we finish loading all available assets
   // for a manifest.
-  base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      2, base::BindOnce(&ManifestBrokerState::OnInitComplete,
-                        weak_ptr_factory_.GetWeakPtr()));
   factory_ = std::make_unique<ManifestSolutionFactory>(
-      *manifest_monitor_.manifest(), model_broker_impl_, service_client_);
+      *manifest_monitor_.manifest(), model_broker_impl_, service_client_,
+      base::BindOnce(&ManifestBrokerState::OnInitComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
   factory_->UpdateAssetState(
       kManifestAssetName,
       ManifestSolutionFactory::AssetInfo{
-          .path = manifest_monitor_.manifest_dir().value()},
-      barrier_closure);
+          .path = manifest_monitor_.manifest_dir().value()});
   // TODO(b/489511247): Wire the factory into an asset manager.
   // asset_manager_ = std::make_unique<ManifestAssetManager>(
   //     &*local_state_, usage_tracker_, std::move(init_tasks_->delegate_),
   //     factory_->manifest());
   // asset_manager_->SetFactory(std::move(factory), barrier_closure);
-  barrier_closure.Run();  // For asset manager init.
 }
 
 void ManifestBrokerState::OnInitComplete() {

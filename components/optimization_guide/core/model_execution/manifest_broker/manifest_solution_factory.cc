@@ -60,12 +60,12 @@ base::flat_map<std::string, ManifestSolutionFactory::AssetState> MakeAssetsMap(
   states.emplace_back(
       kManifestAssetName,
       base::unexpected(
-          ManifestSolutionFactory::AssetUnavailableReason::kNotDownloaded));
+          ManifestSolutionFactory::AssetUnavailableReason::kUninitialized));
   for (const auto& [name, _] : assets.on_demand_components()) {
     states.emplace_back(
         name,
         base::unexpected(
-            ManifestSolutionFactory::AssetUnavailableReason::kNotDownloaded));
+            ManifestSolutionFactory::AssetUnavailableReason::kUninitialized));
   }
   return base::flat_map<std::string, ManifestSolutionFactory::AssetState>(
       std::move(states));
@@ -246,7 +246,8 @@ ManifestSolutionFactory::SolutionState::operator=(SolutionState&& other) =
 ManifestSolutionFactory::ManifestSolutionFactory(
     Manifest manifest,
     ModelBrokerImpl& broker_impl,
-    on_device_model::ServiceClient& service_client)
+    on_device_model::ServiceClient& service_client,
+    base::OnceClosure on_init_complete)
     : broker_impl_(broker_impl),
       service_client_(service_client),
       manifest_(std::move(manifest)),
@@ -254,25 +255,33 @@ ManifestSolutionFactory::ManifestSolutionFactory(
       base_models_(MakeBaseModelsMap(manifest_.GetRecipes())),
       adaptations_(MakeAdaptationsMap(manifest_.GetRecipes())),
       safety_models_(MakeSafetyModelsMap(manifest_.GetRecipes())),
-      solutions_(MakeSolutionsMap(manifest_.GetRecipes())) {}
+      solutions_(MakeSolutionsMap(manifest_.GetRecipes())),
+      on_asset_init_(
+          base::BarrierClosure(assets_.size(), std::move(on_init_complete))) {}
 ManifestSolutionFactory::~ManifestSolutionFactory() = default;
 
 void ManifestSolutionFactory::UpdateAssetState(const std::string& asset_id,
-                                               AssetState new_state,
-                                               base::OnceClosure on_complete) {
+                                               AssetState new_state) {
   TRACE_EVENT("optimization_guide", "ManifestSolutionFactory::UpdateAssetState",
               "asset_id", asset_id, "is_available", new_state.has_value());
+  CHECK(new_state != base::unexpected(AssetUnavailableReason::kUninitialized));
   auto it = assets_.find(asset_id);
   // We already know all possible assets from the manifest.
   CHECK(it != assets_.end());
   // We don't support an available asset being updated to unavailable.
   CHECK(!it->second.has_value());
+
+  // Call UpdateSolutions after any config loads complete
+  base::OnceClosure on_complete =
+      base::BindOnce(&ManifestSolutionFactory::UpdateSolutions,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  // If this is initializing the asset, track progress of initialization.
+  if (it->second == base::unexpected(AssetUnavailableReason::kUninitialized)) {
+    on_complete = std::move(on_complete).Then(on_asset_init_);
+  }
   it->second = new_state;
-  // Call UpdateSolutions after any config loads complete, but before
-  // notifying the caller that we're done.
-  on_complete = base::BindOnce(&ManifestSolutionFactory::UpdateSolutions,
-                               weak_ptr_factory_.GetWeakPtr())
-                    .Then(std::move(on_complete));
+
   if (it->second.has_value()) {
     // Start loading all of the configs provided by this asset.
     LoadSolutionConfigsFrom(asset_id, std::move(on_complete));
