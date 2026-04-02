@@ -1081,6 +1081,19 @@ cronet_package_apk("cronet_package_with_nativejava_apk") {
   ]
 }
 
+# Generates a source jar.
+#
+# The main purpose of us packaging source jars is for downstream consumers to be
+# able to extract public APIs and Javadocs. We don't care as much about the
+# sources for implementation details, which is only included on a best-effort
+# basis. Sources for implementation details likely have gaps because they are
+# not tested for completeness and jar_src() is not smart enough to automatically
+# recurse into dependencies, requiring them to be listed manually. Even if the
+# sources were complete, there is the added complication of rename rules (see
+# repackage_jars() renaming_rules) which causes mismatches between the source
+# file paths and the final class names, limiting the usefulness of the source
+# jar unless we take extra steps to post-process it. See also
+# https://crbug.com/498920641 for some context.
 template("jar_src") {
   action_with_pydeps(target_name) {
     _rebased_src_search_dirs =
@@ -1167,7 +1180,10 @@ jar_src("jar_cronet_api_source") {
     "api/src",
     _templates_dir,
   ]
-  source_deps = [ ":cronet_api_java" ]
+  source_deps = [
+    ":cronet_api_helpers_java",
+    ":cronet_api_java",
+  ]
   jar_path = "$_package_dir/cronet_api-src.jar"
 }
 
