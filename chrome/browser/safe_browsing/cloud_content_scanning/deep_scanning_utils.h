@@ -7,15 +7,10 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
-#include "base/time/time.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/common.h"
-#include "components/enterprise/connectors/core/content_analysis_info_base.h"
-#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -35,21 +30,6 @@ enterprise_connectors::ContentAnalysisResponse
 SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
                                         std::optional<bool> malware_success,
                                         bool has_custom_rule_message);
-
-// Helper enum and function to manipulate crash keys relevant to scanning.
-// If a key would be set to 0, it is unset.
-enum class ScanningCrashKey {
-  PENDING_FILE_UPLOADS,
-  PENDING_TEXT_UPLOADS,
-  PENDING_FILE_DOWNLOADS,
-  PENDING_PRINTS,
-  TOTAL_FILE_UPLOADS,
-  TOTAL_TEXT_UPLOADS,
-  TOTAL_FILE_DOWNLOADS,
-  TOTAL_PRINTS
-};
-void IncrementCrashKey(ScanningCrashKey key, int delta = 1);
-void DecrementCrashKey(ScanningCrashKey key, int delta = 1);
 
 }  // namespace safe_browsing
 

@@ -22,7 +22,10 @@ namespace safe_browsing {
 
 namespace {
 
+using enterprise_connectors::DecrementCrashKey;
+using enterprise_connectors::IncrementCrashKey;
 using enterprise_connectors::RecordDeepScanMetrics;
+using enterprise_connectors::ScanningCrashKey;
 
 constexpr enterprise_connectors::ScanRequestUploadResult
     kAllBinaryUploadServiceResults[]{

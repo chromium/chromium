@@ -6,6 +6,7 @@
 
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 
 namespace enterprise_connectors {
 
@@ -24,15 +25,12 @@ ClipboardAnalysisRequest::ClipboardAnalysisRequest(
     data_.contents = std::move(text);
     result_ = ScanRequestUploadResult::kSuccess;
   }
-  safe_browsing::IncrementCrashKey(
-      safe_browsing::ScanningCrashKey::PENDING_TEXT_UPLOADS);
-  safe_browsing::IncrementCrashKey(
-      safe_browsing::ScanningCrashKey::TOTAL_TEXT_UPLOADS);
+  IncrementCrashKey(ScanningCrashKey::PENDING_TEXT_UPLOADS);
+  IncrementCrashKey(ScanningCrashKey::TOTAL_TEXT_UPLOADS);
 }
 
 ClipboardAnalysisRequest::~ClipboardAnalysisRequest() {
-  safe_browsing::DecrementCrashKey(
-      safe_browsing::ScanningCrashKey::PENDING_TEXT_UPLOADS);
+  DecrementCrashKey(ScanningCrashKey::PENDING_TEXT_UPLOADS);
 }
 
 void ClipboardAnalysisRequest::GetRequestData(DataCallback callback) {

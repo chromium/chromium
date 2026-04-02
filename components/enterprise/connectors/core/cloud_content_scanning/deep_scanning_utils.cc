@@ -6,6 +6,8 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -60,6 +62,92 @@ bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
     case TriggeredRule::BLOCK:
     case TriggeredRule::FORCE_SAVE_TO_CLOUD:
       return false;
+  }
+}
+
+crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
+  static crash_reporter::CrashKeyString<7> pending_file_uploads(
+      "pending-file-upload-scans");
+  static crash_reporter::CrashKeyString<7> pending_text_uploads(
+      "pending-text-upload-scans");
+  static crash_reporter::CrashKeyString<7> pending_file_downloads(
+      "pending-file-download-scans");
+  static crash_reporter::CrashKeyString<7> pending_prints(
+      "pending-print-scans");
+  static crash_reporter::CrashKeyString<7> total_file_uploads(
+      "total-file-upload-scans");
+  static crash_reporter::CrashKeyString<7> total_text_uploads(
+      "total-text-upload-scans");
+  static crash_reporter::CrashKeyString<7> total_file_downloads(
+      "total-file-download-scans");
+  static crash_reporter::CrashKeyString<7> total_prints("total-print-scans");
+  switch (key) {
+    case ScanningCrashKey::PENDING_FILE_UPLOADS:
+      return &pending_file_uploads;
+    case ScanningCrashKey::PENDING_TEXT_UPLOADS:
+      return &pending_text_uploads;
+    case ScanningCrashKey::PENDING_FILE_DOWNLOADS:
+      return &pending_file_downloads;
+    case ScanningCrashKey::PENDING_PRINTS:
+      return &pending_prints;
+    case ScanningCrashKey::TOTAL_FILE_UPLOADS:
+      return &total_file_uploads;
+    case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
+      return &total_text_uploads;
+    case ScanningCrashKey::TOTAL_FILE_DOWNLOADS:
+      return &total_file_downloads;
+    case ScanningCrashKey::TOTAL_PRINTS:
+      return &total_prints;
+  }
+}
+
+int* GetScanCrashKeyCount(ScanningCrashKey key) {
+  static int pending_file_uploads = 0;
+  static int pending_text_uploads = 0;
+  static int pending_file_downloads = 0;
+  static int pending_prints = 0;
+  static int total_file_uploads = 0;
+  static int total_text_uploads = 0;
+  static int total_file_downloads = 0;
+  static int total_prints = 0;
+  switch (key) {
+    case ScanningCrashKey::PENDING_FILE_UPLOADS:
+      return &pending_file_uploads;
+    case ScanningCrashKey::PENDING_TEXT_UPLOADS:
+      return &pending_text_uploads;
+    case ScanningCrashKey::PENDING_FILE_DOWNLOADS:
+      return &pending_file_downloads;
+    case ScanningCrashKey::PENDING_PRINTS:
+      return &pending_prints;
+    case ScanningCrashKey::TOTAL_FILE_UPLOADS:
+      return &total_file_uploads;
+    case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
+      return &total_text_uploads;
+    case ScanningCrashKey::TOTAL_FILE_DOWNLOADS:
+      return &total_file_downloads;
+    case ScanningCrashKey::TOTAL_PRINTS:
+      return &total_prints;
+  }
+}
+
+void ModifyKey(ScanningCrashKey key, int delta) {
+  int* key_value = GetScanCrashKeyCount(key);
+
+  // Since the crash key string length is determined at compile time, ensure the
+  // given number is restricted to 6 digits (char 7 is for null terminating the
+  // string).
+  int new_value = (*key_value) + delta;
+  new_value = std::max(0, new_value);
+  new_value = std::min(999999, new_value);
+
+  *key_value = new_value;
+  crash_reporter::CrashKeyString<7>* crash_key = GetScanCrashKey(key);
+  DCHECK(crash_key);
+
+  if (new_value == 0) {
+    crash_key->Clear();
+  } else {
+    crash_key->Set(base::NumberToString(new_value));
   }
 }
 
@@ -476,6 +564,16 @@ std::string BinaryUploadServiceResultToString(
     case ScanRequestUploadResult::kIncompleteResponse:
       return "IncompleteResponse";
   }
+}
+
+void IncrementCrashKey(ScanningCrashKey key, int delta) {
+  DCHECK_GE(delta, 0);
+  ModifyKey(key, delta);
+}
+
+void DecrementCrashKey(ScanningCrashKey key, int delta) {
+  DCHECK_GE(delta, 0);
+  ModifyKey(key, -delta);
 }
 
 }  // namespace enterprise_connectors

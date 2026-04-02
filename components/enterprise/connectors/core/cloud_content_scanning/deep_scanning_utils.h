@@ -123,6 +123,21 @@ void RecordDeepScanMetrics(bool is_cloud,
                            const std::string& result,
                            bool success);
 
+// Helper enum and function to manipulate crash keys relevant to scanning.
+// If a key would be set to 0, it is unset.
+enum class ScanningCrashKey {
+  PENDING_FILE_UPLOADS,
+  PENDING_TEXT_UPLOADS,
+  PENDING_FILE_DOWNLOADS,
+  PENDING_PRINTS,
+  TOTAL_FILE_UPLOADS,
+  TOTAL_TEXT_UPLOADS,
+  TOTAL_FILE_DOWNLOADS,
+  TOTAL_PRINTS
+};
+void IncrementCrashKey(ScanningCrashKey key, int delta = 1);
+void DecrementCrashKey(ScanningCrashKey key, int delta = 1);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_

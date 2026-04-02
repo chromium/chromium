@@ -174,12 +174,10 @@ void FilesRequestHandler::FileRequestCallbackForTesting(
 }
 
 bool FilesRequestHandler::UploadDataImpl() {
-  safe_browsing::IncrementCrashKey(
-      safe_browsing::ScanningCrashKey::PENDING_FILE_UPLOADS, paths_.size());
+  IncrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS, paths_.size());
 
   if (!paths_.empty()) {
-    safe_browsing::IncrementCrashKey(
-        safe_browsing::ScanningCrashKey::TOTAL_FILE_UPLOADS, paths_.size());
+    IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_UPLOADS, paths_.size());
 
     std::vector<safe_browsing::FileOpeningJob::FileOpeningTask> tasks(
         paths_.size());
@@ -371,8 +369,7 @@ void FilesRequestHandler::FileRequestCallback(
       CalculateEventResult(analysis_settings, request_handler_result.complies,
                            result_is_warning));
 
-  safe_browsing::DecrementCrashKey(
-      safe_browsing::ScanningCrashKey::PENDING_FILE_UPLOADS);
+  DecrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS);
 
   MaybeCompleteScanRequest();
 }

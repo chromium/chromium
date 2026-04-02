@@ -488,8 +488,10 @@ void DeepScanningRequest::Start() {
 void DeepScanningRequest::StartSingleFileScan() {
   DCHECK(!scanning_started_);
   scanning_started_ = true;
-  IncrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS);
-  IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_DOWNLOADS);
+  enterprise_connectors::IncrementCrashKey(
+      enterprise_connectors::ScanningCrashKey::PENDING_FILE_DOWNLOADS);
+  enterprise_connectors::IncrementCrashKey(
+      enterprise_connectors::ScanningCrashKey::TOTAL_FILE_DOWNLOADS);
 
   auto request = std::make_unique<FileAnalysisRequest>(
       analysis_settings_, metadata_->GetFullPath(),
@@ -531,10 +533,12 @@ void DeepScanningRequest::StartSingleFileScan() {
 void DeepScanningRequest::StartSavePackageScan() {
   DCHECK(!scanning_started_);
   scanning_started_ = true;
-  IncrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS,
-                    pending_scan_requests_);
-  IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_DOWNLOADS,
-                    pending_scan_requests_);
+  enterprise_connectors::IncrementCrashKey(
+      enterprise_connectors::ScanningCrashKey::PENDING_FILE_DOWNLOADS,
+      pending_scan_requests_);
+  enterprise_connectors::IncrementCrashKey(
+      enterprise_connectors::ScanningCrashKey::TOTAL_FILE_DOWNLOADS,
+      pending_scan_requests_);
 
   Profile* profile =
       Profile::FromBrowserContext(metadata_->GetBrowserContext());
@@ -909,7 +913,8 @@ content::WebContents* DeepScanningRequest::web_contents() const {
 void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
   download_check_result_ =
       GetHighestPrecedenceResult(download_check_result_, result);
-  DecrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS);
+  enterprise_connectors::DecrementCrashKey(
+      enterprise_connectors::ScanningCrashKey::PENDING_FILE_DOWNLOADS);
 
   if ((--pending_scan_requests_) == 0) {
     if (!save_package_files_.empty()) {

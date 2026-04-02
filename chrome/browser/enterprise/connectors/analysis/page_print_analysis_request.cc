@@ -9,6 +9,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 
 namespace enterprise_connectors {
 
@@ -27,15 +28,12 @@ PagePrintAnalysisRequest::PagePrintAnalysisRequest(
                           base::BindRepeating(&GetBrowserPolicyConnector)),
       page_(std::move(page)) {
   DCHECK(page_.IsValid());
-  safe_browsing::IncrementCrashKey(
-      safe_browsing::ScanningCrashKey::PENDING_PRINTS);
-  safe_browsing::IncrementCrashKey(
-      safe_browsing::ScanningCrashKey::TOTAL_PRINTS);
+  IncrementCrashKey(ScanningCrashKey::PENDING_PRINTS);
+  IncrementCrashKey(ScanningCrashKey::TOTAL_PRINTS);
 }
 
 PagePrintAnalysisRequest::~PagePrintAnalysisRequest() {
-  safe_browsing::DecrementCrashKey(
-      safe_browsing::ScanningCrashKey::PENDING_PRINTS);
+  DecrementCrashKey(ScanningCrashKey::PENDING_PRINTS);
 }
 
 void PagePrintAnalysisRequest::GetRequestData(DataCallback callback) {
