@@ -114,9 +114,9 @@ class RTCRtpSenderImplTest : public ::testing::Test {
     // and the |run_loop| quit.
     sender_->ReplaceTrack(
         component,
-        blink::BindOnce(&RTCRtpSenderImplTest::CallbackOnComplete,
-                        Unretained(this), Unretained(result_holder.get()),
-                        blink::Unretained(run_loop.get())));
+        CrossThreadBindOnce(&RTCRtpSenderImplTest::CallbackOnComplete,
+                            Unretained(this), Unretained(result_holder.get()),
+                            blink::Unretained(run_loop.get())));
     // When the resulting callback is invoked, waits for |run_loop| to complete
     // and returns |*result_holder|.
     return base::BindOnce(&RTCRtpSenderImplTest::RunLoopAndReturnResult,

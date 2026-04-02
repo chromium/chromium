@@ -213,7 +213,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
   }
 
   void ReplaceTrack(MediaStreamComponent* with_track,
-                    base::OnceCallback<void(bool)> callback) {
+                    CrossThreadOnceFunction<void(bool)> callback) {
     DCHECK(main_task_runner_->BelongsToCurrentThread());
     std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
         track_ref;
@@ -228,7 +228,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
                                 ReplaceTrackOnSignalingThread,
                             WrapRefCounted(this), std::move(track_ref),
                             CrossThreadUnretained(webrtc_track),
-                            CrossThreadBindOnce(std::move(callback))));
+                            std::move(callback)));
   }
 
   std::unique_ptr<blink::RtcDtmfSenderHandler> GetDtmfSender() const {
@@ -250,7 +250,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
   void SetParameters(
       Vector<webrtc::RtpEncodingParameters> encodings,
       std::optional<webrtc::DegradationPreference> degradation_preference,
-      base::OnceCallback<void(webrtc::RTCError)> callback) {
+      CrossThreadOnceFunction<void(webrtc::RTCError)> callback) {
     DCHECK(main_task_runner_->BelongsToCurrentThread());
 
     webrtc::RtpParameters new_parameters = parameters_;
@@ -285,7 +285,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
         CrossThreadBindOnce(&RTCRtpSenderImpl::RTCRtpSenderInternal::
                                 SetParametersOnSignalingThread,
                             WrapRefCounted(this), std::move(new_parameters),
-                            CrossThreadBindOnce(std::move(callback))));
+                            std::move(callback)));
   }
 
   void GetStats(RTCStatsReportCallback callback) {
@@ -495,7 +495,8 @@ Vector<String> RTCRtpSenderImpl::StreamIds() const {
 void RTCRtpSenderImpl::ReplaceTrack(MediaStreamComponent* with_track,
                                     RTCVoidRequest* request) {
   internal_->ReplaceTrack(
-      with_track, BindOnce(&OnReplaceTrackCompleted, WrapPersistent(request)));
+      with_track, CrossThreadBindOnce(&OnReplaceTrackCompleted,
+                                      WrapCrossThreadPersistent(request)));
 }
 
 std::unique_ptr<blink::RtcDtmfSenderHandler> RTCRtpSenderImpl::GetDtmfSender()
@@ -513,7 +514,8 @@ void RTCRtpSenderImpl::SetParameters(
     blink::RTCVoidRequest* request) {
   internal_->SetParameters(
       std::move(encodings), degradation_preference,
-      BindOnce(&OnSetParametersCompleted, WrapPersistent(request)));
+      CrossThreadBindOnce(&OnSetParametersCompleted,
+                          WrapCrossThreadPersistent(request)));
 }
 
 void RTCRtpSenderImpl::GetStats(RTCStatsReportCallback callback) {
@@ -524,8 +526,9 @@ void RTCRtpSenderImpl::SetStreams(const Vector<String>& stream_ids) {
   internal_->SetStreams(stream_ids);
 }
 
-void RTCRtpSenderImpl::ReplaceTrack(MediaStreamComponent* with_track,
-                                    base::OnceCallback<void(bool)> callback) {
+void RTCRtpSenderImpl::ReplaceTrack(
+    MediaStreamComponent* with_track,
+    CrossThreadOnceFunction<void(bool)> callback) {
   internal_->ReplaceTrack(with_track, std::move(callback));
 }
 

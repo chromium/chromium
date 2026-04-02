@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_transceiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtp_sender_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
@@ -160,7 +161,7 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   // ReplaceTrack() without having a blink::RTCVoidRequest, which can only be
   // constructed inside of blink.
   void ReplaceTrack(MediaStreamComponent* with_track,
-                    base::OnceCallback<void(bool)> callback);
+                    CrossThreadOnceFunction<void(bool)> callback);
   // Removes this sender's track from its PeerConnection. Only used in Plan B.
   bool RemoveFromPeerConnection(webrtc::PeerConnectionInterface* pc);
 
