@@ -93,7 +93,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
 #endif
 
@@ -1331,7 +1331,7 @@ TEST_F(ChromePasswordManagerClientTest, CanShowBubbleOnURL) {
       {url::kFileSystemScheme, true},
 
       {"invalid-scheme-i-just-made-up", false},
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       {extensions::kExtensionScheme, false},
 #endif
       {url::kAboutScheme, false},
