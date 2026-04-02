@@ -127,7 +127,7 @@ public class SelectActionMenuHelperTest {
         assertEquals(R.id.select_action_menu_cut, menuItems.get(0).id);
         assertEquals(R.id.select_action_menu_copy, menuItems.get(1).id);
         assertEquals(android.R.id.paste, menuItems.get(2).id);
-        assertEquals(R.id.select_action_menu_paste_as_plain_text, menuItems.get(3).id);
+        assertEquals(android.R.id.pasteAsPlainText, menuItems.get(3).id);
         assertEquals(R.id.select_action_menu_share, menuItems.get(4).id);
         assertEquals(R.id.select_action_menu_select_all, menuItems.get(5).id);
         assertEquals(R.id.select_action_menu_web_search, menuItems.get(6).id);
@@ -147,7 +147,7 @@ public class SelectActionMenuHelperTest {
         assertEquals(R.id.select_action_menu_cut, menuItems.get(0).id);
         assertEquals(R.id.select_action_menu_copy, menuItems.get(1).id);
         assertEquals(android.R.id.paste, menuItems.get(2).id);
-        assertEquals(R.id.select_action_menu_paste_as_plain_text, menuItems.get(3).id);
+        assertEquals(android.R.id.pasteAsPlainText, menuItems.get(3).id);
         assertEquals(R.id.select_action_menu_select_all, menuItems.get(4).id);
         assertEquals(R.id.select_action_menu_share, menuItems.get(5).id);
         assertEquals(R.id.select_action_menu_web_search, menuItems.get(6).id);
