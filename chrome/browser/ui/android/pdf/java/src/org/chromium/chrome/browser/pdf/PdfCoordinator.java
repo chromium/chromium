@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.pdf.PdfPoint;
 import androidx.pdf.PdfSandboxHandle;
 import androidx.pdf.SandboxedPdfLoader;
 import androidx.pdf.content.ExternalLink;
@@ -167,19 +168,51 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         private @Nullable PdfActionsDelegate mDelegate;
         private @Nullable PdfView mPdfView;
 
+        public void setPdfViewForTesting(PdfView pdfView) {
+            this.mPdfView = pdfView;
+        }
+
         @Override
         public void onPdfViewCreated(PdfView pdfView) {
             super.onPdfViewCreated(pdfView);
             mPdfView = pdfView;
-        }
 
-        /** Returns the PdfView from the PdfViewerFragment. */
-        public @Nullable PdfView getPdfViewFromFragment() {
-            return mPdfView;
-        }
+            // TODO(crbug.com/498644542): call getPageCount() within onLoadDocumentSuccess()
+            if (PdfUtils.isInlinePdfV2Enabled()) {
+                // Add a one-time listener to track total page count and remove itself afterwards.
+                // This listener is necessary because getPdfDocument() can return null up until the
+                // viewport is changed.
+                mPdfView.addOnViewportChangedListener(
+                        new PdfView.OnViewportChangedListener() {
+                            @Override
+                            public void onViewportChanged(
+                                    int firstVisiblePage,
+                                    int visiblePagesCount,
+                                    android.util.SparseArray pageLocations,
+                                    float zoomLevel) {
+                                if (mDelegate != null
+                                        && mPdfView != null
+                                        && mPdfView.getPdfDocument() != null) {
+                                    mDelegate.onDocumentLoaded(
+                                            mPdfView.getPdfDocument().getPageCount());
+                                    mPdfView.post(
+                                            () -> {
+                                                if (mPdfView != null) {
+                                                    mPdfView.removeOnViewportChangedListener(this);
+                                                }
+                                            });
+                                }
+                            }
+                        });
 
-        public void setPdfViewForTesting(PdfView pdfView) {
-            mPdfView = pdfView;
+                // Add a persistent listener to track page changes.
+                mPdfView.addOnViewportChangedListener(
+                        (firstVisiblePage, visiblePagesCount, pageLocations, zoomLevel) -> {
+                            if (mDelegate != null) {
+                                mDelegate.onPageChanged(firstVisiblePage);
+                            }
+                        });
+            }
         }
 
         /** Public no-arg constructor for FragmentManager. */
@@ -231,6 +264,26 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
                 PdfUtils.recordPdfLoadResultDetail(PdfLoadResult.ERROR);
             }
             mIsLoadDocumentError = true;
+        }
+
+        void scrollToPage(int pageIndex) {
+            if (mPdfView != null) {
+                // 1. Get the current height of the view in pixels.
+                float viewHeightPx = mPdfView.getHeight();
+
+                // 2. Get the current zoom level.
+                float currentZoom = mPdfView.getZoom();
+
+                // 3. Calculate half of the viewport height in PDF content units (points).
+                // Formula: (Pixels / 2) / Zoom = Content Points
+                // When the viewer "centers" this point, the top of the page (0,0)
+                // will be pushed exactly to the top of the screen.
+                float yOffsetPoints = (viewHeightPx / 2f) / currentZoom;
+
+                // 4. Use the single-argument scrollToPosition.
+                // The internal logic will center this offset, resulting in a top-aligned page.
+                mPdfView.scrollToPosition(new PdfPoint(pageIndex, 0f, yOffsetPoints));
+            }
         }
     }
 
@@ -398,6 +451,10 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         ResettersForTesting.register(() -> sSkipLoadPdfForTesting = oldValue);
     }
 
+    static float calculateYOffsetPoints(float viewHeightPx, float currentZoom) {
+        return (viewHeightPx / 2f) / currentZoom;
+    }
+
     /**
      * Navigates to the specified page.
      *
@@ -405,8 +462,18 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
      */
     @Override
     public void navigateToPage(int pageIndex) {
-        if (mChromePdfViewerFragment.getPdfViewFromFragment() != null) {
-            mChromePdfViewerFragment.getPdfViewFromFragment().scrollToPage(pageIndex);
-        }
+        mChromePdfViewerFragment.scrollToPage(pageIndex);
+    }
+
+    @Override
+    public void onDocumentLoaded(int pageCount) {
+        assert mToolbarCoordinator != null;
+        mToolbarCoordinator.onDocumentLoaded(pageCount);
+    }
+
+    @Override
+    public void onPageChanged(int pageIndex) {
+        assert mToolbarCoordinator != null;
+        mToolbarCoordinator.onViewportChanged(pageIndex);
     }
 }

@@ -85,6 +85,18 @@ public class PdfToolbarCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnViewportChanged_indexing() {
+        // Input is 0-indexed (page 0), output should be 1-indexed ("1")
+        mPdfToolbarCoordinator.onViewportChanged(0);
+        TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
+        Assert.assertEquals("1", currentPage.getText().toString());
+
+        // Input is 0-indexed (page 5), output should be 1-indexed ("6")
+        mPdfToolbarCoordinator.onViewportChanged(5);
+        Assert.assertEquals("6", currentPage.getText().toString());
+    }
+
+    @Test
     public void testViewInit() {
         TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
         TextView pageCountDivider = mPdfPageView.findViewById(R.id.page_count_divider);
@@ -96,5 +108,16 @@ public class PdfToolbarCoordinatorUnitTest {
                         + pageCount.getText().toString());
         TextView zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
         Assert.assertEquals("100%", zoomValue.getText().toString());
+    }
+
+    @Test
+    public void testOnDocumentLoaded() {
+        // Initial state from constructor is 99/100
+        mPdfToolbarCoordinator.onDocumentLoaded(50);
+        TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
+        TextView pageCount = mPdfPageView.findViewById(R.id.page_count);
+        // Current page remains 99 (default), total page count becomes 50
+        Assert.assertEquals("99", currentPage.getText().toString());
+        Assert.assertEquals("50", pageCount.getText().toString());
     }
 }

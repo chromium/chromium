@@ -51,11 +51,19 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     }
 
     /**
+     * Called when the PDF document is successfully loaded.
+     *
+     * @param pageCount The total page count of the document.
+     */
+    public void onDocumentLoaded(int pageCount) {
+        mModel.set(PdfToolbarProperties.TOTAL_PAGE_COUNT, pageCount);
+    }
+
+    /**
      * Called when the viewport changes on the PDF viewer.
      *
      * @param firstVisiblePage The first visible page.
      */
-    // TODO(crbug.com/479584455): Update the total page count in the top toolbar.
     public void onViewportChanged(int firstVisiblePage) {
         // Fetch absolute state from engine as the single source of truth.
         // Keep the model 1-indexed.

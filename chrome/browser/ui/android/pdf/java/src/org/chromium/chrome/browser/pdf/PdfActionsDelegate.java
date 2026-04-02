@@ -18,4 +18,18 @@ public interface PdfActionsDelegate {
      * @return True if the link was handled, false otherwise.
      */
     boolean onLinkClicked(Uri uri);
+
+    /**
+     * Called when the PDF document is successfully loaded.
+     *
+     * @param pageCount The total page count.
+     */
+    default void onDocumentLoaded(int pageCount) {}
+
+    /**
+     * Called when the PDF page is changed.
+     *
+     * @param pageIndex The 0-based index of the current page.
+     */
+    default void onPageChanged(int pageIndex) {}
 }
