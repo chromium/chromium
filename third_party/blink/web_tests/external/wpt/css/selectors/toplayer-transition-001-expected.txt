@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] :focus-within should be adjusted on ancestors when popover enters/exits top layer.
-  assert_false: container should not match :focus-within after showPopover expected false got true
-[FAIL] :hover should be adjusted on ancestors when popover enters/exits top layer.
-  assert_false: container should not match :hover after showPopover expected false got true
-Harness: the test ran to completion.
-

@@ -11262,7 +11262,54 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
   if (IsInTopLayer() == in_top_layer) {
     return;
   }
+
+  bool user_action_stops_at_top_layer =
+      RuntimeEnabledFeatures::UserActionPseudosStopAtTopLayerEnabled();
+  bool update_focus_within = user_action_stops_at_top_layer && HasFocusWithin();
+  bool update_hover = user_action_stops_at_top_layer && IsHovered();
+  bool update_active = user_action_stops_at_top_layer && IsActive();
+
+  Element* hover_element = nullptr;
+  Element* active_element = nullptr;
+  if (update_hover) {
+    hover_element = GetDocument().HoverElement();
+    GetDocument().UpdateHoverState(nullptr);
+  }
+  if (update_active) {
+    active_element = GetDocument().GetActiveElement();
+    GetDocument().UpdateActiveState(/*is_active=*/false,
+                                    /*update_active_chain=*/false, nullptr);
+  }
+  if (update_focus_within) {
+    // UserActionElementTraversal::Next is roughly a
+    // FlatTreeTraversal::ParentElement traversal, except that it stops at top
+    // layer elements.
+    if (Element* parent = UserActionElementTraversal::Next(*this)) {
+      CHECK(in_top_layer);
+      parent->SetHasFocusWithinUpToAncestor(
+          /*has_focus_within=*/false, /*ancestor=*/nullptr,
+          /*need_snap_container_search=*/false);
+    }
+  }
+
   SetElementFlag(ElementFlags::kIsInTopLayer, in_top_layer);
+
+  if (update_focus_within) {
+    if (Element* parent = UserActionElementTraversal::Next(*this)) {
+      CHECK(!in_top_layer);
+      parent->SetHasFocusWithinUpToAncestor(
+          /*has_focus_within=*/true, /*ancestor=*/nullptr,
+          /*need_snap_container_search=*/false);
+    }
+  }
+  if (update_active) {
+    GetDocument().UpdateActiveState(
+        /*is_active=*/true, /*update_active_chain=*/true, active_element);
+  }
+  if (update_hover) {
+    GetDocument().UpdateHoverState(hover_element);
+  }
+
   if (!isConnected()) {
     return;
   }

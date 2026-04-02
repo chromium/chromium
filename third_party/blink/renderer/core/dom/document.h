@@ -1712,7 +1712,7 @@ class CORE_EXPORT Document : public ContainerNode,
     return top_layer_elements_;
   }
   void ScheduleForTopLayerRemoval(Element*, TopLayerReason);
-  void RemoveFinishedTopLayerElements();
+  bool RemoveFinishedTopLayerElements();
   // Returns std::nullopt if the provided element is not scheduled for top
   // layer removal. If it is scheduled for removal, then this returns the reason
   // for the element being in the top layer.
@@ -2324,6 +2324,9 @@ class CORE_EXPORT Document : public ContainerNode,
   void AddOverscrollCommandInvoker(Element& invoker);
   void RemoveOverscrollCommandInvoker(Element& invoker);
 
+  void UpdateActiveState(bool is_active, bool update_active_chain, Element*);
+  void UpdateHoverState(Element*);
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -2585,9 +2588,6 @@ class CORE_EXPORT Document : public ContainerNode,
     in_pseudo_has_checking_ = true;
   }
   void LeavePseudoHasChecking() { in_pseudo_has_checking_ = false; }
-
-  void UpdateActiveState(bool is_active, bool update_active_chain, Element*);
-  void UpdateHoverState(Element*);
 
   const AtomicString& BodyAttributeValue(const QualifiedName&) const;
   void SetBodyAttribute(const QualifiedName&, const AtomicString&);

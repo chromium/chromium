@@ -8646,9 +8646,9 @@ void Document::ScheduleForTopLayerRemoval(Element* element,
   ScheduleLayoutTreeUpdateIfNeeded();
 }
 
-void Document::RemoveFinishedTopLayerElements() {
+bool Document::RemoveFinishedTopLayerElements() {
   if (top_layer_elements_pending_removal_.empty()) {
-    return;
+    return false;
   }
   HeapVector<Member<Element>> to_remove;
   for (const auto& pending_removal : top_layer_elements_pending_removal_) {
@@ -8662,9 +8662,12 @@ void Document::RemoveFinishedTopLayerElements() {
       to_remove.push_back(element);
     }
   }
+  bool removed = false;
   for (Element* remove_element : to_remove) {
     RemoveFromTopLayerImmediately(remove_element);
+    removed = true;
   }
+  return removed;
 }
 
 void Document::RemoveFromTopLayerImmediately(Element* element) {
