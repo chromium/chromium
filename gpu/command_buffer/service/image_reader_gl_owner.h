@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
@@ -33,6 +34,9 @@ namespace gpu {
 // data present in the surface.
 class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
                                             public RefCountedLockHelperDrDc {
+  // TODO(https://crbug.com/496519208): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   ImageReaderGLOwner(const ImageReaderGLOwner&) = delete;
   ImageReaderGLOwner& operator=(const ImageReaderGLOwner&) = delete;
