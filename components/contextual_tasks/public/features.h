@@ -203,6 +203,9 @@ extern bool GetIsContextualTasksSuggestionsEnabled();
 // Whether Smart Tab Sharing is enabled for the ContextualTasksContext feature.
 extern bool GetIsSmartTabSharingEnabled();
 
+// Returns the timeout for smart tab sharing tab selection.
+extern base::TimeDelta GetSmartTabSharingTabSelectionTimeout();
+
 // Enables tab auto-chip for contextual tasks. When disabled, no suggested
 // chips will be shown in the composebox automatically.
 extern bool GetIsTabAutoSuggestionChipEnabled();

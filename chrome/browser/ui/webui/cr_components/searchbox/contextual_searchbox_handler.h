@@ -43,10 +43,7 @@ class Profile;
 class SkBitmap;
 
 namespace contextual_tasks {
-
-#if !BUILDFLAG(IS_ANDROID)
 class ContextualTasksContextService;
-#endif
 }  // namespace contextual_tasks
 
 namespace lens {
@@ -303,6 +300,13 @@ class ContextualSearchboxHandler
   void OnPreviewReceived(GetTabPreviewCallback callback,
                          const SkBitmap& preview_bitmap);
 
+  void ContextualizeQueryWithRelevantTabsAndOpenUrl(
+      const std::string& query_text,
+      WindowOpenDisposition disposition,
+      omnibox::ChromeAimEntryPoint aim_entry_point,
+      std::map<std::string, std::string> additional_params,
+      std::vector<content::WebContents*> relevant_tabs);
+
   std::optional<base::Uuid> GetTaskId();
 
   std::optional<std::pair<base::UnguessableToken,
@@ -311,10 +315,8 @@ class ContextualSearchboxHandler
 
   std::unique_ptr<contextual_tasks::QueryContextualizer> query_contextualizer_;
 
-#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<contextual_tasks::ContextualTasksContextService>
       contextual_tasks_context_service_;
-#endif
 
   // The context controller this searchbox is listening to for file upload
   // status updates.

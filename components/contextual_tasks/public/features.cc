@@ -133,6 +133,11 @@ const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing(
     "ContextualTasksContextSmartTabSharing",
     false);
 
+const base::FeatureParam<base::TimeDelta> kSmartTabSharingTabSelectionTimeout(
+    &kContextualTasksContext,
+    "ContextualTasksContextSmartTabSharingTabSelectionTimeout",
+    base::Milliseconds(300));
+
 const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
     &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
     1.0};
@@ -411,6 +416,13 @@ bool GetIsContextualTasksSuggestionsEnabled() {
 bool GetIsSmartTabSharingEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksContext) &&
          kContextualTasksContextSmartTabSharing.Get();
+}
+
+base::TimeDelta GetSmartTabSharingTabSelectionTimeout() {
+  if (kSmartTabSharingTabSelectionTimeout.Get().is_positive()) {
+    return kSmartTabSharingTabSelectionTimeout.Get();
+  }
+  return base::Milliseconds(300);
 }
 
 bool GetIsTabAutoSuggestionChipEnabled() {
