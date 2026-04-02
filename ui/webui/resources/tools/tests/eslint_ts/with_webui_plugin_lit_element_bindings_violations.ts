@@ -31,7 +31,6 @@ export class LitElementBindingsViolationsElement extends CrLitElement {
       limits: {type: Object},
       label: {type: String},
       errorMessage: {type: String},
-      someBooleanProp: {type: Boolean},
       someArrayProp: {type: Array},
     };
   }
@@ -41,8 +40,6 @@ export class LitElementBindingsViolationsElement extends CrLitElement {
   accessor value: number[] = [0];
   accessor errorMessage: string = '';
   accessor label: string = 'hello world';
-  // Intentionally mismatching Lit reactive properties type.
-  accessor someBooleanProp: boolean|number = false;
   accessor someArrayProp: string = '';
   trustedHtml: TrustedHTML = window.trustedTypes!.emptyHTML;
 

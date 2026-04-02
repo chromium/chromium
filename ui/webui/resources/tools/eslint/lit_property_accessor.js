@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import assert from 'node:assert';
 
-import {isCrLitElementSubclass} from './query_utils.js';
+import {getLitPropertyType, isCrLitElementSubclass} from './query_utils.js';
 
 export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
   name: 'lit-property-accessor',
@@ -20,6 +21,10 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
           'Missing \'accessor\' keyword when declaring Lit reactive property \'{{propName}}\' in class \'{{className}}\'.',
       extraAccessorKeyword:
           'Unnecessary \'accessor\' keyword when declaring regular (non Lit reactive) property \'{{propName}}\' in class \'{{className}}\'.',
+      propertyTypeMismatch:
+          'Property type mismatch: {{propertyName}} is declared as {{declaredType}} reactive property but is typed as {{tsType}}.',
+      missingClassMember:
+          'Missing class member declaration for Lit reactive property \'{{propName}}\'',
     },
   },
   defaultOptions: [],
@@ -34,7 +39,8 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
     }
 
     let isLitElement = false;
-    let litProperties = null;  // Set<string>|null
+    let litProperties = null;   // Map<string, string|null>
+    let seenProperties = null;  // Set<string>
     let currentClass = null;   // TSESTree.ClassDeclaration|null
 
     return {
@@ -42,10 +48,12 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
         isLitElement = isCrLitElementSubclass(node, context.sourceCode.ast);
 
         if (!isLitElement) {
+          currentClass = null;
           return;
         }
 
-        litProperties = new Set();
+        litProperties = new Map();
+        seenProperties = new Set();
         currentClass = node;
       },
       'ClassDeclaration > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property'(
@@ -54,7 +62,10 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
           return;
         }
 
-        litProperties.add(node.key.name);
+        const typeProp = node.value.properties.find(p => p.key.name === 'type');
+        // Required by Chromium's patch of Lit's reactive-element.d.ts.
+        assert.ok(typeProp);
+        litProperties.set(node.key.name, typeProp.value.name);
       },
       'ClassDeclaration > ClassBody > PropertyDefinition'(node) {
         if (!isLitElement) {
@@ -62,6 +73,7 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
         }
 
         if (litProperties.has(node.key.name)) {
+          seenProperties.add(node.key.name);
           context.report({
             node,
             messageId: 'missingAccessorKeyword',
@@ -86,6 +98,47 @@ export const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
               className: currentClass.id.name,
             },
           });
+          return;
+        }
+
+        seenProperties.add(node.key.name);
+
+        // Check Lit property type is compatible with TS type.
+        const declaredType = litProperties.get(node.key.name);
+        assert.ok(declaredType);
+        const checker = services.program.getTypeChecker();
+        const tsNode = services.esTreeNodeToTSNodeMap.get(node);
+        const tsType = checker.getTypeAtLocation(tsNode);
+        const expressionLitType = getLitPropertyType(tsType, checker);
+
+        if (declaredType !== expressionLitType) {
+          const tsTypeStr = checker.typeToString(tsType);
+          context.report({
+            node,
+            messageId: 'propertyTypeMismatch',
+            data: {
+              propertyName: node.key.name,
+              declaredType: declaredType,
+              tsType: tsTypeStr,
+            },
+          });
+        }
+      },
+      'ClassDeclaration:exit'(node) {
+        if (!isLitElement || node !== currentClass) {
+          return;
+        }
+
+        for (const [propName, _] of litProperties) {
+          if (!seenProperties.has(propName)) {
+            context.report({
+              node: currentClass,
+              messageId: 'missingClassMember',
+              data: {
+                propName: propName,
+              },
+            });
+          }
         }
       },
     };

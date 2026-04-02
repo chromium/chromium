@@ -5,6 +5,7 @@
 import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/types/dist/index.js';
 import {AST_NODE_TYPES} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
+import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
 import path from 'node:path';
 
@@ -141,4 +142,58 @@ export function extractClassImport(
     type: type,
     fileName: path.basename(classImportNode.source.value).replace('.js', '.ts'),
   };
+}
+
+function isArrayType(typeStr: string): boolean {
+  return typeStr.endsWith('[]') || typeStr.startsWith('Array<');
+}
+
+function isObjectType(type: ts.Type, typeStr: string): boolean {
+  if (isArrayType(typeStr)) {
+    return false;
+  }
+  if ((type.flags & (ts.TypeFlags.Object | ts.TypeFlags.Intersection)) !== 0) {
+    return true;
+  }
+  return typeStr.startsWith('Record<') || typeStr.startsWith('{') ||
+      typeStr === 'object';
+}
+
+export function getLitPropertyType(
+    type: ts.Type, checker: ts.TypeChecker): string|null {
+  const nonNullableType = checker.getNonNullableType(type);
+  const nonNullableTypeStr = checker.typeToString(nonNullableType);
+  if (nonNullableTypeStr === 'TrustedHTML') {
+    return 'String';
+  }
+
+  if (checker.isTypeAssignableTo(nonNullableType, checker.getBooleanType())) {
+    return 'Boolean';
+  }
+
+  if (checker.isTypeAssignableTo(nonNullableType, checker.getStringType())) {
+    return 'String';
+  }
+
+  if (checker.isTypeAssignableTo(nonNullableType, checker.getNumberType())) {
+    return 'Number';
+  }
+
+  if (isArrayType(nonNullableTypeStr)) {
+    return 'Array';
+  }
+
+  if (isObjectType(type, nonNullableTypeStr)) {
+    return 'Object';
+  }
+
+  if ((type.flags & ts.TypeFlags.Union) !== 0) {
+    const union = type as ts.UnionType;
+    if (union.types.some(
+            (t: ts.Type) => isObjectType(t, checker.typeToString(t)))) {
+      return 'Object';
+    }
+  }
+
+  return null;
 }

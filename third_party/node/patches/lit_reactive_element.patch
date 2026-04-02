@@ -1,7 +1,7 @@
-diff --git a/node_modules/@lit/reactive-element/reactive-element.d.ts b/node_modules/@lit/reactive-element/reactive-element.bak.d.ts
-index 13df13f..45142bc 100644
+diff --git a/node_modules/@lit/reactive-element/reactive-element.d.ts b/node_modules/@lit/reactive-element/reactive-element.d.ts
+index c5c21f4ff4a1a..2fe682da147d3 100644
 --- a/node_modules/@lit/reactive-element/reactive-element.d.ts
-+++ b/node_modules/@lit/reactive-element/reactive-element.bak.d.ts
++++ b/node_modules/@lit/reactive-element/reactive-element.d.ts
 @@ -57,7 +57,9 @@ type AttributeConverter<Type = unknown, TypeHint = unknown> = ComplexAttributeCo
  /**
   * Defines options for a property accessor.
@@ -13,3 +13,15 @@ index 13df13f..45142bc 100644
      /**
       * When set to `true`, indicates the property is internal private state. The
       * property should not be set by users. When using TypeScript, this property
+@@ -78,8 +80,10 @@ export interface PropertyDeclaration<Type = unknown, TypeHint = unknown> {
+      * Indicates the type of the property. This is used only as a hint for the
+      * `converter` to determine how to convert the attribute
+      * to/from a property.
++     * Chromium patch to make this property required, since the type is
++     * validated against the declared TS type.
+      */
+-    readonly type?: TypeHint;
++    readonly type: TypeHint;
+     /**
+      * Indicates how to convert the attribute to/from a property. If this value
+      * is a function, it is used to convert the attribute value a the property

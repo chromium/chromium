@@ -128,9 +128,19 @@ class EslintTsTest(unittest.TestCase):
         "Unnecessary 'accessor' keyword when declaring regular (non Lit reactive) property 'prop3' in class 'SomeElement'",
         "Missing 'accessor' keyword when declaring Lit reactive property 'prop1' in class 'SomeOtherElement'",
         "Unnecessary 'accessor' keyword when declaring regular (non Lit reactive) property 'prop4' in class 'SomeOtherElement'",
+        "Property type mismatch: propMismatchedString is declared as String reactive property but is typed as number",
+        "Property type mismatch: propMismatchedNumber is declared as Number reactive property but is typed as string",
+        "Missing class member declaration for Lit reactive property 'propMissingNumber'",
+    ]
+    non_errors = [
+        "Property type mismatch: propEnumString is declared as String reactive property",
+        "Property type mismatch: propEnumNumber is declared as Number reactive property",
+        "Property type mismatch: propObjectType is declared as Object reactive property",
     ]
     for e in errors:
       self.assertTrue(e in str(context.exception))
+    for e in non_errors:
+      self.assertFalse(e in str(context.exception))
 
   def testWebUiEslintPlugin_PolymerPropertyDeclare(self):
     with self.assertRaises(RuntimeError) as context:
@@ -756,27 +766,21 @@ class EslintTsTest(unittest.TestCase):
             'attributeName': 'invalid',
             'propertyName': 'errorMessage',
         },
+        _INCORRECT_BOOLEAN_ERROR % {
+            'attributeName': 'disabled',
+            'propertyName': 'buttonDisabled',
+        },
         _NO_TRUE_BINDING_ERROR % {
             'attributeName': 'readonly',
             'propertyName': 'readonly',
         },
         _NO_FALSE_BINDING_ERROR % {
-            'attributeName': 'disabled',
-            'propertyName': 'disabled',
+            'attributeName': 'hidden',
+            'propertyName': 'hidden',
         },
         _NO_FALSE_BINDING_ERROR % {
             'attributeName': 'some-multi-word-attr',
             'propertyName': 'someMultiWordAttr',
-        },
-        _PROPERTY_TYPE_MISMATCH_ERROR % {
-            'propertyName': 'someBooleanProp',
-            'declaredType': 'Boolean',
-            'tsType': 'number | boolean',
-        },
-        _PROPERTY_TYPE_MISMATCH_ERROR % {
-            'propertyName': 'someArrayProp',
-            'declaredType': 'Array',
-            'tsType': 'string',
         },
         _INCORRECT_BOOLEAN_ERROR % {
             'attributeName': 'hidden',
@@ -787,14 +791,15 @@ class EslintTsTest(unittest.TestCase):
             'propertyName': 'this.getLabels()',
             'propertyExpression': '.ariaLabel=',
         },
-        _PROPERTY_TYPE_MISMATCH_ERROR % {
-            'propertyName': 'buttonDisabled',
-            'declaredType': 'Boolean',
-            'tsType': 'boolean | undefined',
-        },
         _PROPERTY_NOT_FOUND_ERROR % {
             'propertyName': 'nonExistentProperty',
             'tagName': 'hello-world-child',
+        },
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'mixinString',
+            'tagName': 'hello-world-child',
+            'expectedType': 'string',
+            'providedType': 'boolean',
         },
         _BINDING_TYPE_MISMATCH_ERROR % {
             'propertyName': 'mixinString',

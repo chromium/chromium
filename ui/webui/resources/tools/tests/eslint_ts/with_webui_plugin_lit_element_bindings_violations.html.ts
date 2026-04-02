@@ -15,8 +15,8 @@ export function getHtml(this: BindingsViolationsElement) {
     ?disabled="${this.disabled}" error-message="${this.errorMessage}"
     min="${this.limits.min}" max="${this.limits.max}"
     ?invalid="${this.errorMessage}" ?readonly="${true}"
-    ?disabled="${false}" ?some-multi-word-attr="${false}"
-    ?hidden="${this.someBooleanProp}" some-array="${this.someArrayProp}">
+    ?hidden="${false}" ?some-multi-word-attr="${false}"
+    some-array="${this.someArrayProp}">
 </cr-input>
 <hello-world-child .fooString="${this.value}" .fooNumber="${this.label}"
     .fooArray="${this.getErrorMessage()}"

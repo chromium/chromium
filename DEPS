@@ -849,10 +849,10 @@ deps = {
     'condition': 'non_git_source',
     'objects': [
       {
-        'object_name': 'c325dbe3b0db9de9cea58d902481381cec246d27',
-        'sha256sum': '0d293fee32e8de20e4d49b8312f94b93333cd3432e9c920c2b5aa0c23cb51c8e',
-        'size_bytes': 11604545,
-        'generation': 1774920747734158,
+        'object_name': '6c15205ac08a854251151c1fbeb8978d2ca5a022',
+        'sha256sum': '2ca9e4b10119399283bf9e9da695cd747491921f77063d54729afcbeb304e6aa',
+        'size_bytes': 11521752,
+        'generation': 1775157031622617,
         'output_file': 'node_modules.tar.gz',
       },
     ],
