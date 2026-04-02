@@ -23,6 +23,7 @@ public class TabBottomSheetMediator {
     private final PropertyModel mModel;
     private final TouchArbitrator mTouchArbitrator;
     private final float mFullheightRatio;
+    private final float mKeyboardShowingHeightRatio;
 
     private @SheetState int mCurrentSheetState = SheetState.HIDDEN;
 
@@ -31,8 +32,8 @@ public class TabBottomSheetMediator {
         mModel = model;
         mTouchArbitrator = new TouchArbitrator();
         // Setting statically right now, can be modified later to be set dynamically based on device
-        // type.
         mFullheightRatio = 0.7f;
+        mKeyboardShowingHeightRatio = 0.9f;
     }
 
     void onSheetStateChanged(@SheetState int state, boolean hasPeekView) {
@@ -59,13 +60,18 @@ public class TabBottomSheetMediator {
     }
 
     /**
-     * Sets the sheets height to 70% of the bottom sheet container height. If the bottom sheet had
-     * never been called before, BottomSheetController.getContainerHeight() returns 0. To avoid this
-     * we set the height after the sheet has been initialized. TODO(crbug.com/486916366): Temporary
-     * fix until bottom sheet resizing is implemented.
+     * Sets the sheets height to a ratio of the bottom sheet container height. If the bottom sheet
+     * had never been called before, BottomSheetController.getContainerHeight() returns 0. To avoid
+     * this we set the height after the sheet has been initialized. TODO(crbug.com/486916366):
+     * Temporary fix until bottom sheet resizing is implemented.
+     *
+     * @param maxSheetHeight The maximum height of the bottom sheet container.
+     * @param isKeyboardShowing Whether the keyboard is currently showing, which determines the
+     *     height ratio.
      */
-    void setMaxSheetHeight(int maxSheetHeight) {
-        int sheetHeight = Math.round(maxSheetHeight * mFullheightRatio);
+    void setMaxSheetHeight(int maxSheetHeight, boolean isKeyboardShowing) {
+        float ratio = isKeyboardShowing ? mKeyboardShowingHeightRatio : mFullheightRatio;
+        int sheetHeight = Math.round(maxSheetHeight * ratio);
         mModel.set(TabBottomSheetProperties.SHEET_HEIGHT, sheetHeight);
     }
 
@@ -116,5 +122,9 @@ public class TabBottomSheetMediator {
 
     float getFullHeightRatioForTesting() {
         return mFullheightRatio;
+    }
+
+    float getKeyboardShowingHeightRatioForTesting() {
+        return mKeyboardShowingHeightRatio;
     }
 }

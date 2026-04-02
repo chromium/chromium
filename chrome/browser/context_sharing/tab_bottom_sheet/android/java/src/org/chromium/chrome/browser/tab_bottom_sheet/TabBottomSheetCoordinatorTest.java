@@ -43,6 +43,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabBottomSheetCoordinator}. */
@@ -54,6 +56,8 @@ public class TabBottomSheetCoordinatorTest {
 
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private CoBrowseViews mCoBrowseViews;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Captor private ArgumentCaptor<TabBottomSheetContent> mBottomSheetContentArgumentCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverArgumentCaptor;
     @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksArgumentCaptor;
@@ -68,10 +72,12 @@ public class TabBottomSheetCoordinatorTest {
         mContext = spy(ApplicationProvider.getApplicationContext());
         mView = new FrameLayout(mContext);
         when(mCoBrowseViews.getView()).thenReturn(mView);
+        when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
 
         mCoordinator =
                 new TabBottomSheetCoordinator(
-                        mContext, mMockBottomSheetController, mCoBrowseViews, null);
+                        mContext, mWindowAndroid, mMockBottomSheetController, mCoBrowseViews, null);
+
         mCoordinatorModel = mCoordinator.getModelForTesting();
     }
 
@@ -219,5 +225,31 @@ public class TabBottomSheetCoordinatorTest {
         // In destroy(), hideContent is called, but collapseSheet is what the runnable does.
         verify(mMockBottomSheetController, never()).collapseSheet(anyBoolean());
         assertFalse(mCoordinator.isExpectingLayoutChangeForTesting());
+    }
+
+    @Test
+    public void testOnContainerSizeChanged_withKeyboard() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        int containerHeight = 1000;
+        when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(true);
+
+        observer.onContainerSizeChanged(500, containerHeight);
+
+        int expectedHeight = Math.round(containerHeight * 0.9f);
+        assertTrue(expectedHeight == mCoordinatorModel.get(TabBottomSheetProperties.SHEET_HEIGHT));
+    }
+
+    @Test
+    public void testOnContainerSizeChanged_withoutKeyboard() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        int containerHeight = 1000;
+        when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(false);
+
+        observer.onContainerSizeChanged(500, containerHeight);
+
+        int expectedHeight = Math.round(containerHeight * 0.7f);
+        assertTrue(expectedHeight == mCoordinatorModel.get(TabBottomSheetProperties.SHEET_HEIGHT));
     }
 }

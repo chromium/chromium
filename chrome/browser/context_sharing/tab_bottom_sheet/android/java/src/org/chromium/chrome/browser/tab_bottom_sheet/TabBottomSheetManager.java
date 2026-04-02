@@ -135,7 +135,12 @@ public class TabBottomSheetManager implements Destroyable {
         tryToCloseBottomSheet();
         mTabBottomSheetCoordinator =
                 new TabBottomSheetCoordinator(
-                        mContext, mBottomSheetController, coBrowseViews, this::onBottomSheetClosed);
+                        mContext,
+                        mWindowAndroid,
+                        mBottomSheetController,
+                        coBrowseViews,
+                        this::onBottomSheetClosed);
+
         if (mIsSuppressedOnTabSwitcher) {
             // We are currently in the tab switcher, save this sheet to be shown when we return to a
             // tab.

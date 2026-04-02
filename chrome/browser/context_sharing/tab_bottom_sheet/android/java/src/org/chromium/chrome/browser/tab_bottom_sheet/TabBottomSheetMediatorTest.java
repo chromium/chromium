@@ -55,7 +55,17 @@ public class TabBottomSheetMediatorTest {
     public void testSetMaxSheetHeight_setsSheetHeight() {
         int maxHeight = 1000;
         int expectedHeight = Math.round(maxHeight * mMediator.getFullHeightRatioForTesting());
-        mMediator.setMaxSheetHeight(maxHeight);
+        mMediator.setMaxSheetHeight(maxHeight, /* isKeyboardShowing= */ false);
+        assertEquals(expectedHeight, mModel.get(TabBottomSheetProperties.SHEET_HEIGHT));
+    }
+
+    @Test
+    @SmallTest
+    public void testSetMaxSheetHeight_keyboardShowing() {
+        int maxHeight = 1000;
+        int expectedHeight =
+                Math.round(maxHeight * mMediator.getKeyboardShowingHeightRatioForTesting());
+        mMediator.setMaxSheetHeight(maxHeight, /* isKeyboardShowing= */ true);
         assertEquals(expectedHeight, mModel.get(TabBottomSheetProperties.SHEET_HEIGHT));
     }
 

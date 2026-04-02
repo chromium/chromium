@@ -16,6 +16,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -40,6 +41,7 @@ public class TabBottomSheetCoordinator {
     private final PropertyModel mModel;
     private final CoBrowseViews mCoBrowseViews;
     private final TabBottomSheetMediator mMediator;
+    private final WindowAndroid mWindowAndroid;
 
     private @Nullable Runnable mOnClose;
     private @Nullable TabBottomSheetContent mSheetContent;
@@ -61,10 +63,12 @@ public class TabBottomSheetCoordinator {
      */
     TabBottomSheetCoordinator(
             Context context,
+            WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
             CoBrowseViews coBrowseViews,
             @Nullable Runnable onClose) {
         mContext = context;
+        mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
         mCoBrowseViews = coBrowseViews;
         mOnClose = onClose;
@@ -92,7 +96,9 @@ public class TabBottomSheetCoordinator {
             // We set it here, and if it changes later, we will update it in the observer.
             mContentView.post(
                     () -> {
-                        mMediator.setMaxSheetHeight(mBottomSheetController.getContainerHeight());
+                        boolean isKeyboard = isKeyboardShowing();
+                        mMediator.setMaxSheetHeight(
+                                mBottomSheetController.getContainerHeight(), isKeyboard);
                         if (startsExpanded
                                 && mSheetContent != null
                                 && mMediator.isSheetHeightSufficient()) {
@@ -189,11 +195,16 @@ public class TabBottomSheetCoordinator {
             public void onContainerSizeChanged(int containerWidth, int containerHeight) {
                 if (mExpectingLayoutChange) {
                     mBottomSheetController.collapseSheet(/* animate= */ true);
-                    mMediator.setMaxSheetHeight(containerHeight);
                     mExpectingLayoutChange = false;
                 }
+                mMediator.setMaxSheetHeight(containerHeight, isKeyboardShowing());
             }
         };
+    }
+
+    private boolean isKeyboardShowing() {
+        if (mWindowAndroid.getKeyboardDelegate() == null) return false;
+        return mWindowAndroid.getKeyboardDelegate().isKeyboardShowing(mCoBrowseViews.getView());
     }
 
     // Testing methods.
