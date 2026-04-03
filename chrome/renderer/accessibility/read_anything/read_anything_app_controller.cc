@@ -781,9 +781,12 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 
 ReadAnythingAppModel::DistillationMethod
 ReadAnythingAppController::GetInitialDistillationMethod(bool is_pdf) const {
-  // If |is_pdf| = true, override IsReadAnythingWithReadabilityEnabled flag and
-  // return kScreen2x.
-  return is_pdf || !features::IsReadAnythingWithReadabilityEnabled()
+  // If |is_pdf| = true, or if phrase highlighting is enabled, override
+  // IsReadAnythingWithReadabilityEnabled flag and return kScreen2x.
+  // TODO: crbug.com/444029483- Update the phrase highlighting implementation
+  // so that it works with Readability.
+  return is_pdf || !features::IsReadAnythingWithReadabilityEnabled() ||
+                 features::IsReadAnythingReadAloudPhraseHighlightingEnabled()
              ? ReadAnythingAppModel::DistillationMethod::kScreen2x
              : ReadAnythingAppModel::DistillationMethod::kReadability;
 }
@@ -1936,7 +1939,8 @@ bool ReadAnythingAppController::IsTsTextSegmentationEnabled() const {
 // Returns true if the experimental flag allowing testing with alternative
 // distillation methods such as Readability.js is enabled.
 bool ReadAnythingAppController::IsReadabilityEnabled() const {
-  return features::IsReadAnythingWithReadabilityEnabled();
+  return features::IsReadAnythingWithReadabilityEnabled() &&
+         !features::IsReadAnythingReadAloudPhraseHighlightingEnabled();
 }
 
 bool ReadAnythingAppController::IsLineFocusEnabled() const {

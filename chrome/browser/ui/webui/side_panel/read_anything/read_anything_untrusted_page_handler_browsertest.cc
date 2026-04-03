@@ -263,8 +263,8 @@ class ReadAnythingUntrustedPageHandlerTest
   }
 
   explicit ReadAnythingUntrustedPageHandlerTest(
-      std::vector<base::test::FeatureRef> enabled_features) {
-    std::vector<base::test::FeatureRef> disabled_features;
+      std::vector<base::test::FeatureRef> enabled_features,
+      std::vector<base::test::FeatureRef> disabled_features = {}) {
     if (IsImmersiveEnabled()) {
       enabled_features.push_back(features::kImmersiveReadAnything);
     } else {
@@ -2047,7 +2047,9 @@ class ReadAnythingUntrustedPageHandlerDistillerTest
  public:
   ReadAnythingUntrustedPageHandlerDistillerTest()
       : ReadAnythingUntrustedPageHandlerTest(
-            {features::kReadAnythingWithReadability}) {}
+            {features::kReadAnythingWithReadability,
+             features::kReadAnythingReadAloudTSTextSegmentation},
+            {features::kReadAnythingReadAloudPhraseHighlighting}) {}
 };
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
@@ -2271,7 +2273,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerAutomationTest,
   handler_ = CreateHandler();
 
   // The call happens inside CreateHandler. Let's make sure it's processed.
-  base::RunLoop().RunUntilIdle();
+  page_.receiver_.FlushForTesting();
 
   // Ensure that no distillation occurs.
   EXPECT_FALSE(handler_->dom_distiller_title().has_value());

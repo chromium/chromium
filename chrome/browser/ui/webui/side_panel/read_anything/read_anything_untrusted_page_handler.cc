@@ -438,7 +438,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
                 weak_factory_.GetWeakPtr()));
   }
 
-  if (features::IsReadAnythingWithReadabilityEnabled()) {
+  if (features::IsReadAnythingWithReadabilityEnabled() &&
+      !features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
     // Set the JavaScript world ID.
     if (!dom_distiller::DistillerJavaScriptWorldIdIsSet()) {
       dom_distiller::SetDistillerJavaScriptWorldId(
@@ -1376,8 +1377,13 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   VLOG(1) << "Sending non-pdf tree with id " << rfh->GetAXTreeID();
 
+  // TODO: crbug.com/444029483- Phrase highlighting currently doesn't work
+  // with the TS text segmentation method. Therefore, it doesn't work with
+  // Readability. Until phrase highlighting works with TSTextSegmentation,
+  // default to using Screen2x when the phrase highlighting flag is enabled.
   const bool use_readability =
-      features::IsReadAnythingWithReadabilityEnabled() && !is_pdf_with_frame_;
+      features::IsReadAnythingWithReadabilityEnabled() && !is_pdf_with_frame_ &&
+      !features::IsReadAnythingReadAloudPhraseHighlightingEnabled();
 
   if (use_readability) {
     // We must emit `kDistillationInProgress` before sending the new tree ID
@@ -1405,7 +1411,9 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 }
 void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
     content::WebContents* content) {
-  if (!features::IsReadAnythingWithReadabilityEnabled() || is_pdf_with_frame_) {
+  if (!features::IsReadAnythingWithReadabilityEnabled() ||
+      features::IsReadAnythingReadAloudPhraseHighlightingEnabled() ||
+      is_pdf_with_frame_) {
     return;
   }
 
@@ -1473,7 +1481,8 @@ void ReadAnythingUntrustedPageHandler::RecordDistillationSchemeHistogram(
 void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
     const dom_distiller::DistilledArticleProto* article_proto) {
   CHECK(features::IsReadAnythingWithReadabilityEnabled() &&
-        !is_pdf_with_frame_);
+        !is_pdf_with_frame_ &&
+        !features::IsReadAnythingReadAloudPhraseHighlightingEnabled());
   if (article_proto && article_proto->pages_size() > 0) {
     dom_distiller_title_ = article_proto->title();
 
