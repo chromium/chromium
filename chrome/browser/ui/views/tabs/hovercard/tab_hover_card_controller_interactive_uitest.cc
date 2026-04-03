@@ -966,6 +966,25 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       EnsureNotPresent(TabHoverCardBubbleView::kGroupCardElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest, HideHoverCardLock) {
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock> lock;
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUINewTabURL)),
+      HoverTabAt(0), CheckHovercardIsOpen(), UnhoverTarget(),
+      CheckHovercardIsClosed(), Do([this, &lock]() {
+        lock = GetTabStrip(browser())
+                   ->hover_card_controller_for_testing()
+                   ->GetHoverCardHideLock();
+      }),
+      HoverTabAt(0), CheckHovercardIsClosed(), Do([&lock]() { lock.reset(); }),
+      // After lock is released, we should not expect it to automatically show
+      // if it wasn't re-triggered by a new hover event.
+      CheckHovercardIsClosed(), HoverTabAt(1), CheckHovercardIsOpen());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     TabHoverCardFadeFooterWithDiscardInteractiveUiTest,

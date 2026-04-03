@@ -265,6 +265,16 @@ TabHoverCardController::TabHoverCardController(
   }
 }
 
+TabHoverCardController::ScopedHideHoverCardLock::ScopedHideHoverCardLock(
+    TabHoverCardController* controller)
+    : controller_(controller) {
+  controller_->OnLockCreated();
+}
+
+TabHoverCardController::ScopedHideHoverCardLock::~ScopedHideHoverCardLock() {
+  controller_->OnLockDestroyed();
+}
+
 TabHoverCardController::~TabHoverCardController() = default;
 
 bool TabHoverCardController::IsHoverCardVisible() const {
@@ -280,6 +290,11 @@ bool TabHoverCardController::IsHoverCardShowingForTab(
 void TabHoverCardController::UpdateHoverCard(
     HoverCardAnchorTarget* anchor_target,
     TabSlotController::HoverCardUpdateType update_type) {
+  if (hide_hover_card_lock_count_ > 0) {
+    anchor_target = nullptr;
+    update_type = TabSlotController::HoverCardUpdateType::kAnimating;
+  }
+
   // Never display a hover card for an invalid tab.
   if (anchor_target && !anchor_target->IsValidHoverCardTarget()) {
     anchor_target = nullptr;
@@ -340,6 +355,21 @@ void TabHoverCardController::UpdateHoverCard(
 
 void TabHoverCardController::PreventImmediateReshow() {
   last_mouse_exit_timestamp_ = base::TimeTicks();
+}
+
+std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>
+TabHoverCardController::GetHoverCardHideLock() {
+  return std::make_unique<ScopedHideHoverCardLock>(this);
+}
+
+void TabHoverCardController::OnLockCreated() {
+  hide_hover_card_lock_count_++;
+  delayed_show_timer_.Stop();
+  HideHoverCard();
+}
+
+void TabHoverCardController::OnLockDestroyed() {
+  hide_hover_card_lock_count_--;
 }
 
 // static

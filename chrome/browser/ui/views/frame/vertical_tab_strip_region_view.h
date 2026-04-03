@@ -335,6 +335,9 @@ class VerticalTabStripRegionView final
   int expand_on_hover_lock_count_ = 0;
   std::unique_ptr<ScopedExpandOnHoverLock> omnibox_open_lock_;
 
+  std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>
+      hover_card_animation_lock_;
+
   // Used to track the time needed to create a new tab from the new tab button.
   std::optional<base::TimeTicks> new_tab_button_pressed_start_time_;
 

@@ -264,6 +264,8 @@ void VerticalTabStripRegionView::OnAnimationProgressed(
           TabStripAnimations::kExpand) {
         update_state_controller_collapsed_callback_.Run(false);
       }
+      hover_card_animation_lock_ =
+          hover_card_controller_->GetHoverCardHideLock();
       if (tab_strip_view_) {
         tab_strip_view_->SetIsAnimatingSize(true);
       }
@@ -272,6 +274,7 @@ void VerticalTabStripRegionView::OnAnimationProgressed(
       InvalidateLayout();
       break;
     case BrowserAnimationUpdate::kEnded: {
+      hover_card_animation_lock_.reset();
       if (tab_strip_view_) {
         tab_strip_view_->SetIsAnimatingSize(false);
       }
@@ -289,6 +292,7 @@ void VerticalTabStripRegionView::OnAnimationProgressed(
       break;
     }
     case BrowserAnimationUpdate::kCanceled:
+      hover_card_animation_lock_.reset();
       if (tab_strip_view_) {
         tab_strip_view_->SetIsAnimatingSize(false);
       }
@@ -1007,6 +1011,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
   // then we shouldn't be in or entering the expand on hover state.
   if (!state_controller_->IsCollapsed() || expand_on_hover_lock_count_ > 0) {
     expand_on_hover_timer_.Stop();
+    hover_card_animation_lock_.reset();
     is_expanded_on_hover_ = false;
     return;
   }
@@ -1023,11 +1028,13 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
     } else {
       // If the timer is running but we shouldn't be expanding, stop the timer.
       expand_on_hover_timer_.Stop();
+      hover_card_animation_lock_.reset();
       is_expanded_on_hover_ = false;
     }
   }
 
   if (!is_expanded_on_hover_ && should_expand) {
+    hover_card_animation_lock_ = hover_card_controller_->GetHoverCardHideLock();
     expand_on_hover_timer_.Start(
         FROM_HERE, kExpandOnHoverDelay,
         base::BindOnce(&VerticalTabStripRegionView::AnimateExpandOnHover,

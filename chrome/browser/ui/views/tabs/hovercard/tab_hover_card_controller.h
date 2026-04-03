@@ -37,6 +37,17 @@ class BrowserWindowInterface;
 class TabHoverCardController : public views::ViewObserver,
                                public TabResourceUsageCollector::Observer {
  public:
+  class ScopedHideHoverCardLock {
+   public:
+    explicit ScopedHideHoverCardLock(TabHoverCardController* controller);
+    ScopedHideHoverCardLock(const ScopedHideHoverCardLock&) = delete;
+    ScopedHideHoverCardLock& operator=(const ScopedHideHoverCardLock&) = delete;
+    ~ScopedHideHoverCardLock();
+
+   private:
+    raw_ptr<TabHoverCardController> controller_;
+  };
+
   TabHoverCardController(TabStripRegionView* tab_strip,
                          BrowserWindowInterface* browser_window_interface);
   ~TabHoverCardController() override;
@@ -46,6 +57,8 @@ class TabHoverCardController : public views::ViewObserver,
   void UpdateHoverCard(HoverCardAnchorTarget* anchor_target,
                        TabSlotController::HoverCardUpdateType update_type);
   void PreventImmediateReshow();
+
+  std::unique_ptr<ScopedHideHoverCardLock> GetHoverCardHideLock();
 
   const HoverCardAnchorTarget* target_tab() const { return target_tab_.get(); }
 
@@ -160,6 +173,9 @@ class TabHoverCardController : public views::ViewObserver,
   //  Resets controller state associated with a HoverCard widget.
   void OnCardClosing();
 
+  void OnLockCreated();
+  void OnLockDestroyed();
+
   bool start_hover_card_fade_ = false;
 
   // Timestamp of the last time the hover card is hidden by the mouse leaving
@@ -212,6 +228,8 @@ class TabHoverCardController : public views::ViewObserver,
   PrefChangeRegistrar pref_change_registrar_;
   bool hover_card_image_previews_enabled_ = false;
   bool hover_card_memory_usage_enabled_ = false;
+
+  int hide_hover_card_lock_count_ = 0;
 
   // Ensure that this timer is destroyed before anything else is cleaned up.
   base::OneShotTimer delayed_show_timer_;
