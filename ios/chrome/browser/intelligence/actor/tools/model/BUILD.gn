@@ -135,6 +135,17 @@ optimize_ts("type_tool_ts") {
   ]
 }
 
+optimize_ts("scroll_tool_ts") {
+  sources = [ "resources/scroll_tool.ts" ]
+  output_name = "scroll_tool"
+
+  deps = [
+    ":actor_tool_utils_ts",
+    "//ios/chrome/browser/intelligence/proto_wrappers:dom_node_ids_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
 source_set("click_tool") {
   sources = [
     "click_tool.h",
@@ -212,6 +223,7 @@ source_set("unit_tests") {
     "click_tool_unittest.mm",
     "history_tool_unittest.mm",
     "navigate_tool_unittest.mm",
+    "scroll_tool_js_unittest.mm",
     "type_tool_java_script_feature_unittest.mm",
     "type_tool_js_unittest.mm",
     "type_tool_unittest.mm",
@@ -226,6 +238,7 @@ source_set("unit_tests") {
     ":history_tool",
     ":java_script_features",
     ":navigate_tool",
+    ":scroll_tool_ts",
     ":type_tool",
     ":type_tool_ts",
     "//base/test:test_support",

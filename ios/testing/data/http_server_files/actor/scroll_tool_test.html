@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 2000px;
+      width: 2000px;
+    }
+    #scrollable_div {
+      position: absolute;
+      left: 50px;
+      top: 100px;
+      width: 100px;
+      height: 100px;
+      overflow: auto;
+      background: lightblue;
+    }
+    #inner_div {
+      width: 500px;
+      height: 500px;
+      pointer-events: none;
+    }
+    #non_scrollable_div {
+      position: absolute;
+      left: 50px;
+      top: 300px;
+      width: 100px;
+      height: 100px;
+      overflow: hidden;
+      background: lightgreen;
+    }
+    #non_scrollable_inner {
+      width: 500px;
+      height: 500px;
+      pointer-events: none;
+    }
+    #not_overflowing_div {
+      position: absolute;
+      left: 50px;
+      top: 450px;
+      width: 100px;
+      height: 100px;
+      overflow: auto;
+      background: lightcoral;
+    }
+    #not_overflowing_inner {
+      width: 50px;
+      height: 50px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="scrollable_div">
+    <div id="inner_div"></div>
+  </div>
+  <div id="non_scrollable_div">
+    <div id="non_scrollable_inner"></div>
+  </div>
+  <div id="not_overflowing_div">
+    <div id="not_overflowing_inner"></div>
+  </div>
+</body>
+</html>

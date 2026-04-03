@@ -1,0 +1,245 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Functions to allow Chrome on iOS to scroll to or scroll
+ * within an element.
+ */
+
+import {getElementFromPoint} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
+import {getNodeById} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+
+// 'center' is selected to align with Desktop's behavior in
+// WebElement::ScrollIntoViewIfNeeded.
+const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
+  // 'auto' behavior is used to avoid delays from using 'smooth'.
+  behavior: 'auto',
+  block: 'center',
+  inline: 'center',
+};
+
+// Mirrored from
+// components/optimization_guide/proto/features/actions_data.proto.
+enum ScrollDirection {
+  // Unknown scroll direction. This should not be used.
+  UNKNOWN_SCROLL_DIRECTION = 0,
+  // Scroll left.
+  LEFT = 1,
+  // Scroll right.
+  RIGHT = 2,
+  // Scroll up.
+  UP = 3,
+  // Scroll down.
+  DOWN = 4,
+}
+
+function getScrollDirection(direction: number): ScrollDirection {
+  switch (direction) {
+    case 1:
+      return ScrollDirection.LEFT;
+    case 2:
+      return ScrollDirection.RIGHT;
+    case 3:
+      return ScrollDirection.UP;
+    case 4:
+      return ScrollDirection.DOWN;
+    default:
+      return ScrollDirection.UNKNOWN_SCROLL_DIRECTION;
+  }
+}
+
+// Additional parameters for the ScrollAction that aren't needed for the
+// ScrollToAction.
+interface ScrollParams {
+  distance: number;
+  direction: ScrollDirection;
+}
+
+/**
+ * Checks if an element is scrollable in a given direction.
+ * @param element The element to check.
+ * @return true if the element is scrollable.
+ */
+export function isScrollable(
+    element: Element, direction: ScrollDirection): boolean {
+  const style = window.getComputedStyle(element);
+  const overflowX = style.getPropertyValue('overflow-x');
+  const overflowY = style.getPropertyValue('overflow-y');
+  const hasOverflowX = overflowX === 'auto' || overflowX === 'scroll';
+  const hasOverflowY = overflowY === 'auto' || overflowY === 'scroll';
+  const hasScrollableContentX = element.scrollWidth > element.clientWidth;
+  const hasScrollableContentY = element.scrollHeight > element.clientHeight;
+
+  const canScrollLeft = hasScrollableContentX && element.scrollLeft > 0;
+  const canScrollRight = hasScrollableContentX &&
+      Math.ceil(element.scrollLeft) + element.clientWidth < element.scrollWidth;
+  const canScrollUp = hasScrollableContentY && element.scrollTop > 0;
+  const canScrollDown = hasScrollableContentY &&
+      Math.ceil(element.scrollTop) + element.clientHeight <
+          element.scrollHeight;
+
+  switch (direction) {
+    case ScrollDirection.LEFT:
+      return hasOverflowX && canScrollLeft;
+    case ScrollDirection.RIGHT:
+      return hasOverflowX && canScrollRight;
+    case ScrollDirection.UP:
+      return hasOverflowY && canScrollUp;
+    case ScrollDirection.DOWN:
+      return hasOverflowY && canScrollDown;
+    default:
+      return false;
+  }
+}
+
+
+/**
+ * Scrolls an element into view.
+ * @param target The target element.
+ * @return an object containing the result of the scroll attempt.
+ */
+function scrollElementIntoView(target: Element): {
+  success: boolean,
+  message: string,
+} {
+  target.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS);
+  return {success: true, message: 'Initiated scrollIntoView.'};
+}
+
+/**
+ * Scrolls an element based on the params. If scrollParams omitted, the element
+ * is scrolled into view.
+ * @param target The target element.
+ * @param [scrollParams] The scroll parameters.
+ * @return an object containing the result of the scroll attempt.
+ */
+function scrollElement(target: Element, scrollParams?: ScrollParams):
+    {success: boolean, message: string} {
+  if (!scrollParams) {
+    return scrollElementIntoView(target);
+  }
+
+  // The desktop ScrollTool treats targets that are not scrollable as invalid.
+  // See
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/scroll_tool.cc;l=34;drc=06d06050f1a98a6ce06cc1dc4470eebaf5a81990
+  if (!isScrollable(target, scrollParams.direction)) {
+    return {success: false, message: 'Element is not scrollable.'};
+  }
+
+  const initialScrollTop = target.scrollTop;
+  const initialScrollLeft = target.scrollLeft;
+  switch (scrollParams.direction) {
+    case ScrollDirection.LEFT:
+      target.scrollLeft -= scrollParams.distance;
+      break;
+    case ScrollDirection.RIGHT:
+      target.scrollLeft += scrollParams.distance;
+      break;
+    case ScrollDirection.UP:
+      target.scrollTop -= scrollParams.distance;
+      break;
+    case ScrollDirection.DOWN:
+      target.scrollTop += scrollParams.distance;
+      break;
+    default:
+      return {success: false, message: 'Invalid scroll direction.'};
+  }
+
+  if (target.scrollTop === initialScrollTop &&
+      target.scrollLeft === initialScrollLeft) {
+    return {
+      success: false,
+      message: 'Element scroll position did not change after calling scrollBy.',
+    };
+  }
+
+  return {success: true, message: 'Successfully scrolled element.'};
+}
+
+/**
+ * Simulates scrolling at a coordinate.
+ * @param x The x-coordinate.
+ * @param y The y-coordinate.
+ * @param pixelType The type of pixels.
+ * @param [direction] The scroll direction.
+ * @param [distance] The distance to scroll.
+ * @return an object containing the result of the scroll attempt.
+ */
+function scrollByCoordinate(
+    x: number,
+    y: number,
+    pixelType: number,
+    direction?: number,
+    distance?: number,
+    ): {
+  success: boolean,
+  message: string,
+} {
+  const {element} = getElementFromPoint(x, y, pixelType);
+  if (!element) {
+    return {
+      success: false,
+      message: 'No element found at the target coordinates.',
+    };
+  }
+
+  let scrollParams: ScrollParams|undefined;
+  if (direction !== undefined && distance !== undefined) {
+    scrollParams = {
+      direction: getScrollDirection(direction),
+      distance,
+    };
+  }
+
+  return scrollElement(element, scrollParams);
+}
+
+/**
+ * Simulates scrolling an element specified by its DOM node ID.
+ * @param nodeId The ID of the node.
+ * @param [direction] The scroll direction.
+ * @param [distance] The distance to scroll.
+ * @return an object containing the result of the scroll attempt.
+ */
+function scrollByNodeId(
+    nodeId: number, direction?: number, distance?: number): {
+  success: boolean,
+  message: string,
+} {
+  const node = getNodeById(nodeId, window);
+  if (!node) {
+    return {
+      success: false,
+      message: `No element found with id ${nodeId}.`,
+    };
+  }
+
+  if (node.nodeType !== Node.ELEMENT_NODE) {
+    // The desktop ScrollTool treats targets that are not ELEMENT nodes as
+    // invalid. See
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/scroll_tool.cc;l=34;drc=06d06050f1a98a6ce06cc1dc4470eebaf5a81990.
+    return {
+      success: false,
+      message: `Node with id ${nodeId} is not an element.`,
+    };
+  }
+
+  let scrollParams: ScrollParams|undefined;
+  if (direction !== undefined && distance !== undefined) {
+    scrollParams = {
+      direction: getScrollDirection(direction),
+      distance,
+    };
+  }
+
+  return scrollElement(node as Element, scrollParams);
+}
+
+const scrollToolApi = new CrWebApi('scroll_tool');
+scrollToolApi.addFunction('scrollByCoordinate', scrollByCoordinate);
+scrollToolApi.addFunction('scrollByNodeId', scrollByNodeId);
+scrollToolApi.addFunction('isScrollable', isScrollable);
+
+gCrWeb.registerApi(scrollToolApi);
