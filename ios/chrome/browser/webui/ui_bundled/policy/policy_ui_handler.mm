@@ -441,12 +441,25 @@ base::DictValue PolicyUIHandler::GetPolicyNames() const {
 
   base::DictValue names;
   names.Set(policy::kChromePoliciesId, std::move(chrome_values));
+
+  // Add precedence policy names.
+  base::ListValue precedence_policy_names;
+  for (auto* policy : policy::metapolicy::kPrecedence) {
+    precedence_policy_names.Append(policy);
+  }
+  base::DictValue precedence_values;
+  precedence_values.Set(policy::kNameKey, policy::kPrecedencePoliciesName);
+  precedence_values.Set(policy::kPolicyNamesKey,
+                        std::move(precedence_policy_names));
+  names.Set(policy::kPrecedencePoliciesId, std::move(precedence_values));
+
   return names;
 }
 
 base::DictValue PolicyUIHandler::GetPolicyValues() const {
   base::ListValue policy_ids;
   policy_ids.Append(policy::kChromePoliciesId);
+  policy_ids.Append(policy::kPrecedencePoliciesId);
 
   base::DictValue policy_values =
       policy::PolicyConversions(std::make_unique<PolicyConversionsClientIOS>(
