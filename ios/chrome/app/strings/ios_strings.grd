@@ -4964,6 +4964,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TRANSLATE" desc="The title for the context menu item to hide Translate. This should match the title of the Translate action in the menu." meaning="[iOS only] [Length: Unlimited]">
         Hide Translate
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TURN_OFF_READING_MODE" desc="The title for the context menu item to hide Turn off Reading Mode. This should match the title of the Turn off Reading Mode action in the menu." meaning="[iOS only] [Length: Unlimited]">
+        Hide Turn off Reading Mode
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TURN_ON_READING_MODE" desc="The title for the context menu item to hide Turn on Reading Mode. This should match the title of the Turn on Reading Mode action in the menu." meaning="[iOS only] [Length: Unlimited]">
+        Hide Turn on Reading Mode
+      </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_BOOKMARKS" desc="The title for the context menu item to hide Bookmarks. This should match the title of the Bookmarks destination in the menu." meaning="[iOS only] [Length: Unlimited]">
         Hide Bookmarks
       </message>

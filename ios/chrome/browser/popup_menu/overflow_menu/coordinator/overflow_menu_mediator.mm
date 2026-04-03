@@ -774,6 +774,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   BOOL isReaderModeActive = [self isReaderModeActive];
   int nameID = isReaderModeActive ? IDS_IOS_TOOLS_MENU_HIDE_READER_MODE
                                   : IDS_IOS_TOOLS_MENU_READER_MODE;
+  int hideID = isReaderModeActive
+                   ? IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TURN_OFF_READING_MODE
+                   : IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TURN_ON_READING_MODE;
+  NSString* hideString = l10n_util::GetNSString(hideID);
   __weak __typeof(self) weakSelf = self;
   OverflowMenuAction* action = [self
       createOverflowMenuActionWithNameID:nameID
@@ -782,7 +786,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuReaderMode
-                            hideItemText:nil
+                            hideItemText:hideString
                                  handler:^{
                                    base::RecordAction(UserMetricsAction(
                                        "MobileMenuReaderMode"));
