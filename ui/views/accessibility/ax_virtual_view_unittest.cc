@@ -4,6 +4,7 @@
 
 #include "ui/views/accessibility/ax_virtual_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -911,6 +912,117 @@ TEST_P(AXVirtualViewTest, GetTargetForEvents) {
             virtual_label_->GetTargetForNativeAccessibilityEvent());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_P(AXVirtualViewTest, ContainerLiveStatusPropagatedToVirtualChildren) {
+  button_->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  ui::AXNodeData label_data;
+  virtual_label_->GetAccessibleNodeData(&label_data);
+  EXPECT_EQ("polite", label_data.GetStringAttribute(
+                          ax::mojom::StringAttribute::kContainerLiveStatus));
+  EXPECT_EQ("additions text",
+            label_data.GetStringAttribute(
+                ax::mojom::StringAttribute::kContainerLiveRelevant));
+  // virtual_label_ should NOT have kLiveStatus, kLiveRelevant, or kLiveAtomic
+  // itself.
+  EXPECT_FALSE(
+      label_data.HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  EXPECT_FALSE(
+      label_data.HasStringAttribute(ax::mojom::StringAttribute::kLiveRelevant));
+  EXPECT_FALSE(
+      label_data.HasBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
+}
+
+TEST_P(AXVirtualViewTest,
+       ContainerLiveStatusPropagatedToNestedVirtualChildren) {
+  button_->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  auto grandchild = std::make_unique<AXVirtualView>();
+  grandchild->SetRole(ax::mojom::Role::kStaticText);
+  grandchild->SetName("Nested text");
+  AXVirtualView* grandchild_ptr = grandchild.get();
+  virtual_label_->AddChildView(std::move(grandchild));
+
+  ui::AXNodeData gc_data;
+  grandchild_ptr->GetAccessibleNodeData(&gc_data);
+  EXPECT_EQ("polite", gc_data.GetStringAttribute(
+                          ax::mojom::StringAttribute::kContainerLiveStatus));
+  EXPECT_EQ("additions text",
+            gc_data.GetStringAttribute(
+                ax::mojom::StringAttribute::kContainerLiveRelevant));
+}
+
+TEST_P(AXVirtualViewTest, LiveRegionChangedOnVirtualViewNameChange) {
+  button_->GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+  button_->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  std::vector<ax::mojom::Event> fired_events;
+  button_->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](std::vector<ax::mojom::Event>* events,
+             const ui::AXPlatformNodeDelegate*,
+             ax::mojom::Event event) { events->push_back(event); },
+          &fired_events));
+
+  // Only the container's own name change should fire kLiveRegionChanged.
+  button_->GetViewAccessibility().SetName("Updated container");
+
+  EXPECT_NE(std::find(fired_events.begin(), fired_events.end(),
+                      ax::mojom::Event::kLiveRegionChanged),
+            fired_events.end());
+}
+
+TEST_P(AXVirtualViewTest, LiveRegionChangedOnVirtualChildAddition) {
+  button_->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  std::vector<ax::mojom::Event> fired_events;
+  button_->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](std::vector<ax::mojom::Event>* events,
+             const ui::AXPlatformNodeDelegate*,
+             ax::mojom::Event event) { events->push_back(event); },
+          &fired_events));
+
+  auto grandchild = std::make_unique<AXVirtualView>();
+  grandchild->SetRole(ax::mojom::Role::kStaticText);
+  grandchild->SetName("New child");
+  virtual_label_->AddChildView(std::move(grandchild));
+
+  EXPECT_NE(std::find(fired_events.begin(), fired_events.end(),
+                      ax::mojom::Event::kLiveRegionChanged),
+            fired_events.end());
+}
+
+TEST_P(AXVirtualViewTest,
+       VirtualChildRemovalFromLiveRegionNoEventWithDefaultRelevant) {
+  button_->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  auto grandchild = std::make_unique<AXVirtualView>();
+  grandchild->SetRole(ax::mojom::Role::kStaticText);
+  grandchild->SetName("Removable child");
+  AXVirtualView* grandchild_ptr = grandchild.get();
+  virtual_label_->AddChildView(std::move(grandchild));
+
+  std::vector<ax::mojom::Event> fired_events;
+  button_->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](std::vector<ax::mojom::Event>* events,
+             const ui::AXPlatformNodeDelegate*,
+             ax::mojom::Event event) { events->push_back(event); },
+          &fired_events));
+
+  virtual_label_->RemoveChildView(grandchild_ptr);
+
+  // Default relevant is "additions text", removals should NOT fire.
+  EXPECT_EQ(std::find(fired_events.begin(), fired_events.end(),
+                      ax::mojom::Event::kLiveRegionChanged),
+            fired_events.end());
+}
 
 // Instantiate the values of device scale factor in the parameterized tests.
 INSTANTIATE_TEST_SUITE_P(All, AXVirtualViewTest, ::testing::Values(1.0f, 2.0f));

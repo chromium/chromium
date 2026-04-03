@@ -100,6 +100,76 @@ END_METADATA
 
 }  // namespace
 
+ui::AXNodeData GetNodeData(View* view) {
+  ui::AXNodeData data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  return data;
+}
+
+void ExpectLiveRegionContainer(View* view,
+                               const std::string& status,
+                               const std::string& relevant,
+                               bool atomic = false) {
+  SCOPED_TRACE("ExpectLiveRegionContainer on " +
+               std::string(view->GetClassName()));
+  ui::AXNodeData data = GetNodeData(view);
+  EXPECT_EQ(status,
+            data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  EXPECT_EQ(relevant,
+            data.GetStringAttribute(ax::mojom::StringAttribute::kLiveRelevant));
+  EXPECT_EQ(atomic,
+            data.GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
+  EXPECT_EQ(status, data.GetStringAttribute(
+                        ax::mojom::StringAttribute::kContainerLiveStatus));
+  EXPECT_EQ(relevant, data.GetStringAttribute(
+                          ax::mojom::StringAttribute::kContainerLiveRelevant));
+}
+
+void ExpectLiveRegionDescendant(View* view,
+                                const std::string& status,
+                                const std::string& relevant) {
+  SCOPED_TRACE("ExpectLiveRegionDescendant on " +
+               std::string(view->GetClassName()));
+  ui::AXNodeData data = GetNodeData(view);
+  EXPECT_FALSE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  EXPECT_FALSE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kLiveRelevant));
+  EXPECT_FALSE(data.HasBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
+  EXPECT_EQ(status, data.GetStringAttribute(
+                        ax::mojom::StringAttribute::kContainerLiveStatus));
+  EXPECT_EQ(relevant, data.GetStringAttribute(
+                          ax::mojom::StringAttribute::kContainerLiveRelevant));
+}
+
+void ExpectNotInLiveRegion(View* view) {
+  SCOPED_TRACE("ExpectNotInLiveRegion on " + std::string(view->GetClassName()));
+  ui::AXNodeData data = GetNodeData(view);
+  EXPECT_FALSE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  EXPECT_FALSE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kLiveRelevant));
+  EXPECT_FALSE(data.HasBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
+  EXPECT_FALSE(data.HasStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus));
+  EXPECT_FALSE(data.HasStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveRelevant));
+}
+
+void CollectEvents(View* view, std::vector<ax::mojom::Event>* out) {
+  view->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](std::vector<ax::mojom::Event>* events,
+             const ui::AXPlatformNodeDelegate*,
+             ax::mojom::Event event) { events->push_back(event); },
+          out));
+}
+
+bool HasEvent(const std::vector<ax::mojom::Event>& events,
+              ax::mojom::Event event) {
+  return std::find(events.begin(), events.end(), event) != events.end();
+}
+
 class ViewAccessibilityTest : public ViewsTestBase {
  public:
   ViewAccessibilityTest() : ax_mode_setter_(ui::kAXModeComplete) {
@@ -781,6 +851,405 @@ TEST_F(ViewAccessibilityTest, GetActiveDescendantView_ValidatesIdSync) {
   // Verify we get child2 back.
   EXPECT_EQ(parent->GetViewAccessibility().GetActiveDescendantView(),
             &child2_ptr->GetViewAccessibility());
+}
+
+TEST_F(ViewAccessibilityTest, SetLiveRegionContainer) {
+  ExpectNotInLiveRegion(view());
+
+  view()->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+  ExpectLiveRegionContainer(view(), "polite", "additions text");
+
+  view()->GetViewAccessibility().RemoveLiveRegionContainer();
+  ExpectNotInLiveRegion(view());
+}
+
+TEST_F(ViewAccessibilityTest, LiveRegionPropagation) {
+  view()->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+  ExpectLiveRegionDescendant(child_view(), "polite", "additions text");
+
+  view()->GetViewAccessibility().RemoveLiveRegionContainer();
+  ExpectNotInLiveRegion(child_view());
+}
+
+TEST_F(ViewAccessibilityTest, InternalLiveRegionPropagation) {
+  // Grandparent -> Parent (Live Region) -> Child
+  auto grandparent = std::make_unique<TestView>();
+  auto* parent = grandparent->AddChildView(std::make_unique<TestView>());
+  auto* child = parent->AddChildView(std::make_unique<TestView>());
+
+  parent->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  ExpectNotInLiveRegion(grandparent.get());
+  ExpectLiveRegionContainer(parent, "polite", "additions text");
+  ExpectLiveRegionDescendant(child, "polite", "additions text");
+}
+
+TEST_F(ViewAccessibilityTest, NestedLiveRegionPrecedence) {
+  // Parent (Live: polite) -> Child (Live: assertive) -> Grandchild
+  view()->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  auto child = std::make_unique<TestView>();
+  auto* child_ptr = view()->AddChildView(std::move(child));
+  child_ptr->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kAssertive);
+
+  auto grandchild = std::make_unique<TestView>();
+  auto* grandchild_ptr = child_ptr->AddChildView(std::move(grandchild));
+
+  ExpectLiveRegionContainer(view(), "polite", "additions text");
+  ExpectLiveRegionContainer(child_ptr, "assertive", "additions text");
+  ExpectLiveRegionDescendant(grandchild_ptr, "assertive", "additions text");
+}
+
+TEST_F(ViewAccessibilityTest, ReparentingUpdatesLiveStatus) {
+  auto live_container = std::make_unique<TestView>();
+  live_container->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  auto child = std::make_unique<TestView>();
+  auto* child_ptr = child.get();
+
+  ExpectNotInLiveRegion(child_ptr);
+
+  // Attach to live container.
+  live_container->AddChildView(std::move(child));
+  ExpectLiveRegionDescendant(child_ptr, "polite", "additions text");
+}
+
+TEST_F(ViewAccessibilityTest, SetLiveRegionContainerFullAttributes) {
+  auto live_view = std::make_unique<TestView>();
+
+  live_view->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kAssertive);
+  ExpectLiveRegionContainer(live_view.get(), "assertive", "additions text");
+
+  live_view->GetViewAccessibility().RemoveLiveRegionContainer();
+  ExpectNotInLiveRegion(live_view.get());
+}
+
+TEST_F(ViewAccessibilityTest, LiveRegionChangedFiredOnNameChange) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  // Changing the container's own name should fire kLiveRegionChanged.
+  contents->GetViewAccessibility().SetName("Updated name");
+
+  EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest, LiveRegionChangedNotFiredOutsideLiveRegion) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  child->GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  child->GetViewAccessibility().SetName("Updated name");
+
+  EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest, LiveRegionChangedFiredOnViewAddition) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  contents->AddChildView(std::make_unique<TestView>());
+
+  EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest,
+       LiveRegionChangedNotFiredOnRemovalWithDefaultRelevant) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  // Default relevant is "additions text", so removing a child should NOT
+  // fire kLiveRegionChanged.
+  auto removed = contents->RemoveChildViewT(child);
+
+  EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest, LiveRegionChangedFiredOnLiveRegionRoot) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+  contents->AddChildView(std::make_unique<TestView>());
+
+  std::vector<ax::mojom::Event> root_events;
+  CollectEvents(contents, &root_events);
+
+  // Changing the container's own name should fire kLiveRegionChanged.
+  contents->GetViewAccessibility().SetName("Updated announcement");
+
+  EXPECT_TRUE(HasEvent(root_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+// Descendant text changes (e.g. a child Label's SetText) should NOT fire
+// kLiveRegionChanged. Only the container's own SetName fires the event.
+TEST_F(ViewAccessibilityTest,
+       DescendantTextChangeDoesNotFireLiveRegionChanged) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+  auto* grandchild = child->AddChildView(std::make_unique<TestView>());
+
+  std::vector<ax::mojom::Event> root_events;
+  CollectEvents(contents, &root_events);
+  std::vector<ax::mojom::Event> child_events;
+  CollectEvents(child, &child_events);
+
+  grandchild->GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  grandchild->GetViewAccessibility().SetName("Updated");
+
+  // kLiveRegionChanged should NOT fire from a descendant text change.
+  EXPECT_FALSE(HasEvent(root_events, ax::mojom::Event::kLiveRegionChanged));
+  EXPECT_FALSE(HasEvent(child_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest, EmptyNameDoesNotFireLiveRegionChanged) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+  contents->GetViewAccessibility().SetName("Initial");
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  contents->GetViewAccessibility().SetName(std::u16string());
+
+  EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest, LiveRegionChangedFiredOnNestedLiveRegionRoot) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+  child->GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+  child->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kAssertive);
+
+  std::vector<ax::mojom::Event> outer_events;
+  CollectEvents(contents, &outer_events);
+  std::vector<ax::mojom::Event> inner_events;
+  CollectEvents(child, &inner_events);
+
+  // Changing the nested container's own name should fire on the inner root.
+  child->GetViewAccessibility().SetName("Updated");
+
+  EXPECT_TRUE(HasEvent(inner_events, ax::mojom::Event::kLiveRegionChanged));
+  EXPECT_FALSE(HasEvent(outer_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest, VirtualChildAddedToLiveRegionFiresEvent) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  virtual_child->SetRole(ax::mojom::Role::kStaticText);
+  virtual_child->SetName("Virtual text");
+  contents->GetViewAccessibility().AddVirtualChildView(
+      std::move(virtual_child));
+
+  EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest,
+       VirtualChildRemovedFromLiveRegionNoEventWithDefaultRelevant) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  virtual_child->SetRole(ax::mojom::Role::kStaticText);
+  virtual_child->SetName("Virtual text");
+  AXVirtualView* virtual_child_ptr = virtual_child.get();
+  contents->GetViewAccessibility().AddVirtualChildView(
+      std::move(virtual_child));
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  contents->GetViewAccessibility().RemoveVirtualChildView(virtual_child_ptr);
+
+  // Default relevant is "additions text", removals should NOT fire.
+  EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest, ContainerLiveStatusAndEventOnReparent) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  auto* live_container = contents->AddChildView(std::make_unique<TestView>());
+  live_container->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite);
+  auto* non_live = contents->AddChildView(std::make_unique<TestView>());
+  auto* child = non_live->AddChildView(std::make_unique<TestView>());
+
+  ExpectNotInLiveRegion(child);
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(live_container, &fired_events);
+
+  // Reparent child into the live region container.
+  live_container->AddChildView(child);
+
+  ExpectLiveRegionDescendant(child, "polite", "additions text");
+
+  // kLiveRegionChanged should fire (kAdditions is in default relevant).
+  EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest, SetLiveRegionContainerCustomRelevantAndAtomic) {
+  auto live_view = std::make_unique<TestView>();
+
+  live_view->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite,
+      ViewAccessibility::kLiveRegionRelevantRemovals,
+      /*atomic=*/true);
+
+  ExpectLiveRegionContainer(live_view.get(), "polite", "removals",
+                            /*atomic=*/true);
+}
+
+TEST_F(ViewAccessibilityTest, LiveRegionCustomRelevantRemovalsFiresOnRemoval) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite,
+      ViewAccessibility::kLiveRegionRelevantRemovals);
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  // With relevant=kLiveRegionRelevantRemovals, removing a child SHOULD fire.
+  auto removed = contents->RemoveChildViewT(child);
+
+  EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest,
+       LiveRegionCustomRelevantRemovalsDoesNotFireOnAddition) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite,
+      ViewAccessibility::kLiveRegionRelevantRemovals);
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  // With relevant=kLiveRegionRelevantRemovals, adding a child should NOT fire.
+  contents->AddChildView(std::make_unique<TestView>());
+
+  EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest,
+       LiveRegionCustomRelevantRemovalsDoesNotFireOnText) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite,
+      ViewAccessibility::kLiveRegionRelevantRemovals);
+  auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  // With relevant=kLiveRegionRelevantRemovals, changing text should NOT fire.
+  child->GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  child->GetViewAccessibility().SetName("New name");
+
+  EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(ViewAccessibilityTest, LiveRegionRelevantAllFiresOnAllTriggers) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kPolite,
+      ViewAccessibility::kLiveRegionRelevantAll);
+
+  // Test additions.
+  {
+    std::vector<ax::mojom::Event> fired_events;
+    CollectEvents(contents, &fired_events);
+
+    auto* child = contents->AddChildView(std::make_unique<TestView>());
+
+    EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+
+    // Test text change on the container itself.
+    fired_events.clear();
+    contents->GetViewAccessibility().SetName("Updated");
+    EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+
+    // Test removals.
+    fired_events.clear();
+    auto removed = contents->RemoveChildViewT(child);
+    EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+  }
+}
+
+TEST_F(ViewAccessibilityTest, LiveRegionOffDoesNotFireEvents) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+  contents->GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+  contents->GetViewAccessibility().SetLiveRegionContainer(
+      ViewAccessibility::LiveRegionStatus::kOff);
+
+  ExpectLiveRegionContainer(contents, "off", "additions text");
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  // Adding a child to an "off" live region should NOT fire.
+  contents->AddChildView(std::make_unique<TestView>());
+  EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
+
+  // Changing the name should NOT fire either.
+  fired_events.clear();
+  contents->GetViewAccessibility().SetName("Updated");
+  EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
 }
 
 }  // namespace views::test

@@ -111,6 +111,7 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
       has_focusable_ancestor());
 
   AXUpdateNotifier::Get()->NotifyChildAdded(added_view, this);
+  FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger::kAdditions);
 
   if (owner_view) {
     owner_view->NotifyAccessibilityEventDeprecated(
@@ -179,6 +180,9 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
       std::move(virtual_children_[cur_index.value()]);
   virtual_children_.erase(virtual_children_.begin() +
                           static_cast<ptrdiff_t>(cur_index.value()));
+
+  FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger::kRemovals);
+
   child->virtual_parent_view_ = nullptr;
 
   if (GetOwnerView()) {
@@ -651,6 +655,7 @@ void AXVirtualView::OnViewHasNewAncestor(bool ancestor_focusable) {
   parent_view_is_drawn_ = !parent_invisible;
 
   UpdateInvisibleState();
+  UpdateContainerLiveStatus();
 
   // We only want to propagate the `ancestor_focusable` value if it's true. This
   // is because if this view is unfocusable, and it gets added to a tree with a

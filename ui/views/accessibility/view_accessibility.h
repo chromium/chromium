@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_VIEW_ACCESSIBILITY_H_
 #define UI_VIEWS_ACCESSIBILITY_VIEW_ACCESSIBILITY_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -77,6 +78,47 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   using AXVirtualViews = std::vector<std::unique_ptr<AXVirtualView>>;
 
   enum class State { kUninitialized, kInitializing, kInitialized };
+
+  // The ARIA live region politeness level.
+  enum class LiveRegionStatus {
+    kPolite,
+    kAssertive,
+    kOff,
+  };
+
+  // Converts a LiveRegionStatus enum to its ARIA string representation
+  // (e.g. "polite").
+  static const char* LiveRegionStatusToString(LiveRegionStatus status);
+
+  // Describes what triggered a potential kLiveRegionChanged event.
+  // Used to check against the aria-relevant attribute before firing.
+  enum class LiveRegionEventTrigger {
+    kAdditions,  // A node was added to the live region.
+    kText,       // A node's text (name) changed.
+    kRemovals,   // A node was removed from the live region.
+  };
+
+  // Bitmask for the ARIA "aria-relevant" attribute values.
+  enum LiveRegionRelevant : uint8_t {
+    kLiveRegionRelevantAdditions = 1 << 0,
+    kLiveRegionRelevantText = 1 << 1,
+    kLiveRegionRelevantRemovals = 1 << 2,
+    kLiveRegionRelevantAll = kLiveRegionRelevantAdditions |
+                             kLiveRegionRelevantText |
+                             kLiveRegionRelevantRemovals,
+  };
+
+  // Default: "additions text" per the ARIA spec.
+  static constexpr uint8_t kLiveRegionRelevantDefault =
+      kLiveRegionRelevantAdditions | kLiveRegionRelevantText;
+
+  // Converts a LiveRegionRelevant bitmask to the ARIA string representation
+  // (e.g. "additions text").
+  static std::string LiveRegionRelevantToString(uint8_t relevant);
+
+  // Converts an ARIA aria-relevant string (e.g. "additions text") to a
+  // LiveRegionRelevant bitmask.
+  static uint8_t LiveRegionRelevantFromString(const std::string& relevant);
 
   static std::unique_ptr<ViewAccessibility> Create(View* view);
 
@@ -278,15 +320,37 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetTextSelStart(int32_t text_sel_start);
   void SetTextSelEnd(int32_t text_sel_end);
 
+  // Deprecated: Use SetLiveRegionContainer() instead, which sets all
+  // necessary live region attributes at once.
   void SetLiveAtomic(bool live_atomic);
-
+  // Deprecated: Use SetLiveRegionContainer() instead.
   void SetLiveStatus(const std::string& status);
-
+  // Deprecated: Use SetLiveRegionContainer() instead.
   void SetLiveRelevant(const std::string& live_relevant);
+  // Deprecated: Use RemoveLiveRegionContainer() instead.
   void RemoveLiveRelevant();
-
+  // Deprecated: Use SetLiveRegionContainer() instead.
   void SetContainerLiveRelevant(const std::string& live_relevant);
+  // Deprecated: Use RemoveLiveRegionContainer() instead.
   void RemoveContainerLiveRelevant();
+
+  // Designates this view as a live region container, setting all required
+  // attributes (kLiveStatus, kContainerLiveStatus, kLiveRelevant, etc.) and
+  // propagating kContainerLiveStatus to descendants. Automatically fires
+  // kLiveRegionChanged events when children are added/removed or text changes.
+  //
+  // |relevant| controls which mutations fire kLiveRegionChanged; defaults to
+  // kLiveRegionRelevantDefault ("additions text"). |atomic| maps to
+  // aria-atomic; defaults to false.
+  //
+  // Callers currently using the deprecated SetContainerLiveStatus() /
+  // SetLiveStatus() should migrate to this method. Once all callers have
+  // migrated, the deprecated methods and the `is_live_region_container_` /
+  // `is_in_new_api_live_region_` compatibility flags can be removed.
+  void SetLiveRegionContainer(LiveRegionStatus live_status,
+                              uint8_t relevant = kLiveRegionRelevantDefault,
+                              bool atomic = false);
+  void RemoveLiveRegionContainer();
 
   // Hides this view from the accessibility APIs. Keep in mind that this is not
   // the sole determinant of whether the ignored state is set. See
@@ -426,7 +490,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   virtual void SetShowContextMenu(bool show_context_menu);
 
+  // Deprecated: Use SetLiveRegionContainer() instead.
   void SetContainerLiveStatus(const std::string& status);
+  // Deprecated: Use RemoveLiveRegionContainer() instead.
   void RemoveContainerLiveStatus();
 
   // Sets the kValue attribute of the accessible object.
@@ -483,6 +549,19 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   virtual void UpdateInvisibleState();
 
   bool should_be_invisible() const { return should_be_invisible_; }
+
+  // Updates kContainerLiveStatus and kContainerLiveRelevant for this node
+  // (and recursively for children). Only affects views using the new
+  // SetLiveRegionContainer() API; views using the deprecated
+  // SetContainerLiveStatus()/SetContainerLiveRelevant() are left untouched.
+  void UpdateContainerLiveStatus();
+  void UpdateContainerLiveStatusRecursive();
+
+  // Fires kLiveRegionChanged on the nearest ancestor live region root, if this
+  // node is inside a live region set up via SetLiveRegionContainer() and the
+  // trigger matches the region's aria-relevant value. No-op for views using
+  // the deprecated API (they manage their own event firing).
+  void FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger trigger);
 
   // Override the child tree id.
   void SetChildTreeID(ui::AXTreeID tree_id);
@@ -831,6 +910,15 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   bool needs_ax_tree_manager_ = false;
 
   bool is_widget_closed_ = false;
+
+  // These flags distinguish the new SetLiveRegionContainer() API from the
+  // deprecated SetContainerLiveStatus()/SetLiveStatus() API so that
+  // UpdateContainerLiveStatus() and FireLiveRegionChangedIfNeeded() only
+  // affect views opted into the new mechanism. Remove these flags (and the
+  // guards that check them) once all callers have migrated to
+  // SetLiveRegionContainer().
+  bool is_live_region_container_ = false;
+  bool is_in_new_api_live_region_ = false;
 
   std::unique_ptr<ui::AXAttributeChangedCallbacks>
       attribute_changed_callbacks_ = nullptr;

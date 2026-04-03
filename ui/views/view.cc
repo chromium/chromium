@@ -3241,6 +3241,12 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   // initialized. If so, let's merge these two functions.
   view->GetViewAccessibility().OnViewHasNewAncestor(this);
 
+  // Fire the live region event if needed on the parent of the added view, not
+  // the view itself, so the right live region container is notified of the
+  // addition.
+  GetViewAccessibility().FireLiveRegionChangedIfNeeded(
+      ViewAccessibility::LiveRegionEventTrigger::kAdditions);
+
   if (widget) {
     // There are scenarios where we might be reparenting a view from a widget
     // that was closed to a widget that is not closed.
@@ -3322,6 +3328,8 @@ void View::DoRemoveChildView(View* view,
   }
 
   if (view->parent_) {
+    view->parent_->GetViewAccessibility().FireLiveRegionChangedIfNeeded(
+        ViewAccessibility::LiveRegionEventTrigger::kRemovals);
     view->parent_->GetViewAccessibility().NotifyEvent(
         ax::mojom::Event::kChildrenChanged, true);
   }
