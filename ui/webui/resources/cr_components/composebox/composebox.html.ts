@@ -9,7 +9,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ComposeboxElement} from './composebox.js';
 import {getHtml as getContextMenuHtml} from './composebox_context_menu.html.js';
 import {ToolMode} from './composebox_query.mojom-webui.js';
-import {getHtml as getSubmitButtonHtml} from './composebox_submit_button.html.js';
 
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
@@ -87,9 +86,16 @@ export function getHtml(this: ComposeboxElement) {
                 </div>
                 ` : ''}
             </div>
-            ${this.shouldShowSubmitButton_ && this.searchboxLayoutMode === 'Compact' ?
-              getSubmitButtonHtml.bind(this)() :
-              ''}
+            ${this.shouldShowSubmitButton_ && this.searchboxLayoutMode === 'Compact' ? html`
+              <cr-composebox-submit
+                exportparts="action-icon, submit, submit-icon, submit-overlay"
+                ?disabled="${!this.canSubmitFilesAndInput}"
+                .iconType="${this.submitButtonIconType}"
+                .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
+                @submit-click="${this.onSubmitClick_}"
+                @submit-focusin="${this.onSubmitFocusin_}">
+              </cr-composebox-submit>
+            ` : ''}
           </div>
           ${this.shouldShowDivider_ ? html`
             <div class="carousel-divider" part="carousel-divider"></div>
@@ -118,9 +124,16 @@ export function getHtml(this: ComposeboxElement) {
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </cr-icon-button>
           ` : ''}
-          ${this.shouldShowSubmitButton_ && this.searchboxLayoutMode === 'TallBottomContext' ?
-              getSubmitButtonHtml.bind(this)() :
-              ''}
+          ${this.shouldShowSubmitButton_ && this.searchboxLayoutMode === 'TallBottomContext' ? html`
+              <cr-composebox-submit
+                exportparts="action-icon, submit, submit-icon, submit-overlay"
+                ?disabled="${!this.canSubmitFilesAndInput}"
+                .iconType="${this.submitButtonIconType}"
+                .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
+                @submit-click="${this.onSubmitClick_}"
+                @submit-focusin="${this.onSubmitFocusin_}">
+              </cr-composebox-submit>
+          ` : ''}
         </cr-composebox-file-inputs>
       </div>
     </div>
@@ -139,7 +152,16 @@ export function getHtml(this: ComposeboxElement) {
     <!-- A seperate container is needed for the submit button so the
        expand/collapse animation can be applied without affecting the submit
        button enabled/disabled state. -->
-    ${!this.searchboxNextEnabled ? getSubmitButtonHtml.bind(this)() : ''}
+    ${!this.searchboxNextEnabled ? html`
+      <cr-composebox-submit
+        exportparts="action-icon, submit, submit-icon, submit-overlay"
+        ?disabled="${!this.canSubmitFilesAndInput}"
+        .iconType="${this.submitButtonIconType}"
+        .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
+        @submit-click="${this.onSubmitClick_}"
+        @submit-focusin="${this.onSubmitFocusin_}">
+      </cr-composebox-submit>
+    ` : ''}
   </div>
   ${this.shouldShowVoiceSearch_() ? html`
     <cr-composebox-voice-search id="voiceSearch"

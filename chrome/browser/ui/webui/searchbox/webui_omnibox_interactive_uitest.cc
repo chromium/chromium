@@ -64,7 +64,7 @@ const DeepQuery kVoiceSearch = {"omnibox-aim-app", "cr-composebox",
 const DeepQuery kCancelIcon = {"omnibox-aim-app", "cr-composebox",
                                "cr-composebox-input", "#cancelIcon"};
 const DeepQuery kAimSubmit = {"omnibox-aim-app", "cr-composebox",
-                              "#submitContainer"};
+                              "cr-composebox-submit", "#submitContainer"};
 }  // namespace
 
 class OmniboxWebUiInteractiveTestBase

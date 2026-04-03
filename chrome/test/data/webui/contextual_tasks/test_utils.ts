@@ -165,17 +165,13 @@ export async function deleteLastFile(composebox: any) {
 }
 
 export function getSubmitContainer(composebox: any): HTMLElement|null {
-  return composebox.shadowRoot.querySelector('#submitContainer');
+  const submitElement =
+      composebox.shadowRoot.querySelector('cr-composebox-submit');
+  return submitElement?.$.submitContainer || null;
 }
 
 export function getSubmitButton(composebox: any): HTMLButtonElement|null {
-  const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
-
-  if (!submitContainer) {
-    return null;
-  }
-
-  const submitButton: HTMLButtonElement|null =
-      submitContainer.querySelector('#submitIcon');
-  return submitButton;
+  const submitElement =
+      composebox.shadowRoot.querySelector('cr-composebox-submit');
+  return submitElement?.$.submitIcon || null;
 }

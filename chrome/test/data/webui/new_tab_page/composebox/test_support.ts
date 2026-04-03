@@ -243,15 +243,19 @@ export async function addTab(testProxy: ComposeboxTestElement): Promise<string> 
 
 export function getSubmitContainer(testProxy: ComposeboxTestElement):
     HTMLElement {
-  const container = testProxy.element.shadowRoot.querySelector<HTMLElement>(
-      '#submitContainer');
+  const button = testProxy.element.shadowRoot.querySelector(
+      'cr-composebox-submit');
+  assertTrue(!!button);
+  const container = button.shadowRoot.querySelector<HTMLElement>('#submitContainer');
   assertTrue(!!container);
   return container;
 }
 
 export function getSubmitIcon(testProxy: ComposeboxTestElement): HTMLElement {
-  const submitIcon = testProxy.element.shadowRoot.querySelector<HTMLElement>(
-      '#submitIcon');
+  const button = testProxy.element.shadowRoot.querySelector(
+      'cr-composebox-submit');
+  assertTrue(!!button);
+  const submitIcon = button.shadowRoot.querySelector<HTMLElement>('#submitIcon');
   assertTrue(!!submitIcon);
   return submitIcon;
 }

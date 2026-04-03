@@ -13,6 +13,7 @@ import './file_carousel.js';
 import './file_thumbnail.js';
 import './icons.html.js';
 import './composebox_input.js';
+import './composebox_submit.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -242,6 +243,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return this.searchboxNextEnabled && this.submitEnabled;
   }
 
+  // TODO(crbug.com/486705724): Clean up methods used by the legacy composebox
+  // submit button template.
   protected submitButtonIconClass_(): string {
     switch (this.submitButtonIconType) {
       case SubmitButtonIconType.FORWARD:
@@ -951,7 +954,13 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
+  // TODO(crbug.com/486705724): Clean up methods used by the legacy composebox
+  // submit button template.
   protected onSubmitContainerClick_(e: MouseEvent) {
+    this.submitQuery_(e);
+  }
+
+  protected onSubmitClick_(e: MouseEvent) {
     this.submitQuery_(e);
   }
 
@@ -1349,7 +1358,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.fire('composebox-focus-out');
   }
 
+  // TODO(crbug.com/486705724): Clean up methods used by the legacy composebox
+  // submit button template.
   protected onSubmitContainerFocusin_() {
+    // Matches should always be greater than 0 due to verbatim match.
+    if (this.input && !this.selectedMatch) {
+      this.selectFirstMatch();
+    }
+  }
+
+  protected onSubmitFocusin_() {
     // Matches should always be greater than 0 due to verbatim match.
     if (this.input && !this.selectedMatch) {
       this.selectFirstMatch();

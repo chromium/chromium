@@ -29,7 +29,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, assertStyle, deleteLastFile, FAKE_TOKEN_STRING, fixtureUrl, installMock} from './test_utils.js';
+import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, assertStyle, deleteLastFile, FAKE_TOKEN_STRING, fixtureUrl, getSubmitContainer, installMock} from './test_utils.js';
 
 async function dispatchDragAndDropEvent(dropZone: Element, files: File[]) {
   if (!dropZone) {
@@ -645,7 +645,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
           await composebox.updateComplete;
           await microtasksFinished();
 
-          composebox.$.submitContainer.click();
+          getSubmitContainer(composebox)!.click();
 
           await composebox.updateComplete;
           await microtasksFinished();

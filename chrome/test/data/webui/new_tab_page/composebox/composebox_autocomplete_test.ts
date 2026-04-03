@@ -13,7 +13,7 @@ import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_u
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, generateZeroId, MockInputState, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, generateZeroId, getSubmitIcon, MockInputState, setupComposeboxTest} from './test_support.js';
 
 enum Attributes {
   SELECTED = 'selected',
@@ -594,10 +594,8 @@ suite('NewTabPageComposeboxAutocompleteKeyboardNavigationTest', () => {
             '', testProxy.element.getInputElement().inputElement.value);
 
         // Assert submit is enabled.
-        const submitButton =
-            testProxy.element.shadowRoot.querySelector<HTMLElement>(
-                '#submitIcon');
-        assertFalse(submitButton!.hasAttribute('disabled'));
+        const submitButton = getSubmitIcon(testProxy);
+        assertFalse(submitButton.hasAttribute('disabled'));
 
         // By pressing 'Enter' on the button.
         const keydownEvent = (new KeyboardEvent('keydown', {

@@ -320,6 +320,88 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
   });
 
+  test(
+      'cr-composebox-submit is rendered when searchboxNextEnabled is false',
+      async () => {
+        createComposeboxElement(testProxy, {
+          searchboxNextEnabled: false,
+        });
+        await microtasksFinished();
+
+        const composeboxSubmit =
+            testProxy.element.shadowRoot.querySelector('cr-composebox-submit');
+
+        assertTrue(!!composeboxSubmit);
+      });
+
+  test(
+      'cr-composebox-submit is not rendered when searchboxNextEnabled is true',
+      async () => {
+        createComposeboxElement(testProxy, {
+          searchboxNextEnabled: true,
+        });
+        await microtasksFinished();
+
+        const composeboxSubmit =
+            testProxy.element.shadowRoot.querySelector('cr-composebox-submit');
+
+        assertFalse(!!composeboxSubmit);
+      });
+
+  test(
+      'cr-composebox-submit is rendered when searchboxLayoutMode is Compact',
+      async () => {
+        createComposeboxElement(testProxy, {
+          searchboxNextEnabled: true,
+        });
+        testProxy.element.searchboxLayoutMode = 'Compact';
+        testProxy.element.getInputElement().$.input.value = 'test';
+        testProxy.element.getInputElement().$.input.dispatchEvent(
+            new Event('input'));
+        await microtasksFinished();
+
+        const composeboxSubmit =
+            testProxy.element.shadowRoot.querySelector('cr-composebox-submit');
+
+        assertTrue(!!composeboxSubmit);
+      });
+
+  test(
+      'cr-composebox-submit is rendered when searchboxLayoutMode is TallBottomContext',
+      async () => {
+        createComposeboxElement(testProxy, {
+          searchboxNextEnabled: true,
+        });
+        testProxy.element.searchboxLayoutMode = 'TallBottomContext';
+        testProxy.element.getInputElement().$.input.value = 'test';
+        testProxy.element.getInputElement().$.input.dispatchEvent(
+            new Event('input'));
+        await microtasksFinished();
+
+        const composeboxSubmit =
+            testProxy.element.shadowRoot.querySelector('cr-composebox-submit');
+
+        assertTrue(!!composeboxSubmit);
+      });
+
+  test(
+      'cr-composebox-submit is not rendered when there is no input text',
+      async () => {
+        createComposeboxElement(testProxy, {
+          searchboxNextEnabled: true,
+        });
+        testProxy.element.searchboxLayoutMode = 'TallBottomContext';
+        testProxy.element.getInputElement().$.input.value = '';
+        testProxy.element.getInputElement().$.input.dispatchEvent(
+            new Event('input'));
+        await microtasksFinished();
+
+        const composeboxSubmit =
+            testProxy.element.shadowRoot.querySelector('cr-composebox-submit');
+
+        assertFalse(!!composeboxSubmit);
+      });
+
   test('submit button click leads to handler called', async () => {
     createComposeboxElement(testProxy);
     // Assert.
@@ -360,9 +442,8 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert submit is disabled.
-    const submitButton =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#submitIcon');
-    assertTrue(submitButton!.hasAttribute('disabled'));
+    const submitButton = getSubmitIcon(testProxy);
+    assertTrue(submitButton.hasAttribute('disabled'));
 
     // Act.
     getSubmitContainer(testProxy).click();
@@ -384,9 +465,8 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert call cannot occur.
-    const submitButton =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#submitIcon');
-    assertTrue(submitButton!.hasAttribute('disabled'));
+    const submitButton = getSubmitIcon(testProxy);
+    assertTrue(submitButton.hasAttribute('disabled'));
   });
 
   test('submit button is disabled', async () => {
@@ -397,9 +477,8 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert.
-    const submitButton =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#submitIcon');
-    assertTrue(submitButton!.hasAttribute('disabled'));
+    const submitButton = getSubmitIcon(testProxy);
+    assertTrue(submitButton.hasAttribute('disabled'));
   });
 
   test('keydown submit only works for enter', async () => {
@@ -846,7 +925,10 @@ suite('NewTabPageComposeboxTest', () => {
     await collapsibleBox.updateComplete;
 
     // Submit query.
-    const submit = collapsibleBox.shadowRoot.querySelector<HTMLElement>(
+    const composeboxSubmit =
+        collapsibleBox.shadowRoot.querySelector('cr-composebox-submit');
+    assertTrue(!!composeboxSubmit);
+    const submit = composeboxSubmit.shadowRoot.querySelector<HTMLElement>(
         '#submitContainer');
     assertTrue(!!submit);
     submit.click();

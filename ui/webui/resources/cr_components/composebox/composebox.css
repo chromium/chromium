@@ -196,18 +196,12 @@ search-animated-glow {
   --input-bottom-spacing: 0;
 }
 
-/* Controls the opacity of the icons when the composebox is expanded/collapsed. */
-.icon-fade {
-  opacity: 0;
-  transition: var(--icon-exit-transition);
-}
-
-:host([expanding_]) .icon-fade {
+:host([expanding_]) cr-composebox-submit::part(submit) {
   opacity: 1;
   transition: var(--icon-entry-transition);
 }
 
-:host([in-voice-search-mode]) .icon-fade {
+:host([in-voice-search-mode]) cr-composebox-submit::part(submit) {
   opacity: 0;
   transition: var(--icon-exit-transition);
 }
@@ -265,39 +259,19 @@ search-animated-glow {
   opacity: 0.3;
 }
 
-:host(:not([submit-enabled])) #submitContainer{
+:host(:not([submit-enabled])) cr-composebox-submit::part(submit) {
   display: none;
-}
-
-#submitContainer {
-  border-radius: 50%;
-  bottom: var(--input-bottom-spacing);
-  cursor: default; /* For Lens side panel. */
-  height: var(--cr-composebox-submit-container-size, var(--cr-icon-button-size));
-  inset-inline-end: 10px;
-  position: absolute;
-  width: var(--cr-composebox-submit-container-size, var(--cr-icon-button-size));
 }
 
 :host([submit-enabled]) #submitContainer {
   cursor: pointer;
 }
 
-#submitOverlay {
-  border-radius: inherit;
-  display: inherit;
-  height: var(--cr-icon-button-size);
-  margin-inline-start: 2px;
-  margin-top: 2px;
-  position: absolute;
-  width: var(--cr-icon-button-size);
-  z-index: 2;
-}
-
 :host([submit-enabled]) #submitContainer:hover #submitOverlay {
   background-color: var(--cr-composebox-submit-button-hover-color, var(--color-composebox-submit-button-hover));
 }
 
+/* TODO(crbug.com/486705724): Clean up duplicate styles. */
 #submitIcon {
   --cr-icon-button-fill-color: var(--color-composebox-submit-button-icon, white);
   --cr-icon-button-icon-size: 16px;
@@ -428,7 +402,7 @@ search-animated-glow {
   --input-bottom-spacing: 12px;
 }
 
-:host([searchbox-next-enabled]) #submitIcon {
+:host([searchbox-next-enabled]) cr-composebox-submit::part(submit-icon) {
   --cr-icon-button-icon-size: 12px;
 }
 
@@ -456,11 +430,6 @@ search-animated-glow {
   }
 }
 
-:host([searchbox-next-enabled][searchbox-layout-mode='Compact']) #submitOverlay,
-:host([searchbox-next-enabled][searchbox-layout-mode='TallBottomContext']) #submitOverlay {
-  position: relative;
-}
-
 :host(:not([searchbox-next-enabled])) #voiceSearchButton,
 :host([searchbox-layout-mode='TallBottomContext']) #voiceSearchButton {
   bottom: 12px;
@@ -485,22 +454,22 @@ search-animated-glow {
   flex-direction: row;
 }
 
-:host([submit-enabled][searchbox-layout-mode='Compact']) #submitContainer {
+:host([submit-enabled][searchbox-layout-mode='Compact']) cr-composebox-submit::part(submit) {
   inset-inline-end: 0;
   margin-block: 12px 2px;
   margin-inline: auto 10px;
   position: relative;
 }
 
-:host([submit-enabled][searchbox-layout-mode='TallBottomContext']) #submitContainer {
+:host([submit-enabled][searchbox-layout-mode='TallBottomContext']) cr-composebox-submit::part(submit) {
   position: absolute;
 }
 
-:host([submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown])) #submitContainer {
+:host([submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown])) cr-composebox-submit::part(submit) {
   bottom: 10px;
 }
 
-:host([submit-enabled][searchbox-layout-mode='TallBottomContext'][show-dropdown]) #submitContainer {
+:host([submit-enabled][searchbox-layout-mode='TallBottomContext'][show-dropdown]) cr-composebox-submit::part(submit) {
   top: var(--cr-composebox-submit-container-top, 58px);
 }
 

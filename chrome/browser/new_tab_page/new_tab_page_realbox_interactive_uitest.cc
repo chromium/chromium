@@ -89,8 +89,8 @@ const DeepQuery kComposeboxContextMenuDialog = {
     "#menu",   "#menu",       "#dialog"};
 const DeepQuery kComposeboxInput = {"ntp-app", "cr-composebox",
                                     "cr-composebox-input", "#input"};
-const DeepQuery kComposeboxSubmitButton = {"ntp-app", "#composebox",
-                                           "#submitContainer"};
+const DeepQuery kComposeboxSubmitButton = {
+    "ntp-app", "#composebox", "cr-composebox-submit", "#submitContainer"};
 const DeepQuery kComposeboxCancelButton = {
     "ntp-app", "#composebox", "cr-composebox-input", "#cancelIcon"};
 const DeepQuery kComposeboxDialog = {"ntp-app", "#composeboxDialog"};
