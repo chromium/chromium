@@ -471,7 +471,7 @@ void RecordShortcutsAutoRemovalMetrics(Profile* profile, int prev_count) {
   // Log the new staleness count for shortcuts. We're only logging it here
   // because the auto-removal will be skipped anyway due to conditions above.
   // NOTE: An exclusive max of 101 days was picked as the max threshold.
-  base::UmaHistogramExactLinear("NewTabPage.Shortcuts.AutoRemovalStaleDays",
+  base::UmaHistogramExactLinear("NewTabPage.MostVisited.AutoRemovalStaleDays",
                                 prev_count, 101);
 
   // Auto-removal skipped due to the staleness threshold.

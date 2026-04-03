@@ -922,7 +922,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
             shortcuts_staleness_count + 1);
 
   histogram_tester_.ExpectUniqueSample(
-      "NewTabPage.Shortcuts.AutoRemovalStaleDays", shortcuts_staleness_count,
+      "NewTabPage.MostVisited.AutoRemovalStaleDays", shortcuts_staleness_count,
       1);
 }
 
