@@ -36,10 +36,6 @@ SigninUIError CanOfferSignin(Profile* profile,
     return SigninUIError::SigninDisallowed(email);
   }
 
-  if (!ChromeSigninClient::ProfileAllowsSigninCookies(profile)) {
-    return SigninUIError::SigninCookiesDisallowed(email);
-  }
-
   if (!email.empty()) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     if (!identity_manager) {
@@ -123,6 +119,12 @@ SigninUIError CanOfferSignin(Profile* profile,
           prefs::kGoogleServicesLastSyncingUsername);
       return SigninUIError::ProfileWasUsedByAnotherAccount(email, last_email);
     }
+  }
+
+  // This error has lower priority because it is not critical and may sometimes
+  // be ignored.
+  if (!ChromeSigninClient::ProfileAllowsSigninCookies(profile)) {
+    return SigninUIError::SigninCookiesDisallowed(email);
   }
 
   return SigninUIError::Ok();

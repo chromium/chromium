@@ -271,6 +271,14 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
     return;
   }
 
+  if (signin_ui_error.type() == SigninUIError::Type::kSigninCookiesDisallowed) {
+    // Ignore cookie errors for profile deletion. Deleting the profile because
+    // cookies are blocked would be very surprising for the user, and is not
+    // absolutely required. Even though new sign-ins are disallowed, existing
+    // sessions can remain.
+    return;
+  }
+
   if (ChromeSigninClientFactory::GetForProfile(profile)
           ->IsClearPrimaryAccountAllowed()) {
     // Force clear the primary account if it is no longer allowed and if sign
