@@ -317,6 +317,16 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
   }
   CHECK(metadata);
 
+  // Ensure that the metadata's application URL is same origin as the page, to
+  // prevent a compromised renderer from installing cross-origin apps. Setting
+  // this to an empty GURL allows a fallback to the `start_url`, which is
+  // computed from the web contents itself.
+  if (metadata->application_url.is_valid() &&
+      !url::IsSameOriginWith(metadata->application_url,
+                             contents->GetLastCommittedURL())) {
+    metadata->application_url = GURL();
+  }
+
   std::unique_ptr<WebAppInstallInfo> info = std::move(fallback_install_info_);
   PopulateWebAppInfoFromMetadata(info.get(), *metadata);
   std::move(get_web_app_info_callback_).Run(std::move(info));

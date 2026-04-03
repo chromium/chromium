@@ -147,12 +147,13 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
 }
 
 TEST_F(ShortcutInfoTest, UpdateFromWebPageMetadata) {
-  info_ = ShortcutInfo(GURL());
+  const GURL kAppUrl("https://new.com/start");
+  info_ = ShortcutInfo(kAppUrl);
   webapps::mojom::WebPageMetadataPtr metadata =
       webapps::mojom::WebPageMetadata::New();
   metadata->application_name = u"new title";
   metadata->description = u"new description";
-  metadata->application_url = GURL("https://new.com/start");
+  metadata->application_url = kAppUrl;
   metadata->mobile_capable = mojom::WebPageMobileCapable::ENABLED;
 
   info_.UpdateFromWebPageMetadata(*metadata);
@@ -164,6 +165,19 @@ TEST_F(ShortcutInfoTest, UpdateFromWebPageMetadata) {
   ASSERT_EQ(metadata->application_url, info_.url);
   ASSERT_EQ(GURL("https://new.com/"), info_.scope);
   ASSERT_EQ(blink::mojom::DisplayMode::kStandalone, info_.display);
+}
+
+TEST_F(ShortcutInfoTest, UpdateFromWebPageMetadataCrossOrigin) {
+  const GURL kInitialUrl("https://old.com/start");
+  info_ = ShortcutInfo(kInitialUrl);
+  webapps::mojom::WebPageMetadataPtr metadata =
+      webapps::mojom::WebPageMetadata::New();
+  metadata->application_url = GURL("https://new.com/start");
+
+  info_.UpdateFromWebPageMetadata(*metadata);
+
+  // URL should not change if cross-origin
+  ASSERT_EQ(kInitialUrl, info_.url);
 }
 
 TEST_F(ShortcutInfoTest, WebPageMetadataTitleAppName) {

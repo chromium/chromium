@@ -583,7 +583,10 @@ void FetchManifestAndInstallCommand::OnInstallInfoObtainedMergeAndShowDialog(
       GetMutableDebugValue().Set("used_fallback_after_icon_download_failed",
                                  true);
       valid_manifest_for_crafted_web_app_ = false;
+
+      web_app_info_ = std::move(install_info);
       web_app_info_->is_diy_app = true;
+
       data_retriever_->GetIcons(
           web_contents_.get(), {},
           /*download_page_favicons=*/true,

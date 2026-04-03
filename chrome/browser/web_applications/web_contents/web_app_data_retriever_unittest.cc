@@ -187,9 +187,9 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlAbsent) {
 TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
   SetFakeWebPageMetadataAgent();
 
-  web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
-
   GURL other_app_url = GURL("https://bar.example");
+  web_contents_tester()->NavigateAndCommit(other_app_url);
+
   std::u16string other_app_title = u"Other App Title";
   SetRendererWebPageMetadata(other_app_url, other_app_title,
                              /*description=*/u"");
@@ -204,6 +204,30 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
 
   EXPECT_EQ(other_app_url, web_app_info()->start_url());
   EXPECT_EQ(other_app_title, web_app_info()->title.value());
+}
+
+TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlCrossOrigin) {
+  SetFakeWebPageMetadataAgent();
+
+  const GURL kFooUrl("https://foo.example");
+  web_contents_tester()->NavigateAndCommit(kFooUrl);
+
+  GURL other_app_url = GURL("https://bar.example");
+  std::u16string other_app_title = u"Other App Title";
+  SetRendererWebPageMetadata(other_app_url, other_app_title,
+                             /*description=*/u"");
+
+  base::RunLoop run_loop;
+  WebAppDataRetriever retriever;
+  retriever.GetWebAppInstallInfo(
+      web_contents(),
+      base::BindOnce(&WebAppDataRetrieverTest::GetWebAppInstallInfoCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // If the origin differs, we fallback to the url that was already in the
+  // web_app_info().
+  EXPECT_EQ(kFooUrl, web_app_info()->start_url());
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {

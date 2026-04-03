@@ -135,7 +135,8 @@ void ShortcutInfo::UpdateFromWebPageMetadata(
   if (!metadata.description.empty()) {
     description = metadata.description;
   }
-  if (metadata.application_url.is_valid()) {
+  if (metadata.application_url.is_valid() &&
+      url::IsSameOriginWith(metadata.application_url, url)) {
     url = metadata.application_url;
     scope = metadata.application_url.GetWithoutFilename();
   }
