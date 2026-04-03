@@ -97,6 +97,8 @@ class PinInfoBarControllerTest : public testing::Test {
     tab_strip_model_->AppendWebContents(std::move(web_contents), true);
     infobars::ContentInfoBarManager::CreateForWebContents(
         tab_strip_model_->GetActiveWebContents());
+    ASSERT_TRUE(infobar_manager());
+    ASSERT_TRUE(infobar_manager()->infobars().empty());
   }
 
   void SetBrowserType(BrowserWindowInterface::Type type) {
@@ -109,6 +111,10 @@ class PinInfoBarControllerTest : public testing::Test {
   }
   TestingProfile* profile() { return profile_.get(); }
   TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
+  infobars::ContentInfoBarManager* infobar_manager() {
+    return infobars::ContentInfoBarManager::FromWebContents(
+        tab_strip_model_->GetActiveWebContents());
+  }
   MockBrowserWindowInterface* browser_window_interface() {
     return browser_window_interface_.get();
   }
@@ -175,10 +181,6 @@ TEST_F(PinInfoBarControllerTest, DontShowIfCantPin) {
 
 // Don't show the infobar if it was shown recently.
 TEST_F(PinInfoBarControllerTest, DontShowIfShownRecently) {
-  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-      tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(infobar_manager);
-  ASSERT_TRUE(infobar_manager->infobars().empty());
   SetBrowserType(BrowserWindowInterface::Type::TYPE_NORMAL);
 
   SetInfoBarShownRecently();
@@ -186,7 +188,7 @@ TEST_F(PinInfoBarControllerTest, DontShowIfShownRecently) {
   PinInfoBarController controller{browser_window_interface()};
   EXPECT_FALSE(OnShouldOfferToPinResultAndWait(controller,
                                                /*should_offer_to_pin=*/true));
-  EXPECT_TRUE(infobar_manager->infobars().empty());
+  EXPECT_TRUE(infobar_manager()->infobars().empty());
 }
 
 // Don't show the infobar if it was shown the maximum number of times.
@@ -194,10 +196,6 @@ TEST_F(PinInfoBarControllerTest, DontShowIfShownRecently) {
 // Disabled because it's broken on multiple bots and very flaky on every other
 // bot it runs on; see https://crbug.com/435215855 for links and more info.
 TEST_F(PinInfoBarControllerTest, DISABLED_DontShowIfShownMaxTimes) {
-  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-      tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(infobar_manager);
-  ASSERT_TRUE(infobar_manager->infobars().empty());
   SetBrowserType(BrowserWindowInterface::Type::TYPE_NORMAL);
 
   for (int i = 0; i < kPinInfoBarMaxPromptCount; i++) {
@@ -209,25 +207,21 @@ TEST_F(PinInfoBarControllerTest, DISABLED_DontShowIfShownMaxTimes) {
   PinInfoBarController controller{browser_window_interface()};
   EXPECT_FALSE(OnShouldOfferToPinResultAndWait(controller,
                                                /*should_offer_to_pin=*/true));
-  EXPECT_TRUE(infobar_manager->infobars().empty());
+  EXPECT_TRUE(infobar_manager()->infobars().empty());
 }
 
 // Show the infobar if the browser type is normal.
 TEST_F(PinInfoBarControllerTest, ShowInfoBar) {
-  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-      tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(infobar_manager);
-  ASSERT_TRUE(infobar_manager->infobars().empty());
   SetBrowserType(BrowserWindowInterface::Type::TYPE_NORMAL);
 
   PinInfoBarController controller{browser_window_interface()};
   EXPECT_TRUE(OnShouldOfferToPinResultAndWait(controller,
                                               /*should_offer_to_pin=*/true));
-  EXPECT_FALSE(infobar_manager->infobars().empty());
+  EXPECT_FALSE(infobar_manager()->infobars().empty());
 
   // Clear the infobar to ensure `controller` stops observing
-  // `infobar_manager` before being destroyed.
-  infobar_manager->RemoveAllInfoBars(false);
+  // `infobar_manager()` before being destroyed.
+  infobar_manager()->RemoveAllInfoBars(false);
 }
 
 }  // namespace default_browser
