@@ -57,9 +57,10 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isZeroState="${this.isZeroState_}"
           .isSidePanel="${!this.isShownInTab_}"
           .isLensOverlayShowing="${this.isLensOverlayShowing_}"
-          .isOverlayOpenForAimVisualSearch="${this.isOverlayOpenForAimVisualSearch_}"
-          .enableNativeZeroStateSuggestions=
-              "${this.enableNativeZeroStateSuggestions_}"
+          .isOverlayOpenForAimVisualSearch="${
+              this.isOverlayOpenForAimVisualSearch_}"
+          .enableNativeZeroStateSuggestions="${
+              this.enableNativeZeroStateSuggestions_}"
           .inputEnabled="${!this.isInputLocked_}">
     </contextual-tasks-composebox>
 </if>

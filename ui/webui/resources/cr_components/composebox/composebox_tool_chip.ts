@@ -30,10 +30,13 @@ export class ComposeboxToolChipElement extends I18nMixinLit
   static override get properties() {
     return {
       inputState: {type: Object},
+      isCanvasQuerySubmitted: {type: Boolean},
     };
   }
 
   protected accessor inputState: InputState|null = null;
+  accessor isCanvasQuerySubmitted: boolean = false;
+
 
   protected getToolChipLabel_(): string {
     if (!this.inputState) {
@@ -60,6 +63,11 @@ export class ComposeboxToolChipElement extends I18nMixinLit
     }
   }
 
+  protected get isCanvasActive_(): boolean {
+    return this.inputState?.activeTool === ToolMode.kCanvas &&
+        this.isCanvasQuerySubmitted;
+  }
+
   protected getIcon_(): string {
     if (!this.inputState) {
       return '';
@@ -79,6 +87,13 @@ export class ComposeboxToolChipElement extends I18nMixinLit
 
   protected onClick_() {
     if (this.inputState) {
+      // Client-side workaround: The Canvas chip should be non-removable once
+      // active, as per launch requirements (see crbug.com/491479366). A future
+      // proper fix might involve server-side config or handling
+      // TOOL_SUBSTATE_CANVAS_FOLLOWUP (see crbug.com/491591419).
+      if (this.isCanvasActive_) {
+        return;
+      }
       this.fire('tool-click', {toolMode: this.inputState.activeTool});
     }
   }
