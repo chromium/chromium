@@ -4,7 +4,6 @@
 
 #include "media/base/android/jni_hdr_metadata.h"
 
-#include "media/base/video_color_space.h"
 #include "ui/gfx/hdr_metadata.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -19,9 +18,8 @@ constexpr skhdr::MasteringDisplayColorVolume kDefaultMDCV;
 
 }  // namespace
 
-JniHdrMetadata::JniHdrMetadata(const VideoColorSpace& color_space,
-                               const gfx::HDRMetadata& hdr_metadata)
-    : color_space_(color_space), hdr_metadata_(hdr_metadata) {
+JniHdrMetadata::JniHdrMetadata(const gfx::HDRMetadata& hdr_metadata)
+    : hdr_metadata_(hdr_metadata) {
   JNIEnv* env = base::android::AttachCurrentThread();
   jobject_ = Java_HdrMetadata_create(env, reinterpret_cast<int64_t>(this));
   base::android::CheckException(env);
@@ -30,18 +28,6 @@ JniHdrMetadata::JniHdrMetadata(const VideoColorSpace& color_space,
 JniHdrMetadata::~JniHdrMetadata() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_HdrMetadata_close(env, obj());
-}
-
-int32_t JniHdrMetadata::Primaries(JNIEnv* env) {
-  return static_cast<int>(color_space_->primaries);
-}
-
-int32_t JniHdrMetadata::ColorTransfer(JNIEnv* env) {
-  return static_cast<int>(color_space_->transfer);
-}
-
-int32_t JniHdrMetadata::Range(JNIEnv* env) {
-  return static_cast<int>(color_space_->range);
 }
 
 float JniHdrMetadata::PrimaryRChromaticityX(JNIEnv* env) {

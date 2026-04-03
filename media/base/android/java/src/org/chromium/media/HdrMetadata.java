@@ -52,18 +52,6 @@ class HdrMetadata {
         synchronized (mLock) {
             assert mNativeJniHdrMetadata != 0;
 
-            // TODO(sandv): Use color space matrix when android has support for it.
-            int colorStandard = getColorStandard();
-            if (colorStandard != -1) {
-                format.setInteger(MediaFormat.KEY_COLOR_STANDARD, colorStandard);
-            }
-            int colorTransfer = getColorTransfer();
-            if (colorTransfer != -1) {
-                format.setInteger(MediaFormat.KEY_COLOR_TRANSFER, colorTransfer);
-            }
-            int colorRange = getColorRange();
-            if (colorRange != -1) format.setInteger(MediaFormat.KEY_COLOR_RANGE, colorRange);
-
             ByteBuffer hdrStaticInfo = ByteBuffer.wrap(new byte[25]);
             hdrStaticInfo.order(ByteOrder.LITTLE_ENDIAN);
             hdrStaticInfo.put((byte) 0); // Type.
@@ -82,53 +70,6 @@ class HdrMetadata {
 
             hdrStaticInfo.rewind();
             format.setByteBuffer(MediaFormat.KEY_HDR_STATIC_INFO, hdrStaticInfo);
-        }
-    }
-
-    private int getColorStandard() {
-        // media/base/video_color_space.h
-        switch (HdrMetadataJni.get().primaries(mNativeJniHdrMetadata)) {
-            case 1:
-                return MediaFormat.COLOR_STANDARD_BT709;
-            case 4: // BT.470M.
-            case 5: // BT.470BG.
-            case 6: // SMPTE 170M.
-            case 7: // SMPTE 240M.
-                return MediaFormat.COLOR_STANDARD_BT601_NTSC;
-            case 9:
-                return MediaFormat.COLOR_STANDARD_BT2020;
-            default:
-                return -1;
-        }
-    }
-
-    private int getColorTransfer() {
-        // media/base/video_color_space.h
-        switch (HdrMetadataJni.get().colorTransfer(mNativeJniHdrMetadata)) {
-            case 1: // BT.709.
-            case 6: // SMPTE 170M.
-            case 7: // SMPTE 240M.
-                return MediaFormat.COLOR_TRANSFER_SDR_VIDEO;
-            case 8:
-                return MediaFormat.COLOR_TRANSFER_LINEAR;
-            case 16:
-                return MediaFormat.COLOR_TRANSFER_ST2084;
-            case 18:
-                return MediaFormat.COLOR_TRANSFER_HLG;
-            default:
-                return -1;
-        }
-    }
-
-    private int getColorRange() {
-        // media/base/video_color_space.h
-        switch (HdrMetadataJni.get().range(mNativeJniHdrMetadata)) {
-            case 1:
-                return MediaFormat.COLOR_RANGE_LIMITED;
-            case 2:
-                return MediaFormat.COLOR_RANGE_FULL;
-            default:
-                return -1;
         }
     }
 
@@ -182,12 +123,6 @@ class HdrMetadata {
 
     @NativeMethods
     interface Natives {
-        int primaries(long nativeJniHdrMetadata);
-
-        int colorTransfer(long nativeJniHdrMetadata);
-
-        int range(long nativeJniHdrMetadata);
-
         float primaryRChromaticityX(long nativeJniHdrMetadata);
 
         float primaryRChromaticityY(long nativeJniHdrMetadata);

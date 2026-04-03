@@ -80,6 +80,9 @@ public class MediaFormatBuilderTest {
                         VIDEO_WIDTH,
                         VIDEO_HEIGHT,
                         csds,
+                        -1,
+                        -1,
+                        -1,
                         null,
                         false,
                         VIDEO_PROFILE);
@@ -98,6 +101,9 @@ public class MediaFormatBuilderTest {
                         VIDEO_WIDTH,
                         VIDEO_HEIGHT,
                         csds,
+                        -1,
+                        -1,
+                        -1,
                         null,
                         false,
                         VIDEO_PROFILE);
@@ -117,6 +123,9 @@ public class MediaFormatBuilderTest {
                         VIDEO_WIDTH,
                         VIDEO_HEIGHT,
                         csds,
+                        -1,
+                        -1,
+                        -1,
                         null,
                         false,
                         VIDEO_PROFILE);
@@ -135,10 +144,36 @@ public class MediaFormatBuilderTest {
                         VIDEO_WIDTH,
                         VIDEO_HEIGHT,
                         csds,
+                        -1,
+                        -1,
+                        -1,
                         hdrMetadata,
                         false,
                         VIDEO_PROFILE);
         assertTrue(hdrMetadata.was_called);
+    }
+
+    @Test
+    public void testCreateVideoDecoderWithColorSpace() {
+        byte[][] csds = {};
+        int standard = MediaFormat.COLOR_STANDARD_BT709;
+        int transfer = MediaFormat.COLOR_TRANSFER_SDR_VIDEO;
+        int range = MediaFormat.COLOR_RANGE_LIMITED;
+        MediaFormat format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        VIDEO_DECODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        standard,
+                        transfer,
+                        range,
+                        null,
+                        false,
+                        VIDEO_PROFILE);
+        assertEquals(standard, format.getInteger(MediaFormat.KEY_COLOR_STANDARD));
+        assertEquals(transfer, format.getInteger(MediaFormat.KEY_COLOR_TRANSFER));
+        assertEquals(range, format.getInteger(MediaFormat.KEY_COLOR_RANGE));
     }
 
     @Test
@@ -150,6 +185,9 @@ public class MediaFormatBuilderTest {
                         VIDEO_WIDTH,
                         VIDEO_HEIGHT,
                         csds,
+                        -1,
+                        -1,
+                        -1,
                         null,
                         false,
                         VIDEO_PROFILE);
@@ -166,6 +204,9 @@ public class MediaFormatBuilderTest {
                         VIDEO_WIDTH,
                         VIDEO_HEIGHT,
                         csds,
+                        -1,
+                        -1,
+                        -1,
                         null,
                         true,
                         VIDEO_PROFILE);
@@ -186,6 +227,9 @@ public class MediaFormatBuilderTest {
                         VIDEO_WIDTH,
                         VIDEO_HEIGHT,
                         csds,
+                        -1,
+                        -1,
+                        -1,
                         null,
                         true,
                         dvProfile5);
@@ -199,6 +243,9 @@ public class MediaFormatBuilderTest {
                         VIDEO_WIDTH,
                         VIDEO_HEIGHT,
                         csds,
+                        -1,
+                        -1,
+                        -1,
                         null,
                         true,
                         dvProfile8);
@@ -216,6 +263,9 @@ public class MediaFormatBuilderTest {
                         VIDEO_WIDTH,
                         VIDEO_HEIGHT,
                         csds,
+                        -1,
+                        -1,
+                        -1,
                         null,
                         true,
                         VideoCodecProfile.DOLBYVISION_PROFILE5);

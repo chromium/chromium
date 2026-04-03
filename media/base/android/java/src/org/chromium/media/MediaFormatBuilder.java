@@ -23,11 +23,23 @@ class MediaFormatBuilder {
             int width,
             int height,
             byte[][] csds,
+            int colorStandard,
+            int colorTransfer,
+            int colorRange,
             @Nullable HdrMetadata hdrMetadata,
             boolean allowAdaptivePlayback,
             int profile) {
         MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
         setCodecSpecificData(format, csds);
+        if (colorStandard != -1) {
+            format.setInteger(MediaFormat.KEY_COLOR_STANDARD, colorStandard);
+        }
+        if (colorTransfer != -1) {
+            format.setInteger(MediaFormat.KEY_COLOR_TRANSFER, colorTransfer);
+        }
+        if (colorRange != -1) {
+            format.setInteger(MediaFormat.KEY_COLOR_RANGE, colorRange);
+        }
         if (hdrMetadata != null) {
             hdrMetadata.addMetadataToFormat(format);
         }

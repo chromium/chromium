@@ -48,6 +48,8 @@ if (is_android) {
       "media_drm_bridge_factory.h",
       "media_drm_storage_bridge.cc",
       "media_drm_storage_bridge.h",
+      "media_format_color_space.cc",
+      "media_format_color_space.h",
       "media_server_crash_listener.cc",
       "media_server_crash_listener.h",
     ]
@@ -79,6 +81,7 @@ if (is_android) {
       "media_codec_loop_unittest.cc",
       "media_codec_util_unittest.cc",
       "media_drm_bridge_unittest.cc",
+      "media_format_color_space_unittest.cc",
     ]
 
     deps = [

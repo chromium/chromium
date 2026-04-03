@@ -11,12 +11,9 @@
 
 namespace media {
 
-class VideoColorSpace;
-
 class JniHdrMetadata {
  public:
-  JniHdrMetadata(const VideoColorSpace& color_space,
-                 const gfx::HDRMetadata& hdr_metadata);
+  explicit JniHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
 
   JniHdrMetadata(const JniHdrMetadata&) = delete;
   JniHdrMetadata& operator=(const JniHdrMetadata&) = delete;
@@ -26,10 +23,6 @@ class JniHdrMetadata {
   base::android::ScopedJavaLocalRef<jobject> obj() { return jobject_; }
 
   // Java HdrMetadata implementation.
-
-  int32_t Primaries(JNIEnv* env);
-  int32_t ColorTransfer(JNIEnv* env);
-  int32_t Range(JNIEnv* env);
 
   float PrimaryRChromaticityX(JNIEnv* env);
   float PrimaryRChromaticityY(JNIEnv* env);
@@ -45,7 +38,6 @@ class JniHdrMetadata {
   int32_t MaxFrameAverageLuminance(JNIEnv* env);
 
  private:
-  const raw_ref<const VideoColorSpace> color_space_;
   const raw_ref<const gfx::HDRMetadata> hdr_metadata_;
   base::android::ScopedJavaLocalRef<jobject> jobject_;
 };
