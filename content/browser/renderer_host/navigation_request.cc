@@ -2305,6 +2305,7 @@ NavigationRequest::NavigationRequest(
 NavigationRequest::~NavigationRequest() {
   TRACE_EVENT("navigation", "NavigationRequest::~NavigationRequest",
               perfetto::TerminatingFlow::FromPointer(this));
+  is_destructing_ = true;
 #if DCHECK_IS_ON()
   // If |is_safe_to_delete_| is false, it means |this| is being deleted at an
   // unexpected time, more specifically a time that is likely to lead to
@@ -8394,6 +8395,12 @@ NavigatorDelegate* NavigationRequest::GetDelegate() const {
 void NavigationRequest::Resume(NavigationThrottle* resuming_throttle) {
   CHECK(resuming_throttle);
   CHECK(!is_resuming_) << "This call does not support re-entrancy.";
+  // We cannot resume the navigation during the destruction of the
+  // NavigationRequest. Otherwise the construction of the URL loader will crash
+  // because FrameTreeNode::navigation_request() returns nullptr.
+  if (is_destructing_) {
+    return;
+  }
   EnterChildTraceEvent("Resume", this);
 
   if (1u == throttle_registry_->GetDeferringThrottles().size()) {

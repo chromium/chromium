@@ -3583,6 +3583,15 @@ class CONTENT_EXPORT NavigationRequest
   mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
       resume_after_deferred_commit_listener_;
 
+  // If true, the destructor of the NavigationRequest is ongoing. The flag is
+  // added to avoid resuming the NavigationRequest in the destructor while
+  // calling DidFinishNavigation() back.
+  // TODO(crbug.com/496792860): Ideally we can destruct the navigation throttles
+  // first before issuing the DidFinishNavigation callback. However
+  // ContentSubresourceFilterThrottleManager currently relies on the throttle to
+  // be alive during the callback to work.
+  bool is_destructing_ = false;
+
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
 
