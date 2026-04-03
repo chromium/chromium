@@ -320,20 +320,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetTextSelStart(int32_t text_sel_start);
   void SetTextSelEnd(int32_t text_sel_end);
 
-  // Deprecated: Use SetLiveRegionContainer() instead, which sets all
-  // necessary live region attributes at once.
-  void SetLiveAtomic(bool live_atomic);
-  // Deprecated: Use SetLiveRegionContainer() instead.
-  void SetLiveStatus(const std::string& status);
-  // Deprecated: Use SetLiveRegionContainer() instead.
-  void SetLiveRelevant(const std::string& live_relevant);
-  // Deprecated: Use RemoveLiveRegionContainer() instead.
-  void RemoveLiveRelevant();
-  // Deprecated: Use SetLiveRegionContainer() instead.
-  void SetContainerLiveRelevant(const std::string& live_relevant);
-  // Deprecated: Use RemoveLiveRegionContainer() instead.
-  void RemoveContainerLiveRelevant();
-
   // Designates this view as a live region container, setting all required
   // attributes (kLiveStatus, kContainerLiveStatus, kLiveRelevant, etc.) and
   // propagating kContainerLiveStatus to descendants. Automatically fires
@@ -342,11 +328,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // |relevant| controls which mutations fire kLiveRegionChanged; defaults to
   // kLiveRegionRelevantDefault ("additions text"). |atomic| maps to
   // aria-atomic; defaults to false.
-  //
-  // Callers currently using the deprecated SetContainerLiveStatus() /
-  // SetLiveStatus() should migrate to this method. Once all callers have
-  // migrated, the deprecated methods and the `is_live_region_container_` /
-  // `is_in_new_api_live_region_` compatibility flags can be removed.
   void SetLiveRegionContainer(LiveRegionStatus live_status,
                               uint8_t relevant = kLiveRegionRelevantDefault,
                               bool atomic = false);
@@ -490,11 +471,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   virtual void SetShowContextMenu(bool show_context_menu);
 
-  // Deprecated: Use SetLiveRegionContainer() instead.
-  void SetContainerLiveStatus(const std::string& status);
-  // Deprecated: Use RemoveLiveRegionContainer() instead.
-  void RemoveContainerLiveStatus();
-
   // Sets the kValue attribute of the accessible object.
   // In case of ProgressBar, if progressBarIndicator value is negative,
   // then kValue attribute should not be set.
@@ -550,17 +526,19 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   bool should_be_invisible() const { return should_be_invisible_; }
 
-  // Updates kContainerLiveStatus and kContainerLiveRelevant for this node
-  // (and recursively for children). Only affects views using the new
-  // SetLiveRegionContainer() API; views using the deprecated
-  // SetContainerLiveStatus()/SetContainerLiveRelevant() are left untouched.
+  // Updates the container live status of the `data_` object.
+  // The view is considered a live region container if it has a live status
+  // set. If not, it inherits the container live status from its parent.
+  // UpdateContainerLiveStatus() updates only this node, without recursion.
+  // UpdateContainerLiveStatusRecursive() updates this node and recurses into
+  // children.
   void UpdateContainerLiveStatus();
   void UpdateContainerLiveStatusRecursive();
 
-  // Fires kLiveRegionChanged on the nearest ancestor live region root, if this
-  // node is inside a live region set up via SetLiveRegionContainer() and the
-  // trigger matches the region's aria-relevant value. No-op for views using
-  // the deprecated API (they manage their own event firing).
+  // Fires a kLiveRegionChanged event if this node is inside a live region
+  // and the given trigger type is included in the aria-relevant attribute.
+  // Walks up ancestors to find the live region root (where kLiveStatus is set)
+  // and fires the event on that node.
   void FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger trigger);
 
   // Override the child tree id.
@@ -910,15 +888,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   bool needs_ax_tree_manager_ = false;
 
   bool is_widget_closed_ = false;
-
-  // These flags distinguish the new SetLiveRegionContainer() API from the
-  // deprecated SetContainerLiveStatus()/SetLiveStatus() API so that
-  // UpdateContainerLiveStatus() and FireLiveRegionChangedIfNeeded() only
-  // affect views opted into the new mechanism. Remove these flags (and the
-  // guards that check them) once all callers have migrated to
-  // SetLiveRegionContainer().
-  bool is_live_region_container_ = false;
-  bool is_in_new_api_live_region_ = false;
 
   std::unique_ptr<ui::AXAttributeChangedCallbacks>
       attribute_changed_callbacks_ = nullptr;

@@ -1327,9 +1327,6 @@ void ViewAccessibility::SetLiveRegionContainer(LiveRegionStatus live_status,
   const char* live_status_str = LiveRegionStatusToString(live_status);
   const std::string relevant_str = LiveRegionRelevantToString(relevant);
 
-  is_live_region_container_ = true;
-  is_in_new_api_live_region_ = true;
-
   data_.AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
                            live_status_str);
   data_.AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
@@ -1345,9 +1342,6 @@ void ViewAccessibility::SetLiveRegionContainer(LiveRegionStatus live_status,
 }
 
 void ViewAccessibility::RemoveLiveRegionContainer() {
-  is_live_region_container_ = false;
-  is_in_new_api_live_region_ = false;
-
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kLiveStatus);
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kLiveRelevant);
   data_.RemoveBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic);
@@ -1360,49 +1354,34 @@ void ViewAccessibility::RemoveLiveRegionContainer() {
 }
 
 void ViewAccessibility::UpdateContainerLiveStatus() {
-  // If this view is the root of a new-API live region (set via
-  // SetLiveRegionContainer), its kContainerLiveStatus and
-  // kContainerLiveRelevant are already set by SetLiveRegionContainer()
-  // on the container itself, so there is nothing to do here.
-  if (is_live_region_container_) {
-    return;
-  }
-
-  // For other views: only inherit kContainerLiveStatus and
-  // kContainerLiveRelevant from parents that are in a new-API live region.
-  // Do not touch these attributes if they were set via the old
-  // SetContainerLiveStatus()/SetContainerLiveRelevant() APIs.
-  ViewAccessibility* parent = GetViewAccessibilityParent();
-  if (parent && parent->is_in_new_api_live_region_) {
-    std::string parent_status = parent->data_.GetStringAttribute(
-        ax::mojom::StringAttribute::kContainerLiveStatus);
-    if (!parent_status.empty()) {
-      data_.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
-                               parent_status);
-      // Also propagate kContainerLiveRelevant from the parent.
-      // TODO(crbug.com/485397138): This could be optimized. See bug for
-      // details.
-      std::string parent_relevant = parent->data_.GetStringAttribute(
+  std::string status =
+      data_.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus);
+  std::string relevant;
+  if (status.empty()) {
+    ViewAccessibility* parent = GetViewAccessibilityParent();
+    if (parent) {
+      status = parent->data_.GetStringAttribute(
+          ax::mojom::StringAttribute::kContainerLiveStatus);
+      relevant = parent->data_.GetStringAttribute(
           ax::mojom::StringAttribute::kContainerLiveRelevant);
-      if (!parent_relevant.empty()) {
-        data_.AddStringAttribute(
-            ax::mojom::StringAttribute::kContainerLiveRelevant,
-            parent_relevant);
-      }
-      is_in_new_api_live_region_ = true;
-      return;
     }
+  } else {
+    relevant =
+        data_.GetStringAttribute(ax::mojom::StringAttribute::kLiveRelevant);
   }
 
-  // Not in a new-API live region. If we previously inherited from one, clean
-  // up. Otherwise, leave kContainerLiveStatus/kContainerLiveRelevant
-  // untouched (they may have been explicitly set via the old APIs).
-  if (is_in_new_api_live_region_) {
+  if (status.empty()) {
     data_.RemoveStringAttribute(
         ax::mojom::StringAttribute::kContainerLiveStatus);
     data_.RemoveStringAttribute(
         ax::mojom::StringAttribute::kContainerLiveRelevant);
-    is_in_new_api_live_region_ = false;
+  } else {
+    data_.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
+                             status);
+    if (!relevant.empty()) {
+      data_.AddStringAttribute(
+          ax::mojom::StringAttribute::kContainerLiveRelevant, relevant);
+    }
   }
 }
 
@@ -1423,24 +1402,17 @@ void ViewAccessibility::UpdateContainerLiveStatusRecursive() {
 
 void ViewAccessibility::FireLiveRegionChangedIfNeeded(
     LiveRegionEventTrigger trigger) {
-  // Only fire for views inside a live region set up via the new
-  // SetLiveRegionContainer() API. Views using the deprecated
-  // SetContainerLiveStatus() manage their own event firing.
-  if (!is_in_new_api_live_region_) {
-    return;
-  }
-
   std::string container_live_status = data_.GetStringAttribute(
       ax::mojom::StringAttribute::kContainerLiveStatus);
   if (container_live_status.empty() || container_live_status == "off") {
     return;
   }
 
-  // Walk up ancestors to find the live region root set via
-  // SetLiveRegionContainer().
+  // Walk up ancestors to find the live region root (the view with kLiveStatus).
   ViewAccessibility* live_region_root = this;
   while (live_region_root) {
-    if (live_region_root->is_live_region_container_) {
+    if (live_region_root->data_.HasStringAttribute(
+            ax::mojom::StringAttribute::kLiveStatus)) {
       break;
     }
     live_region_root = live_region_root->GetViewAccessibilityParent();
@@ -2326,56 +2298,6 @@ void ViewAccessibility::SetTextSelStart(int32_t text_sel_start) {
 
 void ViewAccessibility::SetTextSelEnd(int32_t text_sel_end) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, text_sel_end);
-  NotifyDataChanged();
-}
-
-void ViewAccessibility::SetLiveAtomic(bool live_atomic) {
-  data_.AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, live_atomic);
-  NotifyDataChanged();
-}
-
-void ViewAccessibility::SetLiveStatus(const std::string& live_status) {
-  data_.AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
-                           live_status);
-  NotifyDataChanged();
-}
-
-void ViewAccessibility::SetLiveRelevant(const std::string& live_relevant) {
-  data_.AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
-                           live_relevant);
-  NotifyDataChanged();
-}
-
-void ViewAccessibility::RemoveLiveRelevant() {
-  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kLiveRelevant);
-  NotifyDataChanged();
-}
-
-void ViewAccessibility::SetContainerLiveRelevant(
-    const std::string& live_relevant) {
-  data_.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveRelevant,
-                           live_relevant);
-  NotifyDataChanged();
-}
-
-void ViewAccessibility::RemoveContainerLiveRelevant() {
-  data_.RemoveStringAttribute(
-      ax::mojom::StringAttribute::kContainerLiveRelevant);
-  NotifyDataChanged();
-}
-
-void ViewAccessibility::SetContainerLiveStatus(const std::string& status) {
-  data_.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
-                           status);
-  NotifyDataChanged();
-}
-
-void ViewAccessibility::RemoveContainerLiveStatus() {
-  if (!data_.HasStringAttribute(
-          ax::mojom::StringAttribute::kContainerLiveStatus)) {
-    return;
-  }
-  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus);
   NotifyDataChanged();
 }
 
