@@ -114,13 +114,13 @@ class PushMessagingNotificationManager {
 
   void LogSilentPushEvent(SilentPushEvent event);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // For extensions builds, skip userVisibleOnly requirement for worker-based
   // extensions that set it to false.
   bool ShouldExtensionsBypassUserVisibleOnlyRequirement(
       const GURL& origin,
       bool requested_user_visible_only);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // Weak. This manager is owned by a keyed service on this profile.
   raw_ptr<Profile> profile_;

@@ -15,13 +15,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 class PushMessagingNotificationManagerTest
     : public ChromeRenderViewHostTestHarness {};
@@ -59,7 +59,7 @@ TEST_F(PushMessagingNotificationManagerTest, IsTabVisibleViewSource) {
   EXPECT_FALSE(manager.IsTabVisible(profile(), web_contents(), origin));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace extensions {
 
 using ContextType = extensions::browser_test_util::ContextType;
@@ -171,15 +171,18 @@ TEST_P(ExtensionsPushMessagingNotificationManagerTest,
   EXPECT_FALSE(skip_allowed);
 }
 
+// Android only supports manifest V3 with service worker.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     NonWorkerExtension,
     ExtensionsPushMessagingNotificationManagerTest,
     ::testing::ValuesIn({ContextType::kEventPage,
                          ContextType::kPersistentBackground}));
+#endif
 INSTANTIATE_TEST_SUITE_P(WorkerBasedExtension,
                          ExtensionsPushMessagingNotificationManagerTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
 }  // namespace extensions
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

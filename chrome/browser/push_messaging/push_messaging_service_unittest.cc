@@ -49,7 +49,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
@@ -57,7 +57,7 @@
 #include "content/public/test/mock_permission_controller.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/gcm_driver/instance_id/instance_id_android.h"
@@ -550,7 +550,7 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
 
 // Tests that extensions are permitted to pass userVisibleOnly true or false
 // when subscribing to push messages.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace extensions {
 
 using ContextType = extensions::browser_test_util::ContextType;
@@ -680,18 +680,21 @@ TEST_P(ExtensionsPushMessagingServiceTest, PushMessagingAPIPermission) {
   }
 }
 
+// Android only supports manifest V3 with service worker.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     NonWorkerExtension,
     ExtensionsPushMessagingServiceTest,
     testing::ValuesIn({ContextType::kEventPage,
                        ContextType::kPersistentBackground}));
+#endif
 INSTANTIATE_TEST_SUITE_P(WorkerBasedExtension,
                          ExtensionsPushMessagingServiceTest,
                          testing::Values(ContextType::kServiceWorker));
 
 }  // namespace extensions
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_ANDROID)
 class FCMRevocationTest : public PushMessagingServiceTest {
