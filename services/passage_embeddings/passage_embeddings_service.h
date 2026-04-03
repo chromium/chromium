@@ -5,6 +5,9 @@
 #ifndef SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_H_
 #define SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_H_
 
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
@@ -28,12 +31,20 @@ class PassageEmbeddingsService : public mojom::PassageEmbeddingsService {
                   mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
                   LoadModelsCallback callback) override;
 
+  // Called when the models have finished loading on the background thread.
+  void OnModelsLoaded(LoadModelsCallback callback, bool success);
+
   mojo::Receiver<mojom::PassageEmbeddingsService> receiver_;
+
+  // The task runner used for the embedder.
+  scoped_refptr<base::UpdateableSequencedTaskRunner> task_runner_;
 
   // Called when the embedder remote disconnects.
   void OnEmbedderDisconnect();
 
   std::unique_ptr<PassageEmbedder> embedder_;
+
+  base::WeakPtrFactory<PassageEmbeddingsService> weak_ptr_factory_{this};
 };
 
 }  // namespace passage_embeddings

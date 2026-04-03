@@ -10,6 +10,8 @@ source_set("passage_embeddings") {
     "passage_embedder.h",
     "passage_embedder_execution_task.cc",
     "passage_embedder_execution_task.h",
+    "passage_embedder_impl.cc",
+    "passage_embedder_impl.h",
     "passage_embeddings_op_resolver.cc",
     "passage_embeddings_op_resolver.h",
     "passage_embeddings_service.cc",

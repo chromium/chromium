@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/passage_embeddings/passage_embedder.h"
+#include "services/passage_embeddings/passage_embedder_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace passage_embeddings {
