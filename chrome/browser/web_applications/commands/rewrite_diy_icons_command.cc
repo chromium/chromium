@@ -33,7 +33,7 @@ namespace web_app {
 
 RewriteDiyIconsCommand::RewriteDiyIconsCommand(
     const webapps::AppId& app_id,
-    base::OnceCallback<void(RewriteIconResult)> callback)
+    RewriteIconResultCallback callback)
     : WebAppCommand("RewriteDiyIconsCommand",
                     AppLockDescription({app_id}),
                     base::BindOnce([](RewriteIconResult result) {

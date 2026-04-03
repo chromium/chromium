@@ -82,7 +82,6 @@
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/web_applications/commands/rewrite_diy_icons_command.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"

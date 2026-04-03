@@ -43,6 +43,10 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/scheduler/rewrite_diy_icons_result.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 class GURL;
 class Profile;
 class Browser;
@@ -105,9 +109,6 @@ class RemoveObsoleteBundleVersionsError;
 class RemoveObsoleteBundleVersionsSuccess;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_MAC)
-enum class RewriteIconResult;
-#endif  // BUILDFLAG(IS_MAC)
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
 // * Operations occur after the WebAppProvider is ready (so you don't have to
@@ -604,7 +605,7 @@ class WebAppCommandScheduler {
   // `WebApp::diy_app_icons_masked_on_mac()` to true when
   // complete.
   void RewriteDiyIcons(const webapps::AppId& app_id,
-                       base::OnceCallback<void(RewriteIconResult)> callback,
+                       RewriteIconResultCallback callback,
                        const base::Location& location = FROM_HERE);
 #endif  // BUILDFLAG(IS_MAC)
 

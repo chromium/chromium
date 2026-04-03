@@ -116,6 +116,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/commands/rewrite_diy_icons_command.h"
+#include "chrome/browser/web_applications/scheduler/rewrite_diy_icons_result.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace web_app {
@@ -686,10 +687,9 @@ void WebAppCommandScheduler::SetUserDisplayMode(
 }
 
 #if BUILDFLAG(IS_MAC)
-void WebAppCommandScheduler::RewriteDiyIcons(
-    const webapps::AppId& app_id,
-    base::OnceCallback<void(RewriteIconResult)> callback,
-    const base::Location& from_here) {
+void WebAppCommandScheduler::RewriteDiyIcons(const webapps::AppId& app_id,
+                                             RewriteIconResultCallback callback,
+                                             const base::Location& from_here) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<RewriteDiyIconsCommand>(app_id, std::move(callback)),
       from_here);

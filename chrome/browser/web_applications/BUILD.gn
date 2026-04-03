@@ -338,6 +338,8 @@ source_set("web_applications") {
     "scheduler/manifest_silent_update_result.h",
     "scheduler/navigate_and_trigger_install_dialog_result.cc",
     "scheduler/navigate_and_trigger_install_dialog_result.h",
+    "scheduler/rewrite_diy_icons_result.cc",
+    "scheduler/rewrite_diy_icons_result.h",
     "scheduler/web_app_install_from_migrate_from_field_result.cc",
     "scheduler/web_app_install_from_migrate_from_field_result.h",
     "scope_extension_info.cc",

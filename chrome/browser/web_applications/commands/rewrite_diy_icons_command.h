@@ -12,22 +12,12 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/scheduler/rewrite_diy_icons_result.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
 struct ShortcutInfo;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with RewriteIconResult
-// in tools/metrics/histograms/metadata/webapps/enums.xml.
-enum class RewriteIconResult {
-  kUnexpectedAppStateChange = 0,
-  kUpdateSucceeded = 1,
-  kShortcutInfoFetchFailed = 2,
-  kUpdateShortcutFailed = 3,
-  kMaxValue = kUpdateShortcutFailed
-};
 
 // On macOS, rewrites the icons for a DIY app to apply the correct mask, if this
 // operation has not yet occurred. This is a one-time migration for existing
@@ -37,7 +27,7 @@ class RewriteDiyIconsCommand
     : public WebAppCommand<AppLock, RewriteIconResult> {
  public:
   RewriteDiyIconsCommand(const webapps::AppId& app_id,
-                         base::OnceCallback<void(RewriteIconResult)> callback);
+                         RewriteIconResultCallback callback);
 
   ~RewriteDiyIconsCommand() override;
 

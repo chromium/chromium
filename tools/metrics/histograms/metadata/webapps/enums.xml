@@ -451,12 +451,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.cc:ProtocolHandlerPickerDialogClosedReason) -->
 
+<!-- LINT.IfChange(RewriteIconResult) -->
+
 <enum name="RewriteIconResult">
   <int value="0" label="The app's state was changed unexpectedly"/>
   <int value="1" label="Icon successfully rewritten with mask"/>
   <int value="2" label="Failed to fetch shortcut info"/>
   <int value="3" label="Failed to update shortcuts"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/web_applications/scheduler/rewrite_diy_icons_result.h:RewriteIconResult) -->
 
 <enum name="RunOnOSLoginCommandCompletionState">
   <int value="0" label="Run On OS Login command successfully completed"/>
