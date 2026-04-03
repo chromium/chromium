@@ -358,6 +358,9 @@ void GameControllerGamepad::InitializeStaticData(Gamepad& pad) {
 
 void GameControllerGamepad::SetVibration(
     mojom::GamepadEffectParametersPtr params) {
+  if (IsShuttingDown()) {
+    return;
+  }
   StartHaptics();
   // Assuming strong -> left and weak -> right as in Xbox controllers.
   UpdateHapticPlayer(params->strong_magnitude, left_haptic_engine_,
