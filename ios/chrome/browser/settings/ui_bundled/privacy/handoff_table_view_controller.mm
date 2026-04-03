@@ -25,6 +25,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSwitch = kSectionIdentifierEnumZero,
 };
 
+NSString* const kHandoffTableViewAccessibilityIdentifier =
+    @"HandoffTableViewAccessibilityIdentifier";
+NSString* const kHandoffSwitchAccessibilityIdentifier =
+    @"HandoffSwitchAccessibilityIdentifier";
+
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSwitch = kItemTypeEnumZero,
   ItemTypeFooter,
@@ -69,6 +74,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.estimatedSectionFooterHeight = 70;
+  self.tableView.accessibilityIdentifier =
+      kHandoffTableViewAccessibilityIdentifier;
 
   [self loadModel];
 }
@@ -82,6 +89,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierSwitch];
   _handoffSwitchItem =
       [[TableViewSwitchItem alloc] initWithType:ItemTypeSwitch];
+  _handoffSwitchItem.accessibilityIdentifier =
+      kHandoffSwitchAccessibilityIdentifier;
   _handoffSwitchItem.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES);
   _handoffSwitchItem.on = _handoffEnabled.value;
@@ -138,6 +147,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)switchChanged:(UISwitch*)switchView {
   _handoffEnabled.value = switchView.isOn;
+  _handoffSwitchItem.on = switchView.isOn;
+  [self reconfigureCellsForItems:@[ _handoffSwitchItem ]];
 }
 
 @end
