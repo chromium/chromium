@@ -49,6 +49,12 @@ void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
       receiver_.ReportBadMessage(
           "ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory: "
           "CreateLoaderAndStart called multiple times.");
+    } else {
+      // If already fused, create a new URLLoader and start the new request.
+      // TODO(crbug.com/497437113): Remove this once the kill switch is removed.
+      fallback_factory_->CreateLoaderAndStart(
+          std::move(receiver), request_id, options, resource_request,
+          std::move(client), traffic_annotation);
     }
   }
 }
