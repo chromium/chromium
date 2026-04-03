@@ -248,7 +248,8 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
   forwarded_race_network_request_url_loader_factory_.emplace(
       forwarding_client.InitWithNewPipeAndPassReceiver(),
-      network::SharedURLLoaderFactory::Create(fallback_factory_->Clone()));
+      network::SharedURLLoaderFactory::Create(fallback_factory_->Clone()),
+      /*is_main_resource=*/false);
 
   DCHECK(!race_network_request_loader_client_);
   // TODO(crbug.com/340949948): Ensure the fetch event completion and data

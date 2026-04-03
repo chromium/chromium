@@ -5,6 +5,8 @@
 #include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace content {
 
@@ -17,9 +19,11 @@ BASE_FEATURE(kKillSwitchForRaceNetworkRequestMultipleCreateLoaderAndStartCalls,
 ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
     ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory(
         mojo::PendingReceiver<network::mojom::URLLoaderClient> client_receiver,
-        scoped_refptr<network::SharedURLLoaderFactory> fallback_factory)
+        scoped_refptr<network::SharedURLLoaderFactory> fallback_factory,
+        bool is_main_resource)
     : client_receiver_(std::move(client_receiver)),
-      fallback_factory_(fallback_factory) {}
+      fallback_factory_(fallback_factory),
+      is_main_resource_(is_main_resource) {}
 
 ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
     ~ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory() = default;
@@ -32,6 +36,12 @@ void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
         const network::ResourceRequest& resource_request,
         mojo::PendingRemote<network::mojom::URLLoaderClient> client,
         const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"ServiceWorker.FetchEvent.",
+                    is_main_resource_ ? "MainResource" : "Subresource",
+                    ".RaceNetworkRequest.ForwardedFactory.CreateLoaderAndStart."
+                    "MultipleCalls"}),
+      is_data_pipe_fused_);
   if (!is_data_pipe_fused_) {
     // If the member data pipes are still not fused to mojo endpoints, fuse them
     // to reuse the response.

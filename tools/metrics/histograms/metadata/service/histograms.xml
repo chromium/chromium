@@ -547,6 +547,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.ForwardedFactory.CreateLoaderAndStart.MultipleCalls"
+    enum="Boolean" expires_after="2026-09-27">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Recorded when
+    ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::CreateLoaderAndStart()
+    is called. It is recorded as false for the first call, and true for any
+    subsequent calls. This is to measure how often this method is called
+    multiple times, which is not expected for a legitimate renderer.
+
+    This metric is recorded per {Resource}.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
+<histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.IsCloningDataFinishedBeforeResponseComplete"
     enum="Boolean" expires_after="2026-09-27">
   <owner>sisidovski@chromium.org</owner>

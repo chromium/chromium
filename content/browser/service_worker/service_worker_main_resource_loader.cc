@@ -573,7 +573,8 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
       service_worker_client_->CreateNetworkURLLoaderFactory(
           ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
               kRaceNetworkRequest,
-          context->storage_partition(), resource_request_));
+          context->storage_partition(), resource_request_),
+      /*is_main_resource=*/true);
   CHECK(!race_network_request_url_loader_client_);
   race_network_request_url_loader_client_.emplace(
       resource_request_.url, AsWeakPtr(), std::move(forwarding_client),
