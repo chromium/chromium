@@ -1887,15 +1887,24 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
           ExecuteJsAt(
               kOverlayId, kPathToOverlaySearchboxInput,
               "(el) => { el.dispatchEvent(new KeyboardEvent('keydown', { "
-              "key:'Enter', bubbles: true, cancelable: true, composed: true })); }",
+              "key:'Enter', bubbles: true, cancelable: true, composed: true "
+              "})); }",
               ExecuteJsMode::kFireAndForget)),
       // Screenshot is implicitly uploaded with CSB query.
       FinishScreenshotUpload(), WaitForHide(kOverlayId),
       WaitForShow(kContextualTasksSidePanelWebViewElementId));
 }
 
+// TODO(crbug.com/499019946): Re-enable this test on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ComposeboxLensButtonClearsThenTogglesOverlay \
+  DISABLED_ComposeboxLensButtonClearsThenTogglesOverlay
+#else
+#define MAYBE_ComposeboxLensButtonClearsThenTogglesOverlay \
+  ComposeboxLensButtonClearsThenTogglesOverlay
+#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
-                       ComposeboxLensButtonClearsThenTogglesOverlay) {
+                       MAYBE_ComposeboxLensButtonClearsThenTogglesOverlay) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
