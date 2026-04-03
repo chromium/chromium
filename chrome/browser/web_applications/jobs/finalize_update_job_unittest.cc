@@ -323,4 +323,96 @@ TEST_F(FinalizeUpdateJobTest, MigrationSourceChangeSchedulesSync) {
             update_future.Get<webapps::InstallResultCode>());
 }
 
+TEST_F(FinalizeUpdateJobTest, ValidateShortcutsSanitizedOutsideScope) {
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+
+  webapps::AppId app_id = test::InstallWebApp(
+      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::EXTERNAL_POLICY);
+
+  WebAppShortcutsMenuItemInfo valid_shortcut;
+  valid_shortcut.name = u"Valid";
+  valid_shortcut.url = GURL("https://foo.example/shortcut");
+
+  WebAppShortcutsMenuItemInfo invalid_shortcut;
+  invalid_shortcut.name = u"Invalid";
+  invalid_shortcut.url = GURL("https://bar.example/shortcut");
+
+  info->shortcuts_menu_item_infos = {valid_shortcut, invalid_shortcut};
+
+  // Provide dummy icon bitmaps for both shortcuts.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  IconBitmaps valid_bitmaps;
+  valid_bitmaps.any[16] = bitmap;
+  IconBitmaps invalid_bitmaps;
+  invalid_bitmaps.any[16] = bitmap;
+  info->shortcuts_menu_icon_bitmaps = {valid_bitmaps, invalid_bitmaps};
+
+  base::test::TestFuture<webapps::AppId, webapps::InstallResultCode>
+      update_future;
+  provider().command_manager().ScheduleCommand(
+      std::make_unique<FinalizeUpdateJobWrapperCommand>(
+          provider(), *info, update_future.GetCallback()));
+  ASSERT_TRUE(update_future.Wait());
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+            update_future.Get<webapps::InstallResultCode>());
+
+  const WebApp* updated_app = registrar().GetAppById(app_id);
+  ASSERT_EQ(1u, updated_app->shortcuts_menu_item_infos().size());
+  EXPECT_EQ(u"Valid", updated_app->shortcuts_menu_item_infos()[0].name);
+}
+
+TEST_F(FinalizeUpdateJobTest, ValidateShortcutsKeptInExtendedScope) {
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+
+  webapps::AppId app_id = test::InstallWebApp(
+      profile(), std::make_unique<WebAppInstallInfo>(info->Clone()),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::EXTERNAL_POLICY);
+
+  WebAppShortcutsMenuItemInfo extended_scope_shortcut;
+  extended_scope_shortcut.name = u"Extended Scope";
+  extended_scope_shortcut.url = GURL("https://bar.example/shortcut");
+
+  info->shortcuts_menu_item_infos = {extended_scope_shortcut};
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  IconBitmaps extended_bitmaps;
+  extended_bitmaps.any[16] = bitmap;
+  info->shortcuts_menu_icon_bitmaps = {extended_bitmaps};
+
+  // Add bar.example as a validated scope extension.
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForScope(GURL("https://bar.example/"),
+                                         /*has_origin_wildcard=*/true);
+  info->scope_extensions = {scope_extension};
+
+  // Set data such that scope_extension will be returned in validated data.
+  std::map<ScopeExtensionInfo, ScopeExtensionInfo> data = {
+      {scope_extension, scope_extension}};
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetData(data);
+
+  base::test::TestFuture<webapps::AppId, webapps::InstallResultCode>
+      update_future;
+  provider().command_manager().ScheduleCommand(
+      std::make_unique<FinalizeUpdateJobWrapperCommand>(
+          provider(), *info, update_future.GetCallback()));
+  ASSERT_TRUE(update_future.Wait());
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+            update_future.Get<webapps::InstallResultCode>());
+
+  const WebApp* updated_app = registrar().GetAppById(app_id);
+  ASSERT_EQ(1u, updated_app->shortcuts_menu_item_infos().size());
+  EXPECT_EQ(u"Extended Scope",
+            updated_app->shortcuts_menu_item_infos()[0].name);
+}
+
 }  // namespace web_app

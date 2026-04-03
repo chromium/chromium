@@ -622,6 +622,83 @@ TEST_F(FinalizeInstallJobTest, ValidateMigrationSourcesApproved) {
           &MigrationSource::manifest_id,
           webapps::ManifestId(GURL("https://migration.foo.example/")))));
 }
+
+TEST_F(FinalizeInstallJobTest, ValidateShortcutsSanitizedOutsideScope) {
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+
+  WebAppShortcutsMenuItemInfo valid_shortcut;
+  valid_shortcut.name = u"Valid";
+  valid_shortcut.url = GURL("https://foo.example/shortcut");
+
+  WebAppShortcutsMenuItemInfo invalid_shortcut;
+  invalid_shortcut.name = u"Invalid";
+  invalid_shortcut.url = GURL("https://bar.example/shortcut");
+
+  info->shortcuts_menu_item_infos = {valid_shortcut, invalid_shortcut};
+
+  // Provide dummy icon bitmaps for both shortcuts.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  IconBitmaps valid_bitmaps;
+  valid_bitmaps.any[16] = bitmap;
+  IconBitmaps invalid_bitmaps;
+  invalid_bitmaps.any[16] = bitmap;
+  info->shortcuts_menu_icon_bitmaps = {valid_bitmaps, invalid_bitmaps};
+
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+
+  // The invalid shortcut should be removed.
+  ASSERT_EQ(1u, installed_app->shortcuts_menu_item_infos().size());
+  EXPECT_EQ(u"Valid", installed_app->shortcuts_menu_item_infos()[0].name);
+}
+
+TEST_F(FinalizeInstallJobTest, ValidateShortcutsKeptInExtendedScope) {
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+
+  WebAppShortcutsMenuItemInfo extended_scope_shortcut;
+  extended_scope_shortcut.name = u"Extended Scope";
+  extended_scope_shortcut.url = GURL("https://bar.example/shortcut");
+
+  info->shortcuts_menu_item_infos = {extended_scope_shortcut};
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  IconBitmaps extended_bitmaps;
+  extended_bitmaps.any[16] = bitmap;
+  info->shortcuts_menu_icon_bitmaps = {extended_bitmaps};
+
+  // Add bar.example as a validated scope extension.
+  auto scope_extension =
+      ScopeExtensionInfo::CreateForScope(GURL("https://bar.example/"),
+                                         /*has_origin_wildcard=*/true);
+  info->scope_extensions = {scope_extension};
+
+  // Set data such that scope_extension will be returned in validated data.
+  std::map<ScopeExtensionInfo, ScopeExtensionInfo> data = {
+      {scope_extension, scope_extension}};
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetData(data);
+
+  FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+
+  // The shortcut should be kept since it is in the validated extended scope.
+  ASSERT_EQ(1u, installed_app->shortcuts_menu_item_infos().size());
+  EXPECT_EQ(u"Extended Scope",
+            installed_app->shortcuts_menu_item_infos()[0].name);
+}
+
 TEST_F(FinalizeInstallJobTest,
        SuggestedFromMigrationSucceedsWithoutValidatedSource) {
   GURL start_url("https://foo.example");

@@ -33,6 +33,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
@@ -178,6 +179,19 @@ content::WebContents* WebAppLaunchProcess::Run() {
     return browser ? browser->GetActiveWebContents() : nullptr;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // During install, shortcut urls are required to be in-scope. But some users &
+  // admins create custom shortcuts to launch weirdly configured apps with
+  // out-of-scope but same-origin urls. So specifically also allow same-origin
+  // urls to be launched here, even if they are not in scope.
+  if (in_scope_result == LaunchUrlInScopeResult::kNotInScope &&
+      !url::IsSameOriginWith(launch_url, web_app_scope->scope())) {
+    launch_url = registrar_->GetAppStartUrl(params_->app_id);
+    // If this was a file handler launch, then it would be unexpected that a
+    // file handle exists if we are resetting the URL. Thus, reset to only a
+    // regular launch.
+    is_file_handling = false;
+  }
 
   auto [browser, is_new_browser] = EnsureBrowser();
 

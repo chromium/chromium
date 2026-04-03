@@ -9,12 +9,13 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_client.h"
-#include "net/base/schemeful_site.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/base/schemeful_site.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
 namespace content {
 
 namespace {
@@ -86,6 +88,17 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
                                           manifest.migrate_to->install_url)) {
         return "Manifest migrate_to install_url must be the same site as the "
                "document.";
+      }
+    }
+
+    for (const auto& shortcut : manifest.shortcuts) {
+      if (!shortcut.url.is_valid()) {
+        return "Manifest shortcut urls must be valid.";
+      }
+      if (!(url::IsSameOriginWith(manifest.scope, shortcut.url) &&
+            base::StartsWith(shortcut.url.path(), manifest.scope.path(),
+                             base::CompareCase::SENSITIVE))) {
+        return "Manifest shortcut urls must be within scope.";
       }
     }
   }

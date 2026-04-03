@@ -1187,5 +1187,34 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
                   "as the document."));
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       ManifestShortcutUrlOutsideScopeBadMessage) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  // Test that a shortcut url outside the scope triggers a bad message.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  // Inject out-of-scope shortcut to trigger bad message.
+  blink::Manifest::ShortcutItem shortcut;
+  shortcut.url = embedded_test_server()->GetURL("/out-of-scope/");
+  bad_manifest->shortcuts.push_back(std::move(shortcut));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(
+      bad_message_observer.WaitForBadMessage(),
+      ::testing::StartsWith("Manifest shortcut urls must be within scope."));
+}
+
 }  // namespace
 }  // namespace content

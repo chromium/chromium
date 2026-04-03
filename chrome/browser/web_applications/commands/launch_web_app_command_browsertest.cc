@@ -41,6 +41,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -346,5 +347,27 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
 }
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
+                       WebAppLaunchProcessStripsMaliciousShortcutUrl) {
+  apps::AppLaunchParams launch_params =
+      CreateLaunchParams(app_id_, apps::LaunchContainer::kLaunchContainerWindow,
+                         WindowOpenDisposition::NEW_WINDOW,
+                         apps::LaunchSource::kFromTest, {}, std::nullopt);
+  launch_params.override_url = GURL("chrome://settings");
+
+  base::WeakPtr<Browser> launch_browser;
+  base::WeakPtr<content::WebContents> web_contents;
+  apps::LaunchContainer launch_container;
+  std::tie(launch_browser, web_contents, launch_container) =
+      DoLaunch(std::move(launch_params));
+
+  ASSERT_TRUE(web_contents);
+  content::WaitForLoadStop(web_contents.get());
+
+  // The launch process should intercept the out-of-scope/cross-origin URL
+  // and redirect it to the app's start URL.
+  EXPECT_EQ(kAppStartUrl, web_contents->GetLastCommittedURL());
+}
 
 }  // namespace web_app

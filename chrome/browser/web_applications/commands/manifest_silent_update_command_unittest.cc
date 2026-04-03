@@ -443,7 +443,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ShortcutsMenuItemInfosUpdatedSilently) {
   {
     blink::Manifest::ShortcutItem shortcut;
     shortcut.name = u"New Shortcut";
-    shortcut.url = GURL("https://www.foo.bar/new_shortcut");
+    shortcut.url = GURL("https://www.foo.bar/web_apps/new_shortcut");
     new_manifest->shortcuts.push_back(std::move(shortcut));
   }
 
@@ -453,12 +453,13 @@ TEST_F(ManifestSilentUpdateCommandTest, ShortcutsMenuItemInfosUpdatedSilently) {
 
   const auto& new_shortcuts =
       provider().registrar_unsafe().GetAppShortcutsMenuItemInfos(app_id);
-  EXPECT_THAT(new_shortcuts,
-              testing::ElementsAre(testing::AllOf(
-                  testing::Field(&web_app::WebAppShortcutsMenuItemInfo::name,
-                                 u"New Shortcut"),
-                  testing::Field(&web_app::WebAppShortcutsMenuItemInfo::url,
-                                 GURL("https://www.foo.bar/new_shortcut")))));
+  EXPECT_THAT(
+      new_shortcuts,
+      testing::ElementsAre(testing::AllOf(
+          testing::Field(&web_app::WebAppShortcutsMenuItemInfo::name,
+                         u"New Shortcut"),
+          testing::Field(&web_app::WebAppShortcutsMenuItemInfo::url,
+                         GURL("https://www.foo.bar/web_apps/new_shortcut")))));
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Webapp.Update.ManifestSilentUpdateCheckResult"),
               BucketsAre(base::Bucket(
