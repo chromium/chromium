@@ -41,12 +41,16 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
-/** Tests {@link SidePanelContainerCoordinatorImpl}'s integration with {@code ChromeActivity}. */
+/**
+ * Tests {@link SidePanelContainerCoordinatorImpl}'s integration with {@code ChromeActivity}.
+ *
+ * <p>TODO(crbug.com/499090354): Enable this test on tablets.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
-@Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+@Restriction(DeviceFormFactor.DESKTOP)
 @NullMarked
 public class SidePanelContainerCoordinatorIntegrationTest {
     private static final @ColorInt int SIDE_PANEL_CONTENT_BACKGROUND_COLOR = Color.GREEN;

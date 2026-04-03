@@ -34,7 +34,11 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.ui.base.DeviceFormFactor;
 
-/** Tests {@link SidePanelDevFeature}'s integration with {@code ChromeActivity}. */
+/**
+ * Tests {@link SidePanelDevFeature}'s integration with {@code ChromeActivity}.
+ *
+ * <p>TODO(crbug.com/499090354): Enable this test on tablets.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
@@ -42,7 +46,7 @@ import org.chromium.ui.base.DeviceFormFactor;
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE
 })
-@Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+@Restriction(DeviceFormFactor.DESKTOP)
 @NullMarked
 public class SidePanelDevFeatureIntegrationTest {
 
