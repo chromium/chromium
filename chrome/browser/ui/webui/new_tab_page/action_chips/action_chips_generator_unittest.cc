@@ -292,12 +292,6 @@ class GeneratorFixture {
         .WillByDefault(Return(true));
 
     set_searchbox_config({TOOL_MODE_DEEP_SEARCH, TOOL_MODE_IMAGE_GEN});
-    ON_CALL(*mock_aim_eligibility_service_, IsDeepSearchEligible)
-        .WillByDefault(Return(true));
-    ON_CALL(*mock_aim_eligibility_service_, IsCreateImagesEligible)
-        .WillByDefault(Return(true));
-    ON_CALL(*mock_aim_eligibility_service_, IsCanvasEligible)
-        .WillByDefault(Return(true));
   }
 
   // This method is created to make it easy to pass `const

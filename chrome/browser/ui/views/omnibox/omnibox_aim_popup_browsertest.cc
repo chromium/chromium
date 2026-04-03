@@ -30,7 +30,6 @@ std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
       /*template_url_service=*/nullptr,
       /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
       AimEligibilityService::Configuration{});
-  ON_CALL(*service, IsAimEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*service, GetCountryCode()).WillByDefault(testing::Return("US"));
   ON_CALL(*service, GetLocaleImpl()).WillByDefault(testing::Return("en-US"));
   return service;

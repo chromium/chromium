@@ -70,8 +70,6 @@ class AimEligibilityRefreshNavigationThrottleTest
 
     aim_eligibility_service_ = static_cast<MockAimEligibilityService*>(
         AimEligibilityServiceFactory::GetForProfile(profile()));
-    ON_CALL(*aim_eligibility_service_, IsAimEligible())
-        .WillByDefault(testing::Return(true));
     ON_CALL(*aim_eligibility_service_, HasAimUrlParams(testing::_))
         .WillByDefault(testing::Return(true));
   }

@@ -178,21 +178,6 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
   pro_config->set_menu_label(std::string(kModelProLabel));
   config->set_hint_text(std::string(kHintText));
 
-  ON_CALL(*mock_aim_eligibility_service, IsAimEligible())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(*mock_aim_eligibility_service, IsCanvasEligible())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(*mock_aim_eligibility_service, IsDeepSearchEligible())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(*mock_aim_eligibility_service, IsCreateImagesEligible())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(*mock_aim_eligibility_service, IsFuseboxEligible())
-      .WillByDefault(testing::Return(true));
-
   return std::move(mock_aim_eligibility_service);
 }
 

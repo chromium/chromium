@@ -52,15 +52,6 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
           /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
           AimEligibilityService::Configuration{});
 
-  EXPECT_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_aim_eligibility_service, IsAimEligible())
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_aim_eligibility_service, IsFuseboxEligible())
-      .WillRepeatedly(testing::Return(true));
-
   omnibox::RuleSet* rule_set =
       mock_aim_eligibility_service->config().mutable_rule_set();
   auto* input_rule = rule_set->add_input_type_rules();

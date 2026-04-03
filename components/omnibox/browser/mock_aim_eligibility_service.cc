@@ -18,7 +18,14 @@ MockAimEligibilityService::MockAimEligibilityService(
                             identity_manager,
                             "en-US",
                             std::move(configuration)) {
+  ON_CALL(*this, IsServerEligibilityEnabled())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*this, IsAimLocallyEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*this, IsAimEligible()).WillByDefault(testing::Return(true));
+  ON_CALL(*this, IsCanvasEligible()).WillByDefault(testing::Return(true));
+  ON_CALL(*this, IsCobrowseEligible()).WillByDefault(testing::Return(true));
+  ON_CALL(*this, IsDeepSearchEligible()).WillByDefault(testing::Return(true));
+  ON_CALL(*this, IsCreateImagesEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*this, IsFuseboxEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*this, GetSearchboxConfig())
       .WillByDefault(testing::Return(&mock_config));

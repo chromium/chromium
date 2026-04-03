@@ -489,10 +489,6 @@ class LensOverlayQueryControllerTest : public testing::Test {
     PrefService* prefs = profile_->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
     prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
-    auto* aim_eligibility_service = static_cast<MockAimEligibilityService*>(
-        AimEligibilityServiceFactory::GetForProfile(profile()));
-    EXPECT_CALL(*aim_eligibility_service, IsAimEligible())
-        .WillRepeatedly(testing::Return(true));
     feature_list_.InitWithFeaturesAndParameters(
         {kDefaultLensOverlayContextualSearchboxParams}, {});
     testing::Test::SetUp();

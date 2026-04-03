@@ -59,10 +59,6 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
       *profile->GetPrefs(), /*template_url_service=*/nullptr,
       /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr);
 
-  EXPECT_CALL(*aim_eligibility_service, IsAimEligible())
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*aim_eligibility_service, IsCobrowseEligible())
-      .WillRepeatedly(testing::Return(true));
   // Mock HasAimUrlParams to return true for our special AI source page.
   EXPECT_CALL(*aim_eligibility_service, HasAimUrlParams(testing::_))
       .WillRepeatedly([&](const GURL& url) {

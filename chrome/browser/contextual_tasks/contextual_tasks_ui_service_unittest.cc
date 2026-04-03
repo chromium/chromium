@@ -167,8 +167,6 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
     // By default, assume URLs have the correct URL params to be intercepted.
     ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
         .WillByDefault(Return(true));
-    ON_CALL(*aim_eligibility_service_, IsCobrowseEligible())
-        .WillByDefault(Return(true));
 
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
         profile_.get(), contextual_tasks_service_.get(),
