@@ -108,9 +108,9 @@ which _are_ valid. As a rule:
 
 * **If the bug is an in-the-wild report**:
     * Start a thread in the Shepherding chat immediately
-* If the bug looks eligible for a [delegated triage
-  rotation](delegated-triage.md):
-    * Move it to that rotation's component
+* Is the bug eligible for [delegated triage](delegated-triage.md)?:
+    * If it's a GPU bug, put it in [https://b.corp.google.com/hotlists/8198490][hotlist 8198490]
+    * TODO: add more here :)
     * You are now done triaging this bug, congratulations!
 * If the bug is a v8 bug (including wasm):
     * Do not attempt to reproduce!
