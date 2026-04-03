@@ -8,7 +8,14 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/common/chrome_switches.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager_impl.h"
+#endif
 
 namespace glic {
 
@@ -89,9 +96,11 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
             {features::kGlic,
              {
                  {"glic-default-hotkey", "Ctrl+G"},
-                 // Shorten load timeouts.
+                 // Shorten transition times.
                  {features::kGlicPreLoadingTimeMs.name, "20"},
                  {features::kGlicMinLoadingTimeMs.name, "40"},
+                 // Lengthen max loading time.
+                 {features::kGlicMaxLoadingTimeMs.name, "30000"},
              }},
         },
         /*disabled_features=*/
@@ -100,6 +109,26 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
         });
   }
   ~GlicApiBrowserTestMixin() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    Base::SetUpCommandLine(command_line);
+    // Suppress background activity.
+    command_line->AppendSwitch(switches::kDisableBackgroundNetworking);
+    command_line->AppendSwitch(switches::kDisableComponentUpdate);
+    command_line->AppendSwitch(switches::kDisableDefaultApps);
+    // Ensure our background web contents stays awake.
+    // TODO(b/495451913): This shouldn't be necessary.
+    command_line->AppendSwitch(switches::kDisableRendererBackgrounding);
+    command_line->AppendSwitch(switches::kDisableBackgroundTimerThrottling);
+  }
+
+  void SetUpOnMainThread() override {
+    Base::SetUpOnMainThread();
+#if !BUILDFLAG(IS_ANDROID)
+    // Makes active browser selection deterministic for tests.
+    GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(true);
+#endif
+  }
 
   content::RenderFrameHost* FindGlicGuestMainFrame() {
     auto* instance = this->GetOnlyGlicInstance();
@@ -146,20 +175,39 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
   }
 
   void WaitForGuest() {
-    auto end_time = base::TimeTicks::Now() + base::Seconds(10);
+    auto end_time = base::TimeTicks::Now() + base::Seconds(30);
+    auto next_message_time = base::TimeTicks::Now() + base::Seconds(2);
+    auto sleep_time = base::Milliseconds(200);
     content::RenderFrameHost* frame = nullptr;
+    content::RenderFrameHost* last_frame = nullptr;
     while (base::TimeTicks::Now() < end_time) {
       // Note: Sometimes the previous guest frame is still around, but it won't
       // have the runApiTest function. Loop until both conditions are met.
       frame = FindGlicGuestMainFrame();
       if (frame) {
+#if !BUILDFLAG(IS_ANDROID)
+        if (frame != last_frame) {
+          frame->GetProcess()->SetPriorityOverride(
+              base::Process::Priority::kUserVisible);
+        }
+#else
+        (void)last_frame;  // Unused on Android.
+#endif
+        last_frame = frame;
         auto result =
             content::EvalJs(frame, {"typeof runApiTest !== 'undefined'"});
         if (result.is_ok() && result.ExtractBool()) {
           return;
         }
       }
-      sleepWithRunLoop(base::Milliseconds(200));
+      if (base::TimeTicks::Now() > next_message_time) {
+        LOG(INFO) << "Waiting for guest frame. Guest frame: "
+                  << (frame ? frame->GetLastCommittedURL().spec()
+                            : "not found");
+        next_message_time = base::TimeTicks::Now() + base::Seconds(2);
+      }
+      sleepWithRunLoop(sleep_time);
+      sleep_time = std::min(base::Seconds(2), 2 * sleep_time);
     }
     FAIL() << "Timed out waiting for guest frame. Guest frame: "
            << (frame ? frame->GetLastCommittedURL().spec() : "not found");

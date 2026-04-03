@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_logging_settings.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
@@ -75,11 +76,8 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
   base::test::ScopedFeatureList test_param_features_;
 };
 
-// TODO(harringtond): I'm working on debugging these tests on windows. They're
-// flaky in the common test setup, so the errors are not indicative of a problem
-// with the new code.
-// These are also newly failing in test setup on desktop android.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_DESKTOP_ANDROID)
+// These are newly failing in test setup on desktop android.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
 #define MAYBE_NewGlicApiTest DISABLED_NewGlicApiTest
 #else
 #define MAYBE_NewGlicApiTest NewGlicApiTest
@@ -88,6 +86,7 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
 class MAYBE_NewGlicApiTest : public GlicApiBrowserTest, public WithTestParams {
  public:
   MAYBE_NewGlicApiTest() : GlicApiBrowserTest("./new_glic_api_browsertest.js") {
+    scoped_vmodule_switches_.InitWithSwitches("*glic*=1");
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kGlic, {}},
@@ -125,13 +124,15 @@ class MAYBE_NewGlicApiTest : public GlicApiBrowserTest, public WithTestParams {
   }
 
   void SetUpOnMainThread() override {
-    GlicBrowserTest::SetUpOnMainThread();
+    GlicApiBrowserTest::SetUpOnMainThread();
 
     ASSERT_TRUE(content::NavigateToURL(
         GetTabListInterface()->GetActiveTab()->GetContents(),
         GetTestUrl("page.html")));
   }
 
+ private:
+  logging::ScopedVmoduleSwitches scoped_vmodule_switches_;
   base::test::ScopedFeatureList features_;
 };
 
