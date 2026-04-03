@@ -153,6 +153,7 @@ void SaveUpdateAddressProfileFlowManagerTest::SetUp() {
 }
 
 void SaveUpdateAddressProfileFlowManagerTest::TearDown() {
+  message_model_.reset();
   identity_test_env_adaptor_.reset();
   ChromeRenderViewHostTestHarness::TearDown();
 }
@@ -213,6 +214,9 @@ TEST_F(SaveUpdateAddressProfileFlowManagerTest,
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
             GetMessageWrapper()->GetIconResourceId());
 
+  EXPECT_CALL(save_callback(),
+              Run(AutofillClient::AddressPromptUserDecision::kIgnored,
+                  Property(&ProfileRef::has_value, false)));
   TriggerMessageDismissed(messages::DismissReason::UNKNOWN);
 }
 
@@ -244,6 +248,9 @@ TEST_F(SaveUpdateAddressProfileFlowManagerTest,
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS),
       GetMessageWrapper()->GetIconResourceId());
 
+  EXPECT_CALL(save_callback(),
+              Run(AutofillClient::AddressPromptUserDecision::kIgnored,
+                  Property(&ProfileRef::has_value, false)));
   TriggerMessageDismissed(messages::DismissReason::UNKNOWN);
 }
 
@@ -273,6 +280,9 @@ TEST_F(SaveUpdateAddressProfileFlowManagerTest,
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
             GetMessageWrapper()->GetIconResourceId());
 
+  EXPECT_CALL(save_callback(),
+              Run(AutofillClient::AddressPromptUserDecision::kIgnored,
+                  Property(&ProfileRef::has_value, false)));
   TriggerMessageDismissed(messages::DismissReason::UNKNOWN);
 }
 
@@ -295,6 +305,9 @@ TEST_F(SaveUpdateAddressProfileFlowManagerTest, UpdateMessageContent) {
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
             GetMessageWrapper()->GetIconResourceId());
 
+  EXPECT_CALL(save_callback(),
+              Run(AutofillClient::AddressPromptUserDecision::kIgnored,
+                  Property(&ProfileRef::has_value, false)));
   TriggerMessageDismissed(messages::DismissReason::UNKNOWN);
 }
 
@@ -322,6 +335,9 @@ TEST_F(SaveUpdateAddressProfileFlowManagerTest,
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
             GetMessageWrapper()->GetIconResourceId());
 
+  EXPECT_CALL(save_callback(),
+              Run(AutofillClient::AddressPromptUserDecision::kIgnored,
+                  Property(&ProfileRef::has_value, false)));
   TriggerMessageDismissed(messages::DismissReason::UNKNOWN);
 }
 
