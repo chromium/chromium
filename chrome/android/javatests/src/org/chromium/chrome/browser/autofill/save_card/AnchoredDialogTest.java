@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
@@ -87,7 +90,7 @@ public class AnchoredDialogTest {
     @Test
     @MediumTest
     public void testShowAndHide() {
-        runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(mContent));
+        assertTrue(runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(mContent)));
         verify(mObserver).onSheetContentChanged(mContent);
         verify(mObserver).onSheetOpened(StateChangeReason.NONE);
         verify(mObserver).onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
@@ -102,36 +105,67 @@ public class AnchoredDialogTest {
 
     @Test
     @MediumTest
-    public void testReplaceContents() {
+    public void testHideWithoutShow() {
+        runOnUiThreadBlocking(
+                () -> mCoordinator.hideContent(mContent, StateChangeReason.INTERACTION_COMPLETE));
+        verifyNoInteractions(mObserver);
+    }
+
+    @Test
+    @MediumTest
+    public void testQueueContents() {
         InOrder inOrder = inOrder(mObserver);
 
-        runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(mContent));
+        // Show mContent.
+        assertTrue(runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(mContent)));
         inOrder.verify(mObserver).onSheetContentChanged(mContent);
         inOrder.verify(mObserver).onSheetOpened(StateChangeReason.NONE);
         inOrder.verify(mObserver).onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
         clearInvocations(mObserver);
 
-        final TestBottomSheetContent newContent =
+        // Add newContent1 to the queue.
+        final TestBottomSheetContent newContent1 =
                 runOnUiThreadBlocking(
                         () ->
                                 new TestBottomSheetContent(
                                         mTestRule.getActivity(),
                                         BottomSheetContent.ContentPriority.HIGH,
                                         false));
+        assertFalse(runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(newContent1)));
+        verifyNoInteractions(mObserver);
 
-        runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(newContent));
+        // Add newContent2 to the queue.
+        final TestBottomSheetContent newContent2 =
+                runOnUiThreadBlocking(
+                        () ->
+                                new TestBottomSheetContent(
+                                        mTestRule.getActivity(),
+                                        BottomSheetContent.ContentPriority.HIGH,
+                                        false));
+        assertFalse(runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(newContent2)));
+        verifyNoInteractions(mObserver);
+
+        // Call hideContent() to remove newContent1 from the queue.
+        runOnUiThreadBlocking(() -> mCoordinator.hideContent(newContent1, StateChangeReason.NONE));
+        verifyNoInteractions(mObserver);
+
+        // Hide mContent. This shows the next queued content which is newContent2.
+        runOnUiThreadBlocking(() -> mCoordinator.hideContent(mContent, StateChangeReason.NONE));
 
         inOrder.verify(mObserver).onSheetClosed(StateChangeReason.NONE);
         inOrder.verify(mObserver).onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
         inOrder.verify(mObserver).onSheetContentChanged(null);
 
-        inOrder.verify(mObserver).onSheetContentChanged(newContent);
+        inOrder.verify(mObserver).onSheetContentChanged(newContent2);
         inOrder.verify(mObserver).onSheetOpened(StateChangeReason.NONE);
         inOrder.verify(mObserver).onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
         clearInvocations(mObserver);
 
+        // Hide newContent2.
         runOnUiThreadBlocking(
-                () -> mCoordinator.hideContent(newContent, StateChangeReason.INTERACTION_COMPLETE));
+                () ->
+                        mCoordinator.hideContent(
+                                newContent2, StateChangeReason.INTERACTION_COMPLETE));
         inOrder.verify(mObserver).onSheetClosed(StateChangeReason.INTERACTION_COMPLETE);
         inOrder.verify(mObserver)
                 .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.INTERACTION_COMPLETE);
@@ -141,7 +175,7 @@ public class AnchoredDialogTest {
     @Test
     @MediumTest
     public void testDismissDialogOnBack() {
-        runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(mContent));
+        assertTrue(runOnUiThreadBlocking(() -> mCoordinator.requestShowContent(mContent)));
         verify(mObserver).onSheetOpened(StateChangeReason.NONE);
 
         CriteriaHelper.pollUiThread(

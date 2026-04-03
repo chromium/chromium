@@ -41,9 +41,10 @@ public class AnchoredDialogCoordinator {
      * Show the content in the dialog.
      *
      * @param content The content to be shown.
+     * @return True if the content was shown, and false if it was queued for display.
      */
-    public void requestShowContent(BottomSheetContent content) {
-        mMediator.requestShowContent(content);
+    public boolean requestShowContent(BottomSheetContent content) {
+        return mMediator.requestShowContent(content);
     }
 
     /**

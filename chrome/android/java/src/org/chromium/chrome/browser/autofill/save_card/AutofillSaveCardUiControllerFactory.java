@@ -59,8 +59,7 @@ class AutofillSaveCardUiControllerFactory {
 
         @Override
         public boolean requestShowContent(BottomSheetContent content, boolean animate) {
-            mController.requestShowContent(content);
-            return true;
+            return mController.requestShowContent(content);
         }
 
         @Override
