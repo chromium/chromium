@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_content_annotations/core/edu_classifier_model_handler.h"
+#include "components/page_content_annotations/core/category_classifier_model_handler.h"
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -18,7 +18,7 @@ namespace page_content_annotations {
 
 namespace {
 
-class EduClassifierModelProvider
+class CategoryClassifierModelProvider
     : public optimization_guide::TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
@@ -41,14 +41,15 @@ class EduClassifierModelProvider
   }
 };
 
-class EduClassifierModelHandlerTest : public testing::Test {
+class CategoryClassifierModelHandlerTest : public testing::Test {
  public:
-  EduClassifierModelHandlerTest() = default;
-  ~EduClassifierModelHandlerTest() override = default;
+  CategoryClassifierModelHandlerTest() = default;
+  ~CategoryClassifierModelHandlerTest() override = default;
 
   void SetUp() override {
-    model_provider_ = std::make_unique<EduClassifierModelProvider>();
-    model_handler_ = std::make_unique<EduClassifierModelHandler>(
+    model_provider_ = std::make_unique<CategoryClassifierModelProvider>();
+    model_handler_ = std::make_unique<CategoryClassifierModelHandler>(
+        optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
         model_provider_.get(), task_environment_.GetMainThreadTaskRunner());
   }
 
@@ -59,7 +60,7 @@ class EduClassifierModelHandlerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  EduClassifierModelHandler* model_handler() const {
+  CategoryClassifierModelHandler* model_handler() const {
     return model_handler_.get();
   }
 
@@ -67,11 +68,11 @@ class EduClassifierModelHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       model_provider_;
-  std::unique_ptr<EduClassifierModelHandler> model_handler_;
+  std::unique_ptr<CategoryClassifierModelHandler> model_handler_;
 };
 
-TEST_F(EduClassifierModelHandlerTest, ModelExecutes) {
-  EduClassifierModelHandler* handler = model_handler();
+TEST_F(CategoryClassifierModelHandlerTest, ModelExecutes) {
+  CategoryClassifierModelHandler* handler = model_handler();
 
   std::vector<float> input(768, 0.0f);
 
