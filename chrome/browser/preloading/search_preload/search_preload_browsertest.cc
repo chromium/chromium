@@ -19,6 +19,7 @@
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1804,13 +1805,6 @@ class SearchPreloadBrowserTest_Throttle : public SearchPreloadBrowserTestBase {
       base::test::ScopedFeatureList& scoped_feature_list) override {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {
-            // TODO(crbug.com/423465927): Allow ScopedPrewarmFeatureList
-            // to be used in the SearchPreloadBrowserTest Currently we are
-            // running into dependency issue when using the test helper.
-            {
-                features::kPrewarm,
-                {{"throttle_prefetch", "true"}},
-            },
             {
                 features::kDsePreload2,
                 {
@@ -1828,12 +1822,18 @@ class SearchPreloadBrowserTest_Throttle : public SearchPreloadBrowserTestBase {
             },
         },
         /*disabled_features=*/{});
+    scoped_prewarm_feature_list_ = std::make_unique<
+        test::ScopedPrewarmFeatureList>(
+        test::ScopedPrewarmFeatureList::PrewarmState::kEnabledWithNoTrigger);
   }
 
   void SetUpOnMainThread() override {
     PrerenderManager::CreateForWebContents(&GetWebContents());
     SearchPreloadBrowserTestBase::SetUpOnMainThread();
   }
+
+ private:
+  std::unique_ptr<test::ScopedPrewarmFeatureList> scoped_prewarm_feature_list_;
 };
 
 // Tests that search prefetch/prerender are throttled during an ongoing search
