@@ -18,6 +18,10 @@
 #include "remoting/host/win/evaluate_d3d.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "remoting/base/username.h"
+#endif
+
 namespace remoting {
 
 namespace {
@@ -63,6 +67,18 @@ inline constexpr bool IsNonOfficialBuild() {
   return !IsOfficialBuild();
 }
 
+bool IsMultiProcessHost() {
+#if BUILDFLAG(IS_WIN)
+  return true;
+#elif BUILDFLAG(IS_LINUX)
+  // The Linux host is multi-process only when GetHostAttributes() is called in
+  // the network process, which is run as the CRD network user.
+  return GetUsername() == GetNetworkProcessUsername();
+#else
+  return false;
+#endif
+}
+
 // By using std::size() macro in base/macros.h, it's illegal to have empty
 // arrays.
 //
@@ -79,6 +95,7 @@ static constexpr Attribute kAttributes[] = {
     {"ChromiumBrand", &IsChromiumBranded},
     {"OfficialBuild", &IsOfficialBuild},
     {"NonOfficialBuild", &IsNonOfficialBuild},
+    {"MultiProcessHost", &IsMultiProcessHost},
 };
 
 }  // namespace
