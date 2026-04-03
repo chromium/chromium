@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -163,7 +164,7 @@ TEST_F(SystemProxyManagerTest, KerberosConfig) {
             client_test_interface()->GetSetAuthenticationDetailsCallCount());
 
   TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-      prefs::kKerberosEnabled, true);
+      ash::prefs::kKerberosEnabled, true);
   EXPECT_EQ(++expected_set_auth_details_call_count,
             client_test_interface()->GetSetAuthenticationDetailsCallCount());
 
@@ -174,7 +175,7 @@ TEST_F(SystemProxyManagerTest, KerberosConfig) {
   EXPECT_EQ(request.traffic_type(), system_proxy::TrafficOrigin::SYSTEM);
 
   // Set an active principal name.
-  profile_->GetPrefs()->SetString(prefs::kKerberosActivePrincipalName,
+  profile_->GetPrefs()->SetString(ash::prefs::kKerberosActivePrincipalName,
                                   kKerberosActivePrincipalName);
   EXPECT_EQ(++expected_set_auth_details_call_count,
             client_test_interface()->GetSetAuthenticationDetailsCallCount());
@@ -188,14 +189,14 @@ TEST_F(SystemProxyManagerTest, KerberosConfig) {
   EXPECT_EQ(request.traffic_type(), system_proxy::TrafficOrigin::ALL);
 
   // Remove the active principal name.
-  profile_->GetPrefs()->SetString(prefs::kKerberosActivePrincipalName, "");
+  profile_->GetPrefs()->SetString(ash::prefs::kKerberosActivePrincipalName, "");
   request = client_test_interface()->GetLastAuthenticationDetailsRequest();
   EXPECT_EQ("", request.active_principal_name());
   EXPECT_TRUE(request.kerberos_enabled());
 
   // Disable kerberos.
   TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-      prefs::kKerberosEnabled, false);
+      ash::prefs::kKerberosEnabled, false);
   request = client_test_interface()->GetLastAuthenticationDetailsRequest();
   EXPECT_FALSE(request.kerberos_enabled());
 }

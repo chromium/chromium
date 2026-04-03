@@ -1125,7 +1125,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 
 #if BUILDFLAG(IS_CHROMEOS)
   { key::kKerberosEnabled,
-    prefs::kKerberosEnabled,
+    ash::prefs::kKerberosEnabled,
     base::Value::Type::BOOLEAN },
   { key::kReportWebsiteActivityAllowlist,
     ::reporting::kReportWebsiteActivityAllowlist,
@@ -1595,19 +1595,19 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kUsbPowerShareEnabled,
     base::Value::Type::BOOLEAN },
   { key::kKerberosRememberPasswordEnabled,
-    prefs::kKerberosRememberPasswordEnabled,
+    ash::prefs::kKerberosRememberPasswordEnabled,
     base::Value::Type::BOOLEAN },
   { key::kKerberosAddAccountsAllowed,
-    prefs::kKerberosAddAccountsAllowed,
+    ash::prefs::kKerberosAddAccountsAllowed,
     base::Value::Type::BOOLEAN },
   { key::kKerberosDomainAutocomplete,
-    prefs::kKerberosDomainAutocomplete,
+    ash::prefs::kKerberosDomainAutocomplete,
     base::Value::Type::STRING },
   { key::kKerberosUseCustomPrefilledConfig,
-    prefs::kKerberosUseCustomPrefilledConfig,
+    ash::prefs::kKerberosUseCustomPrefilledConfig,
     base::Value::Type::BOOLEAN },
   { key::kKerberosCustomPrefilledConfig,
-    prefs::kKerberosCustomPrefilledConfig,
+    ash::prefs::kKerberosCustomPrefilledConfig,
     base::Value::Type::STRING },
   { key::kStartupBrowserWindowLaunchSuppressed,
     prefs::kStartupBrowserWindowLaunchSuppressed,
@@ -3289,7 +3289,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
-      key::kKerberosAccounts, prefs::kKerberosAccounts, chrome_schema,
+      key::kKerberosAccounts, ash::prefs::kKerberosAccounts, chrome_schema,
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));

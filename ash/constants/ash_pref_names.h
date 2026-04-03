@@ -2958,6 +2958,51 @@ inline constexpr char kUse24HourClock[] = "settings.clock.use_24hour_clock";
 inline constexpr char kUserTimezone[] = "settings.timezone";
 
 //-----------------------------------------------------------------------------
+// Kerberos related Prefs
+//-----------------------------------------------------------------------------
+
+// Dictionary specifying a pre-set list of Kerberos accounts.
+// Tied to KerberosAccounts policy.
+inline constexpr char kKerberosAccounts[] = "kerberos.accounts";
+
+// Used by KerberosCredentialsManager to remember which account is currently
+// active (empty if none) and to determine whether to wake up the Kerberos
+// daemon on session startup.
+inline constexpr char kKerberosActivePrincipalName[] =
+    "kerberos.active_principal_name";
+
+// Boolean whether users may add new Kerberos accounts.
+// Tied to KerberosAddAccountsAllowed policy.
+inline constexpr char kKerberosAddAccountsAllowed[] =
+    "kerberos.add_accounts_allowed";
+
+// Used by KerberosAccountsHandler to prefill kerberos krb5 config for
+// manually creating new tickets.
+// Tied to KerberosCustomPrefilledConfig policy.
+inline constexpr char kKerberosCustomPrefilledConfig[] =
+    "kerberos.custom_prefilled_config";
+
+// Used by KerberosAccountsHandler to prefill kerberos domain in
+// username field of "Add a ticket" UI window.
+// Tied to KerberosDomainAutocomplete policy.
+inline constexpr char kKerberosDomainAutocomplete[] =
+    "kerberos.domain_autocomplete";
+
+// Boolean whether Kerberos functionality is enabled.
+inline constexpr char kKerberosEnabled[] = "kerberos.enabled";
+
+// Boolean whether Kerberos daemon supports remembering passwords.
+// Tied to KerberosRememberPasswordEnabled policy.
+inline constexpr char kKerberosRememberPasswordEnabled[] =
+    "kerberos.remember_password_enabled";
+
+// Used by KerberosAccountsHandler to decide if the custom default configuration
+// should be prefilled.
+// Tied to KerberosUseCustomPrefilledConfig policy.
+inline constexpr char kKerberosUseCustomPrefilledConfig[] =
+    "kerberos.use_custom_prefilled_config";
+
+//-----------------------------------------------------------------------------
 // File manager/file system related Prefs
 //-----------------------------------------------------------------------------
 

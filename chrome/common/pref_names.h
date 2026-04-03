@@ -706,38 +706,6 @@ inline constexpr char kNetworkFileSharesSavedShares[] =
 inline constexpr char kDeviceWallpaperImageFilePath[] =
     "policy.device_wallpaper_image_file_path";
 
-// Boolean whether Kerberos daemon supports remembering passwords.
-// Tied to KerberosRememberPasswordEnabled policy.
-inline constexpr char kKerberosRememberPasswordEnabled[] =
-    "kerberos.remember_password_enabled";
-// Boolean whether users may add new Kerberos accounts.
-// Tied to KerberosAddAccountsAllowed policy.
-inline constexpr char kKerberosAddAccountsAllowed[] =
-    "kerberos.add_accounts_allowed";
-// Dictionary specifying a pre-set list of Kerberos accounts.
-// Tied to KerberosAccounts policy.
-inline constexpr char kKerberosAccounts[] = "kerberos.accounts";
-// Used by KerberosCredentialsManager to remember which account is currently
-// active (empty if none) and to determine whether to wake up the Kerberos
-// daemon on session startup.
-inline constexpr char kKerberosActivePrincipalName[] =
-    "kerberos.active_principal_name";
-// Used by KerberosAccountsHandler to prefill kerberos domain in
-// username field of "Add a ticket" UI window.
-// Tied to KerberosDomainAutocomplete policy.
-inline constexpr char kKerberosDomainAutocomplete[] =
-    "kerberos.domain_autocomplete";
-// Used by KerberosAccountsHandler to decide if the custom default configuration
-// should be prefilled.
-// Tied to KerberosUseCustomPrefilledConfig policy.
-inline constexpr char kKerberosUseCustomPrefilledConfig[] =
-    "kerberos.use_custom_prefilled_config";
-// Used by KerberosAccountsHandler to prefill kerberos krb5 config for
-// manually creating new tickets.
-// Tied to KerberosCustomPrefilledConfig policy.
-inline constexpr char kKerberosCustomPrefilledConfig[] =
-    "kerberos.custom_prefilled_config";
-
 // A boolean pref for enabling/disabling App reinstall recommendations in Zero
 // State Launcher by policy.
 inline constexpr char kAppReinstallRecommendationEnabled[] =
@@ -2303,8 +2271,6 @@ inline constexpr char kNtlmV2Enabled[] = "auth.ntlm_v2_enabled";
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Boolean whether Kerberos functionality is enabled.
-inline constexpr char kKerberosEnabled[] = "kerberos.enabled";
 
 // Holds URL patterns that specify origins that will be allowed to call
 // `subApps.{add|remove|list}())` without prior user gesture and that will skip

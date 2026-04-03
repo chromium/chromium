@@ -94,10 +94,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/net/network_annotation_monitor.h"
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/net/dhcp_wpad_url_client.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/net/network_annotation_monitor.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -144,7 +145,7 @@ bool g_network_service_will_allow_gssapi_library_load = false;
 
 const char* kGssapiDesiredPref =
 #if BUILDFLAG(IS_CHROMEOS)
-    prefs::kKerberosEnabled;
+    ash::prefs::kKerberosEnabled;
 #elif BUILDFLAG(IS_LINUX)
     prefs::kReceivedHttpAuthNegotiateHeader;
 #endif
@@ -471,8 +472,9 @@ class SystemNetworkContextManager::URLLoaderFactoryForSystem
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!manager_)
+    if (!manager_) {
       return;
+    }
     manager_->GetURLLoaderFactory()->CreateLoaderAndStart(
         std::move(receiver), request_id, options, url_request,
         std::move(client), traffic_annotation);
@@ -480,8 +482,9 @@ class SystemNetworkContextManager::URLLoaderFactoryForSystem
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    if (!manager_)
+    if (!manager_) {
       return;
+    }
     manager_->GetURLLoaderFactory()->Clone(std::move(receiver));
   }
 
@@ -622,8 +625,9 @@ SystemNetworkContextManager::SystemNetworkContextManager(
           ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                                 std::string()))
           .GetValue(policy::key::kQuicAllowed, base::Value::Type::BOOLEAN);
-  if (value)
+  if (value) {
     is_quic_allowed_ = value->GetBool();
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
   shared_url_loader_factory_ = new URLLoaderFactoryForSystem(this);
 
@@ -775,8 +779,9 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 // static
 StubResolverConfigReader*
 SystemNetworkContextManager::GetStubResolverConfigReader() {
-  if (stub_resolver_config_reader_for_testing_)
+  if (stub_resolver_config_reader_for_testing_) {
     return stub_resolver_config_reader_for_testing_;
+  }
 
   return &GetInstance()->stub_resolver_config_reader_;
 }
@@ -793,8 +798,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   url_loader_factory_.reset();
 
   // Disable QUIC globally, if needed.
-  if (!is_quic_allowed_)
+  if (!is_quic_allowed_) {
     network_service->DisableQuic();
+  }
 
   if (content::IsOutOfProcessNetworkService()) {
     mojo::PendingRemote<network::mojom::NetLogProxySource> proxy_source_remote;
@@ -805,8 +811,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
     network_service->AttachNetLogProxy(
         std::move(proxy_source_remote),
         proxy_sink_remote.BindNewPipeAndPassReceiver());
-    if (net_log_proxy_source_)
+    if (net_log_proxy_source_) {
       net_log_proxy_source_->ShutDown();
+    }
     net_log_proxy_source_ = std::make_unique<net_log::NetLogProxySource>(
         std::move(proxy_source_receiver), std::move(proxy_sink_remote));
   }
@@ -1088,8 +1095,9 @@ void SystemNetworkContextManager::FlushProxyConfigMonitorForTesting() {
 void SystemNetworkContextManager::FlushNetworkInterfaceForTesting() {
   DCHECK(network_service_network_context_);
   network_service_network_context_.FlushForTesting();
-  if (url_loader_factory_)
+  if (url_loader_factory_) {
     url_loader_factory_.FlushForTesting();
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1121,8 +1129,9 @@ void SystemNetworkContextManager::SetCTLogListTimelyForTesting() {
 }
 
 bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
-  if (certificate_transparency_enabled_for_testing_.has_value())
+  if (certificate_transparency_enabled_for_testing_.has_value()) {
     return certificate_transparency_enabled_for_testing_.value();
+  }
   // Certificate Transparency is enabled:
   //   - by default for Chrome-branded builds
   //   - on an opt-in basis for other builds and embedders, controlled with the

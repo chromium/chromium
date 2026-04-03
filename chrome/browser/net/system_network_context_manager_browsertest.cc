@@ -76,6 +76,10 @@
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using SystemNetworkContextManagerBrowsertest = InProcessBrowserTest;
 
 const char* kCookieName = "Cookie";
@@ -214,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   // The kerberos.enabled pref is false and the device is not Active Directory
   // managed by default.
   EXPECT_FALSE(dynamic_params->allow_gssapi_library_load);
-  local_state->SetBoolean(prefs::kKerberosEnabled, true);
+  local_state->SetBoolean(ash::prefs::kKerberosEnabled, true);
   dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
   EXPECT_TRUE(dynamic_params->allow_gssapi_library_load);
@@ -255,7 +259,7 @@ class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
   // network service restart to remove the sandbox.
   const char* kGssapiDesiredPref =
 #if BUILDFLAG(IS_CHROMEOS)
-      prefs::kKerberosEnabled;
+      ash::prefs::kKerberosEnabled;
 #elif BUILDFLAG(IS_LINUX)
       prefs::kReceivedHttpAuthNegotiateHeader;
 #endif
@@ -823,8 +827,9 @@ IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
     PRE_ReloadsFirstPartySetsAfterCrash) {
   // Network service is not running out of process, so cannot be crashed.
-  if (!content::IsOutOfProcessNetworkService())
+  if (!content::IsOutOfProcessNetworkService()) {
     return;
+  }
 
   // Set a persistent cookie that will still be there after the network service
   // is crashed. We don't use the system network context here (which wouldn't
@@ -845,8 +850,9 @@ IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
     ReloadsFirstPartySetsAfterCrash) {
   // Network service is not running out of process, so cannot be crashed.
-  if (!content::IsOutOfProcessNetworkService())
+  if (!content::IsOutOfProcessNetworkService()) {
     return;
+  }
 
   CookieTracker cookie_tracker(web_contents());
 

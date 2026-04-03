@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -93,8 +94,9 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
 // proxy authentication. Otherwise, system-proxy is disabled.
 SystemProxyManager::SystemProxyState DetermineSystemProxyState(
     bool policy_enabled) {
-  if (policy_enabled)
+  if (policy_enabled) {
     return SystemProxyManager::SystemProxyState::kEnabledForAll;
+  }
 
   if (base::FeatureList::IsEnabled(features::kSystemProxyForSystemServices)) {
     return SystemProxyManager::SystemProxyState::kEnabledForSystemServices;
@@ -120,7 +122,7 @@ SystemProxyManager::SystemProxyManager(PrefService* local_state) {
   local_state_pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   local_state_pref_change_registrar_->Init(local_state_);
   local_state_pref_change_registrar_->Add(
-      prefs::kKerberosEnabled,
+      ash::prefs::kKerberosEnabled,
       base::BindRepeating(&SystemProxyManager::OnKerberosEnabledChanged,
                           weak_factory_.GetWeakPtr()));
   DCHECK(NetworkHandler::IsInitialized());
@@ -185,7 +187,7 @@ void SystemProxyManager::StartObservingPrimaryProfilePrefs(Profile* profile) {
   profile_pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   profile_pref_change_registrar_->Init(primary_profile_->GetPrefs());
   profile_pref_change_registrar_->Add(
-      prefs::kKerberosActivePrincipalName,
+      ash::prefs::kKerberosActivePrincipalName,
       base::BindRepeating(&SystemProxyManager::OnKerberosAccountChanged,
                           base::Unretained(this)));
   profile_pref_change_registrar_->Add(
@@ -291,7 +293,7 @@ void SystemProxyManager::OnKerberosEnabledChanged() {
 }
 
 void SystemProxyManager::OnKerberosAccountChanged() {
-  if (!local_state_->GetBoolean(prefs::kKerberosEnabled)) {
+  if (!local_state_->GetBoolean(ash::prefs::kKerberosEnabled)) {
     return;
   }
   SendKerberosAuthenticationDetails();
@@ -311,7 +313,7 @@ void SystemProxyManager::OnArcEnabledChanged() {
     return;
   }
 
-  if (local_state_->GetBoolean(prefs::kKerberosEnabled)) {
+  if (local_state_->GetBoolean(ash::prefs::kKerberosEnabled)) {
     SendKerberosAuthenticationDetails();
     return;
   }
@@ -364,8 +366,9 @@ void SystemProxyManager::SendPolicyAuthenticationCredentials(
     const std::string& username,
     const std::string& password,
     bool force_send) {
-  if (!IsEnabled())
+  if (!IsEnabled()) {
     return;
+  }
 
   if (!force_send &&
       (last_sent_username_ == username && last_sent_password_ == password)) {
@@ -403,11 +406,11 @@ void SystemProxyManager::SendKerberosAuthenticationDetails() {
           ? system_proxy::TrafficOrigin::ALL
           : system_proxy::TrafficOrigin::SYSTEM);
   request.set_kerberos_enabled(
-      local_state_->GetBoolean(prefs::kKerberosEnabled));
+      local_state_->GetBoolean(ash::prefs::kKerberosEnabled));
   if (primary_profile_) {
     request.set_active_principal_name(
         primary_profile_->GetPrefs()
-            ->GetValue(prefs::kKerberosActivePrincipalName)
+            ->GetValue(ash::prefs::kKerberosActivePrincipalName)
             // TODO (https://crbug.com/1344857) Maybe call GetString directly.
             .GetString());
   }
@@ -459,7 +462,7 @@ void SystemProxyManager::CloseAuthDialogForTest() {
 
 // static
 void SystemProxyManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kSystemProxyUserTrafficHostAndPort,
+  registry->RegisterStringPref(::prefs::kSystemProxyUserTrafficHostAndPort,
                                /*default_value=*/std::string());
 }
 
@@ -482,8 +485,9 @@ bool SystemProxyManager::CanUsePolicyCredentials(
     return false;
   }
 
-  if (!IsManagedProxyConfigured())
+  if (!IsManagedProxyConfigured()) {
     return false;
+  }
 
   if (!policy_credentials_auth_schemes_.empty()) {
     if (!std::ranges::contains(policy_credentials_auth_schemes_,
@@ -511,15 +515,17 @@ void SystemProxyManager::OnSetAuthenticationDetails(
         << "Failed to set system traffic credentials for system proxy: "
         << kSystemProxyService << ", Error: " << response.error_message();
   }
-  if (send_auth_details_closure_for_test_)
+  if (send_auth_details_closure_for_test_) {
     send_auth_details_closure_for_test_.Run();
+  }
 }
 
 // This function is called when the default network changes or when any of its
 // properties change.
 void SystemProxyManager::DefaultNetworkChanged(const NetworkState* network) {
-  if (!network)
+  if (!network) {
     return;
+  }
   OnProxyConfigChanged();
 }
 
@@ -549,18 +555,21 @@ bool SystemProxyManager::IsManagedProxyConfigured() {
         network_handler->network_state_handler()->DefaultNetwork()->guid(),
         &proxy_settings);
   }
-  if (proxy_settings.empty())
+  if (proxy_settings.empty()) {
     return false;  // no managed proxy set
+  }
 
-  if (IsProxyConfiguredByUserViaExtension())
+  if (IsProxyConfiguredByUserViaExtension()) {
     return false;
+  }
   // Proxy was configured by the admin
   return true;
 }
 
 bool SystemProxyManager::IsProxyConfiguredByUserViaExtension() {
-  if (!extension_prefs_util_)
+  if (!extension_prefs_util_) {
     return false;
+  }
 
   std::optional<extensions::api::settings_private::PrefObject> pref =
       extension_prefs_util_->GetPref(proxy_config::prefs::kProxy);
@@ -592,8 +601,9 @@ void SystemProxyManager::OnWorkerActive(
     system_services_address_ = details.local_proxy_url();
     return;
   }
-  if (system_proxy_state_ != SystemProxyState::kEnabledForAll)
+  if (system_proxy_state_ != SystemProxyState::kEnabledForAll) {
     return;
+  }
 
   SetUserTrafficProxyPref(details.local_proxy_url());
 }
@@ -604,7 +614,7 @@ void SystemProxyManager::SetUserTrafficProxyPref(
     return;
   }
   primary_profile_->GetPrefs()->SetString(
-      prefs::kSystemProxyUserTrafficHostAndPort, user_traffic_address);
+      ::prefs::kSystemProxyUserTrafficHostAndPort, user_traffic_address);
 }
 
 void SystemProxyManager::OnAuthenticationRequired(
@@ -675,8 +685,9 @@ void SystemProxyManager::LookupProxyAuthCredentialsCallback(
 void SystemProxyManager::ShowAuthenticationNotification(
     const system_proxy::ProtectionSpace& protection_space,
     bool show_error) {
-  if (active_auth_dialog_)
+  if (active_auth_dialog_) {
     return;
+  }
   notification_handler_ = std::make_unique<SystemProxyNotification>(
       protection_space, show_error,
       base::BindOnce(&SystemProxyManager::ShowAuthenticationDialog,
@@ -687,11 +698,13 @@ void SystemProxyManager::ShowAuthenticationNotification(
 void SystemProxyManager::ShowAuthenticationDialog(
     const system_proxy::ProtectionSpace& protection_space,
     bool show_error_label) {
-  if (active_auth_dialog_)
+  if (active_auth_dialog_) {
     return;
+  }
 
-  if (notification_handler_)
+  if (notification_handler_) {
     notification_handler_->Close();
+  }
 
   active_auth_dialog_ = new RequestSystemProxyCredentialsView(
       protection_space.origin(), show_error_label,
@@ -734,8 +747,9 @@ void SystemProxyManager::CloseAuthenticationUI() {
     notification_handler_->Close();
     notification_handler_.reset();
   }
-  if (!auth_widget_)
+  if (!auth_widget_) {
     return;
+  }
   // Also deletes the |auth_widget_| instance.
   auth_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }

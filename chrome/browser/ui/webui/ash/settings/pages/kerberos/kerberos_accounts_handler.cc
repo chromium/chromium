@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/url_constants.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -121,21 +121,21 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
   // Whether the 'Remember password' checkbox is enabled.
   html_source->AddBoolean(
       "kerberosRememberPasswordEnabled",
-      local_state->GetBoolean(::prefs::kKerberosRememberPasswordEnabled));
+      local_state->GetBoolean(::ash::prefs::kKerberosRememberPasswordEnabled));
 
   // Prefilled domain if policy is enabled. Note that Kerberos
   // domains should be in all uppercase.
   html_source->AddString("kerberosDomainAutocomplete",
                          base::ToUpperASCII(local_state->GetString(
-                             ::prefs::kKerberosDomainAutocomplete)));
+                             ::ash::prefs::kKerberosDomainAutocomplete)));
 
   // Kerberos default prefilled configuration.
   // If the 'KerberosUseCustomPrefilledConfig' policy is set to 'true', the
   // configuration comes from the 'KerberosCustomPrefilledConfig' policy.
   // Otherwise the default value is used.
   const std::string prefilledConfig =
-      local_state->GetBoolean(::prefs::kKerberosUseCustomPrefilledConfig)
-          ? local_state->GetString(::prefs::kKerberosCustomPrefilledConfig)
+      local_state->GetBoolean(::ash::prefs::kKerberosUseCustomPrefilledConfig)
+          ? local_state->GetString(::ash::prefs::kKerberosCustomPrefilledConfig)
           : KerberosCredentialsManager::GetDefaultKerberosConfig();
   html_source->AddString("defaultKerberosConfig", prefilledConfig);
 }
@@ -171,7 +171,7 @@ void AddKerberosAccountsPageStrings(content::WebUIDataSource* html_source) {
   // Whether new Kerberos accounts may be added.
   html_source->AddBoolean(
       "kerberosAddAccountsAllowed",
-      local_state->GetBoolean(::prefs::kKerberosAddAccountsAllowed));
+      local_state->GetBoolean(::ash::prefs::kKerberosAddAccountsAllowed));
 
   // Kerberos accounts page with "Learn more" link.
   html_source->AddString(
