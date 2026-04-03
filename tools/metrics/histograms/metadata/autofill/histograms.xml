@@ -5551,6 +5551,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Starts when AutofillManager::Observer::OnFieldTypesDetermined is called.
     Logs if the logic made it to the IntersectionObserver section, or if the
     flow aborted, why it aborted.
+
+    Note that OnFieldTypesDetermined(~) is generally called once per detected
+    form, *not* once per page load or once per Omnibox Autofill flow, so using
+    these values to analyze opportunity size is not recommended. It is highly
+    affected by the number of forms detected on a page.
   </summary>
 </histogram>
 

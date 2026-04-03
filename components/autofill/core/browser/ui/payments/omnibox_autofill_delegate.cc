@@ -39,9 +39,8 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
   // Only run checks using the the outermost AutofillManager to avoid having
   // multiple managers triggering the logic flow at once.
   if (!IsOutermostMainFrameActiveAutofillManager(manager)) {
-    // Don't log an `OmniboxAutofillShowChipDecisionPart1` entry here, because
-    // learning how many non-outermost-active-main-frame BAMs exist on the page
-    // is not useful information.
+    LogOmniboxAutofillShowChipDecisionPart1(
+        OmniboxAutofillShowChipDecisionPart1::kNotActiveOutermostMainFrameBam);
     return;
   }
 

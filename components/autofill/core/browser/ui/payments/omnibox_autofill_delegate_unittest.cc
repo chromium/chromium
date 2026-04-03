@@ -121,9 +121,9 @@ TEST_F(OmniboxAutofillDelegateTest,
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
-  // Logic flow aborting at the stage of finding the right BAM is not logged.
-  histogram_tester.ExpectTotalCount(
-      "Autofill.OmniboxAutofill.ShowChipDecisionPart1", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kNotActiveOutermostMainFrameBam, 1);
 
   autofill_driver(0).SetParent(nullptr);
 }
@@ -139,9 +139,9 @@ TEST_F(OmniboxAutofillDelegateTest,
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
-  // Logic flow aborting at the stage of finding the right BAM is not logged.
-  histogram_tester.ExpectTotalCount(
-      "Autofill.OmniboxAutofill.ShowChipDecisionPart1", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kNotActiveOutermostMainFrameBam, 1);
 }
 
 TEST_F(OmniboxAutofillDelegateTest,
@@ -155,9 +155,9 @@ TEST_F(OmniboxAutofillDelegateTest,
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
-  // Logic flow aborting at the stage of finding the right BAM is not logged.
-  histogram_tester.ExpectTotalCount(
-      "Autofill.OmniboxAutofill.ShowChipDecisionPart1", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kNotActiveOutermostMainFrameBam, 1);
 }
 
 TEST_F(OmniboxAutofillDelegateTest,

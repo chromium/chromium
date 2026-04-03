@@ -13,32 +13,39 @@ namespace autofill::autofill_metrics {
 // the flow could drop off without warning, which is why it is split from
 // OmniboxAutofillShowChipDecisionPart2.
 //
+// Note that this histogram is recorded once per call to
+// `OnFieldTypesDetermined(~)` which is generally once per detected form, *not*
+// once per page load or once per Omnibox Autofill flow.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
 // LINT.IfChange(OmniboxAutofillShowChipDecisionPart1)
 enum class OmniboxAutofillShowChipDecisionPart1 {
+  // Was not the active, outermost main frame's BrowserAutofillManager.
+  kNotActiveOutermostMainFrameBam = 0,
+
   // The Autofill payment methods policy pref (kAutofillCreditCardEnabled) was
   // disabled, regardless of if it was by the user, enterprise admin, or
   // extension.
-  kAutofillPaymentMethodsPolicyDisabled = 0,
+  kAutofillPaymentMethodsPolicyDisabled = 1,
 
   // The user did not have any cards saved, so nothing can be autofilled.
-  kNoCreditCardsSaved = 1,
+  kNoCreditCardsSaved = 2,
 
   // Fetching the form via its FormGlobalId failed.
-  kCouldNotFindCachedForm = 2,
+  kCouldNotFindCachedForm = 3,
 
   // The form did not have a credit card number and expiration date on it.
-  kNotCompleteCreditCardForm = 3,
+  kNotCompleteCreditCardForm = 4,
 
   // The form or client context was not secure, such as being HTTP.
-  kFormOrClientContextNotSecure = 4,
+  kFormOrClientContextNotSecure = 5,
 
   // Expected remaining buckets:
-  //  kNonAllowlistedIframe = 5,
+  //  kNonAllowlistedIframe = 6,
 
-  kSuccess = 6,
+  kSuccess = 7,
 
   kMaxValue = kSuccess,
 };
