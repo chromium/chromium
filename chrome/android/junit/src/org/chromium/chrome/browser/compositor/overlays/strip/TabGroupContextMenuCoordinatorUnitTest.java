@@ -29,7 +29,10 @@ import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import androidx.annotation.IdRes;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -44,6 +47,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -73,6 +77,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerContainer;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
@@ -88,6 +93,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
@@ -1175,5 +1181,163 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 "The title for the other window is incorrect.",
                 "Example",
                 otherWindowItem.model.get(TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testMenuWidthAndColorPicker_MainMenu() {
+        setUpTabGroupModelFilter();
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+
+        // 1. Verify visibility of title editor and color picker.
+        View contentView = mTabGroupContextMenuCoordinator.getContentViewForTesting();
+        assertNotNull(contentView);
+        assertEquals(
+                "Title editor should be visible",
+                View.VISIBLE,
+                contentView.findViewById(R.id.tab_group_title).getVisibility());
+        assertEquals(
+                "Color picker should be visible",
+                View.VISIBLE,
+                contentView.findViewById(R.id.color_picker_container).getVisibility());
+
+        // 2. Verify menu width.
+        verifyMenuWidthAndColorPicker(contentView);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMenuWidthAndVisibility_SubMenu() {
+        HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
+        setUpTabGroupModelFilter();
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        // Click on "Move group to another window" to open a submenu.
+        int moveToIndex = -1;
+        for (int i = 0; i < modelList.size(); i++) {
+            if (modelList.get(i).model.containsKey(SUBMENU_ITEMS)) {
+                moveToIndex = i;
+                break;
+            }
+        }
+        assertTrue("Move to window item not found", moveToIndex != -1);
+        ListItem moveItem = modelList.get(moveToIndex);
+        moveItem.model.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+
+        // 1. Verify visibility of title editor and color picker are GONE in submenu.
+        View contentView = mTabGroupContextMenuCoordinator.getContentViewForTesting();
+        assertEquals(
+                "Title editor should be hidden in submenu",
+                View.GONE,
+                contentView.findViewById(R.id.tab_group_title).getVisibility());
+        assertEquals(
+                "Color picker should be hidden in submenu",
+                View.GONE,
+                contentView.findViewById(R.id.color_picker_container).getVisibility());
+
+        // 2. Verify submenu width is updated (should be <= maxWidth).
+        int maxWidthPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_group_context_menu_max_width);
+
+        ListView listView = contentView.findViewById(R.id.tab_group_action_menu_list);
+        ViewGroup container = (ViewGroup) listView.getParent().getParent();
+        int width = container.getLayoutParams().width;
+        assertTrue("Submenu width " + width + " should be <= " + maxWidthPx, width <= maxWidthPx);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMenuRestoration_NavigateBack() {
+        HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
+        setUpTabGroupModelFilter();
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        // Go to submenu.
+        int moveToIndex = -1;
+        for (int i = 0; i < modelList.size(); i++) {
+            if (modelList.get(i).model.containsKey(SUBMENU_ITEMS)) {
+                moveToIndex = i;
+                break;
+            }
+        }
+        assertTrue("Move to window item not found", moveToIndex != -1);
+        ListItem moveItem = modelList.get(moveToIndex);
+        moveItem.model.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+
+        // Go back (by clicking the same item which now acts as a back button in hierarchical menu).
+        // Wait, in HierarchicalMenuController, clicking the submenu header usually goes back.
+        // Let's find the submenu header and click it.
+        ModelList subMenuModelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+        assertEquals(ListItemType.SUBMENU_HEADER, subMenuModelList.get(0).type);
+        subMenuModelList.get(0).model.get(ListMenuItemProperties.CLICK_LISTENER).onClick(null);
+
+        // 1. Verify restoration of title editor and color picker.
+        View contentView = mTabGroupContextMenuCoordinator.getContentViewForTesting();
+        assertEquals(
+                "Title editor should be restored",
+                View.VISIBLE,
+                contentView.findViewById(R.id.tab_group_title).getVisibility());
+        assertEquals(
+                "Color picker should be restored",
+                View.VISIBLE,
+                contentView.findViewById(R.id.color_picker_container).getVisibility());
+
+        // 2. Verify menu width.
+        verifyMenuWidthAndColorPicker(contentView);
+    }
+
+    private void verifyMenuWidthAndColorPicker(View contentView) {
+        ListView listView = contentView.findViewById(R.id.tab_group_action_menu_list);
+        // Hierarchy: ScrollView -> LinearLayout (container) -> FrameLayout -> ListView
+        ViewGroup container = (ViewGroup) listView.getParent().getParent();
+        int width = container.getLayoutParams().width;
+
+        ColorPickerContainer colorPicker = container.findViewById(R.id.color_picker_container);
+
+        int minWidthPx = mActivity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
+        int maxWidthPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_group_context_menu_max_width);
+
+        int expectedWidth;
+        int singleRowWidth = colorPicker.getSingleRowWidth();
+        if (singleRowWidth < maxWidthPx) {
+            expectedWidth = singleRowWidth;
+        } else {
+            expectedWidth = colorPicker.getDoubleRowWidth();
+        }
+
+        // Also considers list item widths.
+        ListAdapter listAdapter = listView.getAdapter();
+        int maxItemWidth = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            maxItemWidth = Math.max(maxItemWidth, listItem.getMeasuredWidth());
+        }
+
+        expectedWidth = Math.max(expectedWidth, maxItemWidth);
+        expectedWidth =
+                MathUtils.clamp(
+                        expectedWidth + listView.getPaddingLeft() + listView.getPaddingRight(),
+                        minWidthPx,
+                        maxWidthPx);
+
+        assertEquals("Menu width is incorrect", expectedWidth, width);
     }
 }

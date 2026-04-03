@@ -31,6 +31,7 @@ import android.widget.ListView;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
@@ -65,6 +66,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabStripReorderingHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
+import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerContainer;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerType;
@@ -494,15 +496,58 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         boolean isInSubmenu = (listAdapter.getItemViewType(0) == SUBMENU_HEADER);
         listView.setScrollContainer(isInSubmenu);
 
+        int minWidth = getDimensionPixelSize(R.dimen.list_menu_width);
+        int absoluteMaxWidth =
+                getDimensionPixelSize(R.dimen.tab_strip_group_context_menu_max_width);
+
         int totalHeight = 0;
+        int maxItemWidth = 0;
+
+        // When not in a submenu, the menu also includes a title editor and a color picker.
+        // We need to ensure that the menu width is large enough to accommodate these
+        // components as well. The color picker is the one we care about, since the other is an
+        // text editing box that will match its parent's width.
+        View container = ((ViewGroup) assumeNonNull(mContentView)).getChildAt(0);
+        if (!isInSubmenu && mColorPickerCoordinator != null) {
+            ColorPickerContainer colorPicker = mColorPickerCoordinator.getContainerView();
+            if (colorPicker.getColorPickerLayoutType() == ColorPickerLayoutType.DYNAMIC) {
+                if (colorPicker.getVisibility() == VISIBLE) {
+                    int singleRowWidth = colorPicker.getSingleRowWidth();
+                    if (singleRowWidth < absoluteMaxWidth) {
+                        maxItemWidth = Math.max(maxItemWidth, singleRowWidth);
+                    } else {
+                        maxItemWidth = Math.max(maxItemWidth, colorPicker.getDoubleRowWidth());
+                    }
+                }
+            }
+        }
+
         for (int i = 0; i < listAdapter.getCount(); i++) {
             View listItem = listAdapter.getView(i, null, listView);
             listItem.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
             totalHeight += listItem.getMeasuredHeight();
+            maxItemWidth = Math.max(maxItemWidth, listItem.getMeasuredWidth());
         }
+
+        int width =
+                MathUtils.clamp(
+                        maxItemWidth + listView.getPaddingLeft() + listView.getPaddingRight(),
+                        minWidth,
+                        absoluteMaxWidth);
+
+        // Set the width on the ScrollView's child (the LinearLayout) to ensure all components
+        // (title editor, color picker, and list items) share the same width and dividers
+        // extend to the full width of the menu.
+        ViewGroup.LayoutParams containerParams = container.getLayoutParams();
+        containerParams.width = width;
+        container.setLayoutParams(containerParams);
+
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + listView.getPaddingTop() + listView.getPaddingBottom();
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
         listView.setLayoutParams(params);
+
+        resizeMenu();
     }
 
     private int getMenuItemIndex(ModelList itemList, int menuItemId) {

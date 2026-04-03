@@ -29,10 +29,23 @@ public abstract class ColorPickerContainer extends LinearLayout {
      */
     public abstract void setColorViews(List<FrameLayout> colorViews);
 
+    /** Returns the {@link ColorPickerLayoutType} to be used. */
+    public abstract @ColorPickerLayoutType int getColorPickerLayoutType();
+
     /**
      * Stores the requested layout type to be arranged in this component.
      *
      * @param layoutType The {@link ColorPickerLayoutType} to be used.
      */
     public abstract void setColorPickerLayoutType(@ColorPickerLayoutType int layoutType);
+
+    /**
+     * @return Width (in px) the {@link ColorPickerContainer} would have in a single-row layout.
+     */
+    public abstract int getSingleRowWidth();
+
+    /**
+     * @return Width (in px) the {@link ColorPickerContainer} would have in a double-row layout.
+     */
+    public abstract int getDoubleRowWidth();
 }

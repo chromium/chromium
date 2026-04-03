@@ -21,6 +21,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParentIndex;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,13 +32,16 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
+import androidx.test.espresso.ViewAssertion;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -426,6 +430,15 @@ public class TabStripGroupContextMenuTest {
         assertEquals("The blue color should be selected", TabGroupColorId.BLUE, color);
     }
 
+    private static ViewAssertion matchesWithMessage(Matcher<? super View> matcher, String message) {
+        return (view, noViewFoundException) -> {
+            if (noViewFoundException != null) {
+                throw new AssertionError(message, noViewFoundException);
+            }
+            assertThat(message, view, matcher);
+        };
+    }
+
     @Test
     @SmallTest
     @Feature("KeyboardA11y")
@@ -439,19 +452,52 @@ public class TabStripGroupContextMenuTest {
         // Start with the edit text box. Click to focus, then hit down arrow.
         onView(withId(R.id.tab_group_title)).perform(click());
         onView(withId(R.id.tab_group_title)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
-        // One of the color picker circles should be focused.
-        onView(allOf(isDescendantOfA(withId(R.id.color_picker_container)), isFocused()))
-                .check(matches(isDisplayed()));
-        // Hit down arrow a 2nd time.
+
+        // One of the color picker circles should be focused in the first row.
+        onView(allOf(isDescendantOfA(withId(R.id.color_picker_first_row)), isFocused()))
+                .check(
+                        matchesWithMessage(
+                                isDisplayed(),
+                                "One of the color picker circles in the first row should be"
+                                        + " focused."));
+
+        // Check if there's a second row of colors and navigate accordingly.
+        final boolean[] hasSecondRow = new boolean[1];
+        onView(withId(R.id.color_picker_second_row))
+                .check(
+                        (view, noViewFoundException) -> {
+                            if (view instanceof ViewGroup group) {
+                                hasSecondRow[0] = group.getChildCount() > 0;
+                            }
+                        });
+
+        if (hasSecondRow[0]) {
+            // Hit down arrow to move from the first row to the second row of the color picker.
+            onView(isFocused()).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+            onView(allOf(isDescendantOfA(withId(R.id.color_picker_second_row)), isFocused()))
+                    .check(
+                            matchesWithMessage(
+                                    isDisplayed(),
+                                    "One of the color picker circles in the second row should be"
+                                            + " focused."));
+        }
+
+        // Hit down arrow to move from the color picker to the action menu list.
         onView(isFocused()).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
-        // TODO(crbug.com/385172744): This may need to be updated for color picker taking up 2 rows
+
         // The second element of tab_group_action_menu_list should be focused (skip divider).
         onView(allOf(withParent(withId(R.id.tab_group_action_menu_list)), withParentIndex(1)))
-                .check(matches(isFocused()));
+                .check(
+                        matchesWithMessage(
+                                isFocused(),
+                                "The second element of tab_group_action_menu_list should be"
+                                        + " focused."));
+
         // Now hit the button.
         onView(isFocused()).perform(pressKey(KeyEvent.KEYCODE_SPACE));
 
         assertEquals(
+                "Tab count should increase by 1 after activating 'New tab in group'.",
                 numTabsBeforeClick + 1,
                 getTabCountOnUiThread(mActivityTestRule.getActivity().getCurrentTabModel()));
     }
