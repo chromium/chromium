@@ -166,6 +166,7 @@ TEST_F(PaintWorkletTest, SinglyRegisteredDocumentDefinitionNotUsed) {
       static_cast<CSSPaintImageGeneratorImpl*>(
           CSSPaintImageGeneratorImpl::Create("foo", GetDocument(), nullptr));
   EXPECT_TRUE(generator);
+  EXPECT_FALSE(generator->IsImageGeneratorReady());
   EXPECT_EQ(generator->GetRegisteredDefinitionCountForTesting(), 1u);
   DocumentPaintDefinition* definition;
   // Please refer to CSSPaintImageGeneratorImpl::GetValidDocumentDefinition for
@@ -288,6 +289,11 @@ TEST_P(MainOrOffThreadPaintWorkletTest, ConsistentGlobalScopeOnMainThread) {
   // foo0 and foo1 have the same name but different definitions, therefore
   // this definition must become invalid.
   EXPECT_FALSE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
+  DocumentPaintDefinition* invalid_definition = nullptr;
+  EXPECT_FALSE(
+      generator_foo->GetValidDocumentDefinitionForTesting(invalid_definition));
+  EXPECT_FALSE(invalid_definition);
+  EXPECT_FALSE(generator_foo->IsImageGeneratorReady());
 
   ClassicScript::CreateUnspecifiedScript(bar)->RunScriptOnScriptState(
       global_scopes[0]->ScriptController()->GetScriptState());
@@ -546,6 +552,7 @@ TEST_F(PaintWorkletTest, GeneratorNotifiedAfterAllRegistrations) {
       global_scopes[1]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
+  EXPECT_FALSE(generator->IsImageGeneratorReady());
 
   CSSPaintDefinition* definition = global_scopes[0]->FindDefinition("foo");
 
@@ -559,6 +566,7 @@ TEST_F(PaintWorkletTest, GeneratorNotifiedAfterAllRegistrations) {
       definition->GetPaintRenderingContext2DSettings()->alpha());
 
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
+  EXPECT_TRUE(generator->IsImageGeneratorReady());
 }
 
 }  // namespace blink
