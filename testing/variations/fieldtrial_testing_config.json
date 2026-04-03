@@ -24845,21 +24845,6 @@
             ]
         }
     ],
-    "WebUITabStripDeprecation": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Treatment",
-                    "disable_features": [
-                        "WebUITabStrip"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewBypassProvisionalCookieManager": [
         {
             "platforms": [
