@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <title>A 'background-clip: text' background layer should blend with the underlying layer</title>
-<script src="../../resources/ahem.js"></script>
+<link rel="help" href="https://drafts.csswg.org/css-backgrounds-4/#valdef-background-clip-text">
+<link rel="match" href="clip-text-blend-mode-ref.html">
+
 <style>
 #target {
-  font: 100px/1 Ahem;
+  font-size: 100px;
   background-image: linear-gradient(#f00, #f00), linear-gradient(#ff0, #ff0);
   background-color: red;
   background-blend-mode: difference, normal;

@@ -132,6 +132,7 @@ external/wpt/content-security-policy/svg/svg-from-guid.html
 external/wpt/css/css-align/content-distribution/place-content-shorthand-002.html
 external/wpt/css/css-align/content-distribution/place-content-shorthand-003.html
 external/wpt/css/css-align/default-alignment/place-items-shorthand-001.html
+external/wpt/css/css-backgrounds/background-clip/clip-text-constrain-geometry.html
 external/wpt/css/css-display/display-contents-computed-style.html
 external/wpt/css/css-grid/grid-definition/grid-template-columns-rows-resolved-values-001.xht
 external/wpt/css/css-grid/grid-layout-properties.html
@@ -362,7 +363,6 @@ fast/animation/request-animation-frame-cancel.html
 fast/animation/request-animation-frame-within-callback.html
 fast/autoresize/basic.html
 fast/autoresize/turn-off-autoresize.html
-fast/backgrounds/background-clip-text.html
 fast/backgrounds/background-fill-zero-area-crash.html
 fast/backgrounds/size/parsing-background-size-values.html
 fast/beacon/beacon-basic.html

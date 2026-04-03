@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<title>background-clip:text with various descendant types</title>
+<link rel="help" href="https://drafts.csswg.org/css-backgrounds-4/#valdef-background-clip-text">
+<link rel="match" href="clip-text-descendants-ref.html">
 <style>
 body {
   font-size: 40px;
@@ -8,11 +11,11 @@ body {
 }
 .clip-text {
   background: blue;
-  -webkit-background-clip: text;
+  background-clip: text;
   color: rgba(255,0,0,0.5);
 }
 </style>
-Passes if all texts are purple.
+<!-- Passes if all texts are purple. -->
 <div class="clip-text"><div>Block</div></div>
 <div class="clip-text transformed"><div>Block transformed</div></div>
 <div class="clip-text"><div style="float:left">Float</div><br></div>

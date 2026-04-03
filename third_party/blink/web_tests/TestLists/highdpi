@@ -33,7 +33,6 @@ compositing/background-color/background-color-change-to-transparent.html
 compositing/background-color/background-color-container.html
 compositing/background-color/background-color-content-clip.html
 compositing/background-color/background-color-text-change.html
-compositing/background-color/background-color-text-clip.html
 compositing/background-color/view-blending-base-background.html
 compositing/backgrounds/fixed-backgrounds.html
 compositing/backgrounds/local-background.html
@@ -289,6 +288,7 @@ external/wpt/css/css-backgrounds/animations/background-color-transition-currentc
 external/wpt/css/css-backgrounds/animations/background-position-composition.html
 external/wpt/css/css-backgrounds/animations/invalidation/background-color-transition-with-initially-transparent.html
 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-6.html
+external/wpt/css/css-backgrounds/background-clip/clip-text-composited-descendant-with-bg-color.html
 external/wpt/css/css-backgrounds/background-position/subpixel-position-center.tentative.html
 external/wpt/css/css-backgrounds/background-size-008.html
 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html
