@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_SIDE_PANEL_COORDINATOR_H_
 
 #include <memory>
+#include <ostream>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -94,6 +95,18 @@ class GlicSidePanelCoordinator {
  private:
   ui::ScopedUnownedUserData<GlicSidePanelCoordinator> scoped_user_data_;
 };
+
+inline std::ostream& operator<<(std::ostream& os,
+                                GlicSidePanelCoordinator::State state) {
+  switch (state) {
+    case GlicSidePanelCoordinator::State::kShown:
+      return os << "kShown";
+    case GlicSidePanelCoordinator::State::kBackgrounded:
+      return os << "kBackgrounded";
+    case GlicSidePanelCoordinator::State::kClosed:
+      return os << "kClosed";
+  }
+}
 
 }  // namespace glic
 

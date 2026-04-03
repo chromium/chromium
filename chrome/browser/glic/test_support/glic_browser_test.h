@@ -9,9 +9,12 @@
 #include <memory>
 #include <sstream>
 #include <string_view>
+#include <type_traits>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/functional/function_ref.h"
 #include "base/path_service.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +35,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
 #include "url/gurl.h"
 
@@ -63,6 +67,40 @@ namespace glic {
 #else
 #define SKIP_NEEDS_ANDROID_IMPL(message)
 #endif
+
+// Runs `get_value` until it returns `expected_value`. Returns a
+// testing::AssertionResult indicating success or failure.
+// Note, `type_identity_t` ensures T's type is inferred from `expected_value`.
+template <typename T>
+[[nodiscard]] testing::AssertionResult RunUntilEqual(
+    base::FunctionRef<std::type_identity_t<T>()> get_value,
+    const T& expected_value,
+    std::string_view message = std::string_view()) {
+  using ValueType = std::remove_reference_t<T>;
+  if (get_value() == expected_value) {
+    return testing::AssertionSuccess();
+  }
+  std::vector<ValueType> ignored_values;
+  if (base::test::RunUntil([get_value, expected_value, &ignored_values]() {
+        ValueType value = get_value();
+        if (value == expected_value) {
+          return true;
+        }
+        if (ignored_values.empty() || ignored_values.back() != value) {
+          ignored_values.push_back(value);
+        }
+        return false;
+      })) {
+    return testing::AssertionSuccess();
+  }
+  auto failure = testing::AssertionFailure();
+  failure << message << " Expected: " << expected_value << ", saw values: {";
+  for (const auto& value : ignored_values) {
+    failure << value << ", ";
+  }
+  failure << "}";
+  return failure;
+}
 
 template <typename Trigger>
 [[nodiscard]] bool RunUntil(Trigger&& trigger, std::string_view message) {

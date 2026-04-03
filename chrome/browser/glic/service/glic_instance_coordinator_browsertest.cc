@@ -149,8 +149,9 @@ bool WaitForSidePanelState(tabs::TabInterface* tab,
   if (!side_panel_coordinator) {
     return false;
   }
-  return base::test::RunUntil(
-      [&]() { return side_panel_coordinator->state() == expected_state; });
+  return RunUntilEqual([&]() { return side_panel_coordinator->state(); },
+                       expected_state,
+                       "Timeout waiting for side panel state to match");
 }
 
 void ActivateTab(tabs::TabInterface* tab) {
@@ -162,8 +163,9 @@ bool WaitForActiveEmbedderToMatchTab(GlicInstanceImpl* instance,
                                      tabs::TabInterface* tab) {
   CHECK(tab);
   CHECK(instance);
-  return base::test::RunUntil(
-      [&]() { return instance->GetActiveEmbedderTabForTesting() == tab; });
+  return RunUntilEqual(
+      [&]() { return instance->GetActiveEmbedderTabForTesting(); }, tab,
+      "Timeout waiting for active embedder to match tab");
 }
 
 }  // namespace
