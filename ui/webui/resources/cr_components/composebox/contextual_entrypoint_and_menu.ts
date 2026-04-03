@@ -91,7 +91,7 @@ export class ContextualEntrypointAndMenuElement extends
   protected accessor usePecApi_: boolean =
       getLoadTimeBoolean('contextualMenuUsePecApi', /*defaultValue=*/ false);
 
-  // TODO(crbug.com/491126593): Explore avoiding/removing this local property.
+  // TODO(crbug.com/499310611): Explore avoiding/removing this local property.
   private shouldOpenMenuForMultiSelection_: boolean = false;
 
   openMenuForMultiSelection() {
