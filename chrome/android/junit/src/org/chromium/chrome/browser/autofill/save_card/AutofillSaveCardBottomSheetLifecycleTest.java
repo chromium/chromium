@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,7 +35,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 public class AutofillSaveCardBottomSheetLifecycleTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private LayoutStateProvider mLayoutStateProvider;
-    @Mock private AutofillSaveCardUiController mUiController;
+    @Mock private AutofillSheetUiController mUiController;
     @Mock private TabModel mTabModel;
     private AutofillSaveCardBottomSheetLifecycle mLifecycle;
     @Mock private AutofillSaveCardBottomSheetMediator mDelegate;

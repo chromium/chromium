@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
 import org.chromium.chrome.browser.autofill.save_card.AutofillSaveCardBottomSheetMediator.SaveCardPromptResult;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -35,7 +36,7 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AutofillSaveCardBottomSheetContent mBottomSheetContent;
     @Mock private AutofillSaveCardBottomSheetLifecycle mLifeCycle;
-    @Mock private AutofillSaveCardUiController mUiController;
+    @Mock private AutofillSheetUiController mUiController;
     private PropertyModel mModel;
     @Mock private AutofillSaveCardBottomSheetBridge mDelegate;
     private AutofillSaveCardBottomSheetMediator mMediator;

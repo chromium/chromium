@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.save_card;
+package org.chromium.chrome.browser.autofill.anchored_dialog;
 
 import android.content.Context;
 import android.view.View;
@@ -35,6 +35,11 @@ public class AnchoredDialogCoordinator {
         PropertyModelChangeProcessor.create(mModel, mView, AnchoredDialogViewBinder::bind);
 
         mMediator = new AnchoredDialogMediator(mModel, containerView, verticalOffsetProvider);
+    }
+
+    public void destroy() {
+        mMediator.destroy();
+        mView.hide();
     }
 
     /**

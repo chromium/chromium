@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
-
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -31,7 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         void onIgnored();
     }
 
-    private final AutofillSaveCardUiController mUiController;
+    private final AutofillSheetUiController mUiController;
     private final LayoutStateProvider mLayoutStateProvider;
     private final TabModel mTabModel;
     private ControllerDelegate mDelegate;
@@ -40,14 +40,14 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     /**
      * Constructs the lifecycle for the save card bottom sheet.
      *
-     * @param bottomSheetController The controller to use for showing or hiding the content.
+     * @param uiController The controller to use for showing or hiding the content.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
      *     to be hidden after a change of layout (e.g. to the tab switcher).
      * @param tabModel The TabModel used to detect when the bottom sheet needs to be hidden after a
      *     tab change.
      */
     AutofillSaveCardBottomSheetLifecycle(
-            AutofillSaveCardUiController uiController,
+            AutofillSheetUiController uiController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel) {
         mUiController = uiController;

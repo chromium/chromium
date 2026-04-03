@@ -35,8 +35,8 @@ import org.robolectric.shadows.ShadowActivity;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
@@ -58,8 +58,8 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
     private ShadowActivity mShadowActivity;
     @Mock private TabModel mTabModel;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private AnchoredDialogCoordinator mAnchoredDialogCoordinator;
     @Mock private LayoutStateProvider mLayoutStateProvider;
-    @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private AutofillSaveCardBottomSheetBridge mDelegate;
     private AutofillSaveCardBottomSheetCoordinator mCoordinator;
 
@@ -73,8 +73,8 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                         uiInfoForTest(),
                         /* skipLoadingForFixFlow= */ false,
                         mBottomSheetController,
+                        mAnchoredDialogCoordinator,
                         mLayoutStateProvider,
-                        mBrowserControlsManager,
                         mTabModel,
                         mDelegate);
     }
@@ -213,8 +213,8 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                                 .build(),
                         /* skipLoadingForFixFlow= */ false,
                         mBottomSheetController,
+                        mAnchoredDialogCoordinator,
                         mLayoutStateProvider,
-                        mBrowserControlsManager,
                         mTabModel,
                         mDelegate);
 
@@ -238,8 +238,8 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                         uiInfoForTest(),
                         /* skipLoadingForFixFlow= */ true,
                         mBottomSheetController,
+                        mAnchoredDialogCoordinator,
                         mLayoutStateProvider,
-                        mBrowserControlsManager,
                         mTabModel,
                         mDelegate);
 

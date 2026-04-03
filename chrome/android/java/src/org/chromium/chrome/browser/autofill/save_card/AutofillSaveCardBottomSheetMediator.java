@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -38,7 +39,7 @@ import java.lang.annotation.RetentionPolicy;
 
     private final AutofillSaveCardBottomSheetContent mContent;
     private final AutofillSaveCardBottomSheetLifecycle mLifecycle;
-    private final AutofillSaveCardUiController mUiController;
+    private final AutofillSheetUiController mUiController;
     private final PropertyModel mModel;
     private final AutofillSaveCardBottomSheetCoordinator.NativeDelegate mDelegate;
     private final boolean mIsServerCard;
@@ -74,7 +75,7 @@ import java.lang.annotation.RetentionPolicy;
      *
      * @param content The bottom sheet content to be shown.
      * @param lifecycle A custom lifecycle that ignores page navigation.
-     * @param bottomSheetController The controller to use for showing or hiding the content.
+     * @param uiController The controller to use for showing or hiding the content.
      * @param delegate The delegate to signal UI flow events (OnUiShown, OnUiAccepted, etc.) to.
      * @param isServerCard Whether or not the bottom sheet is for a server card save.
      * @param isLoadingDisabled Whether or not the loading for the card save is disabled.
@@ -82,7 +83,7 @@ import java.lang.annotation.RetentionPolicy;
     AutofillSaveCardBottomSheetMediator(
             AutofillSaveCardBottomSheetContent content,
             AutofillSaveCardBottomSheetLifecycle lifecycle,
-            AutofillSaveCardUiController uiController,
+            AutofillSheetUiController uiController,
             PropertyModel model,
             AutofillSaveCardBottomSheetCoordinator.NativeDelegate delegate,
             boolean isServerCard,

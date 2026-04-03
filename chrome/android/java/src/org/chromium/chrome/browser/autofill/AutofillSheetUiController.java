@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.save_card;
+package org.chromium.chrome.browser.autofill;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -15,7 +15,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
  * BottomSheetController interface.
  */
 @NullMarked
-interface AutofillSaveCardUiController {
+public interface AutofillSheetUiController {
     boolean requestShowContent(BottomSheetContent content, boolean animate);
 
     void hideContent(

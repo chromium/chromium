@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.save_card;
+package org.chromium.chrome.browser.autofill.anchored_dialog;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -62,14 +62,8 @@ public class AnchoredDialogTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
-                            new AnchoredDialogCoordinator(
-                                    mTestRule.getActivity(),
-                                    mTestRule.getActivity().getContentView(),
-                                    () ->
-                                            mTestRule
-                                                    .getActivity()
-                                                    .getBrowserControlsManager()
-                                                    .getContentOffset());
+                            AnchoredDialogCoordinatorProvider.from(
+                                    mTestRule.getActivity().getWindowAndroid());
                     mContent =
                             new TestBottomSheetContent(
                                     mTestRule.getActivity(),

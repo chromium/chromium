@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.content.Context;
 import android.net.Uri;
 import android.view.View;
@@ -13,15 +11,14 @@ import android.view.View;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiControllerFactory;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -61,10 +58,10 @@ public class AutofillSaveCardBottomSheetCoordinator {
      * @param skipLoadingForFixFlow When true, loading is skipped due to the fix flow.
      * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
      *     shown.
+     * @param anchoredDialogCoordinator The anchored dialog coordinator where this bottom sheet will
+     *     be shown.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
      *     to be hidden after a change of layout (e.g. to the tab switcher).
-     * @param browserControlsManager The BrowserControlsManager used to measure the position of the
-     *     content area.
      * @param tabModel The TabModel used to detect when the bottom sheet needs to be hidden after a
      *     tab change.
      * @param delegate The native callbacks for user actions.
@@ -74,8 +71,8 @@ public class AutofillSaveCardBottomSheetCoordinator {
             AutofillSaveCardUiInfo uiInfo,
             boolean skipLoadingForFixFlow,
             BottomSheetController bottomSheetController,
+            AnchoredDialogCoordinator anchoredDialogCoordinator,
             LayoutStateProvider layoutStateProvider,
-            BrowserControlsManager browserControlsManager,
             TabModel tabModel,
             NativeDelegate delegate) {
         mContext = context;
@@ -128,11 +125,9 @@ public class AutofillSaveCardBottomSheetCoordinator {
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillSaveCardBottomSheetViewBinder::bind);
 
-        AutofillSaveCardUiController uiController =
-                shouldUseNonBlockingDialog()
-                        ? createDialogCoordinator(mContext, browserControlsManager, tabModel)
-                        : AutofillSaveCardUiControllerFactory.createBottomSheetUiController(
-                                bottomSheetController);
+        AutofillSheetUiController uiController =
+                AutofillSheetUiControllerFactory.createUiController(
+                        mContext, bottomSheetController, anchoredDialogCoordinator);
 
         mMediator =
                 new AutofillSaveCardBottomSheetMediator(
@@ -183,23 +178,5 @@ public class AutofillSaveCardBottomSheetCoordinator {
                 .setShowTitle(true)
                 .build()
                 .launchUrl(mContext, Uri.parse(url));
-    }
-
-    private boolean shouldUseNonBlockingDialog() {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ANDROID_SAVE_CARD_NON_BLOCKING_DIALOG);
-    }
-
-    private static AutofillSaveCardUiController createDialogCoordinator(
-            Context context, BrowserControlsManager browserControlsManager, TabModel tabModel) {
-        Tab tab = tabModel.getCurrentTabSupplier().get();
-        assertNonNull(tab);
-        View containerView = tab.getView();
-        assertNonNull(containerView);
-        AnchoredDialogCoordinator controller =
-                new AnchoredDialogCoordinator(
-                        context, containerView, () -> browserControlsManager.getContentOffset());
-        return AutofillSaveCardUiControllerFactory.createAnchoredDialogUiController(controller);
     }
 }

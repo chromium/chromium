@@ -16,8 +16,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -37,8 +37,8 @@ public class AutofillSaveCardBottomSheetBridge
     private final TabModel mTabModel;
     private final @Nullable Context mContext;
     private final @Nullable BottomSheetController mBottomSheetController;
+    private final @Nullable AnchoredDialogCoordinator mAnchoredDialogCoordinator;
     private final @Nullable LayoutStateProvider mLayoutStateProvider;
-    private final @Nullable BrowserControlsManager mBrowserControlsManager;
     private @Nullable AutofillSaveCardBottomSheetCoordinator mCoordinator;
 
     @CalledByNative
@@ -49,8 +49,8 @@ public class AutofillSaveCardBottomSheetBridge
         mTabModel = tabModel;
         mContext = window.getContext().get();
         mBottomSheetController = BottomSheetControllerProvider.from(window);
+        mAnchoredDialogCoordinator = AnchoredDialogCoordinatorProvider.from(window);
         mLayoutStateProvider = LayoutManagerProvider.from(window);
-        mBrowserControlsManager = BrowserControlsManagerSupplier.getValueOrNullFrom(window);
     }
 
     /**
@@ -67,8 +67,8 @@ public class AutofillSaveCardBottomSheetBridge
         if (mNativeAutofillSaveCardBottomSheetBridge == 0
                 || mContext == null
                 || mBottomSheetController == null
-                || mLayoutStateProvider == null
-                || mBrowserControlsManager == null) {
+                || mAnchoredDialogCoordinator == null
+                || mLayoutStateProvider == null) {
             // Likely only to happen when Chrome's window is being closed.
             return;
         }
@@ -79,8 +79,8 @@ public class AutofillSaveCardBottomSheetBridge
                         uiInfo,
                         skipLoadingForFixFlow,
                         mBottomSheetController,
+                        mAnchoredDialogCoordinator,
                         mLayoutStateProvider,
-                        mBrowserControlsManager,
                         mTabModel,
                         /* delegate= */ this);
         mCoordinator.requestShowContent();

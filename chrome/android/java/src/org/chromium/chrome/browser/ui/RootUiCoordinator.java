@@ -59,6 +59,8 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
 import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
@@ -429,6 +431,7 @@ public class RootUiCoordinator
     protected @Nullable OpenInAppEntryPoint mOpenInAppEntryPoint;
     protected @Nullable OmniboxChipManager mOmniboxChipManager;
     protected @Nullable BottomBarHostManager mBottomBarHostManager;
+    private @Nullable AnchoredDialogCoordinator mAnchoredDialogCoordinator;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -992,6 +995,12 @@ public class RootUiCoordinator
             mReaderModeBottomSheetManager = null;
         }
 
+        if (mAnchoredDialogCoordinator != null) {
+            AnchoredDialogCoordinatorProvider.detach(mAnchoredDialogCoordinator);
+            mAnchoredDialogCoordinator.destroy();
+            mAnchoredDialogCoordinator = null;
+        }
+
         if (mLinkHoverStatusBarCoordinator != null) {
             mLinkHoverStatusBarCoordinator.destroy();
             mLinkHoverStatusBarCoordinator = null;
@@ -1270,6 +1279,13 @@ public class RootUiCoordinator
                     new LinkHoverStatusBarCoordinator(
                             mActivity, mActivityTabProvider.asObservable(), statusBarStub);
         }
+
+        mAnchoredDialogCoordinator =
+                new AnchoredDialogCoordinator(
+                        mActivity,
+                        mCompositorViewHolderSupplier.get(),
+                        () -> mBrowserControlsManager.getContentOffset());
+        AnchoredDialogCoordinatorProvider.attach(mWindowAndroid, mAnchoredDialogCoordinator);
     }
 
     protected boolean isContextualSearchEnabled() {
