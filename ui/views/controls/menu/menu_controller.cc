@@ -1826,8 +1826,13 @@ void MenuController::SetSelectionOnPointerDown(SubmenuView* source,
   SetSelection(part.menu, selection_types);
 }
 
-void MenuController::StartDrag(SubmenuView* source,
+void MenuController::StartDrag(SubmenuView* source_raw,
                                const gfx::Point& location) {
+  // TODO(crbug.com/497736679): Intended to keep `source_raw` quarantined inside
+  // StartDrag(). Since `source_raw` might be destroyed while RunDrawDropLoop(),
+  // `source` will be sometimes dangling pointer. So detecting
+  // `source` is dangling is expected.
+  raw_ptr<SubmenuView, DisableDanglingPtrDetection> source(source_raw);
   MenuItemView* item = state_.item;
   DCHECK(item);
   // Points are in the coordinates of the submenu, need to map to that of
