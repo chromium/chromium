@@ -10672,6 +10672,16 @@ be describing additional metrics about the same event.
       cache and the second requestAnimationFrame time in milliseconds.
     </summary>
   </metric>
+  <metric name="SoftNavigationCount">
+    <summary>
+      Number of soft navigations detected by heuristics. See
+      https://github.com/WICG/soft-navigations
+
+      Soft navigations are JS-driven same-document navigations that are using
+      the history API or the new Navigation API, triggered by a user gesture and
+      meaningfully modify the DOM, replacing the previous content with new one.
+    </summary>
+  </metric>
   <metric name="ThirdRequestAnimationFrameAfterBackForwardCacheRestore">
     <summary>
       Measures the time duration between the page restore from back-forward
@@ -17136,7 +17146,7 @@ be describing additional metrics about the same event.
   <metric name="SoftNavigationCount">
     <summary>
       Number of soft navigations detected by heuristics. See
-      https://bit.ly/soft-navigation
+      https://github.com/WICG/soft-navigations
 
       Soft navigations are JS-driven same-document navigations that are using
       the history API or the new Navigation API, triggered by a user gesture and
@@ -20330,7 +20340,7 @@ be describing additional metrics about the same event.
   <metric name="SoftNavigationCount">
     <summary>
       Number of soft navigations detected by heuristics. See
-      https://bit.ly/soft-navigation
+      https://github.com/WICG/soft-navigations
 
       Soft navigations are JS-driven same-document navigations that are using
       the history API or the new Navigation API, triggered by a user gesture and

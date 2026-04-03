@@ -19,11 +19,14 @@
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "components/ukm/gmock_matchers.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -39,7 +42,12 @@
 
 namespace page_load_metrics {
 namespace {
+using testing::EndsWith;
+using testing::UnorderedElementsAre;
+using ukm::builders::HistoryNavigation;
 using ukm::builders::PrerenderPageLoad;
+using ukm::testing::HasMetric;
+using ukm::testing::HasMetricWithValue;
 
 std::map<int64_t, double> GetSoftNavigationMetrics(
     const ukm::TestUkmRecorder& ukm_recorder,
@@ -1023,6 +1031,141 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationPrerenderTest, SoftNavigationCount) {
       initiator_page_entry, PrerenderPageLoad::kTriggeredPrerenderName, 1);
   EXPECT_FALSE(ukm_recorder().EntryHasMetric(
       initiator_page_entry, PrerenderPageLoad::kWasPrerenderedName));
+}
+
+//
+// Tests soft navigation metrics after back-forward-cache restores.
+//
+class SoftNavigationBackForwardCacheTest : public MetricIntegrationTest {
+ public:
+  SoftNavigationBackForwardCacheTest() = default;
+  ~SoftNavigationBackForwardCacheTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MetricIntegrationTest::SetUpCommandLine(command_line);
+    feature_list_for_bfcache_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{page_load_metrics::features::
+                  kBackForwardCacheEmitZeroSamplesForKeyMetrics,
+              {{}}}}),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+  }
+
+  content::RenderFrameHost* top_frame_host() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_bfcache_;
+};
+
+IN_PROC_BROWSER_TEST_F(SoftNavigationBackForwardCacheTest,
+                       SoftNavigationCount) {
+  Start();
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/soft_navigation_basics.html#image"));
+  GURL url_a_after_softnavs(embedded_test_server()->GetURL(
+      "a.com", "/soft_navigation_basics.html?id=2#image"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/empty.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(top_frame_host());
+
+  // Navigate to B.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Go back to A - this will be the 1st bfcache restore.
+  {
+    PageLoadMetricsTestWaiter waiter(web_contents());
+    waiter.AddPageBackForwardCacheRestoreExpectation(
+        /*back_forward_timings_index=*/0,
+        PageLoadMetricsTestWaiter::TimingField::
+            kFirstPaintAfterBackForwardCacheRestore);
+    web_contents()->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+    waiter.Wait();
+    // 1st soft navigation: click on the next page button and wait for soft
+    // navigation count and image lcp.
+    TriggerSoftNavigationAndWait(web_contents(), &waiter,
+                                 /*expected_soft_nav_count=*/1,
+                                 /*element_id=*/"next-page");
+    // 2nd soft navigation: click on the next page button and wait for soft
+    // navigation count and image lcp.
+    TriggerSoftNavigationAndWait(web_contents(), &waiter,
+                                 /*expected_soft_nav_count=*/2,
+                                 /*element_id=*/"next-page");
+  }
+
+  // Navigate to B again.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Go back to A again - this will be the 2nd bfcache restore.
+  {
+    PageLoadMetricsTestWaiter waiter(web_contents());
+    waiter.AddPageBackForwardCacheRestoreExpectation(
+        /*back_forward_timings_index=*/1,
+        PageLoadMetricsTestWaiter::TimingField::
+            kFirstPaintAfterBackForwardCacheRestore);
+    web_contents()->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+    waiter.Wait();
+    // 1st soft navigation for this bfcache restore: click on the next page
+    // button and wait for soft navigation count and image lcp.
+    TriggerSoftNavigationAndWait(web_contents(), &waiter,
+                                 /*expected_soft_nav_count=*/1,
+                                 /*element_id=*/"next-page");
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+    auto entries =
+        GetMergedUkmEntries(ukm_recorder(), HistoryNavigation::kEntryName);
+    std::vector<GURL> urls;
+    for (const auto& entry : entries) {
+      urls.push_back(entry.first);
+    }
+    // url_a is the URL from the 1st bfcache restore, which means it's
+    // the URL that we originally (hard) navigated to.
+    EXPECT_THAT(url_a.spec(), EndsWith("/soft_navigation_basics.html#image"));
+    // url_a_after_softnavs is the URL from the 2nd bfcache restore, which
+    // means it's the URL that we soft navigated to after the 1st bfcache
+    // restore. Since there were 2 soft navigations before the 2nd bfcache
+    // restore, the id is 2.
+    EXPECT_THAT(url_a_after_softnavs.spec(),
+                EndsWith("/soft_navigation_basics.html?id=2#image"));
+    EXPECT_THAT(urls, UnorderedElementsAre(url_a, url_a_after_softnavs));
+    ASSERT_TRUE(entries[url_a].get());
+    const ukm::mojom::UkmEntry* bfcache_restore_1 = entries[url_a].get();
+    EXPECT_THAT(
+        bfcache_restore_1,
+        HasMetric(HistoryNavigation::
+                      kNavigationToFirstPaintAfterBackForwardCacheRestoreName));
+    EXPECT_THAT(
+        bfcache_restore_1,
+        HasMetricWithValue(HistoryNavigation::kSoftNavigationCountName, 2));
+
+    EXPECT_TRUE(entries[url_a_after_softnavs].get());
+    const ukm::mojom::UkmEntry* bfcache_restore_2 =
+        entries[url_a_after_softnavs].get();
+    EXPECT_THAT(
+        bfcache_restore_2,
+        HasMetric(HistoryNavigation::
+                      kNavigationToFirstPaintAfterBackForwardCacheRestoreName));
+    EXPECT_THAT(
+        bfcache_restore_2,
+        HasMetricWithValue(HistoryNavigation::kSoftNavigationCountName, 1));
+  }
 }
 }  // namespace
 }  // namespace page_load_metrics
