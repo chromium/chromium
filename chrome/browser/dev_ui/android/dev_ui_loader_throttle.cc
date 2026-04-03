@@ -35,6 +35,7 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
   // Each WebUI host (including synonyms) in the DevUI DFM must have an entry.
   // Assume linear search is fast enough. Can optimize later if needed.
   return host == chrome::kChromeUIAccessibilityHost ||
+         host == chrome::kChromeUIActorInternalsHost ||
          host == chrome::kChromeUIAutofillInternalsHost ||
          host == chrome::kChromeUIBluetoothInternalsHost ||
          host == chrome::kChromeUIBrowsingTopicsInternalsHost ||
