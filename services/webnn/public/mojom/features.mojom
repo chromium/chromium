@@ -6,12 +6,14 @@ module webnn.mojom.features;
 
 // Enables the Web Machine Learning Neural Network API. Explainer:
 // https://github.com/webmachinelearning/webnn/blob/main/explainer.md
+// Note: This feature is unsafe and not currently accepting security reports.
 feature kWebMachineLearningNeuralNetwork {
   const string name = "WebMachineLearningNeuralNetwork";
   const bool default_state = false;
 };
 
 // Enables experimental Web Machine Learning Neural Network API features.
+// Note: This feature is unsafe and not currently accepting security reports.
 feature kExperimentalWebMachineLearningNeuralNetwork {
   const string name = "ExperimentalWebMachineLearningNeuralNetwork";
   const bool default_state = false;

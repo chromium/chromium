@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -54,6 +55,12 @@
 #include "services/webnn/tflite/context_impl_litert.h"
 #endif
 
+#if defined(ADDRESS_SANITIZER)
+#include <sanitizer/asan_interface.h>
+
+#include "base/debug/asan_service.h"
+#endif
+
 namespace webnn {
 
 namespace {
@@ -96,6 +103,16 @@ void RecordDeviceType(const mojom::Device device) {
   base::UmaHistogramEnumeration("WebNN.DeviceType", uma_value);
 }
 
+#if defined(ADDRESS_SANITIZER)
+NO_SANITIZE("address")
+void AsanUnsafeFeatureWarning(const char* reason,
+                              bool* should_exit_cleanly,
+                              bool* should_abort) {
+  auto* asan_service = base::debug::AsanService::GetInstance();
+  asan_service->Log("\nUnsafe feature: WebMachineLearningNeuralNetwork");
+}
+#endif
+
 }  // namespace
 
 WebNNContextProviderImpl::WebNNContextProviderImpl(
@@ -123,6 +140,12 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
   // `gpu_host_` is used to ensure that the execution providers used by the ORT
   // backend are ready. It should be connected to the browser process.
   CHECK(gpu_host_.is_bound());
+
+#if defined(ADDRESS_SANITIZER)
+  LOG(ERROR) << "WebMachineLearningNeuralNetwork is an unsafe feature.";
+  base::debug::AsanService::GetInstance()->AddErrorCallback(
+      AsanUnsafeFeatureWarning);
+#endif
 }
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() {
