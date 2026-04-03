@@ -372,7 +372,10 @@
   },
   {
     "prefix": "connection-allowlist",
-    "owners": [ "mkwst@chromium.org" ],
+    "owners": [
+      "mkwst@chromium.org",
+      "shivanisha@chromium.org"
+    ],
     "platforms": [ "Linux" ],
     "bases": [
       "external/wpt/connection-allowlist",
@@ -380,7 +383,21 @@
     ],
     "exclusive_tests": "ALL",
     "args": [ "--enable-features=ConnectionAllowlists,OverrideConnectionAllowlistOriginTrial" ],
-    "expires": "Jul 1, 2026"
+    "expires": "Dec 1, 2026"
+  },
+  {
+    "prefix": "connection-allowlist-origin-trial",
+    "owners": [
+      "mkwst@chromium.org",
+      "shivanisha@chromium.org"
+    ],
+    "platforms": [ "Linux" ],
+    "bases": [
+      "wpt_internal/connection-allowlist"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [ "--enable-features=ConnectionAllowlists" ],
+    "expires": "Dec 1, 2026"
   },
   {
     "prefix": "controls-refresh-hc",
