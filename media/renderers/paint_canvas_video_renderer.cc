@@ -1401,6 +1401,7 @@ bool PaintCanvasVideoRenderer::
         viz::RasterContextProvider* raster_context_provider,
         gpu::gles2::GLES2Interface* destination_gl,
         scoped_refptr<VideoFrame> video_frame,
+        VideoFrameSharedImageCache* rgb_si_cache,
         unsigned int target,
         unsigned int texture,
         unsigned int internal_format,
@@ -1413,6 +1414,7 @@ bool PaintCanvasVideoRenderer::
   DCHECK(video_frame);
   CHECK(video_frame->HasSharedImage());
   CHECK(destination_gl);
+  CHECK(rgb_si_cache);
 
   if (!raster_context_provider) {
     return false;
@@ -1429,11 +1431,6 @@ bool PaintCanvasVideoRenderer::
       raster_context_provider->RasterInterface();
   DCHECK(canvas_ri);
 
-  // Create the intermediate rgb shared image cache if not already present.
-  if (!rgb_shared_image_cache_) {
-    rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
-  }
-
   // This SI is used to cache the VideoFrame. We copy the contents of the
   // source VideoFrame into the cached SI over the raster interface and will
   // eventually read out its contents into a destination GL texture via the
@@ -1441,7 +1438,7 @@ bool PaintCanvasVideoRenderer::
   gpu::SharedImageUsageSet src_usage =
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   auto [rgb_shared_image, rgb_sync_token, status] =
-      rgb_shared_image_cache_->GetOrCreateSharedImage(
+      rgb_si_cache->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
           SHARED_IMAGE_FORMAT, kPremul_SkAlphaType,
           video_frame->CompatRGBColorSpace());
@@ -1469,11 +1466,18 @@ bool PaintCanvasVideoRenderer::
 
   // Update the `rgb_sync_token` to be waited upon based on gles tasks
   // performed earlier.
-  rgb_shared_image_cache_->UpdateSyncToken(dest_sync_token);
+  rgb_si_cache->UpdateSyncToken(dest_sync_token);
 
   // We do not need to synchronize video frame read here since it's already
   // taken care of earlier.
   return true;
+}
+
+VideoFrameSharedImageCache* PaintCanvasVideoRenderer::GetRGBSharedImageCache() {
+  if (!rgb_shared_image_cache_) {
+    rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
+  }
+  return rgb_shared_image_cache_.get();
 }
 
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(

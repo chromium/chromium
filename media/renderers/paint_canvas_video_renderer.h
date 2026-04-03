@@ -142,6 +142,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
       scoped_refptr<VideoFrame> video_frame,
+      VideoFrameSharedImageCache* rgb_si_cache,
       unsigned int target,
       unsigned int texture,
       unsigned int internal_format,
@@ -150,6 +151,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       int level,
       SkAlphaType dst_alpha_type,
       GrSurfaceOrigin dst_origin);
+
+  VideoFrameSharedImageCache* GetRGBSharedImageCache();
 
   // Copy the CPU-side YUV contents of |video_frame| to texture |texture| in
   // context |destination_gl|.
