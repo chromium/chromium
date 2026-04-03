@@ -9,10 +9,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -29,9 +27,10 @@ import java.lang.annotation.RetentionPolicy;
 
     private final AutofillVcnEnrollBottomSheetContent mContent;
     private final AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
-    private @Nullable BottomSheetController mBottomSheetController;
+    private final AutofillSheetUiController mUiController;
     private final PropertyModel mModel;
     private @VirtualCardEnrollmentBubbleResult int mLoadingResult;
+    private boolean mDidShow;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -66,29 +65,27 @@ import java.lang.annotation.RetentionPolicy;
     AutofillVcnEnrollBottomSheetMediator(
             AutofillVcnEnrollBottomSheetContent content,
             AutofillVcnEnrollBottomSheetLifecycle lifecycle,
+            AutofillSheetUiController uiController,
             PropertyModel model) {
         mContent = content;
         mLifecycle = lifecycle;
+        mUiController = uiController;
         mModel = model;
     }
 
     /**
      * Requests to show the bottom sheet.
      *
-     * @param window The window where the bottom sheet should be shown.
      * @return True if shown.
      */
-    boolean requestShowContent(WindowAndroid window) {
+    boolean requestShowContent() {
         if (!mLifecycle.canBegin()) return false;
 
-        mBottomSheetController = BottomSheetControllerProvider.from(window);
-        if (mBottomSheetController == null) return false;
+        mDidShow = mUiController.requestShowContent(mContent, /* animate= */ true);
 
-        boolean didShow = mBottomSheetController.requestShowContent(mContent, /* animate= */ true);
+        if (mDidShow) mLifecycle.begin(/* onEndOfLifecycle= */ this::hide);
 
-        if (didShow) mLifecycle.begin(/* onEndOfLifecycle= */ this::hide);
-
-        return didShow;
+        return mDidShow;
     }
 
     /** Callback for when the user hits the [accept] button. */
@@ -109,8 +106,8 @@ import java.lang.annotation.RetentionPolicy;
     /** Hides the bottom sheet, if present. */
     void hide() {
         if (mLifecycle.hasBegun()) mLifecycle.end();
-        if (mBottomSheetController != null) {
-            mBottomSheetController.hideContent(
+        if (mDidShow) {
+            mUiController.hideContent(
                     mContent,
                     /* animate= */ true,
                     BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);

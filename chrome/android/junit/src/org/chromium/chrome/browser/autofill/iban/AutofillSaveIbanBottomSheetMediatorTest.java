@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.SaveIbanPromptOffer;
@@ -30,7 +31,7 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AutofillSaveIbanBottomSheetBridge mDelegate;
-    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private AutofillSheetUiController mUiController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TabModel mTabModel;
 
@@ -44,7 +45,7 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
                 new AutofillSaveIbanBottomSheetMediator(
                         mDelegate,
                         mBottomSheetContent,
-                        mBottomSheetController,
+                        mUiController,
                         mLayoutStateProvider,
                         mTabModel,
                         /* isServerSave= */ true);
@@ -58,13 +59,13 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
                                 + ".Upload.FirstShow",
                         SaveIbanPromptOffer.SHOWN);
 
-        when(mBottomSheetController.requestShowContent(
+        when(mUiController.requestShowContent(
                         any(AutofillSaveIbanBottomSheetContent.class), /* animate= */ eq(true)))
                 .thenReturn(true);
 
         mMediator.requestShowContent();
 
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, /* animate= */ true);
+        verify(mUiController).requestShowContent(mBottomSheetContent, /* animate= */ true);
         promptOfferHistogramWatcher.assertExpected();
     }
 
@@ -76,13 +77,13 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
                                 + ".Upload.FirstShow",
                         SaveIbanPromptResult.UNKNOWN);
 
-        when(mBottomSheetController.requestShowContent(
+        when(mUiController.requestShowContent(
                         any(AutofillSaveIbanBottomSheetContent.class), /* animate= */ eq(true)))
                 .thenReturn(false);
 
         mMediator.requestShowContent();
 
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, /* animate= */ true);
+        verify(mUiController).requestShowContent(mBottomSheetContent, /* animate= */ true);
         promptOfferHistogramWatcher.assertExpected();
     }
 
@@ -90,7 +91,7 @@ public final class AutofillSaveIbanBottomSheetMediatorTest {
     public void testHide_hidesBottomSheetContent() {
         mMediator.hide(BottomSheetController.StateChangeReason.NONE);
 
-        verify(mBottomSheetController)
+        verify(mUiController)
                 .hideContent(
                         mBottomSheetContent,
                         /* animate= */ true,

@@ -10,13 +10,16 @@ import android.view.View;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiControllerFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.ImageSize;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -43,6 +46,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
      * Constructs a coordinator controller for the virtual card enrollment bottom sheet.
      *
      * @param context The activity context.
+     * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
+     *     shown
+     * @param anchoredDialogCoordinator The anchored dialog coordinator where this bottom sheet will
+     *     be shown.
      * @param modelBuilder The bottom sheet contents.
      * @param layoutStateProvider Exposes a way to listen to layout state changes.
      * @param tabModelSelectorSupplier Supplies the tab model selector when it's ready.
@@ -50,6 +57,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
      */
     AutofillVcnEnrollBottomSheetCoordinator(
             Context context,
+            BottomSheetController bottomSheetController,
+            AnchoredDialogCoordinator anchoredDialogCoordinator,
             Profile profile,
             PropertyModel.Builder modelBuilder,
             LayoutStateProvider layoutStateProvider,
@@ -75,12 +84,17 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
 
+        AutofillSheetUiController uiController =
+                AutofillSheetUiControllerFactory.createUiController(
+                        context, bottomSheetController, anchoredDialogCoordinator);
+
         mMediator =
                 new AutofillVcnEnrollBottomSheetMediator(
                         new AutofillVcnEnrollBottomSheetContent(
                                 mView.mContentView, mView.mScrollView, delegate::onDismiss),
                         new AutofillVcnEnrollBottomSheetLifecycle(
                                 layoutStateProvider, tabModelSelectorSupplier),
+                        uiController,
                         mModel);
 
         mView.mAcceptButton.setOnClickListener(
@@ -98,11 +112,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
     /**
      * Requests to show the bottom sheet.
      *
-     * @param window The window where the bottom sheet should be shown.
      * @return True if shown.
      */
-    boolean requestShowContent(WindowAndroid window) {
-        return mMediator.requestShowContent(window);
+    boolean requestShowContent() {
+        return mMediator.requestShowContent();
     }
 
     /** Hides the virtual card enrollment bottom sheet, if present. */

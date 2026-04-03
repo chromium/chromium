@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -17,7 +18,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.components.autofill.SaveIbanPromptOffer;
 import org.chromium.components.autofill.SaveIbanPromptResult;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
@@ -39,13 +39,14 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     static final String SAVE_IBAN_PROMPT_OFFER_HISTOGRAM = "Autofill.SaveIbanPromptOffer";
 
     @VisibleForTesting
-    static final String SAVE_IBAN_PROMPT_RESULT_FOR_SAVE_WITH_NICKNAME_HISTOGRAM = "Autofill.SaveIbanPromptResult";
+    static final String SAVE_IBAN_PROMPT_RESULT_FOR_SAVE_WITH_NICKNAME_HISTOGRAM =
+            "Autofill.SaveIbanPromptResult";
 
     static final String SAVE_IBAN_PROMPT_RESULT_HISTOGRAM = "Autofill.SaveIbanPromptResult2";
 
     private final AutofillSaveIbanBottomSheetCoordinator.NativeDelegate mDelegate;
     private final AutofillSaveIbanBottomSheetContent mBottomSheetContent;
-    private final BottomSheetController mBottomSheetController;
+    private final AutofillSheetUiController mAutofillSheetUiController;
     private final LayoutStateProvider mLayoutStateProvider;
     private final TabModel mTabModel;
     private final boolean mIsServerSave;
@@ -56,8 +57,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
      *
      * @param delegate The delegate to signal UI flow events (OnUiCanceled, OnUiAccepted, etc.).
      * @param bottomSheetContent The bottom sheet content to be shown.
-     * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
-     *     shown.
+     * @param uiController The controller to use for showing or hiding the content.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
      *     to be hidden after a change of layout (e.g. to the tab switcher).
      * @param tabModel The TabModel used to detect when the bottom sheet needs to be hidden after a
@@ -67,25 +67,26 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     AutofillSaveIbanBottomSheetMediator(
             AutofillSaveIbanBottomSheetCoordinator.NativeDelegate delegate,
             AutofillSaveIbanBottomSheetContent bottomSheetContent,
-            BottomSheetController bottomSheetController,
+            AutofillSheetUiController uiController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
             boolean isServerSave) {
         mDelegate = delegate;
         mBottomSheetContent = bottomSheetContent;
-        mBottomSheetController = bottomSheetController;
+        mAutofillSheetUiController = uiController;
         mLayoutStateProvider = layoutStateProvider;
         mTabModel = tabModel;
         mIsServerSave = isServerSave;
 
-        mBottomSheetController.addObserver(this);
+        mAutofillSheetUiController.addObserver(this);
         mLayoutStateProvider.addObserver(this);
         mTabModel.addObserver(this);
     }
 
     /** Requests to show the bottom sheet content. */
     void requestShowContent() {
-        if (mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true)) {
+        if (mAutofillSheetUiController.requestShowContent(
+                mBottomSheetContent, /* animate= */ true)) {
             logSaveIbanPromptOffer(SaveIbanPromptOffer.SHOWN, mIsServerSave);
         } else {
             mDelegate.onUiIgnored();
@@ -118,8 +119,9 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     }
 
     void hide(@StateChangeReason int hideReason) {
-        mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true, hideReason);
-        mBottomSheetController.removeObserver(this);
+        mAutofillSheetUiController.hideContent(
+                mBottomSheetContent, /* animate= */ true, hideReason);
+        mAutofillSheetUiController.removeObserver(this);
         mLayoutStateProvider.removeObserver(this);
         mTabModel.removeObserver(this);
     }
@@ -151,7 +153,8 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         // ways such as by opening a link from another app. In this case we want to hide the bottom
         // sheet rather than keeping the bottom sheet open while this tab loads behind the scrim.
         if (lastId != tab.getId()) {
-            mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
+            mAutofillSheetUiController.hideContent(
+                    mBottomSheetContent, /* animate= */ false, StateChangeReason.NONE);
         }
     }
 
@@ -161,7 +164,8 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         // When the browser layout changes away from browsing to say the tab switcher, then the
         // bottom sheet must be hidden.
         if (layoutType != LayoutType.BROWSING) {
-            mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
+            mAutofillSheetUiController.hideContent(
+                    mBottomSheetContent, /* animate= */ true, StateChangeReason.NONE);
         }
     }
 

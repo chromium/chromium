@@ -14,11 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
-
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,15 +23,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetMediator.VirtualCardEnrollmentBubbleResult;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
-import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetMediator}. */
@@ -45,32 +39,25 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
 
     @Mock private AutofillVcnEnrollBottomSheetContent mContent;
     @Mock private AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
-    @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private AutofillSheetUiController mUiController;
     private PropertyModel mModel;
-    private WindowAndroid mWindow;
     private AutofillVcnEnrollBottomSheetMediator mMediator;
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mModel = new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS).build();
-        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
-        BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         when(mLifecycle.canBegin()).thenReturn(true);
-        mMediator = new AutofillVcnEnrollBottomSheetMediator(mContent, mLifecycle, mModel);
-    }
-
-    @After
-    public void tearDown() {
-        BottomSheetControllerFactory.detach(mBottomSheetController);
-        mWindow.destroy();
+        when(mUiController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator =
+                new AutofillVcnEnrollBottomSheetMediator(
+                        mContent, mLifecycle, mUiController, mModel);
     }
 
     @Test
     public void testShowBottomSheet() {
-        mMediator.requestShowContent(mWindow);
+        mMediator.requestShowContent();
 
-        verify(mBottomSheetController)
+        verify(mUiController)
                 .requestShowContent(/* content= */ eq(mContent), /* animate= */ eq(true));
     }
 
@@ -78,26 +65,26 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
     public void testCannotShowBottomSheet() {
         when(mLifecycle.canBegin()).thenReturn(false); // E.g., when in tab overview.
 
-        mMediator.requestShowContent(mWindow);
+        mMediator.requestShowContent();
 
-        verifyNoInteractions(mBottomSheetController);
+        verifyNoInteractions(mUiController);
     }
 
     @Test
     public void testOnAccept_showsLoadingState() {
-        mMediator.requestShowContent(mWindow);
+        mMediator.requestShowContent();
         mMediator.onAccept();
 
         assertTrue(mModel.get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE));
-        verify(mBottomSheetController, times(0)).hideContent(any(), anyBoolean(), anyInt());
+        verify(mUiController, times(0)).hideContent(any(), anyBoolean(), anyInt());
     }
 
     @Test
     public void testOnCancel() {
-        mMediator.requestShowContent(mWindow);
+        mMediator.requestShowContent();
         mMediator.onCancel();
 
-        verify(mBottomSheetController)
+        verify(mUiController)
                 .hideContent(
                         eq(mContent),
                         /* animate= */ eq(true),
@@ -106,10 +93,10 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
 
     @Test
     public void testHideBottomSheetAfterShowing() {
-        mMediator.requestShowContent(mWindow);
+        mMediator.requestShowContent();
         mMediator.hide();
 
-        verify(mBottomSheetController)
+        verify(mUiController)
                 .hideContent(
                         /* content= */ eq(mContent),
                         /* animate= */ eq(true),
@@ -120,7 +107,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
     public void testHideBottomSheetWithoutShowing() {
         mMediator.hide();
 
-        verifyNoInteractions(mBottomSheetController);
+        verifyNoInteractions(mUiController);
     }
 
     @Test
@@ -133,7 +120,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
                         AutofillVcnEnrollBottomSheetMediator.LOADING_RESULT_HISTOGRAM,
                         VirtualCardEnrollmentBubbleResult.ACCEPTED);
 
-        mMediator.requestShowContent(mWindow);
+        mMediator.requestShowContent();
         mMediator.onAccept();
         mMediator.hide();
 
@@ -148,7 +135,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
                         AutofillVcnEnrollBottomSheetMediator.LOADING_RESULT_HISTOGRAM,
                         VirtualCardEnrollmentBubbleResult.CLOSED);
 
-        mMediator.requestShowContent(mWindow);
+        mMediator.requestShowContent();
         mMediator.onAccept();
         mMediator.onCancel();
 
@@ -163,7 +150,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
                                 AutofillVcnEnrollBottomSheetMediator.LOADING_RESULT_HISTOGRAM)
                         .build();
 
-        mMediator.requestShowContent(mWindow);
+        mMediator.requestShowContent();
         mMediator.hide();
 
         loadingResultHistogram.assertExpected();

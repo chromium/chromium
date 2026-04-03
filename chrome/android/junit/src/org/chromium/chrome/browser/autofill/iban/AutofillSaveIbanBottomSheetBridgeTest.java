@@ -26,6 +26,8 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,6 +62,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
 
     @Mock private AutofillSaveIbanBottomSheetBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private AnchoredDialogCoordinator mAnchoredDialogCoordinator;
     @Mock private ManagedLayoutManager mLayoutManager;
     @Mock private Profile mProfile;
 
@@ -74,6 +77,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
+        AnchoredDialogCoordinatorProvider.attach(mWindow, mAnchoredDialogCoordinator);
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);
         mAutofillSaveIbanBottomSheetBridge =
@@ -82,6 +86,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
 
     @After
     public void tearDown() {
+        AnchoredDialogCoordinatorProvider.detach(mAnchoredDialogCoordinator);
         BottomSheetControllerFactory.detach(mBottomSheetController);
         LayoutManagerAppUtils.detach(mLayoutManager);
         mWindow.destroy();

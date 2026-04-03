@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.autofill.iban;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
+import org.chromium.chrome.browser.autofill.AutofillSheetUiControllerFactory;
+import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -52,7 +55,9 @@ public class AutofillSaveIbanBottomSheetCoordinator {
      * @param uiInfo An object providing UI resources for the bottom sheet model.
      * @param context The context for this component.
      * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
-     *     shown.
+     *     shown
+     * @param anchoredDialogCoordinator The anchored dialog coordinator where this bottom sheet will
+     *     be shown.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
      *     to be hidden after a change of layout (e.g. to the tab switcher).
      * @param tabModel The TabModel used to detect when the bottom sheet needs to be hidden after a
@@ -63,6 +68,7 @@ public class AutofillSaveIbanBottomSheetCoordinator {
             AutofillSaveIbanUiInfo uiInfo,
             Context context,
             BottomSheetController bottomSheetController,
+            AnchoredDialogCoordinator anchoredDialogCoordinator,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel) {
         mContext = context;
@@ -99,12 +105,16 @@ public class AutofillSaveIbanBottomSheetCoordinator {
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillSaveIbanBottomSheetViewBinder::bind);
 
+        AutofillSheetUiController uiController =
+                AutofillSheetUiControllerFactory.createUiController(
+                        mContext, bottomSheetController, anchoredDialogCoordinator);
+
         mMediator =
                 new AutofillSaveIbanBottomSheetMediator(
                         delegate,
                         new AutofillSaveIbanBottomSheetContent(
                                 mView.mContentView, mView.mScrollView),
-                        bottomSheetController,
+                        uiController,
                         layoutStateProvider,
                         tabModel,
                         uiInfo.isServerSave());
