@@ -103,7 +103,9 @@ QuickInsertSearchResultsView::QuickInsertSearchResultsView(
   SetProperty(views::kElementIdentifierKey,
               kQuickInsertSearchResultsPageElementId);
   GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
-  GetViewAccessibility().SetContainerLiveStatus("polite");
+  GetViewAccessibility().SetLiveRegionContainer(
+      views::ViewAccessibility::LiveRegionStatus::kPolite,
+      views::ViewAccessibility::kLiveRegionRelevantText);
 
   section_list_view_ =
       AddChildView(std::make_unique<QuickInsertSectionListView>(
@@ -362,8 +364,6 @@ void QuickInsertSearchResultsView::UpdateAccessibleName() {
     return;
   }
   GetViewAccessibility().SetName(std::move(accessible_name));
-  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kLiveRegionChanged,
-                                     true);
 }
 
 BEGIN_METADATA(QuickInsertSearchResultsView)

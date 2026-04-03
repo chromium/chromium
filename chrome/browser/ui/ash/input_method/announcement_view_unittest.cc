@@ -55,5 +55,17 @@ TEST_F(AnnouncementViewTest, HeaderAccessibilityProperties) {
             u"test");
 }
 
+TEST_F(AnnouncementViewTest, LiveRegionAttributesSetOnConstruction) {
+  ui::AXNodeData data;
+  announcement_view_->announcement_label_->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+
+  EXPECT_EQ(data.role, ax::mojom::Role::kStatus);
+  EXPECT_EQ("polite",
+            data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  EXPECT_EQ("polite", data.GetStringAttribute(
+                          ax::mojom::StringAttribute::kContainerLiveStatus));
+}
+
 }  // namespace ime
 }  // namespace ui

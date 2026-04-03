@@ -33,6 +33,8 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -40,6 +42,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
@@ -665,6 +668,25 @@ TEST_F(QuickInsertSearchResultsViewTest, AppendResultsHidesThrobber) {
       /*has_more_results=*/false)});
 
   EXPECT_FALSE(view.throbber_container_for_testing().GetVisible());
+}
+
+TEST_F(QuickInsertSearchResultsViewTest,
+       LiveRegionAttributesSetOnConstruction) {
+  MockQuickInsertSearchResultsViewDelegate mock_delegate;
+  QuickInsertSearchResultsView view(
+      &mock_delegate, kQuickInsertWidth, /*asset_fetcher=*/nullptr,
+      /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr);
+
+  ui::AXNodeData data;
+  view.GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_EQ(data.role, ax::mojom::Role::kStatus);
+  EXPECT_EQ("polite",
+            data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  EXPECT_EQ("polite", data.GetStringAttribute(
+                          ax::mojom::StringAttribute::kContainerLiveStatus));
+  EXPECT_EQ("text",
+            data.GetStringAttribute(ax::mojom::StringAttribute::kLiveRelevant));
 }
 
 TEST_F(QuickInsertSearchResultsViewTest,

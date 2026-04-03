@@ -12,7 +12,8 @@
 AnnouncementLabel::AnnouncementLabel(const std::u16string& name) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
   GetViewAccessibility().SetName(name);
-  GetViewAccessibility().SetContainerLiveStatus("polite");
+  GetViewAccessibility().SetLiveRegionContainer(
+      views::ViewAccessibility::LiveRegionStatus::kPolite);
   UpdateAccessibleDescription();
 }
 
