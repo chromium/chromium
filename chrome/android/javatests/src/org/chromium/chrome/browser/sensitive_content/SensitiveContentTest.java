@@ -36,12 +36,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -82,8 +80,6 @@ import java.util.List;
 @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT)
 @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(crbug.com/493270994): Remove this check after swipe conditions are properly handled.
-@Features.DisableFeatures({ChromeFeatureList.ENABLE_TOOLBAR_SWIPE_ON_NON_DESKTOP_LFF})
 public class SensitiveContentTest {
     private static final class TestSensitiveContentClientObserver
             implements SensitiveContentClient.Observer {
@@ -378,6 +374,7 @@ public class SensitiveContentTest {
     // This test also tests if metrics are recorded properly.
     @Test
     @LargeTest
+    @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testSwipingBetweenTabsIsSensitive() {
         CtaPageStation page = mPage;

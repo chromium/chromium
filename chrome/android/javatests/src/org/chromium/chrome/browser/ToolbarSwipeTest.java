@@ -26,12 +26,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
@@ -49,9 +47,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 /** Tests swiping the toolbar to switch tabs. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(crbug.com/493270994): Remove this check after swipe conditions are properly handled.
-@Features.DisableFeatures({ChromeFeatureList.ENABLE_TOOLBAR_SWIPE_ON_NON_DESKTOP_LFF})
 @Batch(Batch.PER_CLASS)
+@Restriction(DeviceFormFactor.PHONE)
 public class ToolbarSwipeTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
