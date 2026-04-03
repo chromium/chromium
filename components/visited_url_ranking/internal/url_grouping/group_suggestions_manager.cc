@@ -267,12 +267,13 @@ void GroupSuggestionsManager::MaybeTriggerSuggestions(
 void GroupSuggestionsManager::RegisterDelegate(
     GroupSuggestionsDelegate* delegate,
     const GroupSuggestionsService::Scope& scope) {
-  if (registered_delegates_.count(delegate)) {
-    CHECK(scope == registered_delegates_[delegate].scope);
+  auto [it, inserted] = registered_delegates_.try_emplace(
+      delegate, DelegateMetadata{.delegate = delegate, .scope = scope});
+
+  if (!inserted) {
+    CHECK(scope == it->second.scope);
     return;
   }
-  registered_delegates_.emplace(
-      delegate, DelegateMetadata{.delegate = delegate, .scope = scope});
 }
 
 void GroupSuggestionsManager::UnregisterDelegate(
