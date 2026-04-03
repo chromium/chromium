@@ -183,8 +183,8 @@ void QueryContextualizer::OnTabContextualizationFetched(
         GetContextIdForTab(*context, *page_content_data, session_handle);
   }
 
-  if (IsContextUnchangedFromPreviousUpload(maybe_context_id, *page_content_data,
-                                           session_handle)) {
+  if (CheckIfContextChangedAndPrepareUploadData(
+          maybe_context_id, *page_content_data, session_handle)) {
     delegate_->OnTabProcessedForQueryContextualization(tab_id);
     barrier_closure.Run();
     return;
@@ -271,9 +271,9 @@ std::optional<int64_t> QueryContextualizer::GetContextIdForTab(
   return std::nullopt;
 }
 
-bool QueryContextualizer::IsContextUnchangedFromPreviousUpload(
+bool QueryContextualizer::CheckIfContextChangedAndPrepareUploadData(
     std::optional<int64_t> context_id,
-    const lens::ContextualInputData& page_content_data,
+    lens::ContextualInputData& page_content_data,
     base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
         session_handle) {
   if (!context_id.has_value()) {
@@ -316,11 +316,12 @@ bool QueryContextualizer::IsContextUnchangedFromPreviousUpload(
   const auto& old_data = *matching_file_info->input_data;
   const auto& new_data = page_content_data;
 
-  if (old_data.primary_content_type != new_data.primary_content_type) {
-    return false;
-  }
+  bool page_content_changed = false;
+  bool viewport_changed = false;
 
-  if (new_data.primary_content_type.has_value()) {
+  if (old_data.primary_content_type != new_data.primary_content_type) {
+    page_content_changed = true;
+  } else if (new_data.primary_content_type.has_value()) {
     const std::vector<lens::ContextualInput>& old_inputs =
         old_data.context_input.has_value()
             ? *old_data.context_input
@@ -342,13 +343,13 @@ bool QueryContextualizer::IsContextUnchangedFromPreviousUpload(
       if (old_size > 0) {
         const float percent_changed = abs((new_size - old_size) / old_size);
         if (percent_changed >= kByteChangeTolerancePercent) {
-          return false;
+          page_content_changed = true;
         }
       } else if (new_size > 0) {
-        return false;
+        page_content_changed = true;
       }
     } else if (old_it != old_inputs.end() || new_it != new_inputs.end()) {
-      return false;
+      page_content_changed = true;
     }
   }
 
@@ -365,18 +366,15 @@ bool QueryContextualizer::IsContextUnchangedFromPreviousUpload(
                             !new_data.viewport_screenshot_bytes->empty();
 
   if (old_has_screenshot != new_has_screenshot) {
-    return false;
-  }
-
-  if (old_has_screenshot) {
+    viewport_changed = true;
+  } else if (old_has_screenshot) {
     const auto& old_bytes = old_data.viewport_screenshot_bytes.value();
     const auto& new_bytes = new_data.viewport_screenshot_bytes.value();
     if (old_bytes.size() != new_bytes.size()) {
-      return false;
-    }
-    // Exact byte comparison for screenshot.
-    if (old_bytes != new_bytes) {
-      return false;
+      viewport_changed = true;
+    } else if (old_bytes != new_bytes) {
+      // Exact byte comparison for screenshot.
+      viewport_changed = true;
     }
   }
 
@@ -384,20 +382,30 @@ bool QueryContextualizer::IsContextUnchangedFromPreviousUpload(
   bool new_has_bitmap = new_data.viewport_screenshot.has_value();
 
   if (old_has_bitmap != new_has_bitmap) {
-    return false;
-  }
-
-  if (old_has_bitmap) {
+    viewport_changed = true;
+  } else if (old_has_bitmap) {
     const auto& old_bitmap = old_data.viewport_screenshot.value();
     const auto& new_bitmap = new_data.viewport_screenshot.value();
     if (!new_bitmap.drawsNothing() &&
         (old_bitmap.drawsNothing() ||
          !gfx::BitmapsAreEqual(old_bitmap, new_bitmap))) {
-      return false;
+      viewport_changed = true;
     }
   }
 
-  return true;
+  if (new_data.primary_content_type == lens::MimeType::kPdf) {
+    page_content_changed = false;
+  }
+
+  if (!page_content_changed && !viewport_changed) {
+    return true;
+  }
+
+  if (!page_content_changed) {
+    page_content_data.context_input = std::nullopt;
+  }
+
+  return false;
 }
 
 const UrlAttachment* QueryContextualizer::GetMatchingAttachment(
