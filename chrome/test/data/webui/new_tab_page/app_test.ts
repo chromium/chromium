@@ -285,7 +285,7 @@ suite('NewTabPageAppTest', () => {
       const [_, {type, applyLightTheme}] =
           windowProxy.getArgs('postMessage')[0];
       assertEquals('updateAppearance', type);
-      assertEquals(true, applyLightTheme);
+      assertTrue(applyLightTheme);
       assertNotStyle($$(app, '#oneGoogleBarScrim')!, 'display', 'none');
     });
   });
@@ -492,7 +492,7 @@ suite('NewTabPageAppTest', () => {
             const [_, {type, applyLightTheme}] =
                 windowProxy.getArgs('postMessage')[0];
             assertEquals('updateAppearance', type);
-            assertEquals(true, applyLightTheme);
+            assertTrue(applyLightTheme);
           });
     });
 
@@ -2405,7 +2405,7 @@ suite('NewTabPageAppTest', () => {
       assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
       const [tabId, delayUpload] = searchboxHandler.getArgs('addTabContext')[0];
       assertEquals(1, tabId);
-      assertEquals(true, delayUpload);
+      assertTrue(delayUpload);
     });
     test(
         'Deep dive chip click opens composebox with context and suggestion',
@@ -2453,7 +2453,7 @@ suite('NewTabPageAppTest', () => {
           const [tabId, delayUpload] =
               searchboxHandler.getArgs('addTabContext')[0];
           assertEquals(1, tabId);
-          assertEquals(true, delayUpload);
+          assertTrue(delayUpload);
           assertTrue(!!composebox.getInputElement().$.input);
           assertEquals(suggestion, composebox.getInputElement().$.input.value);
         });

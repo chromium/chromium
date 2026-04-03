@@ -306,6 +306,6 @@ suite('SeaPenFeedbackTest', function() {
     simulateSendReport();
     const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
         await browserProxy.whenCalled('sendFeedback');
-    assertEquals(false, feedbackInfo.sendHistograms);
+    assertFalse(!!feedbackInfo.sendHistograms);
   });
 });

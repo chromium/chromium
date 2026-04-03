@@ -280,7 +280,7 @@ suite('reimagingDeviceInformationPageTest', function() {
         newCustomLabelIndex, setDeviceInformationResults.customLabelIndex);
     assertEquals(newSkuIndex, setDeviceInformationResults.skuIndex);
     assertEquals(newDramPartNumber, setDeviceInformationResults.dramPartNumber);
-    assertEquals(false, setDeviceInformationResults.isChassisBranded);
+    assertFalse(setDeviceInformationResults.isChassisBranded);
     assertEquals(0, setDeviceInformationResults.hwComplianceVersion);
   });
 

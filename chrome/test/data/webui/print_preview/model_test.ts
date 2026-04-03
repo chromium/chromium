@@ -549,10 +549,10 @@ suite('ModelTest', function() {
     model.applyStickySettings();
 
     // Confirm some defaults.
-    assertEquals(false, model.getSettingValue('color'));
+    assertFalse(model.getSettingValue('color'));
     assertEquals('NA_LETTER', model.getSettingValue('mediaSize').name);
     assertEquals(200, model.getSettingValue('dpi').horizontal_dpi);
-    assertEquals(false, model.getSettingValue('duplex'));
+    assertFalse(model.getSettingValue('duplex'));
 
     // Toggle some printer specified settings.
     model.setSetting('duplex', true);
@@ -564,10 +564,10 @@ suite('ModelTest', function() {
         'dpi', testDestination.capabilities!.printer.dpi!.option[1]!);
 
     // Confirm toggles.
-    assertEquals(true, model.getSettingValue('color'));
+    assertTrue(model.getSettingValue('color'));
     assertEquals('CUSTOM', model.getSettingValue('mediaSize').name);
     assertEquals(100, model.getSettingValue('dpi').horizontal_dpi);
-    assertEquals(true, model.getSettingValue('duplex'));
+    assertTrue(model.getSettingValue('duplex'));
 
     // Set to a new destination with the same capabilities. Confirm that
     // everything stays the same, except for 'mediaSize' which is reverted back
@@ -625,10 +625,10 @@ suite('ModelTest', function() {
     // Verify things changed.
     const updatedSettings = JSON.stringify(model.observable.getTarget());
     assertNotEquals(oldSettings, updatedSettings);
-    assertEquals(false, model.getSettingValue('color'));
+    assertFalse(model.getSettingValue('color'));
     assertEquals('ISO_A4', model.getSettingValue('mediaSize').name);
     assertEquals(400, model.getSettingValue('dpi').horizontal_dpi);
-    assertEquals(false, model.getSettingValue('duplex'));
+    assertFalse(model.getSettingValue('duplex'));
   });
 
   /**

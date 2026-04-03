@@ -296,11 +296,11 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       }));
       const resultClickEvent = await resultClickEventPromise;
       assertEquals(mockResults[0], resultClickEvent.detail.item);
-      assertEquals(true, resultClickEvent.detail.middleButton);
-      assertEquals(true, resultClickEvent.detail.altKey);
-      assertEquals(false, resultClickEvent.detail.ctrlKey);
-      assertEquals(false, resultClickEvent.detail.metaKey);
-      assertEquals(true, resultClickEvent.detail.shiftKey);
+      assertTrue(resultClickEvent.detail.middleButton);
+      assertTrue(resultClickEvent.detail.altKey);
+      assertFalse(resultClickEvent.detail.ctrlKey);
+      assertFalse(resultClickEvent.detail.metaKey);
+      assertTrue(resultClickEvent.detail.shiftKey);
     });
 
     test('FiresRecordHistoryLinkClick', async () => {
@@ -366,11 +366,11 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       }));
       const answerClickEvent = await answerClickEventPromise;
       assertEquals(resultWithAnswer, answerClickEvent.detail.item);
-      assertEquals(true, answerClickEvent.detail.middleButton);
-      assertEquals(true, answerClickEvent.detail.altKey);
-      assertEquals(false, answerClickEvent.detail.ctrlKey);
-      assertEquals(false, answerClickEvent.detail.metaKey);
-      assertEquals(true, answerClickEvent.detail.shiftKey);
+      assertTrue(answerClickEvent.detail.middleButton);
+      assertTrue(answerClickEvent.detail.altKey);
+      assertFalse(answerClickEvent.detail.ctrlKey);
+      assertFalse(answerClickEvent.detail.metaKey);
+      assertTrue(answerClickEvent.detail.shiftKey);
 
       const answerLinkContextMenuEventPromise =
           eventToPromise('answer-context-menu', element);

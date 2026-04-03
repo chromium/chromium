@@ -428,7 +428,7 @@ suite('TabDiscardExceptionList', function() {
     addDialog.$.actionButton.click();
     flush();
 
-    assertEquals(false, exceptionList.$.collapse.opened);
+    assertFalse(exceptionList.$.collapse.opened);
     assertExceptionListEquals([existingEntry, ...entries]);
   });
 

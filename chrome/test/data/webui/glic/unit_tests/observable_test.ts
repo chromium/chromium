@@ -1,3 +1,6 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import {ObservableValue, Subject} from 'chrome://glic/observable.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -33,7 +36,7 @@ suite('ObservableTest', () => {
     observable.complete();
     assertTrue(completeReceived);
     sub.unsubscribe();
-    assertEquals(false, reportedHasActiveSubscription);
+    assertFalse(!!reportedHasActiveSubscription);
   });
 
   test('ObservableValue does not get completion when unsubscribed', () => {
@@ -96,7 +99,7 @@ suite('ObservableTest', () => {
     const error = new Error('test error');
     observable.error(error);
     assertEquals(error, reportedError);
-    assertEquals(false, reportedHasActiveSubscription);
+    assertFalse(!!reportedHasActiveSubscription);
   });
 
   test('Subject subscriber gets value while subscribed', () => {

@@ -127,7 +127,7 @@ suite('StorageAccessStaticSiteListEntry', function() {
     assertEquals(origin, args[0]);
     assertEquals(storageAccessException.embeddingOrigin, args[1]);
     assertEquals(ContentSettingsTypes.STORAGE_ACCESS, args[2]);
-    assertEquals(/*incognito=*/ false, args[3]);
+    assertFalse(args[3]);
   });
 
   test('reset incognito permission with embedding origin', async function() {
@@ -142,7 +142,7 @@ suite('StorageAccessStaticSiteListEntry', function() {
     assertEquals(incognitoStorageAccessException.origin, args[0]);
     assertEquals(incognitoStorageAccessException.embeddingOrigin, args[1]);
     assertEquals(ContentSettingsTypes.STORAGE_ACCESS, args[2]);
-    assertEquals(/*incognito=*/ true, args[3]);
+    assertTrue(args[3]);
   });
 
   test('reset site aria-label', async function() {

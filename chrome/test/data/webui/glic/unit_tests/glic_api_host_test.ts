@@ -5,7 +5,7 @@
 import {GatedSender} from 'chrome://glic/glic_api_impl/host/gated_sender.js';
 import type {RequestMessage} from 'chrome://glic/glic_api_impl/post_message_transport.js';
 import {PostMessageRequestSender, PostMessageRouter, Queue} from 'chrome://glic/glic_api_impl/post_message_transport.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // To trigger these tests, run tests in
 // chrome/test/data/webui/glic/glic_browsertest.cc
@@ -56,14 +56,14 @@ suite('Queue', () => {
 
   test('empty() checks accurately', () => {
     const q = new Queue<number>();
-    assertEquals(true, q.empty());
+    assertTrue(q.empty());
     q.push(1);  // next=[1]
-    assertEquals(false, q.empty());
+    assertFalse(q.empty());
     q.push(2);     // next=[1, 2]
     q.popFront();  // current=[∅, 2], next=[]
-    assertEquals(false, q.empty());
+    assertFalse(q.empty());
     q.popFront();  // current=[∅, ∅]
-    assertEquals(true, q.empty());
+    assertTrue(q.empty());
   });
 });
 
@@ -264,7 +264,7 @@ suite('GlicApiHost', () => {
         assertEquals(2, stubSender.sentMessages.length);
         assertEquals('typeNoRes', stubSender.sentMessages[1]!.type);
         // It was upgraded to have a requestId.
-        assertEquals(true, stubSender.sentMessages[1]!.requestId !== undefined);
+        assertTrue(stubSender.sentMessages[1]!.requestId !== undefined);
       });
 
   test('sendResponsesForAllRequests forces requestId on all messages', () => {
@@ -279,7 +279,7 @@ suite('GlicApiHost', () => {
     assertEquals(1, stubSender.sentMessages.length);
     // Should have requestId even though it's "no response" because the mode is
     // on.
-    assertEquals(true, stubSender.sentMessages[0]!.requestId !== undefined);
+    assertTrue(stubSender.sentMessages[0]!.requestId !== undefined);
     assertEquals(1, sender.inFlightRequestCount());
   });
 });

@@ -151,7 +151,7 @@ suite('LanguageMenu', () => {
           assertLanguageLineWithTextAndSwitch(
               'en-us', getLanguageLineItems()[1]!);
           assertEquals('', getLanguageSearchField().value);
-          assertEquals(true, getNoResultsFoundMessage()!.hidden);
+          assertTrue(getNoResultsFoundMessage()!.hidden);
         });
 
     suite('with display names for locales', () => {
@@ -175,7 +175,7 @@ suite('LanguageMenu', () => {
 
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(0, getLanguageLineItems().length);
-        assertEquals(false, getNoResultsFoundMessage()!.hidden);
+        assertFalse(getNoResultsFoundMessage()!.hidden);
       });
 
       test('it displays matching language with a match', async () => {
@@ -185,7 +185,7 @@ suite('LanguageMenu', () => {
         assertEquals(1, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
             'English (United States)', getLanguageLineItems()[0]!);
-        assertEquals(true, getNoResultsFoundMessage()!.hidden);
+        assertTrue(getNoResultsFoundMessage()!.hidden);
       });
 
       test('it matches the language code', async () => {
@@ -195,7 +195,7 @@ suite('LanguageMenu', () => {
         assertEquals(1, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
             'English (United States)', getLanguageLineItems()[0]!);
-        assertEquals(true, getNoResultsFoundMessage()!.hidden);
+        assertTrue(getNoResultsFoundMessage()!.hidden);
       });
 
       test('shows clear button when search field has contents', async () => {
@@ -258,7 +258,7 @@ suite('LanguageMenu', () => {
         assertEquals(1, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
             portugueseDisplayName, getLanguageLineItems()[0]!);
-        assertEquals(true, getNoResultsFoundMessage()!.hidden);
+        assertTrue(getNoResultsFoundMessage()!.hidden);
       });
 
       test('it matches search with no accent', async () => {
@@ -268,7 +268,7 @@ suite('LanguageMenu', () => {
         assertEquals(1, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
             portugueseDisplayName, getLanguageLineItems()[0]!);
-        assertEquals(true, getNoResultsFoundMessage()!.hidden);
+        assertTrue(getNoResultsFoundMessage()!.hidden);
       });
 
       test('it matches the language code', async () => {
@@ -278,7 +278,7 @@ suite('LanguageMenu', () => {
         assertEquals(1, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
             portugueseDisplayName, getLanguageLineItems()[0]!);
-        assertEquals(true, getNoResultsFoundMessage()!.hidden);
+        assertTrue(getNoResultsFoundMessage()!.hidden);
       });
     });
   });

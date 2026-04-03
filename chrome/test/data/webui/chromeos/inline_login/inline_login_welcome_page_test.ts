@@ -68,8 +68,7 @@ suite('InlineLoginWelcomePageTest', () => {
         'Add account screen should be active');
 
     return testBrowserProxy.whenCalled('skipWelcomePage').then(skip => {
-      assertEquals(
-          false, skip, 'skipWelcomePage should be called with "false"');
+      assertFalse(skip, 'skipWelcomePage should be called with "false"');
     });
   });
 
@@ -92,7 +91,7 @@ suite('InlineLoginWelcomePageTest', () => {
     assertTrue(!!okButton);
     okButton.click();
     return testBrowserProxy.whenCalled('skipWelcomePage').then(skip => {
-      assertEquals(true, skip, 'skipWelcomePage should be called with "true"');
+      assertTrue(skip, 'skipWelcomePage should be called with "true"');
     });
   });
 

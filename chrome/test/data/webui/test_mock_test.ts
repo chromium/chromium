@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertArrayEquals, assertEquals, assertNotReached} from './chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from './chai_assert.js';
 import {TestMock} from './test_mock.js';
 
 class Foo {
@@ -101,10 +101,10 @@ suite('TestMockTest', () => {
       called = true;
     });
 
-    assertEquals(false, called);
+    assertFalse(called);
     mock.bar();
     await promise2;
-    assertEquals(true, called);
+    assertTrue(called);
   });
 
   test('reset', async () => {

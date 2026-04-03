@@ -316,8 +316,8 @@ suite('SeaPenTemplateQueryElementTest', function() {
     chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
-    assertEquals(
-        true, chip.parentElement?.classList.contains('selected'),
+    assertTrue(
+        !!chip.parentElement?.classList.contains('selected'),
         'chip is selected');
 
     const chipText = chip.shadowRoot!.getElementById('chipText');

@@ -168,7 +168,7 @@ suite('ShortcutsTest', () => {
     const selector =
         customizeShortcutsElement.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!selector);
-    assertEquals(true, selector.opened);
+    assertTrue(selector.opened);
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
@@ -189,7 +189,7 @@ suite('ShortcutsTest', () => {
     const selector =
         customizeShortcutsElement.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!selector);
-    assertEquals(false, selector.opened);
+    assertFalse(selector.opened);
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
@@ -210,7 +210,7 @@ suite('ShortcutsTest', () => {
     const selector =
         customizeShortcutsElement.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!selector);
-    assertEquals(true, selector.opened);
+    assertTrue(selector.opened);
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];

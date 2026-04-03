@@ -223,7 +223,7 @@ suite('HistoryClustersTest', () => {
     const openHistoryUrlArgs = await handler.whenCalled('openHistoryUrl');
 
     assertEquals(urlVisit!.$.url.innerHTML, openHistoryUrlArgs[0]);
-    assertEquals(true, openHistoryUrlArgs[1].shiftKey);
+    assertTrue(openHistoryUrlArgs[1].shiftKey);
     assertEquals(1, handler.getCallCount('openHistoryUrl'));
   });
 

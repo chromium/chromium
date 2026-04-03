@@ -8,7 +8,7 @@ import type {SettingsInputMethodOptionsPageElement} from 'chrome://os-settings/l
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -149,10 +149,10 @@ suite('<settings-input-method-options-page>', () => {
     assertEquals('Auto-correction', autoCorrection.textContent.trim());
     const autoCorrectToggleButton = options[0]!.querySelector('cr-toggle');
     assertTrue(!!autoCorrectToggleButton);
-    assertEquals(false, autoCorrectToggleButton.checked);
+    assertFalse(autoCorrectToggleButton.checked);
     autoCorrectToggleButton.click();
     await waitAfterNextRender(autoCorrectToggleButton);
-    assertEquals(true, autoCorrectToggleButton.checked);
+    assertTrue(autoCorrectToggleButton.checked);
     assertEquals(
         1,
         optionsPage.getPref(PREFS_KEY)
@@ -163,13 +163,11 @@ suite('<settings-input-method-options-page>', () => {
     assertEquals('Sound on keypress', soundOnKeypress.textContent.trim());
     const soundToggleButton = options[1]!.querySelector('cr-toggle');
     assertTrue(!!soundToggleButton);
-    assertEquals(false, soundToggleButton.checked);
+    assertFalse(soundToggleButton.checked);
     soundToggleButton.click();
     await waitAfterNextRender(soundToggleButton);
-    assertEquals(true, soundToggleButton.checked);
-    assertEquals(
-        true,
-        optionsPage.getPref(PREFS_KEY)
-            .value['xkb:us::eng']['enableSoundOnKeypress']);
+    assertTrue(soundToggleButton.checked);
+    assertTrue(optionsPage.getPref(PREFS_KEY)
+                   .value['xkb:us::eng']['enableSoundOnKeypress']);
   });
 });

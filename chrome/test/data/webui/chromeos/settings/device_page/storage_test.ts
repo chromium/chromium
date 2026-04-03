@@ -112,7 +112,7 @@ suite('<settings-storage> for device page', () => {
     const expectedState = visible ? 'be visible' : 'not be visible';
     if (!myFilesSizeLabel) {
       // Element can't be found at all.
-      assertEquals(false, visible, `Expected ${id} to be ${expectedState}`);
+      assertFalse(visible, `Expected ${id} to be ${expectedState}`);
       return;
     }
 
