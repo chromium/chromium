@@ -3034,48 +3034,7 @@ TEST_F(ChromeComposeClientTest, DisableComposeBlocksSelectionNudgeTest) {
                                 0)));
 }
 
-TEST_F(ChromeComposeClientTest, TextFieldChangeThresholdHidesProactiveNudge) {
-  compose::Config& config = compose::GetMutableConfigForTesting();
-  config.proactive_nudge_enabled = true;
-  config.proactive_nudge_show_probability = 1.0;
-  config.proactive_nudge_segmentation = false;
 
-  client().field_change_observer_.SetSkipSuggestionTypeForTest(true);
-
-  autofill::FormData form_data;
-  form_data.set_url(
-      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.set_fields({autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-
-  // Simulate an Autofill popup being shown.
-  autofill::AutofillClient::PopupOpenArgs args;
-  args.suggestions = {
-      autofill::Suggestion(autofill::SuggestionType::kComposeProactiveNudge)};
-  autofill_client()->ShowAutofillSuggestions(args, /*delegate=*/nullptr);
-  EXPECT_TRUE(autofill_client()->IsShowingAutofillPopup());
-
-  // Simulate field change events up to limit specified by config.
-  autofill::FormFieldData& field_data = test_api(form_data).field(0);
-  field_data.set_value(u"a");
-  unsigned int max = config.nudge_field_change_event_max;
-  for (size_t i = 1; i < max; i++) {
-    autofill_manager()->OnTextFieldValueChanged(
-        form_data, field_data.global_id(), /*timestamp=*/{});
-    EXPECT_EQ(
-        i,
-        client().field_change_observer_.text_field_value_change_event_count_);
-    field_data.set_value(field_data.value() + u"a");
-  }
-
-  // Reaching the event threshold resets the event count and hides the Autofill
-  // popup.
-  autofill_manager()->OnTextFieldValueChanged(form_data, field_data.global_id(),
-                                              /*timestamp=*/{});
-  EXPECT_EQ(
-      0U, client().field_change_observer_.text_field_value_change_event_count_);
-  EXPECT_FALSE(autofill_client()->IsShowingAutofillPopup());
-}
 
 TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
   ShowDialogAndBindMojo();

@@ -229,6 +229,7 @@ class ChromeComposeClient
 
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;
+  friend class ChromeComposeClientBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(ChromeComposeClientTest,
                            TestComposeQualityFeedbackPositive);
   FRIEND_TEST_ALL_PREFIXES(ChromeComposeClientTest,
