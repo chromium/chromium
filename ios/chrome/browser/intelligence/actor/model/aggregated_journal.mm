@@ -16,6 +16,8 @@
 #import "base/values.h"
 #import "url/gurl.h"
 
+namespace actor {
+
 JournalEntry::JournalEntry() = default;
 JournalEntry::JournalEntry(const JournalEntry&) = default;
 JournalEntry& JournalEntry::operator=(const JournalEntry&) = default;
@@ -29,7 +31,7 @@ AggregatedJournal::Entry::~Entry() = default;
 AggregatedJournal::PendingAsyncEntry::PendingAsyncEntry(
     base::PassKey<AggregatedJournal>,
     base::WeakPtr<AggregatedJournal> journal,
-    TaskId task_id,
+    ActorTaskId task_id,
     std::string_view event_name,
     uint64_t track_uuid)
     : journal_(std::move(journal)),
@@ -58,7 +60,7 @@ AggregatedJournal* AggregatedJournal::PendingAsyncEntry::GetJournal() {
   return journal_.get();
 }
 
-TaskId AggregatedJournal::PendingAsyncEntry::GetTaskId() {
+ActorTaskId AggregatedJournal::PendingAsyncEntry::GetTaskId() {
   return task_id_;
 }
 
@@ -74,7 +76,7 @@ uint64_t AggregatedJournal::AllocateDynamicTrackUUID() {
 std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
 AggregatedJournal::CreatePendingAsyncEntry(
     const GURL& url,
-    TaskId task_id,
+    ActorTaskId task_id,
     uint64_t track_uuid,
     std::string_view event_name,
     std::vector<JournalDetails> details) {
@@ -97,14 +99,14 @@ AggregatedJournal::CreatePendingAsyncEntry(
 }
 
 void AggregatedJournal::Log(const GURL& url,
-                            TaskId task_id,
+                            ActorTaskId task_id,
                             std::string_view event_name,
                             std::vector<JournalDetails> details) {
   Log(url, task_id, 0, event_name, std::move(details));
 }
 
 void AggregatedJournal::Log(const GURL& url,
-                            TaskId task_id,
+                            ActorTaskId task_id,
                             uint64_t track_uuid,
                             std::string_view event_name,
                             std::vector<JournalDetails> details) {
@@ -155,7 +157,7 @@ std::string AggregatedJournal::GetLogsAsJson() const {
         dict.Set("type", "Instant");
         break;
     }
-    dict.Set("task_id", entry.task_id.id);
+    dict.Set("task_id", entry.task_id.value().ToString());
     dict.Set("event", entry.event);
     dict.Set("timestamp", entry.timestamp.InSecondsFSinceUnixEpoch());
     dict.Set("track_uuid", base::NumberToString(entry.track_uuid));
@@ -195,7 +197,7 @@ base::WeakPtr<AggregatedJournal> AggregatedJournal::GetWeakPtr() {
 }
 
 void AggregatedJournal::AddEndEvent(base::PassKey<AggregatedJournal>,
-                                    TaskId task_id,
+                                    ActorTaskId task_id,
                                     const std::string& event_name,
                                     uint64_t track_uuid,
                                     std::vector<JournalDetails> details) {
@@ -214,3 +216,5 @@ void AggregatedJournal::AddEntry(std::unique_ptr<Entry> entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   entries_.SaveToBuffer(std::move(entry));
 }
+
+}  // namespace actor

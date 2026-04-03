@@ -17,11 +17,14 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
 
 class ProfileIOS;
-class TypeToolJavaScriptFeature;
 
 namespace web {
 class WebState;
 }  // namespace web
+
+namespace actor {
+
+class TypeToolJavaScriptFeature;
 
 // Tool to type text into an element on a page.
 class TypeTool : public WebActorTool {
@@ -33,7 +36,7 @@ class TypeTool : public WebActorTool {
       ProfileIOS* profile);
 
   // ActorTool:
-  void Execute(ActorCallback callback) override;
+  void Execute(ToolExecutionCallback callback) override;
 
  private:
   TypeTool(const optimization_guide::proto::TypeAction& action,
@@ -41,7 +44,7 @@ class TypeTool : public WebActorTool {
 
   void OnTargetFrameResolved(
       optimization_guide::proto::TypeAction action,
-      ActorCallback callback,
+      ToolExecutionCallback callback,
       base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
                      ActorToolError> result);
 
@@ -50,5 +53,7 @@ class TypeTool : public WebActorTool {
   raw_ptr<TypeToolJavaScriptFeature> js_feature_ = nullptr;
   base::WeakPtrFactory<TypeTool> weak_ptr_factory_{this};
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_TYPE_TOOL_H_

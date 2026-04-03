@@ -18,6 +18,8 @@
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
+namespace actor {
+
 using optimization_guide::proto::ClickAction;
 
 namespace {
@@ -91,7 +93,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_JsReturnsNonDict) {
 
   ClickAction action = CreateClickActionWithCoordinates();
 
-  base::test::TestFuture<ActorTool::ActorResult> future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
 
   auto result = future.Get();
@@ -115,7 +117,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_JsReturnsError) {
 
   ClickAction action = CreateClickActionWithCoordinates();
 
-  base::test::TestFuture<ActorTool::ActorResult> future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
 
   auto result = future.Get();
@@ -141,7 +143,7 @@ TEST_F(ClickToolJavaScriptFeatureTest,
 
   ClickAction action = CreateClickActionWithCoordinates();
 
-  base::test::TestFuture<ActorTool::ActorResult> future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
 
   auto result = future.Get();
@@ -156,7 +158,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_Success) {
   ASSERT_TRUE(main_frame);
   ClickAction action = CreateClickActionWithCoordinates();
 
-  base::test::TestFuture<ActorTool::ActorResult> future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
 
   auto result = future.Get();
@@ -178,7 +180,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByNodeId_JsReturnsError) {
 
   ClickAction action = CreateClickActionWithNodeId();
 
-  base::test::TestFuture<ActorTool::ActorResult> future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
 
   auto result = future.Get();
@@ -203,7 +205,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByNodeId_Success) {
 
   ClickAction action = CreateClickActionWithNodeId();
 
-  base::test::TestFuture<ActorTool::ActorResult> future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
   feature()->Click(main_frame, action, future.GetCallback());
 
   auto result = future.Get();
@@ -211,3 +213,5 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByNodeId_Success) {
 }
 
 }  // namespace
+
+}  // namespace actor

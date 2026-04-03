@@ -14,13 +14,15 @@
 namespace optimization_guide {
 namespace proto {
 class ActionTarget;
-}
+}  // namespace proto
 }  // namespace optimization_guide
 
 namespace web {
 class WebState;
 class WebFrame;
 }  // namespace web
+
+namespace actor {
 
 // Base class for actor tools that interact with web content.
 //
@@ -35,5 +37,7 @@ class WebActorTool : public ActorTool {
       const optimization_guide::proto::ActionTarget& target,
       ActionTargetJavaScriptFeature::TargetFrameCallback callback);
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_WEB_ACTOR_TOOL_H_

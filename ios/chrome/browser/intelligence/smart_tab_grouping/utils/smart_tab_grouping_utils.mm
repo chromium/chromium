@@ -35,7 +35,7 @@ void ApplySmartTabGroupResponse(
   }
 
   if (!indices_to_ungroup.empty()) {
-    UngroupTabs(indices_to_ungroup, web_state_list);
+    actor::UngroupTabs(indices_to_ungroup, web_state_list);
   }
 
   // Map tab unique IDs to WebState pointers. This is necessary because
@@ -100,7 +100,7 @@ void ApplySmartTabGroupResponse(
     const tab_groups::TabGroupVisualData group_visual_data(
         base::UTF8ToUTF16(title_with_emoji), color);
 
-    CreateTabGroup(indices_in_group, group_visual_data, web_state_list);
+    actor::CreateTabGroup(indices_in_group, group_visual_data, web_state_list);
 
     group_color_index++;
   }

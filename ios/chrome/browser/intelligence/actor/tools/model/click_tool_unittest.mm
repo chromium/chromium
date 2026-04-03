@@ -20,8 +20,10 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-using ActorCallback = ActorTool::ActorCallback;
-using ActorResult = ActorTool::ActorResult;
+namespace actor {
+
+using ToolExecutionCallback = ActorTool::ToolExecutionCallback;
+using ToolExecutionResult = ActorTool::ToolExecutionResult;
 
 class ClickToolTest : public PlatformTest {
  public:
@@ -150,10 +152,10 @@ TEST_F(ClickToolTest, Execute_WebStateDestroyed_ReturnsError) {
 
   browser_->GetWebStateList()->CloseWebStateAt(
       web_state_index, WebStateList::ClosingReason::kDefault);
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
             result.error().code);
@@ -183,10 +185,10 @@ TEST_F(ClickToolTest, Execute_NoWebFramesManager_ReturnsError) {
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ClickTool> tool = std::move(create_result.value());
 
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
             result.error().code);
@@ -225,11 +227,13 @@ TEST_F(ClickToolTest, Execute_NoMainFrame_ReturnsError) {
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ClickTool> tool = std::move(create_result.value());
 
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
             result.error().code);
 }
+
+}  // namespace actor

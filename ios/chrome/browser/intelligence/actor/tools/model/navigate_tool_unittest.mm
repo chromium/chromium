@@ -24,7 +24,9 @@
 #import "testing/platform_test.h"
 #import "ui/base/page_transition_types.h"
 
-using ActorResult = ActorTool::ActorResult;
+namespace actor {
+
+using ToolExecutionResult = ActorTool::ToolExecutionResult;
 
 namespace {
 
@@ -122,10 +124,10 @@ TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
 
   browser_->GetWebStateList()->DetachWebStateAt(0);
 
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
             result.error().code);
@@ -146,10 +148,10 @@ TEST_F(NavigateToolTest, Execute_InvalidUrl) {
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kNavigationInvalidURL, result.error().code);
 }
@@ -173,10 +175,10 @@ TEST_F(NavigateToolTest, Execute_Success) {
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
@@ -210,7 +212,7 @@ TEST_F(NavigateToolTest,
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
@@ -254,10 +256,10 @@ TEST_F(NavigateToolTest, Execute_TabMoved_Success) {
   // Swap their positions.
   browser_->GetWebStateList()->MoveWebStateAt(0, 1);
 
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
@@ -285,10 +287,12 @@ TEST_F(NavigateToolTest, Execute_TargetTabUnrealized) {
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kNavigationTabNotRealized, result.error().code);
 }
+
+}  // namespace actor

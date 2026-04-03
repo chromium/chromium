@@ -6,6 +6,8 @@
 
 #import "base/notreached.h"
 
+namespace actor {
+
 ActorToolError::ActorToolError(ActorToolErrorCode code,
                                std::optional<std::string> message)
     : code(code), message(std::move(message)) {}
@@ -70,3 +72,5 @@ std::string GetActorToolErrorMessage(const ActorToolError& error) {
   }
   NOTREACHED();
 }
+
+}  // namespace actor

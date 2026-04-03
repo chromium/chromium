@@ -17,6 +17,8 @@ namespace {
 const char kScriptName[] = "click_tool";
 }  // namespace
 
+namespace actor {
+
 // static
 ClickToolJavaScriptFeature* ClickToolJavaScriptFeature::GetInstance() {
   static base::NoDestructor<ClickToolJavaScriptFeature> instance;
@@ -37,7 +39,7 @@ ClickToolJavaScriptFeature::~ClickToolJavaScriptFeature() = default;
 void ClickToolJavaScriptFeature::Click(
     web::WebFrame* target_frame,
     const optimization_guide::proto::ClickAction& action,
-    ActorTool::ActorCallback callback) {
+    ActorTool::ToolExecutionCallback callback) {
   CHECK(target_frame);
   CHECK(action.has_target());
   CHECK(action.has_click_count() && action.has_click_type());
@@ -78,3 +80,5 @@ void ClickToolJavaScriptFeature::Click(
                 kJavascriptFeatureFailedToCallJavaScriptFunction}));
   }
 }
+
+}  // namespace actor

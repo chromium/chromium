@@ -21,6 +21,8 @@ class ClickAction;
 }  // namespace proto
 }  // namespace optimization_guide
 
+namespace actor {
+
 // A feature that provides methods to execute a click action in the web page.
 class ClickToolJavaScriptFeature : public web::JavaScriptFeature {
  public:
@@ -29,7 +31,7 @@ class ClickToolJavaScriptFeature : public web::JavaScriptFeature {
   // Executes the click action on the given WebFrame.
   void Click(web::WebFrame* target_frame,
              const optimization_guide::proto::ClickAction& action,
-             ActorTool::ActorCallback callback);
+             ActorTool::ToolExecutionCallback callback);
 
  protected:
   ClickToolJavaScriptFeature();
@@ -38,5 +40,7 @@ class ClickToolJavaScriptFeature : public web::JavaScriptFeature {
  private:
   friend class base::NoDestructor<ClickToolJavaScriptFeature>;
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_CLICK_TOOL_JAVA_SCRIPT_FEATURE_H_

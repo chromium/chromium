@@ -37,7 +37,8 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
     return;
   }
 
-  ActorService* service = ActorServiceFactory::GetForProfile(profile);
+  actor::ActorService* service =
+      actor::ActorServiceFactory::GetForProfile(profile);
   if (!service) {
     completion([NSError
         errorWithDomain:kActorAppInterfaceErrorDomain
@@ -56,7 +57,7 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   }
 
   service->ExecuteAction(
-      action, base::BindOnce(^(ActorTool::ActorResult result) {
+      action, base::BindOnce(^(actor::ActorTool::ToolExecutionResult result) {
         if (result.has_value()) {
           completion(nil);
         } else {

@@ -18,6 +18,8 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
+namespace actor {
+
 TypeTool::~TypeTool() = default;
 
 // static
@@ -58,7 +60,7 @@ base::expected<std::unique_ptr<TypeTool>, ActorToolError> TypeTool::Create(
       new TypeTool(action, resolution_result.value().web_state));
 }
 
-void TypeTool::Execute(ActorCallback callback) {
+void TypeTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_) {
     std::move(callback).Run(base::unexpected(
         ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
@@ -87,7 +89,7 @@ TypeTool::TypeTool(const optimization_guide::proto::TypeAction& action,
 
 void TypeTool::OnTargetFrameResolved(
     optimization_guide::proto::TypeAction action,
-    ActorCallback callback,
+    ToolExecutionCallback callback,
     base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
                    ActorToolError> result) {
   if (!result.has_value()) {
@@ -110,3 +112,5 @@ void TypeTool::OnTargetFrameResolved(
 
   js_feature_->Type(target_web_frame, action, std::move(callback));
 }
+
+}  // namespace actor

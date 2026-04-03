@@ -31,6 +31,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
+namespace actor {
+
 using optimization_guide::proto::TypeAction;
 
 namespace {
@@ -122,8 +124,8 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsNonDict) {
   TypeAction type_by_node_id = CreateTypeActionWithIdentifiers(
       /*node_id=*/1, /*serialized_token=*/"token");
 
-  base::test::TestFuture<ActorTool::ActorResult> coordinate_future;
-  base::test::TestFuture<ActorTool::ActorResult> node_id_future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
 
   feature()->Type(main_frame, type_by_coordinate,
                   coordinate_future.GetCallback());
@@ -160,8 +162,8 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsError) {
   TypeAction type_by_node_id = CreateTypeActionWithIdentifiers(
       /*node_id=*/1, /*serialized_token=*/"token");
 
-  base::test::TestFuture<ActorTool::ActorResult> coordinate_future;
-  base::test::TestFuture<ActorTool::ActorResult> node_id_future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
 
   feature()->Type(main_frame, type_by_coordinate,
                   coordinate_future.GetCallback());
@@ -185,7 +187,7 @@ TEST_F(TypeToolJavaScriptFeatureTest, TypeByCoordinate_Success) {
   ASSERT_TRUE(main_frame);
   TypeAction action = CreateTypeActionWithCoordinates();
 
-  base::test::TestFuture<ActorTool::ActorResult> future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
   feature()->Type(main_frame, action, future.GetCallback());
 
   auto result = future.Get();
@@ -212,7 +214,7 @@ TEST_F(TypeToolJavaScriptFeatureTest, TypeByIdentifier_Success) {
   TypeAction action =
       CreateTypeActionWithIdentifiers(node_id, document_identifier);
 
-  base::test::TestFuture<ActorTool::ActorResult> future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
   feature()->Type(main_frame, action, future.GetCallback());
 
   auto result = future.Get();
@@ -220,3 +222,5 @@ TEST_F(TypeToolJavaScriptFeatureTest, TypeByIdentifier_Success) {
 }
 
 }  // namespace
+
+}  // namespace actor

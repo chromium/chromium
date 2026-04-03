@@ -8,7 +8,9 @@
 #import "base/values.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 
-void ParseJavaScriptResult(ActorTool::ActorCallback callback,
+namespace actor {
+
+void ParseJavaScriptResult(ActorTool::ToolExecutionCallback callback,
                            const base::Value* result) {
   if (!result || !result->is_dict()) {
     std::move(callback).Run(base::unexpected(ActorToolError{
@@ -26,3 +28,5 @@ void ParseJavaScriptResult(ActorTool::ActorCallback callback,
   }
   std::move(callback).Run(base::ok());
 }
+
+}  // namespace actor

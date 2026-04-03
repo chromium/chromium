@@ -14,6 +14,8 @@
 
 class ProfileIOS;
 
+namespace actor {
+
 // Factory for creating ActorTool objects from raw action data.
 class ActorToolFactory {
  public:
@@ -31,5 +33,7 @@ class ActorToolFactory {
   virtual std::vector<optimization_guide::proto::Action::ActionCase>
   GetSupportedCapabilities() const;
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_FACTORY_H_

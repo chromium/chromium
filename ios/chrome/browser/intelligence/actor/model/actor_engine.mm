@@ -15,11 +15,12 @@ ActorEngine::ActorEngine() : state_(State::kInit) {}
 ActorEngine::~ActorEngine() = default;
 
 void ActorEngine::ExecuteTools(std::vector<std::unique_ptr<ActorTool>> tools,
-                               ExecuteToolsCallback callback) {
+                               ActorEngine::EngineCompletionCallback callback) {
   // TODO(crbug.com/496164779): Implement and test.
 }
 
-void ActorEngine::CancelOngoingAndPendingTools(ActorEngineResult reason) {
+void ActorEngine::CancelOngoingAndPendingTools(
+    ActorEngine::EngineResult reason) {
   // TODO(crbug.com/496164779): Implement and test.
 }
 

@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
 
+namespace actor {
+
 ActorToolFactory::ActorToolFactory() = default;
 ActorToolFactory::~ActorToolFactory() = default;
 
@@ -48,3 +50,5 @@ ActorToolFactory::GetSupportedCapabilities() const {
   };
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
 }
+
+}  // namespace actor

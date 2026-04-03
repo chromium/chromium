@@ -544,8 +544,8 @@
 }
 
 - (void)executeActuationWithParams:(NSDictionary*)params {
-  ActorService* actorService =
-      ActorServiceFactory::GetForProfile(ProfileIOS::FromBrowserState(
+  actor::ActorService* actorService =
+      actor::ActorServiceFactory::GetForProfile(ProfileIOS::FromBrowserState(
           _webStateList->GetActiveWebState()->GetBrowserState()));
 
   if (!actorService) {
@@ -579,7 +579,7 @@
 
   __weak __typeof(self) weakSelf = self;
   actorService->ExecuteAction(
-      action, base::BindOnce(^(ActorTool::ActorResult result) {
+      action, base::BindOnce(^(actor::ActorTool::ToolExecutionResult result) {
         NSLog(@"[AIPrototypingMediator] Actor callback executed.");
         if (result.has_value()) {
           [weakSelf.consumer
@@ -587,7 +587,8 @@
                      forFeature:AIPrototypingFeature::kActorTools];
         } else {
           NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(
-              "Action failed: %s", GetActorToolErrorMessage(result.error())));
+              "Action failed: %s",
+              actor::GetActorToolErrorMessage(result.error()).c_str()));
           NSLog(@"[AIPrototypingMediator] %@", errorMsg);
           [weakSelf.consumer
               updateQueryResult:errorMsg

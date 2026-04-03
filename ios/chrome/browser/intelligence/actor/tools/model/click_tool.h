@@ -13,11 +13,14 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
 
 class ProfileIOS;
-class ClickToolJavaScriptFeature;
 
 namespace web {
 class WebState;
 }  // namespace web
+
+namespace actor {
+
+class ClickToolJavaScriptFeature;
 
 // Tool to click an element on a page.
 class ClickTool : public WebActorTool {
@@ -29,12 +32,12 @@ class ClickTool : public WebActorTool {
       ProfileIOS* profile);
 
   // ActorTool:
-  void Execute(ActorCallback callback) override;
+  void Execute(ToolExecutionCallback callback) override;
 
  private:
   void OnTargetFrameResolved(
       const optimization_guide::proto::ClickAction& action,
-      ActorCallback callback,
+      ToolExecutionCallback callback,
       base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
                      ActorToolError> result);
 
@@ -46,5 +49,7 @@ class ClickTool : public WebActorTool {
   raw_ptr<ClickToolJavaScriptFeature> js_feature_ = nullptr;
   base::WeakPtrFactory<ClickTool> weak_ptr_factory_{this};
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_CLICK_TOOL_H_

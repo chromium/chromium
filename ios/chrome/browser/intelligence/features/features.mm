@@ -573,7 +573,7 @@ bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {
     return true;
   }
 
-  std::optional<std::string> tool_name = ActorActionCaseToToolName(tool);
+  std::optional<std::string> tool_name = actor::ActorActionCaseToToolName(tool);
   if (!tool_name) {
     // Don't support tools that aren't in the proto.
     return true;

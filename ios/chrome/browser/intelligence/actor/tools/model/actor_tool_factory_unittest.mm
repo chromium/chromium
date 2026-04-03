@@ -14,6 +14,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
+namespace actor {
+
 class ActorToolFactoryTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -47,3 +49,5 @@ TEST_F(ActorToolFactoryTest, CreateToolUnsupported) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kUnsupportedAction, result.error().code);
 }
+
+}  // namespace actor

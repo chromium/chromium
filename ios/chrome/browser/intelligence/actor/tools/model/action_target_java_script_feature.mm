@@ -21,6 +21,8 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
+namespace actor {
+
 namespace {
 const char kScriptName[] = "action_target";
 
@@ -240,3 +242,5 @@ ActionTargetJavaScriptFeature::GetWebFrameByRemoteFrameToken(
 
   return target_frame;
 }
+
+}  // namespace actor

@@ -21,6 +21,8 @@ namespace optimization_guide::proto {
 class TypeAction;
 }  // namespace optimization_guide::proto
 
+namespace actor {
+
 // A feature that provides methods to execute a type action in the web page.
 class TypeToolJavaScriptFeature : public web::JavaScriptFeature {
  public:
@@ -29,7 +31,7 @@ class TypeToolJavaScriptFeature : public web::JavaScriptFeature {
   // Executes the type action on the given WebFrame.
   void Type(web::WebFrame* target_frame,
             const optimization_guide::proto::TypeAction& action,
-            ActorTool::ActorCallback callback);
+            ActorTool::ToolExecutionCallback callback);
 
  protected:
   TypeToolJavaScriptFeature();
@@ -38,5 +40,7 @@ class TypeToolJavaScriptFeature : public web::JavaScriptFeature {
  private:
   friend class base::NoDestructor<TypeToolJavaScriptFeature>;
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_TYPE_TOOL_JAVA_SCRIPT_FEATURE_H_

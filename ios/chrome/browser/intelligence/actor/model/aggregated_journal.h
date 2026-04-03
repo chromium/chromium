@@ -16,12 +16,11 @@
 #import "base/sequence_checker.h"
 #import "base/time/time.h"
 #import "base/types/pass_key.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
 class GURL;
 
-struct TaskId {
-  int32_t id;
-};
+namespace actor {
 
 // Mirrored from chrome/common/actor.mojom.
 enum class JournalEntryType {
@@ -49,7 +48,7 @@ struct JournalEntry {
   ~JournalEntry();
 
   JournalEntryType type;
-  TaskId task_id;
+  ActorTaskId task_id;
   base::Time timestamp;
   std::string event;
   uint64_t track_uuid;
@@ -67,7 +66,7 @@ class AggregatedJournal {
    public:
     PendingAsyncEntry(base::PassKey<AggregatedJournal>,
                       base::WeakPtr<AggregatedJournal> journal,
-                      TaskId task_id,
+                      ActorTaskId task_id,
                       std::string_view event_name,
                       uint64_t track_uuid);
     ~PendingAsyncEntry();
@@ -76,7 +75,7 @@ class AggregatedJournal {
     void EndEntry(std::vector<JournalDetails> details);
 
     AggregatedJournal* GetJournal();
-    TaskId GetTaskId();
+    ActorTaskId GetTaskId();
 
     const std::string& event_name() const { return event_name_; }
     base::TimeTicks begin_time() const { return begin_time_; }
@@ -84,7 +83,7 @@ class AggregatedJournal {
    private:
     bool terminated_ = false;
     base::WeakPtr<AggregatedJournal> journal_;
-    TaskId task_id_;
+    ActorTaskId task_id_;
     std::string event_name_;
     base::TimeTicks begin_time_;
     uint64_t track_uuid_;
@@ -113,20 +112,20 @@ class AggregatedJournal {
   // When the returned object is destroyed, it logs an End event.
   std::unique_ptr<PendingAsyncEntry> CreatePendingAsyncEntry(
       const GURL& url,
-      TaskId task_id,
+      ActorTaskId task_id,
       uint64_t track_uuid,
       std::string_view event_name,
       std::vector<JournalDetails> details);
 
   // Log an instant event.
   void Log(const GURL& url,
-           TaskId task_id,
+           ActorTaskId task_id,
            std::string_view event_name,
            std::vector<JournalDetails> details);
 
   // Log an instant event with a specific track.
   void Log(const GURL& url,
-           TaskId task_id,
+           ActorTaskId task_id,
            uint64_t track_uuid,
            std::string_view event_name,
            std::vector<JournalDetails> details);
@@ -141,7 +140,7 @@ class AggregatedJournal {
   base::SafeRef<AggregatedJournal> GetSafeRef();
   base::WeakPtr<AggregatedJournal> GetWeakPtr();
   void AddEndEvent(base::PassKey<AggregatedJournal>,
-                   TaskId task_id,
+                   ActorTaskId task_id,
                    const std::string& event_name,
                    uint64_t track_uuid,
                    std::vector<JournalDetails> details);
@@ -153,5 +152,7 @@ class AggregatedJournal {
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<AggregatedJournal> weak_ptr_factory_{this};
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_AGGREGATED_JOURNAL_H_

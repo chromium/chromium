@@ -219,6 +219,7 @@
 void EnsureProfileKeyedServiceFactoriesBuilt() {
   // Keep this list alphabetized -- namespaced factories first, followed by
   // non-namespaced factories.
+  actor::ActorServiceFactory::GetInstance();
   autofill::AutocompleteHistoryManagerFactory::GetInstance();
   autofill::AutofillImageFetcherFactory::GetInstance();
   autofill::AutofillLogRouterFactory::GetInstance();
@@ -282,7 +283,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
 
   AboutThisSiteServiceFactory::GetInstance();
   AcceptLanguagesServiceFactory::GetInstance();
-  ActorServiceFactory::GetInstance();
   AppStoreBundleServiceFactory::GetInstance();
   AuthenticationServiceFactory::GetInstance();
   BackgroundDownloadServiceFactory::GetInstance();

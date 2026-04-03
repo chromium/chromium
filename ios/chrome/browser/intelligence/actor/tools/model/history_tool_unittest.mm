@@ -20,7 +20,9 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-using ActorResult = ActorTool::ActorResult;
+namespace actor {
+
+using ToolExecutionResult = ActorTool::ToolExecutionResult;
 
 namespace {
 
@@ -106,10 +108,10 @@ TEST_F(HistoryToolTest, Execute_TabRemovedBeforeExecution) {
 
   // Removes the web state.
   browser_->GetWebStateList()->DetachWebStateAt(0);
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
             result.error().code);
@@ -127,10 +129,10 @@ TEST_F(HistoryToolTest, Execute_Back_Success) {
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(web_state->GetNavigationManager()->GetLastCommittedItemIndex(), 0);
 }
@@ -150,10 +152,10 @@ TEST_F(HistoryToolTest, Execute_Back_NotPossible) {
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kHistoryBackNotPossible, result.error().code);
 }
@@ -170,10 +172,10 @@ TEST_F(HistoryToolTest, Execute_Forward_Success) {
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(web_state->GetNavigationManager()->GetLastCommittedItemIndex(), 1);
 }
@@ -191,13 +193,15 @@ TEST_F(HistoryToolTest, Execute_Forward_NotPossible) {
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
-  base::test::TestFuture<ActorResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  ActorResult result = future.Get();
+  ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActorToolErrorCode::kHistoryForwardNotPossible,
             result.error().code);
 }
 
 }  // namespace
+
+}  // namespace actor

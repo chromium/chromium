@@ -13,6 +13,8 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
+namespace actor {
+
 ClickTool::~ClickTool() = default;
 
 // static
@@ -53,7 +55,7 @@ base::expected<std::unique_ptr<ClickTool>, ActorToolError> ClickTool::Create(
       new ClickTool(action, resolution_result.value().web_state));
 }
 
-void ClickTool::Execute(ActorCallback callback) {
+void ClickTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_) {
     std::move(callback).Run(base::unexpected(
         ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
@@ -76,7 +78,7 @@ void ClickTool::Execute(ActorCallback callback) {
 
 void ClickTool::OnTargetFrameResolved(
     const optimization_guide::proto::ClickAction& action,
-    ActorCallback callback,
+    ToolExecutionCallback callback,
     base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
                    ActorToolError> result) {
   if (!result.has_value()) {
@@ -106,3 +108,5 @@ ClickTool::ClickTool(const optimization_guide::proto::ClickAction& action,
     : action_(action),
       web_state_(web_state),
       js_feature_(ClickToolJavaScriptFeature::GetInstance()) {}
+
+}  // namespace actor

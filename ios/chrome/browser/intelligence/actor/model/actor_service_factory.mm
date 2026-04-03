@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
+namespace actor {
+
 // static
 ActorService* ActorServiceFactory::GetForProfile(ProfileIOS* profile) {
   return GetInstance()->GetServiceForProfileAs<ActorService>(profile,
@@ -33,3 +35,5 @@ std::unique_ptr<KeyedService> ActorServiceFactory::BuildServiceInstanceFor(
   }
   return std::make_unique<ActorService>(profile);
 }
+
+}  // namespace actor

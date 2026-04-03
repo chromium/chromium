@@ -9,6 +9,8 @@
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
+namespace actor {
+
 void UngroupTabs(const std::set<int>& indices_to_ungroup,
                  WebStateList* web_state_list) {
   CHECK(web_state_list);
@@ -27,3 +29,5 @@ void CreateTabGroup(const std::set<int>& indices_for_group,
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
   web_state_list->CreateGroup(indices_for_group, visual_data, group_id);
 }
+
+}  // namespace actor

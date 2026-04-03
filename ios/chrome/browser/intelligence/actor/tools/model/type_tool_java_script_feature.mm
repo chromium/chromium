@@ -18,6 +18,8 @@ namespace {
 const char kScriptName[] = "type_tool";
 }  // namespace
 
+namespace actor {
+
 // static
 TypeToolJavaScriptFeature* TypeToolJavaScriptFeature::GetInstance() {
   static base::NoDestructor<TypeToolJavaScriptFeature> instance;
@@ -38,7 +40,7 @@ TypeToolJavaScriptFeature::~TypeToolJavaScriptFeature() = default;
 void TypeToolJavaScriptFeature::Type(
     web::WebFrame* target_frame,
     const optimization_guide::proto::TypeAction& action,
-    ActorTool::ActorCallback callback) {
+    ActorTool::ToolExecutionCallback callback) {
   CHECK(target_frame);
   CHECK(action.has_target());
   CHECK(action.has_text() && action.has_mode());
@@ -79,3 +81,5 @@ void TypeToolJavaScriptFeature::Type(
                 kJavascriptFeatureFailedToCallJavaScriptFunction}));
   }
 }
+
+}  // namespace actor

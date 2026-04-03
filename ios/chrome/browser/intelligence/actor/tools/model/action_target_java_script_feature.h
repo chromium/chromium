@@ -22,6 +22,8 @@ class WebFrame;
 class WebState;
 }  // namespace web
 
+namespace actor {
+
 // A JS feature to help find the target elements for web actuation.
 class ActionTargetJavaScriptFeature : public web::JavaScriptFeature {
  public:
@@ -75,5 +77,7 @@ class ActionTargetJavaScriptFeature : public web::JavaScriptFeature {
       web::WebState* web_state,
       const std::string& remote_frame_token);
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTION_TARGET_JAVA_SCRIPT_FEATURE_H_

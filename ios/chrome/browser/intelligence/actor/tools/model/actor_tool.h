@@ -11,7 +11,6 @@
 #import "base/types/expected.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-struct ActorToolError;
 class Browser;
 class ProfileIOS;
 
@@ -19,11 +18,15 @@ namespace web {
 class WebState;
 }
 
+namespace actor {
+
+struct ActorToolError;
+
 // Abstract base class for all actor tools.
 class ActorTool {
  public:
-  using ActorResult = base::expected<void, ActorToolError>;
-  using ActorCallback = base::OnceCallback<void(ActorResult)>;
+  using ToolExecutionResult = base::expected<void, ActorToolError>;
+  using ToolExecutionCallback = base::OnceCallback<void(ToolExecutionResult)>;
 
   // Result of resolving a tab ID to its associated objects.
   struct TabResolutionResult {
@@ -43,7 +46,7 @@ class ActorTool {
   virtual ~ActorTool() = default;
 
   // Executes the tool.
-  virtual void Execute(ActorCallback callback) = 0;
+  virtual void Execute(ToolExecutionCallback callback) = 0;
 
  protected:
   // Resolves the given `tab_id` to its associated objects in regular Browsers.
@@ -53,5 +56,7 @@ class ActorTool {
       int32_t tab_id,
       ProfileIOS* profile);
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_H_

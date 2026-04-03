@@ -13,6 +13,8 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
+namespace actor {
+
 HistoryTool::~HistoryTool() = default;
 
 // static
@@ -30,7 +32,7 @@ HistoryTool::Create(
   return CreateInternal(action, profile);
 }
 
-void HistoryTool::Execute(ActorCallback callback) {
+void HistoryTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_ || !web_state_->IsRealized() ||
       !web_state_->GetNavigationManager()) {
     std::move(callback).Run(base::unexpected(
@@ -81,3 +83,5 @@ HistoryTool::CreateInternal(const HistoryAction& action, ProfileIOS* profile) {
 HistoryTool::HistoryTool(bool is_back_action,
                          base::WeakPtr<web::WebState> web_state)
     : is_back_action_(is_back_action), web_state_(web_state) {}
+
+}  // namespace actor

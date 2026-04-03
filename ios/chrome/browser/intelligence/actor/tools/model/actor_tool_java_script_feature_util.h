@@ -11,8 +11,12 @@ namespace base {
 class Value;
 }  // namespace base
 
+namespace actor {
+
 // Processes a standard {success: bool, message: string} JS result.
-void ParseJavaScriptResult(ActorTool::ActorCallback callback,
+void ParseJavaScriptResult(ActorTool::ToolExecutionCallback callback,
                            const base::Value* result);
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_JAVA_SCRIPT_FEATURE_UTIL_H_

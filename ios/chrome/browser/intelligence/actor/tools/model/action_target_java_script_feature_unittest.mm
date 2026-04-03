@@ -21,6 +21,8 @@
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
+namespace actor {
+
 namespace {
 
 constexpr int kHtmlWidth = 500;
@@ -453,3 +455,5 @@ TEST_F(ActionTargetJavaScriptFeatureTest, MaxDepthExceeded) {
 }
 
 }  // namespace
+
+}  // namespace actor

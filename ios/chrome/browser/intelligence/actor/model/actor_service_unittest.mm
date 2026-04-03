@@ -17,7 +17,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-using ActorResult = ActorTool::ActorResult;
+namespace actor {
 
 class ActorServiceTest : public PlatformTest {
  public:
@@ -54,12 +54,14 @@ TEST_F(ActorServiceTest, CreateTaskGeneratesUniqueIds) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  std::set<actor::ActorTaskId> task_ids;
+  std::set<ActorTaskId> task_ids;
   for (int i = 0; i < 100; ++i) {
-    actor::ActorTaskId task_id =
+    ActorTaskId task_id =
         service->CreateTask("Test Task", /*delegate=*/nil,
                             /*allow_incognito_web_states=*/false);
     EXPECT_FALSE(task_id.value().is_zero());
     EXPECT_TRUE(task_ids.insert(task_id).second);
   }
 }
+
+}  // namespace actor

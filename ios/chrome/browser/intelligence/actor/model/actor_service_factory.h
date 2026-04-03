@@ -8,8 +8,11 @@
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ActorService;
 class ProfileIOS;
+
+namespace actor {
+
+class ActorService;
 
 // Singleton that owns all ActorServices and associates them with
 // ProfileIOS.
@@ -28,5 +31,7 @@ class ActorServiceFactory : public ProfileKeyedServiceFactoryIOS {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_SERVICE_FACTORY_H_

@@ -15,6 +15,8 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
+namespace actor {
+
 NavigateTool::~NavigateTool() = default;
 
 // static
@@ -39,7 +41,7 @@ NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
 
 // TODO(crbug.com/474383578): Limit what URLs can be navigated to using the
 // ActorService.
-void NavigateTool::Execute(ActorCallback callback) {
+void NavigateTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_ || !web_state_list_ || !url_loader_) {
     std::move(callback).Run(base::unexpected(
         ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
@@ -82,3 +84,5 @@ NavigateTool::NavigateTool(const std::string& url,
       web_state_(web_state),
       web_state_list_(web_state_list),
       url_loader_(url_loader) {}
+
+}  // namespace actor

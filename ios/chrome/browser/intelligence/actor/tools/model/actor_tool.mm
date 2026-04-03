@@ -13,6 +13,8 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
+namespace actor {
+
 ActorTool::TabResolutionResult::TabResolutionResult() = default;
 
 ActorTool::TabResolutionResult::TabResolutionResult(
@@ -51,3 +53,5 @@ ActorTool::ResolveTab(int32_t tab_id, ProfileIOS* profile) {
   result.web_state = web_state->GetWeakPtr();
   return result;
 }
+
+}  // namespace actor

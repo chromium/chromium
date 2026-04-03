@@ -8,6 +8,8 @@
 #import <optional>
 #import <string>
 
+namespace actor {
+
 // Error codes for ActorTool in Chrome on iOS.
 //
 // This enum follows the structure of `ActionResultCode` from
@@ -107,5 +109,7 @@ struct ActorToolError {
 
 // Returns a localized error message for the given error.
 std::string GetActorToolErrorMessage(const ActorToolError& error);
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_ERROR_H_

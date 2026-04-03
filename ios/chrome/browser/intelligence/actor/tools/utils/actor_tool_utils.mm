@@ -8,6 +8,8 @@
 
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 
+namespace actor {
+
 using optimization_guide::proto::Action;
 
 std::optional<std::string> ActorActionCaseToToolName(Action::ActionCase tool) {
@@ -63,3 +65,5 @@ std::optional<std::string> ActorActionCaseToToolName(Action::ActionCase tool) {
   }
   return std::nullopt;
 }
+
+}  // namespace actor

@@ -9,7 +9,6 @@
 #import "base/types/expected.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
-struct ActorToolError;
 class ProfileIOS;
 
 namespace optimization_guide::proto {
@@ -20,6 +19,10 @@ class HistoryForwardAction;
 namespace web {
 class WebState;
 }  // namespace web
+
+namespace actor {
+
+struct ActorToolError;
 
 // Tool to navigate back or forward in a tab's history.
 class HistoryTool : public ActorTool {
@@ -37,7 +40,7 @@ class HistoryTool : public ActorTool {
       ProfileIOS* profile);
 
   // ActorTool:
-  void Execute(ActorCallback callback) override;
+  void Execute(ToolExecutionCallback callback) override;
 
  private:
   // Internal helper to create the public `Create` method.
@@ -50,5 +53,7 @@ class HistoryTool : public ActorTool {
   bool is_back_action_;
   base::WeakPtr<web::WebState> web_state_;
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_HISTORY_TOOL_H_

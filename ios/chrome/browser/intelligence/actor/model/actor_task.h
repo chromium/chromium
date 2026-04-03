@@ -19,10 +19,9 @@ namespace web {
 class WebState;
 }
 
-class ActorTool;
-
 namespace actor {
 
+class ActorTool;
 class ActorEngine;
 
 // A class representing a task managed by `ActorService`. A task should live for

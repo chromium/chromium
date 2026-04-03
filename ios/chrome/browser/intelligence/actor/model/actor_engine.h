@@ -11,9 +11,9 @@
 
 #import "base/functional/callback.h"
 
-class ActorTool;
-
 namespace actor {
+
+class ActorTool;
 
 // Executes a sequence of actions moving through the state machine.
 class ActorEngine {
@@ -41,7 +41,7 @@ class ActorEngine {
   };
 
   // Indicates the terminal outcome of the engine's overall execution sequence.
-  enum class ActorEngineResult {
+  enum class EngineResult {
     // Default value.
     kUnknown = 0,
     // All requested tools completed successfully.
@@ -54,36 +54,35 @@ class ActorEngine {
     kCancelled,
   };
 
-  using EngineCompleteCallback = base::OnceCallback<void(ActorEngineResult)>;
+  using EngineCompletionCallback = base::OnceCallback<void(EngineResult)>;
 
   ActorEngine();
   ~ActorEngine();
   ActorEngine(const ActorEngine&) = delete;
   ActorEngine& operator=(const ActorEngine&) = delete;
 
-  using ExecuteToolsCallback = base::OnceCallback<void(ActorEngineResult)>;
-
   // Performs the given sequence of tools and invokes the callback when
   // completed.
   void ExecuteTools(std::vector<std::unique_ptr<ActorTool>> tools,
-                    ExecuteToolsCallback callback);
+                    EngineCompletionCallback callback);
 
   // Cancels any ongoing and pending tools.
-  void CancelOngoingAndPendingTools(ActorEngineResult reason);
+  void CancelOngoingAndPendingTools(EngineResult reason);
 
-  // Accessors. TODO(crbug.com/496164779): Remove when they are used internally
-  // in ActorEngine, this is to fix compilation warnings about unused fields.
+  // Accessors. TODO(crbug.com/496164779): Remove when they
+  // are used internally in ActorEngine, this is to fix
+  // compilation warnings about unused fields.
   State state() const { return state_; }
   const std::vector<std::unique_ptr<ActorTool>>& pending_tools() const {
     return pending_tools_;
   }
-  const EngineCompleteCallback& completion_callback() const {
+  const EngineCompletionCallback& completion_callback() const {
     return completion_callback_;
   }
 
  private:
-  // The core state machine loop. Evaluates `state_` and routes to the correct
-  // method.
+  // The core state machine loop. Evaluates `state_` and
+  // routes to the correct method.
   void AdvanceState();
 
   // Executes the next tool.
@@ -104,8 +103,9 @@ class ActorEngine {
   // The sequence of tools remaining to be executed.
   std::vector<std::unique_ptr<ActorTool>> pending_tools_;
 
-  // Invoked when all actions complete successfully or a terminal error occurs.
-  EngineCompleteCallback completion_callback_;
+  // Invoked when all actions complete successfully or a
+  // terminal error occurs.
+  EngineCompletionCallback completion_callback_;
 };
 
 }  // namespace actor

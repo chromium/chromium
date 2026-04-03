@@ -8,9 +8,12 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/test/task_environment.h"
+#import "base/token.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
+
+namespace actor {
 
 class AggregatedJournalTest : public PlatformTest {
  protected:
@@ -19,14 +22,14 @@ class AggregatedJournalTest : public PlatformTest {
 
 TEST_F(AggregatedJournalTest, LogInstant) {
   AggregatedJournal journal;
-  TaskId task_id = {1};
+  ActorTaskId task_id(base::Token::CreateRandom());
   journal.Log(GURL("https://example.com"), task_id, "TestEvent",
               {{"key", "value"}});
 
   auto logs = journal.GetLogs();
   ASSERT_EQ(1u, logs.size());
   EXPECT_EQ(JournalEntryType::kInstant, logs[0].type);
-  EXPECT_EQ(1, logs[0].task_id.id);
+  EXPECT_EQ(task_id, logs[0].task_id);
   EXPECT_EQ("TestEvent", logs[0].event);
   ASSERT_EQ(1u, logs[0].details.size());
   EXPECT_EQ("key", logs[0].details[0].key);
@@ -35,7 +38,7 @@ TEST_F(AggregatedJournalTest, LogInstant) {
 
 TEST_F(AggregatedJournalTest, GetLogsAsJson) {
   AggregatedJournal journal;
-  TaskId task_id = {1};
+  ActorTaskId task_id(base::Token::CreateRandom());
   journal.Log(GURL("https://example.com"), task_id, "TestEvent",
               {{"key", "value"}});
 
@@ -49,7 +52,7 @@ TEST_F(AggregatedJournalTest, GetLogsAsJson) {
 
 TEST_F(AggregatedJournalTest, AsyncEntry) {
   AggregatedJournal journal;
-  TaskId task_id = {2};
+  ActorTaskId task_id(base::Token::CreateRandom());
   {
     auto pending =
         journal.CreatePendingAsyncEntry(GURL("https://example.com"), task_id,
@@ -74,7 +77,7 @@ TEST_F(AggregatedJournalTest, AsyncEntry) {
 
 TEST_F(AggregatedJournalTest, RingBuffer) {
   AggregatedJournal journal;
-  TaskId task_id = {3};
+  ActorTaskId task_id(base::Token::CreateRandom());
   for (int i = 0; i < 30; ++i) {
     journal.Log(GURL(), task_id, "Event " + base::NumberToString(i), {});
   }
@@ -85,3 +88,5 @@ TEST_F(AggregatedJournalTest, RingBuffer) {
   EXPECT_EQ("Event 10", logs[0].event);
   EXPECT_EQ("Event 29", logs[19].event);
 }
+
+}  // namespace actor

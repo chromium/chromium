@@ -19,13 +19,15 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-using ActorCallback = ActorTool::ActorCallback;
-
+namespace actor {
 namespace {
 
 class MockActorTool : public ActorTool {
  public:
-  MOCK_METHOD(void, Execute, (ActorCallback callback), (override));
+  MOCK_METHOD(void,
+              Execute,
+              (ActorTool::ToolExecutionCallback callback),
+              (override));
 };
 
 class MockActorToolFactory : public ActorToolFactory {
@@ -84,7 +86,7 @@ TEST_F(ActorServiceJournalTest, ToolExecutionFails) {
       .WillOnce(testing::Return(std::move(mock_tool)));
 
   EXPECT_CALL(*tool_ptr, Execute(testing::_))
-      .WillOnce([](ActorCallback callback) {
+      .WillOnce([](ActorTool::ToolExecutionCallback callback) {
         std::move(callback).Run(base::unexpected(
             ActorToolError{ActorToolErrorCode::kNavigationInvalidURL}));
       });
@@ -121,8 +123,9 @@ TEST_F(ActorServiceJournalTest, ToolExecutionSucceeds) {
       .WillOnce(testing::Return(std::move(mock_tool)));
 
   EXPECT_CALL(*tool_ptr, Execute(testing::_))
-      .WillOnce(
-          [](ActorCallback callback) { std::move(callback).Run(base::ok()); });
+      .WillOnce([](ActorTool::ToolExecutionCallback callback) {
+        std::move(callback).Run(base::ok());
+      });
 
   ActorService service(profile_.get(), std::move(mock_factory));
 
@@ -144,3 +147,5 @@ TEST_F(ActorServiceJournalTest, ToolExecutionSucceeds) {
   // Verify no error detail in End log on success
   EXPECT_EQ(0u, logs[2].details.size());
 }
+
+}  // namespace actor

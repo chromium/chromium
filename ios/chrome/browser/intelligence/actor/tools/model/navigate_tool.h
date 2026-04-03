@@ -11,8 +11,6 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
-struct ActorToolError;
-
 class ProfileIOS;
 class UrlLoadingBrowserAgent;
 class WebStateList;
@@ -27,6 +25,10 @@ namespace web {
 class WebState;
 }  // namespace web
 
+namespace actor {
+
+struct ActorToolError;
+
 // Command to navigate to a URL.
 class NavigateTool : public ActorTool {
  public:
@@ -37,7 +39,7 @@ class NavigateTool : public ActorTool {
       ProfileIOS* profile);
 
   // ActorTool:
-  void Execute(ActorCallback callback) override;
+  void Execute(ToolExecutionCallback callback) override;
 
  private:
   NavigateTool(const std::string& url,
@@ -50,5 +52,7 @@ class NavigateTool : public ActorTool {
   raw_ptr<WebStateList> web_state_list_;
   raw_ptr<UrlLoadingBrowserAgent> url_loader_;
 };
+
+}  // namespace actor
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_NAVIGATE_TOOL_H_

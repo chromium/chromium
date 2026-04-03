@@ -452,9 +452,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(PageContextExtractorJavaScriptFeature::GetInstance());
 
   if (base::FeatureList::IsEnabled(kActorTools)) {
-    features.push_back(ActionTargetJavaScriptFeature::GetInstance());
-    features.push_back(ClickToolJavaScriptFeature::GetInstance());
-    features.push_back(TypeToolJavaScriptFeature::GetInstance());
+    features.push_back(actor::ActionTargetJavaScriptFeature::GetInstance());
+    features.push_back(actor::ClickToolJavaScriptFeature::GetInstance());
+    features.push_back(actor::TypeToolJavaScriptFeature::GetInstance());
   }
 
   features.push_back(
