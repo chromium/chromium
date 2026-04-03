@@ -731,6 +731,9 @@ bool AXTreeSerializer<AXSourceNode,
         DUMP_WILL_BE_NOTREACHED()
             << "We should not have a null LCA when ComputeReparentingLCA "
                "returns with 'true'.";
+        // In this path, our assumptions in the rest of this method are no
+        // longer valid. Abort now so we can recover.
+        return false;
       } else {
         out_update->node_id_to_clear = tree_->GetId(lca);
       }
@@ -742,6 +745,7 @@ bool AXTreeSerializer<AXSourceNode,
     CreateClientRoot(lca);
   }
 
+  CHECK(lca);
   CHECK(tree_->GetId(lca) != kInvalidAXNodeID);
   if (!SerializeChangedNodes(lca, out_update, out_error)) {
     return false;
