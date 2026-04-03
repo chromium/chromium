@@ -37,6 +37,8 @@ export class PinnedToolbarActionElement extends CrLitElement {
     action: PinnedToolbarAction.kUnspecified,
     highlighted: false,
     enabled: true,
+    tooltip: '',
+    accessibilityText: '',
   };
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();

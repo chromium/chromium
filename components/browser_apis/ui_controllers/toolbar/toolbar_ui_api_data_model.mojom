@@ -215,6 +215,12 @@ struct PinnedToolbarActionState {
 
   // Should this button appear enabled?
   bool enabled;
+
+  // Tooltip text to display on hover.
+  mojo_base.mojom.String16 tooltip;
+
+  // Accessible name (aria-label) for the action.
+  mojo_base.mojom.String16 accessibility_text;
 };
 
 struct LocationBarState {

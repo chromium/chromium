@@ -168,6 +168,8 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     state->action = *mojo_id;
     state->highlighted = highlighted;
     state->enabled = item->GetEnabled();
+    state->tooltip = item->GetTooltipText();
+    state->accessibility_text = item->GetAccessibleName();
     states.push_back(std::move(state));
     processed_actions.insert(id);
   };

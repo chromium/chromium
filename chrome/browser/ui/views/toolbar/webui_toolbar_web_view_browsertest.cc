@@ -2584,3 +2584,88 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, StateAccessors) {
   EXPECT_FALSE(view->IsActionPinned(kActionPrint));
   EXPECT_FALSE(view->IsActionPoppedOut(kActionPrint));
 }
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       TextAndAriaLabelAttributes) {
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  actions::ActionId action_id = kActionPrint;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
+
+  auto* action_item = actions::ActionManager::Get().FindAction(
+      action_id, browser()->GetActions()->root_action_item());
+  ASSERT_TRUE(action_item);
+
+  // Pin it so it renders.
+  model_->UpdatePinnedState(action_id, true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+  // Test the default appropriate values are set for the tooltip and ax text.
+  std::string default_name =
+      base::UTF16ToUTF8(action_item->GetAccessibleName().empty()
+                            ? action_item->GetTooltipText()
+                            : action_item->GetAccessibleName());
+  std::string default_description =
+      base::UTF16ToUTF8(action_item->GetTooltipText());
+
+  content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
+                                                         default_name);
+  content::FindAccessibilityNodeCriteria find_criteria;
+  find_criteria.role = ax::mojom::Role::kButton;
+  find_criteria.name = default_name;
+  ui::AXPlatformNodeDelegate* print_node =
+      content::FindAccessibilityNode(web_contents, find_criteria);
+  ASSERT_TRUE(print_node);
+
+  EXPECT_EQ(default_name,
+            print_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(default_description, print_node->GetStringAttribute(
+                                     ax::mojom::StringAttribute::kDescription));
+
+  // Test all values are provided.
+  action_item->SetTooltipText(u"tooltip");
+  action_item->SetAccessibleName(u"accessible_name");
+
+  content::WaitForAccessibilityTreeToChange(web_contents);
+  content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
+                                                         "accessible_name");
+  find_criteria.name = "accessible_name";
+  print_node = content::FindAccessibilityNode(web_contents, find_criteria);
+  ASSERT_TRUE(print_node);
+  EXPECT_EQ("accessible_name",
+            print_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("tooltip", print_node->GetStringAttribute(
+                           ax::mojom::StringAttribute::kDescription));
+
+  // Test accessible_name is empty (Fallback to Tooltip).
+  action_item->SetAccessibleName(u"");
+
+  content::WaitForAccessibilityTreeToChange(web_contents);
+  content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
+                                                         "tooltip");
+  find_criteria.name = "tooltip";
+  print_node = content::FindAccessibilityNode(web_contents, find_criteria);
+  ASSERT_TRUE(print_node);
+  EXPECT_EQ("tooltip",
+            print_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("tooltip", print_node->GetStringAttribute(
+                           ax::mojom::StringAttribute::kDescription));
+
+  // Test tooltip and accessible_name are empty.
+  action_item->SetTooltipText(u"");
+
+  content::WaitForAccessibilityTreeToChange(web_contents);
+  content::WaitForAccessibilityTreeToContainNodeWithName(web_contents, "");
+  find_criteria.name = "";
+  print_node = content::FindAccessibilityNode(web_contents, find_criteria);
+  ASSERT_TRUE(print_node);
+  EXPECT_EQ("",
+            print_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("", print_node->GetStringAttribute(
+                    ax::mojom::StringAttribute::kDescription));
+}

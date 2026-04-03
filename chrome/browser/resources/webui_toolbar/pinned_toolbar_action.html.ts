@@ -11,6 +11,8 @@ export function getHtml(this: PinnedToolbarActionElement) {
   <cr-icon-button iron-icon="${this.getIcon_()}"
       ?disabled="${!this.state.enabled}"
       ?is-menu-open="${this.state.highlighted}"
+      title="${this.state.tooltip}"
+      aria-label="${this.state.accessibilityText || this.state.tooltip}"
       @click="${this.onActionClick_}">
   </cr-icon-button>
 <!--_html_template_end_-->`;
