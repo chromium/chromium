@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper_observer_bridge.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -187,6 +188,13 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   // TODO(crbug.com/496229929): Call InvalidateInsetRange() from the correct
   // event(s).
   _browserAgent->InvalidateInsetRange(PassKey());
+}
+
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigationContext {
+  if (!navigationContext->IsSameDocument()) {
+    _browserAgent->ExitFullscreen(PassKey(), /*animated=*/true);
+  }
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
