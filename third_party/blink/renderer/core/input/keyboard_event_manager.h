@@ -65,7 +65,6 @@ class CORE_EXPORT KeyboardEventManager final
   static void SetCurrentCapsLockState(OverrideCapsLockState);
 
   void DefaultSpaceEventHandler(KeyboardEvent*, Node*);
-  void DefaultBackspaceEventHandler(KeyboardEvent*);
   void DefaultTabEventHandler(KeyboardEvent*);
   void DefaultEscapeEventHandler(KeyboardEvent*);
   void DefaultEnterEventHandler(KeyboardEvent*);
