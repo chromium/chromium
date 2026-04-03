@@ -21,8 +21,10 @@ namespace webauthn {
 
 namespace {
 
-constexpr int kTestMaxRequests = 3;
-constexpr int kTestWindowSeconds = 60;
+constexpr int kTestMaxRequestsLong = 5;
+constexpr int kTestWindowSecondsLong = 60;
+constexpr int kTestMaxRequestsShort = 3;
+constexpr int kTestWindowSecondsShort = 5;
 
 class ImmediateRequestRateLimiterTest : public ::testing::Test {
  protected:
@@ -30,15 +32,23 @@ class ImmediateRequestRateLimiterTest : public ::testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    SetRateLimitParams(kTestMaxRequests, kTestWindowSeconds);
+    SetRateLimitParams(kTestMaxRequestsLong, kTestWindowSecondsLong,
+                       kTestMaxRequestsShort, kTestWindowSecondsShort);
     EnableRateLimitFeature();
   }
 
-  void SetRateLimitParams(int max_requests, int window_seconds) {
-    feature_params_[device::kWebAuthnImmediateRequestRateLimitMaxRequests
-                        .name] = base::NumberToString(max_requests);
-    feature_params_[device::kWebAuthnImmediateRequestRateLimitWindowSeconds
-                        .name] = base::NumberToString(window_seconds);
+  void SetRateLimitParams(int max_requests_long,
+                          int window_seconds_long,
+                          int max_requests_short,
+                          int window_seconds_short) {
+    feature_params_[device::kWebAuthnImmediateRequestLongRateLimitMaxRequests
+                        .name] = base::NumberToString(max_requests_long);
+    feature_params_[device::kWebAuthnImmediateRequestLongRateLimitWindowSeconds
+                        .name] = base::NumberToString(window_seconds_long);
+    feature_params_[device::kWebAuthnImmediateRequestShortRateLimitMaxRequests
+                        .name] = base::NumberToString(max_requests_short);
+    feature_params_[device::kWebAuthnImmediateRequestShortRateLimitWindowSeconds
+                        .name] = base::NumberToString(window_seconds_short);
   }
 
   void EnableRateLimitFeature() {
@@ -64,18 +74,18 @@ TEST_F(ImmediateRequestRateLimiterTest, FeatureDisabled) {
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
 
   // Should always allow requests when the feature is disabled.
-  for (int i = 0; i < kTestMaxRequests + 5; ++i) {
+  for (int i = 0; i < kTestMaxRequestsLong + 5; ++i) {
     EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin))
         << "Request should be allowed when feature is disabled (attempt "
         << i + 1 << ")";
   }
 }
 
-TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_BasicLimit) {
+TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_BasicLimitShort) {
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
 
-  // First kTestMaxRequests should be allowed.
-  for (int i = 0; i < kTestMaxRequests; ++i) {
+  // First kTestMaxRequestsShort should be allowed.
+  for (int i = 0; i < kTestMaxRequestsShort; ++i) {
     EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin))
         << "Request should be allowed within limit (attempt " << i + 1 << ")";
   }
@@ -85,7 +95,43 @@ TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_BasicLimit) {
       << "Request should be denied after exceeding limit";
 
   // Advance time slightly less than the window.
-  task_environment_.FastForwardBy(base::Seconds(kTestWindowSeconds - 1));
+  task_environment_.FastForwardBy(base::Seconds(kTestWindowSecondsShort - 1));
+  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(origin))
+      << "Request should still be denied before window expires";
+
+  // Advance time past the window. This advances to the end of the long window
+  // because the previous requests will exceed the long rate limiter as well.
+  task_environment_.FastForwardBy(
+      base::Seconds(kTestWindowSecondsLong - kTestWindowSecondsShort + 1));
+  EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin))
+      << "Request should be allowed again after window expires";
+}
+
+TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_BasicLimitLong) {
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+
+  // First kTestMaxRequestsShort should be allowed.
+  for (int i = 0; i < kTestMaxRequestsShort; ++i) {
+    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin))
+        << "Request should be allowed within limit (attempt " << i + 1 << ")";
+  }
+
+  // Advance to the end of the short time window, and use the rest of the
+  // allowed requests on the long limiter.
+  task_environment_.FastForwardBy(base::Seconds(kTestWindowSecondsShort));
+  for (int i = 0; i < kTestMaxRequestsLong - kTestMaxRequestsShort; ++i) {
+    EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin))
+        << "Request should be allowed within long time limit (attempt " << i + 1
+        << ")";
+  }
+
+  // The next request should be denied.
+  EXPECT_FALSE(rate_limiter_.IsRequestAllowed(origin))
+      << "Request should be denied after exceeding limit";
+
+  // Advance time slightly less than the window.
+  task_environment_.FastForwardBy(
+      base::Seconds(kTestWindowSecondsLong - kTestWindowSecondsShort - 1));
   EXPECT_FALSE(rate_limiter_.IsRequestAllowed(origin))
       << "Request should still be denied before window expires";
 
@@ -103,7 +149,7 @@ TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_SubdomainsShareLimit) {
   const url::Origin origin3 = url::Origin::Create(GURL("https://example.com"));
 
   // Use up the limit with origin1.
-  for (int i = 0; i < kTestMaxRequests; ++i) {
+  for (int i = 0; i < kTestMaxRequestsShort; ++i) {
     EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin1))
         << "Request for origin1 should be allowed (attempt " << i + 1 << ")";
   }
@@ -119,7 +165,7 @@ TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_SubdomainsShareLimit) {
       << "Request for origin3 should be denied (shared limit)";
 
   // Advance time past the window.
-  task_environment_.FastForwardBy(base::Seconds(kTestWindowSeconds));
+  task_environment_.FastForwardBy(base::Seconds(kTestWindowSecondsLong));
 
   // All origins should now be allowed again (up to the limit).
   EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin1))
@@ -137,13 +183,13 @@ TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_DifferentDomains) {
       url::Origin::Create(GURL("https://example.org"));
 
   // Use up the limit for example.com.
-  for (int i = 0; i < kTestMaxRequests; ++i) {
+  for (int i = 0; i < kTestMaxRequestsShort; ++i) {
     EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin_com));
   }
   EXPECT_FALSE(rate_limiter_.IsRequestAllowed(origin_com));
 
   // example.org should still have its full quota.
-  for (int i = 0; i < kTestMaxRequests; ++i) {
+  for (int i = 0; i < kTestMaxRequestsShort; ++i) {
     EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin_org))
         << "Request for origin_org should be allowed (attempt " << i + 1 << ")";
   }
@@ -158,14 +204,14 @@ TEST_F(ImmediateRequestRateLimiterTest, FeatureEnabled_Localhost) {
 
   // Should always allow requests for localhost, regardless of limit,
   // because it's explicitly bypassed.
-  for (int i = 0; i < kTestMaxRequests + 5; ++i) {
+  for (int i = 0; i < kTestMaxRequestsShort + 5; ++i) {
     EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin_localhost))
         << "Request for localhost should always be allowed (attempt " << i + 1
         << ")";
   }
 
   // Advance time past the window - should still be allowed.
-  task_environment_.FastForwardBy(base::Seconds(kTestWindowSeconds));
+  task_environment_.FastForwardBy(base::Seconds(kTestWindowSecondsLong));
   EXPECT_TRUE(rate_limiter_.IsRequestAllowed(origin_localhost))
       << "Request for localhost should still be allowed after window time";
 }

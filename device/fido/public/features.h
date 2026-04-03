@@ -105,20 +105,36 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnSignalApiHidePasskeys);
 
-// Enables rate limiting of immediate requests based on eTLD+1.
+// Enables rate limiting of immediate requests based on main frame's eTLD+1.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnImmediateRequestRateLimit);
 
 // Parameter controlling the maximum number of immediate requests allowed per
-// origin (eTLD+1) within the time window.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE_PARAM(int, kWebAuthnImmediateRequestRateLimitMaxRequests);
-
-// Parameter controlling the time window (in seconds) for the immediate request
-// rate limit.
+// origin (eTLD+1) within the time window. This applies to the longer of the
+// two rate limiters.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE_PARAM(int,
-                           kWebAuthnImmediateRequestRateLimitWindowSeconds);
+                           kWebAuthnImmediateRequestLongRateLimitMaxRequests);
+
+// Parameter controlling the time window (in seconds) for the immediate request
+// rate limit. This applies to the longer of the two rate limiters.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE_PARAM(int,
+                           kWebAuthnImmediateRequestLongRateLimitWindowSeconds);
+
+// Parameter controlling the maximum number of immediate requests allowed per
+// origin (eTLD+1) within the time window. This applies to the shorter of the
+// two rate limiters.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE_PARAM(int,
+                           kWebAuthnImmediateRequestShortRateLimitMaxRequests);
+
+// Parameter controlling the time window (in seconds) for the immediate request
+// rate limit. This applies to the shorter of the two rate limiters.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kWebAuthnImmediateRequestShortRateLimitWindowSeconds);
 
 // Enables the immediate mediation for `navigator.credentials.get` requests.
 COMPONENT_EXPORT(FIDO_PUBLIC)

@@ -15,6 +15,26 @@
 
 namespace {
 constexpr size_t kBucketCount = 1;
+
+bool AcquireFromRateLimiter(
+    base::flat_map<std::string,
+                   std::unique_ptr<webauthn::RateLimiterSlideWindow>>& limiter,
+    const std::string& relying_party,
+    int max_requests,
+    int window_seconds) {
+  auto it = limiter.find(relying_party);
+  if (it == limiter.end()) {
+    base::TimeDelta time_window = base::Seconds(window_seconds);
+
+    // Use try_emplace to insert the new rate limiter.
+    it = limiter
+             .try_emplace(relying_party,
+                          std::make_unique<webauthn::RateLimiterSlideWindow>(
+                              max_requests, time_window, kBucketCount))
+             .first;
+  }
+  return it->second->Acquire(1);
+}
 }
 
 namespace webauthn {
@@ -23,36 +43,31 @@ ImmediateRequestRateLimiter::ImmediateRequestRateLimiter() = default;
 
 ImmediateRequestRateLimiter::~ImmediateRequestRateLimiter() = default;
 
-bool ImmediateRequestRateLimiter::IsRequestAllowed(const url::Origin& origin) {
+bool ImmediateRequestRateLimiter::IsRequestAllowed(
+    const url::Origin& top_frame_origin) {
   if (!base::FeatureList::IsEnabled(
           device::kWebAuthnImmediateRequestRateLimit)) {
     return true;
   }
-  if (origin.host() == "localhost") {
+  if (top_frame_origin.host() == "localhost") {
     return true;
   }
   std::string relying_party =
       net::registry_controlled_domains::GetDomainAndRegistry(
-          origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+          top_frame_origin,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   CHECK(!relying_party.empty());
 
-  auto it = rate_limits_.find(relying_party);
-  if (it == rate_limits_.end()) {
-    int max_requests =
-        device::kWebAuthnImmediateRequestRateLimitMaxRequests.Get();
-    int window_seconds =
-        device::kWebAuthnImmediateRequestRateLimitWindowSeconds.Get();
-    base::TimeDelta time_window = base::Seconds(window_seconds);
-
-    // Use try_emplace to insert the new rate limiter.
-    it = rate_limits_
-             .try_emplace(relying_party,
-                          std::make_unique<webauthn::RateLimiterSlideWindow>(
-                              max_requests, time_window, kBucketCount))
-             .first;
-  }
-
-  return it->second->Acquire(1);
+  return AcquireFromRateLimiter(
+             long_period_rate_limits_, relying_party,
+             device::kWebAuthnImmediateRequestLongRateLimitMaxRequests.Get(),
+             device::kWebAuthnImmediateRequestLongRateLimitWindowSeconds
+                 .Get()) &&
+         AcquireFromRateLimiter(
+             short_period_rate_limits_, relying_party,
+             device::kWebAuthnImmediateRequestShortRateLimitMaxRequests.Get(),
+             device::kWebAuthnImmediateRequestShortRateLimitWindowSeconds
+                 .Get());
 }
 
 }  // namespace webauthn

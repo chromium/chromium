@@ -2085,9 +2085,8 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
           "request."));
       return;
     }
-    if (!LocalFrame::ConsumeTransientUserActivation(
-            To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
-            UserActivationUpdateSource::kRenderer)) {
+    if (!LocalFrame::HasTransientUserActivation(
+            To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame())) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "A user activation is required to request immediate credentials."));

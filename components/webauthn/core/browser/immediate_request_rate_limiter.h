@@ -17,12 +17,17 @@ class ImmediateRequestRateLimiter : public KeyedService {
   ImmediateRequestRateLimiter();
   ~ImmediateRequestRateLimiter() override;
 
-  bool IsRequestAllowed(const url::Origin& origin);
+  // Returns true if a request at the current time will not exceed any of the
+  // throttling limits for Immediate requests.
+  // `top_frame_origin` must be the origin of the main frame because the
+  // same throttle applies across all requests for a single page.
+  bool IsRequestAllowed(const url::Origin& top_frame_origin);
 
  private:
-  base::flat_map<std::string,
-                 std::unique_ptr<RateLimiterSlideWindow>>
-      rate_limits_;
+  base::flat_map<std::string, std::unique_ptr<RateLimiterSlideWindow>>
+      long_period_rate_limits_;
+  base::flat_map<std::string, std::unique_ptr<RateLimiterSlideWindow>>
+      short_period_rate_limits_;
 };
 
 }  // namespace webauthn

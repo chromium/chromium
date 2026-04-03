@@ -892,10 +892,11 @@ bool ChromeAuthenticatorRequestDelegate::MaybeHandleImmediateMediation(
 
   if (auto* rate_limiter =
           ImmediateRequestRateLimiterFactory::GetForProfile(profile())) {
-    const url::Origin origin = GetRenderFrameHost()->GetLastCommittedOrigin();
-    if (!rate_limiter->IsRequestAllowed(origin)) {
-      FIDO_LOG(ERROR)
-          << "Immediate request rate limit exceeded for the origin.";
+    const url::Origin top_frame_origin =
+        GetRenderFrameHost()->GetMainFrame()->GetLastCommittedOrigin();
+    if (!rate_limiter->IsRequestAllowed(top_frame_origin)) {
+      FIDO_LOG(ERROR) << "Immediate request rate limit exceeded for the main "
+                         "frame's origin.";
       base::UmaHistogramEnumeration(
           "WebAuthentication.GetAssertion.Immediate.RejectionReason",
           content::ImmediateMediationRejectionReason::kRateLimited);
