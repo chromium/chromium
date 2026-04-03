@@ -27,6 +27,7 @@ source_set("actor_tool_factory") {
     ":type_tool",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/features",
   ]
 }
 

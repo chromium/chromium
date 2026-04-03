@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/history_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 
 namespace actor {
 
@@ -42,13 +43,22 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
 std::vector<optimization_guide::proto::Action::ActionCase>
 ActorToolFactory::GetSupportedCapabilities() const {
   // LINT.IfChange(SupportedCapabilities)
-  return {
+  const optimization_guide::proto::Action::ActionCase kCandidates[] = {
       optimization_guide::proto::Action::kNavigate,
       optimization_guide::proto::Action::kClick,
       optimization_guide::proto::Action::kBack,
       optimization_guide::proto::Action::kForward,
+      optimization_guide::proto::Action::kType,
   };
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
+
+  std::vector<optimization_guide::proto::Action::ActionCase> capabilities;
+  for (const auto tool : kCandidates) {
+    if (!IsToolDisabled(tool)) {
+      capabilities.push_back(tool);
+    }
+  }
+  return capabilities;
 }
 
 }  // namespace actor

@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -16,6 +18,7 @@
 
 namespace actor {
 
+// Test fixture for ActorToolFactory.
 class ActorToolFactoryTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -29,7 +32,12 @@ class ActorToolFactoryTest : public PlatformTest {
   std::unique_ptr<ActorToolFactory> factory_;
 };
 
+// Tests that GetSupportedCapabilities returns the expected list of tools when
+// all tools are enabled.
 TEST_F(ActorToolFactoryTest, GetSupportedCapabilities) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kActorTools);
+
   std::vector<optimization_guide::proto::Action::ActionCase> capabilities =
       factory_->GetSupportedCapabilities();
 
@@ -37,7 +45,29 @@ TEST_F(ActorToolFactoryTest, GetSupportedCapabilities) {
                                 optimization_guide::proto::Action::kNavigate,
                                 optimization_guide::proto::Action::kClick,
                                 optimization_guide::proto::Action::kBack,
-                                optimization_guide::proto::Action::kForward));
+                                optimization_guide::proto::Action::kForward,
+                                optimization_guide::proto::Action::kType));
+}
+
+// Tests that GetSupportedCapabilities filters out tools that are disabled via
+// feature parameters.
+TEST_F(ActorToolFactoryTest, GetSupportedCapabilitiesWithDisabledTools) {
+  base::test::ScopedFeatureList feature_list;
+  // Disable ClickTool via feature parameters.
+  feature_list.InitAndEnableFeatureWithParameters(
+      kActorTools, {{"DisabledTools", "ClickTool"}});
+
+  std::vector<optimization_guide::proto::Action::ActionCase> capabilities =
+      factory_->GetSupportedCapabilities();
+
+  // Verify that the disabled tool is not included in the supported
+  // capabilities.
+  EXPECT_THAT(capabilities, testing::Not(testing::Contains(
+                                optimization_guide::proto::Action::kClick)));
+
+  // Verify that other tools (which are not disabled) are still included.
+  EXPECT_THAT(capabilities,
+              testing::Contains(optimization_guide::proto::Action::kNavigate));
 }
 
 TEST_F(ActorToolFactoryTest, CreateToolUnsupported) {
