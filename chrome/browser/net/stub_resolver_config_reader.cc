@@ -161,11 +161,11 @@ bool ShouldUseDohFallback(net::SecureDnsMode secure_dns_mode,
   // user. We need to do this in order to test the feature before we include it
   // in a security bundle. See: crbug.com/490045356
 
-  // Lastly return whether the feature flag for forcing DoH fallback is enabled.
-  // The feature needs to be checked last, because checking the feature
-  // activates the field trial and marks the client as active in a study group.
-  return base::FeatureList::IsEnabled(
-      net::features::kForceSecureDnsDohFallback);
+  // Since the pref is disabled we will return true to enable the feature from
+  // the perspective of the browser process, relying on the
+  // kForceSecureDnsDohFallback feature flag in the network service to actually
+  // prevent the functionality from being enabled (for the experiment).
+  return true;
 }
 
 }  // namespace

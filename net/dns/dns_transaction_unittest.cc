@@ -33,6 +33,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/idempotency.h"
@@ -3512,6 +3513,9 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeSuppressedByContext) {
 }
 
 TEST_F(DnsTransactionTestWithMockTime, ProbeSuppressionChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kForceSecureDnsDohFallback);
+
   config_.secure_dns_mode = SecureDnsMode::kAutomatic;
   ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
                       /*make_available=*/false,
@@ -3585,6 +3589,9 @@ TEST_F(DnsTransactionTestWithMockTime,
 
 TEST_F(DnsTransactionTestWithMockTime,
        ProbeAllowedInitiallyWithFallbackConfig) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kForceSecureDnsDohFallback);
+
   config_.secure_dns_mode = SecureDnsMode::kAutomatic;
   ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
                       /*make_available=*/false,
@@ -3610,6 +3617,33 @@ TEST_F(DnsTransactionTestWithMockTime,
   // The first probe attempt should NOT be suppressed.
   EXPECT_TRUE(base::test::RunUntil([&] { return url_requests_started == 1u; }));
   CheckServerOrder({session_->config().nameservers.size()});
+}
+
+TEST_F(DnsTransactionTestWithMockTime,
+       ProbeSuppressedWithFallbackConfigAndFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kForceSecureDnsDohFallback);
+
+  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
+  ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
+                      /*make_available=*/false,
+                      /*use_doh_fallback_upgrade=*/true);
+  ASSERT_FALSE(config_.doh_config.servers().empty());
+
+  // Probes should be suppressed if the feature flag is DISABLED,
+  // even if fallback upgrade is ALLOWED.
+  resolve_context_->set_doh_fallback_upgrade_allowed(true);
+
+  size_t url_requests_started = 0;
+  SetUrlRequestStartedCallback(
+      base::BindLambdaForTesting([&] { url_requests_started++; }));
+
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
+  EXPECT_EQ(url_requests_started, 0u);
 }
 
 TEST_F(DnsTransactionTestWithMockTime, ProbeCreationTriggersSuccessMetric) {

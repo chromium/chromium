@@ -5565,9 +5565,11 @@ INSTANTIATE_TEST_SUITE_P(All, NetworkContextCanaryDomainTest, testing::Bool());
 TEST_P(NetworkContextCanaryDomainTest, CanaryDomainServiceProbe) {
   base::test::ScopedFeatureList feature_list;
   std::string host = "example.test";
-  feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kProbeSecureDnsCanaryDomain,
-      {{"canary_domain_host", host}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kProbeSecureDnsCanaryDomain,
+        {{"canary_domain_host", host}}},
+       {net::features::kForceSecureDnsDohFallback, {}}},
+      {});
 
   network_service_->set_host_resolver_factory_for_testing(
       std::make_unique<net::MockHostResolverFactory>());

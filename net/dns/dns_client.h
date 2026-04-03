@@ -41,6 +41,21 @@ enum class DnsConfigLocalNameserverState {
   kMaxValue = kLoopbackAndNonLoopback,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(FallbackFromSecureTransactionPreferredReason)
+enum class FallbackFromSecureTransactionPreferredReason {
+  kFallbackNotPreferred = 0,
+  kFallbackPreferredCannotUseSecureDns = 1,
+  kFallbackPreferredCanaryDomainCheckPending = 2,
+  kFallbackPreferredCanaryDomainCheckNegative = 3,
+  kFallbackPreferredNoAvailableDohServers = 4,
+  kFallbackPreferredDohFallbackUpgradeNotAllowed = 5,
+  kFallbackPreferredDohFallbackExperimentDisabled = 6,
+  kMaxValue = kFallbackPreferredDohFallbackExperimentDisabled,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:FallbackFromSecureTransactionPreferredReason)
+
 // Entry point for HostResolverManager to interact with the built-in async
 // resolver, as implemented by DnsTransactionFactory. Manages configuration and
 // status of the resolver.

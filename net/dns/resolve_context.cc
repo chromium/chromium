@@ -722,8 +722,13 @@ void ResolveContext::EmitDohAutoupgradeSuccessMetrics() {
 }
 
 bool ResolveContext::IsDohFallbackProbeEnabled() const {
+  // It's important to check the feature flag after the DohConfig and
+  // `doh_fallback_upgrade_allowed()` checks for when we conduct an experiment
+  // enabling the functionality.
   return IsDohConfigFromFallbackDohNameservers() &&
          doh_fallback_upgrade_allowed() &&
+         base::FeatureList::IsEnabled(
+             net::features::kForceSecureDnsDohFallback) &&
          doh_fallback_canary_domain_check_status_ !=
              CanaryDomainCheckStatus::kInactive;
 }

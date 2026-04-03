@@ -262,9 +262,12 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
     // changes the user will have to wait for a network change event or restart
     // to have DoH auto-upgrade enabled, but this is acceptable since this
     // approach to disabling is only intended to be used for a brief duration
-    // experiment.
+    // experiment. It's important to check the feature flag last because of how
+    // we plan to conduct an experiment enabling the functionality.
     if (context_->IsDohConfigFromFallbackDohNameservers() &&
-        !context_->doh_fallback_upgrade_allowed()) {
+        (!context_->doh_fallback_upgrade_allowed() ||
+         !base::FeatureList::IsEnabled(
+             net::features::kForceSecureDnsDohFallback))) {
       probe_stats_list_[doh_server_index] = nullptr;
       return;
     }

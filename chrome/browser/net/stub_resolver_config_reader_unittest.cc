@@ -186,11 +186,10 @@ TEST_F(StubResolverConfigReaderTest,
 }
 
 TEST_F(StubResolverConfigReaderTest,
-       Doh_Automatic_FallbackUpgradePrefUseDisabled_ConfigNotSetByDefault) {
+       Doh_Automatic_FallbackUpgradePrefUseDisabled_ConfigSetByDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {}, {safe_browsing::kBundledSecuritySettingsSecureDnsV2,
-           net::features::kForceSecureDnsDohFallback});
+      {}, {safe_browsing::kBundledSecuritySettingsSecureDnsV2});
   local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
   local_state_.SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeAutomatic);
@@ -203,37 +202,9 @@ TEST_F(StubResolverConfigReaderTest,
   SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.fallback_doh_nameservers(), testing::IsEmpty());
-  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
-
-  histogram_tester_.ExpectUniqueSample(
-      "Net.DNS.DnsConfig.SecureDnsMode",
-      StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
-          kAutomaticByUser,
-      1);
-}
-
-TEST_F(StubResolverConfigReaderTest,
-       Doh_Automatic_FallbackUpgradePrefUseDisabled_FallbackEnabledByForce) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {net::features::kForceSecureDnsDohFallback},
-      {safe_browsing::kBundledSecuritySettingsSecureDnsV2});
-  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
-  local_state_.SetString(prefs::kDnsOverHttpsMode,
-                         SecureDnsConfig::kModeAutomatic);
-  // Pref is false, but kForceSecureDnsDohFallback should force to interpreting
-  // as if it were true.
-  local_state_.SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
-                          false);
-
-  config_reader_->UpdateNetworkService(/*record_metrics=*/true);
-
-  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
-      /*force_check_parental_controls_for_automatic_mode=*/false);
-  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
   EXPECT_EQ(expected_fallback_doh_nameservers_,
             secure_dns_config.fallback_doh_nameservers());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   histogram_tester_.ExpectUniqueSample(
       "Net.DNS.DnsConfig.SecureDnsMode",

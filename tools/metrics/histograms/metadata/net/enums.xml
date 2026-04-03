@@ -449,9 +449,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Fallback preferred: no available Doh servers"/>
   <int value="5"
       label="Fallback preferred: DoH to the fallback provider not allowed"/>
+  <int value="6" label="Fallback preferred: DoH fallback experiment disabled"/>
 </enum>
 
-<!-- LINT.ThenChange(//net/dns/dns_client.cc:FallbackFromSecureTransactionPreferredReason) -->
+<!-- LINT.ThenChange(//net/dns/dns_client.h:FallbackFromSecureTransactionPreferredReason) -->
 
 <enum name="HSTSRedirectUpgradeReason">
   <int value="0" label="URL not HTTP"/>
