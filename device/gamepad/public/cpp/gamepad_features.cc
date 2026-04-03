@@ -52,7 +52,7 @@ BASE_FEATURE(kAllowlistHidrawGamepads, base::FEATURE_ENABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_APPLE)
 // Enable Xbox gamepad support in GameControllerDataFetcherMac
 BASE_FEATURE(kXboxUseGameControllerDataFetcherMac,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable PlayStation gamepad support in
 // GameControllerDataFetcherMac
 BASE_FEATURE(kPlayStationUseGameControllerDataFetcherMac,
