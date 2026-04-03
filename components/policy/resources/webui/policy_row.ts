@@ -106,19 +106,6 @@ export class PolicyRowElement extends CustomElement {
       }
       scopeDisplay!.textContent = loadTimeData.getString(scope);
 
-      // Display scope and level as rows instead of columns on space constraint
-      // devices.
-      // <if expr="is_android or is_ios">
-      const scopeRowContentDisplay =
-          this.shadowRoot!.querySelector('.scope.row .value');
-      scopeRowContentDisplay!.textContent = loadTimeData.getString(scope);
-      const levelRowContentDisplay =
-          this.shadowRoot!.querySelector('.level.row .value');
-      levelRowContentDisplay!.textContent = loadTimeData.getString(
-          policy.level === 'recommended' ? 'levelRecommended' :
-                                           'levelMandatory');
-      // </if>
-
       const levelDisplay = this.shadowRoot!.querySelector('.level');
       levelDisplay!.textContent = loadTimeData.getString(
           policy.level === 'recommended' ? 'levelRecommended' :
@@ -205,6 +192,22 @@ export class PolicyRowElement extends CustomElement {
       messagesDisplay!.textContent = notice;
       policy.status = notice;
 
+      // Display scope, level and status as rows instead of columns on space
+      // constraint devices.
+      // <if expr="is_android or is_ios">
+      const scopeRowContentDisplay =
+          this.shadowRoot!.querySelector('.scope.row .value');
+      scopeRowContentDisplay!.textContent = loadTimeData.getString(scope);
+      const levelRowContentDisplay =
+          this.shadowRoot!.querySelector('.level.row .value');
+      levelRowContentDisplay!.textContent = loadTimeData.getString(
+          policy.level === 'recommended' ? 'levelRecommended' :
+                                           'levelMandatory');
+      const messagesRowContentDisplay =
+          this.shadowRoot!.querySelector('.messages.row .value');
+      messagesRowContentDisplay!.textContent = notice;
+      // </if>
+
       if (policy.conflicts) {
         policy.conflicts.forEach(conflict => {
           const row = document.createElement('policy-conflict');
@@ -258,6 +261,8 @@ export class PolicyRowElement extends CustomElement {
     scopeRowDisplay.hidden = !scopeRowDisplay.hidden;
     const levelRowDisplay = this.getRequiredElement('.level.row');
     levelRowDisplay.hidden = !levelRowDisplay.hidden;
+    const messagesRowDisplay = this.getRequiredElement('.messages.row');
+    messagesRowDisplay.hidden = !messagesRowDisplay.hidden;
     // </if>
     valueRowDisplay.hidden = !valueRowDisplay.hidden;
     this.classList.toggle('expanded', !valueRowDisplay.hidden);

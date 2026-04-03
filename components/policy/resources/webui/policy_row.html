@@ -132,6 +132,7 @@ a {
 }
 
 .level.row,
+.messages.row,
 .scope.row {
   border-inline-end: none;
 }
@@ -193,6 +194,10 @@ a {
   </div>
   <div class="level row" role="row" hidden>
     <div class="name" role="rowheader">$i18n{headerLevel}</div>
+    <div class="value" role="cell"></div>
+  </div>
+  <div class="messages row" role="row" hidden>
+    <div class="name" role="rowheader">$i18n{headerStatus}</div>
     <div class="value" role="cell"></div>
   </div>
 </if>
