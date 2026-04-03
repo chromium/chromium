@@ -52,7 +52,7 @@ declare -A DISPLAY_RES=(
 # Use WXGA as default panel.
 DISPLAY_CONFIG=${DISPLAY_RES[wxga]}
 
-FEATURES=
+FEATURES=VerticalTabs
 
 # GLIC specific feature flags.
 GLIC_BASIC_FEATURES=Glic,TabstripComboButton,GlicUserStatusCheck,\
