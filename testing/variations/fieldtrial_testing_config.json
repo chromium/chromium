@@ -7700,24 +7700,6 @@
             ]
         }
     ],
-    "DefaultBrowserPictureInPicture": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "DefaultBrowserPictureInPictureParam": "Enabled"
-                    },
-                    "enable_features": [
-                        "DefaultBrowserPictureInPicture"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultBrowserPromoAndroid2": [
         {
             "platforms": [
