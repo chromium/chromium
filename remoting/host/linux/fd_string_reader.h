@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 
 namespace remoting {
 

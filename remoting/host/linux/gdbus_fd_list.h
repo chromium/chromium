@@ -14,7 +14,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/gvariant_type.h"
 #include "ui/base/glib/scoped_gobject.h"

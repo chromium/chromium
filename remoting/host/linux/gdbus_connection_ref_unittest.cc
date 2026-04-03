@@ -17,7 +17,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "dbus/test_service.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/linux/dbus_interfaces/org_chromium_TestInterface.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_DBus_Properties.h"
 #include "remoting/host/linux/gvariant_ref.h"

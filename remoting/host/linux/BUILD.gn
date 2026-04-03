@@ -85,6 +85,7 @@ source_set("gvariant") {
   ]
   deps = [
     "//base",
+    "//remoting/base",
     "//remoting/host/base",
   ]
 }
@@ -100,6 +101,7 @@ source_set("utils") {
   deps = [
     "dbus_interfaces:interface_headers",
     "//base",
+    "//remoting/base",
     "//remoting/host/base",
     "//ui/base",
   ]
@@ -182,8 +184,6 @@ source_set("platform_impls") {
     "login_session_manager.h",
     "login_session_server.cc",
     "login_session_server.h",
-    "passwd_utils.cc",
-    "passwd_utils.h",
     "pipewire_capture_stream.cc",
     "pipewire_capture_stream.h",
     "pipewire_desktop_capturer.cc",

@@ -19,10 +19,10 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "remoting/base/passwd_utils.h"
 #include "remoting/host/linux/gdm_remote_display_manager.h"
 #include "remoting/host/linux/login_session_manager.h"
 #include "remoting/host/linux/login_session_server.h"
-#include "remoting/host/linux/passwd_utils.h"
 
 namespace remoting {
 

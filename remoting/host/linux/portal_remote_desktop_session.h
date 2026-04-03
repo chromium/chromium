@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"

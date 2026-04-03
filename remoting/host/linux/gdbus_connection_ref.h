@@ -24,7 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_DBus_Properties.h"
 #include "remoting/host/linux/gdbus_fd_list.h"
 #include "remoting/host/linux/gvariant_ref.h"

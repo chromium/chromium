@@ -18,7 +18,7 @@
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/daemon_process.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/linux/remote_display_session_manager.h"

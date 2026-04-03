@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_DBus_ObjectManager.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_DBus_Properties.h"
 #include "remoting/host/linux/dbus_interfaces/org_gnome_DisplayManager.h"

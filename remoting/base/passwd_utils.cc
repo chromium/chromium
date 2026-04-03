@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/linux/passwd_utils.h"
+#include "remoting/base/passwd_utils.h"
 
 #include <pwd.h>
 #include <unistd.h>
@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 
 namespace remoting {
 

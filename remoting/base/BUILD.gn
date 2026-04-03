@@ -125,6 +125,8 @@ source_set("base") {
     "leaky_bucket.h",
     "local_session_policies_provider.cc",
     "local_session_policies_provider.h",
+    "loggable.cc",
+    "loggable.h",
     "logging_service_client.h",
     "protobuf_http_client.cc",
     "protobuf_http_client.h",
@@ -220,6 +222,13 @@ source_set("base") {
     deps += [
       ":api_key_stubs",
       "//remoting/proto:internal_stubs",
+    ]
+  }
+
+  if (is_posix) {
+    sources += [
+      "passwd_utils.cc",
+      "passwd_utils.h",
     ]
   }
 

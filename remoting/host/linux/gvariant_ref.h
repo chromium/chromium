@@ -35,7 +35,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/base/pointer_utils.h"
 #include "remoting/host/linux/gvariant_type.h"
 

@@ -19,7 +19,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/linux/gdbus_fd_list.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "ui/base/glib/scoped_gobject.h"

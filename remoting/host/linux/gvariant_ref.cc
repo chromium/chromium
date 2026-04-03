@@ -21,7 +21,7 @@
 #include "base/location.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/linux/gvariant_type.h"
 
 namespace remoting::gvariant {

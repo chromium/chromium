@@ -12,7 +12,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 
 namespace remoting {
 

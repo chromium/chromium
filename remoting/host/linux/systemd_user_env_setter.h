@@ -6,7 +6,7 @@
 #define REMOTING_HOST_LINUX_SYSTEMD_USER_ENV_SETTER_H_
 
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 
 namespace remoting {
 

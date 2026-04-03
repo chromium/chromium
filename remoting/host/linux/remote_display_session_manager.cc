@@ -27,12 +27,12 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/version.h"
+#include "remoting/base/loggable.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/passwd_utils.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/login_session_manager.h"
-#include "remoting/host/linux/passwd_utils.h"
 
 namespace remoting {
 

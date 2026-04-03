@@ -26,7 +26,7 @@
 #include "base/posix/safe_strerror.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "ui/base/glib/scoped_gobject.h"
 
 namespace remoting {

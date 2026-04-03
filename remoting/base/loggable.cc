@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 
 #include <memory>
 #include <ostream>

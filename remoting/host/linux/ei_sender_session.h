@@ -20,7 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/base/pointer_utils.h"
 #include "remoting/proto/event.pb.h"
 #include "third_party/libei/cipd/include/libei-1.0/libei.h"

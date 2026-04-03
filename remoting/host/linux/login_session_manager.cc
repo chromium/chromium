@@ -16,7 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_DBus_Properties.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_login1_Manager.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_login1_Session.h"

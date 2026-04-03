@@ -21,7 +21,7 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
+#include "remoting/base/loggable.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/linux/capture_stream_manager.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
