@@ -60,6 +60,7 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
+#include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -6744,6 +6745,23 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
+  // Mark the data: URL as familiar to prevent an unwanted BrowsingInstance
+  // swap. By default, BlockV8OptimizersOnUnfamiliarSites treats data: URLs as
+  // unfamiliar, disabling V8 optimizations. Navigating from an unfamiliar data:
+  // URL to a familiar URL (a.test) triggers a swap due to mismatched V8
+  // optimization settings, breaking related SiteInstance expectations for this
+  // test. While <webview> frames do support BrowsingInstance swaps, handling
+  // them adds unnecessary complexity for this basic test. Marking the data: URL
+  // as familiar is only necessary for scenarios where the user has the
+  // automatic BlockV8OptimizersOnUnfamiliarSites profile setting enabled.
+
+  // The "simple test" data: url_string comes from
+  // chrome/test/data/extensions/platform_apps/web_view/simple/main.js
+  // TODO(crbug.com/493200120): Find a better way to handle unfamiliar data:
+  // URLs in process tests.
+  site_protection::SiteFamiliarityFetcher::SetUrlFamiliarForTesting(
+      GURL("data:text/html,<html><body>simple test</body></html>"));
+
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
   guest_view::GuestViewBase* guest = GetGuestView();
@@ -6759,6 +6777,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
   EXPECT_FALSE(starting_instance->GetSecurityPrincipal()
                    .GetStoragePartitionConfig()
                    .is_default());
+  EXPECT_FALSE(main_frame->GetProcess()->AreV8OptimizationsDisabled());
 
   // Navigate <webview> to a cross-site page with a same-site iframe.
   const GURL start_url =

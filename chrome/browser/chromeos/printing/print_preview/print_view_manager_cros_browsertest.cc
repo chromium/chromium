@@ -19,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -125,6 +126,10 @@ class PrintViewManagerCrosBrowserTest : public InProcessBrowserTest {
     if (!web_contents) {
       return nullptr;
     }
+
+    // Ensure that the tab navigation has fully completed before creating print
+    // view.
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
     return PrintViewManagerCros::FromWebContents(web_contents);
   }
