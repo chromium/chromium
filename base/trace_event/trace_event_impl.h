@@ -55,9 +55,6 @@ class BASE_EXPORT TraceEvent {
   TraceEvent(TraceEvent&&) noexcept;
   TraceEvent& operator=(TraceEvent&&) noexcept;
 
-  // Reset instance to empty state.
-  void Reset();
-
   TimeTicks timestamp() const { return timestamp_; }
   char phase() const { return phase_; }
   PlatformThreadId thread_id() const { return thread_id_; }

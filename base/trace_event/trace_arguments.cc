@@ -226,15 +226,6 @@ TraceArguments::TraceArguments(int num_args,
   }
 }
 
-void TraceArguments::Reset() {
-  for (size_t n = 0; n < size_; ++n) {
-    if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_CONVERTABLE) {
-      delete UNSAFE_TODO(values_[n]).as_convertable;
-    }
-  }
-  size_ = 0;
-}
-
 void TraceArguments::CopyStringsTo(StringStorage* storage,
                                    bool copy_all_strings,
                                    const char** extra_string) {

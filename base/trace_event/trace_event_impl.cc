@@ -77,13 +77,6 @@ TraceEvent::~TraceEvent() = default;
 TraceEvent::TraceEvent(TraceEvent&& other) noexcept = default;
 TraceEvent& TraceEvent::operator=(TraceEvent&& other) noexcept = default;
 
-void TraceEvent::Reset() {
-  // Only reset fields that won't be initialized in Reset(int, ...), or that may
-  // hold references to other objects.
-  args_.Reset();
-  parameter_copy_storage_.Reset();
-}
-
 void TraceEvent::InitArgs(TraceArguments* args) {
   if (args) {
     args_ = std::move(*args);

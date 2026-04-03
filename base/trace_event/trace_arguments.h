@@ -639,9 +639,6 @@ class BASE_EXPORT TraceArguments {
   const char* const* names() const { return names_; }
   const TraceValue* values() const { return values_; }
 
-  // Reset to empty arguments list.
-  void Reset();
-
   // Use |storage| to copy all copyable strings.
   // If |copy_all_strings| is false, then only the TRACE_VALUE_TYPE_COPY_STRING
   // values will be copied into storage. If it is true, then argument names are

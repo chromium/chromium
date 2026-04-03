@@ -376,23 +376,6 @@ TEST(TraceArguments, MoveAssignment) {
   EXPECT_FALSE(destroy_flag);
 }
 
-TEST(TraceArguments, Reset) {
-  bool destroy_flag = false;
-  {
-    TraceArguments args(
-        "foo_arg1", "Hello", "foo_arg2",
-        std::make_unique<MyConvertable>("World", &destroy_flag));
-
-    EXPECT_EQ(2U, args.size());
-    EXPECT_FALSE(destroy_flag);
-    args.Reset();
-    EXPECT_EQ(0U, args.size());
-    EXPECT_TRUE(destroy_flag);
-    destroy_flag = false;
-  }  // Calls |args| destructor. Should not delete twice.
-  EXPECT_FALSE(destroy_flag);
-}
-
 TEST(TraceArguments, CopyStringsTo_NoStrings) {
   StringStorage storage;
 
