@@ -46,8 +46,6 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
         .MarkFirstContentfulPaint();
   }
 
-  canvas->TakeGridScaleFactorSnapshot();
-
   if (auto* layer = canvas->ContentsCcLayer()) {
     // TODO(crbug.com/705019): For a texture layer canvas, setting the layer
     // background color to an opaque color will cause the layer to be treated as

@@ -185,13 +185,11 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   }
 
   // Element size in physical coordinates.
-  gfx::RectF src_rect(child_paint_record->box_size);
+  gfx::RectF src_rect(child_paint_record->paint_state.box_size);
   if (sx && sy && swidth && sheight) {
-    float dpr = child_paint_record->scale;
+    float dpr = child_paint_record->paint_state.effective_zoom;
     src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
   }
-
-  HTMLCanvasElement* canvas_element = static_cast<HTMLCanvasElement*>(Host());
 
   // The default destination size for GetElementImage is the source content
   // size scaled to canvas grid coordinates. This causes the element to have
@@ -199,7 +197,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   // were it painted outside the canvas.
   gfx::SizeF intrinsic_size(src_rect.size());
   gfx::Vector2dF canvas_scale =
-      canvas_element->PhysicalPixelToCanvasGridScaleFactor();
+      child_paint_record->paint_state.canvas_grid_scale_factor;
   intrinsic_size.Scale(canvas_scale.x(), canvas_scale.y());
   gfx::Size intrinsic_dest_size = gfx::ToCeiledSize(intrinsic_size);
   gfx::Size dest_size(intrinsic_dest_size);

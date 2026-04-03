@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_child_paint_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
@@ -104,19 +105,21 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
 
   // Used to associate this effect with a direct child of a canvas element for
   // DrawElementImage.
-  struct PLATFORM_EXPORT CanvasChildState {
-    DISALLOW_NEW();
-
+  struct PLATFORM_EXPORT CanvasChildState
+      : public GarbageCollected<CanvasChildState> {
    public:
-    bool operator==(const CanvasChildState&) const = default;
+    bool operator==(const CanvasChildState& other) const {
+      return id == other.id && paint_state == other.paint_state &&
+             content_effect == other.content_effect &&
+             content_clip == other.content_clip;
+    }
 
     DOMNodeId id = kInvalidDOMNodeId;
-    gfx::SizeF box_size;
-    float effective_zoom = 1.f;
+    CanvasChildPaintState paint_state;
     Member<const EffectPaintPropertyNodeOrAlias> content_effect;
     Member<const ClipPaintPropertyNodeOrAlias> content_clip;
 
-    void Trace(Visitor*) const;
+    void Trace(Visitor* visitor) const;
   };
 
   // To make it less verbose and more readable to construct and update a node,
@@ -153,7 +156,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     // Used to associate this effect node with its originating Element.
     RestrictionTargetId restriction_target_id;
 
-    CanvasChildState canvas_child_state;
+    Member<CanvasChildState> canvas_child_state;
 
     // When set, the affected elements should avoid doing clipping for
     // optimization purposes (like off-screen clipping). This is set by view
@@ -381,17 +384,20 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   }
 
   bool HasCanvasChildState() const {
-    return state_.canvas_child_state.id != kInvalidDOMNodeId;
+    if (!state_.canvas_child_state) {
+      return false;
+    }
+    return state_.canvas_child_state->id != kInvalidDOMNodeId;
   }
 
-  DOMNodeId CanvasChildId() const { return state_.canvas_child_state.id; }
-
-  gfx::SizeF CanvasChildBoxSize() const {
-    return state_.canvas_child_state.box_size;
+  DOMNodeId CanvasChildId() const {
+    return state_.canvas_child_state ? state_.canvas_child_state->id
+                                     : kInvalidDOMNodeId;
   }
 
-  float CanvasChildEffectiveZoom() const {
-    return state_.canvas_child_state.effective_zoom;
+  const CanvasChildPaintState* canvas_child_paint_state() const {
+    return state_.canvas_child_state ? &state_.canvas_child_state->paint_state
+                                     : nullptr;
   }
 
   const EffectPaintPropertyNode& CanvasChildContentEffect() const;

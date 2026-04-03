@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_CONTENT_LAYER_CLIENT_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_CONTENT_LAYER_CLIENT_IMPL_H_
 
+#include <memory>
+#include <optional>
+
 #include "base/dcheck_is_on.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
@@ -52,7 +55,10 @@ class PLATFORM_EXPORT ContentLayerClientImpl
 
   RasterInvalidator& GetRasterInvalidator() { return *raster_invalidator_; }
 
-  CanvasChildPaintRecord GetCanvasChildPaintRecord() const;
+  std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord() const;
+  const CanvasChildPaintState* canvas_child_paint_state() const {
+    return canvas_child_paint_state_.get();
+  }
 
   size_t ApproximateUnsharedMemoryUsage() const;
 
@@ -63,8 +69,7 @@ class PLATFORM_EXPORT ContentLayerClientImpl
   scoped_refptr<cc::PictureLayer> cc_picture_layer_;
   scoped_refptr<cc::DisplayItemList> cc_display_item_list_;
   Member<RasterInvalidator> raster_invalidator_;
-  gfx::SizeF canvas_child_box_size_;
-  float canvas_child_effective_zoom_;
+  std::unique_ptr<CanvasChildPaintState> canvas_child_paint_state_;
   // Used during UpdateCcPictureLayer().
   bool has_empty_invalidations_ = false;
 

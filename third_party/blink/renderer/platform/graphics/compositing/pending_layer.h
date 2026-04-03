@@ -81,7 +81,16 @@ class PLATFORM_EXPORT PendingLayer {
     chunks_.SetPaintArtifact(paint_artifact);
   }
 
-  std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord() const;
+  std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord() const {
+    return content_layer_client_
+               ? content_layer_client_->GetCanvasChildPaintRecord()
+               : std::nullopt;
+  }
+  const CanvasChildPaintState* canvas_child_paint_state() const {
+    return content_layer_client_
+               ? content_layer_client_->canvas_child_paint_state()
+               : nullptr;
+  }
 
   using IsCompositedScrollFunction =
       PropertyTreeState::IsCompositedScrollFunction;

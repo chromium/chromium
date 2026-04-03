@@ -137,9 +137,11 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
             paint_chunks[0].id.client_id));
   }
 
-  canvas_child_box_size_ = layer_state.Effect().CanvasChildBoxSize();
-  canvas_child_effective_zoom_ =
-      layer_state.Effect().CanvasChildEffectiveZoom();
+  if (const auto* state = layer_state.Effect().canvas_child_paint_state()) {
+    canvas_child_paint_state_ = std::make_unique<CanvasChildPaintState>(*state);
+  } else {
+    canvas_child_paint_state_.reset();
+  }
 
   // Note: cc::Layer API assumes the layer bounds start at (0, 0), but the
   // bounding box of a paint chunk does not necessarily start at (0, 0) (and
@@ -242,18 +244,22 @@ void ContentLayerClientImpl::InvalidateRect(const gfx::Rect& rect) {
   cc_picture_layer_->SetNeedsDisplayRect(rect);
 }
 
-CanvasChildPaintRecord ContentLayerClientImpl::GetCanvasChildPaintRecord()
-    const {
-  gfx::Vector2dF offset = cc_picture_layer_->offset_to_transform_parent();
-  if (offset.IsZero()) {
-    return {canvas_child_effective_zoom_, canvas_child_box_size_,
-            cc_display_item_list_->paint_op_buffer().DeepCopyAsRecord()};
+std::optional<CanvasChildPaintRecord>
+ContentLayerClientImpl::GetCanvasChildPaintRecord() const {
+  if (!canvas_child_paint_state_) {
+    return std::nullopt;
   }
-  auto result = sk_make_sp<cc::PaintOpBuffer>();
-  result->push<cc::TranslateOp>(offset.x(), offset.y());
-  *result += cc_display_item_list_->paint_op_buffer();
-  return {canvas_child_effective_zoom_, canvas_child_box_size_,
-          result->ReleaseAsRecord()};
+  gfx::Vector2dF offset = cc_picture_layer_->offset_to_transform_parent();
+  cc::PaintRecord record;
+  if (offset.IsZero()) {
+    record = cc_display_item_list_->paint_op_buffer().DeepCopyAsRecord();
+  } else {
+    auto result = sk_make_sp<cc::PaintOpBuffer>();
+    result->push<cc::TranslateOp>(offset.x(), offset.y());
+    *result += cc_display_item_list_->paint_op_buffer();
+    record = result->ReleaseAsRecord();
+  }
+  return CanvasChildPaintRecord{*canvas_child_paint_state_, std::move(record)};
 }
 
 size_t ContentLayerClientImpl::ApproximateUnsharedMemoryUsage() const {

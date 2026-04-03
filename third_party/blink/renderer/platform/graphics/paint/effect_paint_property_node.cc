@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -60,7 +61,7 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
       view_transition_element_resource_id !=
           other.view_transition_element_resource_id ||
       restriction_target_id != other.restriction_target_id ||
-      canvas_child_state != other.canvas_child_state ||
+      !base::ValuesEquivalent(canvas_child_state, other.canvas_child_state) ||
       self_or_ancestor_participates_in_view_transition !=
           other.self_or_ancestor_participates_in_view_transition ||
       needs_effect_for_2d_scale_transform !=
@@ -232,13 +233,13 @@ gfx::Rect EffectPaintPropertyNode::MapRect(const gfx::Rect& input_rect) const {
 const EffectPaintPropertyNode&
 EffectPaintPropertyNode::CanvasChildContentEffect() const {
   CHECK(HasCanvasChildState());
-  return state_.canvas_child_state.content_effect->Unalias();
+  return state_.canvas_child_state->content_effect->Unalias();
 }
 
 const ClipPaintPropertyNode& EffectPaintPropertyNode::CanvasChildContentClip()
     const {
   CHECK(HasCanvasChildState());
-  return state_.canvas_child_state.content_clip->Unalias();
+  return state_.canvas_child_state->content_clip->Unalias();
 }
 
 std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {

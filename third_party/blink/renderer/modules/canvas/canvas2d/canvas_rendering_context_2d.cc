@@ -905,8 +905,8 @@ DOMMatrix* CanvasRenderingContext2D::DrawElementInternal(
                                       "No cached paint record for element.");
     return nullptr;
   }
-  float dpr = child_paint_record->scale;
-  gfx::SizeF box_size = child_paint_record->box_size;
+  float dpr = child_paint_record->paint_state.effective_zoom;
+  gfx::SizeF box_size = child_paint_record->paint_state.box_size;
   cc::PaintRecord paint_record = std::move(child_paint_record->record);
 
   gfx::RectF src_rect(box_size);
@@ -924,7 +924,7 @@ DOMMatrix* CanvasRenderingContext2D::DrawElementInternal(
   // canvas.
   gfx::SizeF ideal_dst_size(src_rect.size());
   gfx::Vector2dF scale_factor =
-      canvas()->PhysicalPixelToCanvasGridScaleFactor();
+      child_paint_record->paint_state.canvas_grid_scale_factor;
   ideal_dst_size.Scale(scale_factor.x(), scale_factor.y());
 
   gfx::RectF dst_rect(x, y, 0, 0);

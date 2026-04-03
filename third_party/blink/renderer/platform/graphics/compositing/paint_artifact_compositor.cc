@@ -116,9 +116,18 @@ PaintArtifactCompositor::GetCanvasChildPaintRecord(DOMNodeId child_id) const {
   if (it == canvas_child_layer_map_.end()) {
     return std::nullopt;
   }
-  auto& pending_layer =
-      pending_layers_[canvas_child_layer_map_.find(child_id)->value];
+  auto& pending_layer = pending_layers_[it->value];
   return pending_layer.GetCanvasChildPaintRecord();
+}
+
+const CanvasChildPaintState* PaintArtifactCompositor::GetCanvasChildPaintState(
+    DOMNodeId child_id) const {
+  auto it = canvas_child_layer_map_.find(child_id);
+  if (it == canvas_child_layer_map_.end()) {
+    return nullptr;
+  }
+  auto& pending_layer = pending_layers_[it->value];
+  return pending_layer.canvas_child_paint_state();
 }
 
 void PaintArtifactCompositor::WillBeRemovedFromFrame() {

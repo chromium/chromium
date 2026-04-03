@@ -915,6 +915,15 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
         To<LayoutHTMLCanvas>(layout_object)->CanvasSizeChanged();
       layout_object->SetShouldDoFullPaintInvalidation();
     }
+
+    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() && layoutSubtree()) {
+      // Invalidate the child's paint properties so that its cached
+      // CanvasChildPaintState is updated with the new canvas size.
+      for (LayoutObject* child = layout_object->SlowFirstChild(); child;
+           child = child->NextSibling()) {
+        child->SetNeedsPaintPropertyUpdate();
+      }
+    }
   }
 }
 
@@ -929,93 +938,47 @@ void HTMLCanvasElement::ResetLayer() {
   }
 }
 
-void HTMLCanvasElement::TakeGridScaleFactorSnapshot() {
-  CHECK(GetDocument().Lifecycle().GetState() == DocumentLifecycle::kInPaint);
-
-  grid_scale_factor_snapshot_ = {1.f, 1.f};
-  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
-    return;
-  }
-  if (!GetDocument().View() || !GetLayoutBox()) {
-    return;
-  }
-
-  // As a special case, if the canvas is sized to its devicePixelContentBox,
-  // make sure the element's physical pixels are mapped 1:1 to the canvas
-  // grid to avoid any inadverent fuzziness due to rounding.
-  gfx::Size canvas_size = Size();
-  gfx::Size device_pixel_content_box =
-      ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
-          LogicalSize(GetLayoutBox()->ContentLogicalWidth(),
-                      GetLayoutBox()->ContentLogicalHeight()),
-          *GetLayoutBox(), GetLayoutBox()->StyleRef());
-  if (canvas_size == device_pixel_content_box) {
-    return;
-  }
-
-  PhysicalRect content_rect;
-  if (auto* replaced = DynamicTo<LayoutReplaced>(GetLayoutBox())) {
-    content_rect = replaced->ReplacedContentRect();
-  } else {
-    content_rect = GetLayoutBox()->PhysicalContentBoxRect();
-  }
-  grid_scale_factor_snapshot_ = {
-      canvas_size.width() / content_rect.Width().ToFloat(),
-      canvas_size.height() / content_rect.Height().ToFloat()};
-}
-
-namespace {
-
-// Given a transform at the origin, return an adjusted transform that is
-// equivalent, but can be applied to `element` given the current
-// `transform-origin`.
-DOMMatrix* AdjustTransformByTransformOrigin(const Element* element,
-                                            DOMMatrix* transform) {
-  gfx::Point3F origin_css;
-  if (LayoutBox* box = element ? element->GetLayoutBox() : nullptr) {
-    const PhysicalRect reference_box = ComputeReferenceBox(*box);
-    const ComputedStyle& style = box->StyleRef();
-
-    gfx::Point3F origin_phys;
-    origin_phys.set_x(FloatValueForLength(style.GetTransformOrigin().X(),
-                                          reference_box.Width()));
-    origin_phys.set_y(FloatValueForLength(style.GetTransformOrigin().Y(),
-                                          reference_box.Height()));
-    origin_phys.set_z(style.GetTransformOrigin().Z());
-    origin_css = ScalePoint(origin_phys, 1.0f / style.EffectiveZoom());
-  }
-
-  DOMMatrix* result = DOMMatrix::Create();
-  result->translateSelf(-origin_css.x(), -origin_css.y(), -origin_css.z());
-  result->multiplySelf(*transform);
-  result->translateSelf(origin_css.x(), origin_css.y(), origin_css.z());
-  return result;
-}
-
-}  // namespace
-
 DOMMatrix* HTMLCanvasElement::getElementTransform(
     Element* element,
     DOMMatrix* draw_transform,
     ExceptionState& exception_state) {
-  DOMMatrix* result = DOMMatrix::Create();
-
-  // This is a change of basis for a transform in canvas pixel grid coordinates
-  // to a canvas in css coordinates. The general formula is:
-  // T_css = S_canvas_to_css * T_canvas * S_canvas_to_css-1
-  gfx::Vector2dF physical_to_canvas_grid =
-      PhysicalPixelToCanvasGridScaleFactor();
-  float physical_to_css = 1.0f;
-  if (element->GetComputedStyle()) {
-    physical_to_css = 1.0f / element->ComputedStyleRef().EffectiveZoom();
+  if (!element) {
+    return nullptr;
   }
+
+  auto* paint_state = GetCanvasChildPaintState(element->GetDomNodeId());
+  if (!paint_state) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "No cached paint record for element.");
+    return nullptr;
+  }
+
+  gfx::Vector2dF physical_to_canvas_grid =
+      paint_state->canvas_grid_scale_factor;
+  float physical_to_css = 1.0f / paint_state->effective_zoom;
   float canvas_grid_to_css_x = physical_to_css / physical_to_canvas_grid.x();
   float canvas_grid_to_css_y = physical_to_css / physical_to_canvas_grid.y();
-  result->scaleSelf(canvas_grid_to_css_x, canvas_grid_to_css_y);
-  result->multiplySelf(*draw_transform);
-  result->scaleSelf(1.0f / canvas_grid_to_css_x, 1.0f / canvas_grid_to_css_y);
 
-  return AdjustTransformByTransformOrigin(element, result);
+  // 1. Change of basis for a transform in canvas pixel grid coordinates to a
+  // canvas in css coordinates. The general formula is:
+  //   T_css = S_canvas_to_css * T_canvas * S_canvas_to_css^-1
+  DOMMatrix* css_transform = DOMMatrix::Create();
+  css_transform->scaleSelf(canvas_grid_to_css_x, canvas_grid_to_css_y);
+  css_transform->multiplySelf(*draw_transform);
+  css_transform->scaleSelf(1.0f / canvas_grid_to_css_x,
+                           1.0f / canvas_grid_to_css_y);
+
+  // 2. Apply the transform relative to the transform origin.
+  DOMMatrix* result = DOMMatrix::Create();
+  result->translateSelf(-paint_state->transform_origin.x(),
+                        -paint_state->transform_origin.y(),
+                        -paint_state->transform_origin.z());
+  result->multiplySelf(*css_transform);
+  result->translateSelf(paint_state->transform_origin.x(),
+                        paint_state->transform_origin.y(),
+                        paint_state->transform_origin.z());
+
+  return result;
 }
 
 bool HTMLCanvasElement::PaintsIntoCanvasBuffer() const {
@@ -1679,6 +1642,16 @@ HTMLCanvasElement::GetCanvasChildPaintRecord(DOMNodeId child_id) const {
     }
   }
   return std::nullopt;
+}
+
+const CanvasChildPaintState* HTMLCanvasElement::GetCanvasChildPaintState(
+    DOMNodeId child_id) const {
+  if (auto* view = GetDocument().View()) {
+    if (auto* pac = view->GetPaintArtifactCompositor()) {
+      return pac->GetCanvasChildPaintState(child_id);
+    }
+  }
+  return nullptr;
 }
 
 void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {

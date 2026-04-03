@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/paint/pre_paint_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 #include "third_party/blink/renderer/core/paint/view_painter.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
@@ -1892,6 +1893,65 @@ FragmentPaintPropertyTreeBuilder::ParentForViewTransitionPseudoEffect() const {
   return scope_vt_effect->Parent();
 }
 
+static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
+                                          CanvasChildPaintState& paint_state) {
+  gfx::Size canvas_size = canvas->Size();
+  gfx::Size canvas_device_pixel_content_box =
+      ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
+          LogicalSize(canvas->GetLayoutBox()->ContentLogicalWidth(),
+                      canvas->GetLayoutBox()->ContentLogicalHeight()),
+          *canvas->GetLayoutBox(), canvas->GetLayoutBox()->StyleRef());
+
+  PhysicalRect canvas_content_size;
+  if (auto* replaced = DynamicTo<LayoutReplaced>(canvas->GetLayoutBox())) {
+    canvas_content_size = replaced->ReplacedContentRect();
+  } else {
+    canvas_content_size = canvas->GetLayoutBox()->PhysicalContentBoxRect();
+  }
+
+  // As a special case, if the canvas is sized to its devicePixelContentBox,
+  // make sure the element's physical pixels are mapped 1:1 to the canvas
+  // grid to avoid any inadvertent fuzziness due to rounding.
+  gfx::Vector2dF canvas_grid_scale_factor = {1.f, 1.f};
+  if (canvas_size != canvas_device_pixel_content_box &&
+      canvas_content_size.Width().ToFloat() != 0.f &&
+      canvas_content_size.Height().ToFloat() != 0.f) {
+    canvas_grid_scale_factor = {
+        canvas_size.width() / canvas_content_size.Width().ToFloat(),
+        canvas_size.height() / canvas_content_size.Height().ToFloat()};
+  }
+
+  paint_state.canvas_size = canvas_size;
+  paint_state.canvas_content_size = gfx::SizeF(canvas_content_size.size);
+  paint_state.canvas_grid_scale_factor = canvas_grid_scale_factor;
+}
+static void PopulateCanvasChildState(const LayoutObject& object,
+                                     EffectPaintPropertyNode::State& state) {
+  CHECK(IsA<LayoutBox>(object));
+  auto& canvas_fragment = object.Parent()->FirstFragment();
+  gfx::RectF reference_box(To<LayoutBox>(object).PhysicalBorderBoxRect());
+  gfx::Point3F transform_origin(
+      FloatValueForLength(object.StyleRef().GetTransformOrigin().X(),
+                          reference_box.width()),
+      FloatValueForLength(object.StyleRef().GetTransformOrigin().Y(),
+                          reference_box.height()),
+      object.StyleRef().GetTransformOrigin().Z());
+  state.canvas_child_state =
+      MakeGarbageCollected<EffectPaintPropertyNode::CanvasChildState>();
+  state.canvas_child_state->id = object.GetNode()->GetDomNodeId();
+  state.canvas_child_state->paint_state.effective_zoom =
+      object.StyleRef().EffectiveZoom();
+  state.canvas_child_state->paint_state.transform_origin = gfx::ScalePoint(
+      transform_origin, 1.0f / object.StyleRef().EffectiveZoom());
+  state.canvas_child_state->paint_state.box_size =
+      gfx::SizeF(To<LayoutBox>(object).StitchedSize());
+  PopulateCanvasChildPaintState(
+      To<HTMLCanvasElement>(object.Parent()->GetNode()),
+      state.canvas_child_state->paint_state);
+  state.canvas_child_state->content_effect = canvas_fragment.ContentsEffect();
+  state.canvas_child_state->content_clip = canvas_fragment.ContentsClip();
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
   DCHECK(properties_);
   // Since we're doing a full update, clear list of objects waiting for a
@@ -1988,13 +2048,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
         if (state.direct_compositing_reasons &
             CompositingReason::kCanvasChild) {
-          CHECK(IsA<LayoutBox>(object_));
-          auto& canvas_fragment = object_.Parent()->FirstFragment();
-          state.canvas_child_state = {
-              object_.GetNode()->GetDomNodeId(),
-              gfx::SizeF(To<LayoutBox>(object_).StitchedSize()),
-              object_.StyleRef().EffectiveZoom(),
-              canvas_fragment.ContentsEffect(), canvas_fragment.ContentsClip()};
+          PopulateCanvasChildState(object_, state);
         }
       } else {
         // The effect node CompositorElementId is used to uniquely identify
@@ -3759,6 +3813,21 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
     DCHECK(box.HasLayer());
     box.Layer()->SetFilterOnEffectNodeDirty();
     box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
+  }
+
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    const auto* canvas = DynamicTo<HTMLCanvasElement>(object_.GetNode());
+    if (canvas && canvas->layoutSubtree()) {
+      // Invalidate the child's paint properties so that its cached
+      // CanvasChildPaintState is updated with the new canvas size.
+      for (LayoutObject* child = object_.SlowFirstChild(); child;
+           child = child->NextSibling()) {
+        if (auto* child_box = DynamicTo<LayoutBox>(child)) {
+          child_box->GetMutableForPainting()
+              .SetOnlyThisNeedsPaintPropertyUpdate();
+        }
+      }
+    }
   }
 }
 

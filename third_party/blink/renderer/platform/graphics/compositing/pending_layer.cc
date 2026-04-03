@@ -876,14 +876,6 @@ SkColor4f PendingLayer::ComputeBackgroundColor() const {
   return background_color;
 }
 
-std::optional<CanvasChildPaintRecord> PendingLayer::GetCanvasChildPaintRecord()
-    const {
-  if (!content_layer_client_) {
-    return std::nullopt;
-  }
-  return content_layer_client_->GetCanvasChildPaintRecord();
-}
-
 bool PendingLayer::HasVideo() const {
   return Chunks().size() == 1 && FirstPaintChunk().size() == 1 &&
          FirstDisplayItem().GetType() == DisplayItem::kForeignLayerVideo;
