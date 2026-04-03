@@ -1753,4 +1753,27 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppDirectSocketsPermissionPrompt,
 
   EXPECT_EQ("InvalidAccessError", content::EvalJs(iwa_frame, script));
 }
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiTest,
+                       MulticastSendWithoutPrivatePolicyBypass) {
+  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp(
+      /*with_pna=*/false, /*with_multicast=*/false);
+
+  const std::string script = R"(
+    (async () => {
+      try {
+        const socket = new UDPSocket({ remoteAddress: '239.255.255.250', remotePort: 1900 });
+        const { writable } = await socket.opened;
+        const writer = writable.getWriter();
+        await writer.write({ data: new TextEncoder().encode("M-SEARCH * HTTP/1.1\r\n...") });
+        writer.releaseLock();
+        await socket.close();
+        return 'success';
+      } catch (e) {
+        return e.message;
+      }
+    })()
+  )";
+  EXPECT_EQ("Access to local network is blocked.", EvalJs(app_frame, script));
+}
 }  // namespace

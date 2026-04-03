@@ -174,8 +174,10 @@ bool IsMulticastAllowed(const Context& context) {
 bool RequiresPrivateNetworkAccess(const net::AddressList& addresses) {
   return std::ranges::any_of(
       addresses.endpoints(), [](const net::IPEndPoint& ip_endpoint) {
+        // All multicast endpoints require PNA.
         return network::IPAddressToIPAddressSpace(ip_endpoint.address()) ==
-               network::mojom::IPAddressSpace::kLocal;
+                   network::mojom::IPAddressSpace::kLocal ||
+               ip_endpoint.address().IsMulticast();
       });
 }
 
