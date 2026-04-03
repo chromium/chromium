@@ -37,6 +37,9 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 24;
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_GUIDED_TOUR_PROMPT_BUTTON_TITLE);
   self.configuration.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION);
+  // The default margin causes the title to stretch to two lines for many
+  // devices + English, so lower the margin.
+  self.titleHorizontalMargin = 0;
   [super viewDidLoad];
 }
 
