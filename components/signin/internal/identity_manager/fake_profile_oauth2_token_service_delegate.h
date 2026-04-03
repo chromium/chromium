@@ -61,7 +61,7 @@ class FakeProfileOAuth2TokenServiceDelegate
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  bool IsRefreshTokenBound(const CoreAccountId& account_id) const override;
+  bool IsRefreshTokenBoundToKey(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;
   bool AllBoundTokensShareSameBindingKey() const override;

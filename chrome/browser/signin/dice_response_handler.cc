@@ -201,7 +201,8 @@ void DiceResponseHandler::DiceTokenFetcher::StartTokenFetch() {
   gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchange(
       authorization_code_, binding_registration_token_,
       {.full_version_list = ua_metadata.SerializeBrandFullVersionList(),
-       .platform = SerializeHeaderString(ua_metadata.platform)});
+       .platform = SerializeHeaderString(ua_metadata.platform)},
+      mtls_token_binding_);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_closure_.callback(),
       base::Seconds(kDiceTokenFetchTimeoutSeconds));
@@ -484,10 +485,6 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
     const std::vector<uint8_t>& wrapped_binding_key) {
   const std::string& email = token_fetcher->email();
   const GaiaId& gaia_id = token_fetcher->gaia_id();
-  // TODO(crbug.com/481624833): propagate `mtls_token_binding` to the
-  // AccountsMutator.
-  [[maybe_unused]] const bool mtls_token_binding =
-      token_fetcher->mtls_token_binding();
 
   // Log is consumed by E2E tests. Please CC potassium-engprod@google.com if you
   // have to change this log.
@@ -497,13 +494,15 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
       identity_manager_->PickAccountIdForAccount(gaia_id, email);
   bool is_new_account =
       !identity_manager_->HasAccountWithRefreshToken(account_id);
+  const bool mtls_token_binding = token_fetcher->mtls_token_binding();
 
   identity_manager_->GetAccountsMutator()->AddOrUpdateAccount(
       gaia_id, email, refresh_token, is_under_advanced_protection,
       token_fetcher->delegate()->GetAccessPoint(),
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin,
-      signin::TokenBindingInfo(wrapped_binding_key));
+      signin::TokenBindingInfo(wrapped_binding_key, mtls_token_binding));
+
   about_signin_internals_->OnRefreshTokenReceived(
       base::StringPrintf("Successful (%s)", account_id.ToString().c_str()));
   token_fetcher->delegate()->HandleTokenExchangeSuccess(account_id,

@@ -1567,13 +1567,14 @@ TEST_F(AccountReconcilorDiceTest,
       identity_test_env()->identity_manager();
 
   const AccountInfo account_info_1 = signin::MakeAccountAvailable(
-      identity_manager, signin::AccountAvailabilityOptionsBuilder()
-                            .WithGaiaId(kFakeGaiaId)
-                            .WithRefreshToken("refresh_token_1")
-                            .WithRefreshTokenBindingInfo(
-                                signin::TokenBindingInfo(fake_binding_key))
-                            .AsPrimary(signin::ConsentLevel::kSignin)
-                            .Build(kFakeEmail));
+      identity_manager,
+      signin::AccountAvailabilityOptionsBuilder()
+          .WithGaiaId(kFakeGaiaId)
+          .WithRefreshToken("refresh_token_1")
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              fake_binding_key, /*mtls_token_binding=*/false))
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .Build(kFakeEmail));
   ASSERT_TRUE(identity_manager->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSignin));
 
@@ -1581,8 +1582,8 @@ TEST_F(AccountReconcilorDiceTest,
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder()
           .WithRefreshToken("refresh_token_2")
-          .WithRefreshTokenBindingInfo(
-              signin::TokenBindingInfo(fake_binding_key_other))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              fake_binding_key_other, /*mtls_token_binding=*/false))
           .Build(kFakeEmail2));
   ASSERT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info_2.account_id));

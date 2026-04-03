@@ -62,7 +62,7 @@ bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailableOnDevice(
 #endif  //  BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-bool FakeProfileOAuth2TokenServiceDelegate::IsRefreshTokenBound(
+bool FakeProfileOAuth2TokenServiceDelegate::IsRefreshTokenBoundToKey(
     const CoreAccountId& account_id) const {
   auto it = wrapped_binding_keys_.find(account_id);
   return it != wrapped_binding_keys_.end() && !it->second.empty();

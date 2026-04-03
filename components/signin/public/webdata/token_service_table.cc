@@ -172,10 +172,8 @@ bool TokenServiceTable::RemoveOtherTokens(
 bool TokenServiceTable::SetTokenForService(
     const std::string& service,
     const std::string& token,
-    const std::vector<uint8_t>& wrapped_binding_key) {
-  // TODO(crbug.com/481624833): propagate `mtls_token_binding` to the database
-  // once it's populated.
-  const bool mtls_token_binding = false;
+    const std::vector<uint8_t>& wrapped_binding_key,
+    bool mtls_token_binding) {
   std::string encrypted_token;
   SetTokenResult result = SetTokenResult::kSuccess;
   bool encrypted = encryptor()->EncryptString(token, &encrypted_token);

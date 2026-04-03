@@ -34,14 +34,16 @@ class MockOAuth2MintAccessTokenFetcherAdapter
     : public OAuth2MintAccessTokenFetcherAdapter {
  public:
   explicit MockOAuth2MintAccessTokenFetcherAdapter()
-      : OAuth2MintAccessTokenFetcherAdapter(nullptr,
-                                            nullptr,
-                                            GaiaId(),
-                                            "",
-                                            true,
-                                            "",
-                                            "",
-                                            "") {}
+      : OAuth2MintAccessTokenFetcherAdapter(
+            nullptr,
+            nullptr,
+            GaiaId(),
+            "",
+            /*use_mtls_endpoints_for_fetching_tokens=*/false,
+            /*is_refresh_token_bound=*/true,
+            "",
+            "",
+            "") {}
 
   MOCK_METHOD(void,
               Start,

@@ -23,12 +23,19 @@ struct TokenBindingInfo {
   TokenBindingInfo(TokenBindingInfo&&);
   TokenBindingInfo& operator=(TokenBindingInfo&&);
 
-  explicit TokenBindingInfo(std::vector<uint8_t> wrapped_binding_key);
+  explicit TokenBindingInfo(std::vector<uint8_t> wrapped_binding_key,
+                            bool mtls_token_binding);
+
   ~TokenBindingInfo();
 
   // The cryptographic key used to bind the token, in a wrapped format.
   // An empty vector indicates that no token binding key is provided.
   std::vector<uint8_t> wrapped_binding_key;
+
+  // Whether the refresh token is bound to an mTLS certificate. If true,
+  // access token requests using this token should use mTLS-specific
+  // endpoints.
+  bool mtls_token_binding = false;
 };
 
 }  // namespace signin

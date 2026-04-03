@@ -85,7 +85,8 @@ class TokenServiceTable : public WebDatabaseTable {
   // Returns true if we encrypted a token and stored it, false otherwise.
   bool SetTokenForService(const std::string& service,
                           const std::string& token,
-                          const std::vector<uint8_t>& wrapped_binding_key);
+                          const std::vector<uint8_t>& wrapped_binding_key,
+                          bool mtls_token_binding);
 
  private:
   bool MigrateToVersion130AddBindingKeyColumn();

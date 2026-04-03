@@ -599,7 +599,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
       account_id_, "refreshToken",
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin,
-      signin::TokenBindingInfo(std::vector<uint8_t>{1, 2, 3}));
+      signin::TokenBindingInfo(std::vector<uint8_t>{1, 2, 3},
+                               /*mtls_token_binding=*/false));
 
   {
     base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
@@ -645,7 +646,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
       account_id_, "refreshToken",
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin,
-      signin::TokenBindingInfo(std::vector<uint8_t>{2, 3, 4}));
+      signin::TokenBindingInfo(std::vector<uint8_t>{2, 3, 4},
+                               /*mtls_token_binding=*/false));
   token_service.GetDelegate()->UpdateAuthError(
       account_id_,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
@@ -687,7 +689,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
       account_id_, "refreshToken",
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin,
-      signin::TokenBindingInfo(std::vector<uint8_t>{1, 2, 3}));
+      signin::TokenBindingInfo(std::vector<uint8_t>{1, 2, 3},
+                               /*mtls_token_binding=*/false));
 
   base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
                          signin::OAuthMultiloginTokenRequest::Result>

@@ -67,7 +67,8 @@ class BoundSessionOAuthMultiLoginDelegateImplTest : public testing::Test {
   void Signin(const std::vector<uint8_t>& wrapped_key) {
     identity_test_environment_.MakeAccountAvailable(
         signin::AccountAvailabilityOptionsBuilder()
-            .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+            .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+                wrapped_key, /*mtls_token_binding=*/false))
             .Build("test@email.com"));
   }
 

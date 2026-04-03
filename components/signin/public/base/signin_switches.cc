@@ -289,6 +289,13 @@ BASE_FEATURE(kEnableFakeCapabilityForTesting,
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Enables mTLS token binding in the identity stack. This allows binding tokens
+// to an mTLS certificate upon receiving the `mtl_token_binding` indicator in
+// the Dice sigin header.
+BASE_FEATURE(kEnableMtlsTokenBinding, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Enables binding the OAuthMultilogin cookies to a device with DBSC prototype.
 //
 // If `kEnableOAuthMultiloginStandardCookiesBinding` is enabled, DBSC standard

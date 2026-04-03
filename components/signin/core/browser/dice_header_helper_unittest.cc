@@ -10,11 +10,13 @@
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/core/browser/dice_response_params.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -218,6 +220,8 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_MissingEmail) {
 }
 
 TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_MtlsTokenBinding) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kEnableMtlsTokenBinding);
   base::HistogramTester histogram_tester;
   DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
       base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
@@ -241,6 +245,26 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_MtlsTokenBinding) {
                         /*expected_mtls_token_binding=*/true);
   }
   histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true, 1);
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsWithMtlsTokenBindingFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(switches::kEnableMtlsTokenBinding);
+
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
+      base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
+                         "authorization_code=%s,"
+                         "eligible_for_token_binding=%s,"
+                         "mtls_token_binding=true",
+                         kGaiaID.ToString().c_str(), kEmail, kSessionIndex,
+                         kAuthorizationCode, kSupportedTokenBindingAlgorithms));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto* account = signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+  EXPECT_FALSE(account->mtls_token_binding);
 }
 
 TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams) {
@@ -460,6 +484,8 @@ TEST_F(DiceHeaderHelperTest,
 }
 
 TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsSemicolon_AllFields) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kEnableMtlsTokenBinding);
   DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
       base::StringPrintf("action=SIGNIN;id=%s;email=%s;authuser=%i;"
                          "authorization_code=%s;"
@@ -538,6 +564,8 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMultiAccount_Basic) {
 
 TEST_F(DiceHeaderHelperTest,
        BuildDiceSigninResponseParamsMultiAccount_AllFields) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kEnableMtlsTokenBinding);
   const GaiaId kGaiaID1("id1");
   const GaiaId kGaiaID2("id2");
   const std::string kSupportedAlgorithms2 = "ES256";

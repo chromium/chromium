@@ -77,6 +77,7 @@ OAuth2MintAccessTokenFetcherAdapter::OAuth2MintAccessTokenFetcherAdapter(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GaiaId& user_gaia_id,
     const std::string& refresh_token,
+    bool use_mtls_endpoints_for_fetching_tokens,
     bool is_refresh_token_bound,
     const std::string& device_id,
     const std::string& client_version,
@@ -85,6 +86,8 @@ OAuth2MintAccessTokenFetcherAdapter::OAuth2MintAccessTokenFetcherAdapter(
       url_loader_factory_(std::move(url_loader_factory)),
       user_gaia_id_(user_gaia_id),
       refresh_token_(refresh_token),
+      use_mtls_endpoints_for_fetching_tokens_(
+          use_mtls_endpoints_for_fetching_tokens),
       is_refresh_token_bound_(is_refresh_token_bound),
       device_id_(device_id),
       client_version_(client_version),
@@ -107,7 +110,8 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
           : std::string();
   auto params = OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
       client_id, std::vector<std::string_view>(scopes.begin(), scopes.end()),
-      client_version_, client_channel_, device_id_, bound_oauth_token);
+      client_version_, client_channel_, device_id_, bound_oauth_token,
+      use_mtls_endpoints_for_fetching_tokens_);
   if (mint_token_flow_factory_for_testing_) {
     CHECK_IS_TEST();
     mint_token_flow_ =

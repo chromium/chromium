@@ -304,7 +304,8 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(fake_gaia_id_1)
           .WithRefreshToken(refresh_token_1)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(email_1));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
@@ -320,7 +321,8 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
       signin::AccountAvailabilityOptionsBuilder()
           .WithGaiaId(fake_gaia_id_2)
           .WithRefreshToken(refresh_token_2)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(email_2));
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
       account_info_2.account_id));
@@ -409,7 +411,8 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(FakeGaiaMixin::kFakeUserGaiaId)
           .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(FakeGaiaMixin::kFakeUserEmail));
 
   ASSERT_TRUE(
@@ -486,7 +489,8 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(FakeGaiaMixin::kFakeUserGaiaId)
           .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(FakeGaiaMixin::kFakeUserEmail));
 
   ASSERT_TRUE(
@@ -572,7 +576,8 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(fake_gaia_id)
           .WithRefreshToken(refresh_token)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(email));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
@@ -679,13 +684,14 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
   const CoreAccountInfo account_info_1 = signin::MakeAccountAvailable(
-      &identity_manager(), signin::AccountAvailabilityOptionsBuilder()
-                               .AsPrimary(signin::ConsentLevel::kSignin)
-                               .WithGaiaId(fake_gaia_id_1)
-                               .WithRefreshToken(refresh_token_1)
-                               .WithRefreshTokenBindingInfo(
-                                   signin::TokenBindingInfo(GetWrappedKey()))
-                               .Build(email_1));
+      &identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithGaiaId(fake_gaia_id_1)
+          .WithRefreshToken(refresh_token_1)
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              GetWrappedKey(), /*mtls_token_binding=*/false))
+          .Build(email_1));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
       account_info_1);
@@ -696,12 +702,13 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
   const std::string refresh_token_2 = "refresh-token-2";
   const CoreAccountInfo account_info_2 = signin::MakeAccountAvailable(
-      &identity_manager(), signin::AccountAvailabilityOptionsBuilder()
-                               .WithGaiaId(fake_gaia_id_2)
-                               .WithRefreshToken(refresh_token_2)
-                               .WithRefreshTokenBindingInfo(
-                                   signin::TokenBindingInfo(GetWrappedKey()))
-                               .Build(email_2));
+      &identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .WithGaiaId(fake_gaia_id_2)
+          .WithRefreshToken(refresh_token_2)
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              GetWrappedKey(), /*mtls_token_binding=*/false))
+          .Build(email_2));
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
       account_info_2.account_id));
 
@@ -767,7 +774,8 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(fake_gaia_id_1)
           .WithRefreshToken(refresh_token_1)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(email_1));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
@@ -783,7 +791,8 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
       signin::AccountAvailabilityOptionsBuilder()
           .WithGaiaId(fake_gaia_id_2)
           .WithRefreshToken(refresh_token_2)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(email_2));
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
       account_info_2.account_id));
@@ -880,7 +889,8 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(FakeGaiaMixin::kFakeUserGaiaId)
           .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(FakeGaiaMixin::kFakeUserEmail));
 
   ASSERT_TRUE(
@@ -975,7 +985,8 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(FakeGaiaMixin::kFakeUserGaiaId)
           .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(FakeGaiaMixin::kFakeUserEmail));
 
   ASSERT_TRUE(
@@ -1082,7 +1093,8 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(fake_gaia_id_1)
           .WithRefreshToken(refresh_token_1)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(email_1));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
@@ -1098,7 +1110,8 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
       signin::AccountAvailabilityOptionsBuilder()
           .WithGaiaId(fake_gaia_id_2)
           .WithRefreshToken(refresh_token_2)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(email_2));
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
       account_info_2.account_id));
@@ -1211,7 +1224,8 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(FakeGaiaMixin::kFakeUserGaiaId)
           .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(FakeGaiaMixin::kFakeUserEmail));
 
   ASSERT_TRUE(
@@ -1337,7 +1351,8 @@ IN_PROC_BROWSER_TEST_F(
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithGaiaId(FakeGaiaMixin::kFakeUserGaiaId)
           .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(wrapped_key))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              wrapped_key, /*mtls_token_binding=*/false))
           .Build(FakeGaiaMixin::kFakeUserEmail));
 
   ASSERT_TRUE(

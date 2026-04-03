@@ -45,6 +45,7 @@
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -216,8 +217,9 @@ class DiceResponseHandlerTest : public testing::Test,
       case DiceAction::SIGNIN: {
         DiceResponseParams::SigninInfo* signin_info =
             &dice_params.data.emplace<DiceResponseParams::SigninInfo>();
-        signin_info->AddAccount({account_info, kAuthorizationCode, false,
-                                 kEligibleForTokenBinding, false});
+        signin_info->AddAccount(
+            {account_info, kAuthorizationCode, /*no_authorization_code=*/false,
+             kEligibleForTokenBinding, /*mtls_token_binding=*/false});
         break;
       }
       case DiceAction::ENABLE_SYNC: {
@@ -420,6 +422,10 @@ TEST_F(DiceResponseHandlerTest, Signin) {
   // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer, testing::NotNull());
+  EXPECT_EQ(signin_client_.GetTestURLLoaderFactory()
+                ->GetPendingRequest(0)
+                ->request.url,
+            GaiaUrls::GetInstance()->oauth2_token_url());
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   // Simulate GaiaAuthFetcher success.
@@ -450,6 +456,42 @@ TEST_F(DiceResponseHandlerTest, Signin) {
       kTokenBindingOutcomeHistogram,
       DiceResponseHandler::TokenBindingOutcome::kNotBoundNotSupported,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(DiceResponseHandlerTest, SigninWithMtlsTokenBinding) {
+  DiceResponseParams dice_params;
+  DiceResponseParams::AccountInfo account_info =
+      GetDiceResponseParamsAccountInfo(kEmail);
+  DiceResponseParams::SigninInfo* signin_info =
+      &dice_params.data.emplace<DiceResponseParams::SigninInfo>();
+  signin_info->AddAccount(
+      {account_info, kAuthorizationCode, /*no_authorization_code=*/false,
+       kEligibleForTokenBinding, /*mtls_token_binding=*/true});
+
+  CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
+      account_info.gaia_id, account_info.email);
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
+
+  // Check that a GaiaAuthFetcher has been created.
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer, testing::NotNull());
+
+  EXPECT_EQ(signin_client_.GetTestURLLoaderFactory()
+                ->GetPendingRequest(0)
+                ->request.url,
+            GaiaUrls::GetInstance()->mtls_oauth2_token_url());
+
+  EXPECT_EQ(1, reconcilor_blocked_count_);
+  EXPECT_EQ(0, reconcilor_unblocked_count_);
+  // Simulate GaiaAuthFetcher success.
+  consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
+  // Check that the token has been inserted in the token service.
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
 }
 
 // Checks that a SIGNIN action triggers a token exchange request.
@@ -611,7 +653,8 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   identity_test_env_.MakeAccountAvailable(
       signin::AccountAvailabilityOptionsBuilder()
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(kWrappedKey))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              kWrappedKey, /*mtls_token_binding=*/false))
           .Build("other@email.com"));
 
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
@@ -651,7 +694,8 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOneTokenBoundOneNonBound) {
   identity_test_env_.MakeAccountAvailable("nonbound@gmail.com");
   identity_test_env_.MakeAccountAvailable(
       signin::AccountAvailabilityOptionsBuilder()
-          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(kWrappedKey))
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(
+              kWrappedKey, /*mtls_token_binding=*/false))
           .Build("bound@email.com"));
 
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);

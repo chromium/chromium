@@ -17,8 +17,10 @@ TokenBindingInfo& TokenBindingInfo::operator=(const TokenBindingInfo&) =
 TokenBindingInfo::TokenBindingInfo(TokenBindingInfo&&) = default;
 TokenBindingInfo& TokenBindingInfo::operator=(TokenBindingInfo&&) = default;
 
-TokenBindingInfo::TokenBindingInfo(std::vector<uint8_t> wrapped_binding_key)
-    : wrapped_binding_key(std::move(wrapped_binding_key)) {}
+TokenBindingInfo::TokenBindingInfo(std::vector<uint8_t> wrapped_binding_key,
+                                   bool mtls_token_binding)
+    : wrapped_binding_key(std::move(wrapped_binding_key)),
+      mtls_token_binding(mtls_token_binding) {}
 
 TokenBindingInfo::~TokenBindingInfo() = default;
 

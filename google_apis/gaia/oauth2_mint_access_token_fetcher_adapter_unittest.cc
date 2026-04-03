@@ -163,11 +163,14 @@ Matcher<const OAuth2MintTokenFlow::Parameters&> ParamsEq(
       Field("channel", &Parameters::channel, expected.channel),
       Field("mode", &Parameters::mode, expected.mode),
       Field("bound_oauth_token", &Parameters::bound_oauth_token,
-            expected.bound_oauth_token));
+            expected.bound_oauth_token),
+      Field("use_mtls_endpoints", &Parameters::use_mtls_endpoints,
+            expected.use_mtls_endpoints));
 }
 
 OAuth2MintTokenFlow::Parameters GetTestOAuth2MintTokenFlowParameters(
-    std::string_view bound_oauth_token) {
+    std::string_view bound_oauth_token,
+    bool use_mtls_endpoints = false) {
   OAuth2MintTokenFlow::Parameters params;
   params.client_id = kTestClientId;
   params.version = kTestVersion;
@@ -177,6 +180,7 @@ OAuth2MintTokenFlow::Parameters GetTestOAuth2MintTokenFlowParameters(
   params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
   params.scopes = {kTestScope};
   params.bound_oauth_token = bound_oauth_token;
+  params.use_mtls_endpoints = use_mtls_endpoints;
   return params;
 }
 
@@ -188,11 +192,12 @@ class OAuth2MintAccessTokenFetcherAdapterTest : public testing::Test {
   ~OAuth2MintAccessTokenFetcherAdapterTest() override = default;
 
   std::unique_ptr<OAuth2MintAccessTokenFetcherAdapter> CreateFetcher(
-      bool is_refresh_token_bound = true) {
+      bool is_refresh_token_bound = true,
+      bool use_mtls_endpoints = false) {
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         &mock_consumer_, url_loader_factory_.GetSafeWeakWrapper(),
-        kTestUserGaiaId, kTestRefreshToken, is_refresh_token_bound,
-        kTestDeviceId, kTestVersion, kTestChannel);
+        kTestUserGaiaId, kTestRefreshToken, use_mtls_endpoints,
+        is_refresh_token_bound, kTestDeviceId, kTestVersion, kTestChannel);
     fetcher->SetOAuth2MintTokenFlowFactoryForTesting(base::BindRepeating(
         &OAuth2MintAccessTokenFetcherAdapterTest::CreateMockFlow,
         base::Unretained(this)));
@@ -257,6 +262,19 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Params) {
   OAuth2MintTokenFlow::Parameters expected_params =
       GetTestOAuth2MintTokenFlowParameters(gaia::CreateBoundOAuthToken(
           kTestUserGaiaId, kTestRefreshToken, kAssertionSentinel));
+  EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, ParamsWithMtls) {
+  auto fetcher = CreateFetcher(/*is_refresh_token_bound=*/true,
+                               /*use_mtls_endpoints=*/true);
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  EXPECT_TRUE(mock_flow());
+  OAuth2MintTokenFlow::Parameters expected_params =
+      GetTestOAuth2MintTokenFlowParameters(
+          gaia::CreateBoundOAuthToken(kTestUserGaiaId, kTestRefreshToken,
+                                      kAssertionSentinel),
+          /*use_mtls_endpoints=*/true);
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
 }
 

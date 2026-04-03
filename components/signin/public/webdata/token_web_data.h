@@ -55,7 +55,8 @@ class TokenWebData : public WebDataServiceBase {
   // Set a token to use for a specified service.
   void SetTokenForService(const std::string& service,
                           const std::string& token,
-                          const std::vector<uint8_t>& wrapped_binding_key);
+                          const std::vector<uint8_t>& wrapped_binding_key,
+                          bool mtls_token_binding);
 
   // Remove all tokens stored in the web database.
   void RemoveAllTokens();

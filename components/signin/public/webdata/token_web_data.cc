@@ -55,9 +55,10 @@ class TokenWebDataBackend
       const std::string& service,
       const std::string& token,
       const std::vector<uint8_t>& wrapped_binding_key,
+      bool mtls_token_binding,
       WebDatabase* db) {
     if (TokenServiceTable::FromWebDatabase(db)->SetTokenForService(
-            service, token, wrapped_binding_key)) {
+            service, token, wrapped_binding_key, mtls_token_binding)) {
       return WebDatabase::COMMIT_NEEDED;
     }
     return WebDatabase::COMMIT_NOT_NEEDED;
@@ -107,10 +108,12 @@ TokenWebData::TokenWebData(
 void TokenWebData::SetTokenForService(
     const std::string& service,
     const std::string& token,
-    const std::vector<uint8_t>& wrapped_binding_key) {
+    const std::vector<uint8_t>& wrapped_binding_key,
+    bool mtls_token_binding) {
   wdbs_->ScheduleDBTask(
-      FROM_HERE, BindOnce(&TokenWebDataBackend::SetTokenForService,
-                          token_backend_, service, token, wrapped_binding_key));
+      FROM_HERE,
+      BindOnce(&TokenWebDataBackend::SetTokenForService, token_backend_,
+               service, token, wrapped_binding_key, mtls_token_binding));
 }
 
 void TokenWebData::RemoveAllTokens() {

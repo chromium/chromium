@@ -172,7 +172,7 @@ void ProfileOAuth2TokenService::StartRequestForMultilogin(
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  bool is_bound = delegate_->IsRefreshTokenBound(request.account_id());
+  bool is_bound = delegate_->IsRefreshTokenBoundToKey(request.account_id());
 
   // Sign `token_binding_challenge` asynchronously if it's required.
   if (is_bound && !token_binding_challenge.empty()) {

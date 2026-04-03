@@ -128,9 +128,11 @@ class MutableProfileOAuth2TokenServiceDelegate
   std::string GetTokenForMultilogin(
       const CoreAccountId& account_id) const override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
-  bool IsRefreshTokenBound(const CoreAccountId& account_id) const override;
+  bool IsRefreshTokenBoundToKey(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;
+  bool ShouldUseMtlsForAccessTokenFetches(
+      const CoreAccountId& account_id) const;
   bool AllBoundTokensShareSameBindingKey() const override;
   void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,
@@ -326,8 +328,22 @@ class MutableProfileOAuth2TokenServiceDelegate
   void RecordAccountAvailabilityStartup(const CoreAccountId& account_id,
                                         const std::string& refresh_token);
 
-  // In memory refresh token store mapping account_id to refresh_token.
-  std::map<CoreAccountId, crypto::ProcessBoundString> refresh_tokens_;
+  // In memory refresh token store mapping account_id to TokenData.
+  struct TokenData {
+    crypto::ProcessBoundString refresh_token;
+    bool mtls_token_binding = false;
+
+    TokenData(crypto::ProcessBoundString refresh_token,
+              bool mtls_token_binding);
+
+    TokenData(const TokenData&);
+    TokenData& operator=(const TokenData&);
+    TokenData(TokenData&&);
+    TokenData& operator=(TokenData&&);
+
+    ~TokenData();
+  };
+  std::map<CoreAccountId, TokenData> refresh_tokens_;
 
   // Handle to the request reading tokens from database.
   WebDataServiceBase::Handle web_data_service_request_;

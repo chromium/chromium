@@ -950,7 +950,8 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(kFakeWrappedBindingKey));
+      signin::TokenBindingInfo(kFakeWrappedBindingKey,
+                               /*mtls_token_binding=*/false));
   CreateHelper({{kAccountId, kGaiaId}});
 
   // Configure mock cookie manager:
@@ -982,7 +983,8 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(kFakeWrappedBindingKey));
+      signin::TokenBindingInfo(kFakeWrappedBindingKey,
+                               /*mtls_token_binding=*/false));
   CreateHelper({{kAccountId, kGaiaId}});
 
   // First Multilogin call returns a token binding challenge.
@@ -1039,7 +1041,8 @@ TEST_F(OAuthMultiloginHelperTest,
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(kFakeWrappedBindingKey));
+      signin::TokenBindingInfo(kFakeWrappedBindingKey,
+                               /*mtls_token_binding=*/false));
   base::RunLoop wait_for_request_loop;
   url_loader()->SetInterceptor(
       base::IgnoreArgs<const network::ResourceRequest&>(
@@ -1081,7 +1084,8 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(kFakeWrappedBindingKey));
+      signin::TokenBindingInfo(kFakeWrappedBindingKey,
+                               /*mtls_token_binding=*/false));
   CreateHelper({{kAccountId, kGaiaId}});
 
   // First Multilogin call returns a token binding challenge.
@@ -1152,7 +1156,7 @@ TEST_F(OAuthMultiloginHelperPrototypeBoundSessionsEnabledTest,
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(binding_key));
+      signin::TokenBindingInfo(binding_key, /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   Sequence s1, s2;
@@ -1255,7 +1259,8 @@ TEST_F(OAuthMultiloginHelperPrototypeBoundSessionsEnabledTest,
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(std::vector<uint8_t>{1, 2, 3}));
+      signin::TokenBindingInfo(std::vector<uint8_t>{1, 2, 3},
+                               /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   // No bound session delegate is created (no mock is created either).
@@ -1427,7 +1432,7 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(binding_key));
+      signin::TokenBindingInfo(binding_key, /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   // No cookies are set via `CookieManager` if standard DBSC is enabled.
@@ -1514,7 +1519,7 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(binding_key));
+      signin::TokenBindingInfo(binding_key, /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   const GURL kAbsoluteRefreshUrl("https://youtube.com/RotateBoundCookies");
@@ -1594,7 +1599,7 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(binding_key));
+      signin::TokenBindingInfo(binding_key, /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   EXPECT_CALL(
@@ -1673,7 +1678,7 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(binding_key));
+      signin::TokenBindingInfo(binding_key, /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   // No cookies are set via `CookieManager` if standard DBSC is enabled.
@@ -1861,7 +1866,7 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(binding_key));
+      signin::TokenBindingInfo(binding_key, /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   // No sessions are created via `BoundSessionOAuthMultiLoginDelegate` if
@@ -1941,7 +1946,7 @@ TEST_F(
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(binding_key));
+      signin::TokenBindingInfo(binding_key, /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   // No sessions are created and no cookies are set via
@@ -2003,7 +2008,7 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledPrototypeDisabledTest,
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(binding_key));
+      signin::TokenBindingInfo(binding_key, /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   // No sessions are created via `BoundSessionOAuthMultiLoginDelegate` if the
@@ -2055,7 +2060,7 @@ TEST_F(
   token_service()->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      signin::TokenBindingInfo(binding_key));
+      signin::TokenBindingInfo(binding_key, /*mtls_token_binding=*/false));
   CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
 
   // No sessions are created and no cookies are set via
