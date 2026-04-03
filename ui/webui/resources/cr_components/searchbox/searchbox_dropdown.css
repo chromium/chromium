@@ -41,7 +41,8 @@ cr-searchbox-match {
 }
 
 cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
-  color: var(--color-searchbox-results-foreground-selected);
+  color: var(--color-searchbox-results-foreground-selected,
+      var(--color-searchbox-results-foreground));
 }
 
 .header {

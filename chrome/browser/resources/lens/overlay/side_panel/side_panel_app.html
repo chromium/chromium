@@ -18,30 +18,40 @@
   /* Light mode not on AIM results */
   :host(:not([is-on-aim-results]):not([dark-mode])) {
     --cr-composebox-background-color: #f3f5f6;
-    --cr-composebox-submit-button-hover-color: #e9ebf01a;
     --color-composebox-cancel-button: #0a0a0a;
-    --color-composebox-font: #0a0a0a;
     --color-composebox-hover: #e9ebf0;
-    --color-composebox-lens-button: #0a0a0a;
-    --search-background-color: white;
-    --search-background-color-rgb: 255, 255, 255;
+    --color-composebox-font: #0a0a0a;
     --color-composebox-font-light: #0a0a0a;
     --color-composebox-font-dark: #0a0a0a;
+    --color-composebox-lens-button: #0a0a0a;
+
+    /* Sets the color of the searchbox AND the dropdown
+     * (dropdown is technically transparent,
+     * so it shows searchbox wrapper's color, which is this.
+     */
+    --color-lens-searchbox-background: #fff;
+    --color-searchbox-results-background-hovered: #F7F8F9;
+    --cr-composebox-submit-button-hover-color: #e9ebf01a;
+    --search-background-color: white;
+    --search-background-color-rgb: 255, 255, 255;
   }
 
   /* Light mode on AIM results */
   :host([is-on-aim-results]:not([dark-mode])) {
-    --cr-composebox-background-color: #f3f5f6;
-    --cr-composebox-submit-button-hover-color: #e9ebf01a;
     --color-composebox-cancel-button: #0a0a0a;
     --color-composebox-font: #0a0a0a;
-    --color-composebox-hover: #e9ebf0;
-    --color-composebox-lens-button: #0a0a0a;
-    --search-background-color: white;
-    --search-background-color-rgb: 255, 255, 255;
     --color-composebox-font-light: #0a0a0a;
     --color-composebox-font-dark: #0a0a0a;
+    --color-composebox-hover: #e9ebf0;
+    --color-composebox-lens-button: #0a0a0a;
+    --color-lens-searchbox-background: #fff;
+    --color-searchbox-results-background-hovered: #F7F8F9;
+    --cr-composebox-background-color: #f3f5f6;
+    --cr-composebox-submit-button-hover-color: #e9ebf01a;
+    --search-background-color: white;
+    --search-background-color-rgb: 255, 255, 255;
   }
+
 
   /* Dark mode not on AIM results */
   :host(:not([is-on-aim-results])[dark-mode]) {
@@ -168,7 +178,6 @@
   #searchboxContainer {
     position: fixed;
     width: 100%;
-    --color-searchbox-results-background: #ffffffff;
     /* Colors for searchbox ghost loader */
     --color-searchbox-ghost-loader-loading-bar-1: #f1f3f4;
     --color-searchbox-ghost-loader-loading-bar-2: #ecedef;

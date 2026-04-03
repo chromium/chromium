@@ -12,13 +12,15 @@
 
 :host {
   /* Embedders should define --cr-searchbox-min-width. */
-  --cr-searchbox-width: var(--cr-searchbox-min-width);
   --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
+  --cr-searchbox-icon-spacing: 11px;
   --cr-searchbox-icon-width: 26px;
   --cr-searchbox-inner-icon-margin: 8px;
+  --cr-searchbox-shadow: 0 4px 8px 3px rgba(0, 0, 0, 0.15),
+      0 1px 3px 0 rgba(0, 0, 0, 0.30);
   --cr-searchbox-voice-icon-offset: 16px;
   --cr-searchbox-voice-search-button-width: 0px;
-  --cr-searchbox-icon-spacing: 11px;
+  --cr-searchbox-width: var(--cr-searchbox-min-width);
   border-radius: var(--cr-searchbox-border-radius);
   font-size: var(--cr-searchbox-font-size, 16px);
   height: var(--cr-searchbox-height);

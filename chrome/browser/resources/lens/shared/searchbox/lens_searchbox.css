@@ -10,14 +10,15 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --cr-searchbox-width: var(--cr-searchbox-min-width);
   --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
   --cr-searchbox-icon-width: 26px;
+  --cr-searchbox-icon-spacing: 11px;
   --cr-searchbox-inner-icon-margin: 8px;
+  --cr-searchbox-shadow: 0 4px 8px 3px rgba(0, 0, 0, 0.15),
+      0 1px 3px 0 rgba(0, 0, 0, 0.30);
   --cr-searchbox-voice-icon-offset: 16px;
   --cr-searchbox-voice-search-button-width: 0px;
-  --cr-compose-button-width: 104px;
-  --cr-searchbox-icon-spacing: 11px;
+  --cr-searchbox-width: var(--cr-searchbox-min-width);
   border-radius: var(--cr-searchbox-border-radius);
   font-size: var(--cr-searchbox-font-size, 16px);
   height: var(--cr-searchbox-height);
@@ -41,9 +42,10 @@
 }
 
 #inputWrapper {
-  background-color: var(--color-searchbox-background);
+  background-color: var(--color-lens-searchbox-background,
+      var(--color-searchbox-background));
   border-radius: var(--cr-searchbox-border-radius);
-  box-shadow: none;
+  box-shadow: var(--cr-searchbox-shadow);
   display: flex;
   flex-direction: column;
   height: auto;
