@@ -945,6 +945,21 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
         CreateEulaSentinel();
       }
     }
+  } else if (cmd_line.HasSwitch(installer::switches::kOnOsUpgrade)) {
+    installer::InstallStatus status = installer::INVALID_STATE_FOR_OPTION;
+    std::unique_ptr<FileVersionInfo> version_info(
+        FileVersionInfo::CreateFileVersionInfo(setup_exe));
+    const base::Version installed_version(
+        base::UTF16ToUTF8(version_info->product_version()));
+    if (installed_version.IsValid()) {
+      installer::HandleOsUpgradeForBrowser(*installer_state, installed_version,
+                                           setup_exe);
+      status = installer::INSTALL_REPAIRED;
+    } else {
+      LOG(DFATAL) << "Failed to extract product version from "
+                  << setup_exe.value();
+    }
+    *exit_code = InstallUtil::GetInstallReturnCode(status);
   } else if (cmd_line.HasSwitch(installer::switches::kConfigureUserSettings)) {
     // NOTE: Should the work done here, on kConfigureUserSettings, change:
     // kActiveSetupVersion in install_worker.cc needs to be increased for Active
@@ -1058,21 +1073,6 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     installer::DeleteChromeRegistrationKeys(*installer_state,
                                             HKEY_LOCAL_MACHINE, suffix, &tmp);
     *exit_code = tmp;
-  } else if (cmd_line.HasSwitch(installer::switches::kOnOsUpgrade)) {
-    installer::InstallStatus status = installer::INVALID_STATE_FOR_OPTION;
-    std::unique_ptr<FileVersionInfo> version_info(
-        FileVersionInfo::CreateFileVersionInfo(setup_exe));
-    const base::Version installed_version(
-        base::UTF16ToUTF8(version_info->product_version()));
-    if (installed_version.IsValid()) {
-      installer::HandleOsUpgradeForBrowser(*installer_state, installed_version,
-                                           setup_exe);
-      status = installer::INSTALL_REPAIRED;
-    } else {
-      LOG(DFATAL) << "Failed to extract product version from "
-                  << setup_exe.value();
-    }
-    *exit_code = InstallUtil::GetInstallReturnCode(status);
   } else if (cmd_line.HasSwitch(installer::switches::kReenableAutoupdates)) {
     // setup.exe has been asked to attempt to reenable updates for Chrome.
     bool updates_enabled = GoogleUpdateSettings::ReenableAutoupdates();
