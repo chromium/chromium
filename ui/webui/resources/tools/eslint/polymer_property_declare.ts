@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/types/dist/index.js';
 import {ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import assert from 'node:assert';
 
-import {isPolymerElementSubclass} from './query_utils.js';
+import {isIdentifier, isPolymerElementSubclass} from './query_utils.js';
 
-export const polymerPropertyDeclareRule = ESLintUtils.RuleCreator.withoutDocs({
-  name: 'polymer-property-declare',
+type Options = [];
+type MessageIds = 'missingDeclareKeyword'|'extraDeclareKeyword';
+
+export const polymerPropertyDeclareRule = ESLintUtils.RuleCreator.withoutDocs<
+    Options, MessageIds>({
   meta: {
     type: 'problem',
     docs: {
       description:
           'Checks for the proper use of the \'declare\' keyword in Polymer code that uses useDefineForClassFields=true.',
-      recommended: 'error',
     },
     messages: {
       missingDeclareKeyword:
@@ -21,6 +25,7 @@ export const polymerPropertyDeclareRule = ESLintUtils.RuleCreator.withoutDocs({
       extraDeclareKeyword:
           'Unnecessary \'declare\' keyword when declaring regular (non Polymer) property \'{{propName}}\' in class \'{{className}}\'.',
     },
+    schema: [],
   },
   defaultOptions: [],
   create(context) {
@@ -34,15 +39,17 @@ export const polymerPropertyDeclareRule = ESLintUtils.RuleCreator.withoutDocs({
     }
 
     let isPolymerElement = false;
-    let polymerProperties = null;  // Set<string>|null
-    let currentClass = null;       // TSESTree.ClassDeclaration|null
+    let polymerProperties: Set<string>|null = null;
+    let currentClass: TSESTree.ClassDeclaration|null = null;
 
     return {
-      'ClassDeclaration'(node) {
+      'ClassDeclaration'(node: TSESTree.ClassDeclaration) {
         isPolymerElement =
             isPolymerElementSubclass(node, context.sourceCode.ast);
 
         if (!isPolymerElement) {
+          polymerProperties = null;
+          currentClass = null;
           return;
         }
 
@@ -50,17 +57,25 @@ export const polymerPropertyDeclareRule = ESLintUtils.RuleCreator.withoutDocs({
         currentClass = node;
       },
       'ClassDeclaration > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property'(
-          node) {
+          node: TSESTree.Property) {
         if (!isPolymerElement) {
           return;
         }
 
+        assert.ok(polymerProperties);
+        assert.ok(isIdentifier(node.key));
         polymerProperties.add(node.key.name);
       },
-      'ClassDeclaration > ClassBody > PropertyDefinition'(node) {
+      'ClassDeclaration > ClassBody > PropertyDefinition'(
+          node: TSESTree.PropertyDefinition) {
         if (!isPolymerElement) {
           return;
         }
+
+        assert.ok(polymerProperties);
+        assert.ok(currentClass);
+        assert.ok(currentClass.id);
+        assert.ok(isIdentifier(node.key));
 
         if (node.declare) {
           if (!polymerProperties.has(node.key.name)) {
@@ -73,17 +88,18 @@ export const polymerPropertyDeclareRule = ESLintUtils.RuleCreator.withoutDocs({
               },
             });
           }
-        } else {
-          if (polymerProperties.has(node.key.name)) {
-            context.report({
-              node,
-              messageId: 'missingDeclareKeyword',
-              data: {
-                propName: node.key.name,
-                className: currentClass.id.name,
-              },
-            });
-          }
+          return;
+        }
+
+        if (polymerProperties.has(node.key.name)) {
+          context.report({
+            node,
+            messageId: 'missingDeclareKeyword',
+            data: {
+              propName: node.key.name,
+              className: currentClass.id.name,
+            },
+          });
         }
       },
     };

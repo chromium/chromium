@@ -92,6 +92,10 @@ export function isPolymerElementSubclass(
   return false;
 }
 
+export function isIdentifier(node: TSESTree.Node): node is TSESTree.Identifier {
+  return node.type === AST_NODE_TYPES.Identifier;
+}
+
 export function dashCaseToCamelCase(string: string): string {
   return string.replace(/-([a-z])/g, group => group[1]!.toUpperCase());
 }
