@@ -1509,6 +1509,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
       context.attachedItems = _items.containedItems;
       if (_cobrowseBrowserAgent) {
         _cobrowseBrowserAgent->SetCobrowseContext(context);
+        _cobrowseBrowserAgent->SetSessionActive(true);
       }
       [_browserCoordinatorHandler hideComposebox];
       [_sceneHandler showAssistant];
