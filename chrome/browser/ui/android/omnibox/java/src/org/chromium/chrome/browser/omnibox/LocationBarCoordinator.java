@@ -373,7 +373,6 @@ public class LocationBarCoordinator
                 new StatusCoordinator(
                         isTabletWindow(),
                         statusView,
-                        mUrlCoordinator,
                         locationBarDataProvider,
                         templateUrlServiceSupplier,
                         profileObservableSupplier,

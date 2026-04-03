@@ -11,7 +11,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -29,10 +28,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator.OmniboxIconController;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
-import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -67,9 +67,9 @@ import java.util.function.Supplier;
 @NullMarked
 public class StatusMediator
         implements TemplateUrlServiceObserver,
-                MerchantTrustSignalsCoordinator.OmniboxIconController,
+                OmniboxIconController,
                 CookieControlsObserver,
-                SearchEngineUtils.SearchEngineIconObserver,
+                SearchEngineIconObserver,
                 PermissionStatusHandler.Delegate {
 
     static final String COOKIE_CONTROLS_ICON = "COOKIE_CONTROLS_ICON";
@@ -79,31 +79,9 @@ public class StatusMediator
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final @Nullable Supplier<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier;
-    private boolean mUrlHasFocus;
-    private boolean mVerboseStatusSpaceAvailable;
-    private boolean mPageIsPaintPreview;
-    private boolean mPageIsOffline;
-    private boolean mShowStatusIconWhenUrlFocused;
-    private boolean mIsSecurityViewShown;
     private final boolean mIsTablet;
-
-    private int mUrlMinWidth;
-    private int mSeparatorMinWidth;
-    private int mVerboseStatusTextMinWidth;
-
-    private @ConnectionSecurityLevel int mPageSecurityLevel;
-
-    private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
-    private @DrawableRes int mSecurityIconRes;
-    private @ColorRes int mSecurityIconTintRes;
-    private @StringRes int mSecurityIconDescriptionRes;
-    private @ColorRes int mNavigationIconTintRes;
-
     private final Context mContext;
-
     private final LocationBarDataProvider mLocationBarDataProvider;
-    private final UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
-
     private final PermissionStatusHandler mPermissionStatusHandler;
     private final Handler mIconTaskHandler = new Handler();
     private final Handler mStoreIconHandler = new Handler();
@@ -113,18 +91,29 @@ public class StatusMediator
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
             this::onSiteSearchDataChanged;
 
+    private boolean mUrlHasFocus;
+    private boolean mVerboseStatusSpaceAvailable;
+    private boolean mPageIsPaintPreview;
+    private boolean mPageIsOffline;
+    private boolean mShowStatusIconWhenUrlFocused;
+    private boolean mIsSecurityViewShown;
+    private int mUrlMinWidth;
+    private int mSeparatorMinWidth;
+    private int mVerboseStatusTextMinWidth;
+    private @ConnectionSecurityLevel int mPageSecurityLevel;
+    private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
+    private @DrawableRes int mSecurityIconRes;
+    private @ColorRes int mSecurityIconTintRes;
+    private @StringRes int mSecurityIconDescriptionRes;
+    private @ColorRes int mNavigationIconTintRes;
     private boolean mUrlBarTextIsSearch = true;
-
     private boolean mIsStoreIconShowing;
-
     private float mUrlFocusPercent;
-
     private @Nullable CookieControlsBridge mCookieControlsBridge;
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable StatusIconResource mSearchEngineIcon;
     private @Nullable NullableObservableSupplier<SiteSearchData> mSiteSearchDataSupplier;
     private @Nullable OnClickListener mOnStatusIconNavigateBackButtonPress;
-
     private int mLastTabId;
     private boolean mCurrentTabCrashed;
     private Drawable mDefaultStatusBackground;
@@ -136,7 +125,6 @@ public class StatusMediator
     /**
      * @param model The {@link PropertyModel} for this mediator.
      * @param context The {@link Context} for this Status component.
-     * @param urlBarEditingTextStateProvider Provides url bar text state.
      * @param isTablet Whether the current device is a tablet.
      * @param locationBarDataProvider Provides data to the location bar.
      * @param permissionDialogController Controls showing permission dialogs.
@@ -151,7 +139,6 @@ public class StatusMediator
     public StatusMediator(
             PropertyModel model,
             Context context,
-            UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
             boolean isTablet,
             LocationBarDataProvider locationBarDataProvider,
             PermissionDialogController permissionDialogController,
@@ -175,7 +162,6 @@ public class StatusMediator
 
         mProfileSupplier = profileSupplier;
         mContext = context;
-        mUrlBarEditingTextStateProvider = urlBarEditingTextStateProvider;
         mPageInfoIphController = pageInfoIphController;
         mWindowAndroid = windowAndroid;
         mMerchantTrustSignalsCoordinatorSupplier = merchantTrustSignalsCoordinatorSupplier;
@@ -345,10 +331,6 @@ public class StatusMediator
                 show, mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
     }
 
-    void setStatusIconAlpha(float alpha) {
-        mModel.set(StatusProperties.STATUS_ICON_ALPHA, alpha);
-    }
-
     public void setUseSmallWidget(boolean useSmallWidget) {
         mModel.set(StatusProperties.USE_SMALL_WIDGET, useSmallWidget);
     }
@@ -375,7 +357,7 @@ public class StatusMediator
                         || (percent == 0.0f && mUrlFocusPercent > 0.0f);
         mUrlFocusPercent = percent;
         updateStatusVisibility();
-        setStatusIconAlpha(1f);
+        mModel.set(StatusProperties.STATUS_ICON_ALPHA, 1.0f);
 
         if (couldAffectIcon) {
             updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -417,9 +399,8 @@ public class StatusMediator
                         && !mUrlHasFocus
                         && (statusText != 0);
 
-        // Update status content only if it is visible.
-        // Note: PropertyModel will help us avoid duplicate updates with the
-        // same value.
+        // Update status content only if it is visible. Note: PropertyModel will help us avoid
+        // duplicate updates with the same value.
         if (newVisibility) {
             mModel.set(StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES, statusText);
         }
@@ -460,18 +441,6 @@ public class StatusMediator
         return mIsSecurityViewShown;
     }
 
-    /** Get a CookieControlsBridge instance for testing purposes. */
-    @VisibleForTesting
-    @Nullable CookieControlsBridge getCookieControlsBridge() {
-        return mCookieControlsBridge;
-    }
-
-    /** Set a CookieControlsBridge instance for testing purposes. */
-    @VisibleForTesting
-    void setCookieControlsBridge(CookieControlsBridge cookieControlsBridge) {
-        mCookieControlsBridge = cookieControlsBridge;
-    }
-
     /** Compute verbose status text for the current page. */
     private boolean shouldShowVerboseStatusText() {
         return mPageIsOffline || mPageIsPaintPreview;
@@ -501,29 +470,25 @@ public class StatusMediator
     public void updateLocationBarIcon(@IconTransitionType int transitionType) {
         // Reset the store icon status.
         mIsStoreIconShowing = false;
+        mIsSecurityViewShown = false;
 
-        // No need to proceed further if we've already updated it for the search engine icon.
-        if (maybeUpdateStatusIconForSearchEngineIcon()) {
-            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
-            return;
-        }
-
-        int icon = 0;
-        int tint = 0;
-        int toast = 0;
+        @DrawableRes int iconRes = 0;
+        @ColorRes int tintRes = 0;
+        @StringRes int toastRes = 0;
         @StringRes int doubleTapDescriptionRes = R.string.accessibility_toolbar_view_site_info;
         OnClickListener clickListener = null;
 
-        mIsSecurityViewShown = false;
-
-        if (mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
-                == PageClassification.ANDROID_HUB_VALUE) {
+        if (maybeUpdateStatusIconForSearchEngineIcon()) {
+            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
+            // No need to proceed further if we've already updated it for the search engine icon.
+            return;
+        } else if (isHubSearch()) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             updateStatusViewVisibility();
             // Show the status icon primarily for incognito since it is defaulted off there.
             setStatusIconShown(/* show= */ true);
-            icon = R.drawable.ic_arrow_back_24dp;
-            tint = ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme);
+            iconRes = R.drawable.ic_arrow_back_24dp;
+            tintRes = ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme);
             doubleTapDescriptionRes = R.string.accessibility_toolbar_exit_hub_search;
             applyStatusIconAndTooltipProperties(
                     mModel.get(StatusProperties.SHOW_STATUS_ICON),
@@ -532,11 +497,11 @@ public class StatusMediator
         } else if (mUrlHasFocus) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             if (mShowStatusIconWhenUrlFocused) {
-                icon =
+                iconRes =
                         mUrlBarTextIsSearch
                                 ? R.drawable.ic_suggestion_magnifier
                                 : R.drawable.ic_globe_24dp;
-                tint = mNavigationIconTintRes;
+                tintRes = mNavigationIconTintRes;
             }
         } else if (mPermissionStatusHandler.isClapperQuietIconShowing()) {
             return;
@@ -547,15 +512,16 @@ public class StatusMediator
                 mIsSecurityViewShown = false;
             } else {
                 mIsSecurityViewShown = true;
-                icon = mSecurityIconRes;
-                tint = mSecurityIconTintRes;
-                toast = R.string.menu_page_info;
+                iconRes = mSecurityIconRes;
+                tintRes = mSecurityIconTintRes;
+                toastRes = R.string.menu_page_info;
                 clickListener = this::onClickOpenPageInfo;
             }
         }
 
         // If the icon is missing, fallback to the info icon.
-        StatusIconResource statusIcon = icon == 0 ? null : new StatusIconResource(icon, tint);
+        StatusIconResource statusIcon =
+                iconRes == 0 ? null : new StatusIconResource(iconRes, tintRes);
         if (statusIcon != null) {
             statusIcon.setTransitionType(transitionType);
         }
@@ -563,21 +529,14 @@ public class StatusMediator
         // Update the accessibility description before continuing since we need it either way.
         mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, getAccessibilityDescriptionRes());
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
-        mModel.set(StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES, toast);
+        mModel.set(StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES, toastRes);
         mModel.set(
                 StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
                 doubleTapDescriptionRes);
         mModel.set(StatusProperties.STATUS_CLICK_LISTENER, clickListener);
     }
 
-    @VisibleForTesting
-    public PermissionStatusHandler getPermissionStatusHandler() {
-        return mPermissionStatusHandler;
-    }
-
-    /**
-     * @return True if the security icon has been set for the search engine icon.
-     */
+    /** Returns true if the security icon has been set for the search engine icon. */
     @VisibleForTesting
     boolean maybeUpdateStatusIconForSearchEngineIcon() {
         // Show the logo unfocused if we're on the NTP.
@@ -595,8 +554,7 @@ public class StatusMediator
      * independent from alpha/visibility.
      */
     boolean shouldDisplaySearchEngineIcon() {
-        if (mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
-                == PageClassification.ANDROID_HUB_VALUE) {
+        if (isHubSearch()) {
             return false;
         }
 
@@ -656,8 +614,7 @@ public class StatusMediator
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
     private int getAccessibilityDescriptionRes() {
-        if (mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
-                == PageClassification.ANDROID_HUB_VALUE) {
+        if (isHubSearch()) {
             return R.string.hub_search_status_view_back_button_icon_description;
         }
 
@@ -678,29 +635,7 @@ public class StatusMediator
         }
     }
 
-    @VisibleForTesting
-    protected String resolveUrlBarTextWithAutocomplete(CharSequence urlBarText) {
-        String currentAutocompleteText = mUrlBarEditingTextStateProvider.getTextWithAutocomplete();
-        String urlTextWithAutocomplete;
-        if (TextUtils.isEmpty(urlBarText)) {
-            // TODO (crbug.com/1012870): This is to workaround the UrlBar text being empty but the
-            // autocomplete text still pointing at the previous url's autocomplete text.
-            urlTextWithAutocomplete = "";
-        } else if (TextUtils.indexOf(currentAutocompleteText, urlBarText) > -1) {
-            // TODO(crbug.com/40103581): This is to workaround the UrlBar text pointing to the
-            // "current" url and the the autocomplete text pointing to the "previous" url.
-            urlTextWithAutocomplete = currentAutocompleteText;
-        } else {
-            // If the above cases don't apply, then we should use the UrlBar text itself.
-            urlTextWithAutocomplete = urlBarText.toString();
-        }
-
-        return urlTextWithAutocomplete;
-    }
-
-    public void onIncognitoStateChanged() {}
-
-    // CookieControlsObserver interface
+    // CookieControlsObserver interface.
     @Override
     public void onHighlightCookieControl(boolean shouldHighlight) {
         if (shouldHighlight) {
@@ -758,7 +693,7 @@ public class StatusMediator
         }
     }
 
-    // MerchantTrustSignalsCoordinator.OmniboxIconController interface
+    // OmniboxIconController interface.
     @Override
     public void showStoreIcon(
             WindowAndroid window,
@@ -786,9 +721,7 @@ public class StatusMediator
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, storeIconResource);
         mModel.set(StatusProperties.STATUS_CLICK_LISTENER, this::onClickOpenPageInfo);
         mStoreIconHandler.postDelayed(
-                () -> {
-                    updateLocationBarIcon(IconTransitionType.ROTATE);
-                },
+                () -> updateLocationBarIcon(IconTransitionType.ROTATE),
                 PermissionStatusHandler.PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS);
         mIsStoreIconShowing = true;
         updateStatusViewVisibility();
@@ -815,20 +748,16 @@ public class StatusMediator
         mIsStoreIconShowing = false;
     }
 
-    boolean isStoreIconShowing() {
-        return mIsStoreIconShowing;
-    }
-
     /**
-     * @return {@link ChromePageInfoHighlight} which provides the PageInfo highlight row info when
-     *     user clicks the omnibox icon.
+     * Returns {@link ChromePageInfoHighlight} which provides the PageInfo highlight row info when
+     * user clicks the omnibox icon.
      */
     ChromePageInfoHighlight getPageInfoHighlight() {
         ChromePageInfoHighlight highlight = mPermissionStatusHandler.getPageInfoHighlight();
         if (highlight != null) {
             return highlight;
         } else if (mIsStoreIconShowing) {
-            return ChromePageInfoHighlight.forStoreInfo(true);
+            return ChromePageInfoHighlight.forStoreInfo(/* highlightStoreInfo= */ true);
         } else {
             return ChromePageInfoHighlight.noHighlight();
         }
@@ -875,13 +804,12 @@ public class StatusMediator
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
     }
 
-    public void onUrlChanged(boolean isTabChanging) {
-        var currentTab = mLocationBarDataProvider.getTab();
+    public void onUrlChanged() {
+        Tab currentTab = mLocationBarDataProvider.getTab();
         Profile profile = mProfileSupplier.get();
         if (profile != null && currentTab != null) {
             WebContents webContents = currentTab.getWebContents();
-
-            if (webContents != null && profile != null) {
+            if (webContents != null) {
                 BrowserContextHandle originalBrowserContext =
                         profile.isOffTheRecord() ? profile.getOriginalProfile() : null;
                 if (mCookieControlsBridge == null) {
@@ -918,11 +846,8 @@ public class StatusMediator
 
     private void applyStatusIconAndTooltipProperties(
             boolean showIcon, boolean verboseStatusTextVisible) {
-        boolean isHubSearch =
-                mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
-                        == PageClassification.ANDROID_HUB_VALUE;
         mModel.set(StatusProperties.SHOW_STATUS_ICON, showIcon);
-        if (showIcon && !isHubSearch) {
+        if (showIcon && !isHubSearch()) {
             Drawable background;
             if (mLocationBarDataProvider.isIncognitoBranded()) {
                 background =
@@ -944,12 +869,11 @@ public class StatusMediator
     }
 
     private void initBackgroundDrawables(Context context) {
+        Resources res = context.getResources();
         int verboseStatusViewHeight =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.status_view_verbose_highlight_height);
+                res.getDimensionPixelSize(R.dimen.status_view_verbose_highlight_height);
         int verboseStatusViewWidth =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.status_view_verbose_highlight_width);
+                res.getDimensionPixelSize(R.dimen.status_view_verbose_highlight_width);
         mVerboseStatusBackground =
                 DrawableUtils.getSearchBoxIconBackground(
                         context,
@@ -963,7 +887,7 @@ public class StatusMediator
                         verboseStatusViewHeight,
                         verboseStatusViewWidth);
 
-        int size = context.getResources().getDimensionPixelSize(R.dimen.small_icon_background_size);
+        int size = res.getDimensionPixelSize(R.dimen.small_icon_background_size);
         mDefaultStatusBackground =
                 DrawableUtils.getIconBackground(context, /* isIncognito= */ false, size, size);
         mDefaultStatusBackgroundIncognito =
@@ -971,12 +895,9 @@ public class StatusMediator
     }
 
     private void updateStatusViewVisibility() {
-        boolean isHubSearch =
-                mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
-                        == PageClassification.ANDROID_HUB_VALUE;
         setShowStatusView(
                 mUrlHasFocus
-                        || isHubSearch
+                        || isHubSearch()
                         || mShowStatusIconForSecureOrigins
                         || mPageSecurityLevel != ConnectionSecurityLevel.SECURE
                         || mIsStoreIconShowing);
@@ -993,7 +914,28 @@ public class StatusMediator
         openPageInfo(mLocationBarDataProvider.getTab());
     }
 
+    private boolean isHubSearch() {
+        return mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
+                == PageClassification.ANDROID_HUB_VALUE;
+    }
+
     private static boolean isPageInfoMovedToAppMenu() {
         return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled();
+    }
+
+    @Nullable CookieControlsBridge getCookieControlsBridgeForTesting() {
+        return mCookieControlsBridge;
+    }
+
+    void setCookieControlsBridgeForTesting(CookieControlsBridge cookieControlsBridge) {
+        mCookieControlsBridge = cookieControlsBridge;
+    }
+
+    public PermissionStatusHandler getPermissionStatusHandlerForTesting() {
+        return mPermissionStatusHandler;
+    }
+
+    boolean isStoreIconShowingForTesting() {
+        return mIsStoreIconShowing;
     }
 }

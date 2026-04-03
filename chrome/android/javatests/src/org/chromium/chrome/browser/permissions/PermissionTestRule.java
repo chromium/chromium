@@ -766,7 +766,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                             locationBar
                                     .getStatusCoordinator()
                                     .getMediatorForTesting()
-                                    .getPermissionStatusHandler()
+                                    .getPermissionStatusHandlerForTesting()
                                     .getLastPermissionForTest();
                     Criteria.checkThat(lastPermission, Matchers.is(contentSettingsType));
                 });

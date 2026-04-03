@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
 import org.chromium.chrome.browser.omnibox.status.PermissionStatusHandler;
 import org.chromium.chrome.browser.omnibox.status.StatusMediator;
@@ -224,7 +223,6 @@ public class PageInfoDiscoverabilityTest {
     }
 
     @Mock LocationBarDataProvider mLocationBarDataProvider;
-    @Mock UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
     @Mock Profile mProfile;
     @Mock TemplateUrlService mTemplateUrlService;
     @Mock PageInfoIphController mPageInfoIphController;
@@ -251,7 +249,6 @@ public class PageInfoDiscoverabilityTest {
                             new StatusMediator(
                                     mModel,
                                     mContext,
-                                    mUrlBarEditingTextStateProvider,
                                     /* isTablet= */ false,
                                     mLocationBarDataProvider,
                                     mPermissionDialogController,
@@ -261,7 +258,7 @@ public class PageInfoDiscoverabilityTest {
                                     sPermissionTestRule.getActivity().getWindowAndroid(),
                                     /* merchantTrustSignalsCoordinatorSupplier= */ null,
                                     /* pageInfoAction= */ null);
-                    mPermissionStatusHandler = mMediator.getPermissionStatusHandler();
+                    mPermissionStatusHandler = mMediator.getPermissionStatusHandlerForTesting();
                 });
     }
 

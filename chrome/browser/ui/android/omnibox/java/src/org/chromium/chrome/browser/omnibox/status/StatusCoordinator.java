@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -72,7 +71,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
      *
      * @param isTablet Whether the UI is shown on a tablet.
      * @param statusView The status view, used to supply and manipulate child views.
-     * @param urlBarEditingTextStateProvider The url coordinator.
      * @param templateUrlServiceSupplier A supplier for {@link TemplateUrlService} used to query the
      *     default search engine.
      * @param windowAndroid The {@link WindowAndroid} that is used by the owning {@link Activity}.
@@ -86,7 +84,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     public StatusCoordinator(
             boolean isTablet,
             StatusView statusView,
-            UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
             LocationBarDataProvider locationBarDataProvider,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             MonotonicObservableSupplier<Profile> profileSupplier,
@@ -118,7 +115,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
                 new StatusMediator(
                         mModel,
                         mStatusView.getContext(),
-                        urlBarEditingTextStateProvider,
                         isTablet,
                         locationBarDataProvider,
                         PermissionDialogController.getInstance(),
@@ -222,17 +218,9 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     }
 
     // LocationBarDataProvider.Observer implementation.
-    // Using the default empty onPrimaryColorChanged.
-    // Using the default empty onTitleChanged.
-
     @Override
     public void onNtpStartedLoading() {
         mMediator.updateStatusVisibility();
-    }
-
-    @Override
-    public void onIncognitoStateChanged() {
-        mMediator.onIncognitoStateChanged();
     }
 
     @Override
@@ -243,7 +231,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
 
     @Override
     public void onUrlChanged(boolean isTabChanging) {
-        mMediator.onUrlChanged(isTabChanging);
+        mMediator.onUrlChanged();
     }
 
     @Override

@@ -171,7 +171,7 @@ public class PermissionClapperQuietTest {
                     locationBarCoordinator
                             .getStatusCoordinator()
                             .getMediatorForTesting()
-                            .getPermissionStatusHandler()
+                            .getPermissionStatusHandlerForTesting()
                             .triggerIconTimeoutForTesting();
                 });
     }
@@ -189,7 +189,7 @@ public class PermissionClapperQuietTest {
                             locationBarCoordinator
                                     .getStatusCoordinator()
                                     .getMediatorForTesting()
-                                    .getPermissionStatusHandler()
+                                    .getPermissionStatusHandlerForTesting()
                                     .isIconTimeoutRunningForTesting();
                     if (expectedIsRunning) {
 
@@ -215,7 +215,7 @@ public class PermissionClapperQuietTest {
                     locationBarCoordinator
                             .getStatusCoordinator()
                             .getMediatorForTesting()
-                            .getPermissionStatusHandler()
+                            .getPermissionStatusHandlerForTesting()
                             .setOnIconDismissedCallbackForTesting(
                                     onDismissedCallback::notifyCalled);
                 });
@@ -235,7 +235,7 @@ public class PermissionClapperQuietTest {
                     locationBarCoordinator
                             .getStatusCoordinator()
                             .getMediatorForTesting()
-                            .getPermissionStatusHandler()
+                            .getPermissionStatusHandlerForTesting()
                             .setTabSwitchCallbackForTesting(onTabSwitchCallback::notifyCalled);
                 });
         return onTabSwitchCallback;
