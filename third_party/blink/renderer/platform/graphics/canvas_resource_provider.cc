@@ -155,7 +155,8 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
       std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
 }
 
-scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderBitmap::Snapshot(
+scoped_refptr<StaticBitmapImage>
+Canvas2DResourceProviderBitmap::SnapshotForCanvas2D(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "Canvas2DResourceProviderBitmap::Snapshot");
   return UnacceleratedSnapshotForCanvas2D(orientation);
@@ -1043,7 +1044,8 @@ CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndSnapshot(
   return Snapshot(orientation);
 }
 
-scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderSharedImage::Snapshot(
+scoped_refptr<StaticBitmapImage>
+Canvas2DResourceProviderSharedImage::SnapshotForCanvas2D(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "Canvas2DResourceProviderSharedImage::Snapshot");
   if (!IsValid()) {
@@ -1080,6 +1082,11 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderSharedImage::Snapshot(
   DCHECK(cached_snapshot_);
   DCHECK(!current_resource_has_write_access_);
   return cached_snapshot_;
+}
+
+scoped_refptr<StaticBitmapImage>
+CanvasNon2DResourceProviderSharedImage::SnapshotForCanvas2D(ImageOrientation) {
+  NOTREACHED();
 }
 
 scoped_refptr<StaticBitmapImage>

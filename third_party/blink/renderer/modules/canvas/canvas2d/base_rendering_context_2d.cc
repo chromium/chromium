@@ -762,7 +762,7 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
 
   CanvasResourceProvider* provider = GetResourceProvider();
   provider->FlushCanvas2D();
-  return provider->Snapshot();
+  return provider->SnapshotForCanvas2D();
 }
 
 bool BaseRenderingContext2D::IsResourceProviderValid() {

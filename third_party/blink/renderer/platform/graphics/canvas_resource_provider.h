@@ -136,7 +136,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // The ImageOrientationEnum conveys the desired orientation of the image, and
   // should be derived from the source of the bitmap data.
-  virtual scoped_refptr<StaticBitmapImage> Snapshot(
+  virtual scoped_refptr<StaticBitmapImage> SnapshotForCanvas2D(
       ImageOrientation = ImageOrientationEnum::kDefault) = 0;
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
@@ -328,7 +328,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   bool IsValid() const override { return GetSkSurface(); }
   bool IsAccelerated() const override { return false; }
   bool IsGpuContextLost() const override { return true; }
-  scoped_refptr<StaticBitmapImage> Snapshot(
+  scoped_refptr<StaticBitmapImage> SnapshotForCanvas2D(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
   void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
@@ -577,7 +577,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
   }
-  scoped_refptr<StaticBitmapImage> Snapshot(
+  scoped_refptr<StaticBitmapImage> SnapshotForCanvas2D(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
   bool WritePixelsForCanvas2D(const SkImageInfo& orig_info,
                               const void* pixels,
@@ -681,6 +681,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   bool IsValid() const override;
   scoped_refptr<StaticBitmapImage> Snapshot(
+      ImageOrientation = ImageOrientationEnum::kDefault);
+  scoped_refptr<StaticBitmapImage> SnapshotForCanvas2D(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
   void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override {
     NOTREACHED();

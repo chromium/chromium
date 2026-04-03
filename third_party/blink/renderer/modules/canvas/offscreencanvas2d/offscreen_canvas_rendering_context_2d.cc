@@ -366,7 +366,8 @@ scoped_refptr<StaticBitmapImage> OffscreenCanvasRenderingContext2D::GetImage() {
   FinalizeFrame(FlushReason::kOther);
   if (!IsPaintable())
     return nullptr;
-  scoped_refptr<StaticBitmapImage> image = resource_provider_->Snapshot();
+  scoped_refptr<StaticBitmapImage> image =
+      resource_provider_->SnapshotForCanvas2D();
 
   return image;
 }
