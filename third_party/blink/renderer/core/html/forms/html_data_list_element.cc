@@ -185,6 +185,7 @@ void HTMLDataListElement::MoveActiveOption(Direction direction) {
       active_option_ = next_option;
       old_active_option->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
       active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
+      active_option_->scrollIntoViewIfNeeded(/*center_if_needed=*/false);
       return;
     }
   }

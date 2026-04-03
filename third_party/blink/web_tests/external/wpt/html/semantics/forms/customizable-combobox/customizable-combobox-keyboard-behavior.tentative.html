@@ -11,12 +11,27 @@
 input, datalist {
   appearance: base;
 }
+
+#datalist2 {
+  /* 3 options tall */
+  height: calc(3 * max(24px, 1lh));
+}
 </style>
 
-<input list=datalist>
+<input id=input list=datalist>
 <datalist id=datalist>
   <option class=one>one</option>
   <option class=two>two</option>
+</datalist>
+
+<input id=input2 list=datalist2>
+<datalist id=datalist2>
+  <option>one</option>
+  <option>two</option>
+  <option>three</option>
+  <option>four</option>
+  <option>five</option>
+  <option>six</option>
 </datalist>
 
 <script>
@@ -31,10 +46,12 @@ const Tab = '\uE004';
 const Shift = '\uE008';
 const Backspace = '\uE003';
 
-const input = document.querySelector('input');
-const datalist = document.querySelector('datalist');
+const input = document.getElementById('input');
+const datalist = document.getElementById('datalist');
 const optionOne = document.querySelector('.one');
 const optionTwo = document.querySelector('.two');
+const input2 = document.getElementById('input2');
+const datalist2 = document.getElementById('datalist2');
 
 function pressKey(key) {
   return (new test_driver.Actions()
@@ -121,6 +138,32 @@ promise_test(async () => {
   assert_false(datalist.matches(':popover-open'),
     'Datalist should close after calling hidePopover.');
 }, 'Keyboard behavior for customizable combobox.');
+
+promise_test(async () => {
+  input2.focus();
+  assert_equals(datalist2.querySelector(':active-option').textContent, 'one',
+    'option one should be active when opening the picker.');
+  assert_equals(datalist2.scrollTop, 0,
+    'Datalist should not be scrolled at the start of the test.');
+
+  await pressKey(ArrowDown);
+  await pressKey(ArrowDown);
+  await pressKey(ArrowDown);
+  await pressKey(ArrowDown);
+  assert_equals(datalist2.querySelector(':active-option').textContent, 'five',
+    'option five should be active when pressing arrow down multiple times.');
+  assert_not_equals(datalist2.scrollTop, 0,
+    'Datalist should be scrolled down after arrowing down multiple times.');
+
+  await pressKey(ArrowUp);
+  await pressKey(ArrowUp);
+  await pressKey(ArrowUp);
+  await pressKey(ArrowUp);
+  assert_equals(datalist2.querySelector(':active-option').textContent, 'one',
+    'option one should be active after arrowing up to the top.');
+  assert_equals(datalist2.scrollTop, 0,
+    'Datalist should not be scrolled after arrowing up to the top.');
+}, 'Options should be scrolled into view when arrowed to.');
 
 // TODO(crbug.com/453705243): Add tests for these cases:
 // - Modifier keys
