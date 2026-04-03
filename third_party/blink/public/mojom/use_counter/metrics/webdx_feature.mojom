@@ -481,7 +481,7 @@ enum WebDXFeature {
   kMetaTextScale = 417,
   kJpegxl = 418,
   kPartitionedCookies = 419,
-  kPrompt = 420,
+  kLanguageModel = 420,
   kProofreader = 421,
   kRewriter = 422,
   kWriter = 423,
