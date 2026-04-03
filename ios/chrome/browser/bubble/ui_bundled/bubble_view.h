@@ -69,6 +69,10 @@ typedef NS_ENUM(NSInteger, BubblePageControlPage);
 // of the bubble, thus might change the value of `sizeThatFits`.
 @property(nonatomic) CGFloat alignmentOffset;
 
+// Sets the maximum content size category for the bubble view. If set, the
+// bubble view will not scale its text beyond this category.
+@property(nonatomic, copy) UIContentSizeCategory maximumContentSizeCategory;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_UI_BUNDLED_BUBBLE_VIEW_H_

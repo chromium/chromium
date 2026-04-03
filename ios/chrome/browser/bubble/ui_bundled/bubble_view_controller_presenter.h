@@ -68,6 +68,10 @@ using CallbackWithIPHDismissalReasonType =
 // suppressed, ignoring the pan gesture ablation experiment.
 @property(nonatomic, assign) BOOL forceDisablePanGestureRecognizer;
 
+// Sets the maximum content size category for the bubble view. If set, the
+// bubble view will not scale its text beyond this category.
+@property(nonatomic, copy) UIContentSizeCategory maximumContentSizeCategory;
+
 // Initializes the presenter. `text` is the text displayed by the bubble.
 // `titleString` is the title displayed by the bubble. `arrowDirection` is the
 // direction the bubble's arrow is pointing. `alignment` is the position of the

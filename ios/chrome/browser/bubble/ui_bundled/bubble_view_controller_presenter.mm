@@ -230,6 +230,16 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   [self.bubbleViewController setArrowHidden:hidden animated:animated];
 }
 
+- (void)setMaximumContentSizeCategory:
+    (UIContentSizeCategory)maximumContentSizeCategory {
+  self.bubbleViewController.maximumContentSizeCategory =
+      maximumContentSizeCategory;
+}
+
+- (UIContentSizeCategory)maximumContentSizeCategory {
+  return self.bubbleViewController.maximumContentSizeCategory;
+}
+
 - (void)dismissAnimated:(BOOL)animated reason:(IPHDismissalReasonType)reason {
   // Because this object must stay in memory to handle the `userEngaged`
   // property correctly, it is possible for `dismissAnimated` to be called

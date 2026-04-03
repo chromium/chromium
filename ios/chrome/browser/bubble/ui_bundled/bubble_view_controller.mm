@@ -99,6 +99,9 @@ BubbleView* BubbleViewWithType(
   self.view = BubbleViewWithType(self.bubbleViewType, self.text, self.title,
                                  self.arrowDirection, self.alignment,
                                  self.delegate, _page);
+  if (self.maximumContentSizeCategory) {
+    self.view.maximumContentSizeCategory = self.maximumContentSizeCategory;
+  }
   // Begin hidden.
   [self.view setAlpha:0.0f];
   [self.view setHidden:YES];
@@ -151,6 +154,14 @@ BubbleView* BubbleViewWithType(
 
 - (void)setBubbleAlignmentOffset:(CGFloat)alignmentOffset {
   self.view.alignmentOffset = alignmentOffset;
+}
+
+- (void)setMaximumContentSizeCategory:
+    (UIContentSizeCategory)maximumContentSizeCategory {
+  _maximumContentSizeCategory = [maximumContentSizeCategory copy];
+  if (self.isViewLoaded) {
+    self.view.maximumContentSizeCategory = maximumContentSizeCategory;
+  }
 }
 
 @end

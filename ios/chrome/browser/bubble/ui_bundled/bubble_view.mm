@@ -389,16 +389,26 @@ UIStackView* PageControl(BubblePageControlPage page) {
     self.isAccessibilityElement = YES;
 
     __weak __typeof(self) weakSelf = self;
-    NSArray<UITrait>* traits = @[
+    NSArray<UITrait>* styleTraits = @[
       UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
       UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
       UITraitUserInterfaceLevel.class
     ];
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      [weakSelf maybeChangeArrowColor:previousCollection];
-    };
-    [weakSelf registerForTraitChanges:traits withHandler:handler];
+    UITraitChangeHandler styleHandler =
+        ^(id<UITraitEnvironment> traitEnvironment,
+          UITraitCollection* previousCollection) {
+          [weakSelf maybeChangeArrowColor:previousCollection];
+        };
+    [weakSelf registerForTraitChanges:styleTraits withHandler:styleHandler];
+
+    UITraitChangeHandler sizeHandler =
+        ^(id<UITraitEnvironment> traitEnvironment,
+          UITraitCollection* previousCollection) {
+          [weakSelf updateFonts];
+        };
+    [weakSelf
+        registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                    withHandler:sizeHandler];
   }
   return self;
 }
@@ -422,6 +432,46 @@ UIStackView* PageControl(BubblePageControlPage page) {
 - (void)setAlignmentOffset:(CGFloat)alignmentOffset {
   _alignmentOffset = alignmentOffset;
   [self updateArrowAlignmentConstraint];
+}
+
+- (void)setMaximumContentSizeCategory:
+    (UIContentSizeCategory)maximumContentSizeCategory {
+  if (_maximumContentSizeCategory != maximumContentSizeCategory) {
+    _maximumContentSizeCategory = [maximumContentSizeCategory copy];
+    [self updateFonts];
+  }
+}
+
+- (void)updateFonts {
+  UIContentSizeCategory currentCategory =
+      self.traitCollection.preferredContentSizeCategory;
+  UIContentSizeCategory targetCategory = currentCategory;
+  if (self.maximumContentSizeCategory &&
+      UIContentSizeCategoryCompareToCategory(currentCategory,
+                                             self.maximumContentSizeCategory) ==
+          NSOrderedDescending) {
+    targetCategory = self.maximumContentSizeCategory;
+  }
+  UITraitCollection* targetTraits = [self.traitCollection
+      traitCollectionByModifyingTraits:^(id<UIMutableTraits> mutableTraits) {
+        mutableTraits.preferredContentSizeCategory = targetCategory;
+      }];
+
+  UIFontTextStyle labelStyle =
+      self.titleLabel ? UIFontTextStyleFootnote : UIFontTextStyleSubheadline;
+  self.label.font = [UIFont preferredFontForTextStyle:labelStyle
+                        compatibleWithTraitCollection:targetTraits];
+  if (self.titleLabel) {
+    self.titleLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline
+            compatibleWithTraitCollection:targetTraits];
+  }
+  if (self.showsNextButton) {
+    _nextButton.titleLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline
+            compatibleWithTraitCollection:targetTraits];
+  }
+  [self setNeedsLayout];
 }
 
 #pragma mark - UIAccessibility

@@ -66,6 +66,8 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
         [weakSelf nextTapped];
       }];
   _presenter.delegate = self;
+  _presenter.maximumContentSizeCategory =
+      UIContentSizeCategoryExtraExtraExtraLarge;
 
   UIView* anchorView = [self anchorView];
   CGPoint anchorPoint = [self anchorPointForAnchorView:anchorView];
@@ -114,14 +116,25 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 // Returns the anchor point in `anchorView` to which the bubble view will be
 // anchored.
 - (CGPoint)anchorPointForAnchorView:(UIView*)anchorView {
-  CGPoint anchorPoint;
+  CGFloat anchorPointX = CGRectGetMidX(anchorView.frame);
+  CGFloat anchorPointY;
   if ([self shouldPointArrowDown]) {
-    anchorPoint = CGPointMake(CGRectGetMidX(anchorView.frame),
-                              CGRectGetMinY(anchorView.frame));
+    anchorPointY = CGRectGetMinY(anchorView.frame);
   } else {
-    anchorPoint = CGPointMake(CGRectGetMidX(anchorView.frame),
-                              CGRectGetMaxY(anchorView.frame));
+    anchorPointY = CGRectGetMaxY(anchorView.frame);
   }
+
+  // Sometimes, the tab grid only has 1 column (e.g. if the dynamic text size is
+  // large). In this case, the tab can be quite large, so putting the bubble
+  // below or above the tab can lead to not enough space being available.
+  // Instead, put the bubble over the middle of the tab to allow for more space.
+  if (_step == GuidedTourStep::kTabGridLongPress &&
+      anchorView.bounds.size.width >
+          self.baseViewController.view.bounds.size.width / 2) {
+    anchorPointY = CGRectGetMidY(anchorView.frame);
+  }
+  CGPoint anchorPoint = CGPointMake(anchorPointX, anchorPointY);
+
   return [anchorView.superview convertPoint:anchorPoint toView:nil];
 }
 
@@ -204,6 +217,14 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
     return BubbleAlignmentTopOrLeading;
   } else if (_step == GuidedTourStep::kTabGridLongPress) {
     UIView* anchorView = [self anchorView];
+
+    // Sometimes, the tab grid only has 1 column (e.g. if the dynamic text size
+    // is large). In this case, center the arrow.
+    if (anchorView.bounds.size.width >
+        self.baseViewController.view.bounds.size.width / 2) {
+      return BubbleAlignmentCenter;
+    }
+
     CGRect anchorFrameInBaseViewController =
         [anchorView convertRect:[anchorView bounds]
                          toView:self.baseViewController.view];
