@@ -168,9 +168,7 @@ int ChromeViewsDelegate::GetAppbarAutohideEdges(HMONITOR monitor,
   // in us thinking there is no auto-hide edges. By returning at least one edge
   // we don't initially go fullscreen until we figure out the real auto-hide
   // edges.
-  if (!appbar_autohide_edge_map_.count(monitor)) {
-    appbar_autohide_edge_map_[monitor] = EDGE_BOTTOM;
-  }
+  auto it = appbar_autohide_edge_map_.try_emplace(monitor, EDGE_BOTTOM).first;
 
   // We use the SHAppBarMessage API to get the taskbar autohide state. This API
   // spins a modal loop which could cause callers to be reentered. To avoid
@@ -185,9 +183,9 @@ int ChromeViewsDelegate::GetAppbarAutohideEdges(HMONITOR monitor,
         base::BindOnce(&GetAppbarAutohideEdgesOnWorkerThread, monitor),
         base::BindOnce(&ChromeViewsDelegate::OnGotAppbarAutohideEdges,
                        weak_factory_.GetWeakPtr(), std::move(callback), monitor,
-                       appbar_autohide_edge_map_[monitor]));
+                       it->second));
   }
-  return appbar_autohide_edge_map_[monitor];
+  return it->second;
 }
 
 void ChromeViewsDelegate::OnGotAppbarAutohideEdges(base::OnceClosure callback,
