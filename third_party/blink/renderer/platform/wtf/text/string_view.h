@@ -216,9 +216,9 @@ class WTF_EXPORT StringView {
   // Returns a code unit at the specified index.
   // This operator performs an out-of-bounds access if the specified
   // index is out of range.
-  UChar operator[](size_type i) const {
+  UNSAFE_BUFFER_USAGE UChar operator[](size_type i) const {
     SECURITY_DCHECK(i < length());
-    // SAFETY: safe when i < length().
+    // SAFETY: Performance-sensitive, enforced by UNSAFE_BUFFER_USAGE.
     UNSAFE_BUFFERS({
       if (Is8Bit()) {
         return static_cast<const LChar*>(bytes_)[i];
@@ -328,13 +328,17 @@ class WTF_EXPORT StringView {
   // Returns `true` if `this` string starts with `other`.
   bool starts_with(const StringView& other) const;
   // Returns `true` if `this` string starts with `c`.
-  bool starts_with(UChar c) const { return !empty() && (*this)[0] == c; }
+  bool starts_with(UChar c) const {
+    // SAFETY: non-empty implies first element is accessible.
+    return !empty() && UNSAFE_BUFFERS((*this)[0]) == c;
+  }
 
   // Returns `true` if `this` string ends with `other`.
   bool ends_with(const StringView& other) const;
   // Returns `true` if `this` string ends with `c`.
   bool ends_with(UChar c) const {
-    return !empty() && (*this)[length() - 1] == c;
+    // SAFETY: non-empty implies last element is accessible.
+    return !empty() && UNSAFE_BUFFERS((*this)[length() - 1]) == c;
   }
 
   // Returns `true` if this StringView contains the specified string.

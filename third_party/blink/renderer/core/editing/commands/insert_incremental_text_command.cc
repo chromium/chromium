@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/insert_incremental_text_command.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -28,9 +29,12 @@ wtf_size_t ComputeCommonPrefixLength(const StringView& str1,
   ForwardCodePointStateMachine code_point_state_machine;
   wtf_size_t result = 0;
   for (wtf_size_t index = 0; index < max_common_prefix_length; ++index) {
-    if (str1[index] != str2[index])
+    // SAFETY: indices less than max_common_prefix_length are valid for
+    // either string based upon min() expression above.
+    if (UNSAFE_BUFFERS(str1[index]) != UNSAFE_BUFFERS(str2[index])) {
       return result;
-    code_point_state_machine.FeedFollowingCodeUnit(str1[index]);
+    }
+    code_point_state_machine.FeedFollowingCodeUnit(UNSAFE_BUFFERS(str1[index]));
     if (!code_point_state_machine.AtCodePointBoundary())
       continue;
     result = index;
@@ -44,8 +48,13 @@ wtf_size_t ComputeCommonSuffixLength(const StringView& str1,
   const wtf_size_t length2 = str2.length();
   const wtf_size_t max_common_suffix_length = std::min(length1, length2);
   for (wtf_size_t index = 0; index < max_common_suffix_length; ++index) {
-    if (str1[length1 - index - 1] != str2[length2 - index - 1])
+    // SAFETY: max_common_suffix_length is a bound on either string, so when
+    // non-zero, an expression based on this for the "last character" is
+    // valid for either string.
+    if (UNSAFE_BUFFERS(str1[length1 - index - 1]) !=
+        UNSAFE_BUFFERS(str2[length2 - index - 1])) {
       return index;
+    }
   }
   return max_common_suffix_length;
 }

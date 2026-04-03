@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
@@ -90,7 +91,8 @@ void WriteIndent(int depth, StringBuilder* output) {
 
 void EscapeStringForJSON(const StringView& str, StringBuilder* dst) {
   for (unsigned i = 0; i < str.length(); ++i) {
-    UChar c = str[i];
+    // SAFETY: length check above.
+    UChar c = UNSAFE_BUFFERS(str[i]);
     if (!EscapeChar(c, dst)) {
       if (c < 32 || c == '<' || c == '>') {
         // 1. Escaping <, > to prevent script execution.

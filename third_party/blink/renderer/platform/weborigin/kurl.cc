@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
@@ -126,12 +127,14 @@ bool IsValidProtocol(const StringView& protocol) {
   // RFC3986: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
   if (protocol.empty())
     return false;
-  if (!IsSchemeFirstChar(protocol[0]))
+  if (!IsSchemeFirstChar(UNSAFE_BUFFERS(protocol[0]))) {
     return false;
+  }
   unsigned protocol_length = protocol.length();
   for (unsigned i = 1; i < protocol_length; i++) {
-    if (!IsSchemeChar(protocol[i]))
+    if (!IsSchemeChar(UNSAFE_BUFFERS(protocol[i]))) {
       return false;
+    }
   }
   return true;
 }
@@ -549,12 +552,12 @@ StringView ParsePortFromString(const StringView& value) {
   // "008080junk" needs to be treated as port "8080" and "000" as "0".
   wtf_size_t num_leading_digits = 0;
   while (num_leading_digits < value.length() &&
-         IsAsciiDigit(value[num_leading_digits])) {
+         IsAsciiDigit(UNSAFE_BUFFERS(value[num_leading_digits]))) {
     ++num_leading_digits;
   }
   wtf_size_t num_leading_zeros = 0;
   while (num_leading_zeros < num_leading_digits &&
-         value[num_leading_zeros] == '0') {
+         UNSAFE_BUFFERS(value[num_leading_zeros]) == '0') {
     ++num_leading_zeros;
   }
   // If all digits are zeros, consider the last one significant.

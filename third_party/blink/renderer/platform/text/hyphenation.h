@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_HYPHENATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_HYPHENATION_H_
 
+#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -51,7 +52,9 @@ class PLATFORM_EXPORT Hyphenation : public RefCounted<Hyphenation> {
     if (word.length() < MinWordLength())
       return false;
     // Avoid hyphenating capitalized words.
-    return hyphenate_capitalized_word_ || !unicode::IsUpper(word[0]);
+    // SAFETY: length check above ensures first element valid.
+    return hyphenate_capitalized_word_ ||
+           !unicode::IsUpper(UNSAFE_BUFFERS(word[0]));
   }
 
  private:

@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
@@ -318,7 +319,8 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
       referrer_policy = current_result;
     } else {
       for (StringView::size_type i = 0; i < stripped_token.length(); ++i) {
-        if (!IsAsciiAlphaOrHyphen(stripped_token[i])) {
+        // SAFETY: length check above.
+        if (!IsAsciiAlphaOrHyphen(UNSAFE_BUFFERS(stripped_token[i]))) {
           return false;
         }
       }

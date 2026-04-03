@@ -2828,7 +2828,9 @@ bool IsValidExtensionName(const CSSParserToken& token) {
     return false;
   }
   StringView value = token.Value();
-  return value.length() >= 2 && value[0] == '-' && value[1] == '-';
+  // SAFETY: length checked and &&-expression short circuit.
+  return value.length() >= 2 && UNSAFE_BUFFERS(value[0]) == '-' &&
+         UNSAFE_BUFFERS(value[1]) == '-';
 }
 
 std::optional<bool> GetBooleanValue(const CSSParserToken& token) {

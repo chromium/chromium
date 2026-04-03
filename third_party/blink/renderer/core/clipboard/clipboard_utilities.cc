@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -69,8 +70,10 @@ String ConvertURIListToURL(const StringView& uri_list) {
     line = line.StripWhiteSpace();
     if (line.empty())
       continue;
-    if (line[0] == '#')
+    // SAFETY: line tested non-empty above means first element is valid.
+    if (UNSAFE_BUFFERS(line[0]) == '#') {
       continue;
+    }
     KURL url = KURL(line);
     if (url.IsValid())
       return url;

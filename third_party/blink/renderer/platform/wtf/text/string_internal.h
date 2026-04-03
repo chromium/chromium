@@ -153,8 +153,10 @@ inline string_size_t Find(const StringView& string,
 
   // Optimization: fast case for strings of length 1.
   if (match_length == 1) {
-    return string.Is8Bit() ? blink::Find(string.Span8(), match[0], index)
-                           : blink::Find(string.Span16(), match[0], index);
+    // SAFETY: length of one implies first element valid.
+    return string.Is8Bit()
+               ? blink::Find(string.Span8(), UNSAFE_BUFFERS(match[0]), index)
+               : blink::Find(string.Span16(), UNSAFE_BUFFERS(match[0]), index);
   }
 
   // Check index & matchLength are in range.

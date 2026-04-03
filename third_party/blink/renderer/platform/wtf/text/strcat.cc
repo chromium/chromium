@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
+#include "base/compiler_specific.h"
+
 namespace blink {
 
 namespace {
@@ -17,7 +19,8 @@ String StrCat(base::span<const StringView> pieces) {
     size += view.length();
     if (is_8bit && !view.Is8Bit()) {
       // Like StringBuilder, we check one-length 16bit strings.
-      is_8bit = view.length() == 1 && view[0] < 0x0100;
+      // SAFETY: length of one implies first element valid.
+      is_8bit = view.length() == 1 && UNSAFE_BUFFERS(view[0]) < 0x0100;
     }
   }
 
@@ -30,8 +33,8 @@ String StrCat(base::span<const StringView> pieces) {
         sub_buffer.copy_from(view.Span8());
       } else {
         DCHECK_EQ(sub_buffer.size(), 1u);
-        DCHECK_LT(view[0], 0x0100);
-        sub_buffer[0] = view[0];
+        DCHECK_LT(UNSAFE_BUFFERS(view[0]), 0x0100);
+        sub_buffer[0] = UNSAFE_TODO(view[0]);
       }
 #if DCHECK_IS_ON()
       const_cast<StringView&>(view).Clear();

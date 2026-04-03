@@ -33,7 +33,8 @@ class CSSTokenizerInputStream {
     // REPLACEMENT CHARACTER"
     // "surrogate code points" refers to standalone surrogates in this scenario
     // (e.g. a leading without a subsequent trailing and vice versa).
-    UChar result = rest_[0];
+    // SAFETY: early return above when empty implies first element is valid.
+    UChar result = UNSAFE_BUFFERS(rest_[0]);
     if (!result ||
         (IsLeadingSurrogate(result) &&
          !IsTrailingSurrogate(PeekWithoutReplacement(1))) ||
@@ -50,7 +51,7 @@ class CSSTokenizerInputStream {
     if (Offset() == 0) {
       return '\0';
     }
-    return string_[Offset() - 1];
+    return UNSAFE_TODO(string_[Offset() - 1]);
   }
   // Gets the char at lookaheadOffset from the current stream position. Will
   // return NUL (kEndOfFileMarker) if the stream position is at the end.
@@ -60,7 +61,8 @@ class CSSTokenizerInputStream {
     if (lookahead_offset >= rest_.length()) {
       return '\0';
     }
-    return rest_[lookahead_offset];
+    // SAFETY: testing `lookahead_offset` against length ensure it is valid.
+    return UNSAFE_BUFFERS(rest_[lookahead_offset]);
   }
   StringView Peek() const { return rest_; }
 

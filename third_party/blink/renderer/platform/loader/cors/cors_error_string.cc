@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "services/network/public/mojom/cors.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -65,7 +66,8 @@ String EncodeHint(StringView hint) {
   StringBuilder builder;
   if (!hint.IsNull()) {
     for (unsigned i = 0; i < hint.length(); ++i) {
-      UChar c = hint[i];
+      // SAFETY: index checked in loop body.
+      UChar c = UNSAFE_BUFFERS(hint[i]);
       if (IsAsciiPrintable(c)) {
         builder.Append(static_cast<char>(c));
       } else {

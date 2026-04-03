@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
@@ -95,14 +96,17 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
     return 0;
   }
 
-  if (start_index + 1u == length || IsWordDelimiter<true>(text[start_index])) {
+  // SAFETY: start index tested against length above.
+  if (start_index + 1u == length ||
+      IsWordDelimiter<true>(UNSAFE_BUFFERS(text[start_index]))) {
     return start_index + 1;
   }
 
   // 8Bit words end at IsWordDelimiter().
+  // SAFETY: start_index + 1 tested in previous if-statement.
   if (text.Is8Bit()) {
     for (unsigned i = start_index + 1;; ++i) {
-      if (i == length || IsWordDelimiter<false>(text[i])) {
+      if (i == length || IsWordDelimiter<false>(UNSAFE_BUFFERS(text[i]))) {
         return i;
       }
     }

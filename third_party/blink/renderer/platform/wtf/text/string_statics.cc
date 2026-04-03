@@ -27,6 +27,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
@@ -85,7 +86,8 @@ bool NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
   if (view.empty()) {
     return false;
   }
-  if (view[0] != '\n') {
+  // SAFETY: `view` tested for emptyness above.
+  if (UNSAFE_BUFFERS(view[0]) != '\n') {
     return false;
   }
   if (view.Is8Bit()) {

@@ -27,6 +27,7 @@
 #include <unicode/unistr.h>
 #include <unicode/uvernum.h>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -242,14 +243,17 @@ String EmailInputType::TypeMismatchText() const {
         unicode_address);
   wtf_size_t invalid_char_index = local_part.Find(IsInvalidLocalPartCharacter);
   if (invalid_char_index != kNotFound) {
-    unsigned char_length = U_IS_LEAD(local_part[invalid_char_index]) ? 2 : 1;
+    // SAFETY: invalid_char_index is checked against kNotFound.
+    unsigned char_length =
+        U_IS_LEAD(UNSAFE_BUFFERS(local_part[invalid_char_index])) ? 2 : 1;
     return GetLocale().QueryString(
         IDS_FORM_VALIDATION_TYPE_MISMATCH_EMAIL_INVALID_LOCAL, at_sign,
         local_part.substr(invalid_char_index, char_length).ToString());
   }
   invalid_char_index = domain.Find(IsInvalidDomainCharacter);
   if (invalid_char_index != kNotFound) {
-    unsigned char_length = U_IS_LEAD(domain[invalid_char_index]) ? 2 : 1;
+    unsigned char_length =
+        U_IS_LEAD(UNSAFE_TODO(domain[invalid_char_index])) ? 2 : 1;
     return GetLocale().QueryString(
         IDS_FORM_VALIDATION_TYPE_MISMATCH_EMAIL_INVALID_DOMAIN, at_sign,
         domain.substr(invalid_char_index, char_length).ToString());

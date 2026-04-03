@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -27,7 +28,9 @@ class HTMLBRElement;
 namespace {
 
 bool IsBidiControl(StringView string) {
-  return string.length() == 1 && Character::IsBidiControl(string[0]);
+  // SAFETY: length of one implies first element valid.
+  return string.length() == 1 &&
+         Character::IsBidiControl(UNSAFE_BUFFERS(string[0]));
 }
 
 LogicalRect ExpandedSelectionRectForSoftLineBreakIfNeeded(

@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
@@ -181,7 +182,8 @@ size_t BackgroundTracingHelper::GetIdSuffixPos(StringView string) {
   // Extract any trailing integers.
   size_t cursor = string.length();
   while (cursor > 0) {
-    char c = string[cursor - 1];
+    // SAFETY: non-zero cursor <= length implies cursor - 1 is valid.
+    char c = UNSAFE_BUFFERS(string[cursor - 1]);
     if (!IsAsciiDigit(c)) {
       break;
     }
@@ -199,8 +201,10 @@ size_t BackgroundTracingHelper::GetIdSuffixPos(StringView string) {
     return 0;
 
   // A valid suffix must be preceded by an underscore.
-  if (string[cursor - 1] != '_')
+  // SAFETY: cursor is 2 or more and not EOS per checks above.
+  if (UNSAFE_BUFFERS(string[cursor - 1]) != '_') {
     return 0;
+  }
 
   // Return the location of the underscore.
   return cursor - 1;

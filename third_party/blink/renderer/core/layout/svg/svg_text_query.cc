@@ -6,6 +6,7 @@
 
 #include <unicode/utf16.h>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -20,15 +21,16 @@ namespace blink {
 namespace {
 
 unsigned AdjustCodeUnitStartOffset(StringView string, unsigned offset) {
-  return (U16_IS_TRAIL(string[offset]) && offset > 0 &&
-          U16_IS_LEAD(string[offset - 1]))
+  return (U16_IS_TRAIL(UNSAFE_TODO(string[offset])) && offset > 0 &&
+          U16_IS_LEAD(UNSAFE_TODO(string[offset - 1])))
              ? offset - 1
              : offset;
 }
 
 unsigned AdjustCodeUnitEndOffset(StringView string, unsigned offset) {
-  return (offset < string.length() && U16_IS_TRAIL(string[offset]) &&
-          offset > 0 && U16_IS_LEAD(string[offset - 1]))
+  return (offset < string.length() &&
+          U16_IS_TRAIL(UNSAFE_BUFFERS(string[offset])) && offset > 0 &&
+          U16_IS_LEAD(UNSAFE_BUFFERS(string[offset - 1])))
              ? offset + 1
              : offset;
 }

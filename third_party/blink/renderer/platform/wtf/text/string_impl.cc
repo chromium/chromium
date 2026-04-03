@@ -930,10 +930,14 @@ StringImpl::size_type StringImpl::ReverseFind(const StringView& match_string,
     return std::min(index, our_length);
 
   // Optimization 1: fast case for strings of length 1.
+  // SAFETY: length of one implies first element is valid.
   if (match_length == 1) {
-    if (Is8Bit())
-      return internal::ReverseFind(Span8(), match_string[0], index);
-    return internal::ReverseFind(Span16(), match_string[0], index);
+    if (Is8Bit()) {
+      return internal::ReverseFind(Span8(), UNSAFE_BUFFERS(match_string[0]),
+                                   index);
+    }
+    return internal::ReverseFind(Span16(), UNSAFE_BUFFERS(match_string[0]),
+                                 index);
   }
 
   // Check index & matchLength are in range.

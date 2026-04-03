@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_css_parser_observer.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -170,14 +171,15 @@ namespace {
 wtf_size_t FindColonIndex(const StringView& property_string) {
   for (wtf_size_t index = 0;
        index != kNotFound && index < property_string.length(); index++) {
-    if (property_string[index] == '\\') {
+    // SAFETY: index checked in loop body.
+    if (UNSAFE_BUFFERS(property_string[index]) == '\\') {
       // Next character is escaped, skip over it.
       index++;
-    } else if (property_string[index] == ':') {
+    } else if (UNSAFE_BUFFERS(property_string[index]) == ':') {
       return index;
     } else if (index < property_string.length() - 1 &&
-               property_string[index] == '/' &&
-               property_string[index + 1] == '*') {
+               UNSAFE_BUFFERS(property_string[index]) == '/' &&
+               UNSAFE_BUFFERS(property_string[index + 1]) == '*') {
       if (index >= property_string.length() - 2) {
         return kNotFound;
       }

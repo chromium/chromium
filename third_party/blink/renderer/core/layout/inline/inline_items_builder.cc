@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
@@ -117,7 +118,7 @@ bool ShouldRemoveNewlineSlow(const StringBuilder& before,
   }
   UChar32 next = 0;
   if (!after.empty()) {
-    next = after[0];
+    next = UNSAFE_BUFFERS(after[0]);
     if (next == uchar::kZeroWidthSpace) {
       return true;
     }
@@ -200,11 +201,11 @@ inline bool IsControlItemCharacter(UChar c) {
 inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
                                          unsigned* offset,
                                          UChar* c) {
-  DCHECK_EQ(*c, string[*offset]);
+  DCHECK_EQ(*c, UNSAFE_TODO(string[*offset]));
   DCHECK(Character::IsCollapsibleSpace(*c));
   bool space_run_has_newline = *c == uchar::kLineFeed;
   for ((*offset)++; *offset < string.length(); (*offset)++) {
-    *c = string[*offset];
+    *c = UNSAFE_TODO(string[*offset]);
     space_run_has_newline |= *c == uchar::kLineFeed;
     if (!Character::IsCollapsibleSpace(*c))
       break;
@@ -787,7 +788,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
   unsigned start_offset;
   InlineItem::CollapseType end_collapse = InlineItem::kNotCollapsible;
   unsigned i = 0;
-  UChar c = string[i];
+  UChar c = UNSAFE_TODO(string[i]);
   bool space_run_has_newline = false;
   if (Character::IsCollapsibleSpace(c)) {
     // Find the end of the collapsible space run.
@@ -900,10 +901,11 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
     while (true) {
       // Append the non-space text until we find a collapsible space.
       // |string[i]| is guaranteed not to be a space.
-      DCHECK(!Character::IsCollapsibleSpace(string[i]));
+      DCHECK(!Character::IsCollapsibleSpace(UNSAFE_TODO(string[i])));
       unsigned start_of_non_space = i;
       for (i++; i < string.length(); i++) {
-        c = string[i];
+        // SAFETY: index checked against length in for-statement.
+        c = UNSAFE_BUFFERS(string[i]);
         if (Character::IsCollapsibleSpace(c))
           break;
       }
@@ -917,7 +919,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
       }
 
       // Process a collapsible space run. First, find the end of the run.
-      DCHECK_EQ(c, string[i]);
+      DCHECK_EQ(c, UNSAFE_TODO(string[i]));
       DCHECK(Character::IsCollapsibleSpace(c));
       unsigned start_of_spaces = i;
       space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
@@ -977,16 +979,19 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::
     return false;
   }
   // Check if we are at a preserved space character and auto-wrap is enabled.
+  // SAFETY: index checked before use in ||-expression.
   if (style.ShouldCollapseWhiteSpaces() || !style.ShouldWrapLine() ||
       !string.length() || index >= string.length() ||
-      string[index] != uchar::kSpace) {
+      UNSAFE_BUFFERS(string[index]) != uchar::kSpace) {
     return false;
   }
 
   // Preserved leading spaces must be at the beginning of the first line or just
   // after a forced break.
-  if (index)
-    return string[index - 1] == uchar::kLineFeed;
+  if (index) {
+    // SAFETY: zero-length string or out-of-range index returned false above.
+    return UNSAFE_BUFFERS(string[index - 1]) == uchar::kLineFeed;
+  }
   return text_.empty() || text_[text_.length() - 1] == uchar::kLineFeed;
 }
 
@@ -1004,7 +1009,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::
     wtf_size_t end = *start;
     do {
       ++end;
-    } while (end < string.length() && string[end] == uchar::kSpace);
+    } while (end < string.length() &&
+             UNSAFE_BUFFERS(string[end]) == uchar::kSpace);
     AppendTextItem(transformed.Substring(*start, end - *start), layout_object);
     AppendGeneratedBreakOpportunity(layout_object);
     *start = end;
@@ -1057,7 +1063,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
       start = control;
     }
 
-    const UChar c = transformed_view[start];
+    const UChar c = UNSAFE_TODO(transformed_view[start]);
     switch (c) {
       case uchar::kLineFeed:
         if (is_text_combine_ || ruby_text_nesting_level_ > 0) [[unlikely]] {
@@ -1120,7 +1126,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveNewline(
     LayoutText* layout_object) {
   StringView string = transformed.View();
   for (unsigned start = 0; start < string.length();) {
-    if (string[start] == uchar::kLineFeed) {
+    // SAFETY: index checked against length in for-statement.
+    if (UNSAFE_BUFFERS(string[start]) == uchar::kLineFeed) {
       AppendForcedBreakCollapseWhitespace(layout_object);
       start++;
       continue;

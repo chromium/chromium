@@ -152,7 +152,7 @@ static unsigned NextTextBreakPositionForContainer(
 static inline WhitespaceMode RecomputeWhiteSpaceMode(
     const StringView& string_view) {
   DCHECK(!string_view.empty());
-  if (string_view[0] != '\n') {
+  if (UNSAFE_TODO(string_view[0]) != '\n') {
     return string_view.IsAllSpecialCharacters<IsHTMLSpace<UChar>>()
                ? WhitespaceMode::kAllWhitespace
                : WhitespaceMode::kNotAllWhitespace;

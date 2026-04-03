@@ -91,10 +91,13 @@ StringView HyphenationMinikin::WordToHyphenate(
   if (text.Is8Bit()) {
     wtf_size_t begin = 0u;
     wtf_size_t end = text.length();
-    while (begin != end && ShouldSkipLeadingChar(text[begin])) {
+    // SAFETY: begin != end implies begin is valid index.
+    while (begin != end && ShouldSkipLeadingChar(UNSAFE_BUFFERS(text[begin]))) {
       ++begin;
     }
-    while (begin != end && ShouldSkipTrailingChar(text[end - 1])) {
+    // SAFETY: begin != end implies end - 1 is valid index.
+    while (begin != end &&
+           ShouldSkipTrailingChar(UNSAFE_BUFFERS(text[end - 1]))) {
       --end;
     }
     *num_leading_chars_out = begin;

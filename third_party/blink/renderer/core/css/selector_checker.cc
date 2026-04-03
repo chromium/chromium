@@ -32,6 +32,7 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -271,7 +272,8 @@ static bool MatchesLangPseudoClass(
     }
     bool MatchesWildcard() const {
       StringView subtag = CurrentSubtag();
-      return subtag.length() == 1 && subtag[0] == '*';
+      // SAFETY: empty string short-circuited in &&-expression.
+      return subtag.length() == 1 && UNSAFE_BUFFERS(subtag[0]) == '*';
     }
     bool IsSingleton() const {
       return (subtag_end_ - subtag_start_) == 1 && subtag_start_ > 0;

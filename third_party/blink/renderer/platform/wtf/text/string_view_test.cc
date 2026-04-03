@@ -473,12 +473,13 @@ TEST(StringViewTest, NullString) {
 }
 
 TEST(StringViewTest, IndexAccess) {
+  // SAFETY: known strings of sufficient length.
   StringView view8(kChars);
-  EXPECT_EQ('1', view8[0]);
-  EXPECT_EQ('3', view8[2]);
+  EXPECT_EQ('1', UNSAFE_BUFFERS(view8[0]));
+  EXPECT_EQ('3', UNSAFE_BUFFERS(view8[2]));
   StringView view16(kChars16);
-  EXPECT_EQ('1', view16[0]);
-  EXPECT_EQ('3', view16[2]);
+  EXPECT_EQ('1', UNSAFE_BUFFERS(view16[0]));
+  EXPECT_EQ('3', UNSAFE_BUFFERS(view16[2]));
 }
 
 TEST(StringViewTest, EqualIgnoringAsciiCase) {

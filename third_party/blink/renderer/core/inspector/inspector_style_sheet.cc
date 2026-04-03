@@ -157,7 +157,8 @@ String FindMagicComment(const String& content, const StringView& name) {
 
   const StringView disallowed_chars("\"' \t");
   for (uint32_t i = 0; i < match.length(); ++i) {
-    if (disallowed_chars.contains(match[i])) {
+    // SAFETY: index checked against length in loop condition.
+    if (disallowed_chars.contains(UNSAFE_BUFFERS(match[i]))) {
       return g_empty_string;
     }
   }

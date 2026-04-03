@@ -28,6 +28,7 @@
 #include <array>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
@@ -122,8 +123,9 @@ UChar WhitespaceRebalancingCharToAppend(const StringView& string,
                                         UChar previous) {
   DCHECK_LT(index, string.length());
 
-  if (!IsWhitespace(string[index]))
-    return string[index];
+  if (!IsWhitespace(UNSAFE_TODO(string[index]))) {
+    return UNSAFE_TODO(string[index]);
+  }
 
   if (!index && start_is_start_of_paragraph)
     return uchar::kNoBreakSpace;
@@ -138,9 +140,11 @@ UChar WhitespaceRebalancingCharToAppend(const StringView& string,
   }
 
   // Run of two or more spaces starts with a no-break space (crbug.com/453042).
-  if (index + 1 < string.length() && IsWhitespace(string[index + 1]))
+  // SAFETY: index checked before use in &&-expression.
+  if (index + 1 < string.length() &&
+      IsWhitespace(UNSAFE_BUFFERS(string[index + 1]))) {
     return uchar::kNoBreakSpace;
-
+  }
   return ' ';
 }
 

@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -263,7 +264,8 @@ void DateTimeFormat::QuoteAndAppend(const StringView& literal,
   }
 
   for (unsigned i = 0; i < literal.length(); ++i) {
-    if (literal[i] == '\'') {
+    // SAFETY: index `i` checked against length above.
+    if (UNSAFE_BUFFERS(literal[i]) == '\'') {
       buffer.Append("''");
     } else {
       String escaped = literal.substr(i).ToString().Replace("'", "''");

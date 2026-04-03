@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_attr_type.h"
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
@@ -36,7 +37,9 @@ bool CSSVariableParser::IsValidVariableName(const CSSParserToken& token) {
 }
 
 bool CSSVariableParser::IsValidVariableName(StringView string) {
-  return string.length() >= 3 && string[0] == '-' && string[1] == '-';
+  // SAFETY: insufficiently long string short-circuited in &&-expression.
+  return string.length() >= 3 && UNSAFE_BUFFERS(string[0]) == '-' &&
+         UNSAFE_BUFFERS(string[1]) == '-';
 }
 
 bool CSSVariableParser::StartsCustomPropertyDeclaration(
@@ -836,7 +839,10 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
   // the way through here.
   if (text.Is8Bit() && !std::ranges::contains(text.Span8(), '/')) {
     // No comments, so we can strip whitespace only.
-    while (!text.empty() && IsHTMLSpace(text[text.length() - 1])) {
+    // SAFETY: empty strings short-circuited in &&-expression means that
+    // the last character is valid.
+    while (!text.empty() &&
+           IsHTMLSpace(UNSAFE_BUFFERS(text[text.length() - 1]))) {
       text = StringView(text, 0, text.length() - 1);
     }
     return text;
@@ -850,18 +856,22 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
     kInComment
   } state = kDefault;
   for (wtf_size_t i = 0; i < text.length(); ++i) {
+    // SAFETY: `i` checked in loop body.
+    UChar ch = UNSAFE_BUFFERS(text[i]);
     if (state == kInComment) {
       // See if we can end this comment.
-      if (text[i] == '*' && i + 1 < text.length() && text[i + 1] == '/') {
+      // SAFETY: `i + 1` checked in &&-expression before use.
+      if (ch == '*' && i + 1 < text.length() &&
+          UNSAFE_BUFFERS(text[i + 1]) == '/') {
         ++i;
         state = kDefault;
       }
       continue;
     }
-    if (state == kDefault && IsHTMLSpace(text[i])) {
+    if (state == kDefault && IsHTMLSpace(ch)) {
       continue;
     }
-    if (text[i] == '\\' && i + 1 < text.length()) {
+    if (ch == '\\' && i + 1 < text.length()) {
       // Ignore the next character for purposes of changing states.
       ++i;
       if (state == kDefault) {
@@ -871,8 +881,9 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
     }
 
     // See if we must start a comment.
-    if (state == kDefault && text[i] == '/' && i + 1 < text.length() &&
-        text[i + 1] == '*') {
+    // SAFETY: `i + 1` checked in &&-expression before use.
+    if (state == kDefault && ch == '/' && i + 1 < text.length() &&
+        UNSAFE_BUFFERS(text[i + 1]) == '*') {
       ++i;
       state = kInComment;
       continue;
@@ -884,17 +895,17 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
 
     // See if we are entering or leaving quotes.
     if (state == kDefault) {
-      if (text[i] == '\'') {
+      if (ch == '\'') {
         state = kInSingleQuote;
-      } else if (text[i] == '"') {
+      } else if (ch == '"') {
         state = kInDoubleQuote;
       }
     } else if (state == kInSingleQuote) {
-      if (text[i] == '\'') {
+      if (ch == '\'') {
         state = kDefault;
       }
     } else if (state == kInDoubleQuote) {
-      if (text[i] == '"') {
+      if (ch == '"') {
         state = kDefault;
       }
     }
@@ -905,7 +916,8 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
   // Leading whitespace should already have been stripped.
   // (This test needs to be after we stripped trailing spaces,
   // or we could look at trailing space believing it was leading.)
-  DCHECK(ret.empty() || !IsHTMLSpace(ret[0]));
+  // SAFETY: ret is checked for emptiness before access.
+  DCHECK(ret.empty() || !IsHTMLSpace(UNSAFE_BUFFERS(ret[0])));
 
   return ret;
 }

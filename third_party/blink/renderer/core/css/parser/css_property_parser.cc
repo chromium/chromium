@@ -124,8 +124,9 @@ const CSSValue* CSSPropertyParser::ParseSingleValue(
 
 StringView StripInitialWhitespace(StringView value) {
   wtf_size_t initial_whitespace_len = 0;
+  // SAFETY: index checked against length prior to use via &&-expression.
   while (initial_whitespace_len < value.length() &&
-         IsHTMLSpace(value[initial_whitespace_len])) {
+         IsHTMLSpace(UNSAFE_BUFFERS(value[initial_whitespace_len]))) {
     ++initial_whitespace_len;
   }
   return StringView(value, initial_whitespace_len);

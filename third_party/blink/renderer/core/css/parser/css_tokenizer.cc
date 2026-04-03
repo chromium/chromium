@@ -654,11 +654,13 @@ StringView CSSTokenizer::ConsumeName() {
 
   // Slow path for non-UTF-8 and tokens near the end of the string.
   for (; size < buffer.length(); ++size) {
-    UChar cc = buffer[size];
+    // SAFETY: size checked against length in loop condition.
+    UChar cc = UNSAFE_BUFFERS(buffer[size]);
     if (IsSurrogate(cc)) {
       // Valid surrogate pairs can stay on the fast path.
+      // SAFETY: size + 1 checked against length before use.
       if (IsLeadingSurrogate(cc) && ((size + 1) < buffer.length()) &&
-          IsTrailingSurrogate(buffer[size + 1])) {
+          IsTrailingSurrogate(UNSAFE_BUFFERS(buffer[size + 1]))) {
         ++size;
         continue;
       }

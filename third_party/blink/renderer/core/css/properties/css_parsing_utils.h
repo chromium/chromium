@@ -8,6 +8,7 @@
 #include <array>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/css_counter_value.h"
@@ -388,8 +389,10 @@ CORE_EXPORT bool IsDashedIdent(const CSSParserToken&);
 
 // https://drafts.csswg.org/css-mixins-1/#function-rule
 inline bool IsDashedFunctionName(const CSSParserToken& token) {
+  // SAFETY: token value length checked before use in &&-expression.
   return token.GetType() == kFunctionToken && token.Value().length() >= 3 &&
-         token.Value()[0] == '-' && token.Value()[1] == '-';
+         UNSAFE_BUFFERS(token.Value()[0]) == '-' &&
+         UNSAFE_BUFFERS(token.Value()[1]) == '-';
 }
 
 CORE_EXPORT CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream&,

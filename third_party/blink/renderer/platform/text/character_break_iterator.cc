@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace blink {
 
@@ -82,7 +83,8 @@ unsigned LengthOfGraphemeCluster(const StringView& string, unsigned offset) {
 
   // The only Latin-1 Extended Grapheme Cluster is CRLF.
   if (string.Is8Bit()) {
-    return 1 + (string[offset] == '\r' && string[offset + 1] == '\n');
+    return (1 + UNSAFE_TODO(
+                    (string[offset] == '\r' && string[offset + 1] == '\n')));
   }
 
   CharacterBreakIterator it(string);
