@@ -3740,6 +3740,16 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
     layer->UpdateFilterReferenceBox();
   }
 
+  if (!ClipPathClipper::ClipPathStatusResolved(object_)) {
+    // Being here means we cleared the update flag without setting status. This
+    // is a bug, though as long as we re-set the flag it shouldn't result in
+    // painting artifacts as early outs of the tree walk usually imply the
+    // object isn't painted. Do this now so CC clip paths can function properly.
+    // TODO(crbug.com/495205055): Remove this.
+    object_.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
+    return;
+  }
+
   if (!object_.IsBox()) {
     // We could check the change of the clip-path bounding box, but checking
     // layout change is much simpler and good enough for the rare cases of
