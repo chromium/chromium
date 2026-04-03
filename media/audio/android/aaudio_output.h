@@ -17,10 +17,12 @@
 #include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_timestamp_helper.h"
 
 namespace media {
 
 class AudioManagerAndroid;
+class AudioPullFifo;
 
 // Class which uses the AAudio library to playback output.
 class AAudioOutputStream : public MuteableAudioOutputStream,
@@ -53,6 +55,11 @@ class AAudioOutputStream : public MuteableAudioOutputStream,
   void OnDeviceChange() override;
 
  private:
+  void RefillFifo(int frame_delay, AudioBus* destination);
+  bool PullDataFromSource(base::TimeDelta delay,
+                          base::TimeTicks delay_timestamp,
+                          AudioBus* destination);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const raw_ptr<AudioManagerAndroid> audio_manager_;
@@ -61,6 +68,16 @@ class AAudioOutputStream : public MuteableAudioOutputStream,
   AmplitudePeakDetector peak_detector_;
 
   std::unique_ptr<AudioBus> audio_bus_;
+
+  // Use to handle variable sized callbacks.
+  std::unique_ptr<AudioPullFifo> pull_fifo_;
+
+  // Tracks output delay when a single `OnAudioDataRequested()` spans multiple
+  // `RefillFifo()` calls.
+  AudioTimestampHelper delay_helper_;
+
+  // The time at which the `delay_helper_`'s base timestamp was last updated.
+  base::TimeTicks delay_timestamp_;
 
   AAudioStreamWrapper stream_wrapper_;
 

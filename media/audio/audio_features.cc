@@ -47,6 +47,9 @@ BASE_FEATURE(kAndroidAudioDeviceListener, base::FEATURE_ENABLED_BY_DEFAULT);
 // TODO(crbug.com/440210010): Remove when the experiment is done.
 BASE_FEATURE(kAudioStereoInputStreamParameters,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables support for variable sized callbacks in AAudio.
+BASE_FEATURE(kAAudioVariableSizedCallbacks, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // This feature flag controls whether the WebAudio destination resampler is

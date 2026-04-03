@@ -18,6 +18,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioPerStreamDeviceSelection);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAlwaysUseAudioManagerOutputFramesPerBuffer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAndroidAudioDeviceListener);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioStereoInputStreamParameters);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioVariableSizedCallbacks);
 #endif
 
 #if BUILDFLAG(IS_MAC)

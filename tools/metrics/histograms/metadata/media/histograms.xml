@@ -593,6 +593,44 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.Audio.Android.AAudio.CallbackSizeDistribution.{Direction}"
+    units="frames" expires_after="2026-10-31">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of frames delivered in each AAudio data callback for {Direction}
+    streams. Logged sub-sampled (once every 100 callbacks) to evaluate variable
+    callback dynamics.
+  </summary>
+  <token key="Direction" variants="AudioDirection"/>
+</histogram>
+
+<histogram
+    name="Media.Audio.Android.AAudio.CallbackTransitionsPer1000.{Direction}"
+    units="transitions" expires_after="2026-10-31">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of callback size transitions per 1000 callbacks for {Direction}
+    streams. Logged on stream close for streams lasting longer than 10 seconds.
+  </summary>
+  <token key="Direction" variants="AudioDirection"/>
+</histogram>
+
+<histogram name="Media.Audio.Android.AAudio.TimestampDiscontinuitiesPer10s"
+    units="discontinuities" expires_after="2026-10-31">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of discontinuities in OnData() timestamps per 10 second interval
+    for AAudio input streams. A discontinuity is counted if the timestamp
+    differs from the expected timestamp by more than 10% of the callback
+    duration. Logged periodically every 10 seconds while the stream is running.
+    Streams shorter than 10 seconds are ignored.
+  </summary>
+</histogram>
+
+<histogram
     name="Media.Audio.Android.AAudioBufferSizeInFrames.{Direction}{AudioLatencyTag}"
     units="frames" expires_after="2026-09-27">
   <owner>kawasin@google.com</owner>

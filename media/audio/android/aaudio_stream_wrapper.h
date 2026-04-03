@@ -19,6 +19,7 @@
 namespace media {
 
 class AAudioDestructionHelper;
+class AAudioCallbackStatsReporter;
 class AAudioGlitchReporter;
 
 // Small wrapper around AAudioStream which handles its lifetime.
@@ -113,6 +114,8 @@ class AAudioStreamWrapper {
   // Bound to the audio data callback. Outlives |this| in case the callbacks
   // continue after |this| is destroyed. See crbug.com/1183255.
   std::unique_ptr<AAudioDestructionHelper> destruction_helper_;
+
+  std::unique_ptr<AAudioCallbackStatsReporter> callback_stats_reporter_;
 };
 
 }  // namespace media
