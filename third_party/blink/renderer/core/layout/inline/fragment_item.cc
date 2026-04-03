@@ -451,6 +451,10 @@ float FragmentItem::ScaleInlineOffset(LayoutUnit inline_offset) const {
     return inline_offset.ToFloat() * SvgScalingFactor() /
            svg_data->length_adjust_scale;
   }
+  auto [scale, is_inline] = GetFitTextScale();
+  if (scale != 1.0f) {
+    return inline_offset.ToFloat() / scale;
+  }
   return inline_offset.ToFloat();
 }
 
