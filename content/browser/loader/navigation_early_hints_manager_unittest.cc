@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -415,6 +416,59 @@ TEST_F(NavigationEarlyHintsManagerTest, PreloadPriority) {
                 CreateLinkHeader(network::mojom::LinkAsAttribute::kFont,
                                  network::mojom::FetchPriorityAttribute::kLow)),
             net::LOWEST);
+}
+
+TEST_F(NavigationEarlyHintsManagerTest, CSPForModulePreloadAsEmpty) {
+  // link: <https://a.test/script.js>; rel=modulepreload
+  // Without 'as' attribute.
+  auto link_header = network::mojom::LinkHeader::New(
+      GURL(kPreloadPath), network::mojom::LinkRelAttribute::kModulePreload,
+      network::mojom::LinkAsAttribute::kUnspecified,
+      network::mojom::CrossOriginAttribute::kUnspecified,
+      network::mojom::FetchPriorityAttribute::kAuto,
+      /*mime_type=*/std::nullopt);
+
+  auto hints = network::mojom::EarlyHints::New();
+  hints->headers = network::mojom::ParsedHeaders::New();
+  hints->headers->link_headers.push_back(std::move(link_header));
+  hints->headers->content_security_policy =
+      network::ParseContentSecurityPolicies(
+          "script-src 'none'",
+          network::mojom::ContentSecurityPolicyType::kEnforce,
+          network::mojom::ContentSecurityPolicySource::kHTTP,
+          GURL(kNavigationPath));
+
+  early_hints_manager().HandleEarlyHints(std::move(hints),
+                                         CreateNavigationResourceRequest());
+
+  // CSP should block the preload:
+  EXPECT_FALSE(early_hints_manager().HasInflightPreloads());
+}
+
+TEST_F(NavigationEarlyHintsManagerTest, CSPForModulePreloadAsScript) {
+  // link: <https://a.test/script.js>; rel=modulepreload; as=script
+  auto link_header = network::mojom::LinkHeader::New(
+      GURL(kPreloadPath), network::mojom::LinkRelAttribute::kModulePreload,
+      network::mojom::LinkAsAttribute::kScript,
+      network::mojom::CrossOriginAttribute::kUnspecified,
+      network::mojom::FetchPriorityAttribute::kAuto,
+      /*mime_type=*/std::nullopt);
+
+  auto hints = network::mojom::EarlyHints::New();
+  hints->headers = network::mojom::ParsedHeaders::New();
+  hints->headers->link_headers.push_back(std::move(link_header));
+  hints->headers->content_security_policy =
+      network::ParseContentSecurityPolicies(
+          "script-src 'none'",
+          network::mojom::ContentSecurityPolicyType::kEnforce,
+          network::mojom::ContentSecurityPolicySource::kHTTP,
+          GURL(kNavigationPath));
+
+  early_hints_manager().HandleEarlyHints(std::move(hints),
+                                         CreateNavigationResourceRequest());
+
+  // CSP should block the preload:
+  EXPECT_FALSE(early_hints_manager().HasInflightPreloads());
 }
 
 }  // namespace content

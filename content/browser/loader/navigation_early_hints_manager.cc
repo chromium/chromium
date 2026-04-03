@@ -82,10 +82,17 @@ const net::NetworkTrafficAnnotationTag kEarlyHintsPreloadTrafficAnnotation =
 )");
 
 network::mojom::CSPDirectiveName LinkAsAttributeToCSPDirective(
-    network::mojom::LinkAsAttribute attr) {
+    network::mojom::LinkAsAttribute attr,
+    network::mojom::LinkRelAttribute rel) {
   // https://w3c.github.io/webappsec-csp/#csp-directives
   switch (attr) {
     case network::mojom::LinkAsAttribute::kUnspecified:
+      // For modulepreload, the CSP directive should be "script-src-elem" when
+      // `as` is not specified.
+      // https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload
+      if (rel == network::mojom::LinkRelAttribute::kModulePreload) {
+        return network::mojom::CSPDirectiveName::ScriptSrcElem;
+      }
       return network::mojom::CSPDirectiveName::Unknown;
     case network::mojom::LinkAsAttribute::kImage:
       return network::mojom::CSPDirectiveName::ImgSrc;
@@ -109,7 +116,7 @@ bool CheckContentSecurityPolicyForPreload(
          link->rel == network::mojom::LinkRelAttribute::kModulePreload);
 
   network::mojom::CSPDirectiveName directive =
-      LinkAsAttributeToCSPDirective(link->as);
+      LinkAsAttributeToCSPDirective(link->as, link->rel);
 
   for (network::mojom::CSPDirectiveName effective_directive = directive;
        effective_directive != network::mojom::CSPDirectiveName::Unknown;
