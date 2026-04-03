@@ -146,6 +146,11 @@ public class ScreenCapture implements ImageHandler.Delegate {
         }
     }
 
+    /** Blocks until the foreground service is running. */
+    public static void waitForegroundServiceRunning() {
+        sLatch.block();
+    }
+
     /**
      * Called before attempting to start a ScreenCapture session.
      *

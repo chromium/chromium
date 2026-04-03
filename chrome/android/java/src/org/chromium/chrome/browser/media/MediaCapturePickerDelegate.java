@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.media;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.activity.result.ActivityResult;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,6 +45,15 @@ public interface MediaCapturePickerDelegate {
      * @return True if audio sharing was requested.
      */
     boolean shouldShareAudio();
+
+    /**
+     * Called before starting tab sharing. This is only valid if user has picked a tab i.e. {@link
+     * #getPickedTab()} returns non-null.
+     *
+     * @param webContents The webContents of the capturer tab.
+     * @param result The activity result returned by the android capture prompt.
+     */
+    default void startAppContentMediaProjection(WebContents webContents, ActivityResult result) {}
 
     /**
      * Called when the screen capture picker is done i.e. after user has picked a tab/ window/

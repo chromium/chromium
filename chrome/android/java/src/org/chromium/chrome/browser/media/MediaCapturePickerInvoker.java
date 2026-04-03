@@ -102,6 +102,8 @@ public class MediaCapturePickerInvoker {
                 // is fixed to keep it consistent with desktop Chrome.
                 MediaCapturePickerManager.bringTabToFront(tab);
 
+                impl.startAppContentMediaProjection(webContents, result);
+
                 Log.d(TAG, "PickerInvoker: call delegate.onPickTab");
                 delegate.onPickTab(pickedTabwebContents, impl.shouldShareAudio());
                 MediaCapturePickerManager.recordResult(
