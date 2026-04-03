@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
@@ -540,9 +541,9 @@ const VerticalTabDragHandler& VerticalDraggedTabsContainer::GetDragHandler()
 }
 
 bool VerticalDraggedTabsContainer::IsTabStripCollapsed() const {
-  CHECK(collection_node_);
-  const auto* controller = collection_node_->GetController();
-  return controller && controller->IsCollapsed();
+  const auto* controller =
+      collection_node_ ? collection_node_->GetController() : nullptr;
+  return controller && controller->GetStateController()->IsCollapsed();
 }
 
 void VerticalDraggedTabsContainer::ResetCollectionNode() {

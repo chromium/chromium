@@ -72,7 +72,6 @@ class VerticalUnpinnedTabContainerView
                                const gfx::Point& point_in_screen) const;
 
   void ResetCollectionNode();
-  bool IsTabStripCollapsed() const;
 
   raw_ptr<TabCollectionNode> collection_node_;
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;

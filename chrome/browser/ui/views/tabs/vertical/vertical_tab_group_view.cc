@@ -383,7 +383,8 @@ bool VerticalTabGroupView::IsCollapsed() const {
 bool VerticalTabGroupView::IsTabStripCollapsedOrCollapsing() const {
   const auto* controller =
       collection_node_ ? collection_node_->GetController() : nullptr;
-  return controller && controller->IsCollapsedOrCollapsing();
+  return controller &&
+         controller->GetStateController()->IsCollapsedOrCollapsing();
 }
 
 views::ScrollView* VerticalTabGroupView::GetScrollViewForContainer() const {

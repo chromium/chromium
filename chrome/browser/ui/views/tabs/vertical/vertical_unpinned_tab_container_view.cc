@@ -276,12 +276,6 @@ void VerticalUnpinnedTabContainerView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }
 
-bool VerticalUnpinnedTabContainerView::IsTabStripCollapsed() const {
-  const auto* controller =
-      collection_node_ ? collection_node_->GetController() : nullptr;
-  return controller && controller->IsCollapsed();
-}
-
 views::ScrollView* VerticalUnpinnedTabContainerView::GetScrollViewForContainer()
     const {
   return views::ScrollView::GetScrollViewForContents(

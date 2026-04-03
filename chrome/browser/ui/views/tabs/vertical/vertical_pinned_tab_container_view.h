@@ -69,7 +69,6 @@ class VerticalPinnedTabContainerView
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndexForExpanded(
       const gfx::Point& loc_in_container);
 
-  bool IsTabStripCollapsed() const;
   void ResetCollectionNode();
 
   raw_ptr<TabCollectionNode> collection_node_;
