@@ -184,19 +184,45 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                   (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super willTransitionToTraitCollection:newCollection
                withTransitionCoordinator:coordinator];
-  void (^transition)(id<UIViewControllerTransitionCoordinatorContext>) =
-      ^(id<UIViewControllerTransitionCoordinatorContext> context) {
+
+  __weak __typeof(self) weakSelf = self;
+  const BOOL isSplitToolbarMode = IsSplitToolbarMode(newCollection);
+  const BOOL isTabletFormFactor =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+
+  void (^transitionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
+      ^(id<UIViewControllerTransitionCoordinatorContext>) {
+        __strong __typeof(self) strongSelf = weakSelf;
+
+        if (!strongSelf) {
+          return;
+        }
+
+        if (IsChromeNextIaEnabled() && !isTabletFormFactor) {
+          [strongSelf updateToolsMenuButtonVisibility:isSplitToolbarMode];
+        }
+
         // Ensure omnibox is reset when not a regular tablet.
-        if (IsSplitToolbarMode(newCollection)) {
-          [self.toolbarDelegate setScrollProgressForTabletOmnibox:1];
+        if (isSplitToolbarMode) {
+          [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
         }
         // Fake Tap button only needs to work in portrait. Disable the button
         // in landscape because in landscape the button covers logoView (which
         // need to handle taps).
-        self.fakeTapButton.userInteractionEnabled = IsSplitToolbarMode(self);
+        strongSelf.fakeTapButton.userInteractionEnabled = isSplitToolbarMode;
       };
 
-  [coordinator animateAlongsideTransition:transition completion:nil];
+  void (^completionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
+      ^(id<UIViewControllerTransitionCoordinatorContext>) {
+        if (IsChromeNextIaEnabled() && !isTabletFormFactor) {
+          // Hide the tools menu button if it is no longer visible.
+          weakSelf.headerView.toolsMenuButton.hidden =
+              weakSelf.headerView.toolsMenuButton.alpha == 0.0;
+        }
+      };
+
+  [coordinator animateAlongsideTransition:transitionBlock
+                               completion:completionBlock];
 }
 
 - (void)dealloc {
@@ -432,6 +458,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   return [self.headerView fakeboxButtonsSnapshot];
 }
 
+/// TODO(crbug.com/497819911): Combine the two private pragmas in this file.
 #pragma mark - Private
 
 // Initialize and add a search field tap target and a voice search button.
@@ -603,6 +630,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 // Creates the Tools menu and adds it to the header view.
 - (void)addToolsMenu {
   CHECK(IsChromeNextIaEnabled());
+  CHECK_NE(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
+
   UIButton* toolsMenuButton =
       [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
 
@@ -626,7 +655,30 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                       action:@selector(toolsMenuWasTapped:)
             forControlEvents:UIControlEventTouchUpInside];
 
+  // Set initial button visibility. Visible in iPhone portrait, otherwise
+  // invisible.
+  BOOL isSplitToolbarMode = IsSplitToolbarMode(self);
+  toolsMenuButton.hidden = !isSplitToolbarMode;
+  toolsMenuButton.alpha = isSplitToolbarMode ? 1.0 : 0.0;
+
   self.headerView.toolsMenuButton = toolsMenuButton;
+}
+
+// Helper for `-[willTransitionToTraitCollection:withTransitionCoordinator:]`.
+// Updates the visibility of the tools menu button in the header view. The
+// `hidden` property of the `toolsMenuButton` should be updated according after
+// using this helper to fade the button in/out of view.
+- (void)updateToolsMenuButtonVisibility:(BOOL)visibility {
+  CHECK(IsChromeNextIaEnabled());
+  CHECK_NE(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
+
+  if (!self.headerView.toolsMenuButton) {
+    return;
+  }
+
+  // Unhide the tools menu button before fading it in/out of view.
+  self.headerView.toolsMenuButton.hidden = NO;
+  self.headerView.toolsMenuButton.alpha = visibility ? 1.0 : 0.0;
 }
 
 // Configures `identityDiscButton` with the current state of
