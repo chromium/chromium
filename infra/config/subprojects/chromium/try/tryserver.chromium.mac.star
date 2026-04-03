@@ -204,55 +204,6 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(crbug.com/415099984): Remove this builder and merge all the mirrored
-# tests/builds under mac-rel, once Mac GPU tests are ready for ARM migration.
-try_.orchestrator_builder(
-    name = "mac-gpu-rel",
-    branch_selector = branches.selector.MAC_BRANCHES,
-    mirrors = [
-        "ci/GPU Mac Builder",
-        "ci/Mac Release (Intel)",
-        "ci/Mac Retina Release (AMD)",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "release_try_builder",
-            "remoteexec",
-            "no_symbols",
-            "use_clang_coverage",
-            "partial_code_coverage_instrumentation",
-            "enable_dangling_raw_ptr_feature_flag",
-            "enable_backup_ref_ptr_feature_flag",
-            "mac",
-            "x64",
-        ],
-    ),
-    compilator = "mac-gpu-rel-compilator",
-    contact_team_email = "chrome-gpu-infra@google.com",
-    coverage_test_types = ["overall", "unit"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-        # crbug.com/940930
-        "chromium.enable_cleandead": 100,
-    },
-    main_list_view = "try",
-    use_clang_coverage = True,
-    # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    #use_orchestrator_pool = True,
-)
-
-try_.compilator_builder(
-    name = "mac-gpu-rel-compilator",
-    branch_selector = branches.selector.MAC_BRANCHES,
-    description_html = "compilator for mac-gpu-rel.",
-    cpu = cpu.ARM64,
-    contact_team_email = "chrome-gpu-infra@google.com",
-    main_list_view = "try",
-)
-
 try_.builder(
     name = "mac-libfuzzer-asan-rel",
     # TODO(crbug.com/41492669): Can delete this description when it's
