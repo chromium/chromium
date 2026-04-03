@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -97,19 +96,16 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
 
         mEntryPointSpec = mButtonData.getButtonSpec();
         mExitPointSpec =
-                new ButtonSpec(
-                        AppCompatResources.getDrawable(context, R.drawable.ic_mobile_friendly_24dp),
-                        /* onClickListener= */ this,
-                        /* onLongClickListener= */ null,
-                        /* contentDescription= */ context.getString(
-                                R.string.hide_reading_mode_text),
-                        /* supportsTinting= */ true,
-                        /* iphCommandBuilder= */ null,
-                        AdaptiveToolbarButtonVariant.READER_MODE,
-                        /* actionChipLabelResId= */ Resources.ID_NULL,
-                        /* tooltipTextResId= */ R.string.hide_reading_mode_text,
-                        /* hasErrorBadge= */ false,
-                        /* isChecked= */ true);
+                new ButtonSpec.Builder(
+                                AppCompatResources.getDrawable(
+                                        context, R.drawable.ic_mobile_friendly_24dp),
+                                context.getString(R.string.hide_reading_mode_text),
+                                /* supportsTinting= */ true)
+                        .setOnClickListener(this)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.READER_MODE)
+                        .setHoverTooltipTextId(R.string.hide_reading_mode_text)
+                        .setIsChecked(true)
+                        .build();
     }
 
     @Override

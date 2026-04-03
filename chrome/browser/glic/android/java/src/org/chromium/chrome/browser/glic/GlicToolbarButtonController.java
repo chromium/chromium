@@ -92,38 +92,20 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         mTrackerSupplier = trackerSupplier;
         mDefaultSpec = mButtonData.getButtonSpec();
         mWorkingSpec = createWorkingSpec(context);
-        mReviewSpec = createReviewSpec(context);
-        mDoneSpec = createDoneSpec(context);
+        mReviewSpec = createReviewSpec();
+        mDoneSpec = createDoneSpec();
     }
 
-    private ButtonSpec createReviewSpec(Context context) {
-        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp);
-        return new ButtonSpec(
-                drawable,
-                this,
-                mDefaultSpec.getOnLongClickListener(),
-                mDefaultSpec.getContentDescription(),
-                /* supportsTinting= */ true,
-                mDefaultSpec.getIphCommandBuilder(),
-                mDefaultSpec.getButtonVariant(),
-                R.string.glic_button_status_review,
-                mDefaultSpec.getHoverTooltipTextId(),
-                /* hasErrorBadge= */ false);
+    private ButtonSpec createReviewSpec() {
+        return new ButtonSpec.Builder(mDefaultSpec)
+                .setActionChipLabelResId(R.string.glic_button_status_review)
+                .build();
     }
 
-    private ButtonSpec createDoneSpec(Context context) {
-        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp);
-        return new ButtonSpec(
-                drawable,
-                this,
-                mDefaultSpec.getOnLongClickListener(),
-                mDefaultSpec.getContentDescription(),
-                /* supportsTinting= */ true,
-                mDefaultSpec.getIphCommandBuilder(),
-                mDefaultSpec.getButtonVariant(),
-                R.string.glic_button_status_done,
-                mDefaultSpec.getHoverTooltipTextId(),
-                /* hasErrorBadge= */ false);
+    private ButtonSpec createDoneSpec() {
+        return new ButtonSpec.Builder(mDefaultSpec)
+                .setActionChipLabelResId(R.string.glic_button_status_done)
+                .build();
     }
 
     private ButtonSpec createWorkingSpec(Context context) {
@@ -184,17 +166,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         int spinnerInset = Math.round(-10 * density);
         layerDrawable.setLayerInset(0, spinnerInset, spinnerInset, spinnerInset, spinnerInset);
         layerDrawable.setLayerInset(1, sparkInset, sparkInset, sparkInset, sparkInset);
-        return new ButtonSpec(
-                layerDrawable,
-                this,
-                mDefaultSpec.getOnLongClickListener(),
-                mDefaultSpec.getContentDescription(),
-                /* supportsTinting= */ true,
-                mDefaultSpec.getIphCommandBuilder(),
-                mDefaultSpec.getButtonVariant(),
-                mDefaultSpec.getActionChipLabelResId(),
-                mDefaultSpec.getHoverTooltipTextId(),
-                mDefaultSpec.hasErrorBadge());
+        return new ButtonSpec.Builder(mDefaultSpec).setDrawable(layerDrawable).build();
     }
 
     @Override

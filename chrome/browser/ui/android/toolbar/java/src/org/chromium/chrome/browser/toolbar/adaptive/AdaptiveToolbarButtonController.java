@@ -280,21 +280,15 @@ public class AdaptiveToolbarButtonController
             if (mMenuHandler == null) mMenuHandler = createMenuHandler();
             mOriginalButtonSpec = receivedButtonSpec;
             mButtonData.setButtonSpec(
-                    new ButtonSpec(
-                            receivedButtonSpec.getDrawable(),
-                            wrapClickListener(
-                                    receivedButtonSpec.getOnClickListener(),
-                                    receivedButtonSpec.getButtonVariant()),
+                    new ButtonSpec.Builder(receivedButtonSpec)
+                            .setOnClickListener(
+                                    wrapClickListener(
+                                            assumeNonNull(receivedButtonSpec.getOnClickListener()),
+                                            receivedButtonSpec.getButtonVariant()))
                             // Use menu handler only with static actions.
-                            receivedButtonSpec.isDynamicAction() ? null : mMenuHandler,
-                            receivedButtonSpec.getContentDescription(),
-                            receivedButtonSpec.getSupportsTinting(),
-                            receivedButtonSpec.getIphCommandBuilder(),
-                            receivedButtonSpec.getButtonVariant(),
-                            receivedButtonSpec.getActionChipLabelResId(),
-                            receivedButtonSpec.getHoverTooltipTextId(),
-                            receivedButtonSpec.hasErrorBadge(),
-                            receivedButtonSpec.isChecked()));
+                            .setOnLongClickListener(
+                                    receivedButtonSpec.isDynamicAction() ? null : mMenuHandler)
+                            .build());
         }
         return mButtonData;
     }

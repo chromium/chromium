@@ -91,20 +91,15 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
         // Create another ButtonSpec with a filled price tracking icon and a "Stop tracking"
         // description.
         mFilledButtonSpec =
-                new ButtonSpec(
-                        /* drawable= */ AppCompatResources.getDrawable(
-                                context, R.drawable.price_tracking_enabled_filled),
-                        /* onClickListener= */ this,
-                        /* onLongClickListener= */ null,
-                        /* contentDescription= */ context.getString(
-                                R.string.disable_price_tracking_menu_item),
-                        /* supportsTinting= */ true,
-                        /* iphCommandBuilder= */ null,
-                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.PRICE_TRACKING,
-                        /* actionChipLabelResId= */ Resources.ID_NULL,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* hasErrorBadge= */ false,
-                        /* isChecked= */ true);
+                new ButtonSpec.Builder(
+                                AppCompatResources.getDrawable(
+                                        context, R.drawable.price_tracking_enabled_filled),
+                                context.getString(R.string.disable_price_tracking_menu_item),
+                                /* supportsTinting= */ true)
+                        .setOnClickListener(this)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.PRICE_TRACKING)
+                        .setIsChecked(true)
+                        .build();
 
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {

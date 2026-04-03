@@ -220,17 +220,14 @@ public class IdentityDiscController
         String contentDescription =
                 SigninUtils.getContentDescriptionForIdentityDisc(
                         mContext, profileData, mIdentityError);
-        return new ButtonSpec(
-                drawable,
-                buttonSpec.getOnClickListener(),
-                /* onLongClickListener= */ null,
-                contentDescription,
-                shouldSupportTinting,
-                buttonSpec.getIphCommandBuilder(),
-                AdaptiveToolbarButtonVariant.UNKNOWN,
-                buttonSpec.getActionChipLabelResId(),
-                buttonSpec.getHoverTooltipTextId(),
-                /* hasErrorBadge= */ mIdentityError != UserActionableError.NONE);
+        return new ButtonSpec.Builder(buttonSpec)
+                .setDrawable(drawable)
+                .setContentDescription(contentDescription)
+                .setSupportsTinting(shouldSupportTinting)
+                .setHasErrorBadge(mIdentityError != UserActionableError.NONE)
+                .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
+                .setOnLongClickListener(null)
+                .build();
     }
 
     /**

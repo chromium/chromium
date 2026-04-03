@@ -22,7 +22,6 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
@@ -135,17 +134,13 @@ public class OptionalButtonViewTest {
 
         // Whether a button is static or dynamic is determined by the button variant.
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        true,
-                        null,
-                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.NEW_TAB,
-                        /* actionChipLabelResId= */ Resources.ID_NULL,
-                        /* tooltipTextResId= */ R.string.new_tab_title,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(
+                                iconDrawable, contentDescription, /* supportsTinting= */ true)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.NEW_TAB)
+                        .setHoverTooltipTextId(R.string.new_tab_title)
+                        .build();
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -163,17 +158,12 @@ public class OptionalButtonViewTest {
 
         // Whether a button is static or dynamic is determined by the button variant.
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        true,
-                        null,
-                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
-                        /* actionChipLabelResId= */ Resources.ID_NULL,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(
+                                iconDrawable, contentDescription, /* supportsTinting= */ true)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.READER_MODE)
+                        .build();
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -190,17 +180,13 @@ public class OptionalButtonViewTest {
         int actionChipLabelResId = R.string.adaptive_toolbar_button_preference_share;
 
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        true,
-                        null,
-                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
-                        /* actionChipLabelResId= */ actionChipLabelResId,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(
+                                iconDrawable, contentDescription, /* supportsTinting= */ true)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.READER_MODE)
+                        .setActionChipLabelResId(actionChipLabelResId)
+                        .build();
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -216,17 +202,14 @@ public class OptionalButtonViewTest {
         String contentDescription = mActivity.getString(R.string.actionbar_share);
 
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        true,
-                        null,
-                        /* buttonVariant= */ buttonVariant,
-                        0,
-                        tooltipTextIdRes,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(
+                                iconDrawable, contentDescription, /* supportsTinting= */ true)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .setButtonVariant(buttonVariant)
+                        .setHoverTooltipTextId(tooltipTextIdRes)
+                        .build();
+
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -241,17 +224,11 @@ public class OptionalButtonViewTest {
         String contentDescription = mActivity.getString(R.string.actionbar_share);
 
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        /* supportsTinting= */ false,
-                        null,
-                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /* actionChipLabelResId= */ Resources.ID_NULL,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(
+                                iconDrawable, contentDescription, /* supportsTinting= */ false)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .build();
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -604,17 +581,12 @@ public class OptionalButtonViewTest {
         int actionChipLabelResId = R.string.adaptive_toolbar_button_preference_voice_search;
 
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        true,
-                        null,
-                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
-                        /* actionChipLabelResId= */ actionChipLabelResId,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(iconDrawable, contentDescription, true)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.READER_MODE)
+                        .setActionChipLabelResId(actionChipLabelResId)
+                        .build();
         ButtonDataImpl actionChipButtonData2 = new ButtonDataImpl();
         actionChipButtonData2.setButtonSpec(buttonSpec);
         actionChipButtonData2.setCanShow(true);
@@ -891,19 +863,9 @@ public class OptionalButtonViewTest {
         Drawable newIconDrawable =
                 AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon);
         ButtonSpec originalButtonSpec = readerModeButtonData.getButtonSpec();
-        // Create a copy of the original ButtonSpec with a different variant.
+        // Create a copy of the original ButtonSpec with a different drawable.
         readerModeButtonData.setButtonSpec(
-                new ButtonSpec(
-                        newIconDrawable,
-                        originalButtonSpec.getOnClickListener(),
-                        originalButtonSpec.getOnLongClickListener(),
-                        originalButtonSpec.getContentDescription(),
-                        originalButtonSpec.getSupportsTinting(),
-                        originalButtonSpec.getIphCommandBuilder(),
-                        originalButtonSpec.getButtonVariant(),
-                        originalButtonSpec.getActionChipLabelResId(),
-                        originalButtonSpec.getHoverTooltipTextId(),
-                        originalButtonSpec.hasErrorBadge()));
+                new ButtonSpec.Builder(originalButtonSpec).setDrawable(newIconDrawable).build());
 
         mOptionalButtonView.updateButtonWithAnimation(readerModeButtonData);
         mOptionalButtonView.onTransitionStart(null);

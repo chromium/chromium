@@ -65,17 +65,13 @@ public class ButtonDataImpl implements ButtonData {
         mCanShow = canShow;
         mIsEnabled = isEnabled;
         mButtonSpec =
-                new ButtonSpec(
-                        drawable,
-                        onClickListener,
-                        /* onLongClickListener= */ null,
-                        contentDescription,
-                        supportsTinting,
-                        iphCommandBuilder,
-                        buttonVariant,
-                        actionChipLabelResId,
-                        tooltipTextResId,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(drawable, contentDescription, supportsTinting)
+                        .setOnClickListener(onClickListener)
+                        .setIphCommandBuilder(iphCommandBuilder)
+                        .setButtonVariant(buttonVariant)
+                        .setActionChipLabelResId(actionChipLabelResId)
+                        .setHoverTooltipTextId(tooltipTextResId)
+                        .build();
     }
 
     @Override
@@ -116,56 +112,23 @@ public class ButtonDataImpl implements ButtonData {
 
     /** Convenience method to update the IPH command builder. */
     public void updateIphCommandBuilder(@Nullable IphCommandBuilder iphCommandBuilder) {
-        ButtonSpec currentSpec = getButtonSpec();
-        ButtonSpec newSpec =
-                new ButtonSpec(
-                        currentSpec.getDrawable(),
-                        currentSpec.getOnClickListener(),
-                        currentSpec.getOnLongClickListener(),
-                        currentSpec.getContentDescription(),
-                        currentSpec.getSupportsTinting(),
-                        iphCommandBuilder,
-                        currentSpec.getButtonVariant(),
-                        currentSpec.getActionChipLabelResId(),
-                        currentSpec.getHoverTooltipTextId(),
-                        currentSpec.hasErrorBadge());
-        setButtonSpec(newSpec);
+        setButtonSpec(
+                new ButtonSpec.Builder(getButtonSpec())
+                        .setIphCommandBuilder(iphCommandBuilder)
+                        .build());
     }
 
     /** Convenience method to update the action chip string resource ID. */
     public void updateActionChipResourceId(@StringRes int newActionChipResourceId) {
-        ButtonSpec currentSpec = getButtonSpec();
-        ButtonSpec newSpec =
-                new ButtonSpec(
-                        currentSpec.getDrawable(),
-                        currentSpec.getOnClickListener(),
-                        currentSpec.getOnLongClickListener(),
-                        currentSpec.getContentDescription(),
-                        currentSpec.getSupportsTinting(),
-                        currentSpec.getIphCommandBuilder(),
-                        currentSpec.getButtonVariant(),
-                        newActionChipResourceId,
-                        currentSpec.getHoverTooltipTextId(),
-                        currentSpec.hasErrorBadge());
-        setButtonSpec(newSpec);
+        setButtonSpec(
+                new ButtonSpec.Builder(getButtonSpec())
+                        .setActionChipLabelResId(newActionChipResourceId)
+                        .build());
     }
 
     /** Convenience method to update the action chip string resource ID. */
     public void updateDrawable(@Nullable Drawable newDrawable) {
-        ButtonSpec currentSpec = getButtonSpec();
-        ButtonSpec newSpec =
-                new ButtonSpec(
-                        newDrawable,
-                        currentSpec.getOnClickListener(),
-                        currentSpec.getOnLongClickListener(),
-                        currentSpec.getContentDescription(),
-                        currentSpec.getSupportsTinting(),
-                        currentSpec.getIphCommandBuilder(),
-                        currentSpec.getButtonVariant(),
-                        currentSpec.getActionChipLabelResId(),
-                        currentSpec.getHoverTooltipTextId(),
-                        currentSpec.hasErrorBadge());
-        setButtonSpec(newSpec);
+        setButtonSpec(new ButtonSpec.Builder(getButtonSpec()).setDrawable(newDrawable).build());
     }
 
     @Override

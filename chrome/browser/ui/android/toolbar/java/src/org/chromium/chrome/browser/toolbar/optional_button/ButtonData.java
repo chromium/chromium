@@ -6,11 +6,12 @@ package org.chromium.chrome.browser.toolbar.optional_button;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -48,8 +49,8 @@ public interface ButtonData {
         public static final int INVALID_TOOLTIP_TEXT_ID = 0;
         private final @Nullable Drawable mDrawable;
         // TODO(crbug.com/40753109): make mOnClickListener
-        private final View.OnClickListener mOnClickListener;
-        private final View.@Nullable OnLongClickListener mOnLongClickListener;
+        private final @Nullable View.OnClickListener mOnClickListener;
+        private final @Nullable OnLongClickListener mOnLongClickListener;
         private final String mContentDescription;
         private final boolean mSupportsTinting;
         private final @Nullable IphCommandBuilder mIphCommandBuilder;
@@ -60,35 +61,10 @@ public interface ButtonData {
         private final boolean mHasErrorBadge;
         private final boolean mIsChecked;
 
-        public ButtonSpec(
+        private ButtonSpec(
                 @Nullable Drawable drawable,
-                View.OnClickListener onClickListener,
-                View.@Nullable OnLongClickListener onLongClickListener,
-                String contentDescription,
-                boolean supportsTinting,
-                @Nullable IphCommandBuilder iphCommandBuilder,
-                @AdaptiveToolbarButtonVariant int buttonVariant,
-                int actionChipLabelResId,
-                int tooltipTextResId,
-                boolean hasErrorBadge) {
-            this(
-                    drawable,
-                    onClickListener,
-                    onLongClickListener,
-                    contentDescription,
-                    supportsTinting,
-                    iphCommandBuilder,
-                    buttonVariant,
-                    actionChipLabelResId,
-                    tooltipTextResId,
-                    hasErrorBadge,
-                    /* isChecked= */ false);
-        }
-
-        public ButtonSpec(
-                @Nullable Drawable drawable,
-                View.OnClickListener onClickListener,
-                View.@Nullable OnLongClickListener onLongClickListener,
+                @Nullable View.OnClickListener onClickListener,
+                @Nullable OnLongClickListener onLongClickListener,
                 String contentDescription,
                 boolean supportsTinting,
                 @Nullable IphCommandBuilder iphCommandBuilder,
@@ -111,18 +87,140 @@ public interface ButtonData {
             mIsChecked = isChecked;
         }
 
+        /** Builder for {@link ButtonSpec}. */
+        public static class Builder {
+            private @Nullable Drawable mDrawable;
+            private @Nullable View.OnClickListener mOnClickListener;
+            private @Nullable OnLongClickListener mOnLongClickListener;
+            private String mContentDescription;
+            private boolean mSupportsTinting;
+            private @Nullable IphCommandBuilder mIphCommandBuilder;
+            private @AdaptiveToolbarButtonVariant int mButtonVariant =
+                    AdaptiveToolbarButtonVariant.UNKNOWN;
+            private @StringRes int mActionChipLabelResId = INVALID_TOOLTIP_TEXT_ID;
+            private @StringRes int mTooltipTextResId = INVALID_TOOLTIP_TEXT_ID;
+            private boolean mHasErrorBadge;
+            private boolean mIsChecked;
+
+            /**
+             * Creates a new {@link Builder} with the required properties.
+             *
+             * @param drawable The {@link Drawable} for the button icon.
+             * @param contentDescription The string describing the button.
+             * @param supportsTinting Whether the button supports tinting.
+             */
+            public Builder(
+                    @Nullable Drawable drawable,
+                    String contentDescription,
+                    boolean supportsTinting) {
+                mDrawable = drawable;
+                mContentDescription = contentDescription;
+                mSupportsTinting = supportsTinting;
+            }
+
+            /**
+             * Creates a new {@link Builder} from an existing {@link ButtonSpec}.
+             *
+             * @param buttonSpec The existing {@link ButtonSpec} to copy properties from.
+             */
+            public Builder(ButtonSpec buttonSpec) {
+                mDrawable = buttonSpec.mDrawable;
+                mOnClickListener = buttonSpec.mOnClickListener;
+                mOnLongClickListener = buttonSpec.mOnLongClickListener;
+                mContentDescription = buttonSpec.mContentDescription;
+                mSupportsTinting = buttonSpec.mSupportsTinting;
+                mIphCommandBuilder = buttonSpec.mIphCommandBuilder;
+                mButtonVariant = buttonSpec.mButtonVariant;
+                mActionChipLabelResId = buttonSpec.mActionChipLabelResId;
+                mTooltipTextResId = buttonSpec.mTooltipTextResId;
+                mHasErrorBadge = buttonSpec.mHasErrorBadge;
+                mIsChecked = buttonSpec.mIsChecked;
+            }
+
+            public Builder setDrawable(@Nullable Drawable drawable) {
+                mDrawable = drawable;
+                return this;
+            }
+
+            public Builder setOnClickListener(@Nullable View.OnClickListener onClickListener) {
+                mOnClickListener = onClickListener;
+                return this;
+            }
+
+            public Builder setOnLongClickListener(
+                    @Nullable OnLongClickListener onLongClickListener) {
+                mOnLongClickListener = onLongClickListener;
+                return this;
+            }
+
+            public Builder setContentDescription(String contentDescription) {
+                mContentDescription = contentDescription;
+                return this;
+            }
+
+            public Builder setSupportsTinting(boolean supportsTinting) {
+                mSupportsTinting = supportsTinting;
+                return this;
+            }
+
+            public Builder setIphCommandBuilder(@Nullable IphCommandBuilder iphCommandBuilder) {
+                mIphCommandBuilder = iphCommandBuilder;
+                return this;
+            }
+
+            public Builder setButtonVariant(@AdaptiveToolbarButtonVariant int buttonVariant) {
+                mButtonVariant = buttonVariant;
+                return this;
+            }
+
+            public Builder setActionChipLabelResId(@StringRes int actionChipLabelResId) {
+                mActionChipLabelResId = actionChipLabelResId;
+                return this;
+            }
+
+            public Builder setHoverTooltipTextId(@StringRes int tooltipTextResId) {
+                mTooltipTextResId = tooltipTextResId;
+                return this;
+            }
+
+            public Builder setHasErrorBadge(boolean hasErrorBadge) {
+                mHasErrorBadge = hasErrorBadge;
+                return this;
+            }
+
+            public Builder setIsChecked(boolean isChecked) {
+                mIsChecked = isChecked;
+                return this;
+            }
+
+            public ButtonSpec build() {
+                return new ButtonSpec(
+                        mDrawable,
+                        mOnClickListener,
+                        mOnLongClickListener,
+                        mContentDescription,
+                        mSupportsTinting,
+                        mIphCommandBuilder,
+                        mButtonVariant,
+                        mActionChipLabelResId,
+                        mTooltipTextResId,
+                        mHasErrorBadge,
+                        mIsChecked);
+            }
+        }
+
         /** Returns the {@link Drawable} for the button icon. */
         public @Nullable Drawable getDrawable() {
             return mDrawable;
         }
 
         /** Returns the {@link View.OnClickListener} used on the button. */
-        public View.OnClickListener getOnClickListener() {
+        public @Nullable View.OnClickListener getOnClickListener() {
             return mOnClickListener;
         }
 
         /** Returns an optional {@link View.OnLongClickListener} used on the button. */
-        public View.@Nullable OnLongClickListener getOnLongClickListener() {
+        public @Nullable OnLongClickListener getOnLongClickListener() {
             return mOnLongClickListener;
         }
 

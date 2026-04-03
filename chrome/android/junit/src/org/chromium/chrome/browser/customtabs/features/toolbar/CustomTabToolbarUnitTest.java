@@ -32,7 +32,6 @@ import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButton
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.UNKNOWN;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
@@ -797,17 +796,12 @@ public class CustomTabToolbarUnitTest {
 
         // Whether a button is static or dynamic is determined by the button variant.
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        true,
-                        null,
-                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
-                        /* actionChipLabelResId= */ Resources.ID_NULL,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(
+                                iconDrawable, contentDescription, /* supportsTinting= */ true)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS)
+                        .build();
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -824,17 +818,12 @@ public class CustomTabToolbarUnitTest {
 
         // Whether a button is static or dynamic is determined by the button variant.
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        true,
-                        null,
-                        /* buttonVariant= */ READER_MODE,
-                        /* actionChipLabelResId= */ Resources.ID_NULL,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(
+                                iconDrawable, contentDescription, /* supportsTinting= */ true)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .setButtonVariant(READER_MODE)
+                        .build();
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);

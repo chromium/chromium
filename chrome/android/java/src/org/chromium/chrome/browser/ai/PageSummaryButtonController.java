@@ -68,18 +68,14 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
 
         mPageSummarySpec = mButtonData.getButtonSpec();
         mReviewPdfSpec =
-                new ButtonSpec(
-                        mPageSummarySpec.getDrawable(),
-                        /* onClickListener= */ this,
-                        /* onLongClickListener= */ null,
-                        /* contentDescription= */ context.getString(
-                                R.string.menu_review_pdf_with_ai),
-                        /* supportsTinting= */ true,
-                        /* iphCommandBuilder= */ null,
-                        AdaptiveToolbarButtonVariant.PAGE_SUMMARY,
-                        /* actionChipLabelResId= */ Resources.ID_NULL,
-                        /* tooltipTextResId= */ R.string.menu_review_pdf_with_ai,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(
+                                mPageSummarySpec.getDrawable(),
+                                context.getString(R.string.menu_review_pdf_with_ai),
+                                /* supportsTinting= */ true)
+                        .setOnClickListener(this)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.PAGE_SUMMARY)
+                        .setHoverTooltipTextId(R.string.menu_review_pdf_with_ai)
+                        .build();
     }
 
     @Override

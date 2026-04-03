@@ -1392,17 +1392,15 @@ public final class ToolbarTabletUnitTest {
             boolean hasErrorBadge) {
         // Verify reader mode tooltip text is null.
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
-                        v -> {},
-                        v -> false,
-                        mActivity.getString(R.string.actionbar_share),
-                        true,
-                        null,
-                        buttonVariant,
-                        0,
-                        tooltipTextResId,
-                        hasErrorBadge);
+                new ButtonSpec.Builder(
+                                AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
+                                mActivity.getString(R.string.actionbar_share),
+                                /* supportsTinting= */ true)
+                        .setOnLongClickListener(v -> false)
+                        .setButtonVariant(buttonVariant)
+                        .setHoverTooltipTextId(tooltipTextResId)
+                        .setHasErrorBadge(hasErrorBadge)
+                        .build();
 
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);

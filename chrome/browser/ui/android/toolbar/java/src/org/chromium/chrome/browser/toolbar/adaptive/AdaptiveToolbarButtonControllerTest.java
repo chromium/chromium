@@ -502,16 +502,12 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     private static ButtonSpec makeButtonSpec(@AdaptiveToolbarButtonVariant int variant) {
-        return new ButtonSpec(
-                /* drawable= */ null,
-                mock(View.OnClickListener.class),
-                /* onLongClickListener= */ null,
-                /* contentDescription= */ "description",
-                /* supportsTinting= */ false,
-                /* iphCommandBuilder= */ null,
-                variant,
-                /* actionChipLabelResId= */ 0,
-                /* tooltipTextResId= */ Resources.ID_NULL,
-                /* hasErrorBadge= */ false);
+        return new ButtonSpec.Builder(
+                        /* drawable= */ null,
+                        /* contentDescription= */ "description",
+                        /* supportsTinting= */ false)
+                .setOnClickListener(mock(View.OnClickListener.class))
+                .setButtonVariant(variant)
+                .build();
     }
 }

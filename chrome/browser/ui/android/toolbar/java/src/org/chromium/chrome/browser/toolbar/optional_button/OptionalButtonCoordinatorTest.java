@@ -199,17 +199,13 @@ public class OptionalButtonCoordinatorTest {
         String contentDescription = "description";
         boolean isEnabled = true;
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        true,
-                        mockIphCommandBuilder,
-                        AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /* actionChipLabelResId= */ 0,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* hasErrorBadge= */ true);
+                new ButtonSpec.Builder(
+                                iconDrawable, contentDescription, /* supportsTinting= */ true)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .setIphCommandBuilder(mockIphCommandBuilder)
+                        .setHasErrorBadge(true)
+                        .build();
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setEnabled(isEnabled);
@@ -534,17 +530,13 @@ public class OptionalButtonCoordinatorTest {
         String contentDescription = "description";
         boolean isEnabled = true;
         ButtonSpec buttonSpec =
-                new ButtonSpec(
-                        iconDrawable,
-                        clickListener,
-                        longClickListener,
-                        contentDescription,
-                        true,
-                        mockIphCommandBuilder,
-                        AdaptiveToolbarButtonVariant.UNKNOWN,
-                        /* actionChipLabelResId= */ 0,
-                        /* tooltipTextResId= */ Resources.ID_NULL,
-                        /* hasErrorBadge= */ false);
+                new ButtonSpec.Builder(
+                                iconDrawable, contentDescription, /* supportsTinting= */ true)
+                        .setOnClickListener(clickListener)
+                        .setOnLongClickListener(longClickListener)
+                        .setIphCommandBuilder(mockIphCommandBuilder)
+                        .setHasErrorBadge(false)
+                        .build();
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setEnabled(isEnabled);
