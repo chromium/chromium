@@ -12,6 +12,8 @@ source_set("core") {
     "accessibility_annotator_types.h",
     "accessibility_query_service.cc",
     "accessibility_query_service.h",
+    "accessibility_query_service_delegate.cc",
+    "accessibility_query_service_delegate.h",
     "direct_server_entity_provider.cc",
     "direct_server_entity_provider.h",
     "entity_data_provider.h",

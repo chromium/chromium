@@ -28,6 +28,8 @@ source_set("impl") {
     "accessibility_annotator_backend_factory.cc",
     "accessibility_annotator_enablement_service_factory.cc",
     "accessibility_annotator_service_factory.cc",
+    "accessibility_query_service_delegate_impl.cc",
+    "accessibility_query_service_delegate_impl.h",
     "accessibility_query_service_factory.cc",
   ]
   deps = [

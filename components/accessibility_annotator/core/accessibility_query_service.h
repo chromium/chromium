@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/accessibility_annotator/core/accessibility_query_service_delegate.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_classifier.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,6 +29,7 @@ class MemoryDataProvider;
 class AccessibilityQueryService : public KeyedService {
  public:
   AccessibilityQueryService(
+      std::unique_ptr<AccessibilityQueryServiceDelegate> delegate,
       std::vector<std::unique_ptr<MemoryDataProvider>> data_providers,
       optimization_guide::RemoteModelExecutor* remote_model_executor);
   AccessibilityQueryService(const AccessibilityQueryService&) = delete;
@@ -59,6 +61,7 @@ class AccessibilityQueryService : public KeyedService {
       base::RepeatingCallback<void(MemorySearchResults)> update_callback,
       std::vector<std::vector<MemorySearchResult>> entries_list);
 
+  std::unique_ptr<AccessibilityQueryServiceDelegate> delegate_;
   std::vector<std::unique_ptr<MemoryDataProvider>> data_providers_;
   QueryClassifier classifier_;
 

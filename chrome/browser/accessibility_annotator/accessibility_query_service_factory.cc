@@ -9,6 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
+#include "chrome/browser/accessibility_annotator/accessibility_query_service_delegate_impl.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -70,6 +71,8 @@ AccessibilityQueryServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<accessibility_annotator::AccessibilityQueryService>(
+      std::make_unique<
+          accessibility_annotator::AccessibilityQueryServiceDelegateImpl>(),
       std::move(data_providers), optimization_guide_service);
 }
 

@@ -4,12 +4,31 @@
 
 #include "chrome/browser/ui/autofill/mock_accessibility_query_service.h"
 
+#include <memory>
+
+#include "components/accessibility_annotator/core/accessibility_query_service_delegate.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 
 namespace autofill {
 
+namespace {
+
+class StubAccessibilityQueryServiceDelegate
+    : public accessibility_annotator::AccessibilityQueryServiceDelegate {
+ public:
+  void RetrieveLiveTabContext(
+      accessibility_annotator::LiveTabContextQuery query,
+      base::OnceCallback<void(accessibility_annotator::LiveTabContextResponse)>
+          callback) override {
+    std::move(callback).Run({});
+  }
+};
+
+}  // namespace
+
 MockAccessibilityQueryService::MockAccessibilityQueryService()
     : accessibility_annotator::AccessibilityQueryService(
+          std::make_unique<StubAccessibilityQueryServiceDelegate>(),
           /*data_providers=*/{},
           /*remote_model_executor=*/nullptr) {}
 
