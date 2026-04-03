@@ -92,7 +92,8 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // Using `cc::ElementId::InternalValue` because  `cc::ElementId` has a
       // non-trivial constructor and is not allowed in a union.
       cc::ElementId::InternalValue scrollable_area_element_id;
-      // Initial motion that triggered the scroll.
+      // Initial motion that triggered the scroll. See deltas in ScrollUpdate
+      // for how to interpret these.
       float delta_x_hint;
       float delta_y_hint;
       // number of pointers down.
@@ -120,6 +121,8 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
     } scroll_begin;
 
     struct {
+      // These values run positive in the up and left direction of scrolling.
+      // Notably, this is the reverse as used in Blink, CC, and WebAPIs.
       float delta_x;
       float delta_y;
       InertialPhaseState inertial_phase;
