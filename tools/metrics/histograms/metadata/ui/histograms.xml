@@ -524,9 +524,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".SessionRestore" summary="Triggered by session restore"/>
   </token>
   <token key="ExistingWindow">
-    <variant name=".WithExistingWindow"
+    <variant name="WithExistingWindow"
         summary="for the profile with existing window"/>
-    <variant name=".WithoutExistingWindow"
+    <variant name="WithoutExistingWindow"
         summary="for the profile without existing window"/>
   </token>
 </histogram>
