@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
@@ -74,6 +75,19 @@ void OnValidatedAllUrls(ToolCallback overall_callback,
     }
   }
   PostResponseTask(std::move(overall_callback), MakeOkResult());
+}
+
+mojom::ActionResultPtr LogIfValidationFailed(AggregatedJournal& journal,
+                                             TaskId task_id,
+                                             const GURL& url,
+                                             mojom::ActionResultPtr result) {
+  if (!IsOk(result->code)) {
+    journal.Log(url, task_id, "LoadAndExtractContentTool::ValidateUrlFailed",
+                JournalDetailsBuilder()
+                    .Add("action_result_code", static_cast<int>(result->code))
+                    .Build());
+  }
+  return result;
 }
 
 }  // namespace
@@ -159,6 +173,13 @@ void LoadAndExtractContentTool::TabObservationDelayer::DidFinishNavigation(
   has_finished_main_frame_navigation_ = true;
 
   if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+    journal_.Log(navigation_handle->GetURL(), task_id_,
+                 "LoadAndExtractContentTool::TabObservationDelayer::"
+                 "DidFinishNavigationFailed",
+                 JournalDetailsBuilder()
+                     .Add("navigation_id", navigation_handle->GetNavigationId())
+                     .Add("is_error_page", navigation_handle->IsErrorPage())
+                     .Build());
     if (callback_) {
       std::move(callback_).Run(PerTabResultCode::kNavigateCommittedErrorPage);
     }
@@ -317,14 +338,21 @@ void LoadAndExtractContentTool::Validate(ToolCallback overall_callback) {
           base::BindOnce(&OnValidatedAllUrls, std::move(overall_callback)));
 
   for (const auto& url : urls_) {
-    ValidateUrlIsAcceptableNavigationDestination(url, tool_delegate(),
-                                                 per_url_callback);
+    ValidateUrlIsAcceptableNavigationDestination(
+        url, tool_delegate(),
+        base::BindOnce(&LogIfValidationFailed, std::ref(journal()), task_id(),
+                       url)
+            .Then(per_url_callback));
   }
 }
 
 void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
   CHECK(!invoke_callback_);
   invoke_callback_ = std::move(callback);
+
+  journal().Log(GURL::EmptyGURL(), task_id(),
+                "LoadAndExtractContentTool::Invoke",
+                JournalDetailsBuilder().Add("url_count", urls_.size()).Build());
 
   BrowserWindowInterface* browser_window_interface =
       BrowserWindowInterface::FromSessionID(window_id_);
@@ -344,6 +372,9 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
         browser_window_interface->GetBrowserForMigrationOnly(), url,
         kIndexAppendToEnd, /*foreground=*/false);
     if (!web_contents) {
+      journal().Log(url, task_id(),
+                    "LoadAndExtractContentTool::NewTabCreationFailed",
+                    JournalDetailsBuilder().Add("url_index", i).Build());
       per_tab_state_.emplace(
           url_index,
           PerTabState{.result_code = PerTabResultCode::kNewTabCreationFailed});
@@ -351,8 +382,11 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
       continue;
     }
 
-    tabs::TabHandle tab_handle =
-        tabs::TabInterface::GetFromContents(web_contents)->GetHandle();
+    tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+    tabs::TabHandle tab_handle = tab->GetHandle();
+
+    journal().Log(url, task_id(), "LoadAndExtractContentTool::TabCreated",
+                  JournalDetailsBuilder().Add("url_index", i).Build());
     CHECK(page_stability_config_.has_value());
 
     TabObservation tab_observation;
@@ -380,6 +414,12 @@ void LoadAndExtractContentTool::OnTabObservationDelayComplete(
     UrlIndex index,
     PerTabResultCode result_code) {
   if (result_code != PerTabResultCode::kOk) {
+    GURL url = urls_[index.value()];
+    journal().Log(url, task_id(),
+                  "LoadAndExtractContentTool::OnTabObservationDelayComplete",
+                  JournalDetailsBuilder()
+                      .Add("per_tab_result_code", static_cast<int>(result_code))
+                      .Build());
     PostFinishedTask(
         base::BindOnce(&LoadAndExtractContentTool::OnTabReadyToClose,
                        weak_ptr_factory_.GetWeakPtr(), index, result_code));
@@ -420,6 +460,10 @@ void LoadAndExtractContentTool::OnGotAIPageContent(
         std::move(result_or_error->proto);
     FillInTabObservationMetadata(result_or_error->metadata, tab_observation);
   } else {
+    journal().Log(
+        GURL::EmptyGURL(), task_id(),
+        "LoadAndExtractContentTool::OnGotAIPageContentFailed",
+        JournalDetailsBuilder().Add("url_index", index.value()).Build());
     tab_observation.set_annotated_page_content_result(
         TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
     result_code = PerTabResultCode::kLoadAndExtractContentExtractionFailed;
@@ -432,6 +476,15 @@ void LoadAndExtractContentTool::OnGotAIPageContent(
 void LoadAndExtractContentTool::OnTabReadyToClose(
     UrlIndex index,
     PerTabResultCode result_code) {
+  if (result_code != PerTabResultCode::kOk) {
+    journal().Log(GURL::EmptyGURL(), task_id(),
+                  "LoadAndExtractContentTool::OnTabReadyToCloseWithError",
+                  JournalDetailsBuilder()
+                      .Add("url_index", index.value())
+                      .Add("per_tab_result_code", static_cast<int>(result_code))
+                      .Build());
+  }
+
   if (tabs::TabInterface* tab = per_tab_state_[index].tab_handle.Get()) {
     tab->Close();
   } else if (!per_tab_state_[index]
@@ -466,17 +519,29 @@ void LoadAndExtractContentTool::OnAllUrlsCompleted() {
     }
   }
 
-  for (auto& [_, per_tab_state] : per_tab_state_) {
+  for (auto& [index, per_tab_state] : per_tab_state_) {
     CHECK(per_tab_state.result_code.has_value());
     mojom::ActionResultCode action_result_code =
         ToActionResultCode(per_tab_state.result_code.value());
     if (!IsOk(action_result_code)) {
+      GURL url = urls_[index.value()];
+      journal().Log(
+          url, task_id(), "LoadAndExtractContentTool::OnAllUrlsCompleted",
+          JournalDetailsBuilder()
+              .Add("action_result_code", static_cast<int>(action_result_code))
+              .Build());
       PostResponseTask(std::move(invoke_callback_),
                        MakeResult(action_result_code));
 
       return;
     }
   }
+  journal().Log(GURL::EmptyGURL(), task_id(),
+                "LoadAndExtractContentTool::OnAllUrlsCompleted",
+                JournalDetailsBuilder()
+                    .Add("action_result_code",
+                         static_cast<int>(mojom::ActionResultCode::kOk))
+                    .Build());
 
   PostResponseTask(std::move(invoke_callback_), MakeOkResult());
 }
