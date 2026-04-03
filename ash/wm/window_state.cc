@@ -40,6 +40,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/debug/crash_logging.h"
@@ -265,7 +266,7 @@ void MoveAllTransientChildrenToNewRoot(aura::Window* window) {
     if (!transient_child->parent())
       continue;
     const int container_id = transient_child->parent()->GetId();
-    DCHECK_GE(container_id, 0);
+    CHECK_GE(container_id, 0);
     aura::Window* container = dst_root->GetChildById(container_id);
     if (container->Contains(transient_child))
       continue;

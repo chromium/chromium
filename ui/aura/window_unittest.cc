@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -3590,6 +3591,55 @@ TEST_F(WindowTest, OnWindowHierarchyChange) {
     w1.reset();
     w2.reset();
   }
+}
+
+namespace {
+
+class HierarchyMutatingObserver : public WindowObserver {
+ public:
+  explicit HierarchyMutatingObserver(Window* window_to_remove)
+      : window_to_remove_(window_to_remove) {}
+
+  HierarchyMutatingObserver(const HierarchyMutatingObserver&) = delete;
+  HierarchyMutatingObserver& operator=(const HierarchyMutatingObserver&) =
+      delete;
+
+  void OnWindowAddedToRootWindow(Window* window) override {
+    if (window_to_remove_) {
+      window_to_remove_->parent()->RemoveChild(window_to_remove_);
+      window_to_remove_ = nullptr;
+    }
+  }
+
+ private:
+  raw_ptr<Window> window_to_remove_;
+};
+
+}  // namespace
+
+// Tests that modifying the hierarchy during NotifyAddedToRootWindow doesn't
+// cause a crash.
+TEST_F(WindowTest, MutateHierarchyDuringNotifyAddedToRootWindow) {
+  std::unique_ptr<Window> parent_window(CreateTestWindow({.window_id = 0}));
+  std::unique_ptr<Window> w1(CreateTestWindow({.window_id = 1}));
+  std::unique_ptr<Window> w2(CreateTestWindow({.window_id = 2}));
+  std::unique_ptr<Window> w3(CreateTestWindow({.window_id = 3}));
+
+  parent_window->AddChild(w1.get());
+  parent_window->AddChild(w2.get());
+  parent_window->AddChild(w3.get());
+
+  // Add an observer to w2 that removes w1.
+  // When parent_window is added to the root, it will notify its children: w1,
+  // w2, w3.
+  // 1. Notify w1.
+  // 2. Notify w2. w2's observer removes w1.
+  // 3. Notify w3.
+  HierarchyMutatingObserver observer(w1.get());
+  base::ScopedObservation<Window, WindowObserver> observation(&observer);
+  observation.Observe(w2.get());
+
+  root_window()->AddChild(parent_window.get());
 }
 
 class TestLayerAnimationObserver : public ui::LayerAnimationObserver {

@@ -1226,9 +1226,10 @@ void Window::NotifyRemovingFromRootWindow(Window* new_root) {
     UnregisterFrameSinkId();
   for (WindowObserver& observer : observers_)
     observer.OnWindowRemovingFromRootWindow(this, new_root);
-  for (Window::Windows::const_iterator it = children_.begin();
-       it != children_.end(); ++it) {
-    (*it)->NotifyRemovingFromRootWindow(new_root);
+
+  WindowTracker tracker(children_);
+  while (!tracker.windows().empty()) {
+    tracker.Pop()->NotifyRemovingFromRootWindow(new_root);
   }
 }
 
@@ -1237,9 +1238,10 @@ void Window::NotifyAddedToRootWindow() {
     RegisterFrameSinkId();
   for (WindowObserver& observer : observers_)
     observer.OnWindowAddedToRootWindow(this);
-  for (Window::Windows::const_iterator it = children_.begin();
-       it != children_.end(); ++it) {
-    (*it)->NotifyAddedToRootWindow();
+
+  WindowTracker tracker(children_);
+  while (!tracker.windows().empty()) {
+    tracker.Pop()->NotifyAddedToRootWindow();
   }
 }
 
@@ -1261,9 +1263,9 @@ void Window::NotifyWindowHierarchyChange(
 void Window::NotifyWindowHierarchyChangeDown(
     const WindowObserver::HierarchyChangeParams& params) {
   NotifyWindowHierarchyChangeAtReceiver(params);
-  for (Window::Windows::const_iterator it = children_.begin();
-       it != children_.end(); ++it) {
-    (*it)->NotifyWindowHierarchyChangeDown(params);
+  WindowTracker tracker(children_);
+  while (!tracker.windows().empty()) {
+    tracker.Pop()->NotifyWindowHierarchyChangeDown(params);
   }
 }
 
