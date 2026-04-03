@@ -26,7 +26,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/user_script.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #endif
 
