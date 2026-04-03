@@ -4,7 +4,8 @@
 
 #include <jni.h>
 
-#include "chrome/browser/signin/identity_manager_provider.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/safety_check/safety_check.h"
 #include "components/user_prefs/user_prefs.h"
@@ -18,8 +19,8 @@ static bool JNI_SafetyCheckBridge_UserSignedIn(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jhandle) {
   return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
-      signin::GetIdentityManagerForBrowserContext(
-          content::BrowserContextFromJavaHandle(jhandle)));
+      IdentityManagerFactory::GetForProfile(Profile::FromBrowserContext(
+          content::BrowserContextFromJavaHandle(jhandle))));
 }
 
 static int32_t JNI_SafetyCheckBridge_CheckSafeBrowsing(

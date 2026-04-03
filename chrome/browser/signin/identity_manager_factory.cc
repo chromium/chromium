@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/identity_manager_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -74,17 +74,11 @@ IdentityManagerFactory::IdentityManagerFactory()
 #endif
   DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(ProfileMetricsServiceFactory::GetInstance());
-  signin::SetIdentityManagerProvider(
-      base::BindRepeating([](content::BrowserContext* context) {
-        return GetForProfile(Profile::FromBrowserContext(context));
-      }));
   // TODO(crbug.com/40244790): This should declare a dependency to
   // CookieSettingsFactory but this causes a hang for some reason.
 }
 
-IdentityManagerFactory::~IdentityManagerFactory() {
-  signin::SetIdentityManagerProvider({});
-}
+IdentityManagerFactory::~IdentityManagerFactory() = default;
 
 // static
 signin::IdentityManager* IdentityManagerFactory::GetForProfile(
@@ -103,7 +97,8 @@ signin::IdentityManager* IdentityManagerFactory::GetForProfileIfExists(
 
 // static
 IdentityManagerFactory* IdentityManagerFactory::GetInstance() {
-  return base::Singleton<IdentityManagerFactory>::get();
+  static base::NoDestructor<IdentityManagerFactory> instance;
+  return instance.get();
 }
 
 // static

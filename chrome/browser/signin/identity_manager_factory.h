@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -48,7 +48,7 @@ class IdentityManagerFactory : public ProfileKeyedServiceFactory {
   void RemoveObserver(Observer* observer);
 
  private:
-  friend struct base::DefaultSingletonTraits<IdentityManagerFactory>;
+  friend base::NoDestructor<IdentityManagerFactory>;
 
   IdentityManagerFactory();
   ~IdentityManagerFactory() override;

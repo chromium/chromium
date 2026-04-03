@@ -1724,7 +1724,6 @@ static_library("browser") {
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/signin",
     "//chrome/browser/signin:google_accounts_private_api",
-    "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/signin:impl",
     "//chrome/browser/signin:signin_promo",
     "//chrome/browser/site_isolation",

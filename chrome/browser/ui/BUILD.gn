@@ -363,7 +363,6 @@ static_library("ui") {
     "//chrome/browser/sessions",
     "//chrome/browser/share",
     "//chrome/browser/signin",
-    "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/signin:impl",
     "//chrome/browser/signin:signin_promo",
     "//chrome/browser/site_protection",

@@ -15,7 +15,8 @@ source_set("android") {
   sources = [ "safety_check_bridge.cc" ]
   deps = [
     ":jni_headers",
-    "//chrome/browser/signin:identity_manager_provider",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//components/password_manager/core/browser/leak_detection",
     "//components/prefs",
     "//components/safety_check",
