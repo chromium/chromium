@@ -665,6 +665,7 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
                       "number of pages: "
                    << msg->num_pages;
         RejectUpgradeOffer();
+        return true;
       }
 
       std::unique_ptr<DataAvailableNotifier> read_notifier;
