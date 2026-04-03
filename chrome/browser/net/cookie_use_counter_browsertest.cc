@@ -7,6 +7,7 @@
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -167,6 +168,26 @@ IN_PROC_BROWSER_TEST_F(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned,
       /*expected_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(CookieUseCounterBrowserTest,
+                       PartitionedCookiePresentV3_CountOnce) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  NavigateTo(kHost, "/set-cookie?p1=a;Secure;Partitioned");
+  NavigateTo(kHost, "/set-cookie?p2=b;Secure;Partitioned");
+
+  size_t entries_before =
+      ukm_recorder.GetEntriesByName("PartitionedCookiePresentV3").size();
+
+  NavigateTo(kHost, "/echoheader?cookie");
+
+  size_t entries_after =
+      ukm_recorder.GetEntriesByName("PartitionedCookiePresentV3").size();
+  size_t delta = entries_after - entries_before;
+
+  // The request contains 2 partitioned cookies.
+  EXPECT_EQ(delta, 1u);
 }
 
 }  // namespace

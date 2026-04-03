@@ -154,12 +154,12 @@ void RecordFirstPartyPartitionedCookieCrossSiteContextUKM(
       .Record(ukm::UkmRecorder::Get());
 }
 
-// Relies on checks in RecordPartitionedCookiesUKMs to confirm that that the
-// cookie is partitioned, the cookie name is not
-// "receive-cookie-deprecation" and the RenderFrameHost is not prerendering.
-void RecordPartitionedCookieUseV2UKM(RenderFrameHost* rfh,
-                                     const net::CanonicalCookie& cookie,
+// Records the PartitionedCookiePresentV3 UKM. It ignores prerendering pages.
+void RecordPartitionedCookieUseV3UKM(RenderFrameHost* rfh,
                                      const ukm::SourceId& source_id) {
+  if (rfh->IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering)) {
+    return;
+  }
   ukm::builders::PartitionedCookiePresentV3(source_id)
       .SetPartitionedCookiePresentV3(true)
       .Record(ukm::UkmRecorder::Get());
@@ -176,8 +176,7 @@ void RecordPartitionedCookiesUKMs(RenderFrameHostImpl* render_frame_host_impl,
     return;
   }
 
-  // Cookies_FirstPartyPartitionedInCrossSiteContextV3 and
-  // PartitionedCookiePresentV3 both measure cookies
+  // Cookies_FirstPartyPartitionedInCrossSiteContextV3 measures cookies
   // without the name of 'receive-cookie-deprecation'. Return here to ensure
   // that the metrics do not include those cookies.
   if (cookie.Name() == "receive-cookie-deprecation") {
@@ -190,8 +189,6 @@ void RecordPartitionedCookiesUKMs(RenderFrameHostImpl* render_frame_host_impl,
     RecordFirstPartyPartitionedCookieCrossSiteContextUKM(render_frame_host_impl,
                                                          cookie, source_id);
   }
-
-  RecordPartitionedCookieUseV2UKM(render_frame_host_impl, cookie, source_id);
 }
 
 void RecordRedirectContextDowngradeUKM(RenderFrameHost* rfh,
@@ -370,6 +367,7 @@ void EmitCookieWarningsAndMetrics(
   bool samesite_cookie_inclusion_changed_by_cross_site_redirect = false;
 
   bool partitioned_cookies_exist = false;
+  bool valid_partitioned_cookies_for_ukm_exist = false;
 
   absl::flat_hash_set<std::string> partitioned_non_httponly_cookie_names;
   absl::flat_hash_set<std::string> httponly_cookie_names;
@@ -455,6 +453,10 @@ void EmitCookieWarningsAndMetrics(
       }
       RecordPartitionedCookiesUKMs(rfh, cookie->cookie_or_line->get_cookie());
       partitioned_cookies_exist = true;
+      if (cookie->cookie_or_line->get_cookie().Name() !=
+          "receive-cookie-deprecation") {
+        valid_partitioned_cookies_for_ukm_exist = true;
+      }
     }
 
     if (cookie->cookie_or_line->is_cookie() &&
@@ -558,6 +560,10 @@ void EmitCookieWarningsAndMetrics(
   if (partitioned_cookies_exist) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kPartitionedCookies);
+  }
+  if (valid_partitioned_cookies_for_ukm_exist) {
+    ukm::SourceId source_id = rfh->GetPageUkmSourceId();
+    RecordPartitionedCookieUseV3UKM(rfh, source_id);
   }
   if (partitioned_cookies_exist && !httponly_cookie_names.empty()) {
     bool has_shadowed_cookie = false;
