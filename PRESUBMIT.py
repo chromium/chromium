@@ -2308,6 +2308,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
          'WebView.', ),
         treat_as_error=False,
         surface_as_gerrit_lint=True,
+        excluded_paths=(r'.*test\.cc$', ),
     ),
     BanRule(
         pattern='PageActionIconView',

@@ -3076,6 +3076,11 @@ class BannedTypeCheckTest(unittest.TestCase):
                 '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
                 '// some third line',
             ]),
+            MockFile('content/desktop_android_test.cc', [
+                '// some first line',
+                '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
+                '// some third line',
+            ]),
             # New test cases for nlohmann::json::parse
             MockFile('some/cpp/problematic/json_parse.cc',
                      ['nlohmann::json::parse(json_string);']),
@@ -3083,8 +3088,7 @@ class BannedTypeCheckTest(unittest.TestCase):
                      ['json::parse(json_string);']),
             MockFile('third_party/json/ok/json_parse.cc',
                      ['nlohmann::json::parse(json_string);']),
-            MockFile('v8/ok/v8_parse.cc',
-                     ['JSON::Parse(json_string);']),
+            MockFile('v8/ok/v8_parse.cc', ['JSON::Parse(json_string);']),
             MockFile('v8/ok/v8_json_parse.cc',
                      ['v8::JSON::Parse(json_string);']),
         ]
@@ -3112,6 +3116,9 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertIn('banned_ranges_usage.cc', results[6].message)
         self.assertIn('views_usage.cc', results[7].message)
         self.assertIn('content/desktop_android.cc', results[8].message)
+        self.assertTrue(
+            all('content/desktop_android_test.cc' not in r.message
+                for r in results))
         self.assertIn('some/cpp/problematic/json_parse.cc', results[9].message)
         self.assertIn('some/cpp/problematic/json_parse_no_namespace.cc',
                       results[10].message)
