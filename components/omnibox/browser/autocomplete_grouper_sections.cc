@@ -675,6 +675,7 @@ DesktopComposeboxZpsSection::DesktopComposeboxZpsSection(
                            }),
                      Group(max_suggestions,
                            {
+                               {omnibox::GROUP_SEARCH, 1},
                                {omnibox::GROUP_CONTEXTUAL_SEARCH,
                                 max_contextual_suggestions},
                            }),

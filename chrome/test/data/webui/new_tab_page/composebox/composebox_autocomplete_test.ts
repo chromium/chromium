@@ -311,10 +311,14 @@ suite('NewTabPageComposeboxAutocompleteDropdownTest', () => {
     testProxy.element.getInputElement().inputElement.value = 'awesome';
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
+    const typedMatches = [
+      createSearchMatchForTesting({allowedToBeDefaultMatch: true}),
+      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+    ];
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           input: 'awesome',
-          matches: matches,
+          matches: typedMatches,
         }));
     assertTrue(await areMatchesShowing(
         testProxy.element, testProxy.searchboxCallbackRouterRemote));
@@ -325,6 +329,49 @@ suite('NewTabPageComposeboxAutocompleteDropdownTest', () => {
     matchEl = matchEls[0];
     assertTrue(!!matchEl);
     // Verbatim match does not show for typed suggest.
+    assertStyle(matchEl, 'display', 'none');
+  });
+
+  test('image verbatim match does not show', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    // Add image context.
+    testProxy.element.addFileContextForTesting({
+      uuid: FAKE_TOKEN_STRING,
+      name: 'foo.jpg',
+      status: 0,
+      type: 'image/jpeg',
+      inputType: InputType.kLensFile,
+      isDeletable: true,
+      objectUrl: null,
+      dataUrl: null,
+      url: null,
+      tabId: null,
+      iconName: null,
+      supportsUnimodal: true,
+    });
+    await microtasksFinished();
+
+    const matches = [
+      createSearchMatchForTesting({allowedToBeDefaultMatch: true}),
+      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+    ];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          matches: matches,
+        }));
+    assertTrue(await areMatchesShowing(
+        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+    const matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
+        'cr-composebox-match');
+    assertEquals(2, matchEls.length);
+    const matchEl = matchEls[0];
+    assertTrue(!!matchEl);
+    // Verbatim match does not show for image context.
     assertStyle(matchEl, 'display', 'none');
   });
 });

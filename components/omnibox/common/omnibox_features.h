@@ -145,6 +145,10 @@ inline constexpr base::FeatureParam<std::string> kComposeboxClientOverride{
 // Controls whether or not contextual composebox should display suggestions.
 BASE_DECLARE_FEATURE(kComposeboxAttachmentsTypedState);
 
+// Whether the composebox should show a verbatim match for context in
+// zero-suggest.
+BASE_DECLARE_FEATURE(kComposeboxVerbatimMatchZeroSuggest);
+
 // A flag that allows params from experiment configs to be passed through to
 // the AIM eligibility service to control aspects of URL interception.
 BASE_DECLARE_FEATURE(kAimUrlInterceptPassthrough);

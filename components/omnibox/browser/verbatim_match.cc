@@ -160,3 +160,38 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
 
   return match;
 }
+
+AutocompleteMatch VerbatimMatchForContext(AutocompleteProvider* provider,
+                                          AutocompleteProviderClient* client,
+                                          const AutocompleteInput& input,
+                                          int relevance) {
+  AutocompleteMatch match(provider, relevance, /*deletable=*/false,
+                          AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  match.allowed_to_be_default_match = true;
+
+  if (client->GetTemplateURLService()) {
+    const TemplateURL* default_search_provider =
+        client->GetTemplateURLService()->GetDefaultSearchProvider();
+    if (default_search_provider) {
+      TemplateURLRef::SearchTermsArgs search_terms_args;
+      match.destination_url =
+          GURL(default_search_provider->url_ref().ReplaceSearchTerms(
+              search_terms_args,
+              client->GetTemplateURLService()->search_terms_data()));
+      match.keyword = default_search_provider->keyword();
+      match.transition = ui::PAGE_TRANSITION_GENERATED;
+      match.search_terms_args =
+          std::make_unique<TemplateURLRef::SearchTermsArgs>(search_terms_args);
+    }
+  }
+
+  if (match.IsMlSignalLoggingEligible()) {
+    if (!match.scoring_signals) {
+      match.scoring_signals =
+          std::make_optional<::metrics::OmniboxScoringSignals>();
+    }
+    match.scoring_signals->set_is_verbatim(true);
+  }
+
+  return match;
+}

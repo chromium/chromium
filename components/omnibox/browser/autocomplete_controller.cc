@@ -1087,8 +1087,16 @@ bool AutocompleteController::ShouldRunProvider(
 
   if (omnibox::IsComposebox(input_.current_page_classification())) {
     return provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST ||
-           provider->type() == AutocompleteProvider::TYPE_SEARCH;
+           provider->type() == AutocompleteProvider::TYPE_SEARCH ||
+           provider->type() == AutocompleteProvider::TYPE_VERBATIM_MATCH;
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Should only be run for the composebox.
+  if (provider->type() == AutocompleteProvider::TYPE_VERBATIM_MATCH) {
+    return false;
+  }
+#endif
 
   // For contextual realbox queries, we only want to run a subset of providers
   // to filter out irrelevant suggestions (like history suggestions).

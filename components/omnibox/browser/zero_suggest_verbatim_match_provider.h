@@ -35,6 +35,7 @@ class ZeroSuggestVerbatimMatchProvider : public AutocompleteProvider {
                             history::QueryURLResult result);
   void CreateVerbatimMatch(const AutocompleteInput& input,
                            std::u16string title);
+  void CreateVerbatimMatchForComposebox(const AutocompleteInput& input);
 
   ~ZeroSuggestVerbatimMatchProvider() override;
   const raw_ptr<AutocompleteProviderClient> client_{nullptr};

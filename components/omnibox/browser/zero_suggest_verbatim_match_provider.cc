@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -27,17 +28,19 @@ namespace {
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 
 // Returns whether specific context is eligible for a verbatim match.
-// Only offer verbatim match on a site visit and SRP (no NTP etc).
+// Offers verbatim match for:
+// 1) a site visit and SRP (no NTP etc).
+// 2) A composebox.
 bool IsVerbatimMatchEligible(
     metrics::OmniboxEventProto::PageClassification context) {
   using OEP = metrics::OmniboxEventProto;
-  // Only offer verbatim match on a site visit and SRP (no NTP etc).
   return context == OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
          context == OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
          context == OEP::SEARCH_RESULT_PAGE_ON_CCT ||
          context == OEP::ANDROID_SEARCH_WIDGET ||
          context == OEP::ANDROID_SHORTCUTS_WIDGET ||
-         context == OEP::OTHER_ON_CCT || context == OEP::OTHER;
+         context == OEP::OTHER_ON_CCT || context == OEP::OTHER ||
+         omnibox::IsComposebox(context);
 }
 }  // namespace
 
@@ -68,6 +71,17 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
          (page_url.GetScheme() == url::kAboutScheme) ||
          (page_url.GetScheme() ==
           client_->GetEmbedderRepresentationOfAboutScheme())))) {
+    return;
+  }
+
+  // For composebox only, create verbatim match if there are context inputs
+  // in zero suggest.
+  if (omnibox::IsComposebox(input.current_page_classification())) {
+    if (base::FeatureList::IsEnabled(
+            omnibox::kComposeboxVerbatimMatchZeroSuggest) &&
+        input.lens_overlay_suggest_inputs().has_value()) {
+      CreateVerbatimMatchForComposebox(input);
+    }
     return;
   }
 
@@ -108,6 +122,23 @@ void ZeroSuggestVerbatimMatchProvider::OnPageTitleRetrieved(
   // Re-create the item with a title collected from History service.
   matches_.clear();
   CreateVerbatimMatch(input, result.row.title());
+}
+
+void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatchForComposebox(
+    const AutocompleteInput& input) {
+  AutocompleteInput verbatim_input = input;
+  verbatim_input.set_prevent_inline_autocomplete(true);
+  verbatim_input.set_allow_exact_keyword_match(false);
+
+  AutocompleteMatch match =
+      VerbatimMatchForContext(this, client_, verbatim_input,
+                              omnibox::kVerbatimMatchZeroSuggestRelevance);
+
+  // Will only be valid if there's a TemplateURLService and DSE.
+  if (match.destination_url.is_valid()) {
+    match.suggestion_group_id = omnibox::GROUP_SEARCH;
+    matches_.push_back(std::move(match));
+  }
 }
 
 void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(

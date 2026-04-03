@@ -497,6 +497,52 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   }
 }
 
+class ZeroSuggestVerbatimMatchProviderComposeboxTest : public testing::Test {
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+  FakeAutocompleteProviderClient mock_client_;
+  scoped_refptr<ZeroSuggestVerbatimMatchProvider> provider_;
+
+  void SetUp() override {
+    provider_ = new ZeroSuggestVerbatimMatchProvider(&mock_client_);
+  }
+};
+
+TEST_F(ZeroSuggestVerbatimMatchProviderComposeboxTest,
+       CreatesVerbatimMatchForComposeboxWithInputs) {
+  AutocompleteInput input(std::u16string(),
+                          metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+                          TestSchemeClassifier());
+  input.set_current_url(GURL("https://www.wired.com/"));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  // Set lens overlay suggest inputs.
+  lens::proto::LensOverlaySuggestInputs suggest_inputs;
+  suggest_inputs.set_encoded_image_signals("test_signals");
+  input.set_lens_overlay_suggest_inputs(suggest_inputs);
+
+  provider_->Start(input, false);
+
+  ASSERT_EQ(1u, provider_->matches().size());
+  const auto& match = provider_->matches()[0];
+  EXPECT_TRUE(match.search_terms_args);
+}
+
+TEST_F(ZeroSuggestVerbatimMatchProviderComposeboxTest,
+       NoMatchForComposeboxWithoutInputs) {
+  std::string url("https://www.wired.com/");
+  AutocompleteInput input(std::u16string(),
+                          metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+                          TestSchemeClassifier());
+  input.set_current_url(GURL(url));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  provider_->Start(input, false);
+
+  ASSERT_TRUE(provider_->matches().empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ZeroSuggestVerbatimMatchProviderNonIncognitoTests,
     ZeroSuggestVerbatimMatchProviderTest,

@@ -2405,6 +2405,17 @@ TEST(AutocompleteGrouperSectionsTest, DesktopComposeboxZpsSection) {
         // Nothing but personalized zero suggest and aim recommendations.
         {103, 102, 97, 101, 96});
   }
+  {
+    SCOPED_TRACE("All contextual search with one verbatim match");
+    test(
+        {
+            CreateMatch(96, omnibox::GROUP_SEARCH),
+            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        // Group search gets in along with contextual searches.
+        {96, 95, 93});
+  }
 }
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 

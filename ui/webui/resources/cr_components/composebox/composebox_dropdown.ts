@@ -204,15 +204,23 @@ export class ComposeboxDropdownElement extends CrLitElement {
    * Hides the match if its a verbatim match. This match should be hidden
    * for all typed suggestions. It will still be "selected" when the
    * autocomplete result changes, and the user can still navigate to this
-   * verbatim match by navigating to the input text. Zero suggest does not
-   * have verbatim matches.
+   * verbatim match by navigating to the input text. Zero suggest only has
+   * verbatim matches when context is uploaded. In this case the verbatim
+   * match is "empty" and allows for navigation to context with no text.
    */
   protected hideVerbatimMatch_(index: number): boolean {
     assert(this.result);
-    if (!this.result.input) {
+
+    // Only matches at index 0 can be verbatim matches.
+    if (index !== 0) {
       return false;
     }
-    return index === 0;
+
+    // The only match allowed to be default in zero suggest is the verbatim
+    // match.
+    return this.result.input ?
+        true :
+        !!this.result.matches[index]?.allowedToBeDefaultMatch;
   }
 
   protected computeAriaLabel_(match: AutocompleteMatch): string {
