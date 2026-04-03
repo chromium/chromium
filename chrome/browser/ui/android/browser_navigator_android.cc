@@ -105,18 +105,18 @@ void GetOrCreateBrowserWindowForDisposition(
 TabModel::TabLaunchType GetTabLaunchType(const NavigateParams* params) {
   using TabLaunchType = TabModel::TabLaunchType;
 
+  bool is_background =
+      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  bool is_link = ui::PageTransitionCoreTypeIs(params->transition,
+                                              ui::PAGE_TRANSITION_LINK);
   // 1. Explicit Index:
   // If an explicit index is requested, use FROM_CHROME_UI. This type does NOT
   // trigger "adjacency" logic in Java, allowing the passed index to be
   // respected.
   if (params->tabstrip_index != -1) {
-    return TabLaunchType::FROM_CHROME_UI;
+    return is_background ? TabLaunchType::FROM_SYNC_BACKGROUND
+                         : TabLaunchType::FROM_CHROME_UI;
   }
-
-  bool is_background =
-      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  bool is_link = ui::PageTransitionCoreTypeIs(params->transition,
-                                              ui::PAGE_TRANSITION_LINK);
 
   // 2. Background Navigation:
   if (is_background) {
@@ -170,10 +170,10 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       TabModel::TabLaunchType launch_type = GetTabLaunchType(params);
 
       // Identify parent tab.
-      // Parent tab is intentionally left as nullptr if the
-      // TabLaunchType == FROM_OMNIBOX to ensure the tab is added as the last
-      // tab (mirroring WML behavior).
+      // Parent tab is set to nullptr to avoid adjacency overrides when
+      // launching from the Omnibox (where we always append to the end).
       TabAndroid* parent = nullptr;
+
       if (params->source_contents &&
           launch_type != TabModel::TabLaunchType::FROM_OMNIBOX) {
         parent = TabAndroid::FromWebContents(params->source_contents);
