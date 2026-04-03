@@ -358,8 +358,8 @@ class SoftNavigationTest : public MetricIntegrationTest,
     return R"(
       (() => {
         const observer = new PerformanceObserver(() => {});
-        observer.observe({type: 'interaction-contentful-paint', buffered: true,
-                           includeSoftNavigationObservations: true});
+        observer.observe({type: 'interaction-contentful-paint',
+                          buffered: true});
         const lcpCandidates = observer.takeRecords();
         // For each soft navigation, report the last LCP candidate's timing.
         const timingByNavigationId = new Map();
