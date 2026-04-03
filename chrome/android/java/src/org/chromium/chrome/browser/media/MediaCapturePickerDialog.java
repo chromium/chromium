@@ -178,7 +178,7 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
     }
 
     @Override
-    public void onTabUpdated(Tab tab) {
+    public void onTabTitleUpdated(Tab tab) {
         final var state = mTabItemStateMap.get(tab);
         assert state != null;
         state.update();
