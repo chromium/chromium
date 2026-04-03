@@ -3215,8 +3215,7 @@ def CheckNoBannedPatterns(input_api, output_api):
             for ban_rule in _BANNED_CPP_FUNCTIONS:
                 CheckForMatch(f, line_num, line, ban_rule)
 
-    file_filter = lambda f: (
-        f.LocalPath().endswith(('.cc', '.mm', '.h')))
+    file_filter = lambda f: (f.LocalPath().endswith(('.cc', '.mm', '.h')))
     for f in input_api.AffectedFiles(file_filter=file_filter):
         for line_num, line in f.ChangedContents():
             for ban_rule in _DEPRECATED_SYNC_CONSENT_CPP_FUNCTIONS:
@@ -5495,8 +5494,9 @@ def CheckNoDeprecatedCss(input_api, output_api):
             # ellipsis effect which can only be used with -webkit-box.
             r'ui/webui/resources/cr_components/most_visited/.*\.css$',
             r'ui/webui/resources/cr_components/composebox/composebox_match.css$',
-            r'ui/webui/resources/cr_components/searchbox/searchbox_match.css$')
-    )
+            r'ui/webui/resources/cr_components/searchbox/searchbox_match.css$',
+            r'^chrome/browser/resources/new_tab_page/action_chips/action_chips\.css$'
+        ))
     file_filter = lambda f: input_api.FilterSourceFile(
         f, files_to_check=file_inclusion_pattern, files_to_skip=files_to_skip)
     for fpath in input_api.AffectedFiles(file_filter=file_filter):
@@ -6788,22 +6788,25 @@ def CheckNoMainLayoutSwitcher(input_api, output_api):
     # So here "Mainlayoutswitcher" should have lowercase l and s, i.e., "MainLayoutSwitcher"
     # (uppercase L and S) will _not_ match the output of git_footers.py.
     git_footers = input_api.change.GitFootersFromDescription()
-    if 'true' in [footer.lower() for footer in git_footers.get(
-            u'Allow-Mainlayoutswitcher-Changes', [])]:
+    if 'true' in [
+            footer.lower() for footer in git_footers.get(
+                u'Allow-Mainlayoutswitcher-Changes', [])
+    ]:
         return []
 
     results = []
     for f in input_api.AffectedFiles(include_deletes=False):
-        if f.UnixLocalPath() == 'chrome/android/java/src/org/chromium/chrome/browser/app/MainLayoutSwitcher.java':
-            results.append(output_api.PresubmitError(
-                'MainLayoutSwitcher.java is a temporary class to support the forked main layout '
-                '(main_forked_with_secondary_ui_container.xml) during Android side panel '
-                'development.\n'
-                'Generally we should not need to change this file except deleting it, but if you '
-                'must, add "Allow-Mainlayoutswitcher-Changes: true" (note: lowercase l and s in '
-                'Mainlayoutswitcher) to your commit message footers and send the CL to the file '
-                'owners.',
-                [f]))
+        if f.UnixLocalPath(
+        ) == 'chrome/android/java/src/org/chromium/chrome/browser/app/MainLayoutSwitcher.java':
+            results.append(
+                output_api.PresubmitError(
+                    'MainLayoutSwitcher.java is a temporary class to support the forked main layout '
+                    '(main_forked_with_secondary_ui_container.xml) during Android side panel '
+                    'development.\n'
+                    'Generally we should not need to change this file except deleting it, but if you '
+                    'must, add "Allow-Mainlayoutswitcher-Changes: true" (note: lowercase l and s in '
+                    'Mainlayoutswitcher) to your commit message footers and send the CL to the file '
+                    'owners.', [f]))
     return results
 
 
@@ -6816,8 +6819,11 @@ def CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api):
         return []
 
     git_footers = input_api.change.GitFootersFromDescription()
-    if 'true' in [footer.lower() for footer in git_footers.get(
-            u'No-Direct-Ref-To-Android-Side-Panel-Cached-Flag-False-Alarm', [])]:
+    if 'true' in [
+            footer.lower() for footer in git_footers.get(
+                u'No-Direct-Ref-To-Android-Side-Panel-Cached-Flag-False-Alarm',
+                [])
+    ]:
         return []
 
     results = []
@@ -6831,13 +6837,14 @@ def CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api):
             continue
         for line_num, line in f.ChangedContents():
             if pattern.search(line):
-                results.append(output_api.PresubmitError(
-                    '%s:%d: sEnableAndroidSidePanel should not be referenced directly. '
-                    'Use AndroidSidePanelEnabledFn.isEnabled() instead. '
-                    'If this is a false alarm, add '
-                    '"No-Direct-Ref-To-Android-Side-Panel-Cached-Flag-False-Alarm: true" '
-                    'to the commit message footers' % (f.LocalPath(), line_num)
-                ))
+                results.append(
+                    output_api.PresubmitError(
+                        '%s:%d: sEnableAndroidSidePanel should not be referenced directly. '
+                        'Use AndroidSidePanelEnabledFn.isEnabled() instead. '
+                        'If this is a false alarm, add '
+                        '"No-Direct-Ref-To-Android-Side-Panel-Cached-Flag-False-Alarm: true" '
+                        'to the commit message footers' %
+                        (f.LocalPath(), line_num)))
     return results
 
 
@@ -6853,7 +6860,8 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(
         input_api.canned_checks.CheckPatchFormatted(input_api, output_api))
     results.extend(CheckNoMainLayoutSwitcher(input_api, output_api))
-    results.extend(CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api))
+    results.extend(
+        CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api))
     return results
 
 
@@ -6882,7 +6890,8 @@ def CheckChangeOnCommit(input_api, output_api):
         input_api.canned_checks.CheckChangeHasNoUnwantedTags(
             input_api, output_api))
     results.extend(CheckNoMainLayoutSwitcher(input_api, output_api))
-    results.extend(CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api))
+    results.extend(
+        CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api))
     return results
 
 
@@ -8231,8 +8240,8 @@ def CheckSettingsChanges(input_api, output_api):
     registry_filename = 'SearchIndexProviderRegistry.java'
 
     # Filter for Java files, excluding the registry file itself.
-    is_java_file = lambda f: (f.LocalPath().endswith('.java') and not
-                              f.LocalPath().endswith(registry_filename))
+    is_java_file = lambda f: (f.LocalPath().endswith('.java') and not f.
+                              LocalPath().endswith(registry_filename))
     java_files = input_api.AffectedFiles(include_deletes=False,
                                          file_filter=is_java_file)
 
@@ -8271,13 +8280,14 @@ def CheckSettingsChanges(input_api, output_api):
          ['addEntry', 'addEntryForKey', 'updateEntry', 'updateEntryForKey'],
          'Preference added via Java. Ensure it is indexed in updateDynamicPreferences.'
          ),
-        (input_api.re.compile(r'(?:getArguments\(\)|bundle|extras|savedInstanceState)\.put\w*\('),
-         ['getExtras'],
+        (input_api.re.compile(
+            r'(?:getArguments\(\)|bundle|extras|savedInstanceState)\.put\w*\('
+        ), ['getExtras'],
          'Bundle extras (arguments) are modified. Ensure getExtras() provides these '
-         'so search results open the fragment correctly.'
-         ),
-        (input_api.re.compile(r'(?:getArguments\(\)\.(?:get\w*|containsKey|is)|(?:bundle|extras|savedInstanceState)\.(?:get\w*|containsKey))'),
-         ['getExtras'],
+         'so search results open the fragment correctly.'),
+        (input_api.re.compile(
+            r'(?:getArguments\(\)\.(?:get\w*|containsKey|is)|(?:bundle|extras|savedInstanceState)\.(?:get\w*|containsKey))'
+        ), ['getExtras'],
          'The Fragment reads mandatory arguments from its Bundle. Ensure getExtras() '
          'overrides this in the provider to pass these arguments when launched from search.'
          )
@@ -8290,10 +8300,13 @@ def CheckSettingsChanges(input_api, output_api):
         'chrome/android/java/src/org/chromium/chrome/browser/settings/search/'
         'SearchIndexProviderRegistry.java')
     repo_root = input_api.change.RepositoryRoot()
-    registry_full_path = input_api.os_path.join(repo_root, *registry_repo_path.split('/'))
+    registry_full_path = input_api.os_path.join(repo_root,
+                                                *registry_repo_path.split('/'))
 
-    registry_files = [f for f in input_api.AffectedFiles(include_deletes=False)
-                      if f.LocalPath().endswith(registry_filename)]
+    registry_files = [
+        f for f in input_api.AffectedFiles(include_deletes=False)
+        if f.LocalPath().endswith(registry_filename)
+    ]
     registry_file_in_cl = registry_files[0] if registry_files else None
 
     if registry_file_in_cl:
@@ -8334,15 +8347,14 @@ def CheckSettingsChanges(input_api, output_api):
 
         if not provider_field_re.search(content):
             problems.append(
-              f'{f.LocalPath()}:0\n'
-              f'    \tIssue:  Missing SEARCH_INDEX_DATA_PROVIDER field.\n'
-              f'    \tAction: Add "public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER" to the class.'
+                f'{f.LocalPath()}:0\n'
+                f'    \tIssue:  Missing SEARCH_INDEX_DATA_PROVIDER field.\n'
+                f'    \tAction: Add "public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER" to the class.'
             )
 
         if registry_content and class_name:
             registry_pattern = input_api.re.compile(
-              r'\b' + class_name + r'\s*\.\s*SEARCH_INDEX_DATA_PROVIDER'
-            )
+                r'\b' + class_name + r'\s*\.\s*SEARCH_INDEX_DATA_PROVIDER')
             if not registry_pattern.search(registry_content):
                 problems.append(
                     f'{f.LocalPath()}:0\n'
@@ -8398,6 +8410,5 @@ def CheckSettingsChanges(input_api, output_api):
             '  visibility, and arguments) must be mirrored in the indexer.\n\n'
             '  Search Indexing API Reference:\n'
             '  //components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/search/SearchIndexProvider.java\n\n'
-            '  Detailed issues found in your changes:\n',
-            problems)
+            '  Detailed issues found in your changes:\n', problems)
     ]

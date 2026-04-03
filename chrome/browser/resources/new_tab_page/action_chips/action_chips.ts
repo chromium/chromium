@@ -80,10 +80,6 @@ export class ActionChipsElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      showSimplifiedUI_: {
-        type: Boolean,
-        reflect: true,
-      },
       disablementContextMenuEnabled_: {
         type: Boolean,
         reflect: true,
@@ -96,8 +92,6 @@ export class ActionChipsElement extends CrLitElement {
   protected accessor actionChips_: ActionChip[] = [];
   protected accessor showDismissalUI_: boolean =
       loadTimeData.getBoolean('ntpNextShowDismissalUIEnabled');
-  protected accessor showSimplifiedUI_: boolean =
-      loadTimeData.getBoolean('ntpNextShowSimplificationUIEnabled');
   protected accessor disablementContextMenuEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextDisablementContextMenuEnabled');
 
@@ -268,17 +262,8 @@ export class ActionChipsElement extends CrLitElement {
   }
 
 
-  protected showDashSimplifiedUI_(chip: ActionChip) {
-    return chip.suggestTemplateInfo.typeIcon !== IconType.kSubArrowRight &&
-        this.showSimplifiedUI_;
-  }
-
   protected getChipSubtitle_(chip: ActionChip): string {
-    const subtitle = (this.showSimplifiedUI_ && chip.suggestion) ?
-        chip.suggestion :
-        (chip.suggestTemplateInfo.secondaryText?.text ?? '');
-    const prefix = (subtitle && this.showDashSimplifiedUI_(chip)) ? ' - ' : '';
-    return `${prefix}${subtitle}`;
+    return chip.suggestTemplateInfo.secondaryText?.text ?? '';
   }
 
   protected getChipTitle_(chip: ActionChip): string {

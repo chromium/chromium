@@ -448,15 +448,15 @@ suite('NewTabPageActionChipsTest', () => {
               [
                 {
                   title: 'Example Tab',
-                  body: '- Subtitle for recent tab',
+                  body: 'Subtitle for recent tab',
                 },
                 {
                   title: 'Nano Banana',
-                  body: '- Suggestion for image',
+                  body: 'Subtitle for image',
                 },
                 {
                   title: 'Deep Search',
-                  body: '- Suggestion for deep search',
+                  body: 'Subtitle for deep search',
                 },
               ],
               allChips.map((chip: HTMLButtonElement) => {
@@ -542,7 +542,7 @@ suite('NewTabPageActionChipsTest', () => {
           const bodyElement = chip.querySelector('.chip-body');
           assertTrue(!!bodyElement);
           const body = bodyElement.textContent?.trim();
-          assertEquals('- Subtitle for deep search', body);
+          assertEquals('Subtitle for deep search', body);
         });
 
     test(
@@ -592,57 +592,6 @@ suite('NewTabPageActionChipsTest', () => {
           chips.shadowRoot.querySelectorAll<HTMLButtonElement>('.action-chip');
       assertEquals(2, allChips.length);
     });
-
-    test(
-        'shows context menu on container when conditions are met', async () => {
-          loadTimeData.overrideValues({
-            ntpNextShowSimplificationUIEnabled: true,
-          });
-          await initializeChips({});
-          chips.showBackground = true;
-          await microtasksFinished();
-
-          const container = chips.shadowRoot.querySelector<HTMLElement>(
-              '.action-chips-container');
-          assertTrue(!!container);
-
-          const actionMenu =
-              chips.shadowRoot.querySelector<CrActionMenuElement>(
-                  '#actionMenu');
-          assertTrue(!!actionMenu);
-
-          container.dispatchEvent(
-              new MouseEvent('contextmenu', {cancelable: true}));
-          await microtasksFinished();
-
-          assertTrue(actionMenu.open);
-        });
-
-    test(
-        'does not show context menu on container when conditions are not met',
-        async () => {
-          loadTimeData.overrideValues({
-            ntpNextShowSimplificationUIEnabled: false,
-          });
-          await initializeChips({});
-          chips.showBackground = false;
-          await microtasksFinished();
-
-          const container = chips.shadowRoot.querySelector<HTMLElement>(
-              '.action-chips-container');
-          assertTrue(!!container);
-
-          const actionMenu =
-              chips.shadowRoot.querySelector<CrActionMenuElement>(
-                  '#actionMenu');
-          assertTrue(!!actionMenu);
-
-          container.dispatchEvent(
-              new MouseEvent('contextmenu', {cancelable: true}));
-          await microtasksFinished();
-
-          assertFalse(actionMenu.open);
-        });
 
     test('does not show context menu when killswitch is disabled', async () => {
       loadTimeData.overrideValues({

@@ -327,10 +327,6 @@ const base::FeatureParam<bool> kNtpNextEnableCanvasChipParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextEnableCanvasChipParam",
     false);
-const base::FeatureParam<bool> kNtpNextShowSimplificationUIParam(
-    &ntp_features::kNtpNextFeatures,
-    "NtpNextShowSimplificationUIParam",
-    false);
 const base::FeatureParam<bool> kNtpNextShowDismissalUIParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextShowDismissalUIParam",

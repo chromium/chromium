@@ -560,28 +560,6 @@ TEST_F(ActionChipsHandlerTest,
   EXPECT_THAT(actual_chips, IsEmpty());
 }
 
-TEST_F(ActionChipsHandlerTest,
-       StartActionChipsRetrievalAllowsOneChipsForRowUI) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextShowSimplificationUIParam.name, "true"}});
-  std::vector<ActionChipPtr> actual_chips;
-  base::RunLoop run_loop;
-  EXPECT_CALL(page_, OnActionChipsChanged(_))
-      .WillOnce(
-          [&actual_chips, &run_loop](std::vector<ActionChipPtr> action_chips) {
-            actual_chips = std::move(action_chips);
-            run_loop.Quit();
-          });
-  EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(
-          MakeActionChipsVector(MakeActionChip(CreateStaticDeepSearchChip()))));
-  handler().StartActionChipsRetrieval();
-  run_loop.Run();
-  EXPECT_FALSE(actual_chips.empty());
-}
-
 TEST_F(ActionChipsHandlerTest, DiscardWebContentsDoesNotCrash) {
   // Discard the NTP. This would trigger a crash in
   // ActionChipsHandler::OnTabStripModelChanged if the kReplaced event is not

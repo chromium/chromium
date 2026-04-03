@@ -1609,17 +1609,6 @@ const FeatureEntry::FeatureParam
 };
 
 const FeatureEntry::FeatureParam
-    kNtpNextShowSimplificationUIWithChromeNtpActionClient[] = {
-        {"NtpNextShowSimplificationUIParam", "true"},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpNextShowSimplificationUIWithChromeNtpActionClientAndCanvas[] = {
-        {"NtpNextShowSimplificationUIParam", "true"},
-        {"NtpNextEnableCanvasChipParam", "true"},
-};
-
-const FeatureEntry::FeatureParam
     kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState[] = {
         {"kNtpNextShowStaticRecentTabChipParam", "false"},
 };
@@ -1631,54 +1620,21 @@ const FeatureEntry::FeatureParam
             {"NtpNextEnableCanvasChipParam", "true"},
 };
 
-const FeatureEntry::FeatureParam
-    kNtpNextShowSimplificationUIWithNtpActionClientWithNoRecentTabInSteadyState
-        [] = {
-            {"NtpNextShowSimplificationUIParam", "true"},
-            {"kNtpNextShowStaticRecentTabChipParam", "false"},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpNextShowSimplificationUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState
-        [] = {
-            {"NtpNextShowSimplificationUIParam", "true"},
-            {"kNtpNextShowStaticRecentTabChipParam", "false"},
-            {"NtpNextEnableCanvasChipParam", "true"},
-};
-
-const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDismissal[] = {
-    {"NtpNextShowSimplificationUIParam", "true"},
-    {"NtpNextShowDismissalUIParam", "true"},
-};
-
 const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
     {"NtpNextDisablementContextMenuParam", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
-    {"- Show Row UI with a New Suggestions Client",
-     kNtpNextShowSimplificationUIWithChromeNtpActionClient, nullptr},
     {"- Show Chips UI with a New Client and No Recent Tab Chip in the Steady "
      "State",
      kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState,
      nullptr},
-    {"- Show Row UI with a New Client and No Recent Tab Chip in the Steady "
-     "State",
-     kNtpNextShowSimplificationUIWithNtpActionClientWithNoRecentTabInSteadyState,
-     nullptr},
     {"- Show Chips UI with a New Suggestions Client and Canvas Chip",
      kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas, nullptr},
-    {"- Show Row UI with a New Suggestions Client and Canvas Chip",
-     kNtpNextShowSimplificationUIWithChromeNtpActionClientAndCanvas, nullptr},
     {"- Show Chips UI with a New Client, Canvas Chip, and No Recent Tab Chip "
      "in the Steady State",
      kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState,
      nullptr},
-    {"- Show Row UI with a New Client, Canvas Chip, and No Recent Tab Chip in "
-     "the Steady State",
-     kNtpNextShowSimplificationUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState,
-     nullptr},
-    {"- Show Dismissal UI", kNtpNextShowSimplificationUIWithDismissal, nullptr},
     {"- Allow Disable", kNtpNextAllowDisablement, nullptr},
 };
 

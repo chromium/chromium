@@ -16,10 +16,7 @@ export function getHtml(this: ActionChipsElement) {
     ${
       this.actionChips_.length ?
       html`
-      <div class="action-chips-container"
-        @contextmenu="${this.showBackground && this.showSimplifiedUI_ &&
-            this.disablementContextMenuEnabled_ ?
-            this.onContextmenu_ : nothing}">
+      <div class="action-chips-container">
       ${
           this.actionChips_.map(
               (chip: ActionChip, index: number) => html`

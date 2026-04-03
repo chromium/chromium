@@ -257,10 +257,6 @@ extern const base::FeatureParam<bool> kNtpNextEnableCanvasChipParam;
 extern const base::FeatureParam<bool> kNtpNextShowStaticRecentTabChipParam;
 
 // Parameter determining if the Action Chips on the NTP should display the
-// NTP Simplification UI.
-extern const base::FeatureParam<bool> kNtpNextShowSimplificationUIParam;
-
-// Parameter determining if the Action Chips on the NTP should display the
 // dismissal UI.
 extern const base::FeatureParam<bool> kNtpNextShowDismissalUIParam;
 

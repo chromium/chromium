@@ -35,9 +35,6 @@
   max-width: calc(var(--ntp-chips-container-width) + 2px);
 }
 
-:host([show-simplified-ui_]) .action-chips-wrapper {
-  width: calc(var(--ntp-chips-container-width) + 2px);
-}
 
 .action-chips-container {
   display: flex;
@@ -47,35 +44,6 @@
   width: 100%;
 }
 
-:host([show-simplified-ui_]) .action-chips-container {
-  animation:
-    chips-slide var(--chip-slide-duration) 220ms
-      var(--chip-animation-curve) forwards,
-    chips-fade-in var(--chip-fade-duration) 370ms
-      var(--chip-animation-curve) forwards;
-  border-radius: 16px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  gap: 4px;
-  justify-content: center;
-  opacity: 0;
-  padding: 10px;
-  transform: translateY(-56px);
-  width: 100%;
-}
-
-:host([show-simplified-ui_][show-background])
-.action-chips-container {
-  background-color:
-    rgb(
-      from
-        var(--color-new-tab-page-action-chip-background, transparent) r g b
-        / 0.8
-    );
-  overflow: hidden;
-}
 
 .action-chip-icon-container:not(.icon-type-favicon):not(.icon-type-banana) {
   background-color: var(--color-new-tab-page-action-chip-text-body);
@@ -110,8 +78,10 @@
   display: flex;
   font-family: inherit;
   gap: 12px;
-  height: min-content;
+  height: 56px;
   isolation: isolate;
+  max-height: 56px;
+  min-height: 56px;
   opacity: 0;
   overflow: hidden;
   padding: 8px 14px;
@@ -126,29 +96,9 @@
   min-height: 56px;
 }
 
-:host(:not([show-simplified-ui_])) .action-chip:hover,
-:host(:not([show-simplified-ui_])) .action-chip:focus {
+.action-chip:hover,
+.action-chip:focus {
   max-height: 74px;
-}
-
-:host(:not([show-simplified-ui_])) .action-chip {
-  max-height: 56px;
-  min-height: 56px;
-}
-
-:host([show-simplified-ui_]) .action-chip {
-  background-color: transparent;
-  border-radius: 12px;
-  gap: 16px;
-  height: 36px;
-  padding: 0 10px;
-  width: 100%;
-}
-
-:host([show-simplified-ui_]) .chip-button-wrapper {
-  max-height: 36px;
-  min-height: 36px;
-  width: 100%;
 }
 
 .action-chip:focus-visible {
@@ -194,11 +144,13 @@
 }
 
 .action-chip-icon-container {
+  align-self: flex-start;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100%;
   border-radius: 100%;
   height: 24px;
+  margin-top: 8px;
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: 100%;
@@ -208,49 +160,26 @@
   width: 24px;
 }
 
-:host(:not([show-simplified-ui_])) .action-chip-icon-container {
-  align-self: flex-start;
-  margin-top: 8px;
-}
-
-:host([show-simplified-ui_]) .action-chip-icon-container {
-  height: 16px;
-  width: 16px;
-}
-
 .action-chip-recent-tab-favicon {
   border-radius: 2px;
   height: 24px;
   width: 24px;
 }
 
-:host([show-simplified-ui_]) .action-chip-recent-tab-favicon {
-  height: 16px;
-  width: 16px;
-}
-
 .action-chip-text-container {
   align-items: flex-start;
+  align-self: flex-start;
   display: flex;
   flex-direction: column;
+  margin-bottom: auto;
+  margin-top: auto;
   min-width: 0;
+  padding-top: 2px;
   width: 100%;
 }
 
-:host(:not([show-simplified-ui_])) .action-chip-text-container {
-  align-self: flex-start;
-  margin-bottom: auto;
-  margin-top: auto;
-  padding-top: 2px;
-}
-
-:host(:not([show-simplified-ui_])) .action-chip:has(.icon-type-sub-arrow-right) .action-chip-text-container {
+.action-chip:has(.icon-type-sub-arrow-right) .action-chip-text-container {
   padding: 2px 0;
-}
-
-:host([show-simplified-ui_]) .action-chip-text-container {
-  flex-direction: row;
-  gap: 4px;
 }
 
 .chip-title {
@@ -265,67 +194,37 @@
   width: 100%;
 }
 
-:host([show-simplified-ui_]) .chip-title {
-  line-height: 18px;
-  overflow: visible;
-  width: fit-content;
-}
 
 .chip-body {
   color: var(--color-new-tab-page-action-chip-text-body);
+  display: -webkit-box;
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
   overflow: hidden;
   text-align: start;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-}
-
-:host([show-simplified-ui_]) .chip-body {
-  font-size: 13px;
-  mask-image:
-    linear-gradient(
-      to right,
-      var(--color-sys-on-surface-subtle) 90%,
-      transparent 98.5%
-    );
-  overflow: hidden;
-  text-align: start;
-  text-overflow: clip;
-  white-space: nowrap;
-  -webkit-mask-image:
-    linear-gradient(
-      to right,
-      var(--color-sys-on-surface-subtle) 90%,
-      transparent 98.5%
-    );
-}
-
-:host(:not([show-simplified-ui_])) .chip-body {
-  display: -webkit-box;
-  overflow: hidden;
-  word-break: break-word;
   white-space: normal;
+  width: 100%;
+  word-break: break-word;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
 }
 
-:host(:not([show-simplified-ui_])) .action-chip:has(.icon-type-sub-arrow-right) .chip-body {
+.action-chip:has(.icon-type-sub-arrow-right) .chip-body {
   -webkit-line-clamp: 2;
 }
 
-:host(:not([show-simplified-ui_])) .action-chip:hover .chip-body,
-:host(:not([show-simplified-ui_])) .action-chip:focus .chip-body {
+.action-chip:hover .chip-body,
+.action-chip:focus .chip-body {
   max-height: 88px;
   overflow: hidden;
   white-space: normal;
   -webkit-line-clamp: 2;
 }
 
-:host(:not([show-simplified-ui_])) .action-chip:has(.icon-type-sub-arrow-right):hover .chip-body,
-:host(:not([show-simplified-ui_])) .action-chip:has(.icon-type-sub-arrow-right):focus .chip-body {
+.action-chip:has(.icon-type-sub-arrow-right):hover .chip-body,
+.action-chip:has(.icon-type-sub-arrow-right):focus .chip-body {
   word-break: break-word;
   white-space: normal;
   -webkit-box-orient: vertical;
@@ -342,9 +241,6 @@
   right: 16px;
 }
 
-:host([show-simplified-ui_]) .action-chip:hover .chip-remove-button {
-  display: block;
-}
 
 @media (min-width: 560px) {
   :host {
@@ -369,10 +265,8 @@ cr-button>span {
 }
 
 @container style(--cr-animations-disabled: 1) {
-  :host([show-simplified-ui_]) .action-chips-container,
-  :host(:not([show-simplified-ui_])) .action-chips-container,
-  :host([show-simplified-ui_]) .action-chip,
-  :host(:not([show-simplified-ui_])) .action-chip {
+  .action-chips-container,
+  .action-chips-container .action-chip:nth-child(n) {
     animation: none;
     opacity: 1;
     transform: none;

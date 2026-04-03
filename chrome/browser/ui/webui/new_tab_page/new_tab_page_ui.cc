@@ -246,8 +246,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       "ntpNextFeaturesEnabled",
       ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
           base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
-  source->AddBoolean("ntpNextShowSimplificationUIEnabled",
-                     ntp_features::kNtpNextShowSimplificationUIParam.Get());
   source->AddBoolean("ntpNextShowDismissalUIEnabled",
                      ntp_features::kNtpNextShowDismissalUIParam.Get());
   source->AddBoolean("ntpNextDisablementContextMenuEnabled",
