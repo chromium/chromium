@@ -440,13 +440,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOverSplit) {
       ReleaseMouse());
 }
 
-// TODO(crbug.com/40249472): Fails on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DragOverSplitInGroup DISABLED_DragOverSplitInGroup
-#else
-#define MAYBE_DragOverSplitInGroup DragOverSplitInGroup
-#endif
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, MAYBE_DragOverSplitInGroup) {
+IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOverSplitInGroup) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -903,7 +897,7 @@ class VerticalTabDragDetachTest : public VerticalTabDragTest {
 };
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_MAC)
 #define MAYBE_DragToDetachIntoNewWindow DragToDetachIntoNewWindow
 #else
 #define MAYBE_DragToDetachIntoNewWindow DISABLED_DragToDetachIntoNewWindow
@@ -963,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland. Fails on Windows.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_DragToDetachThenCancel DragToDetachThenCancel
 #else
 #define MAYBE_DragToDetachThenCancel DISABLED_DragToDetachThenCancel
@@ -990,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_DragToDetachThenReattach DragToDetachThenReattach
 #else
 #define MAYBE_DragToDetachThenReattach DISABLED_DragToDetachThenReattach
@@ -1051,8 +1045,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachMultipleTabs) {
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && \
-    !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN)
 #define MAYBE_DetachPinnedTab DetachPinnedTab
 #else
 #define MAYBE_DetachPinnedTab DISABLED_DetachPinnedTab
@@ -1080,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachPinnedTab) {
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
 #define MAYBE_DetachTabPreservesActiveTab DetachTabPreservesActiveTab
 #else
 #define MAYBE_DetachTabPreservesActiveTab DISABLED_DetachTabPreservesActiveTab
