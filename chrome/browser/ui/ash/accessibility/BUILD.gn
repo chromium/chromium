@@ -12,8 +12,6 @@ static_library("accessibility") {
     "chrome_accessibility_delegate.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/public/cpp",
