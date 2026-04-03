@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/apple/foundation_util.h"
+#import "base/apple/scoped_cftyperef.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
@@ -43,6 +45,15 @@ namespace {
 // The page height of test pages. This must be big enough to triger fullscreen.
 const int kPageHeightEM = 400;
 
+// Offset to check when there is no safe area (in points).
+const CGFloat kNoInsetOffset = 10.0;
+
+// Sides for gutter color verification.
+enum class FullscreenGutterSide {
+  kLeft,
+  kRight,
+};
+
 // Hides the toolbar by scrolling down.
 void HideToolbarUsingUI() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
@@ -79,6 +90,97 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
   response->set_content_type("text/html");
   response->set_content(content);
   return response;
+}
+
+// Helper to get pixel color at a point in an image.
+void GetColorAtPoint(CGPoint point,
+                     UIImage* image,
+                     CGFloat* red,
+                     CGFloat* green,
+                     CGFloat* blue,
+                     CGFloat* alpha) {
+  base::apple::ScopedCFTypeRef<CFDataRef> pixelData(
+      CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage)));
+  base::span<const uint8_t> pixelDataSpan =
+      base::apple::NSDataToSpan((__bridge NSData*)pixelData.get());
+
+  const NSUInteger bytesPerPixel = CGImageGetBitsPerPixel(image.CGImage) /
+                                   CGImageGetBitsPerComponent(image.CGImage);
+  const NSUInteger index =
+      (CGImageGetWidth(image.CGImage) * (NSUInteger)point.y +
+       (NSUInteger)point.x) *
+      bytesPerPixel;
+
+  base::span<const uint8_t> pixelDataView =
+      pixelDataSpan.subspan(index, bytesPerPixel);
+  // Assuming RGBA.
+  *red = CGFloat(pixelDataView[0]) / 255.0f;
+  *green = CGFloat(pixelDataView[1]) / 255.0f;
+  *blue = CGFloat(pixelDataView[2]) / 255.0f;
+  *alpha = CGFloat(pixelDataView[3]) / 255.0f;
+}
+
+// Helper to assert color at a point in an image.
+void AssertColorAtPoint(CGPoint point,
+                        UIImage* image,
+                        BOOL shouldBeLime,
+                        NSString* sideName,
+                        CGFloat inset) {
+  CGFloat red = 0, green = 0, blue = 0, alpha = 0;
+  GetColorAtPoint(point, image, &red, &green, &blue, &alpha);
+
+  if (shouldBeLime) {
+    GREYAssert(green > 0.9 && red < 0.1 && blue < 0.1,
+               @"%@ gutter should be lime (red=%f, green=%f, blue=%f, "
+               @"inset=%f, point=%@)",
+               sideName, red, green, blue, inset, NSStringFromCGPoint(point));
+  } else {
+    GREYAssertFalse(green > 0.9 && red < 0.1 && blue < 0.1,
+                    @"%@ gutter should NOT be lime (red=%f, green=%f, "
+                    @"blue=%f, inset=%f, point=%@)",
+                    sideName, red, green, blue, inset,
+                    NSStringFromCGPoint(point));
+  }
+}
+
+// Helper to assert color at a side gutter.
+void AssertColorAtSide(FullscreenGutterSide side,
+                       CGFloat inset,
+                       UIImage* image,
+                       BOOL shouldBeLime) {
+  NSString* sideName = nil;
+  CGPoint point;
+
+  const NSUInteger width = CGImageGetWidth(image.CGImage);
+  const NSUInteger height = CGImageGetHeight(image.CGImage);
+  const CGFloat scale = image.scale;
+
+  switch (side) {
+    case FullscreenGutterSide::kLeft:
+      sideName = @"Left";
+      if (inset > 0) {
+        // If there is an inset, we check in the middle of the safe area gutter.
+        point = CGPointMake((inset / 2) * scale, height / 2);
+      } else {
+        // If there is no safe area, we check a point near the edge to verify it
+        // is covered.
+        point = CGPointMake(kNoInsetOffset * scale, height / 2);
+      }
+      break;
+    case FullscreenGutterSide::kRight:
+      sideName = @"Right";
+      if (inset > 0) {
+        // If there is an inset, we check in the middle of the safe area gutter.
+        point = CGPointMake(width - (inset / 2) * scale, height / 2);
+      } else {
+        // If there is no safe area, we check a point near the edge to verify it
+        // is covered.
+        point = CGPointMake(width - kNoInsetOffset * scale, height / 2);
+      }
+      break;
+  }
+
+  AssertColorAtPoint(point, image, shouldBeLime, sideName, inset);
 }
 
 }  // namespace
@@ -582,6 +684,126 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
 
   // Verify that it exits force fullscreen mode and the toolbar is visible.
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
+}
+
+// Tests that viewport-fit=cover works as intended in landscape mode.
+// The test loads a page with a lime green content div and a button to toggle
+// the viewport-fit meta tag.
+// 1. In landscape, without viewport-fit=cover, the side gutters (safe area)
+//    should be white (background color).
+// 2. Tapping the button adds viewport-fit=cover to the viewport meta tag.
+// 3. The content should then expand into the safe area, making the gutters
+//    lime green.
+- (void)testViewportFitCover {
+  if ([ChromeEarlGrey isFullscreenSmoothScrollingSupported]) {
+    EARL_GREY_TEST_SKIPPED(@"Smooth scrolling not supported.");
+  }
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/viewport-fit") {
+          return CreateHttpResponse(
+              "<!DOCTYPE html>"
+              "<html>"
+              "<head>"
+              "  <meta id='viewport' name='viewport' "
+              "content='width=device-width, initial-scale=1.0'>"
+              "  <style>"
+              "    html { background-color: white; }"
+              "    body { background-color: white; margin: 0; }"
+              "    #content { "
+              "      background-color: lime; "
+              "      position: absolute; "
+              "      top: 0; left: 0; right: 0; bottom: 0; "
+              "    }"
+              "    #toggle { "
+              "              position: absolute; top: 50%; left: 50%; "
+              "              transform: translate(-50%, -50%); "
+              "              width: 200px; height: 100px; font-size: 20px; "
+              "z-index: 100; "
+              "              background-color: black; color: white; border: "
+              "none; }"
+              "  </style>"
+              "  <script>"
+              "    function toggle() {"
+              "      var oldMeta = document.getElementById('viewport');"
+              "      var newMeta = document.createElement('meta');"
+              "      newMeta.id = 'viewport';"
+              "      newMeta.name = 'viewport';"
+              "      if "
+              "(oldMeta.getAttribute('content').includes('viewport-fit=cover'))"
+              " {"
+              "        newMeta.setAttribute('content', 'width=device-width, "
+              "initial-scale=1.0');"
+              "        document.getElementById('toggle').innerText = 'Toggle "
+              "(now auto)';"
+              "      } else {"
+              "        newMeta.setAttribute('content', 'width=device-width, "
+              "initial-scale=1.0, viewport-fit=cover');"
+              "        document.getElementById('toggle').innerText = 'Toggle "
+              "(now cover)';"
+              "      }"
+              "      oldMeta.parentNode.replaceChild(newMeta, oldMeta);"
+              "    }"
+              "  </script>"
+              "</head>"
+              "<body>"
+              "  <div id='content'>"
+              "    <button id='toggle' onclick='toggle()'>Toggle (now "
+              "auto)</button>"
+              "  </div>"
+              "</body>"
+              "</html>");
+        }
+        return nullptr;
+      }));
+
+  GREYAssertTrue(self.testServer->Start(), @"The server has not started");
+  GURL URL = self.testServer->GetURL("/viewport-fit");
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Toggle (now auto)"];
+
+  // Rotate to landscape.
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
+
+  UIEdgeInsets safeArea = [FullscreenAppInterface currentWindowSafeArea];
+  // Pick the side with the largest safe area to check.
+  FullscreenGutterSide sideToCheck = (safeArea.right > safeArea.left)
+                                         ? FullscreenGutterSide::kRight
+                                         : FullscreenGutterSide::kLeft;
+  CGFloat inset = (sideToCheck == FullscreenGutterSide::kLeft) ? safeArea.left
+                                                               : safeArea.right;
+
+  // Take a snapshot of the window.
+  EDORemoteVariable<UIImage*>* snapshot = [[EDORemoteVariable alloc] init];
+  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+      performAction:grey_snapshot(snapshot)];
+  UIImage* image = snapshot.object;
+
+  // Check color without viewport-fit=cover.
+  // If there is no safe area inset on the side, it should already be lime.
+  AssertColorAtSide(sideToCheck, inset, image, /*shouldBeLime=*/(inset == 0));
+
+  // Toggle viewport-fit=cover.
+  [ChromeEarlGrey tapWebStateElementWithID:@"toggle"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Toggle (now cover)"];
+
+  // Wait for layout update.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Snapshot again.
+  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+      performAction:grey_snapshot(snapshot)];
+  image = snapshot.object;
+
+  // Check color with viewport-fit=cover.
+  // The side should now be lime regardless of initial safe area.
+  AssertColorAtSide(sideToCheck, inset, image, /*shouldBeLime=*/YES);
+
+  // Rotate back to portrait.
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
 }
 
 @end

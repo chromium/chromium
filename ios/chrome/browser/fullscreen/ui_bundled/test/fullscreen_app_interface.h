@@ -15,6 +15,9 @@
 // Returns the current viewport insets for the visible web content view.
 + (UIEdgeInsets)currentViewportInsets;
 
+// Returns the safe area insets of the key window.
++ (UIEdgeInsets)currentWindowSafeArea;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_TEST_FULLSCREEN_APP_INTERFACE_H_

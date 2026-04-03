@@ -42,8 +42,8 @@ enum class CrFullscreenState;
 @property(nonatomic, weak) id<CRWWebControllerContainerViewDelegate>
     delegate;  // weak
 
-// YES if the webView should cover the entire screen and ignore the safe area.
-@property(nonatomic, assign) BOOL cover;
+// Whether the webView should cover the entire screen and ignore the safe area.
+@property(nonatomic, assign) BOOL viewportFitCover;
 
 // Designated initializer.  `proxy`'s content view will be updated as different
 // content is added to the container.

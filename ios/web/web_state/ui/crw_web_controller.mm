@@ -502,7 +502,7 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
 }
 
 - (BOOL)isCover {
-  return _containerView.cover;
+  return [_containerView viewportFitCover];
 }
 
 #pragma mark Navigation and Session Information
@@ -974,8 +974,7 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
 }
 
 - (void)handleViewportFit:(BOOL)isCover {
-  _containerView.cover = isCover;
-  [_containerView layoutSubviews];
+  [_containerView setViewportFitCover:isCover];
 }
 
 - (void)handleNavigationHashChange {

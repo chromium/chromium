@@ -40,6 +40,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
+    "//ios/web/common:uikit",
     "//ios/web/public",
   ]
 }

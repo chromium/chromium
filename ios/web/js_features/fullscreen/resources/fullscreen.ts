@@ -14,14 +14,33 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
  */
 function reportViewportConfiguration() {
   const viewportMeta = window.document.querySelector('meta[name = "viewport"]');
-  if (viewportMeta) {
-    const coverValue =
-        viewportMeta.getAttribute('content')?.includes('viewport-fit=cover');
-    sendWebKitMessage('FullscreenViewportHandler', {
-      'frame_id': gCrWeb.getFrameId(),
-      'cover': coverValue,
-    });
-  }
+  const coverValue =
+      viewportMeta?.getAttribute('content')?.includes('viewport-fit=cover');
+  sendWebKitMessage('FullscreenViewportHandler', {
+    'frame_id': gCrWeb.getFrameId(),
+    'cover': !!coverValue,
+  });
 }
 
-window.addEventListener('load', reportViewportConfiguration);
+/**
+ * Initializes the MutationObserver to track viewport meta tag changes.
+ */
+function initializeMutationObserver() {
+  const observer = new MutationObserver(() => {
+    reportViewportConfiguration();
+  });
+
+  const config = {
+    attributes: true,
+    childList: true,
+    subtree: true,
+    attributeFilter: ['content', 'name'],
+  };
+
+  observer.observe(document.head, config);
+}
+
+window.addEventListener('load', () => {
+  reportViewportConfiguration();
+  initializeMutationObserver();
+});
