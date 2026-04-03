@@ -1622,7 +1622,7 @@
     {
         "name": "genai-prompt",
         "group": "com.google.mlkit",
-        "version": "1.0.0-beta1"
+        "version": "1.0.0-beta2"
     },
     {
         "name": "protobuf-javalite",
@@ -1902,12 +1902,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.54.0"
+        "version": "3.54.1"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "3.54.0"
+        "version": "3.54.1"
     },
     {
         "name": "animal-sniffer-annotations",
