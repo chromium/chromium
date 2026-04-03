@@ -7,9 +7,8 @@
 
 namespace accessibility_annotator {
 
-// TODO(b/493907614): Update URL.
 inline constexpr char kAccessibilityAnnotatorSettingsURL[] =
-    "https://chromium.org/";
+    "https://gemini.google.com/personalization-settings";
 
 }  // namespace accessibility_annotator
 
