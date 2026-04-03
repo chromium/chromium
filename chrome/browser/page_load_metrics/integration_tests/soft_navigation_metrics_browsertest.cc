@@ -944,6 +944,9 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
   }
 }
 
+//
+// Tests soft navigation metrics after prerender activations.
+//
 class SoftNavigationPrerenderTest : public MetricIntegrationTest {
  public:
   SoftNavigationPrerenderTest()
@@ -1016,21 +1019,21 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationPrerenderTest, SoftNavigationCount) {
   const ukm::mojom::UkmEntry* prerendered_page_entry =
       entries[prerender_url].get();
   ASSERT_TRUE(prerendered_page_entry);
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry, PrerenderPageLoad::kTriggeredPrerenderName));
-  ukm_recorder().ExpectEntryMetric(prerendered_page_entry,
-                                   PrerenderPageLoad::kWasPrerenderedName, 1);
-  ASSERT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry, PrerenderPageLoad::kSoftNavigationCountName));
-  ukm_recorder().ExpectEntryMetric(
-      prerendered_page_entry, PrerenderPageLoad::kSoftNavigationCountName, 2);
+  EXPECT_THAT(prerendered_page_entry,
+              HasMetricWithValue(PrerenderPageLoad::kWasPrerenderedName, 1));
+  EXPECT_THAT(prerendered_page_entry,
+              Not(HasMetric(PrerenderPageLoad::kTriggeredPrerenderName)));
+  EXPECT_THAT(
+      prerendered_page_entry,
+      HasMetricWithValue(PrerenderPageLoad::kSoftNavigationCountName, 2));
 
   const ukm::mojom::UkmEntry* initiator_page_entry = entries[initial_url].get();
   ASSERT_TRUE(initiator_page_entry);
-  ukm_recorder().ExpectEntryMetric(
-      initiator_page_entry, PrerenderPageLoad::kTriggeredPrerenderName, 1);
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      initiator_page_entry, PrerenderPageLoad::kWasPrerenderedName));
+  EXPECT_THAT(
+      initiator_page_entry,
+      HasMetricWithValue(PrerenderPageLoad::kTriggeredPrerenderName, 1));
+  EXPECT_THAT(initiator_page_entry,
+              Not(HasMetric(PrerenderPageLoad::kWasPrerenderedName)));
 }
 
 //
