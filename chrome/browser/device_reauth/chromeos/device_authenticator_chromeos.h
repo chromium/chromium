@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_DEVICE_REAUTH_CHROMEOS_DEVICE_AUTHENTICATOR_CHROMEOS_H_
 
 #include "base/functional/callback.h"
-#include "base/sequence_checker.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/device_reauth/chromeos/authenticator_chromeos.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/device_authenticator_common.h"

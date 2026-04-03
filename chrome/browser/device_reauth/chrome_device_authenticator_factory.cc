@@ -4,10 +4,8 @@
 
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 
-#include "base/memory/ptr_util.h"
-#include "base/notreached.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/device_reauth/device_authenticator_common.h"
-#include "content/public/browser/network_service_instance.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/device_reauth/android/device_authenticator_android.h"

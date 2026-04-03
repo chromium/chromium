@@ -209,6 +209,7 @@ source_set("impl") {
     "//components/autofill/content/browser:risk_proto",
     "//components/compose/core/browser",
     "//components/compose/core/browser:features",
+    "//components/device_reauth",
     "//components/embedder_support:user_agent",
     "//components/feature_engagement/public",
     "//components/infobars/content",

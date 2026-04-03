@@ -9,14 +9,11 @@
 #include <UserConsentVerifierInterop.h>
 #include <windows.foundation.h>
 #include <windows.security.credentials.ui.h>
-#include <windows.storage.streams.h>
 #include <wrl/client.h>
-#include <wrl/event.h>
 
 #include <string>
 #include <utility>
 
-#include "authenticator_win.h"
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/location.h"

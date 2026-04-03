@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

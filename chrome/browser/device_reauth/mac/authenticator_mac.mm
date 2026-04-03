@@ -6,7 +6,6 @@
 
 #import <LocalAuthentication/LAContext.h>
 
-#include "base/functional/callback.h"
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 
 AuthenticatorMac::AuthenticatorMac() = default;

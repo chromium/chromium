@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/device_reauth/win/authenticator_win.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/device_authenticator_common.h"

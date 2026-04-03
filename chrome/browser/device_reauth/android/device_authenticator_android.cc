@@ -5,32 +5,20 @@
 #include "chrome/browser/device_reauth/android/device_authenticator_android.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/device_reauth/android/device_authenticator_bridge_impl.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "components/password_manager/core/browser/origin_credential_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 
-using content::WebContents;
 using device_reauth::BiometricsAvailability;
 using device_reauth::DeviceAuthUIResult;
-using password_manager::UiCredential;
 
 namespace {
 

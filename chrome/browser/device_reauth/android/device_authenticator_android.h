@@ -5,15 +5,10 @@
 #ifndef CHROME_BROWSER_DEVICE_REAUTH_ANDROID_DEVICE_AUTHENTICATOR_ANDROID_H_
 #define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_DEVICE_AUTHENTICATOR_ANDROID_H_
 
-#include <optional>
-
 #include "base/functional/callback.h"
-#include "base/time/time.h"
 #include "chrome/browser/device_reauth/android/device_authenticator_bridge.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/device_authenticator_common.h"
-#include "components/password_manager/core/browser/origin_credential_store.h"
 
 // The result of the device authentication.
 //

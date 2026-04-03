@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "base/functional/bind.h"

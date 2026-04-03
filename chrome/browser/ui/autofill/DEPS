@@ -2,6 +2,7 @@ include_rules = [
   '+components/accessibility_annotator/core',
   '+components/android_autofill',
   '+components/autofill/content',
+  '+components/device_reauth',
   '+components/plus_addresses',
   '+components/webauthn',
   '+third_party/libaddressinput/chromium/chrome_metadata_source.h',

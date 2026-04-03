@@ -21,6 +21,7 @@ static_library("facilitated_payments") {
     "//chrome/browser/strike_database",
     "//chrome/browser/ui/autofill",
     "//components/autofill/core/browser",
+    "//components/device_reauth",
     "//components/facilitated_payments/android",
     "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",

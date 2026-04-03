@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DEVICE_REAUTH_CHROMEOS_AUTHENTICATOR_CHROMEOS_H_
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
 
 // Enum specifying possible states of biometric authentication availability on
