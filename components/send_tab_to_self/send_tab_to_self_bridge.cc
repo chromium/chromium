@@ -224,11 +224,17 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
                   remote_entry->GetTargetDeviceSyncCacheGuid()) &&
               !remote_entry->IsReceived()) {
             remote_entry->MarkReceived(clock_->Now());
+            RecordTimeSentToReceived(remote_entry->GetReceivedTime() -
+                                     remote_entry->GetSharedTime());
             needs_reupload = true;
           }
           if (unknown_opened_entries_.contains(remote_entry->GetGUID())) {
+            base::Time opened_time =
+                unknown_opened_entries_[remote_entry->GetGUID()];
             unknown_opened_entries_.erase(remote_entry->GetGUID());
-            remote_entry->MarkOpened(clock_->Now());
+            remote_entry->MarkOpened(opened_time);
+            RecordTimeSentToOpened(remote_entry->GetOpenedTime() -
+                                   remote_entry->GetSharedTime());
             needs_reupload = true;
           }
           // Reupload the entry to the server so the sending device can
@@ -473,13 +479,15 @@ void SendTabToSelfBridge::MarkEntryOpened(const std::string& guid) {
   SendTabToSelfEntry* entry = GetMutableEntryByGUID(guid);
   // Assure that an entry with that guid exists.
   if (!entry) {
-    unknown_opened_entries_.insert(guid);
+    unknown_opened_entries_[guid] = clock_->Now();
     return;
   }
 
   DCHECK(change_processor()->IsTrackingMetadata());
 
   entry->MarkOpened(clock_->Now());
+
+  RecordTimeSentToOpened(entry->GetOpenedTime() - entry->GetSharedTime());
 
   std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -176,10 +176,11 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   SendTabToSelfEntries entries_;
 
   // Stores guids of entries that have been opened from a layer other than
-  // SendTabToSelfModel. Once the bridge receives the respective entries, they
-  // will be marked opened. Entries are in-memory only and will be lost on
-  // browser restart.
-  base::flat_set<std::string> unknown_opened_entries_;
+  // SendTabToSelfModel, along with the time the open was requested. Once
+  // the bridge receives the respective entries, they will be marked opened
+  // using the stored timestamp. Entries are in-memory only and will be lost
+  // on browser restart.
+  base::flat_map<std::string, base::Time> unknown_opened_entries_;
 
   // |clock_| isn't owned.
   const raw_ptr<const base::Clock> clock_;

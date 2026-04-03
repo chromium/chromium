@@ -94,4 +94,15 @@ void RecordScrollVolume(float volume, bool with_restoration) {
   base::UmaHistogramCounts10000(name, static_cast<int>(std::round(volume)));
 }
 
+void RecordTimeSentToReceived(base::TimeDelta delay) {
+  base::UmaHistogramCustomTimes("Sharing.SendTabToSelf.TimeSentToReceived",
+                                delay, base::Milliseconds(100), base::Days(10),
+                                100);
+}
+
+void RecordTimeSentToOpened(base::TimeDelta delay) {
+  base::UmaHistogramCustomTimes("Sharing.SendTabToSelf.TimeSentToOpened", delay,
+                                base::Milliseconds(100), base::Days(10), 100);
+}
+
 }  // namespace send_tab_to_self

@@ -464,6 +464,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendTabToSelf.TimeSentToOpened" units="ms"
+    expires_after="2027-04-01">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the time from when a tab was shared on the sending device to when
+    the user opened it on the target device. This involves clocks on two
+    different devices so the value may be skewed. Recorded when the entry is
+    opened.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SendTabToSelf.TimeSentToReceived" units="ms"
+    expires_after="2027-04-01">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the time from when a tab was shared on the sending device to when it
+    was first received by the target device's sync bridge. This involves clocks
+    on two different devices so the value may be skewed. Recorded when the entry
+    is received.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SharingHubAndroid.CustomAction"
     enum="ShareCustomAction" expires_after="2026-07-19">
   <owner>wenyufu@chromium.org</owner>

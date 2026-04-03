@@ -78,6 +78,16 @@ void RecordPageContextSize(size_t size);
 // `with_restoration` is true if scroll restoration was attempted.
 void RecordScrollVolume(float volume, bool with_restoration);
 
+// Records the time from when a tab was shared (on the sending device) to when
+// it was first received by the target device's bridge. Note: this involves
+// clocks on two different devices so the value may be skewed.
+void RecordTimeSentToReceived(base::TimeDelta delay);
+
+// Records the time from when a tab was shared (on the sending device) to when
+// it was opened by the user on the target device. Note: this involves clocks
+// on two different devices so the value may be skewed.
+void RecordTimeSentToOpened(base::TimeDelta delay);
+
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_

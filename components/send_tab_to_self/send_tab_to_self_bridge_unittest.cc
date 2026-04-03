@@ -1014,14 +1014,20 @@ TEST_F(SendTabToSelfBridgeTest, SendTabToSelfEntryOpened_QueueUnknownGuid) {
   InitializeBridge();
   SetLocalDeviceCacheGuid("Device1");
 
-  // Call MarkEntryOpened before entry is added.
-  bridge()->MarkEntryOpened("guid1");
+  base::HistogramTester histogram_tester;
 
-  // Add an entry targeting this device.
-  syncer::EntityChangeList remote_input;
+  // Create the entry first to establish shared_time.
   SendTabToSelfEntry entry1("guid1", GURL("http://www.example.com/"), "title",
                             AdvanceAndGetTime(), "device", "Device1",
                             PageContext(), NavigationHistory());
+
+  // Advance clock, then call MarkEntryOpened before the entry is delivered
+  // via sync. The stored opened_time will be after shared_time.
+  AdvanceAndGetTime(base::Seconds(10));
+  bridge()->MarkEntryOpened("guid1");
+
+  // Now deliver the entry via sync.
+  syncer::EntityChangeList remote_input;
   remote_input.push_back(
       syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry1)));
 
@@ -1034,6 +1040,9 @@ TEST_F(SendTabToSelfBridgeTest, SendTabToSelfEntryOpened_QueueUnknownGuid) {
                               std::move(remote_input));
 
   EXPECT_TRUE(bridge()->GetEntryByGUID("guid1")->IsOpened());
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.TimeSentToOpened",
+                                    1);
 }
 
 TEST_F(SendTabToSelfBridgeTest,
@@ -1473,6 +1482,8 @@ TEST_F(SendTabToSelfBridgeTest, AddEntryWithHistory) {
 TEST_F(SendTabToSelfBridgeTest, ReceivedTimeSetOnIncomingEntry) {
   InitializeBridge();
 
+  base::HistogramTester histogram_tester;
+
   // Create an entry targeting the local device.
   base::Time shared_time = AdvanceAndGetTime();
   sync_pb::SendTabToSelfSpecifics specifics = CreateSpecifics(1, shared_time);
@@ -1489,10 +1500,15 @@ TEST_F(SendTabToSelfBridgeTest, ReceivedTimeSetOnIncomingEntry) {
   const SendTabToSelfEntry* entry = bridge()->GetEntryByGUID(specifics.guid());
   ASSERT_NE(nullptr, entry);
   EXPECT_TRUE(entry->IsReceived());
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.TimeSentToReceived",
+                                    1);
 }
 
 TEST_F(SendTabToSelfBridgeTest, ReceivedTimeNotSetForNonTargetEntry) {
   InitializeBridge();
+
+  base::HistogramTester histogram_tester;
 
   // Create an entry targeting a *different* device.
   sync_pb::SendTabToSelfSpecifics specifics = CreateSpecifics(1);
@@ -1507,10 +1523,15 @@ TEST_F(SendTabToSelfBridgeTest, ReceivedTimeNotSetForNonTargetEntry) {
   const SendTabToSelfEntry* entry = bridge()->GetEntryByGUID(specifics.guid());
   ASSERT_NE(nullptr, entry);
   EXPECT_FALSE(entry->IsReceived());
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.TimeSentToReceived",
+                                    0);
 }
 
 TEST_F(SendTabToSelfBridgeTest, OpenedTimeSetsTimestamp) {
   InitializeBridge();
+
+  base::HistogramTester histogram_tester;
 
   // Add an entry targeting a remote device (so no received-time ack happens).
   SendTabToSelfEntry entry("guid", GURL("http://g.com/"), "title",
@@ -1536,6 +1557,9 @@ TEST_F(SendTabToSelfBridgeTest, OpenedTimeSetsTimestamp) {
   const SendTabToSelfEntry* stored = bridge()->GetEntryByGUID("guid");
   ASSERT_NE(nullptr, stored);
   EXPECT_TRUE(stored->IsOpened());
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.TimeSentToOpened",
+                                    1);
 }
 
 TEST_F(SendTabToSelfBridgeTest, ReceivedTimePropagatesFromRemoteUpdate) {
