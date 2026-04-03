@@ -1627,10 +1627,7 @@ bool WebGLRenderingContextBase::PushFrame() {
     return false;
   }
 
-  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
-  if (!must_paint_to_canvas_ && !cleared_content) {
-    return false;
-  }
+  ClearIfComposited(kClearCallerOther);
 
   bool submitted_frame = false;
 
