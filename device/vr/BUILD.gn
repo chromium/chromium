@@ -214,6 +214,7 @@ if (enable_vr) {
         "openxr/openxr_layers.h",
         "openxr/openxr_light_estimator.cc",
         "openxr/openxr_light_estimator.h",
+        "openxr/openxr_mesh_manager.h",
         "openxr/openxr_path_helper.cc",
         "openxr/openxr_path_helper.h",
         "openxr/openxr_plane_manager.cc",

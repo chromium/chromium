@@ -303,4 +303,132 @@ typedef XrResult (XRAPI_PTR *PFN_xrEnumerateSpatialAnchorAttachableComponentsAND
     XrSpatialComponentTypeEXT*      attachableComponents);
 #endif /* XR_ANDROID_spatial_entity_bound_anchor */
 
+#ifndef XR_ANDROID_scene_meshing
+#define XR_ANDROID_scene_meshing 1
+XR_DEFINE_HANDLE(XrSceneMeshingTrackerANDROID)
+XR_DEFINE_HANDLE(XrSceneMeshSnapshotANDROID)
+#define XR_ANDROID_scene_meshing_SPEC_VERSION 3
+#define XR_ANDROID_SCENE_MESHING_EXTENSION_NAME "XR_ANDROID_scene_meshing"
+// Structure type enums
+#define XR_TYPE_SYSTEM_SCENE_MESHING_PROPERTIES_ANDROID \
+  ((XrStructureType)1000718000)
+#define XR_TYPE_SCENE_MESHING_TRACKER_CREATE_INFO_ANDROID \
+  ((XrStructureType)1000718001)
+#define XR_TYPE_SCENE_MESH_SNAPSHOT_CREATE_INFO_ANDROID \
+  ((XrStructureType)1000718002)
+#define XR_TYPE_SCENE_MESH_SNAPSHOT_CREATION_RESULT_ANDROID \
+  ((XrStructureType)1000718003)
+#define XR_TYPE_SCENE_SUBMESH_STATE_ANDROID ((XrStructureType)1000718004)
+#define XR_TYPE_SCENE_SUBMESH_DATA_ANDROID ((XrStructureType)1000718005)
+
+typedef enum XrSceneMeshSemanticLabelSetANDROID {
+  XR_SCENE_MESH_SEMANTIC_LABEL_SET_NONE_ANDROID = 0,
+  XR_SCENE_MESH_SEMANTIC_LABEL_SET_DEFAULT_ANDROID = 1,
+  XR_SCENE_MESH_SEMANTIC_LABEL_SET_MAX_ENUM_ANDROID = 0x7FFFFFFF
+} XrSceneMeshSemanticLabelSetANDROID;
+
+typedef enum XrSceneMeshTrackingStateANDROID {
+  XR_SCENE_MESH_TRACKING_STATE_INITIALIZING_ANDROID = 0,
+  XR_SCENE_MESH_TRACKING_STATE_TRACKING_ANDROID = 1,
+  XR_SCENE_MESH_TRACKING_STATE_WAITING_ANDROID = 2,
+  XR_SCENE_MESH_TRACKING_STATE_ERROR_ANDROID = 3,
+  XR_SCENE_MESH_TRACKING_STATE_MAX_ENUM_ANDROID = 0x7FFFFFFF
+} XrSceneMeshTrackingStateANDROID;
+
+typedef enum XrSceneMeshSemanticLabelANDROID {
+  XR_SCENE_MESH_SEMANTIC_LABEL_OTHER_ANDROID = 0,
+  XR_SCENE_MESH_SEMANTIC_LABEL_FLOOR_ANDROID = 1,
+  XR_SCENE_MESH_SEMANTIC_LABEL_CEILING_ANDROID = 2,
+  XR_SCENE_MESH_SEMANTIC_LABEL_WALL_ANDROID = 3,
+  XR_SCENE_MESH_SEMANTIC_LABEL_TABLE_ANDROID = 4,
+  XR_SCENE_MESH_SEMANTIC_LABEL_MAX_ENUM_ANDROID = 0x7FFFFFFF
+} XrSceneMeshSemanticLabelANDROID;
+
+// XrSystemSceneMeshingPropertiesANDROID extends XrSystemProperties
+typedef struct XrSystemSceneMeshingPropertiesANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrBool32 supportsSceneMeshing;
+} XrSystemSceneMeshingPropertiesANDROID;
+
+typedef struct XrSceneMeshingTrackerCreateInfoANDROID {
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  XrSceneMeshSemanticLabelSetANDROID semanticLabelSet;
+  XrBool32 enableNormals;
+} XrSceneMeshingTrackerCreateInfoANDROID;
+
+typedef struct XrSceneMeshSnapshotCreateInfoANDROID {
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  XrSpace baseSpace;
+  XrTime time;
+  XrBoxf boundingBox;
+} XrSceneMeshSnapshotCreateInfoANDROID;
+
+typedef struct XrSceneMeshSnapshotCreationResultANDROID {
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  XrSceneMeshSnapshotANDROID snapshot;
+  XrSceneMeshTrackingStateANDROID trackingState;
+} XrSceneMeshSnapshotCreationResultANDROID;
+
+typedef struct XrSceneSubmeshStateANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrUuid submeshId;
+  XrTime lastUpdatedTime;
+  XrPosef submeshPoseInBaseSpace;
+  XrExtent3Df bounds;
+} XrSceneSubmeshStateANDROID;
+
+typedef struct XrSceneSubmeshDataANDROID {
+  XrStructureType type;
+  const void* XR_MAY_ALIAS next;
+  XrUuid submeshId;
+  uint32_t vertexCapacityInput;
+  uint32_t vertexCountOutput;
+  XrVector3f* vertexPositions;
+  XrVector3f* vertexNormals;
+  uint8_t* vertexSemantics;
+  uint32_t indexCapacityInput;
+  uint32_t indexCountOutput;
+  uint32_t* indices;
+} XrSceneSubmeshDataANDROID;
+
+typedef XrResult(XRAPI_PTR* PFN_xrEnumerateSupportedSemanticLabelSetsANDROID)(
+    XrInstance instance,
+    XrSystemId systemId,
+    uint32_t supportedSemanticLabelSetsInputCapacity,
+    uint32_t* supportedSemanticLabelSetsOutputCount,
+    XrSceneMeshSemanticLabelSetANDROID* supportedSemanticLabelSets);
+
+typedef XrResult(XRAPI_PTR* PFN_xrCreateSceneMeshingTrackerANDROID)(
+    XrSession session,
+    const XrSceneMeshingTrackerCreateInfoANDROID* createInfo,
+    XrSceneMeshingTrackerANDROID* tracker);
+
+typedef XrResult(XRAPI_PTR* PFN_xrDestroySceneMeshingTrackerANDROID)(
+    XrSceneMeshingTrackerANDROID tracker);
+
+typedef XrResult(XRAPI_PTR* PFN_xrCreateSceneMeshSnapshotANDROID)(
+    XrSceneMeshingTrackerANDROID tracker,
+    const XrSceneMeshSnapshotCreateInfoANDROID* createInfo,
+    XrSceneMeshSnapshotCreationResultANDROID* outSnapshotCreationResult);
+
+typedef XrResult(XRAPI_PTR* PFN_xrDestroySceneMeshSnapshotANDROID)(
+    XrSceneMeshSnapshotANDROID snapshot);
+
+typedef XrResult(XRAPI_PTR* PFN_xrGetAllSubmeshStatesANDROID)(
+    XrSceneMeshSnapshotANDROID snapshot,
+    uint32_t submeshStateCapacityInput,
+    uint32_t* submeshStateCountOutput,
+    XrSceneSubmeshStateANDROID* submeshStates);
+
+typedef XrResult(XRAPI_PTR* PFN_xrGetSubmeshDataANDROID)(
+    XrSceneMeshSnapshotANDROID snapshot,
+    uint32_t submeshDataCount,
+    XrSceneSubmeshDataANDROID* inoutSubmeshData);
+#endif  // XR_ANDROID_scene_meshing
+
 #endif  // THIRD_PARTY_OPENXR_DEV_XR_ANDROID_H_

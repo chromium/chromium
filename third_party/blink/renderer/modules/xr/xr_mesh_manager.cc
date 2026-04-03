@@ -9,11 +9,11 @@
 #include "third_party/blink/renderer/modules/xr/xr_mesh.h"
 #include "third_party/blink/renderer/modules/xr/xr_mesh_set.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/decomposed_transform.h"
 
 namespace blink {
 XRMeshManager::XRMeshManager(base::PassKey<XRSession> pass_key,

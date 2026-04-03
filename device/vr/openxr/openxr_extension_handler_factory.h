@@ -21,6 +21,7 @@ class OpenXrExtensionHelper;
 class OpenXrHandTracker;
 enum class OpenXrHandednessType;
 class OpenXrLightEstimator;
+class OpenXrMeshManager;
 class OpenXRSceneUnderstandingManager;
 class OpenXrStageBoundsProvider;
 class OpenXrUnboundedSpaceProvider;
@@ -80,6 +81,12 @@ class OpenXrExtensionHandlerFactory {
       const OpenXrExtensionEnumeration* extension_enum,
       XrInstance instance,
       XrSystemId system);
+
+  virtual std::unique_ptr<OpenXrMeshManager> CreateMeshManager(
+      const OpenXrExtensionHelper& extension_helper,
+      XrSession session,
+      XrSpace mojo_space,
+      XrSpace view_space) const;
 
   virtual std::unique_ptr<OpenXrDepthSensor> CreateDepthSensor(
       const OpenXrExtensionHelper& extension_helper,

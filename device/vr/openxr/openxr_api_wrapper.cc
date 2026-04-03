@@ -424,9 +424,13 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
 
 OpenXrPlaneManager* OpenXrApiWrapper::GetPlaneManager() {
   return scene_understanding_manager_ &&
-                 IsFeatureEnabled(mojom::XRSessionFeature::PLANE_DETECTION)
+                 (IsFeatureEnabled(mojom::XRSessionFeature::PLANE_DETECTION))
              ? scene_understanding_manager_->GetPlaneManager()
              : nullptr;
+}
+
+OpenXrMeshManager* OpenXrApiWrapper::GetMeshManager() {
+  return nullptr;
 }
 
 OpenXrAnchorManager* OpenXrApiWrapper::GetAnchorManager() {
@@ -527,6 +531,10 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         is_enabled = unbounded_space_ != XR_NULL_HANDLE;
         break;
 
+      case mojom::XRSessionFeature::MESH_DETECTION:
+        is_enabled = false;
+        break;
+
       case mojom::XRSessionFeature::PLANE_DETECTION:
         if (scene_understanding_manager_ == nullptr) {
           scene_understanding_manager_ =
@@ -598,9 +606,6 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         // Enabled if the extension check is good and the graphics binding
         // also supports it.
         is_enabled = graphics_binding_->SupportsLayers();
-        break;
-
-      case mojom::XRSessionFeature::MESH_DETECTION:
         break;
 
       case mojom::XRSessionFeature::FRONT_FACING:

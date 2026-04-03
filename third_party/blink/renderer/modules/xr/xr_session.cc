@@ -2157,8 +2157,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
       camera_image_size_ = frame_data->camera_image_size;
     }
   } else {
-    mesh_manager_->ProcessMeshInformation(
-        nullptr, timestamp);
+    mesh_manager_->ProcessMeshInformation(nullptr, timestamp);
 
     plane_manager_->ProcessPlaneInformation(nullptr, timestamp);
     ProcessAnchorsData(nullptr, timestamp);

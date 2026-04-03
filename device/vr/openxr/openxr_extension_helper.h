@@ -108,6 +108,15 @@ struct OpenXrExtensionMethods {
   OPENXR_DECLARE_FN(xrEnumerateDepthSwapchainImagesANDROID);
   OPENXR_DECLARE_FN(xrEnumerateDepthResolutionsANDROID);
   OPENXR_DECLARE_FN(xrAcquireDepthSwapchainImagesANDROID);
+
+  // Meshing
+  OPENXR_DECLARE_FN(xrEnumerateSupportedSemanticLabelSetsANDROID);
+  OPENXR_DECLARE_FN(xrCreateSceneMeshingTrackerANDROID);
+  OPENXR_DECLARE_FN(xrDestroySceneMeshingTrackerANDROID);
+  OPENXR_DECLARE_FN(xrCreateSceneMeshSnapshotANDROID);
+  OPENXR_DECLARE_FN(xrDestroySceneMeshSnapshotANDROID);
+  OPENXR_DECLARE_FN(xrGetAllSubmeshStatesANDROID);
+  OPENXR_DECLARE_FN(xrGetSubmeshDataANDROID);
 #endif
 };
 // Ensure that we don't export our helper macro.
@@ -176,6 +185,11 @@ class OpenXrExtensionHelper {
       XrSpace base_space,
       const std::vector<mojom::XRSessionFeature>& required_features,
       const std::vector<mojom::XRSessionFeature>& optional_features) const;
+
+  std::unique_ptr<OpenXrMeshManager> CreateMeshManager(
+      XrSession session,
+      XrSpace mojo_space,
+      XrSpace view_space) const;
 
   std::unique_ptr<OpenXrStageBoundsProvider> CreateStageBoundsProvider(
       XrSession session) const;

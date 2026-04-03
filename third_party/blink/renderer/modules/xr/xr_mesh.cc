@@ -13,15 +13,11 @@
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "base/containers/span.h"
-
 
 namespace blink {
 
 namespace {
-DOMFloat32Array* ConvertVerticesToFloat32Array(
-    const Vector<float>& vertices) {
+DOMFloat32Array* ConvertVerticesToFloat32Array(const Vector<float>& vertices) {
   if (vertices.empty()) {
     return DOMFloat32Array::Create(0);
   }
@@ -61,7 +57,7 @@ XRMesh::XRMesh(Id id,
       semantic_label_(semantic_label),
       mojo_from_mesh_(base::OptionalFromPtr(mojo_from_mesh)),
       session_(session),
-      last_changed_time_(timestamp){}
+      last_changed_time_(timestamp) {}
 
 XRMesh::Id XRMesh::id() const {
   return id_;
