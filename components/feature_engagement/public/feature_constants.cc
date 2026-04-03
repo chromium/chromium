@@ -115,7 +115,7 @@ BASE_FEATURE(kIPHGlicPromoFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
              "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGlicTrustFirstOnboardingShortcutToastPromoFeature,
              "IPH_GlicTrustFirstOnboardingShortcutToastPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
