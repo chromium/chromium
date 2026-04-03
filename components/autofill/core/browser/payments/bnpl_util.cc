@@ -345,7 +345,7 @@ std::u16string GetBnplIssuerSelectionOptionText(
       // Divide displayed price by `1'000'000.0` to convert from micros and
       // retain decimals.
       return l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
           formatter.Format(base::NumberToString(
               eligible_price_range->price_lower_bound / 1'000'000.0)));
     case BnplIssuerEligibilityForPage::

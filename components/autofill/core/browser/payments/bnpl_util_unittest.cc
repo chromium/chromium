@@ -664,7 +664,7 @@ TEST_F(
       GetBnplIssuerSelectionOptionText(BnplIssuer::IssuerId::kBnplAffirm,
                                        "en-US", issuer_contexts),
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
           u"$50.00"));
 }
 
