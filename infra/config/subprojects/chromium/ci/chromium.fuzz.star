@@ -912,7 +912,6 @@ libfuzzer_linux_asan_builder(
 
 libfuzzer_linux_asan_builder(
     name = "Libfuzzer Upload Linux ASanBrpV2",
-    branch_selector = branches.selector.LINUX_BRANCHES,
     description_html = "This builder uploads libfuzzer fuzzers, for x64 using ASan with AsanBackupRefPtrV2.",
     # TODO(487852130): remove this once we've added a test builder for this and
     # we've verified that the builder works.
