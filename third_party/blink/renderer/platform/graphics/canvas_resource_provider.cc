@@ -1704,7 +1704,8 @@ CanvasResourceProvider::CanvasResourceProvider(
       color_space_(color_space),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
-  max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
+  max_recorded_op_bytes_for_canvas_2d_ =
+      static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
 
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
@@ -1742,7 +1743,7 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
     return;
   }
   if (recorder_for_canvas_2d_->ReleasableOpBytesUsed() >
-          max_recorded_op_bytes_ ||
+          max_recorded_op_bytes_for_canvas_2d_ ||
       recorder_for_canvas_2d_->ReleasableImageBytesUsed() >
           max_pinned_image_bytes_) [[unlikely]] {
     FlushCanvas2D();
@@ -2049,7 +2050,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
             .GetGpuFeatureInfo()
             .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
         gpu::kGpuFeatureStatusEnabled) {
-      max_recorded_op_bytes_ =
+      max_recorded_op_bytes_for_canvas_2d_ =
           static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
       recorder_for_canvas_2d_->DisableLineDrawingAsPaths();
     }
@@ -2097,8 +2098,6 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
             .GetGpuFeatureInfo()
             .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
         gpu::kGpuFeatureStatusEnabled) {
-      max_recorded_op_bytes_ =
-          static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
       recorder_->DisableLineDrawingAsPaths();
     }
   }

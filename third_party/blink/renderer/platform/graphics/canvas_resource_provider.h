@@ -309,7 +309,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   bool always_enable_raster_timers_for_testing_ = false;
 
   // Parameters for the auto-flushing heuristic.
-  size_t max_recorded_op_bytes_;
+  size_t max_recorded_op_bytes_for_canvas_2d_;
   size_t max_pinned_image_bytes_;
 
   bool clear_frame_for_canvas2d_ = true;
