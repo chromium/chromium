@@ -175,30 +175,54 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelineBrowserTest,
                 "name.includes('resources/non_exist_style.css')).length;"));
 }
 
-class PerformanceTimelineLCPStartTimePrecisionBrowserTest
-    : public PerformanceTimelineBrowserTest {
- protected:
-  EvalJsResult GetIsEqualToPrecision() const {
-    std::string script =
-        content::JsReplace("isEqualToPrecision($1);", getPrecision());
-    return EvalJs(shell(), script);
-  }
+// Assumes the context is text-lcp-start-time.html or
+// cross-origin-non-tao-image.html.
+double GetStartTime(Shell* shell, std::string type, std::string name) {
+  std::string script = content::JsReplace("getStartTime($1, $2);", type, name);
+  return EvalJs(shell, script).ExtractDouble();
+}
 
-  int32_t getPrecision() const { return precision_; }
-
- private:
-  int32_t precision_ = 10;
-};
-
-IN_PROC_BROWSER_TEST_F(PerformanceTimelineLCPStartTimePrecisionBrowserTest,
-                       LCPStartTimePrecision) {
+// Tests that the startTime of the 'first-contentful-paint' performance
+// timeline entry and the startTime of the first 'largest-contentful-paint'
+// performance timeline entry are exactly the same when the LCP element
+// is a text element which also happens to be what's painted in the FCP.
+IN_PROC_BROWSER_TEST_F(PerformanceTimelineBrowserTest,
+                       LCPStartTimeBrowserTestForText) {
+  SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url1(embedded_test_server()->GetURL(
-      "a.com", "/performance_timeline/lcp-start-time-precision.html"));
 
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  const GURL url(embedded_test_server()->GetURL(
+      "a.com", "/performance_timeline/text-lcp-start-time.html"));
 
-  EXPECT_TRUE(GetIsEqualToPrecision().ExtractBool());
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  double fcp = GetStartTime(shell(), "paint", "first-contentful-paint");
+  double lcp = GetStartTime(shell(), "largest-contentful-paint", "");
+  EXPECT_GT(fcp, 0.0);
+  EXPECT_GT(lcp, 0.0);
+  EXPECT_EQ(fcp, lcp);
+}
+
+// Tests that the startTime of the 'first-contentful-paint' performance
+// timeline entry and the startTime of the first 'largest-contentful-paint'
+// performance timeline entry are ordered with FCP <= LCP, when the
+// LCP element is a cross-origin image that  also happens to be what's
+// painted in the FCP.
+IN_PROC_BROWSER_TEST_F(PerformanceTimelineBrowserTest,
+                       LCPStartTimeForCrossOriginImage) {
+  SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL url(embedded_test_server()->GetURL(
+      "a.com", "/performance_timeline/cross-origin-non-tao-image.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  double fcp = GetStartTime(shell(), "paint", "first-contentful-paint");
+  double lcp = GetStartTime(shell(), "largest-contentful-paint", "");
+  EXPECT_GT(fcp, 0.0);
+  EXPECT_GT(lcp, 0.0);
+  EXPECT_LE(fcp, lcp);
 }
 
 class PerformanceTimelineNavigationIdBrowserTest
