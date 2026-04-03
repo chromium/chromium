@@ -347,6 +347,11 @@
       name: "AIPageContentConvertNodeTextToUtf8",
       status: "stable"
     },
+    // When enabled, redact elements with --webkit-text-security.
+    {
+      name: "AIPageContentElementCSSRedaction",
+      status: "stable",
+    },
     {
       name: "AIPageContentIncludeSVGSubtree",
       status: "stable"

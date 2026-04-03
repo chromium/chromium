@@ -124,6 +124,9 @@ class MODULES_EXPORT AIPageContentAgent final
     mojom::blink::AIPageContentNodePtr MaybeGenerateContentNode(
         const LayoutObject& object,
         const RecursionData& recursion_data);
+    mojom::blink::AIPageContentNodePtr MaybeGenerateContentNodeImpl(
+        const LayoutObject& object,
+        const RecursionData& recursion_data);
     void AddPageInteractionInfo(const Document& document,
                                 mojom::blink::AIPageContent& page_content);
     void AddFrameData(LocalFrame& frame,
@@ -189,9 +192,12 @@ class MODULES_EXPORT AIPageContentAgent final
 
     void UpdateLifecycle(Document& document);
 
-    void TrackPasswordRedactionIfNeeded(
+    // Collects the visible bounding box for nodes that require redaction
+    // (e.g. passwords or masked elements) so they can be obscured in
+    // screenshots.
+    void CollectGeometryForRedactedNodes(
         const LayoutObject& object,
-        mojom::blink::AIPageContentAttributes& attributes,
+        mojom::blink::AIPageContentRedactionDecision redaction_decision,
         std::optional<gfx::Rect> visible_bounding_box = std::nullopt);
 
     bool ShouldAddNodeGeometry(
@@ -199,7 +205,7 @@ class MODULES_EXPORT AIPageContentAgent final
         const mojom::blink::AIPageContentAttributes& attributes,
         DOMNodeId accessibility_focused_node_id) const;
 
-    Vector<gfx::Rect> visible_bounding_box_for_passwords_;
+    Vector<gfx::Rect> visible_bounding_boxes_for_redaction_;
 
     // The set of node ids that must always be emitted in APC output for
     // round-trippable metadata and interaction flows.

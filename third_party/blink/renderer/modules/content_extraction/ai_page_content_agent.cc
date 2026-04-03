@@ -834,10 +834,46 @@ bool ShouldSkipSubtree(const LayoutObject& object,
   return false;
 }
 
+bool ShouldRedactSubtree(
+    mojom::blink::AIPageContentRedactionDecision redaction_decision) {
+  switch (redaction_decision) {
+    case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kUnredacted_EmptyPassword:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kUnredacted_EmptyCustomPassword:
+      return false;
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_HasBeenPassword:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_CSS:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_JS:
+      return true;
+  }
+}
+
+mojom::blink::AIPageContentRedactionDecision GetRedactionDecision(
+    const LayoutObject& object) {
+  if (RuntimeEnabledFeatures::AIPageContentElementCSSRedactionEnabled()) {
+    if (const auto* element = DynamicTo<Element>(object.GetNode());
+        element && element->HasBeenHeuristicCustomPasswordCSS()) {
+      return mojom::blink::AIPageContentRedactionDecision::
+          kRedacted_CustomPassword_CSS;
+    }
+  }
+  return mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
+}
+
 bool ShouldSkipDescendants(
-    const mojom::blink::AIPageContentNodePtr& content_node) {
+    const mojom::blink::AIPageContentNodePtr& content_node,
+    const LayoutObject& object) {
   if (!content_node) {
-    return false;
+    // Even if a node is excluded from the structured APC tree (e.g. because
+    // it is a structural wrapper without extraction data ), we must still
+    // respect the redaction state of the element to decide whether to skip its
+    // entire subtree for privacy.
+    return ShouldRedactSubtree(GetRedactionDecision(object));
   }
   // If the child is an iframe, it does its own tree walk.
   // TODO(crbug.com/405173553): Moving ProcessIframe here might simplify
@@ -862,27 +898,12 @@ bool ShouldSkipDescendants(
     return true;
   }
 
-  // Ensure that password editor subtrees are skipped even when the password is
-  // revealed. The node-level redaction decision is now the canonical source.
-  const auto redaction_decision =
-      content_node->content_attributes->redaction_decision;
-  switch (redaction_decision) {
-    case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kUnredacted_EmptyPassword:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kUnredacted_EmptyCustomPassword:
-      break;
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_HasBeenPassword:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_CustomPassword_CSS:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_CustomPassword_JS:
-      // Custom password-like inputs (e.g. `-webkit-text-security`) can also
-      // have UA/editor subtrees which may contain sensitive text. Skip them to
-      // avoid leaking into extracted text nodes.
-      return true;
+  // Ensure that subtrees requiring redaction (e.g. passwords or masked
+  // elements) are skipped even if the content is technically revealed.
+  // The node-level redaction decision is now the canonical source.
+  if (ShouldRedactSubtree(
+          content_node->content_attributes->redaction_decision)) {
+    return true;
   }
 
   return false;
@@ -893,6 +914,10 @@ void ProcessTextNode(const LayoutText& layout_text,
                      const ComputedStyle& document_style) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kText;
   CHECK(IsVisible(layout_text));
+
+  // Secured text nodes are skipped by its ancestor, so no special handling
+  // here.
+  DCHECK(!ShouldRedactSubtree(attributes.redaction_decision));
 
   auto text_style = mojom::blink::AIPageContentTextStyle::New();
   text_style->text_size = GetTextSize(*layout_text.Style(), document_style);
@@ -1138,9 +1163,6 @@ bool ProcessAriaFormControlNode(
   form_control_data.form_control_type = form_control_type;
   form_control_data.is_required = aria_required;
   form_control_data.is_readonly = aria_readonly;
-  // Redaction is now tracked on the node so all node types share one signal.
-  attributes.redaction_decision =
-      mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
 
   if (!aria_placeholder.empty()) {
     form_control_data.placeholder = ReplaceUnpairedSurrogates(aria_placeholder);
@@ -1177,11 +1199,6 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
                                     html_names::kAriaRequiredAttr)) {
     form_control_data->is_required = true;
   }
-
-  // Set the default value for redaction, and override below as appropriate.
-  // Keep this on ContentAttributes so redaction is independent of form payload.
-  attributes.redaction_decision =
-      mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
 
   if (const auto* text_control_element =
           DynamicTo<TextControlElement>(form_control_element)) {
@@ -1243,7 +1260,8 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
     form_control_data->is_checked = html_input_element->Checked();
   }
   if (const auto* select_element =
-          DynamicTo<HTMLSelectElement>(form_control_element)) {
+          DynamicTo<HTMLSelectElement>(form_control_element);
+      select_element && !ShouldRedactSubtree(attributes.redaction_decision)) {
     for (auto& option_element : select_element->GetOptionList()) {
       auto select_option = mojom::blink::AIPageContentSelectOption::New();
       select_option->value = ReplaceUnpairedSurrogates(option_element.value());
@@ -1746,7 +1764,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   WalkChildren(*layout_view, *root_node, recursion_data);
   page_content->root_node = std::move(root_node);
   page_content->visible_bounding_boxes_for_password_redaction =
-      std::move(visible_bounding_box_for_passwords_);
+      std::move(visible_bounding_boxes_for_redaction_);
 
   if (stack_depth_exceeded_) {
     ukm::builders::OptimizationGuide_AIPageContentAgent(document.UkmSourceID())
@@ -1939,7 +1957,7 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     bool child_has_visible_content = false;
     auto child_content_node =
         MaybeGenerateContentNode(*child, child_recursion_data);
-    if (!ShouldSkipDescendants(child_content_node)) {
+    if (!ShouldSkipDescendants(child_content_node, *child)) {
       if (child_content_node) {
         child_recursion_data.stack_depth++;
       }
@@ -2048,6 +2066,22 @@ mojom::blink::AIPageContentNodePtr
 AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     const LayoutObject& object,
     const RecursionData& recursion_data) {
+  mojom::blink::AIPageContentNodePtr content_node =
+      MaybeGenerateContentNodeImpl(object, recursion_data);
+  if (!content_node) {
+    // Even if a node is excluded from the structured APC tree (e.g. because
+    // it is a structural wrapper without extraction data ), its geometry must
+    // still be tracked if it requires redaction so that it can be obscured in
+    // screenshots.
+    CollectGeometryForRedactedNodes(object, GetRedactionDecision(object));
+  }
+  return content_node;
+}
+
+mojom::blink::AIPageContentNodePtr
+AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
+    const LayoutObject& object,
+    const RecursionData& recursion_data) {
   auto content_node = mojom::blink::AIPageContentNode::New();
   content_node->content_attributes =
       mojom::blink::AIPageContentAttributes::New();
@@ -2055,8 +2089,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
       *content_node->content_attributes;
   // Start every node in the non-redacted state and let specialized handlers
   // promote it when needed.
-  attributes.redaction_decision =
-      mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
+  attributes.redaction_decision = GetRedactionDecision(object);
   // Compute state that is used to decide whether this node generates a
   // ContentNode before making the decision below.
   AddAnnotatedRoles(object, attributes.annotated_roles);
@@ -2347,31 +2380,19 @@ void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
   }
 }
 
-void AIPageContentAgent::ContentBuilder::TrackPasswordRedactionIfNeeded(
+void AIPageContentAgent::ContentBuilder::CollectGeometryForRedactedNodes(
     const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes,
+    mojom::blink::AIPageContentRedactionDecision redaction_decision,
     std::optional<gfx::Rect> visible_bounding_box) {
   if (!options_->include_passwords_for_redaction) {
     return;
   }
 
-  switch (attributes.redaction_decision) {
-    case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kUnredacted_EmptyPassword:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kUnredacted_EmptyCustomPassword:
-      return;
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_HasBeenPassword:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_CustomPassword_CSS:
-    case mojom::blink::AIPageContentRedactionDecision::
-        kRedacted_CustomPassword_JS:
-      break;
+  if (!ShouldRedactSubtree(redaction_decision)) {
+    return;
   }
 
-  visible_bounding_box_for_passwords_.push_back(
+  visible_bounding_boxes_for_redaction_.push_back(
       visible_bounding_box.value_or(ComputeVisibleBoundingBox(object)));
 }
 
@@ -2412,7 +2433,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     DOMNodeId accessibility_focused_node_id) {
   if (!ShouldAddNodeGeometry(object, attributes,
                              accessibility_focused_node_id)) {
-    TrackPasswordRedactionIfNeeded(object, attributes);
+    CollectGeometryForRedactedNodes(object, attributes.redaction_decision);
     return;
   }
 
@@ -2463,8 +2484,8 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     geometry.outer_bounding_box = geometry.visible_bounding_box;
   }
 
-  TrackPasswordRedactionIfNeeded(object, attributes,
-                                 geometry.visible_bounding_box);
+  CollectGeometryForRedactedNodes(object, attributes.redaction_decision,
+                                  geometry.visible_bounding_box);
 
   // Validate the relationship between outer and visible bounding boxes
   // TODO(aleventhal): restore for Canary builds.
