@@ -4,6 +4,8 @@
 
 #include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -52,6 +54,11 @@ void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
     CHECK(result) << resource_request.url;
     is_data_pipe_fused_ = true;
   } else {
+    SCOPED_CRASH_KEY_STRING1024("ServiceWorker", "race_req_url",
+                                resource_request.url.spec());
+    SCOPED_CRASH_KEY_BOOL("ServiceWorker", "race_req_is_main",
+                          is_main_resource_);
+    base::debug::DumpWithoutCrashing();
     // A legitimate renderer will never hit this branch.
     // If we are here, the renderer is compromised or severely buggy.
     if (base::FeatureList::IsEnabled(
