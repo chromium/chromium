@@ -29,7 +29,8 @@ if (current_cpu == "x86") {
     cpu_arch_full = "arm-neon"
   }
 } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
-  if (is_win || is_chromeos || is_mac || is_ios || is_desktop_android) {
+  if (is_linux || is_win || is_chromeos || is_mac || is_ios ||
+      is_desktop_android) {
     # This is necessary for CrOS and macOS as they reuse the Linux
     # configuration, of which there are two (see the later definition of
     # os_category).
