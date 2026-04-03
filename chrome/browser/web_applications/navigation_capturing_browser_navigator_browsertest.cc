@@ -52,6 +52,7 @@ constexpr char kFocusExistingUrl[] =
     "/web_apps/simple_focus_existing/index.html";
 constexpr char kFocusExistingSecondUrl[] =
     "/web_apps/simple_focus_existing/index2.html";
+constexpr char kDisplayBrowserUrl[] = "/web_apps/display_browser.html";
 constexpr char kLaunchParamsEnqueueMetricWithNavigation[] =
     "Webapp.NavigationCapturing.LaunchParamsConsumedTime.WithNavigation";
 constexpr char kLaunchParamsEnqueueMetricWithoutNavigation[] =
@@ -111,6 +112,10 @@ class NavigationCapturingBrowserNavigatorBrowserTest
 
   GURL GetFocusExistingSecondUrl() const {
     return embedded_test_server()->GetURL(kFocusExistingSecondUrl);
+  }
+
+  GURL GetDisplayBrowserUrl() const {
+    return embedded_test_server()->GetURL(kDisplayBrowserUrl);
   }
 
   // InstallTestWebApp should not be called with a url that has a manifest link.
@@ -233,6 +238,65 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // Make sure that web contents is a tab in `browser()` and not `new_browser`.
   EXPECT_NE(browser()->tab_strip_model()->GetIndexOfWebContents(new_tab),
             TabStripModel::kNoTab);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
+                       MiddleClickToOpenBrowserAppFromDifferentWindow) {
+  const webapps::AppId& app_id = InstallTestWebApp(
+      GetDisplayBrowserUrl(), mojom::UserDisplayMode::kBrowser,
+      blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting);
+
+  EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
+            base::ok());
+
+  // Use LaunchBrowserForWebAppInTab to ensure the app is recognized as running.
+  // This opens the app in a tab (since it's forced to kBrowser).
+  Browser* app_browser =
+      ::web_app::LaunchBrowserForWebAppInTab(profile(), app_id);
+  ASSERT_TRUE(app_browser);
+
+  content::WebContents* new_tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(new_tab);
+
+  content::WaitForLoadStop(new_tab);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
+
+  Browser* new_browser =
+      ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(new_browser, GURL(url::kAboutBlankURL)));
+
+  base::HistogramTester histograms;
+
+  ui_test_utils::AllBrowserTabAddedWaiter new_tab_observer2;
+  NavigateParams params2(new_browser, GetDisplayBrowserUrl(),
+                         ui::PAGE_TRANSITION_LINK);
+  params2.source_contents =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+  params2.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  Navigate(&params2);
+  content::WebContents* new_tab2 = new_tab_observer2.Wait();
+  ASSERT_TRUE(new_tab2);
+
+  content::WaitForLoadStop(new_tab2);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+  AwaitMetricsAvailableFromRenderer();
+
+  histograms.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
+  histograms.ExpectUniqueSample(
+      "Webapp.NavigationCapturing.Result",
+      NavigationCapturingInitialResult::kForcedContextAppBrowserTab, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 0);
+  EXPECT_THAT(
+      GetNavigationCapturingFinalDisplayMetric(histograms),
+      testing::ElementsAre(
+          NavigationCapturingDisplayModeResult::kAppBrowserTabFinalBrowserTab));
+
+  int index = new_browser->tab_strip_model()->GetIndexOfWebContents(new_tab2);
+  EXPECT_NE(index, TabStripModel::kNoTab);
 }
 
 // Test that the browser provided in NavigateParams is used when finding an app

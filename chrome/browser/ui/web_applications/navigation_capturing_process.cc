@@ -718,12 +718,18 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
       }
       Browser* app_host_window;
       if (app_display_mode == DisplayMode::kBrowser) {
-        // For a 'new tab' with the 'browser' requested display mode, prefer
-        // using an existing browser window.
-        app_host_window = client_mode_and_browser->browser
-                              ? client_mode_and_browser->browser.get()
-                              : Browser::Create(Browser::CreateParams(
-                                    &*profile_, params.user_gesture));
+        // For a 'new tab' with the 'browser' requested display mode, use
+        // the originating browser to ensure the new tab pops under in the
+        // typical place.
+        if (navigation_params_browser_ &&
+            !navigation_params_browser_->app_controller()) {
+          app_host_window = navigation_params_browser_.get();
+        } else if (client_mode_and_browser->browser) {
+          app_host_window = client_mode_and_browser->browser.get();
+        } else {
+          app_host_window = Browser::Create(
+              Browser::CreateParams(&*profile_, params.user_gesture));
+        }
       } else {
         if (is_target_iwa_with_https_url) {
           LaunchIsolatedWebAppInNewWindow(provider, app_id, params.url);
