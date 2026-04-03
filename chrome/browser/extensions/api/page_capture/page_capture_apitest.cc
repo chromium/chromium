@@ -78,29 +78,18 @@ class ExtensionPageCaptureApiTest : public ExtensionApiTest {
   }
 };
 
-// https://crbug.com/492228013: Flaky on desktop android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SaveAsMHTMLWithoutFileAccess \
-    DISABLED_SaveAsMHTMLWithoutFileAccess
-#else
-#define MAYBE_SaveAsMHTMLWithoutFileAccess SaveAsMHTMLWithoutFileAccess
-#endif
+// https://crbug.com/492228013: Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest,
-                       MAYBE_SaveAsMHTMLWithoutFileAccess) {
+                       DISABLED_SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", "ONLY_PAGE_CAPTURE_PERMISSION"))
       << message_;
 }
 
-// https://crbug.com/492228013: Flaky on desktop android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SaveAsMHTMLWithFileAccess DISABLED_SaveAsMHTMLWithFileAccess
-#else
-#define MAYBE_SaveAsMHTMLWithFileAccess SaveAsMHTMLWithFileAccess
-#endif
+// https://crbug.com/492228013: Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest,
-                       MAYBE_SaveAsMHTMLWithFileAccess) {
+                       DISABLED_SaveAsMHTMLWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", /*custom_arg=*/nullptr,
