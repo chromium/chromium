@@ -666,10 +666,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
   }
 
   EmitElementChoice WillProcessElement(const Element& element) override {
-    if (IsA<HTMLScriptElement>(element)) {
-      return EmitElementChoice::kIgnore;
-    }
-    if (IsA<HTMLNoScriptElement>(element)) {
+    if (element.IsScriptElement() || IsA<HTMLNoScriptElement>(element)) {
       return EmitElementChoice::kIgnore;
     }
     auto* meta = DynamicTo<HTMLMetaElement>(element);

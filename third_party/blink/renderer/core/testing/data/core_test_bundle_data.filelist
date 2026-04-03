@@ -208,6 +208,8 @@ testing/data/frameserializer/rewritelinks/image.png
 testing/data/frameserializer/rewritelinks/rewritelinks_simple.html
 testing/data/frameserializer/svg/green_rectangle.svg
 testing/data/frameserializer/svg/page_with_svg_image.html
+testing/data/frameserializer/svg/svg_onload.html
+testing/data/frameserializer/svg/svg_script.html
 testing/data/frameserializer/xml/xmldecl.xml
 testing/data/fullscreen_div.html
 testing/data/fullscreen_iframe.html

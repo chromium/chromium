@@ -562,6 +562,29 @@ TEST_F(FrameSerializerTest, SVGImageDontCrash) {
             250U);
 }
 
+TEST_F(FrameSerializerTest, SVGScriptElementStripped) {
+  SetBaseFolder("frameserializer/svg/");
+
+  RegisterURL("svg_script.html", "text/html");
+  Serialize("svg_script.html");
+
+  String data = GetSerializedData("svg_script.html", "text/html");
+  EXPECT_FALSE(data.contains("<script"));
+  EXPECT_FALSE(data.contains("svg script"));
+  EXPECT_FALSE(data.contains("html script"));
+}
+
+TEST_F(FrameSerializerTest, EventHandlersStripped) {
+  SetBaseFolder("frameserializer/svg/");
+
+  RegisterURL("svg_onload.html", "text/html");
+  Serialize("svg_onload.html");
+
+  String data = GetSerializedData("svg_onload.html", "text/html");
+  EXPECT_FALSE(data.contains("onload"));
+  EXPECT_FALSE(data.contains("onclick"));
+}
+
 TEST_F(FrameSerializerTest, DontIncludeErrorImage) {
   SetBaseFolder("frameserializer/image/");
 
