@@ -324,6 +324,12 @@ inline constexpr char16_t kMemorySaverModeTabDiscardingHelpUrl[] =
 inline constexpr char16_t kIncognitoHelpCenterURL[] =
     u"https://support.google.com/chrome?p=incognito";
 
+// TODO(crbug.com/498632327): Replace this URL with P-link.
+// "Learn more" URL for the web app installation flow, linked from installation
+// dialog and options view.
+inline constexpr char kInstallDialogFlowLearnMoreURL[] =
+    "https://support.google.com/chrome/answer/9658361";
+
 // The URL for the "Learn more" page for the usage/crash reporting option in the
 // first run dialog.
 inline constexpr char kLearnMoreReportingURL[] =

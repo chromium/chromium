@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/prefs/pref_service.h"
@@ -34,6 +36,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/constants.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -46,12 +49,15 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace web_app {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
                                       kInstallDialogFlowViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
+                                      kLearnMoreButtonId);
 
 std::ostream& operator<<(std::ostream& os, InstallOsType type) {
   switch (type) {
@@ -109,6 +115,7 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
   // Last dialog to show the install button.
   // TODO(crbug.com/380497638): Trigger the installation earlier in the flow.
   if (current_step_ == InstallDialogStep::kSuccessful && dialog_model()) {
+    dialog_model()->SetVisible(kLearnMoreButtonId, false);
     ui::DialogModel::Button* ok_button =
         dialog_model()->GetButtonByUniqueId(kPwaInstallDialogInstallButton);
     if (ok_button) {
@@ -117,7 +124,20 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
     }
   }
 
+  if (current_step_ == InstallDialogStep::kProgress && dialog_model()) {
+    dialog_model()->SetVisible(kLearnMoreButtonId, false);
+  }
+
   return false;
+}
+
+void WebAppInstallFlowDialogDelegate::OnLearnMoreButtonClicked() {
+  web_contents()->OpenURL(
+      content::OpenURLParams(
+          GURL(chrome::kInstallDialogFlowLearnMoreURL), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+          /*is_renderer_initiated=*/false),
+      base::DoNothing());
 }
 
 // Builds and shows an install dialog flow according to the install_type.
@@ -204,6 +224,19 @@ void WebAppInstallFlowDialogDelegate::Show(
           l10n_util::GetStringUTF16(install_type == InstallDialogType::kDiy
                                         ? IDS_DIY_APP_INSTALL_DIALOG_TITLE
                                         : IDS_INSTALL_PWA_DIALOG_TITLE))
+      .AddExtraButton(
+          base::BindRepeating(
+              [](base::WeakPtr<WebAppInstallFlowDialogDelegate> delegate,
+                 const ui::Event&) {
+                if (delegate) {
+                  delegate->OnLearnMoreButtonClicked();
+                }
+              },
+              delegate_weak_ptr),
+          ui::DialogModel::Button::Params()
+              .SetLabel(
+                  l10n_util::GetStringUTF16(IDS_LEARN_MORE_MAYBE_TITLE_CASE))
+              .SetId(kLearnMoreButtonId))
       .AddOkButton(
           base::BindRepeating(
               [](base::WeakPtr<WebAppInstallFlowDialogDelegate> delegate) {

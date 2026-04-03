@@ -39,6 +39,7 @@ std::ostream& operator<<(std::ostream& os, InstallOsType type);
 class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallDialogFlowViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLearnMoreButtonId);
 
   WebAppInstallFlowDialogDelegate(
       content::WebContents* web_contents,
@@ -78,6 +79,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
   base::WeakPtr<WebAppInstallFlowView> flow_view_;
 
  private:
+  void OnLearnMoreButtonClicked();
   base::WeakPtrFactory<WebAppInstallFlowDialogDelegate> weak_ptr_factory_{this};
 };
 
