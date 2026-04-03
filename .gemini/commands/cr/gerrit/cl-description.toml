@@ -1,6 +1,6 @@
 description="Suggest a CL description"
 prompt = """
-@{agents/prompts/templates/cldescription.md}
+@{agents/skills/cl-description/cl-description.md}
 
 Use `git upstream-diff` to identify the changs applied to a git repository.
 

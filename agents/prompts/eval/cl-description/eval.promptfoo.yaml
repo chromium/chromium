@@ -1,0 +1,55 @@
+description: Verify the cl-description skill correctly formats messages
+owner: shomizoe@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - cl-description
+defaultTest:
+  assert:
+    - type: javascript
+      value: |
+        const match = output.match(/\[[^\]]+\] [^\n]+\n\n/);
+        if (match === null) {
+          return {pass: false, score: 0, reason: 'Missing empty line after subject. Output: ' + JSON.stringify(output)};
+        }
+        return true;
+    - type: javascript
+      value: |
+        const startIndex = output.search(/\[[^\]]+\] .*/);
+        if (startIndex === -1) {
+          return {pass: false, score: 0, reason: 'Could not find a valid subject line starting with a bracketed component. Output: ' + JSON.stringify(output)};
+        }
+        const text = output.substring(startIndex).trim();
+        const lines = text.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+          // Remove trailing \r if any
+          const line = lines[i].replace(/\r$/, '');
+          // Ignore lines that are just markdown codeblock ticks
+          if (line.trim() === '```' || line.trim() === '```text') continue;
+          if (line.length > 72) {
+            return {pass: false, score: 0, reason: `Line ${i + 1} exceeds 72 characters: "${line}" (length: ${line.length})`};
+          }
+        }
+        return true;
+tests:
+  - vars:
+      query: "Generate a CL description strictly based on the following changes, ignoring any actual uncommitted git changes in the repo. The changes fix an issue where the searchbox didn't gain focus. Important: Start the very first line exactly with the component prefix `[Searchbox] `. Include the bug `Bug: b:312521`. Output ONLY the commit message. DO NOT include any introductions, conclusions, conversational filler, apologies, or markdown enclosures."
+    assert:
+      - type: regex
+        value: "Bug: b:312521"
+    metadata:
+      pass_k_threshold: 1
+      runs_per_test: 3
+  - vars:
+      query: "Output a commit message for my recent work strictly based on this prompt, ignoring any actual uncommitted git changes in the repo. The work fully fixes bug 987654. Important: Start the very first line exactly with the prefix `[Omnibox] `. The bug closure tag must be exactly `Fixed: 987654`. The work involved updating the padding on the omnibox dropdown to 16px. Please add a detailed paragraph explaining that the padding was previously causing visual misalignment on high-DPI displays, and that this 16px value matches the new material design specification. Output ONLY the commit message. DO NOT include any introductions, conclusions, conversational filler, apologies, or markdown enclosures."
+    assert:
+      - type: regex
+        value: "Fixed: 987654"
+    metadata:
+      pass_k_threshold: 1
+      runs_per_test: 3
