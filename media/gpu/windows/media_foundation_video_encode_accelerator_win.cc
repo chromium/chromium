@@ -1103,7 +1103,15 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   DCHECK(activate_);
   DCHECK(encoder_);
   DCHECK_NE(input_visible_size_, frame_size);
-  DCHECK(pending_input_queue_.empty());
+
+  // This is not normally possible, but a compromised renderer could cause it
+  // to be reached.
+  if (!pending_input_queue_.empty()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderIllegalState,
+                       "Can't change frame size when there are pending input "
+                       "frames"});
+    return;
+  }
 
   if (!IsFrameSizeAllowed(frame_size)) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
