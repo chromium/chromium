@@ -18,7 +18,7 @@ inline constexpr std::string_view kAppMallBaseUrl =
 
 // The URL for Frozen Update notification
 inline constexpr std::string_view kFrozenUpdateNotificationURL =
-    "https://support.google.com/chromeosflex/answer/12024394";
+    "http://support.google.com/chromeosflex?p=about_chromeos_flex_updates";
 
 }  // namespace chromeos
 
