@@ -3935,4 +3935,379 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveSavedTabGroupTabAllowed) {
   EXPECT_EQ(tab_list->GetTab(1)->GetContents(), web_contentses[0]);
 }
 
+// Test that the `tabs.group()` function correctly groups tabs.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupWithinWindow) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("GroupWithinWindowTest").Build();
+
+  TabListInterface* tab_list = GetTabListInterface();
+  // Add several web contents to the browser.
+  constexpr int kNumTabs = 5;
+  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
+    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
+
+  // Get the tab IDs of the web contents added in the above loop.
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
+    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
+    web_contentses.push_back(contents);
+  }
+
+  // Use the `TabsGroupFunction` to group tabs 0, 2, and 4.
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension.get());
+  constexpr char kFormatArgs[] = R"([{"tabIds": [%d, %d, %d]}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[0], tab_ids[2], tab_ids[4]);
+  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  EXPECT_EQ(tab_list->GetTab(0)->GetContents(), web_contentses[0]);
+  EXPECT_EQ(tab_list->GetTab(1)->GetContents(), web_contentses[2]);
+  EXPECT_EQ(tab_list->GetTab(2)->GetContents(), web_contentses[4]);
+  EXPECT_EQ(tab_list->GetTab(3)->GetContents(), web_contentses[1]);
+  EXPECT_EQ(tab_list->GetTab(4)->GetContents(), web_contentses[3]);
+
+  std::optional<tab_groups::TabGroupId> group = tab_list->GetTab(0)->GetGroup();
+  EXPECT_TRUE(group.has_value());
+  EXPECT_EQ(group, tab_list->GetTab(1)->GetGroup());
+  EXPECT_EQ(group, tab_list->GetTab(2)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(3)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(4)->GetGroup());
+}
+
+// Test that the `tabs.group()` function correctly groups tabs even when given
+// out-of-order or duplicate tab IDs.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupMixedTabIds) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("GroupMixedTabIdsTest").Build();
+
+  TabListInterface* tab_list = GetTabListInterface();
+  // Add several web contents to the browser.
+  constexpr int kNumTabs = 5;
+  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
+    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
+
+  // Get the tab IDs of the web contents added in the above loop.
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
+    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
+    web_contentses.push_back(contents);
+  }
+
+  // Use the `TabsGroupFunction` to group tab 1 twice, along with tabs 3 and 2.
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension.get());
+  constexpr char kFormatArgs[] = R"([{"tabIds": [%d, %d, %d, %d]}])";
+  const std::string args = base::StringPrintf(
+      kFormatArgs, tab_ids[1], tab_ids[1], tab_ids[3], tab_ids[2]);
+  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  EXPECT_EQ(tab_list->GetTab(0)->GetContents(), web_contentses[0]);
+  EXPECT_EQ(tab_list->GetTab(1)->GetContents(), web_contentses[1]);
+  EXPECT_EQ(tab_list->GetTab(2)->GetContents(), web_contentses[2]);
+  EXPECT_EQ(tab_list->GetTab(3)->GetContents(), web_contentses[3]);
+  EXPECT_EQ(tab_list->GetTab(4)->GetContents(), web_contentses[4]);
+
+  std::optional<tab_groups::TabGroupId> group = tab_list->GetTab(1)->GetGroup();
+  EXPECT_TRUE(group.has_value());
+  EXPECT_FALSE(tab_list->GetTab(0)->GetGroup());
+  EXPECT_EQ(group, tab_list->GetTab(1)->GetGroup());
+  EXPECT_EQ(group, tab_list->GetTab(2)->GetGroup());
+  EXPECT_EQ(group, tab_list->GetTab(3)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(4)->GetGroup());
+}
+
+// Test that the `tabs.group()` function throws an error if both
+// `createProperties` and `groupId` are specified.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupParamsError) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("GroupParamsErrorTest").Build();
+
+  TabListInterface* tab_list = GetTabListInterface();
+  // Add several web contents to the browser.
+  constexpr int kNumTabs = 5;
+  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
+    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
+
+  // Get the tab IDs of the web contents added in the above loop.
+  std::vector<int> tab_ids;
+  for (int i = 0; i < kNumTabs; ++i) {
+    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
+    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
+  }
+
+  // Add a tab to a group to have an existing group ID.
+  std::optional<tab_groups::TabGroupId> group =
+      tab_list->CreateTabGroup({tab_list->GetTab(1)->GetHandle()});
+  ASSERT_TRUE(group.has_value());
+  int group_id = ExtensionTabUtil::GetGroupId(*group);
+
+  // Attempt to specify both `createProperties` and `groupId`.
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension.get());
+  constexpr char kFormatArgs[] =
+      R"([{"tabIds": [%d, %d, %d],
+           "groupId": %d, "createProperties": {"windowId": -1}}])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_ids[0],
+                                              tab_ids[2], tab_ids[4], group_id);
+  std::string error = utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), utils::FunctionMode::kNone);
+  EXPECT_EQ(tabs_constants::kGroupParamsError, error);
+}
+
+// Test that the `tabs.group()` function correctly rearranges sets of tabs
+// across windows before grouping.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupAcrossWindows) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("GroupAcrossWindowsTest").Build();
+
+  TabListInterface* tab_list1 = GetTabListInterface();
+  // Add several web contents to the browser.
+  constexpr int kNumTabs = 5;
+  for (int i = tab_list1->GetTabCount(); i < kNumTabs; ++i) {
+    tab_list1->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_EQ(kNumTabs, tab_list1->GetTabCount());
+
+  // Get the tab IDs of the web contents added in the above loop.
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    content::WebContents* contents = tab_list1->GetTab(i)->GetContents();
+    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
+    web_contentses.push_back(contents);
+  }
+
+  // Create a new window and add a few tabs, adding one to a group.
+  BrowserWindowInterface* bwi2 =
+      CreateBrowserWindowWithType(BrowserWindowInterface::Type::TYPE_NORMAL);
+  TabListInterface* tab_list2 = TabListInterface::From(bwi2);
+
+  constexpr int kNumTabs2 = 3;
+  for (int i = tab_list2->GetTabCount(); i < kNumTabs2; ++i) {
+    tab_list2->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_EQ(kNumTabs2, tab_list2->GetTabCount());
+
+  std::optional<tab_groups::TabGroupId> group2 =
+      tab_list2->CreateTabGroup({tab_list2->GetTab(1)->GetHandle()});
+  ASSERT_TRUE(group2.has_value());
+  int group_id2 = ExtensionTabUtil::GetGroupId(*group2);
+
+  // Use the `TabsGroupFunction` to group tabs 0, 2, and 4 from the original
+  // browser into the same group as the one in `bwi2`.
+  constexpr int kNumTabsMovedAcrossWindows = 3;
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension.get());
+  constexpr char kFormatArgs[] = R"([{"tabIds": [%d, %d, %d], "groupId": %d}])";
+  const std::string args = base::StringPrintf(
+      kFormatArgs, tab_ids[0], tab_ids[2], tab_ids[4], group_id2);
+  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  ASSERT_EQ(kNumTabs2 + kNumTabsMovedAcrossWindows, tab_list2->GetTabCount());
+  EXPECT_EQ(tab_list2->GetTab(2)->GetContents(), web_contentses[0]);
+  EXPECT_EQ(tab_list2->GetTab(3)->GetContents(), web_contentses[2]);
+  EXPECT_EQ(tab_list2->GetTab(4)->GetContents(), web_contentses[4]);
+
+  EXPECT_EQ(*group2, tab_list2->GetTab(1)->GetGroup().value());
+  EXPECT_EQ(*group2, tab_list2->GetTab(2)->GetGroup().value());
+  EXPECT_EQ(*group2, tab_list2->GetTab(3)->GetGroup().value());
+  EXPECT_EQ(*group2, tab_list2->GetTab(4)->GetGroup().value());
+}
+
+// Test that grouping tabs that are in a saved group should fail.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsGroupForSavedTabGroupTab) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("GroupWithinWindowTest").Build();
+
+  TabListInterface* tab_list = GetTabListInterface();
+  // Create 2 tabs.
+  constexpr int kNumTabs = 2;
+  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
+    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
+
+  std::vector<int> tab_ids;
+  for (int i = 0; i < kNumTabs; ++i) {
+    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
+    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
+  }
+
+  tab_groups::TabGroupSyncService* saved_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(saved_service);
+
+#if !BUILDFLAG(IS_ANDROID)
+  tab_groups::TabGroupSyncServiceInitializedObserver observer(saved_service);
+  observer.Wait();
+#endif
+
+  // Group the first tab.
+  std::optional<tab_groups::TabGroupId> old_group =
+      tab_list->CreateTabGroup({tab_list->GetTab(0)->GetHandle()});
+  ASSERT_TRUE(old_group.has_value());
+
+  // Use the `TabsGroupFunction` to group the 2 tabs into a new group.
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension.get());
+  constexpr char kFormatArgs[] = R"([{"tabIds": [%d, %d]}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[0], tab_ids[1]);
+  EXPECT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Make sure the new group exists and is different than the old group.
+  EXPECT_TRUE(tab_list->GetTab(0)->GetGroup().has_value());
+  EXPECT_NE(*old_group, tab_list->GetTab(0)->GetGroup().value());
+  EXPECT_EQ(tab_list->GetTab(0)->GetGroup(), tab_list->GetTab(1)->GetGroup());
+}
+
+// Test that the `tabs.ungroup()` function correctly ungroups tabs from a single
+// group and deletes it.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUngroupSingleGroup) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UngroupSingleGroupTest").Build();
+
+  TabListInterface* tab_list = GetTabListInterface();
+  // Add several web contents to the browser.
+  constexpr int kNumTabs = 5;
+  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
+    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
+
+  // Get the tab IDs of the web contents added in the above loop.
+  std::vector<int> tab_ids;
+  for (int i = 0; i < kNumTabs; ++i) {
+    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
+    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
+  }
+
+  // Add tabs 1, 2, and 3 to a group.
+  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(
+      {tab_list->GetTab(1)->GetHandle(), tab_list->GetTab(2)->GetHandle(),
+       tab_list->GetTab(3)->GetHandle()});
+  ASSERT_TRUE(group.has_value());
+
+  // Use the `TabsUngroupFunction` to ungroup tabs 1, 2, and 3.
+  auto function = base::MakeRefCounted<TabsUngroupFunction>();
+  function->set_extension(extension.get());
+  constexpr char kFormatArgs[] = R"([[%d, %d, %d]])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[1], tab_ids[2], tab_ids[3]);
+  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Expect the group to be deleted because all tabs were ungrouped from it.
+  EXPECT_FALSE(tab_list->GetTab(1)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(2)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(3)->GetGroup());
+  EXPECT_FALSE(tab_list->ContainsTabGroup(*group));
+}
+
+// Saved groups should be ungroupable from extensions.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsUngroupSingleGroupForSavedTabGroup) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UngroupSingleGroupTest").Build();
+
+  TabListInterface* tab_list = GetTabListInterface();
+  // Ensure we have at least one tab.
+  if (tab_list->GetTabCount() == 0) {
+    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_GE(tab_list->GetTabCount(), 1);
+
+  int tab_id = ExtensionTabUtil::GetTabId(tab_list->GetTab(0)->GetContents());
+
+  tab_groups::TabGroupSyncService* saved_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(saved_service);
+
+#if !BUILDFLAG(IS_ANDROID)
+  tab_groups::TabGroupSyncServiceInitializedObserver observer(saved_service);
+  observer.Wait();
+#endif
+
+  // Group the tab and save it.
+  std::optional<tab_groups::TabGroupId> group =
+      tab_list->CreateTabGroup({tab_list->GetTab(0)->GetHandle()});
+  ASSERT_TRUE(group.has_value());
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  tab_list->SetTabGroupVisualData(*group, visual_data);
+
+  auto function = base::MakeRefCounted<TabsUngroupFunction>();
+  function->set_extension(extension.get());
+  constexpr char kFormatArgs[] = R"([[%d]])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+  EXPECT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // The tab should no longer be in the group.
+  EXPECT_EQ(std::nullopt, tab_list->GetTab(0)->GetGroup());
+}
+
+// Test that the `tabs.ungroup()` function correctly ungroups tabs from several
+// different groups and deletes any empty ones.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUngroupFromMultipleGroups) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UngroupFromMultipleGroupsTest").Build();
+
+  TabListInterface* tab_list = GetTabListInterface();
+  // Add several web contents to the browser.
+  constexpr int kNumTabs = 5;
+  for (int i = tab_list->GetTabCount(); i < kNumTabs; ++i) {
+    tab_list->OpenTab(GURL(url::kAboutBlankURL), -1);
+  }
+  ASSERT_EQ(kNumTabs, tab_list->GetTabCount());
+
+  // Get the tab IDs of the web contents added in the above loop.
+  std::vector<int> tab_ids;
+  for (int i = 0; i < kNumTabs; ++i) {
+    content::WebContents* contents = tab_list->GetTab(i)->GetContents();
+    tab_ids.push_back(ExtensionTabUtil::GetTabId(contents));
+  }
+
+  // Add tabs 1, 2, and 3 to `group1`, and tab 4 to `group2`.
+  std::optional<tab_groups::TabGroupId> group1 = tab_list->CreateTabGroup(
+      {tab_list->GetTab(1)->GetHandle(), tab_list->GetTab(2)->GetHandle(),
+       tab_list->GetTab(3)->GetHandle()});
+  ASSERT_TRUE(group1.has_value());
+  std::optional<tab_groups::TabGroupId> group2 =
+      tab_list->CreateTabGroup({tab_list->GetTab(4)->GetHandle()});
+  ASSERT_TRUE(group2.has_value());
+
+  // Use the `TabsUngroupFunction` to ungroup tabs 2, 3, and 4.
+  auto function = base::MakeRefCounted<TabsUngroupFunction>();
+  function->set_extension(extension.get());
+  constexpr char kFormatArgs[] = R"([[%d, %d, %d]])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[2], tab_ids[3], tab_ids[4]);
+  ASSERT_TRUE(utils::RunFunction(function.get(), args, profile(),
+                                 utils::FunctionMode::kNone));
+
+  // Expect `group2` to be deleted because all tabs were ungrouped from it.
+  EXPECT_EQ(group1, tab_list->GetTab(1)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(2)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(3)->GetGroup());
+  EXPECT_FALSE(tab_list->GetTab(4)->GetGroup());
+  EXPECT_TRUE(tab_list->ContainsTabGroup(*group1));
+  EXPECT_FALSE(tab_list->ContainsTabGroup(*group2));
+}
+
 }  // namespace extensions
