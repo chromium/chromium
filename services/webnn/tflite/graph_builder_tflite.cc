@@ -66,6 +66,16 @@ constexpr size_t kWeightsAlignment = 8;
 constexpr size_t kMaxInlineBufferSize = 128 * 1024 * 1024;        /* 128 MiB */
 constexpr size_t kFlatbufferSafetyThreshold = 1536 * 1024 * 1024; /* 1.5 GiB */
 
+// The largest kernel tile size used by ruy's packing kernels (AVX-512 uses 16).
+constexpr int32_t kMaxKernelBlockSize = 16;
+
+// Rounds `value` up to the nearest multiple of `block_size`, using checked
+// arithmetic to detect overflow.
+base::CheckedNumeric<int32_t> RoundUp(base::CheckedNumeric<int32_t> value,
+                                      int32_t block_size) {
+  return (value + block_size - 1) / block_size * block_size;
+}
+
 // Maps a DataType to a `::tflite::TensorType`. Other `TensorTypeMap` overloads
 // may be declared below as needed.
 //
@@ -4216,7 +4226,6 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
   // int32_t arithmetic, see:
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/ruy/src/ruy/pack_x86.h;l=98;drc=6c292a6e91cd3dab6059334d60c09fb5c7d1a94e
   if (fuse_dequantize) {
-    constexpr int32_t kMaxKernelBlockSize = 16;
     base::CheckedNumeric<int32_t> gemm_rows;
     base::CheckedNumeric<int32_t> gemm_cols;
     if (conv2d.kind == mojom::Conv2d::Kind::kDirect) {
@@ -4234,9 +4243,6 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
       gemm_cols = base::CheckedNumeric<int32_t>(input_size2d.height) *
                   input_size2d.width;
     }
-    auto RoundUp = [](base::CheckedNumeric<int32_t> value, int32_t block_size) {
-      return (value + block_size - 1) / block_size * block_size;
-    };
     const base::CheckedNumeric<int32_t> packed_flat_size =
         RoundUp(gemm_rows, kMaxKernelBlockSize) *
         RoundUp(gemm_cols, kMaxKernelBlockSize);
@@ -5286,6 +5292,45 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
     ASSIGN_OR_RETURN(quantized_output, CanFuseQuantizeAndGetOutput(gemm));
   }
   const bool fuse_dequantize = quantized_output.has_value();
+
+  // Ruy (used by TFLite for quantized GEMM) packs each matrix into blocks,
+  // rounding rows/cols up to kernel tile sizes (e.g. up to 16 on AVX-512),
+  // see:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/ruy/src/ruy/create_trmul_params.h;l=42;drc=20b5eb06ebc29c30a5ed460b658fe48d1afc119e
+  // It then computes pointer offsets as `packed_stride * block_col` using
+  // int32_t arithmetic, see:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/ruy/src/ruy/pack_x86.h;l=98;drc=6c292a6e91cd3dab6059334d60c09fb5c7d1a94e
+  //
+  // TODO(crbug.com/499018899): Consider adding a limit on the large tensor
+  // dimension in the WebNN spec.
+  if (fuse_dequantize) {
+    const auto& a_shape = GetOperand(gemm.a_operand_id).descriptor.shape();
+    CHECK_EQ(a_shape.size(), 2u);
+    const auto& output_shape =
+        GetOperand(gemm.output_operand_id).descriptor.shape();
+    CHECK_EQ(output_shape.size(), 2u);
+
+    // FULLY_CONNECTED maps as: input=[M, K], filter=[N, K], output=[M, N].
+    const uint32_t batch = output_shape[0];
+    const uint32_t output_channels = output_shape[1];
+    const uint32_t input_channels = gemm.a_transpose ? a_shape[0] : a_shape[1];
+
+    const base::CheckedNumeric<int32_t> rounded_k = RoundUp(
+        base::CheckedNumeric<int32_t>(input_channels), kMaxKernelBlockSize);
+    // Filter (LHS) packed size: rows = K, cols = N after ruy's internal
+    // transpose.
+    const base::CheckedNumeric<int32_t> lhs_packed_size =
+        rounded_k * RoundUp(base::CheckedNumeric<int32_t>(output_channels),
+                            kMaxKernelBlockSize);
+    // Input (RHS) packed size: rows = K, cols = M.
+    const base::CheckedNumeric<int32_t> rhs_packed_size =
+        rounded_k *
+        RoundUp(base::CheckedNumeric<int32_t>(batch), kMaxKernelBlockSize);
+    if (!lhs_packed_size.IsValid() || !rhs_packed_size.IsValid()) {
+      return base::unexpected(
+          "Gemm's dimensions are too large for the TFLite runtime.");
+    }
+  }
 
   std::optional<TensorIndex> c_expression_index;
   if (gemm.c_operand_id) {
