@@ -1104,12 +1104,7 @@ public class AccountPickerBottomSheetTest {
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT)
                         .build();
         buildAndShowCollapsedThenExpandedBottomSheet();
-
-        onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
-        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
-
-        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
+        addAccountAndSignin(TestAccounts.ACCOUNT2);
 
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         waitForView(
@@ -1117,6 +1112,47 @@ public class AccountPickerBottomSheetTest {
                 allOf(withId(R.id.account_picker_signin_spinner_view), isDisplayed()));
         assertSignInProceeded(bottomSheetView);
 
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testZeroAccountThenAddAccount() {
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED,
+                                AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_NO_DEVICE_ACCOUNT)
+                        .build();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator =
+                            new AccountPickerBottomSheetCoordinator(
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
+                                    mFakeIdentityManager,
+                                    mSigninManagerMock,
+                                    getBottomSheetController(),
+                                    mAccountPickerDelegateMock,
+                                    AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
+                                            mActivityTestRule.getActivity(), mSigninAccessPoint),
+                                    null,
+                                    AccountPickerLaunchMode.DEFAULT,
+                                    /* isWebSignin= */ mSigninAccessPoint
+                                            == SigninAccessPoint.WEB_SIGNIN,
+                                    mSigninAccessPoint,
+                                    /* selectedAccountId= */ null);
+                });
+        checkZeroAccountBottomSheet();
+        addAccountAndSignin(TestAccounts.ACCOUNT2);
+
+        assertSignInProceeded(mCoordinator.getBottomSheetViewForTesting());
         accountConsistencyHistogram.assertExpected();
     }
 
@@ -1133,12 +1169,7 @@ public class AccountPickerBottomSheetTest {
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT)
                         .build();
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
-
-        onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
-        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
-
-        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
+        addAccountAndSignin(TestAccounts.ACCOUNT2);
 
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         waitForView(
@@ -1293,11 +1324,9 @@ public class AccountPickerBottomSheetTest {
     public void testSigninWithAddedAccount_removeAccountAfterManagementNotice() {
         mIsAccountManaged = true;
         buildAndShowCollapsedThenExpandedBottomSheet();
+        addAccountAndSignin(TestAccounts.ACCOUNT2);
 
-        // Start sign-in and remove the account before validating the management notice.
-        onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
-        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        // Remove the account before validating the management notice.
         waitForView(
                 (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
                 withId(R.id.account_picker_confirm_management_description));
@@ -1587,6 +1616,14 @@ public class AccountPickerBottomSheetTest {
                         withText(TestAccounts.ACCOUNT1.getFullName()),
                         R.id.account_picker_state_collapsed)
                 .perform(click());
+    }
+
+    // Add account and sign-in through the fake add account UI flow.
+    private void addAccountAndSignin(AccountInfo accountToAdd) {
+        onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mAccountManagerTestRule.setAddAccountFlowResult(accountToAdd);
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
     }
 
     private BottomSheetController getBottomSheetController() {
