@@ -513,6 +513,25 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     }
 
     /**
+     * Changes the preferred horizontal orientation of the text bubble.
+     *
+     * @param orientation The horizontal orientation preferred.
+     */
+    public void setHorizontalOverlapAnchor(boolean overlap) {
+        mPopupWindow.setHorizontalOverlapAnchor(overlap);
+    }
+
+    /**
+     * Sets whether the popup should horizontally overlap the anchor.
+     *
+     * @param overlap Whether the popup should horizontally overlap the anchor.
+     */
+    public void setPreferredHorizontalOrientation(
+            @AnchoredPopupWindow.HorizontalOrientation int orientation) {
+        mPopupWindow.setPreferredHorizontalOrientation(orientation);
+    }
+
+    /**
      * Return if the popup was dismissed by inside touch last time. It shouldn't be called when the
      * popup is showing
      */

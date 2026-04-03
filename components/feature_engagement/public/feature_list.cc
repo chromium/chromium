@@ -62,6 +62,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDownloadSettingsFeature,
     &kIPHEphemeralTabFeature,
     &kIPHExploreSitesTileFeature,
+    &kIPHExtensionsManageFeature,
     &kIPHFeedCardMenuFeature,
     &kIPHFeedHeaderMenuFeature,
     &kIPHFeedSwipeRefresh,

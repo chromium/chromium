@@ -40,6 +40,8 @@ public class IphCommand {
     public final boolean showTextBubble;
     @AnchoredPopupWindow.VerticalOrientation public final int preferredVerticalOrientation;
     public final boolean enableSnoozeMode;
+    @AnchoredPopupWindow.HorizontalOrientation public final int preferredHorizontalOrientation;
+    public final boolean horizontalOverlapAnchor;
 
     public void fetchFromResources() {
         if (contentString == null) {
@@ -91,7 +93,9 @@ public class IphCommand {
             boolean showTextBubble,
             @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation,
             @Nullable Rect insetRect,
-            boolean enableSnoozeMode) {
+            boolean enableSnoozeMode,
+            @AnchoredPopupWindow.HorizontalOrientation int preferredHorizontalOrientation,
+            boolean horizontalOverlapAnchor) {
         this.mResources = resources;
         this.featureName = featureName;
         this.stringId = stringId;
@@ -115,5 +119,7 @@ public class IphCommand {
         this.preferredVerticalOrientation = preferredVerticalOrientation;
         this.insetRect = insetRect;
         this.enableSnoozeMode = enableSnoozeMode;
+        this.preferredHorizontalOrientation = preferredHorizontalOrientation;
+        this.horizontalOverlapAnchor = horizontalOverlapAnchor;
     }
 }

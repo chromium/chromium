@@ -173,6 +173,9 @@ public class UserEducationHelper {
                                     : assumeNonNull(rectProvider),
                             ChromeAccessibilityUtil.get().isAccessibilityEnabled());
             mTextBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
+            mTextBubble.setPreferredHorizontalOrientation(
+                    iphCommand.preferredHorizontalOrientation);
+            mTextBubble.setHorizontalOverlapAnchor(iphCommand.horizontalOverlapAnchor);
             mTextBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
             mTextBubble.addOnDismissListener(
                     () -> {
