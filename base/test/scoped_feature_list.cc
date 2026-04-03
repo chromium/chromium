@@ -296,6 +296,13 @@ FeatureRefAndParams::~FeatureRefAndParams() = default;
 
 ScopedFeatureList::ScopedFeatureList() = default;
 
+ScopedFeatureList::ScopedFeatureList(ScopedFeatureList&& other)
+    : init_called_(std::exchange(other.init_called_, false)),
+      original_feature_list_(std::move(other.original_feature_list_)),
+      original_field_trial_list_(other.original_field_trial_list_),
+      original_params_(std::move(other.original_params_)),
+      field_trial_list_(std::move(other.field_trial_list_)) {}
+
 ScopedFeatureList::ScopedFeatureList(const Feature& enable_feature) {
   InitAndEnableFeature(enable_feature);
 }

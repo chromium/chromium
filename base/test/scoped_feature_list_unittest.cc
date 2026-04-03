@@ -92,6 +92,20 @@ TEST_F(ScopedFeatureListTest, BasicScoped) {
   EXPECT_FALSE(FeatureList::IsEnabled(kTestFeature1));
 }
 
+TEST_F(ScopedFeatureListTest, MoveCopy) {
+  ExpectFeatures(std::string(), std::string());
+  EXPECT_FALSE(FeatureList::IsEnabled(kTestFeature1));
+  {
+    test::ScopedFeatureList feature_list1;
+    feature_list1.InitFromCommandLine("TestFeature1", std::string());
+    test::ScopedFeatureList feature_list2 = std::move(feature_list1);
+    ExpectFeatures("TestFeature1", std::string());
+    EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  }
+  ExpectFeatures(std::string(), std::string());
+  EXPECT_FALSE(FeatureList::IsEnabled(kTestFeature1));
+}
+
 TEST_F(ScopedFeatureListTest, InitFromCommandLineWithFeatureParams) {
   const std::map<std::string, std::string> feature_params1 = {{"x", "uma"},
                                                               {"y", "ukm"}};

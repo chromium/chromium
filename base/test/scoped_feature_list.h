@@ -92,6 +92,7 @@ class ScopedFeatureList final {
 
   ScopedFeatureList(const ScopedFeatureList&) = delete;
   ScopedFeatureList& operator=(const ScopedFeatureList&) = delete;
+  ScopedFeatureList(ScopedFeatureList&&);
 
   ~ScopedFeatureList();
 
