@@ -565,9 +565,7 @@ class KeyboardAccessoryView extends LinearLayout {
                     @Override
                     public void onItemRangeChanged(int positionStart, int itemCount) {
                         super.onItemRangeChanged(positionStart, itemCount);
-                        if (itemCount > 1) {
-                            view.scrollToPosition(0);
-                        }
+                        view.scrollToPosition(0);
                         view.invalidateItemDecorations();
                         onItemsChanged();
                     }
