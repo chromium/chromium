@@ -419,8 +419,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool IsGpuContextLost() const override;
   base::ByteSize EstimatedSizeInBytes() const override;
 
-  bool IsValid() const override;
-
   sk_sp<SkSurface> CreateSkSurface() const override;
   virtual void OnFlushForImage(cc::PaintImage::ContentId content_id) = 0;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
@@ -473,13 +471,13 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool is_software_ = false;
   bool is_cleared_ = false;
 
- private:
-  scoped_refptr<CanvasResourceSharedImage> CreateResource();
-  void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
-
   // Returns true iff the resource provider is (a) using a GPU channel for
   // software SharedImages and (b) that channel has been lost.
   bool IsSoftwareSharedImageGpuChannelLost() const;
+
+ private:
+  scoped_refptr<CanvasResourceSharedImage> CreateResource();
+  void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
 
   static void NotifyGpuContextLostTask(
       base::WeakPtr<CanvasResourceProviderSharedImage>);
@@ -575,6 +573,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
   bool IsCanvas2D() const override { return true; }
+  bool IsValid() const override;
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
   }
@@ -680,6 +679,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   // CanvasResourceProvider:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
+  bool IsValid() const override;
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
   void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override {
