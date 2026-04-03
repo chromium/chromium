@@ -9950,7 +9950,9 @@ const GURL& NavigationRequest::GetPreviousPrimaryMainFrameURL() {
 }
 
 const GURL& NavigationRequest::GetPreviousMainFrameURL() const {
-  CHECK(state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE);
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE);
   return previous_main_frame_url_;
 }
 
