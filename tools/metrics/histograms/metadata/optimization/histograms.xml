@@ -214,6 +214,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentationTabletProductivityUser"
       summary="Segmentation: Tablet Productivity user"/>
   <variant name="SegmentationVoice" summary="Segmentation: Voice user"/>
+  <variant name="ShoppingClassifier" summary="Shopping classifier"/>
   <variant name="TextClassifier" summary="Smart text selection"/>
   <variant name="TextEmbedder" summary="Generic Text Embedding"/>
   <variant name="TextSafety" summary="Classifies safety of the text"/>

@@ -123,7 +123,7 @@ message ModelInfo {
 
 // The scenarios for which the optimization guide has models for.
 enum OptimizationTarget {
-  reserved 14;
+  reserved 14, 73;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
@@ -274,6 +274,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR = 71;
   // Target for Classifier model.
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_CLASSIFIER = 72;
+  // Target for shopping classifier.
+  OPTIMIZATION_TARGET_SHOPPING_CLASSIFIER = 74;
 }
 
 // The model engine versions that can be used to do model inference.
