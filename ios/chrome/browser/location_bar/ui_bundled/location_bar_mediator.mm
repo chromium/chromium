@@ -364,17 +364,12 @@ const CGFloat kIconPointSize = 16.0;
     return NO;
   }
 
-  return !IsURLNewTabPage(visibleURL) && !lens::IsLensMWebResult(visibleURL);
+  return !IsVisibleURLNewTabPage(webState) &&
+         !lens::IsLensMWebResult(visibleURL);
 }
 
 - (BOOL)isCurrentPageNTP {
-  GURL visibleURL = GURL();
-  web::WebState* webState = [self activeWebState];
-  if (webState) {
-    visibleURL = webState->GetVisibleURL();
-  }
-
-  return IsURLNewTabPage(visibleURL);
+  return IsVisibleURLNewTabPage([self activeWebState]);
 }
 
 - (web::WebState*)activeWebState {

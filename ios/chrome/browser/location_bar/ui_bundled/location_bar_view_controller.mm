@@ -425,6 +425,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 - (void)setPlaceholderDefaultSearchEngineIcon:(UIImage*)icon {
   _defaultSearchEngineIconView.image = icon;
+  if (icon) {
+    _defaultSearchEngineIconView.accessibilityIdentifier = @"DSEIconNonEmpty";
+  } else {
+    _defaultSearchEngineIconView.accessibilityIdentifier = nil;
+  }
 }
 
 #pragma mark - LocationBarSteadyViewConsumer

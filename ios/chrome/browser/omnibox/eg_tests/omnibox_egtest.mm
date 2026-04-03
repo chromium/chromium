@@ -655,6 +655,51 @@ void FocusFakebox() {
   [ChromeEarlGrey closeAllTabs];
 }
 
+// Tests that the DSE icon is visible in Incognito mode on the NTP and persists.
+- (void)testDSEIconInIncognito {
+  [ChromeEarlGrey closeAllTabs];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  // Verify the DSE icon is visible using the accessibilityIdentifier.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"DSEIconNonEmpty")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Focus the omnibox.
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Defocus the omnibox.
+  [OmniboxEarlGrey defocusOmnibox];
+
+  // Verify the DSE icon is still visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"DSEIconNonEmpty")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open a second Incognito tab.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:2];
+
+  // Verify the icon in the new tab.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"DSEIconNonEmpty")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open a normal tab (switches to normal mode).
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open another Incognito tab to switch back and check.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:3];
+
+  // Verify the icon is still there.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"DSEIconNonEmpty")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Clean up.
+  [ChromeEarlGrey closeAllTabs];
+}
+
 #pragma mark - Helpers
 
 // Navigates to Page 1 in a tab and waits for it to load.

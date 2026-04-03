@@ -169,7 +169,7 @@
   // Records the leading icon type when the document changes to avoid too many
   // recording. Don't record on NTP as the leading icon is not visible.
   if (navigation && !navigation->IsSameDocument() &&
-      !IsURLNewTabPage(navigation->GetUrl())) {
+      !IsUrlNtp(navigation->GetUrl())) {
     [self.consumer recordLensOverlayAvailability];
   }
 }
@@ -235,9 +235,7 @@
 - (void)notifyConsumerOfChangedLocation {
   [self.consumer updateLocationText:[self currentLocationString]
                            clipTail:[self locationShouldClipTail]];
-  GURL URL =
-      self.currentWebState ? self.currentWebState->GetVisibleURL() : GURL();
-  BOOL isNTP = IsURLNewTabPage(URL);
+  BOOL isNTP = IsVisibleURLNewTabPage(self.currentWebState);
   if (isNTP) {
     [self.consumer updateAfterNavigatingToNTP];
   }
