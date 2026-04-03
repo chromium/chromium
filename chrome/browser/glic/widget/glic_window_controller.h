@@ -52,7 +52,7 @@ enum class AttachChangeReason;
 // GlicWindowController is a misleading name!
 //
 // GlicWindowController exists as a temporary compatibility interface
-// implemented by GlicWindowControllerImpl and GlicInstanceCoordinatorImpl.
+// implemented by GlicInstanceCoordinatorImpl.
 class GlicWindowController {
  public:
   using StateObserver = PanelStateObserver;

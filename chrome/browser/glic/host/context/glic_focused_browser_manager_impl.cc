@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
-#include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -48,17 +47,7 @@ void GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(
 GlicFocusedBrowserManagerImpl::GlicFocusedBrowserManagerImpl(
     GlicInstance::UiDelegate* window_controller,
     Profile* profile)
-    : window_controller_(*window_controller), profile_(profile) {
-  if (!GlicEnabling::IsMultiInstanceEnabled()) {
-    GlicWindowControllerImpl* window_controller_impl =
-        static_cast<GlicWindowControllerImpl*>(window_controller);
-    window_activation_subscription_ =
-        window_controller_impl->AddWindowActivationChangedCallback(
-            base::BindRepeating(
-                &GlicFocusedBrowserManagerImpl::OnGlicWindowActivationChanged,
-                base::Unretained(this)));
-  }
-}
+    : window_controller_(*window_controller), profile_(profile) {}
 
 GlicFocusedBrowserManagerImpl::~GlicFocusedBrowserManagerImpl() {
   browser_subscriptions_.clear();

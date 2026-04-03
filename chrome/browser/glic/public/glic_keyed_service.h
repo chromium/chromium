@@ -460,7 +460,7 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicFreController> fre_controller_;
-  // Is either a GlicWindowControllerImpl or GlicPanelCoordinatorImpl.
+  // Is a GlicInstanceCoordinatorImpl.
   std::unique_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicSharingManager> sharing_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;

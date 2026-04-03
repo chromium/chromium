@@ -947,7 +947,10 @@ IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest, RejectFreClosesPanel) {
                        .SetMustRemainVisible(false)),
       WaitForHide(kGlicViewElementId),
       PollState(kControllerIsShowingState,
-                [this]() { return GetWindowControllerImpl().IsShowing(); }),
+                [this]() {
+                  auto* instance = GetGlicInstance();
+                  return instance && instance->IsShowing();
+                }),
       WaitForState(kControllerIsShowingState, false),
       CheckControllerShowing(false),
       CheckResult(
