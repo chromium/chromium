@@ -54,6 +54,9 @@ public class WindowOcclusionTrackerUnitTest {
 
     @Before
     public void setUp() {
+        ChromeFeatureList.sAndroidSelfOcclusionTrackingMinimumVisibilitySizeThreshold.setForTesting(
+                0);
+        ChromeFeatureList.sAndroidSelfOcclusionTrackingForwarding.setForTesting(false);
         mOcclusionTracker = new WindowOcclusionTracker(mZOrderTracker);
     }
 
