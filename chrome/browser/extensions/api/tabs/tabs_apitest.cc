@@ -97,14 +97,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiNewTabTest, MAYBE_Tabs) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crud")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
   ASSERT_TRUE(
       RunExtensionTest("tabs/basics", {.extension_url = "audible.html"}))
       << message_;
 }
+
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests removing a tab while it is part of a group and an extension has a
 // listener for both chrome.tabs.onUpdated and chrome.tabs.onRemoved.
@@ -152,6 +152,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Update) {
 // TODO(https://crbug.com/371432155): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
+// Desktop Android does not yet support creating a tab in the pinned state.
+// See OpenTabHelper for details.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Pinned) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/pinned")) << message_;
 }
@@ -166,6 +168,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_Move) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/move")) << message_;
 }
 
+// On desktop Android, times out waiting for onUpdated events.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Events) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/events")) << message_;
 }
@@ -176,14 +179,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, RelativeURLs) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/relative_urls")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Query) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/query")) << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
@@ -226,15 +224,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_Connect) {
 // TODO(https://crbug.com/371432155): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
+// Crashes on desktop Android because it can't find a WindowController for a
+// window while querying tabs.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnRemoved) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_removed")) << message_;
 }
 
+// TODO(crbug.com/499307054): Flaky on desktop Android. Crashes during test
+// shutdown with a Java exception. See bug.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Reload) {
   ASSERT_TRUE(RunExtensionTest("tabs/reload")) << message_;
 }
 
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests various behaviors of highlighting tabs using chrome.tabs.update(),
 // including that highlighting is additive, tabs can be unhighlighted, and

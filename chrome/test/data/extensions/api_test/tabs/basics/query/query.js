@@ -11,10 +11,12 @@ var active_and_window_tabs = [];
 
 const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
+let isAndroid;
 
 loadScript.then(async function() {
 chrome.test.runTests([
-  function setup() {
+  async function setup() {
+    isAndroid = (await chrome.runtime.getPlatformInfo()).os === 'android';
     var tabs = ['http://example.org/a.html', 'http://www.google.com/favicon.ico'];
     chrome.windows.create({url: tabs}, pass(function(window) {
       waitForAllTabs(pass(function() {
@@ -26,7 +28,11 @@ chrome.test.runTests([
           pinned: true
         }, pass(function(tab) {
           waitForAllTabs(pass(function() {
-            assertTrue(tab.pinned);
+            // TODO(crbug.com/371432155): Android does not yet support creating
+            // pinned tabs with chrome.tabs.create(). See OpenTabHelper.
+            if (!isAndroid) {
+              assertTrue(tab.pinned);
+            }
             assertEq(testWindowId, tab.windowId);
           }));
         }));
@@ -88,6 +94,12 @@ chrome.test.runTests([
   },
 
   function queryPinned() {
+    // TODO(crbug.com/371432155): Android does not yet support creating
+    // pinned tabs with chrome.tabs.create(). See OpenTabHelper.
+    if (isAndroid) {
+      chrome.test.succeed('skipped');
+      return;
+    }
     chrome.tabs.query({pinned: true}, pass(function(tabs) {
       assertEq(pinned_tabs.length, tabs.length);
       for (var x = 0; x < tabs.length; x++)
