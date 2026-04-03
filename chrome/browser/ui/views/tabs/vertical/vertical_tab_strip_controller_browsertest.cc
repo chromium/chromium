@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   EXPECT_EQ(0, model->GetIndexOfTab(tab_to_move));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
                        ClickTabInImmersiveMode) {
   // Add another tab to switch to.
@@ -175,8 +175,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
       unpinned_collection_node()->children()[1].get();
   views::View* last_tab_view = last_tab_node->view();
 
+#if BUILDFLAG(IS_CHROMEOS)
   ui::test::EventGenerator event_generator(
       browser()->window()->GetNativeWindow()->GetRootWindow());
+#else
+  ui::test::EventGenerator event_generator(
+      browser()->window()->GetNativeWindow());
+#endif
 
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
@@ -198,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   EXPECT_TRUE(toolbar->app_menu_button()->IsDrawn());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
 class VerticalTabGroupHoverCardTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
