@@ -50,9 +50,11 @@ OptimizationGuideModelExecutionError::FromModelExecutionServerError(
       return OptimizationGuideModelExecutionError(
           ModelExecutionError::kFiltered);
     case proto::ErrorState::ERROR_STATE_REQUEST_THROTTLED:
+    case proto::ErrorState::ERROR_STATE_QUOTA_EXCEEDED:
       return OptimizationGuideModelExecutionError(
           ModelExecutionError::kRequestThrottled);
     case proto::ErrorState::ERROR_STATE_DISABLED:
+    case proto::ErrorState::ERROR_STATE_REQUEST_DISABLED:
       return OptimizationGuideModelExecutionError(
           ModelExecutionError::kDisabled);
   }
