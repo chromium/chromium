@@ -864,6 +864,7 @@ void GPUQueue::CopyElementImageToTextureInternal(
 
   scoped_refptr<StaticBitmapImage> image =
       context->GetElementImage(element, sx, sy, swidth, sheight, width, height,
+                               gpu::SHARED_IMAGE_USAGE_WEBGPU_READ,
                                "copyElementImageToTexture()", exception_state);
   if (!image) {
     return;

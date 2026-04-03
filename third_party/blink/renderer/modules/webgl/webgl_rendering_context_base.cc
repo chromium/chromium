@@ -6878,7 +6878,8 @@ void WebGLRenderingContextBase::TexElementImage2DInternal(
 
   scoped_refptr<StaticBitmapImage> image =
       GetElementImage(element, sx, sy, swidth, sheight, width, height,
-                      "texElementImage2D()", exception_state);
+                      gpu::SHARED_IMAGE_USAGE_GLES2_READ, "texElementImage2D()",
+                      exception_state);
   if (!image) {
     return;
   }

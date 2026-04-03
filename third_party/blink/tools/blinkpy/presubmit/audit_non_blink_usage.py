@@ -2592,6 +2592,7 @@ _CONFIG = [
         'allowed': [
             'base::BindOnce',
             'cc::TextureLayerClient',
+            'gpu::SHARED_IMAGE_USAGE_.+',
             'viz::ReleaseCallback',
             'viz::SharedImageFormat',
             'viz::SinglePlaneFormat',

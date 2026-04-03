@@ -42,15 +42,21 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
+namespace {
+BASE_FEATURE(kAllowAcceleratedTexElement, base::FEATURE_ENABLED_BY_DEFAULT);
+}
 
 CanvasRenderingContext::CanvasRenderingContext(
     CanvasRenderingContextHost* host,
@@ -170,6 +176,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
     std::optional<float> sheight,
     std::optional<uint32_t> width,
     std::optional<uint32_t> height,
+    gpu::SharedImageUsageSet usage,
     const String& func_name,
     ExceptionState& exception_state) {
   if (!IsDrawElementImageEligible(element, func_name, exception_state)) {
@@ -208,6 +215,26 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
         static_cast<float>(dest_size.height()) / intrinsic_dest_size.height());
   }
 
+  auto draw_to_canvas = [&](cc::PaintCanvas& canvas) {
+    canvas.scale(canvas_scale.x(), canvas_scale.y());
+    canvas.translate(-src_rect.x(), -src_rect.y());
+    canvas.drawPicture(child_paint_record->record);
+  };
+
+  if (base::FeatureList::IsEnabled(kAllowAcceleratedTexElement) &&
+      SharedGpuContext::IsGpuCompositingEnabled()) {
+    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+      auto resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
+          dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
+          gfx::ColorSpace::CreateSRGB(), wrapper,
+          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage);
+
+      return resource_provider->DoExternalDrawAndSnapshot(
+          [&](cc::PaintCanvas& canvas) { draw_to_canvas(canvas); },
+          ImageOrientation());
+    }
+  }
+
   sk_sp<SkSurface> surface = SkSurfaces::Raster(
       SkImageInfo::MakeN32Premul(dest_size.width(), dest_size.height()),
       /*surface_props*/ nullptr);
@@ -216,9 +243,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   }
 
   SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
-  skia_paint_canvas.scale(canvas_scale.x(), canvas_scale.y());
-  skia_paint_canvas.translate(-src_rect.x(), -src_rect.y());
-  skia_paint_canvas.drawPicture(child_paint_record->record);
+  draw_to_canvas(skia_paint_canvas);
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
 }
 

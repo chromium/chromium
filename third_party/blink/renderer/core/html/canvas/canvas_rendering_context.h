@@ -291,6 +291,7 @@ class CORE_EXPORT CanvasRenderingContext
       std::optional<float> sheight,
       std::optional<uint32_t> width,
       std::optional<uint32_t> height,
+      gpu::SharedImageUsageSet usage,
       const String& func_name,
       ExceptionState& exception_state);
 
