@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Mockito.mock;
 
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -20,6 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -64,6 +64,7 @@ public class UrlBarTest {
     private WebPageStation mStartingPage;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Callback<String> mUrlTextChangeListener;
 
     @Before
     public void setUpTest() throws Exception {
@@ -209,9 +210,9 @@ public class UrlBarTest {
         final AtomicReference<String> requestedAutocompleteText = new AtomicReference<>();
         final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
         mUrlBar.setTextChangeListener(
-                (textWithoutAutocomplete) -> {
+                (info) -> {
                     autocompleteHelper.notifyCalled();
-                    requestedAutocompleteText.set(textWithoutAutocomplete);
+                    requestedAutocompleteText.set(info);
                     didPreventInlineAutocomplete.set(!mUrlBar.shouldAutocomplete());
                     mUrlBar.setTextChangeListener(null);
                 });
@@ -575,17 +576,17 @@ public class UrlBarTest {
     @SmallTest
     @DisabledTest(message = "Disabled because of b/333536371")
     public void testUrlTextChangeListener() {
-        Callback<String> listener = mock(Callback.class);
-        mUrlBar.setTextChangeListener(listener);
+        mUrlBar.setTextChangeListener(mUrlTextChangeListener);
 
         mOmnibox.setText("onomatop");
-        Mockito.verify(listener).onResult("onomatop");
+        Mockito.verify(mUrlTextChangeListener).onResult("onomatop");
 
         // Setting autocomplete does not send a change update.
         mOmnibox.setAutocompleteText("oeia", null);
 
+        Mockito.clearInvocations(mUrlTextChangeListener);
         mOmnibox.setText("");
-        Mockito.verify(listener).onResult("");
+        Mockito.verify(mUrlTextChangeListener).onResult("");
     }
 
     @Test

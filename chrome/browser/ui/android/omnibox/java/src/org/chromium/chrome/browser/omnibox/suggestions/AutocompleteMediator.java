@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProc
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -70,6 +71,9 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -120,6 +124,10 @@ class AutocompleteMediator
     private static final long OMNIBOX_SUGGESTION_START_DELAY_MS = 30;
     // Delay recording ZPS suppression to allow subsequent suggestion updates to arrive.
     private static final long ZPS_SUPPRESSION_METRIC_DEBOUNCE_MS = 100;
+
+    @VisibleForTesting
+    static final String KEYWORD_SPACE_TRIGGERING_ENABLED_PREF =
+            "omnibox.keyword_space_triggering_enabled";
 
     private final Context mContext;
     private final AutocompleteDelegate mDelegate;
@@ -1160,6 +1168,84 @@ class AutocompleteMediator
         measureSuggestionRequestToUiModelTime(isFinal);
     }
 
+    /**
+     * Executes the site search action if available in the current autocomplete results. We look at
+     * the first suggestion match and check if it has a SITE_SEARCH action.
+     *
+     * @param source The source that triggered this site search.
+     * @return Whether the site search was successfully triggered.
+     */
+    public boolean triggerSiteSearch(@SiteSearchActivationSource int source) {
+        // Escape early if checks below do not pass
+        if (!isInInputSession()) {
+            return false;
+        }
+
+        Profile profile = mSessionState.getProfile();
+        if (profile == null) {
+            return false;
+        }
+
+        TemplateUrlService service = TemplateUrlServiceFactory.getForProfile(profile);
+        if (service == null || !service.isLoaded()) {
+            return false;
+        }
+
+        // Determine the keyword for site-search
+        String keyword = null;
+
+        if (source == SiteSearchActivationSource.SPACE) {
+            if (!UserPrefs.get(profile).getBoolean(KEYWORD_SPACE_TRIGGERING_ENABLED_PREF)) {
+                return false;
+            }
+
+            String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
+            if (text.isEmpty()) {
+                return false;
+            }
+
+            String trimmedText = text.trim();
+            String[] parts = trimmedText.split(" ", 2);
+            String potentialKeyword = parts[0];
+
+            if (service.getTemplateUrlForKeyword(potentialKeyword) != null) {
+                // Case 1: First word is a registered keyword (e.g. "cr abc"). We trigger SiteSearch
+                // for "cr" and will extract query "abc" inside onKeywordModeEntered.
+                keyword = potentialKeyword;
+            } else if (trimmedText.contains(" ")) {
+                // Case 2: Multiple words but first isn't keyword (e.g. "foo bar baz"). Normal
+                // query.
+                return false;
+            } else {
+                // Case 3: No space, not a keyword yet. Keep it as whole (e.g. "crabc") as it might
+                // match a prefix later.
+                keyword = trimmedText;
+            }
+        } else if (source == SiteSearchActivationSource.TAB) {
+            AutocompleteResult result = mAutocompleteResult;
+            if (result == null || result.getSuggestionsList().isEmpty()) {
+                return false;
+            }
+
+            AutocompleteMatch match = result.getSuggestionsList().get(0);
+            keyword = match.getAssociatedKeyword();
+        }
+
+        if (keyword != null) {
+            // Check if the keyword matches a registered search engine.
+            TemplateUrl templateUrl = service.getTemplateUrlForKeyword(keyword);
+            if (templateUrl != null) {
+                SiteSearchData data =
+                        new SiteSearchData(templateUrl.getKeyword(), templateUrl.getShortName());
+                // Enter keyword mode with the new site search data.
+                onKeywordModeEntered(data);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
         if (!isInInputSession()) return;
         onInputChanged(/* isOnFocusContext= */ false);
@@ -1185,9 +1271,21 @@ class AutocompleteMediator
             // *before* the keyword chip is updated. Applying the chip can trigger a text change
             // notification, and if the state/UI text are not already perfectly aligned (empty),
             // the suppression flag above will fail, triggering an unintended suggestion request.
-            mAutocompleteInput.setUserText("");
+            String currentText = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
+            if (currentText == null) currentText = "";
+            String query = "";
+
+            int firstSpaceIndex = currentText.indexOf(' ');
+
+            // Extract any text typed after the keyword (e.g. "cr abc" -> query "abc").
+            if (firstSpaceIndex >= 0 && firstSpaceIndex < currentText.length() - 1) {
+                query = currentText.substring(firstSpaceIndex + 1).trim();
+            }
+
+            mAutocompleteInput.setUserText(query);
             mAutocompleteInput.setSiteSearchData(siteSearchData);
-            mDelegate.setOmniboxEditingText("");
+            mDelegate.setOmniboxEditingText(query);
+
         } else {
             // When explicitly clearing keyword mode, we just update the data.
             // Do not clear the text. The text belongs to the user or the suggestion.

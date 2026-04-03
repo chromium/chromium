@@ -75,6 +75,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDeleg
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -91,6 +93,10 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -103,6 +109,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -145,6 +152,10 @@ public class AutocompleteMediatorUnitTest {
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     private @Mock CachedZeroSuggestionsManager.OverridesForTesting
             mMockCachedZeroSuggestionsManager;
+    private @Mock TemplateUrlService mTemplateUrlService;
+    private @Mock Profile mProfile;
+    private @Mock PrefService mPrefService;
+    private @Mock TemplateUrl mTemplateUrl;
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
     private List<AutocompleteMatch> mSuggestionsList;
@@ -161,6 +172,8 @@ public class AutocompleteMediatorUnitTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
         CachedZeroSuggestionsManager.setOverridesForTesting(mMockCachedZeroSuggestionsManager);
+        UserPrefs.setPrefServiceForTesting(mPrefService);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         PreloadingFeatureMap.setInstanceForTesting(mPreloadingFeatureMap);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJniMock);
         OmniboxActionFactoryJni.setInstanceForTesting(mActionFactoryJni);
@@ -289,6 +302,7 @@ public class AutocompleteMediatorUnitTest {
         autocompleteInput.setPageClassification(pageClassification);
 
         var session = mock(FuseboxSessionState.class);
+        lenient().doReturn(mProfile).when(session).getProfile();
         lenient().doReturn(mAutocompleteController).when(session).getAutocompleteController();
         lenient().doReturn(autocompleteInput).when(session).getAutocompleteInput();
         lenient()
@@ -336,6 +350,65 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.endInput();
         verify(mTextStateProvider).setSiteSearchChip(null);
+    }
+
+    /**
+     * Verifies that triggerSiteSearch successfully executes a SITE_SEARCH action when a matching
+     * suggestion with an action is available.
+     */
+    @Test
+    @SmallTest
+    public void triggerSiteSearchSpaceSuccess() {
+        // Setup: Start session and mock text state.
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        doReturn(true)
+                .when(mPrefService)
+                .getBoolean(AutocompleteMediator.KEYWORD_SPACE_TRIGGERING_ENABLED_PREF);
+        doReturn("bing").when(mTextStateProvider).getTextWithoutAutocomplete();
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        var mockTemplateUrl = mock(TemplateUrl.class);
+        doReturn("bing").when(mockTemplateUrl).getKeyword();
+        doReturn("Bing").when(mockTemplateUrl).getShortName();
+        doReturn(mockTemplateUrl).when(mTemplateUrlService).getTemplateUrlForKeyword("bing");
+
+        assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
+        verify(mAutocompleteDelegate).setOmniboxEditingText("");
+    }
+
+    @Test
+    @SmallTest
+    public void triggerSiteSearchTabSuccess() {
+        // Setup: Start session and mock suggestions.
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        var mockMatch = mock(AutocompleteMatch.class);
+        doReturn("bing").when(mockMatch).getAssociatedKeyword();
+
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(Collections.singletonList(mockMatch), null),
+                /* isFinal= */ true);
+
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        var mockTemplateUrl = mock(TemplateUrl.class);
+        doReturn("bing").when(mockTemplateUrl).getKeyword();
+        doReturn("Bing").when(mockTemplateUrl).getShortName();
+        doReturn(mockTemplateUrl).when(mTemplateUrlService).getTemplateUrlForKeyword("bing");
+
+        assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.TAB));
+        verify(mAutocompleteDelegate).setOmniboxEditingText("");
+    }
+
+    /** Verifies that triggerSiteSearch fails (returns false) if the Omnibox text is empty. */
+    @Test
+    @SmallTest
+    public void triggerSiteSearch_Failure_NoText() {
+        mMediator.beginInput(createEmptySession());
+        doReturn("").when(mTextStateProvider).getTextWithoutAutocomplete();
+
+        assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.TAB));
     }
 
     @Test
@@ -1687,5 +1760,27 @@ public class AutocompleteMediatorUnitTest {
         UnsyncedSuggestionsListAnimationDriver animationDriver =
                 (UnsyncedSuggestionsListAnimationDriver) mMediator.getAnimationDriverForTesting();
         assertFalse(animationDriver.isRunning());
+    }
+
+    @Test
+    @SmallTest
+    public void triggerSiteSearchSpaceWithQuerySuccess() {
+        // Setup: Start session and mock text state with valid keyword and query.
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        doReturn(true)
+                .when(mPrefService)
+                .getBoolean(AutocompleteMediator.KEYWORD_SPACE_TRIGGERING_ENABLED_PREF);
+        doReturn("cr abc").when(mTextStateProvider).getTextWithoutAutocomplete();
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn("cr").when(mTemplateUrl).getKeyword();
+        doReturn("Cr").when(mTemplateUrl).getShortName();
+        doReturn(mTemplateUrl).when(mTemplateUrlService).getTemplateUrlForKeyword("cr");
+
+        assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
+
+        // Verify that the query "abc" was set in the omnibox.
+        verify(mAutocompleteDelegate).setOmniboxEditingText("abc");
     }
 }

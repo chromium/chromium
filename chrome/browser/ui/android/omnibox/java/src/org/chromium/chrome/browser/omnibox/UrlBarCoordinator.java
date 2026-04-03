@@ -132,6 +132,10 @@ public class UrlBarCoordinator
         mMediator.setTextChangeListener(listener);
     }
 
+    public void setRichTextChangeListener(Callback<UrlBarTextChangeInfo> listener) {
+        mMediator.setRichTextChangeListener(listener);
+    }
+
     /**
      * Set the callback that will be invoked for:
      *

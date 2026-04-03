@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
+import org.chromium.chrome.browser.omnibox.suggestions.SiteSearchActivationSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
@@ -635,6 +636,20 @@ class LocationBarMediator
         }
     }
 
+    /** Triggers on EACH key press to drive fast site-search triggers. */
+    /* package */ void onUrlTextRichChanged(UrlBarTextChangeInfo info) {
+        if (mCurrentInput == null) return;
+
+        if (shouldTriggerSiteSearch(info)) {
+            if (mAutocompleteCoordinator != null
+                    && mAutocompleteCoordinator.triggerSiteSearch(
+                            SiteSearchActivationSource.SPACE)) {
+                return;
+            }
+        }
+    }
+
+    /** Triggers only when IME input batch completes to drive autocomplete. */
     /* package */ void onUrlTextChanged(String text) {
         updateButtonVisibility();
         if (mCurrentInput == null) return;
@@ -642,6 +657,54 @@ class LocationBarMediator
         mCurrentInput
                 .setUserText(text)
                 .setAllowUserTextAutocompletion(mUrlCoordinator.shouldAutocomplete());
+    }
+
+    /**
+     * Determines whether site-search should be triggered based on the current text change.
+     * Expression triggers if a single space character was introduced.
+     *
+     * <p>Note that this is an initial check. The AutocompleteCoordinator will perform a more
+     * thorough check to determine if site-search should be triggered based on whether the keyword
+     * is valid.
+     *
+     * @param info Information about the text change.
+     * @return True if site-search should be triggered, false otherwise.
+     */
+    @VisibleForTesting
+    /* package */ boolean shouldTriggerSiteSearch(UrlBarTextChangeInfo info) {
+
+        if (info.isDelete()) {
+            // Deletions should never trigger site-search. This helps avoid accidentally activating
+            // site-search when the user is trying to delete text.
+            return false;
+        }
+
+        String text = info.getText();
+        // Check if a single space character was added (either by pure insertion or by replacing
+        // selection with a single space).
+        // This is the primary condition for site-search activation.
+        boolean singleSpaceAdded =
+                info.getAfter() == 1
+                        && info.getStart() < text.length()
+                        && text.charAt(info.getStart()) == ' ';
+        if (!singleSpaceAdded) {
+            return false;
+        }
+
+        String textBeforeSpace = text.substring(0, info.getStart());
+        if (textBeforeSpace.trim().isEmpty()) {
+            // No valid text before space (e.g. space as first character, or consecutive spaces).
+            return false;
+        }
+
+        if (textBeforeSpace.trim().contains(" ")) {
+            // Multiple words before space. We only trigger site search if the user typed a space
+            // after a single word (e.g. keywords + space). If there are multiple words, it is
+            // likely a normal query.
+            return false;
+        }
+
+        return true;
     }
 
     /* package */ void onSuggestionsChanged(

@@ -177,6 +177,10 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<Callback<String>> TEXT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** The callback to be notified on raw url text changes (rich context). */
+    public static final WritableObjectPropertyKey<Callback<UrlBarTextChangeInfo>>
+            RICH_TEXT_CHANGE_LISTENER = new WritableObjectPropertyKey<>();
+
     /** Specifies the color for url bar text. */
     public static final WritableIntPropertyKey TEXT_COLOR = new WritableIntPropertyKey();
 
@@ -218,6 +222,7 @@ class UrlBarProperties {
                 SHOW_CURSOR,
                 SHOW_HINT_TEXT,
                 TEXT_CHANGE_LISTENER,
+                RICH_TEXT_CHANGE_LISTENER,
                 TEXT_COLOR,
                 TEXT_CONTEXT_MENU_DELEGATE,
                 TEXT_STATE,

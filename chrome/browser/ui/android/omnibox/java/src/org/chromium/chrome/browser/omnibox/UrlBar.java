@@ -97,7 +97,10 @@ public class UrlBar extends AutocompleteEditText {
     private int mUrlDirection;
 
     private @Nullable UrlBarDelegate mUrlBarDelegate;
+    // Waits for IME to settle and commit text. Used for driving autocomplete suggestions.
     private @Nullable Callback<String> mTextChangeListener;
+    // Listens for each raw text change to drive site-search triggering.
+    private @Nullable Callback<UrlBarTextChangeInfo> mRichTextChangeListener;
     private @Nullable OnKeyListener mKeyDownListener;
     private @Nullable UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private @Nullable Callback<Integer> mUrlDirectionListener;
@@ -465,6 +468,13 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         limitDisplayableLength();
+        // Notifies observers about text changes with rich context (e.g., whether it was an
+        // insertion or deletion).
+        if (mRichTextChangeListener != null) {
+            mRichTextChangeListener.onResult(
+                    new UrlBarTextChangeInfo(
+                            getTextWithoutAutocomplete(), start, lengthBefore, lengthAfter));
+        }
 
         post(this::detectAndNotifyOnTextWrappingChanges);
     }
@@ -617,12 +627,36 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     /**
-     * Set the listener to be notified when the URL text has changed.
+     * Set the listener to be notified when the URL text has changed. (for autocomplete suggestions)
      *
      * @param listener The listener to be notified.
      */
     public void setTextChangeListener(Callback<String> listener) {
         mTextChangeListener = listener;
+    }
+
+    /**
+     * Set the listener to be notified when the URL text has changed with rich context (for
+     * site-search triggering).
+     *
+     * @param listener The listener to be notified.
+     */
+    public void setRichTextChangeListener(Callback<UrlBarTextChangeInfo> listener) {
+        mRichTextChangeListener = listener;
+    }
+
+    /**
+     * Intercepts key events. We intercept the TAB key here to enable site-search triggering via the
+     * TAB key in the Omnibox.
+     */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_TAB && mKeyDownListener != null) {
+            if (mKeyDownListener.onKey(this, event.getKeyCode(), event)) {
+                return true;
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     /**

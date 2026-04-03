@@ -796,6 +796,32 @@ public class UrlBarUnitTest {
         }
     }
 
+    /** Verifies that {@link UrlBar#dispatchKeyEvent} intercepts and handles the TAB key. */
+    @Test
+    public void dispatchKeyEvent_tabInterceptionByKeyDownListener() {
+        var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB);
+
+        var listener = mock(View.OnKeyListener.class);
+        mUrlBar.setKeyDownListener(listener);
+
+        // Scenario 1: Listener consumes the TAB event.
+        // We verify that dispatchKeyEvent returns true and the listener is called.
+        doReturn(true).when(listener).onKey(any(), anyInt(), any());
+        assertTrue(mUrlBar.dispatchKeyEvent(event));
+        verify(listener).onKey(mUrlBar, KeyEvent.KEYCODE_TAB, event);
+
+        clearInvocations(listener, mUrlBar);
+
+        // Scenario 2: Listener does NOT consume the TAB event.
+        // We verify that dispatchKeyEvent returns false, and the event falls through to standard
+        // key handling (which might call the listener again in onKeyDown).
+        doReturn(false).when(listener).onKey(any(), anyInt(), any());
+        assertFalse(mUrlBar.dispatchKeyEvent(event));
+        // It gets called once in dispatchKeyEvent, and once in onKeyDown (via
+        // super.dispatchKeyEvent).
+        verify(listener, times(2)).onKey(mUrlBar, KeyEvent.KEYCODE_TAB, event);
+    }
+
     @Test
     public void keyEvents_actionUpKeysBypassListenerCompletely() {
         var keysToCheck =

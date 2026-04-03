@@ -410,6 +410,7 @@ public class LocationBarCoordinator
         mInstallButton.setOnClickListener(mLocationBarMediator::installButtonClicked);
 
         mUrlCoordinator.setTextChangeListener(mLocationBarMediator::onUrlTextChanged);
+        mUrlCoordinator.setRichTextChangeListener(mLocationBarMediator::onUrlTextRichChanged);
         mUrlCoordinator.setKeyDownListener(mLocationBarMediator);
 
         // The LocationBar's direction is tied to the UrlBar's text direction. Icons inside the

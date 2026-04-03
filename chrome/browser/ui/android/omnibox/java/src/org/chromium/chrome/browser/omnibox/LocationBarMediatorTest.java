@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
+import org.chromium.chrome.browser.omnibox.suggestions.SiteSearchActivationSource;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -508,6 +509,96 @@ public class LocationBarMediatorTest {
         doReturn(false).when(mUrlCoordinator).shouldAutocomplete();
         mMediator.onUrlTextChanged("test2");
         assertFalse(input.shouldAllowUserTextAutocompletion());
+    }
+
+    /** Verifies that typing a space after text triggers site search. */
+    @Test
+    public void testOnUrlTextChangedTypedSpaceTriggersSiteSearch() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        doReturn(true)
+                .when(mAutocompleteCoordinator)
+                .triggerSiteSearch(SiteSearchActivationSource.SPACE);
+
+        mMediator.onUrlTextRichChanged(new UrlBarTextChangeInfo("youtube", 0, 0, 7));
+
+        // Simulate user typing space and updating cursor location.
+        mMediator.onUrlTextRichChanged(new UrlBarTextChangeInfo("youtube ", 7, 0, 1));
+
+        verify(mAutocompleteCoordinator).triggerSiteSearch(SiteSearchActivationSource.SPACE);
+    }
+
+    /** Verifies that pasting text that ends with a space does NOT trigger site search. */
+    @Test
+    public void testOnUrlTextChangedPastedTextWithSpaceDoesNotTriggerSiteSearch() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        // Paste "youtube " directly.
+        mMediator.onUrlTextRichChanged(new UrlBarTextChangeInfo("youtube ", 0, 0, 8));
+
+        verify(mAutocompleteCoordinator, never())
+                .triggerSiteSearch(SiteSearchActivationSource.SPACE);
+    }
+
+    /** Verifies that backspacing from "query a" to "query " does NOT trigger site search. */
+    @Test
+    public void testOnUrlTextChangedBackspaceToSpaceDoesNotTriggerSiteSearch() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        mMediator.onUrlTextRichChanged(new UrlBarTextChangeInfo("youtube a", 0, 0, 9));
+        // Backspace deleted "a", leaving "youtube ". Should not trigger.
+        mMediator.onUrlTextRichChanged(new UrlBarTextChangeInfo("youtube ", 8, 1, 0));
+
+        verify(mAutocompleteCoordinator, never())
+                .triggerSiteSearch(SiteSearchActivationSource.SPACE);
+    }
+
+    @Test
+    public void testShouldTriggerSiteSearchScenarios() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        // Scenario 1: Deletion -> False
+        UrlBarTextChangeInfo deleteInfo = new UrlBarTextChangeInfo("text", 4, 1, 0);
+        assertFalse(mMediator.shouldTriggerSiteSearch(deleteInfo));
+
+        // Scenario 2: Replacement with non-space -> False
+        UrlBarTextChangeInfo replaceNonSpaceInfo = new UrlBarTextChangeInfo("texa", 3, 1, 1);
+        assertFalse(mMediator.shouldTriggerSiteSearch(replaceNonSpaceInfo));
+
+        // Scenario 3: Multiple character insertion -> False
+        UrlBarTextChangeInfo multiInsertInfo = new UrlBarTextChangeInfo("text  ", 4, 0, 2);
+        assertFalse(mMediator.shouldTriggerSiteSearch(multiInsertInfo));
+
+        // Scenario 4: Non-space character -> False
+        UrlBarTextChangeInfo nonSpaceInfo = new UrlBarTextChangeInfo("texts", 4, 0, 1);
+        assertFalse(mMediator.shouldTriggerSiteSearch(nonSpaceInfo));
+
+        // Scenario 5: Space with empty before -> False
+        UrlBarTextChangeInfo spaceEmptyBeforeInfo = new UrlBarTextChangeInfo(" ", 0, 0, 1);
+        assertFalse(mMediator.shouldTriggerSiteSearch(spaceEmptyBeforeInfo));
+
+        // Scenario 6: Space with multiple words before -> False
+        UrlBarTextChangeInfo spaceMultiWordsInfo =
+                new UrlBarTextChangeInfo("word1 word2 ", 11, 0, 1);
+        assertFalse(mMediator.shouldTriggerSiteSearch(spaceMultiWordsInfo));
+
+        // Scenario 7: Space with single word before -> True
+        UrlBarTextChangeInfo spaceSingleWordInfo = new UrlBarTextChangeInfo("word1 ", 5, 0, 1);
+        assertTrue(mMediator.shouldTriggerSiteSearch(spaceSingleWordInfo));
+
+        // Scenario 8: Replacement with space (single word before) -> True
+        UrlBarTextChangeInfo replaceWithSpaceInfo =
+                new UrlBarTextChangeInfo(
+                        "word ", 4, 1, 1); // e.g. replacing '1' in "word1" with ' '
+        assertTrue(mMediator.shouldTriggerSiteSearch(replaceWithSpaceInfo));
     }
 
     public void testLoadUrl_base() {

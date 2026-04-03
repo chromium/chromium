@@ -49,7 +49,8 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     // and we couldn't change it by the branded color scheme.
     private boolean mIsHintTextFixedForNtp;
     private boolean mShowOriginOnly;
-    private Callback<String> mTextChangeListener = (text) -> {};
+    private @Nullable Callback<String> mTextChangeListener;
+    private @Nullable Callback<UrlBarTextChangeInfo> mRichTextChangeListener;
 
     /**
      * Creates a URLBarMediator.
@@ -70,6 +71,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, this);
         mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, false);
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, this::onTextChanged);
+        mModel.set(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER, this::onRichTextChanged);
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, true);
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         pushTextToModel(/* originChanged= */ false);
@@ -86,9 +88,22 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mTextChangeListener = listener;
     }
 
+    public void setRichTextChangeListener(Callback<UrlBarTextChangeInfo> listener) {
+        mRichTextChangeListener = listener;
+    }
+
     private void onTextChanged(String text) {
-        mTextChangeListener.onResult(text);
+        if (mTextChangeListener != null) {
+            mTextChangeListener.onResult(text);
+        }
         updateShowHintText(text);
+    }
+
+    private void onRichTextChanged(UrlBarTextChangeInfo info) {
+        if (mRichTextChangeListener != null) {
+            mRichTextChangeListener.onResult(info);
+        }
+        updateShowHintText(info.getText());
     }
 
     private void updateShowHintText(String text) {

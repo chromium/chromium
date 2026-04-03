@@ -409,6 +409,12 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             return false;
         }
 
+        if (keyCode == KeyEvent.KEYCODE_TAB && event.hasNoModifiers()) {
+            if (triggerSiteSearch(SiteSearchActivationSource.TAB)) {
+                return true;
+            }
+        }
+
         // Do not attempt to interpret non-navigaton keys.
         // There are cases where the SPACE key may gen inappropriately routed to the
         // Suggestion, simulating press/long press of the UI element.
@@ -421,6 +427,11 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         }
 
         return false;
+    }
+
+    /** Site search was successfully triggered. */
+    public boolean triggerSiteSearch(@SiteSearchActivationSource int source) {
+        return mMediator.triggerSiteSearch(source);
     }
 
     /** Notify the Autocomplete about Omnibox text change. */
