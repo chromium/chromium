@@ -21,8 +21,7 @@ class TestVerticalTabStripStateControllerDelegate final
   void SetCollapsedStateUpdatedCallback(
       base::RepeatingCallback<void(bool)> callback) override;
   bool IsCollapsing() override;
-  void RequestCollapse(
-      tabs::VerticalTabStripState requested_collapse_state) override;
+  void RequestCollapse(bool collapse) override;
 
  private:
   base::RepeatingCallback<void(bool)>

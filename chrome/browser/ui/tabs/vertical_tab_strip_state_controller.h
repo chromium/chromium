@@ -49,8 +49,7 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
     virtual void SetCollapsedStateUpdatedCallback(
         base::RepeatingCallback<void(bool)> callback) = 0;
     virtual bool IsCollapsing() = 0;
-    virtual void RequestCollapse(
-        tabs::VerticalTabStripState requested_collapse_state) = 0;
+    virtual void RequestCollapse(bool collapse) = 0;
   };
 
   explicit VerticalTabStripStateController(
@@ -72,20 +71,20 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   static VerticalTabStripStateController* From(
       BrowserWindowInterface* browser_window);
 
+  void SetDelegate(Delegate* delegate);
+
   bool ShouldDisplayVerticalTabs() const;
   void SetVerticalTabsEnabled(bool enabled);
 
   std::unique_ptr<ScopedEnableStateLock> GetEnableStateLock();
 
   bool IsCollapsed() const;
-
-  void SetDelegate(Delegate* delegate);
   bool IsCollapsedOrCollapsing() const;
+
   // Request that the Delegate begin transitioning its collapse state.
   // The Delegate is then responsible for updating this class's collapse
   // state through SetCollapsed.
-  void RequestCollapse(tabs::VerticalTabStripState requested_collapse_state);
-  void RequestCollapse(bool collapsed);
+  void RequestCollapse(bool collapse);
 
   int GetUncollapsedWidth() const;
   void SetUncollapsedWidth(int width);
@@ -94,7 +93,6 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   void SetExpandOnHoverEnabled(bool enabled);
 
   const VerticalTabStripState& GetState() const { return state_; }
-  void SetState(const VerticalTabStripState& state);
 
   using CollapseChangeCallback = base::RepeatingCallback<void(bool)>;
   base::CallbackListSubscription RegisterOnCollapseWillChange(

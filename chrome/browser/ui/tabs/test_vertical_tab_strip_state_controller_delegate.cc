@@ -22,9 +22,8 @@ bool TestVerticalTabStripStateControllerDelegate::IsCollapsing() {
 }
 
 void TestVerticalTabStripStateControllerDelegate::RequestCollapse(
-    tabs::VerticalTabStripState requested_collapse_state) {
-  update_state_controller_collapsed_callback_.Run(
-      requested_collapse_state.collapsed);
+    bool collapse) {
+  update_state_controller_collapsed_callback_.Run(collapse);
 }
 
 }  // namespace tabs

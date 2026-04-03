@@ -24,7 +24,6 @@ namespace tabs {
 
 namespace {
 constexpr int kUncollapsedWidth1 = 100;
-constexpr int kUncollapsedWidth2 = 200;
 constexpr int kSessionIDValue = 123;
 }  // namespace
 
@@ -204,32 +203,6 @@ TEST_F(VerticalTabStripStateControllerTest, ExpandOnHover) {
   EXPECT_FALSE(controller()->IsExpandOnHoverEnabled());
   EXPECT_FALSE(
       pref_service()->GetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled));
-}
-
-TEST_F(VerticalTabStripStateControllerTest, State) {
-  int call_count = 0;
-  auto subscription =
-      controller()->RegisterOnCollapseChanged(base::BindRepeating(
-          [](int* call_count, VerticalTabStripStateController* controller,
-             bool collapsed) {
-            (*call_count)++;
-            EXPECT_TRUE(collapsed);
-            EXPECT_EQ(kUncollapsedWidth2, controller->GetUncollapsedWidth());
-          },
-          &call_count, controller()));
-
-  VerticalTabStripState state;
-  state.collapsed = true;
-  state.uncollapsed_width = kUncollapsedWidth2;
-  controller()->SetState(state);
-
-  EXPECT_TRUE(controller()->IsCollapsed());
-  EXPECT_EQ(kUncollapsedWidth2, controller()->GetUncollapsedWidth());
-  EXPECT_EQ(1, call_count);
-
-  // Setting to same value should not trigger a notification.
-  controller()->SetState(state);
-  EXPECT_EQ(1, call_count);
 }
 
 TEST_F(VerticalTabStripStateControllerTest, ImmersiveModeLock) {

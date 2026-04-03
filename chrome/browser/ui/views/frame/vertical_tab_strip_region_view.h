@@ -174,8 +174,7 @@ class VerticalTabStripRegionView final
   void SetCollapsedStateUpdatedCallback(
       base::RepeatingCallback<void(bool)> callback) override;
   bool IsCollapsing() override;
-  void RequestCollapse(
-      tabs::VerticalTabStripState requested_collapse_state) override;
+  void RequestCollapse(bool collapse) override;
 
   views::Separator* tabs_separator_for_testing() {
     return tab_strip_view_->GetTabsSeparator();

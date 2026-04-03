@@ -145,6 +145,15 @@ VerticalTabStripStateController* VerticalTabStripStateController::From(
                         : nullptr;
 }
 
+void VerticalTabStripStateController::SetDelegate(Delegate* delegate) {
+  delegate_ = delegate;
+  if (delegate_) {
+    delegate_->SetCollapsedStateUpdatedCallback(
+        base::BindRepeating(&VerticalTabStripStateController::SetCollapsed,
+                            base::Unretained(this)));
+  }
+}
+
 bool VerticalTabStripStateController::ShouldDisplayVerticalTabs() const {
   return IsVerticalTabsFeatureEnabled() && is_vertical_tabs_enabled_;
 }
@@ -158,31 +167,15 @@ bool VerticalTabStripStateController::IsCollapsed() const {
   return state_.collapsed;
 }
 
-void VerticalTabStripStateController::SetDelegate(Delegate* delegate) {
-  delegate_ = delegate;
-  if (delegate_) {
-    delegate_->SetCollapsedStateUpdatedCallback(
-        base::BindRepeating(&VerticalTabStripStateController::SetCollapsed,
-                            base::Unretained(this)));
-  }
-}
-
 bool VerticalTabStripStateController::IsCollapsedOrCollapsing() const {
   return IsCollapsed() || (delegate_ && delegate_->IsCollapsing());
 }
 
-void VerticalTabStripStateController::RequestCollapse(
-    tabs::VerticalTabStripState requested_collapse_state) {
+void VerticalTabStripStateController::RequestCollapse(bool collapse) {
   if (delegate_) {
-    delegate_->RequestCollapse(requested_collapse_state);
-  };
-  NotifyCollapseWillChange(requested_collapse_state.collapsed);
-}
-
-void VerticalTabStripStateController::RequestCollapse(bool collapsed) {
-  auto requested_collapse_state = state_;
-  requested_collapse_state.collapsed = collapsed;
-  RequestCollapse(requested_collapse_state);
+    delegate_->RequestCollapse(collapse);
+    NotifyCollapseWillChange(collapse);
+  }
 }
 
 int VerticalTabStripStateController::GetUncollapsedWidth() const {
@@ -202,15 +195,6 @@ bool VerticalTabStripStateController::IsExpandOnHoverEnabled() const {
 
 void VerticalTabStripStateController::SetExpandOnHoverEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled, enabled);
-}
-
-void VerticalTabStripStateController::SetState(
-    const VerticalTabStripState& state) {
-  if (state_.collapsed != state.collapsed ||
-      state_.uncollapsed_width != state.uncollapsed_width) {
-    state_ = state;
-    NotifyCollapseChanged();
-  }
 }
 
 base::CallbackListSubscription

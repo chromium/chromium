@@ -782,17 +782,17 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
   if (!starting_width_on_resize_.has_value()) {
     starting_width_on_resize_ = width();
   }
+  bool previously_collapsed = target_collapse_state_.collapsed;
   const int proposed_width = starting_width_on_resize_.value() + resize_amount;
   if (done_resizing) {
     starting_width_on_resize_ = std::nullopt;
   }
 
-  tabs::VerticalTabStripState requested_collapse_state;
-  requested_collapse_state.collapsed = proposed_width <= kCollapseSnapWidth;
-  requested_collapse_state.uncollapsed_width =
-      target_collapse_state_.uncollapsed_width;
-  if (!requested_collapse_state.collapsed) {
-    requested_collapse_state.uncollapsed_width =
+  tabs::VerticalTabStripState new_state;
+  new_state.collapsed = proposed_width <= kCollapseSnapWidth;
+  new_state.uncollapsed_width = target_collapse_state_.uncollapsed_width;
+  if (!new_state.collapsed) {
+    new_state.uncollapsed_width =
         std::clamp(proposed_width, kUncollapsedMinWidth, kUncollapsedMaxWidth);
     if (done_resizing) {
       // We only want to save the uncollapsed width to the state controller if
@@ -800,24 +800,32 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
       // collapse will cause a subsequent collapse button click to only expand
       // to the minimum expanded width, and not to the starting width of the
       // drag-to-collapse operation.
-      state_controller_->SetUncollapsedWidth(
-          requested_collapse_state.uncollapsed_width);
+      state_controller_->SetUncollapsedWidth(new_state.uncollapsed_width);
     }
+  } else if (done_resizing) {
+    // If we are done resizing while in collapsed state, update the target state
+    // to use the uncollapsed width from the state controller.
+    new_state.uncollapsed_width = state_controller_->GetUncollapsedWidth();
   }
 
   if (done_resizing) {
     base::RecordAction(base::UserMetricsAction(
-        requested_collapse_state.collapsed
-            ? "VerticalTabs_TabStrip_ResizeToCollapsed"
-            : "VerticalTabs_TabStrip_ResizeToUncollapsed"));
+        new_state.collapsed ? "VerticalTabs_TabStrip_ResizeToCollapsed"
+                            : "VerticalTabs_TabStrip_ResizeToUncollapsed"));
     base::UmaHistogramCounts1000(
         "Tabs.VerticalTabs.TabStripSize",
-        requested_collapse_state.collapsed
-            ? kCollapsedWidth
-            : requested_collapse_state.uncollapsed_width);
+        new_state.collapsed ? kCollapsedWidth : new_state.uncollapsed_width);
   }
 
-  state_controller_->RequestCollapse(requested_collapse_state);
+  target_collapse_state_ = new_state;
+
+  if (previously_collapsed != target_collapse_state_.collapsed) {
+    state_controller_->RequestCollapse(target_collapse_state_.collapsed);
+  } else if (!target_collapse_state_.collapsed && !IsAnimatingSize()) {
+    // If we are still in the expanding animation, invalidating the layout will
+    // happen in AnimationProgressed, instead of here.
+    InvalidateLayout();
+  }
 }
 
 void VerticalTabStripRegionView::SetCollapsedStateUpdatedCallback(
@@ -831,22 +839,12 @@ bool VerticalTabStripRegionView::IsCollapsing() {
          TabStripAnimations::kCollapse;
 }
 
-void VerticalTabStripRegionView::RequestCollapse(
-    tabs::VerticalTabStripState requested_collapse_state) {
-  bool previously_collapsed = target_collapse_state_.collapsed;
-  target_collapse_state_ = requested_collapse_state;
-
-  if (previously_collapsed != target_collapse_state_.collapsed) {
-    const auto motion = target_collapse_state_.collapsed
-                            ? TabStripAnimations::kCollapse
-                            : TabStripAnimations::kExpand;
-    BrowserAnimationController::From(browser_view_->browser())
-        ->Start(TabStripAnimations::kVerticalTabStrip, motion);
-  } else if (!target_collapse_state_.collapsed && !IsAnimatingSize()) {
-    // If we are still in the expanding animation, invalidating the layout will
-    // happen in AnimationProgressed, instead of here.
-    InvalidateLayout();
-  }
+void VerticalTabStripRegionView::RequestCollapse(bool collapse) {
+  target_collapse_state_.collapsed = collapse;
+  const auto motion =
+      collapse ? TabStripAnimations::kCollapse : TabStripAnimations::kExpand;
+  BrowserAnimationController::From(browser_view_->browser())
+      ->Start(TabStripAnimations::kVerticalTabStrip, motion);
 }
 
 void VerticalTabStripRegionView::DisableTabStripEditingForTesting() {
