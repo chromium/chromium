@@ -22,6 +22,16 @@
 #include "mojo/core/embedder/embedder.h"
 #include "remoting/base/crash/crash_reporting_crashpad.h"
 #include "remoting/base/logging.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include "base/files/file_util.h"
+#include "base/posix/eintr_wrapper.h"
+#include "remoting/base/file_path_util_linux.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/evaluate_capability.h"
@@ -61,6 +71,35 @@ int XSessionChooserMain();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
+
+#if BUILDFLAG(IS_LINUX)
+void EnsureVarLibDirectory() {
+  if (getuid() != 0) {
+    // Only do this in the daemon process, which is always run as root.
+    return;
+  }
+
+  base::FilePath var_lib_dir = GetVarLibDir();
+  if (base::PathExists(var_lib_dir) && !base::DirectoryExists(var_lib_dir)) {
+    if (!base::DeletePathRecursively(var_lib_dir)) {
+      PLOG(FATAL) << "Failed to delete non-directory " << var_lib_dir;
+    }
+  }
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(var_lib_dir, &error)) {
+    LOG(FATAL) << "Failed to create " << var_lib_dir << ": "
+               << base::File::ErrorToString(error);
+  }
+  // Allow other users to list and read files and directories, but not write to
+  // it.
+  if (HANDLE_EINTR(chmod(var_lib_dir.value().c_str(), 0755)) != 0) {
+    PLOG(ERROR) << "Failed to chmod " << var_lib_dir;
+    if (!base::DeletePathRecursively(var_lib_dir)) {
+      PLOG(FATAL) << "Failed to delete " << var_lib_dir;
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 typedef int (*MainRoutineFn)();
 
@@ -224,6 +263,10 @@ int HostMain(int argc, char** argv) {
 
   // Enable debug logs.
   InitHostLogging();
+
+#if BUILDFLAG(IS_LINUX)
+  EnsureVarLibDirectory();
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if defined(REMOTING_ENABLE_CRASH_REPORTING)
   // Initialize crash reporting as early as possible. On Mac the command-line

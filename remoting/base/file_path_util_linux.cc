@@ -14,7 +14,7 @@
 
 namespace remoting {
 namespace {
-const base::FilePath::CharType kConfigDir[] =
+const base::FilePath::CharType kChromeRemoteDesktopDir[] =
     FILE_PATH_LITERAL("chrome-remote-desktop");
 }  // namespace
 
@@ -23,8 +23,12 @@ std::string GetHostHash() {
          base::HexEncodeLower(crypto::obsolete::Md5::Hash(net::GetHostName()));
 }
 
+base::FilePath GetVarLibDir() {
+  return base::FilePath("/var/lib").Append(kChromeRemoteDesktopDir);
+}
+
 base::FilePath GetMultiProcessHostGlobalConfigDir() {
-  return base::FilePath("/etc").Append(kConfigDir);
+  return base::FilePath("/etc").Append(kChromeRemoteDesktopDir);
 }
 
 base::FilePath GetPerUserConfigDir() {
@@ -32,7 +36,7 @@ base::FilePath GetPerUserConfigDir() {
 }
 
 base::FilePath GetPerUserConfigRelativeDir() {
-  return base::FilePath(".config").Append(kConfigDir);
+  return base::FilePath(".config").Append(kChromeRemoteDesktopDir);
 }
 
 }  // namespace remoting

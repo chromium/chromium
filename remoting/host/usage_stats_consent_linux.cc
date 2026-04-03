@@ -10,8 +10,11 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "remoting/base/branding.h"
 #include "remoting/base/file_path_util_linux.h"
@@ -21,33 +24,68 @@
 
 namespace remoting {
 
-bool GetUsageStatsConsent(bool* allowed, bool* set_by_policy) {
+namespace {
+
+inline base::FilePath GetMultiProcessHostUsageStatsConsentFile() {
+  return GetMultiProcessHostGlobalConfigDir().Append(
+      "usage_stats_consent.json");
+}
+
+bool GetUsageStatsConsentFromFile(const base::FilePath& path,
+                                  bool* allowed,
+                                  bool* set_by_policy) {
   *set_by_policy = false;
   *allowed = false;
 
-  std::string filename = GetHostHash() + ".json";
-  base::FilePath config_path = GetConfigDir().Append(filename);
-  std::optional<base::DictValue> config(HostConfigFromJsonFile(config_path));
-  if (!config.has_value()) {
-    LOG(ERROR) << "No host config file found.";
+  JSONFileValueDeserializer deserializer(path);
+  int error_code;
+  std::string error_message;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(&error_code, &error_message);
+  if (!value) {
+    LOG(ERROR) << "Failed to read usage stats consent from file: "
+               << error_message << " (error code: " << error_code << ")";
     return false;
   }
-
-  bool initialized = false;
-  auto usage_stats_consent = config->FindBool(kUsageStatsConsentConfigPath);
+  if (!value->is_dict()) {
+    LOG(ERROR) << "Usage stats consent file does not contain a dictionary.";
+    return false;
+  }
+  const base::DictValue& dict = value->GetDict();
+  auto usage_stats_consent = dict.FindBool(kUsageStatsConsentConfigPath);
   if (usage_stats_consent.has_value()) {
-    initialized = true;
     *allowed = *usage_stats_consent;
+    return true;
   }
-  const std::string* host_owner_ptr = config->FindString(kHostOwnerConfigPath);
-  if (host_owner_ptr && !initialized) {
+  // Note: kHostOwnerConfigPath only exists in the per-user host config file.
+  const std::string* host_owner_ptr = dict.FindString(kHostOwnerConfigPath);
+  if (host_owner_ptr) {
     // Opt into crash reporting for Googlers if not set in the config.
-    initialized = true;
-    *allowed |= IsGoogleEmail(*host_owner_ptr);
+    *allowed = IsGoogleEmail(*host_owner_ptr);
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
+bool GetUsageStatsConsent(bool* allowed, bool* set_by_policy) {
+  std::string consent_content;
+
+  // We don't know if the host is single-process or multi-process, so we always
+  // check the consent file first.
+  if (base::PathExists(GetMultiProcessHostUsageStatsConsentFile())) {
+    return GetUsageStatsConsentFromFile(
+        GetMultiProcessHostUsageStatsConsentFile(), allowed, set_by_policy);
   }
 
-  // Indicate whether |allowed| was successfully initialized.
-  return initialized;
+  std::string filename = GetHostHash() + ".json";
+  base::FilePath config_path = GetConfigDir().Append(filename);
+  if (!base::PathExists(config_path)) {
+    LOG(ERROR) << "Cannot find usage stats consent file: " << config_path;
+    return false;
+  }
+  return GetUsageStatsConsentFromFile(config_path, allowed, set_by_policy);
 }
 
 bool IsUsageStatsAllowed() {

@@ -18,6 +18,10 @@ namespace remoting {
 // in the filename.
 std::string GetHostHash();
 
+// Returns the directory where the multi-process host's persistent variable
+// state data is stored.
+base::FilePath GetVarLibDir();
+
 // Returns the directory where the host config file for the multi-process host
 // is located. Note that only processes run as root will have access to files in
 // the directory.
