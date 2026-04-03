@@ -17,7 +17,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/test/base/chrome_render_view_test.h"
-#include "read_anything_app_model.h"
 #include "read_anything_test_utils.h"
 #include "services/strings/grit/services_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -140,6 +139,17 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     }
     ApplyAccessibilityUpdates(tree_id_, {std::move(initial_update)});
     return child_ids;
+  }
+
+  ui::AXTreeID SetupTree(const std::string& url) {
+    ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id);
+    ui::AXNodeData root = test::LinkNode(/* id= */ 1, url);
+    update.root_id = root.id;
+    update.nodes = {std::move(root)};
+    ApplyAccessibilityUpdates(tree_id, {std::move(update)});
+    return tree_id;
   }
 
   ui::AXTreeID tree_id_;
@@ -2226,4 +2236,145 @@ TEST_F(ReadAnythingAppModelReadabilityTest,
 
   const auto& result = model().ax_tree_anchors();
   ASSERT_TRUE(result.empty());
+}
+
+TEST_F(ReadAnythingAppModelTest, IsWhatsNew_FalseForOtherPage) {
+  ui::AXTreeID tree_id = SetupTree("https://www.google.com");
+  model().SetRootTreeId(tree_id);
+  model().SetActiveTreeId(tree_id);
+
+  EXPECT_FALSE(model().IsWhatsNew());
+}
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ReadAnythingAppModelTest, IsWhatsNew_TrueForWhatsNewPage) {
+  ui::AXTreeID tree_id = SetupTree("chrome://whats-new/");
+  model().SetRootTreeId(tree_id);
+  model().SetActiveTreeId(tree_id);
+
+  EXPECT_TRUE(model().IsWhatsNew());
+}
+
+TEST_F(ReadAnythingAppModelTest, IsWhatsNew_TrueWhenActiveIsChild) {
+  ui::AXTreeID root_id = SetupTree("chrome://whats-new/");
+  ui::AXTreeID child_id = SetupTree("https://www.google.com/child");
+
+  model().SetRootTreeId(root_id);
+  model().SetActiveTreeId(child_id);
+
+  EXPECT_TRUE(model().IsWhatsNew());
+}
+
+TEST_F(ReadAnythingAppModelTest, HasSelection_UsesRootOnWhatsNew) {
+  ui::AXTreeID root_id = SetupTree("chrome://whats-new/");
+  ui::AXTreeID child_id = SetupTree("https://www.google.com/child");
+
+  // Add node 2 to root tree.
+  ui::AXTreeUpdate root_update;
+  test::SetUpdateTreeID(&root_update, root_id);
+  ui::AXNodeData root_node = test::LinkNode(1, "chrome://whats-new/");
+  root_node.child_ids = {2};
+  root_update.root_id = 1;
+  root_update.nodes = {root_node, test::TextNode(2, u"Root Text")};
+  ApplyAccessibilityUpdates(root_id, {std::move(root_update)});
+
+  // Add node 2 to child tree so GetUnignoredSelection succeeds.
+  ui::AXTreeUpdate child_update;
+  test::SetUpdateTreeID(&child_update, child_id);
+  ui::AXNodeData child_root = test::TextNode(1, u"Child Root");
+  child_root.child_ids = {2};
+  child_update.root_id = 1;
+  child_update.nodes = {child_root, test::TextNode(2, u"Child Text")};
+  ApplyAccessibilityUpdates(child_id, {std::move(child_update)});
+
+  model().SetRootTreeId(root_id);
+  model().SetActiveTreeId(child_id);
+
+  // Set selection on the CHILD tree.
+  ui::AXTreeUpdate sel_update;
+  test::SetUpdateTreeID(&sel_update, child_id);
+  sel_update.tree_data.sel_anchor_object_id = 1;
+  sel_update.tree_data.sel_focus_object_id = 2;
+  sel_update.tree_data.sel_anchor_offset = 0;
+  sel_update.tree_data.sel_focus_offset = 1;
+  sel_update.has_tree_data = true;
+  ApplyAccessibilityUpdates(child_id, {std::move(sel_update)});
+
+  model().PostProcessSelection();
+
+  // On What's New page, has_selection() should check the root tree.
+  // Since IDs 1 and 2 exist in both, it should return true.
+  EXPECT_TRUE(model().has_selection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       HasSelection_ReturnsFalseOnWhatsNewIfNoRootNode) {
+  ui::AXTreeID root_id = SetupTree("chrome://whats-new/");
+  ui::AXTreeID child_id = SetupTree("https://www.google.com/child");
+
+  // child_id tree has node 2.
+  ui::AXTreeUpdate child_update;
+  test::SetUpdateTreeID(&child_update, child_id);
+  ui::AXNodeData child_root = test::TextNode(1, u"Child Root");
+  child_root.child_ids = {2};
+  child_update.root_id = 1;
+  child_update.nodes = {child_root, test::TextNode(2, u"Child Text")};
+  ApplyAccessibilityUpdates(child_id, {std::move(child_update)});
+
+  // root_id tree does NOT have node 2 (SetupTree only added node 1).
+
+  model().SetRootTreeId(root_id);
+  model().SetActiveTreeId(child_id);
+
+  // Set selection on the CHILD tree nodes 1 and 2.
+  ui::AXTreeUpdate sel_update;
+  test::SetUpdateTreeID(&sel_update, child_id);
+  sel_update.tree_data.sel_anchor_object_id = 1;
+  sel_update.tree_data.sel_focus_object_id = 2;
+  sel_update.tree_data.sel_anchor_offset = 0;
+  sel_update.tree_data.sel_focus_offset = 1;
+  sel_update.has_tree_data = true;
+  ApplyAccessibilityUpdates(child_id, {std::move(sel_update)});
+
+  model().PostProcessSelection();
+
+  // On What's New page, has_selection() should check the root tree.
+  // Since node 2 is not in root tree, it should return FALSE.
+  EXPECT_FALSE(model().has_selection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       CheckedStateChanged_TriggersDistillationOnWhatsNew) {
+  ui::AXTreeID tree_id = SetupTree("chrome://whats-new/");
+  model().SetRootTreeId(tree_id);
+  model().SetActiveTreeId(tree_id);
+
+  ui::AXEvent checked_event;
+  checked_event.event_type = ax::mojom::Event::kCheckedStateChanged;
+
+  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<ui::AXEvent> events = {checked_event};
+
+  model().set_requires_distillation(false);
+  model().ApplyAccessibilityUpdates(tree_id, updates, events);
+
+  EXPECT_TRUE(model().requires_distillation());
+}
+#endif
+
+TEST_F(ReadAnythingAppModelTest,
+       CheckedStateChanged_DoesNotTriggerDistillationOnOther) {
+  ui::AXTreeID tree_id = SetupTree("https://www.google.com");
+  model().SetRootTreeId(tree_id);
+  model().SetActiveTreeId(tree_id);
+
+  ui::AXEvent checked_event;
+  checked_event.event_type = ax::mojom::Event::kCheckedStateChanged;
+
+  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<ui::AXEvent> events = {checked_event};
+
+  model().set_requires_distillation(false);
+  model().ApplyAccessibilityUpdates(tree_id, updates, events);
+
+  EXPECT_FALSE(model().requires_distillation());
 }

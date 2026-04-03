@@ -15,6 +15,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/common/read_anything/read_anything_util.h"
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/common/url_constants.h"
+#endif
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "content/public/renderer/render_thread.h"
@@ -461,6 +465,11 @@ void ReadAnythingAppModel::SetTreeInfoUrlInformation(
                       url.GetPath().starts_with("/document") &&
                       !url.ExtractFileName().empty();
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  tree_info.is_whats_new = url.SchemeIs(content::kChromeUIScheme) &&
+                           url.host() == chrome::kChromeUIWhatsNewHost;
+#endif
+
   tree_info.is_url_information_set = true;
   previous_tree_url_ = url.GetContent();
 
@@ -486,6 +495,14 @@ bool ReadAnythingAppModel::IsReload() const {
   }
 
   return tree_infos_.at(active_tree_id_)->is_reload;
+}
+
+bool ReadAnythingAppModel::IsWhatsNew() const {
+  if (!tree_infos_.contains(root_tree_id_)) {
+    return false;
+  }
+
+  return tree_infos_.at(root_tree_id_)->is_whats_new;
 }
 
 void ReadAnythingAppModel::AddPendingUpdates(const ui::AXTreeID& tree_id,
@@ -783,6 +800,15 @@ ui::AXNode* ReadAnythingAppModel::GetAXNode(
   return tree->GetFromId(ax_node_id);
 }
 
+ui::AXNode* ReadAnythingAppModel::GetAXNodeFromRoot(
+    const ui::AXNodeID& ax_node_id) const {
+  ui::AXSerializableTree* tree = GetTreeFromId(root_tree_id_);
+  if (!tree) {
+    return nullptr;
+  }
+  return tree->GetFromId(ax_node_id);
+}
+
 bool ReadAnythingAppModel::NodeIsContentNode(ui::AXNodeID ax_node_id) const {
   return std::ranges::contains(content_node_ids_, ax_node_id);
 }
@@ -905,6 +931,11 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kLocationChanged:
         delay_screen2x_training_data_collection_ = true;
         break;
+      case ax::mojom::Event::kCheckedStateChanged:
+        if (IsWhatsNew()) {
+          requires_distillation_ = true;
+        }
+        break;
 
       case ax::mojom::Event::kBlur:
         // Closing ads sometimes sends this event but we also get this when
@@ -916,7 +947,6 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
         break;
       // Audit these events e.g. to require distillation.
       case ax::mojom::Event::kActiveDescendantChanged:
-      case ax::mojom::Event::kCheckedStateChanged:
       case ax::mojom::Event::kChildrenChanged:
       case ax::mojom::Event::kDocumentSelectionChanged:
       case ax::mojom::Event::kDocumentTitleChanged:
@@ -1215,8 +1245,9 @@ void ReadAnythingAppModel::SetFontSize(double font_size, int increment) {
 
 const std::set<ui::AXNodeID>* ReadAnythingAppModel::GetCurrentlyVisibleNodes()
     const {
-  return selection_node_ids_.empty() ? &display_node_ids()
-                                     : &selection_node_ids_;
+  return (selection_node_ids_.empty() || !has_selection())
+             ? &display_node_ids()
+             : &selection_node_ids_;
 }
 
 void ReadAnythingAppModel::AllowChildTreeForActiveTree(bool use_child_tree) {

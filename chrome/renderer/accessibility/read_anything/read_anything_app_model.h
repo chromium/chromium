@@ -96,6 +96,9 @@ class ReadAnythingAppModel {
     // latest tree is a new page.
     bool is_reload = false;
 
+    // Whether the latest tree is the "What's New" page.
+    bool is_whats_new = false;
+
     // TODO(41496290): Include any information that is associated with a
     // particular AXTree, namely is_pdf. Right now, this is set every time the
     // active ax tree id changes; instead, it should be set once when a new tree
@@ -334,6 +337,10 @@ class ReadAnythingAppModel {
   // Sometimes iframes can return selection objects that have a valid id but
   // aren't in the tree.
   bool has_selection() const {
+    if (IsWhatsNew()) {
+      return start_.is_valid() && end_.is_valid() &&
+             GetAXNodeFromRoot(start_.id) && GetAXNodeFromRoot(end_.id);
+    }
     return start_.is_valid() && end_.is_valid() && GetAXNode(start_.id) &&
            GetAXNode(end_.id);
   }
@@ -432,6 +439,7 @@ class ReadAnythingAppModel {
   void SetUrlInformationCallback(base::OnceCallback<void()> callback);
   bool IsDocs() const;
   bool IsReload() const;
+  bool IsWhatsNew() const;
 
   const std::set<ui::AXNodeID>* GetCurrentlyVisibleNodes() const;
 
@@ -578,6 +586,8 @@ class ReadAnythingAppModel {
   };
 
   ui::AXSerializableTree* GetTreeFromId(const ui::AXTreeID& tree_id) const;
+
+  ui::AXNode* GetAXNodeFromRoot(const ui::AXNodeID& ax_node_id) const;
 
   void ResetSelection();
 
