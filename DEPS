@@ -1638,7 +1638,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '2633cae9ede4e04194edfdcc3c3918c7a8b31fc9',
+    '88798aafc0294e54566127d0e48105acbf306f68',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
