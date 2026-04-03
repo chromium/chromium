@@ -80,6 +80,7 @@
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
 <translation id="1287229685519872919">Google Workspace-ի տվյալները</translation>
 <translation id="1291506870746876680">Երբ դուրս գաք <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> կայքից, դրա բոլոր թույլտվությունները կանջատվեն։</translation>
+<translation id="1293491796138057740">Ձեր տեղեկությունները պահվում են Google Wallet-ում <ph name="USER_EMAIL" /> հաշվի համար։ Դուք կարող եք այն օգտագործել Google-ի ծառայություններում՝ ձևերն ավելի արագ լրացնելու համար։</translation>
 <translation id="1293556467332435079">Ֆայլեր</translation>
 <translation id="129553762522093515">Վերջերս փակված</translation>
 <translation id="1296581780163690620">Ներբեռնե՞լ ֆայլը (<ph name="FILE_SIZE" />)</translation>
@@ -107,6 +108,7 @@
 <translation id="1369286077209859800">Ցույց տալ ներդիրների խմբի բոլոր ներդիրները</translation>
 <translation id="136942498637440594">Դուք կարող եք որոնել պատկերներ և այն, ինչ տեսնում եք։</translation>
 <translation id="1373120905936431262">Վերբեռնեք պատկեր՝ Nano Banana-ի միջոցով ռեմիքս ստեղծելու համար</translation>
+<translation id="1377321085342047638">Քարտի համարը</translation>
 <translation id="1377508275003315939">Գաղտնաբառեր</translation>
 <translation id="1381022135873211423">{count,plural, =1{Հասցե {position}՝ {count}-ից}one{Հասցե {position}՝ {count}-ից}other{Հասցե {position}՝ {count}-ից}}</translation>
 <translation id="1383876407941801731">Որոնում</translation>

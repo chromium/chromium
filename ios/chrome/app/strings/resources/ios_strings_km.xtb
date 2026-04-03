@@ -80,6 +80,7 @@
 <translation id="1285320974508926690">មិនបកប្រែគេហទំព័រនេះទៀតឡើយ</translation>
 <translation id="1287229685519872919">ទិន្នន័យ Google Workspace</translation>
 <translation id="1291506870746876680">ការអនុញ្ញាត <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> នឹងកំណត់ឡើងវិញទៅបិទ នៅពេលអ្នកចេញពីគេហទំព័រនេះ។</translation>
+<translation id="1293491796138057740">ព័ត៌មាន​របស់អ្នក​ត្រូវបាន​រក្សាទុក​ទៅ Google Wallet សម្រាប់ <ph name="USER_EMAIL" />។ អ្នកអាចប្រើវាលើផលិតផល Google ផ្សេងៗ ដើម្បីបំពេញទម្រង់បែបបទបានកាន់តែលឿន។</translation>
 <translation id="1293556467332435079">ឯកសារ</translation>
 <translation id="129553762522093515">បានបិទកន្លងទៅថ្មីៗ</translation>
 <translation id="1296581780163690620">ទាញយក​ឯកសារ​ឬ? (<ph name="FILE_SIZE" />)</translation>
@@ -107,6 +108,7 @@
 <translation id="1369286077209859800">បង្ហាញផ្ទាំងទាំងអស់នៅក្នុងក្រុមផ្ទាំង</translation>
 <translation id="136942498637440594">អ្នកអាច​ស្វែងរក​រូបភាព និង​អ្វីដែលអ្នក​មើលឃើញបាន។</translation>
 <translation id="1373120905936431262">បង្ហោះ​រូបភាព ដើម្បីច្នៃ​ដោយប្រើ Nano Banana</translation>
+<translation id="1377321085342047638">លេខកាត</translation>
 <translation id="1377508275003315939">ពាក្យ​សម្ងាត់</translation>
 <translation id="1381022135873211423">{count,plural, =1{អាសយដ្ឋានទី {position} នៃ {count}}other{អាសយដ្ឋានទី {position} នៃ {count}}}</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>

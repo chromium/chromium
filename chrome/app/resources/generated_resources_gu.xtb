@@ -943,7 +943,6 @@
 <translation id="1637224376458524414">આ બુકમાર્ક તમારા iPhone પર મેળવો</translation>
 <translation id="1637765355341780467">તમારી પ્રોફાઇલ ખોલતી વખતે કંઈક ખોટું થયું. કેટલીક સુવિધાઓ અનુપલબ્ધ હોઈ શકે છે.</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
-<translation id="1640235262200048077"><ph name="IME_NAME" /> હજુ પણ Linux ઍપમાં કામ કરતું નથી</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> સંબંધિત વધુ ક્રિયાઓ</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{અન્ય 1 પાસવર્ડ આયાત કરવામાં આવ્યો ન હતો કારણ કે તેને અયોગ્ય રીતે ફૉર્મેટ કરવામાં આવ્યો હતો}one{અન્ય {NUM_PASSWORDS} પાસવર્ડ આયાત કરવામાં આવ્યો ન હતો કારણ કે તેને અયોગ્ય રીતે ફૉર્મેટ કરવામાં આવ્યો હતો}other{અન્ય {NUM_PASSWORDS} પાસવર્ડ આયાત કરવામાં આવ્યા ન હતા કારણ કે તેમને અયોગ્ય રીતે ફૉર્મેટ કરવામાં આવ્યા હતા}}</translation>
@@ -2077,7 +2076,6 @@
 <translation id="2419131370336513030">ઇન્સ્ટૉલ કરેલી ઍપ જુઓ</translation>
 <translation id="2419706071571366386">સુરક્ષા માટે, તમારા કમ્પ્યુટરનો ઉપયોગ ન થતો હોય ત્યારે સાઇન આઉટ કરો.</translation>
 <translation id="2421705177906985956">હમણાં બતાવવા માટે કોઈ સાઇટ નથી</translation>
-<translation id="2422125132043002186">Linux પાછું મેળવવાનું રદ કર્યું</translation>
 <translation id="2423506062824112361">કોઈ અજાણ્યા કારણસર કન્ટેન્ટ ડાઉનલોડ કરવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="2423578206845792524">છબીને આ રૂપે સા&amp;ચવો...</translation>
 <translation id="2424424966051154874">{0,plural, =1{અતિથિ}one{અતિથિ (#)}other{અતિથિ (#)}}</translation>
@@ -3057,6 +3055,7 @@
 <translation id="3076966043108928831">માત્ર આ ડિવાઇસ પર સાચવો</translation>
 <translation id="3076977359333237641">તમારો સાઇન-ઇન ડેટા ડિલીટ કરવામાં આવ્યો હતો</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">સુવિધા કે એક્સ્ટેન્શનનો કોઈ શૉર્ટકટ મળ્યો નથી</translation>
 <translation id="3080930813589868009">વપરાશકર્તા દીઠ અપડેટર</translation>
 <translation id="3080933187214341848">આ નેટવર્ક તમારા એકાઉન્ટ સાથે સિંક કરેલું નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">ઍપનું નામ અથવા ID</translation>
@@ -3960,7 +3959,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">તમે અને Google</translation>
 <translation id="3721178866505920080">પહેલેથી લોડ કરવાનો વિસ્તૃત મોડ ચાલુ કરવા વિશે વધુ માહિતી</translation>
-<translation id="3722108462506185496">વર્ચ્યુઅલ મશીન સેવા શરૂ કરતી વખતે ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> સૂચના મેળવી</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
@@ -5609,7 +5607,6 @@
 <translation id="4868284252360267853">હાલમાં આ સંવાદ ફોકસમાં નથી. આ સંવાદને ફોકસમાં લાવવા માટે Command-Shift-Option A દબાવો.</translation>
 <translation id="4868351661310357223">Google Playમાંથી તમારા <ph name="DEVICE_TYPE" /> પર ઍપ અને ગેમ ઇન્સ્ટૉલ કરો.</translation>
 <translation id="4869170227080975044">ChromeOS નેટવર્કની માહિતી વાંચો</translation>
-<translation id="4869175799055761881">આ ઍપ્લિકેશન વપરાશકર્તા દ્વારા ઇન્સ્ટૉલ કરી શકાતી નથી. કૃપા કરીને ડેવલપરનો સંપર્ક કરો</translation>
 <translation id="4870724079713069532">તમે File Explorer અથવા અન્ય ઍપમાં, આ ઍપ વડે સપોર્ટેડ ફાઇલો ખોલી શકો છો અને તેમાં ફેરફાર કરી શકો છો. આ ઍપમાં ડિફૉલ્ટ તરીકે ખોલવામાં આવે તેવી ફાઇલોને નિયંત્રિત કરવા માટે, <ph name="BEGIN_LINK" />Windowsના સેટિંગ<ph name="END_LINK" /> પર જાઓ.</translation>
 <translation id="4870995365819149457">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> અને અન્ય 1 ઍપમાં ખૂલશે.</translation>
 <translation id="4871308555310586478">Chrome વેબ દુકાનમાંથી નહીં.</translation>
@@ -8281,7 +8278,6 @@ USB ડિવાઇસ</translation>
 <translation id="6781284683813954823">ડૂડલ લિંક</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />ઍપનો ડેટા, ઍપમાં સાચવેલો (ડેવલપર સેટિંગના આધારે) કોઈપણ ડેટા હોઈ શકે છે, જેમાં સંપર્કો, મેસેજ અને ફોટા જેવા ડેટાનો સમાવેશ થાય છે. બૅકઅપ ડેટાની ગણતરી તમારા બાળકના Driveના સ્ટોરેજ ક્વોટામાં કરવામાં આવશે નહીં.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />તમે આ સેવાને સેટિંગમાંથી બંધ કરી શકો છો.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6781978626986383437">Linuxનું બૅકઅપ રદ કર્યું</translation>
 <translation id="6783036716881942511">આ ડિવાઇસને ભૂલી જઈએ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive સેટિંગ</translation>
 <translation id="6784523122863989144">પ્રોફાઇલને સપોર્ટ આપવામાં આવે છે</translation>
@@ -8551,7 +8547,6 @@ USB ડિવાઇસ</translation>
 <translation id="695817292005698051">સંકેતની ભાળ મેળવવાની મર્યાદા</translation>
 <translation id="6959882218873172284">પોસ્ટ વિનંતી</translation>
 <translation id="6960133692707095572">કોઈ ટિકિટ વિના મુલાકાત લો</translation>
-<translation id="6960507406838246615">Linux અપડેટ જરૂરી છે</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> સ્પીચ ફાઇલો ડાઉનલોડ કરી શકાઈ નથી. થોડા સમય પછી ડાઉનલોડ કરવાનો પ્રયાસ કરવામાં આવશે. ડાઉનલોડ પૂર્ણ થાય ત્યાં સુધી, Googleને પ્રક્રિયા કરવા માટે સ્પીચ મોકલવામાં આવે છે.</translation>
 <translation id="696103774840402661">આ <ph name="DEVICE_TYPE" /> પરના બધા વપરાશકર્તાઓ માટેની તમામ ફાઇલો અને સ્થાનિક ડેટા કાયમ માટે ડિલીટ કરવામાં આવ્યો છે.</translation>
 <translation id="6961327401577924850">ઊર્જાનો ઓછા વપરાશવાળું કોઈ બીકન, કોઈ સ્વાસ્થ્ય કે ફિટનેસ ટ્રૅકર અથવા કોઈ સ્માર્ટ લાઇટ બલ્બનું સેટઅપ કરવા કે તેને સિંક કરવા જેવી સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે બ્લૂટૂથ ડિવાઇસ શોધે છે</translation>
@@ -9465,7 +9460,6 @@ USB ડિવાઇસ</translation>
 <translation id="7606639338662398635">ટૅબના ગ્રૂપ</translation>
 <translation id="7607002721634913082">થોભાવેલું</translation>
 <translation id="7608810328871051088">Androidની પસંદગીઓ</translation>
-<translation id="7609148976235050828">કૃપા કરીને ઇન્ટરનેટથી કનેક્ટ થાઓ અને ફરી પ્રયાસ કરો.</translation>
 <translation id="7610337976012700501">આ સંપર્કો સાથે <ph name="FEATURE_NAME" />નો ઉપયોગ કરવા માટે, તેમના Google એકાઉન્ટ સાથે લિંક કરવામાં આવેલું ઇમેઇલ ઍડ્રેસ તમારા સંપર્કોમાં ઉમેરો.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">તમામ એક્સ્ટેન્શન</translation>
@@ -11810,7 +11804,6 @@ USB ડિવાઇસ</translation>
 <translation id="9186963452600581158">બાળકના Google એકાઉન્ટ વડે સાઇન ઇન કરો</translation>
 <translation id="9187967020623675250">કીનો મેળ થતો નથી. <ph name="RESPONSE" /> માટે કોઈપણ કી દબાવો.</translation>
 <translation id="9188142767272053574">પ્રક્રિયાનું આઇસોલેશન ચાલુ કરો</translation>
-<translation id="9189618485998894982">આ ઍપ્લિકેશન બ્લૉક કરવામાં આવી છે. કૃપા કરીને ડેવલપરનો સંપર્ક કરો</translation>
 <translation id="9192019773545828776">બોલાયેલો પ્રતિસાદ સાંભળો, જેથી સ્ક્રીનની સામે જોયા વિના તમે તમારા ડિવાઇસનો ઉપયોગ કરી શકો. કનેક્ટ કરેલા ડિવાઇસ સાથે બ્રેઇલમાં પ્રતિસાદ આપવાની સુવિધા ઉપલબ્ધ છે. ChromeVox ચાલુ અને બંધ કરવા માટે Ctrl + Alt + Zનો ઉપયોગ કરો. નૅવિગેટ કરવા માટે Search + ડાબી ઍરો કી અથવા જમણી ઍરો કીનો ઉપયોગ કરો. પસંદ કરવા (સક્રિય કરવા) માટે Search + Space કીનો ઉપયોગ કરો.</translation>
 <translation id="9195969368671142407">જ્યારે તમારી સંસ્થા તમારા Google એકાઉન્ટમાં સાચવવાનું મર્યાદિત કરે છે, ત્યારે તમે ટૅબના ગ્રૂપ શેર કરી શકતા નથી અથવા તેમાં જોડાઈ શકતા નથી</translation>
 <translation id="919686179725692564">તમારી ઍપનું બૅકઅપ લેવા વિશે વધુ જાણો</translation>

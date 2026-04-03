@@ -24,7 +24,6 @@
 <translation id="1089606299949659462">සමාලෝචනය සම්පූර්ණයි!</translation>
 <translation id="1094555143448724771">ඔබේ අනෙකුත් උපාංගවලින් පටිති බැලීම සඳහා, ඔබේ පටිති සහ ඉතිහාසය සමමුහූර්ත කරන්න</translation>
 <translation id="1095761715416917775">ඔබට සැම විට ඔබගේ සමමුහුර්ත දත්ත වෙත ප්‍රවේශ විය හැකි බව සහතික කර ගන්න</translation>
-<translation id="1096091316906284742">Chrome සොයා ගැනීම් තේරීම් පහළ පත්‍රය</translation>
 <translation id="1100066534610197918">කණ්ඩායම තුළ නව පටිත්ත තුළ විවෘත කරන්න</translation>
 <translation id="1103142993930332957">Chrome වැඩිදියුණු කිරීමට උදව් කරන්නද?</translation>
 <translation id="1105960400813249514">තිර ග්‍රහණය</translation>
@@ -617,7 +616,6 @@
 <translation id="3635073343384702370">ඔබ ඒවා සුරකින විට Chrome හට ඔබේ මුරපද පරීක්ෂා කළ හැක</translation>
 <translation id="3636940436873918441">මනාප භාෂා</translation>
 <translation id="3637744895182738742">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" />.</translation>
-<translation id="3641581193271938629">Chrome සොයා ගැනීම් තෝරා ගැනීම වසා ඇත</translation>
 <translation id="3647019414263135904">සන්දර්භ උත්පතනය විවෘත කරන්න හෝ වසන්න</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google යෙදුම් මුල් පිටුවට යන්න</translation>
@@ -800,7 +798,6 @@
 <translation id="4387647248986092471">මෝටර් රථයේ පැතිකඩ අගුලක් තනන්න</translation>
 <translation id="4387817230000841154">බාගැනීම් විවෘත කරන්න</translation>
 <translation id="4394049700291259645">අක්‍රිය කරන්න</translation>
-<translation id="4395046795145457714">Chrome සොයා ගැනීම් තෝරා ගැනීම සම්පූර්ණ උසින් විවෘත විය</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, තෝරා ගත් ඇමිණූ පටිගත කිරීමේ අප්‍රකට පටිත්ත</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - බාගනිමින්…</translation>
 <translation id="4404568932422911380">පිටුසන් නැත</translation>
@@ -1370,7 +1367,6 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">රූපය පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">පටිත්ත</translation>
-<translation id="6661521899577697780">Chrome සොයා ගැනීම් තෝරා ගැනීම අඩ උසින් විවෘත විය</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> තුළ විවෘත කරන්න</translation>
 <translation id="6669390930482049506">මට දන්වන්න</translation>
 <translation id="6670767097276846646">සමහර දිගුවලට Chrome වෙත සෙවීම් යන්ත්‍ර එක් කළ හැකිය</translation>

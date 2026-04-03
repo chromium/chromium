@@ -80,6 +80,7 @@
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
 <translation id="1287229685519872919">Данные Google Workspace</translation>
 <translation id="1291506870746876680">Когда вы покинете сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, все разрешения для него будут отключены.</translation>
+<translation id="1293491796138057740">Ваши данные сохраняются в Google Кошельке для аккаунта <ph name="USER_EMAIL" />. Вы можете использовать их во всех сервисах Google, чтобы быстрее заполнять формы.</translation>
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="129553762522093515">Недавно закрытые</translation>
 <translation id="1296581780163690620">Скачать файл? (<ph name="FILE_SIZE" />)</translation>
@@ -107,6 +108,7 @@
 <translation id="1369286077209859800">Показать все вкладки в группе</translation>
 <translation id="136942498637440594">Выполняйте поиск по изображениям и ищите то, что видите.</translation>
 <translation id="1373120905936431262">Загрузите изображение, чтобы создать ремикс с помощью Nano Banana</translation>
+<translation id="1377321085342047638">Номер карты</translation>
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1381022135873211423">{count,plural, =1{Адрес {position} из {count}}one{Адрес {position} из {count}}few{Адрес {position} из {count}}many{Адрес {position} из {count}}other{Адрес {position} из {count}}}</translation>
 <translation id="1383876407941801731">Поиск</translation>

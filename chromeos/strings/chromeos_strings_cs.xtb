@@ -578,6 +578,7 @@
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="357889014807611375">měřená Wi-Fi</translation>
 <translation id="3583278742022654445">Signál je slabý. Zkuste se přesunout blíže ke zdroji signálu Wi-Fi.</translation>
+<translation id="3586931643579894722">Skrýt podrobnosti</translation>
 <translation id="3588034708467091142">Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je uživatelsky přívětivý název pro <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterie je nabitá</translation>
@@ -1161,6 +1162,7 @@
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certifikát uživatele</translation>
+<translation id="6140948187512243695">Zobrazit podrobnosti</translation>
 <translation id="6146993107019042706">Chcete-li akci dokončit, zadejte své nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">Nelze se připojit k internetu</translation>

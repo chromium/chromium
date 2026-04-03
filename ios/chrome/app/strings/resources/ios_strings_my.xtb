@@ -80,6 +80,7 @@
 <translation id="1285320974508926690">ဒီဆိုက်ကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="1287229685519872919">Google Workspace ဒေတာ</translation>
 <translation id="1291506870746876680">ဤဝဘ်ဆိုက်မှထွက်သည့်အခါ <ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" /> အတွက် ခွင့်ပြုချက်များပိတ်ရန် ပြင်ဆင်သတ်မှတ်ပါမည်။</translation>
+<translation id="1293491796138057740"><ph name="USER_EMAIL" /> အတွက် သင့်အချက်အလက်ကို Google Wallet တွင် သိမ်းသည်။ ဖောင်များ ပိုမိုမြန်ဆန်စွာဖြည့်ရန် Google ထုတ်ကုန်များတွင် ၎င်းကို သုံးနိုင်သည်။</translation>
 <translation id="1293556467332435079">ဖိုင်များ</translation>
 <translation id="129553762522093515">မကြာသေးခင်က ပိတ်ထားခဲ့သည်</translation>
 <translation id="1296581780163690620">ဖိုင်ဒေါင်းလုဒ်လုပ်မလား။ (<ph name="FILE_SIZE" />)</translation>
@@ -107,6 +108,7 @@
 <translation id="1369286077209859800">တဘ်အုပ်စုရှိ တဘ်အားလုံး ပြပါ</translation>
 <translation id="136942498637440594">ပုံနှင့် သင်မြင်ရသည့်အရာတို့ကို ရှာနိုင်သည်။</translation>
 <translation id="1373120905936431262">Nano Banana ဖြင့် ဆန်းသစ်ရန် ပုံအပ်လုဒ်လုပ်ပါ</translation>
+<translation id="1377321085342047638">ကဒ်နံပါတ်</translation>
 <translation id="1377508275003315939">စကားဝှက်များ</translation>
 <translation id="1381022135873211423">{count,plural, =1{လိပ်စာ {count} ခု အနက် {position}}other{လိပ်စာ {count} ခုအနက် {position}}}</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>

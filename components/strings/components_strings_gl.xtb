@@ -28,7 +28,6 @@
 <translation id="1044897699341250361">Que significa</translation>
 <translation id="1046350918013988591">Cupóns e descontos</translation>
 <translation id="1050038467049342496">Pecha outras aplicacións</translation>
-<translation id="1053959602163383901">Escolliches verificar a túa identidade cun dispositivo de autenticación nos sitios web que usan <ph name="PROVIDER_ORIGIN" />. É posible que este provedor almacenase información sobre o teu método de pago. Podes <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Desfacer adición</translation>
 <translation id="1056898198331236512">Advertencia</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xogar a Dino Run en Chrome, preme Tabulador e, a continuación, Introducir</translation>
@@ -665,7 +664,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2059202684901022309">22 × 34 in</translation>
 <translation id="2064568741209980952">Crédito e préstamos</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suxestión}other{# suxestións}}</translation>
-<translation id="2066915425250589881">solicitar que se elimine</translation>
 <translation id="2066969741541525119">A túa organización bloqueou o sitio ao que queres acceder</translation>
 <translation id="2069913043427250781">Seguranza viaria</translation>
 <translation id="2071156619270205202">Esta tarxeta non é apta para asociarlle un número de tarxeta virtual.</translation>
@@ -985,7 +983,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2512413427717747692">Botón para establecer Chrome como navegador predeterminado. Para establecer Chrome como navegador predeterminado do sistema na configuración de iOS, preme Introducir</translation>
 <translation id="2514548229949738417">Casa e xardín</translation>
 <translation id="2515629240566999685">Comprobar o sinal da túa zona</translation>
-<translation id="2515761554693942801">Escolliches verificar a túa identidade con Touch ID nos sitios web que usan <ph name="PROVIDER_ORIGIN" />. É posible que este provedor almacenase información sobre o teu método de pago. Podes <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Esta tarxeta non está dispoñible. Fala co provedor de tarxetas.</translation>
 <translation id="2521385132275182522">Grampa na parte inferior dereita</translation>
 <translation id="2521736961081452453">Crear formulario</translation>
@@ -1048,6 +1045,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2610561535971892504">Fai clic para copiar a información</translation>
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="2612993535136743634">Eliminaranse os códigos de seguranza que teñas gardados no dispositivo e na Conta de Google</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Activo hai 1 minuto}other{Activo hai # minutos}}</translation>
 <translation id="2614835674900828050">Non dispoñible para esta compra</translation>
 <translation id="2616412942031748191">Márketing e optimización de motores de busca</translation>
 <translation id="2618206371527040026">Publicacións e conferencias académicas</translation>
@@ -1445,7 +1443,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3237427677128462778">Non se puido gardar en Google Wallet</translation>
 <translation id="3238395604961564389">Abrir ligazón nunha ventá do modo de incógnito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar o aspecto do navegador, preme Tabulador e, a continuación, Introducir</translation>
-<translation id="3240791268468473923">A folla da credencial de pagos seguros correspondente ás credenciais non coincidentes está aberta</translation>
 <translation id="3243650379537999343">Debuxar</translation>
 <translation id="3248329428895535435">Non mostrar neste sitio</translation>
 <translation id="3249102948665905108">Completouse a carga do ficheiro en <ph name="CLOUD_PROVIDER" /> con erros</translation>
@@ -1471,7 +1468,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3282085321714087552">A túa organización, <ph name="ENROLLMENT_DOMAIN" />, enviou algúns datos (por exemplo, opcións de configuración ou políticas) aos seguintes sitios web.</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3287510313208355388">Descargar a páxina cando estea en liña</translation>
-<translation id="3288238092761586174">Pode que <ph name="URL" /> teña que tomar outras medidas para verificar o pago</translation>
 <translation id="3289578402369490638">Doutras tendas da Web</translation>
 <translation id="3293642807462928945">Máis información acerca da política de <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consultar e xestiona os teus contrasinais na configuración de Chrome</translation>
@@ -1521,7 +1517,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3378612801784846695">Os temas baséanse no teu historial de navegación recente. Os sitios utilízanos para mostrarche anuncios personalizados ao tempo que protexen a túa identidade</translation>
 <translation id="3380365263193509176">Erro descoñecido</translation>
 <translation id="3380864720620200369">ID de cliente:</translation>
-<translation id="3381668585148405088">Verifica a túa compra</translation>
 <translation id="3383566085871012386">Orde de prioridade actual</translation>
 <translation id="3383713837163550889">Os teus ficheiros locais eliminaranse dentro dun minuto</translation>
 <translation id="3384522979010096022">A túa organización non che permite ver este sitio</translation>
@@ -1537,7 +1532,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3409896703495473338">Xestionar configuración de seguranza</translation>
 <translation id="3410151451624226773">Xestiona estes elementos no xestor de contrasinais de Google</translation>
 <translation id="3411091017011773343">Cargar dentro de <ph name="HOURS" /> h</translation>
-<translation id="341134412449102894">A túa información está gardada en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />)</translation>
 <translation id="3413466783792948876">Se estás usando unha rede pública, á opción máis segura é que entres neste sitio noutro momento. As redes de confianza, como a wifi da casa ou do traballo, supoñen menos riscos.</translation>
 <translation id="3414275587143250384">Informática en nube e distribuída</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
@@ -2601,7 +2595,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="505757197798929356">Indica o motivo polo que queres abrir o ficheiro (obrigatorio)</translation>
 <translation id="5058282932481719070">máis información sobre a función de autocompletar mellorada en Configuración</translation>
 <translation id="5060419232449737386">Configuración de subtítulos</translation>
-<translation id="5060483733937416656">Escolliches verificar a túa identidade con Windows Hello nos sitios web que usan <ph name="PROVIDER_ORIGIN" />. É posible que este provedor almacenase información sobre o teu método de pago. Podes <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Querías dicir "<ph name="LOOKALIKE_DOMAIN" />"?</translation>
 <translation id="5066056036849835175">Historial de impresión</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2968,6 +2961,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5600044805561809264">Podes facer preguntas facilmente sobre as pestanas que compartes mentres navegas.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ou <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Xestión non admitida</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Activo hai 1 hora}other{Activo hai # horas}}</translation>
 <translation id="5605249000617390290">Máis información sobre o seguimento de prezos</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Comprobar a conexión</translation>
@@ -3022,7 +3016,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5689516760719285838">Localización</translation>
 <translation id="569000877158168851">O valor de DnsOverHttpsTemplates non é relevante e non se utilizará, a non ser que a política DnsOverHttpsMode se defina como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Tarxeta de gardado aberta a altura completa.</translation>
-<translation id="5695542892312572833">Queres utilizar Windows Hello para verificar e completar a compra?</translation>
 <translation id="5699628521141772782">Ovos e produtos lácteos</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707154300732650394">Retomar percorrido</translation>
@@ -3247,7 +3240,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6053584886670442526">Podes usar os enderezos gardados nos produtos de Google. Este enderezo está gardado na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="6053735090575989697">Para obter máis información sobre como protexe Google os teus datos, consulta a nosa Política de privacidade.</translation>
 <translation id="6055392876709372977">PKCS n.º 1 SHA-256 con cifrado RSA</translation>
-<translation id="6055888660316801977">Folla da credencial de pagos seguros correspondente ás credenciais non coincidentes</translation>
 <translation id="6055982527635883756">Sobre (arquivo)</translation>
 <translation id="6057177372083677067">Vídeo en liña</translation>
 <translation id="6058646026409894363">Enxeñaría civil</translation>
@@ -3325,7 +3317,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6167577165590485365">Último intento de obtención:</translation>
 <translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" non é un valor válido.</translation>
 <translation id="617256461084925519">Google Chrome está tentando verificar a túa identidade para poder completar a túa información de pago.</translation>
-<translation id="6173208311907792313">Completa a compra con Windows Hello</translation>
 <translation id="6175423614837252320">Gardouse a foto en Google Drive</translation>
 <translation id="6176387967264100435">Este prezo é alto</translation>
 <translation id="6177128806592000436">A túa conexión a este sitio non é segura</translation>
@@ -3469,7 +3460,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6390200185239044127">Dobrez en Z á metade</translation>
 <translation id="6390533465682072118">Recuperación</translation>
 <translation id="639068771471208680">Papel de autocopia</translation>
-<translation id="6391700400718590966">A folla da credencial de pagos seguros correspondente ás credenciais non coincidentes está pechada</translation>
 <translation id="6391911601916058725">Queres compartir sempre as pestanas abertas relevantes?</translation>
 <translation id="6392799395081100092">Papel (velino)</translation>
 <translation id="6393156038355142111">Suxerir contrasinal seguro</translation>
@@ -3525,6 +3515,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6456955391422100996">Quitouse o anuncio.</translation>
 <translation id="6457206614190510200">Costura</translation>
 <translation id="6457455098507772300">As alertas de baixada de prezo móstranse como notificacións emerxentes no escritorio</translation>
+<translation id="6458519747993638565">Activo agora</translation>
 <translation id="6458606150257356946">Pegar de todas as formas</translation>
 <translation id="6462438303393708881">Cancelar carga</translation>
 <translation id="6464094930452079790">imaxes</translation>
@@ -3667,7 +3658,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6698097747703777657">Non recibiches o código? <ph name="BEGIN_LINK" />Xerar un novo código<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creada:</translation>
 <translation id="6698769547327354196">Para desactivar Pix en Chrome, vai á <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" /></translation>
-<translation id="669903922988126943">Garda a túa información e realiza tarefas máis rápido, como completar formularios nos produtos de Google. Podes <ph name="MANAGE_INFO_LINK" /> en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Control desprazable da barra de tempo</translation>
 <translation id="6702851555558236418">Software de música e audio</translation>
 <translation id="6702919718839027939">Presentar</translation>
@@ -3995,7 +3985,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7210993021468939304">Actividade de Linux no contedor, e pode instalar e executar aplicacións de Linux no contedor.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca deste problema.</translation>
 <translation id="7213191991901907140">Coméntanos a túa experiencia</translation>
-<translation id="7217745192097460130">Queres usar Touch ID para verificar e completar a compra?</translation>
 <translation id="7219179957768738017">A conexión utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando</translation>
 <translation id="7221855153210829124">Mostrar notificacións</translation>
@@ -4730,7 +4719,6 @@ Detalles adicionais:
 <translation id="8332188693563227489">Denegouse o acceso a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">Non se traducirán as páxinas en <ph name="LANGUAGE" /></translation>
-<translation id="8339275256517065202">Completa a compra con Touch ID</translation>
 <translation id="833935588477667012"><ph name="FIELD_LABEL" />, campo obrigatorio</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4957,7 +4945,6 @@ Detalles adicionais:
 <translation id="8726549941689275341">Tamaño da páxina:</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8731268612289859741">Código de seguranza</translation>
-<translation id="8731917264694569036">Completa a compra co teu dispositivo</translation>
 <translation id="8733345475331865475">Seguros de automóbil</translation>
 <translation id="8733764070897080460">Podes bloquear os temas que non queiras compartir cos sitios. Chrome tamén elimina automaticamente os temas que teñen máis de 4 semanas. Máis información</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> xestiona o teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
@@ -5194,7 +5181,6 @@ Detalles adicionais:
 <translation id="9114581008513152754">Ningunha compañía ou organización xestiona este navegador. A actividade deste dispositivo pódese xestionar fóra de Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />; para retomar o percorrido e ver a actividade relevante do teu historial de Chrome, preme Tabulador e, despois, Introducir</translation>
 <translation id="9119042192571987207">Cargouse</translation>
-<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> quere verificar a túa identidade</translation>
 <translation id="9119764377203471454">Non se puideron engadir os anexos</translation>
 <translation id="9120593907434185157">Gardar o enderezo</translation>
 <translation id="912327514020027767">Saias</translation>
@@ -5209,6 +5195,7 @@ Detalles adicionais:
 <translation id="9140198744651252040">O navegador Chrome quere usar a túa impresión dixital para autocompletar contrasinais</translation>
 <translation id="9141013498910525015">Xestionar enderezos</translation>
 <translation id="9141435142213469335">Garda o enderezo con máis información</translation>
+<translation id="9141510259469546089">Compra mínima: <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="9141672681283222114">Permitiuse a realidade aumentada neste momento</translation>
 <translation id="9143898823728499852">Podes autocompletar esta tarxeta porque a túa conta <ph name="CARD_ISSUER_NAME" /> está vinculada a Google Pay</translation>
 <translation id="9144951720726881238">Data de vencemento:</translation>
@@ -5282,6 +5269,7 @@ Detalles adicionais:
 <translation id="937885410143139026">Datos enviados á consola de administración</translation>
 <translation id="939736085109172342">Cartafol novo</translation>
 <translation id="940524522703752213">A carga de ficheiros en <ph name="CLOUD_PROVIDER" /> comezará dentro de <ph name="MINUTES" /> minutos</translation>
+<translation id="943185096918807504">Compra máxima: <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="944578681290094302">Mostra que recompensas e beneficios ofrecen as túas tarxetas ao tramitar as compras. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Máis información sobre os beneficios das tarxetas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945673208656386843">Autocompleta esta tarxeta para as compras que fagas en Chromium cando estea gardada neste dispositivo</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente un sitio novo en Google Sites</translation>

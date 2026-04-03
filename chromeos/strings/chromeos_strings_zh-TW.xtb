@@ -578,6 +578,7 @@
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="357889014807611375">計量付費的 Wi-Fi</translation>
 <translation id="3583278742022654445">訊號強度偏弱，建議你移動到較靠近 Wi-Fi 訊號來源的位置。</translation>
+<translation id="3586931643579894722">隱藏詳細資訊</translation>
 <translation id="3588034708467091142">請確定裝置已連上網際網路，然後再試一次。</translation>
 <translation id="3594280220611906414">「<ph name="USER_FRIENDLY_APN_NAME" />」是「<ph name="APN_NAME" />」的易記名稱。</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
@@ -1161,6 +1162,7 @@
 <translation id="6136285399872347291">Backspace 鍵</translation>
 <translation id="6137614725462089991">賽博龐克</translation>
 <translation id="6137767437444130246">使用者憑證</translation>
+<translation id="6140948187512243695">顯示詳細資訊</translation>
 <translation id="6146993107019042706">如要完成變更，請輸入你的新密碼</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">無法連線至網際網路</translation>

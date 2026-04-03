@@ -80,6 +80,7 @@
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
 <translation id="1287229685519872919">Google Workspace ഡാറ്റ</translation>
 <translation id="1291506870746876680">നിങ്ങൾ സൈറ്റിൽ നിന്ന് പുറത്ത് കടക്കുമ്പോൾ "<ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> അനുമതികൾ ഓഫാക്കി റീസെറ്റ് ചെയ്യും.</translation>
+<translation id="1293491796138057740"><ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ടിന്റെ വിവരങ്ങൾ Google Wallet-ൽ സംരക്ഷിക്കും. ഫോമുകൾ വേഗത്തിൽ പൂരിപ്പിക്കാൻ നിങ്ങൾക്ക് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഇത് ഉപയോഗിക്കാം.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="129553762522093515">സമീപകാലത്ത് അടച്ചവ</translation>
 <translation id="1296581780163690620">ഫയൽ ഡൗൺലോഡ് ചെയ്യണോ? (<ph name="FILE_SIZE" />)</translation>
@@ -107,6 +108,7 @@
 <translation id="1369286077209859800">ടാബ് ഗ്രൂപ്പിലെ എല്ലാ ടാബുകളും കാണിക്കുക</translation>
 <translation id="136942498637440594">ചിത്രങ്ങളും നിങ്ങൾ കാണുന്നവയും നിങ്ങൾക്ക് തിരയാം.</translation>
 <translation id="1373120905936431262">Nano Banana ഉപയോഗിച്ച് റീമിക്‌സ് ചെയ്യാൻ ഒരു ചിത്രം അപ്‌ലോഡ് ചെയ്യുക</translation>
+<translation id="1377321085342047638">കാർഡ് നമ്പർ</translation>
 <translation id="1377508275003315939">പാസ്‌വേഡുകൾ</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} വിലാസത്തിൽ {position}-ാമത്തേത്}other{{count} വിലാസങ്ങളിൽ {position}-ാമത്തേത്}}</translation>
 <translation id="1383876407941801731">തിരയുക</translation>

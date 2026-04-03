@@ -80,6 +80,7 @@
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
 <translation id="1287229685519872919">Data Google Workspace</translation>
 <translation id="1291506870746876680">Kebenaran <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> akan ditetapkan semula kepada dimatikan apabila anda meninggalkan laman ini.</translation>
+<translation id="1293491796138057740">Maklumat anda disimpan pada Google Wallet untuk <ph name="USER_EMAIL" />. Anda boleh menggunakan maklumat ini merentas perkhidmatan Google untuk mengisi borang dengan lebih pantas.</translation>
 <translation id="1293556467332435079">Fail</translation>
 <translation id="129553762522093515">Ditutup baru-baru ini</translation>
 <translation id="1296581780163690620">Muat turun fail? (<ph name="FILE_SIZE" />)</translation>
@@ -107,6 +108,7 @@
 <translation id="1369286077209859800">Tunjukkan semua tab dalam kumpulan tab</translation>
 <translation id="136942498637440594">Anda boleh mencari imej dan perkara yang anda lihat.</translation>
 <translation id="1373120905936431262">Muat naik imej untuk diadun semula dengan Nano Banana</translation>
+<translation id="1377321085342047638">Nombor Kad</translation>
 <translation id="1377508275003315939">Kata laluan</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} daripada {count} alamat}other{{position} daripada {count} alamat}}</translation>
 <translation id="1383876407941801731">Carian</translation>

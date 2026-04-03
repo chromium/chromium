@@ -28,7 +28,6 @@
 <translation id="1044897699341250361">Какво означава това</translation>
 <translation id="1046350918013988591">Талони и оферти за отстъпка</translation>
 <translation id="1050038467049342496">Затворете другите приложения.</translation>
-<translation id="1053959602163383901">Избрахте опцията за потвърждаване чрез устройство за удостоверяване в уебсайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче да <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Отмяна на добавянето</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да играете играта с динозавъра в Chrome</translation>
@@ -665,7 +664,6 @@
 <translation id="2059202684901022309">22 x 34 инча</translation>
 <translation id="2064568741209980952">Кредити и заеми</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 предложение}other{# предложения}}</translation>
-<translation id="2066915425250589881">заявите изтриването ѝ</translation>
 <translation id="2066969741541525119">Сайтът е блокиран от организацията ви</translation>
 <translation id="2069913043427250781">Безопасност на автомобила и движението по пътищата</translation>
 <translation id="2071156619270205202">Тази карта не отговаря на условията за номер на виртуална карта.</translation>
@@ -985,7 +983,6 @@
 <translation id="2512413427717747692">Бутон за задаване на Chrome като браузър по подразбиране. Натиснете Enter за задаване на Chrome като браузъра по подразбиране за системата в настройките на iOS</translation>
 <translation id="2514548229949738417">Дом и градина</translation>
 <translation id="2515629240566999685">Проверете сигнала в района.</translation>
-<translation id="2515761554693942801">Избрахте опцията за потвърждаване чрез Touch ID в уебсайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче да <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Тази карта не е налице. Моля, свържете се с доставчика ѝ.</translation>
 <translation id="2521385132275182522">Телбодиране долу вдясно</translation>
 <translation id="2521736961081452453">Създаване на формуляр</translation>
@@ -1445,7 +1442,6 @@
 <translation id="3237427677128462778">Запазването в Google Wallet не бе успешно</translation>
 <translation id="3238395604961564389">Отваряне на връзката в прозорец в режим „инкогнито“</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате облика на браузъра си</translation>
-<translation id="3240791268468473923">Листът за несъответстващи идентификационни данни за сигурни плащания е отворен</translation>
 <translation id="3243650379537999343">Рисуване</translation>
 <translation id="3248329428895535435">Да не се показва на този сайт</translation>
 <translation id="3249102948665905108">Качването на файлове в(ъв) <ph name="CLOUD_PROVIDER" /> завърши с грешки</translation>
@@ -1471,7 +1467,6 @@
 <translation id="3282085321714087552">Организацията ви (<ph name="ENROLLMENT_DOMAIN" />) изпрати известна информация, като например настройки или правила, до долупосочените уебсайтове.</translation>
 <translation id="3286372614333682499">вертикална ориентация</translation>
 <translation id="3287510313208355388">Изтегляне, когато съм онлайн</translation>
-<translation id="3288238092761586174">Може да се наложи <ph name="URL" /> да предприеме допълнителни стъпки за потвърждаване на плащането ви</translation>
 <translation id="3289578402369490638">От други магазини в мрежата</translation>
 <translation id="3293642807462928945">Научете повече за правилото <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Преглеждайте и управлявайте паролите си в настройките на Chrome</translation>
@@ -1521,7 +1516,6 @@
 <translation id="3378612801784846695">Темите са въз основа на скорошната ви история на сърфиране. Сайтовете ги използват, за да ви показват персонализирани реклами, като същевременно защитават самоличността ви</translation>
 <translation id="3380365263193509176">Неизвестна грешка</translation>
 <translation id="3380864720620200369">Идент. № на клиентската програма:</translation>
-<translation id="3381668585148405088">Потвърждаване на покупката ви</translation>
 <translation id="3383566085871012386">Текущият приоритет</translation>
 <translation id="3383713837163550889">Локалните ви файлове ще бъдат изтрити след 1 минута</translation>
 <translation id="3384522979010096022">Организацията ви не разрешава да преглеждате този сайт</translation>
@@ -1537,7 +1531,6 @@
 <translation id="3409896703495473338">Управление на настройките за сигурност</translation>
 <translation id="3410151451624226773">Управление в Google Мениджър на пароли</translation>
 <translation id="3411091017011773343">Качване след <ph name="HOURS" /> ч</translation>
-<translation id="341134412449102894">Данните ви се запазват в <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Ако използвате обществена мрежа, най-безопасно е да посетите този сайт по-късно. Рискът е по-малък при доверена мрежа, като например домашната или служебната ви Wi-Fi мрежа.</translation>
 <translation id="3414275587143250384">Разпределени изчисления и изчисления в облака</translation>
 <translation id="3414952576877147120">Размер:</translation>
@@ -2601,7 +2594,6 @@
 <translation id="505757197798929356">Посочете причина за отварянето (задължително)</translation>
 <translation id="5058282932481719070">научете повече за подобреното автоматично попълване в настройките</translation>
 <translation id="5060419232449737386">Настройки за надписите</translation>
-<translation id="5060483733937416656">Избрахте опцията за потвърждаване чрез Windows Hello в уебсайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче да <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Може би имахте предвид <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">История на отпечатаното</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3022,7 +3014,6 @@
 <translation id="5689516760719285838">Местоположение</translation>
 <translation id="569000877158168851">Стойността на DnsOverHttpsTemplates не е подходяща и няма да се използва, освен ако за правилото DnsOverHttpsMode не е зададено <ph name="SECURE_DNS_MODE_AUTOMATIC" /> или <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Подканата за запазване на карта е отворена на пълната височина.</translation>
-<translation id="5695542892312572833">Искате ли да използвате Windows Hello, за да потвърдите и завършите покупката си?</translation>
 <translation id="5699628521141772782">Млечни изделия и яйца</translation>
 <translation id="5701381305118179107">Центриране</translation>
 <translation id="5707154300732650394">Възобновяване на пътешествието</translation>
@@ -3247,7 +3238,6 @@
 <translation id="6053584886670442526">Можете да използвате запазените адреси в различни продукти на Google. Този адрес е запазен в профила ви в Google (<ph name="ACCOUNT" />).</translation>
 <translation id="6053735090575989697">В Декларацията ни за поверителност можете да научите повече за това как Google защитава данните ви.</translation>
 <translation id="6055392876709372977">PKCS 1 SHA-256 с RSA шифроване</translation>
-<translation id="6055888660316801977">Лист за несъответстващи идентификационни данни за сигурни плащания</translation>
 <translation id="6055982527635883756">Плик (архивен)</translation>
 <translation id="6057177372083677067">Онлайн видео</translation>
 <translation id="6058646026409894363">Строително инженерство</translation>
@@ -3325,7 +3315,6 @@
 <translation id="6167577165590485365">Последен опит за извличане:</translation>
 <translation id="6171968084616623939"><ph name="PROXY_INVALID_SCHEME_HOST_PORT" /> не е валидна стойност.</translation>
 <translation id="617256461084925519">Google Chrome се опитва да потвърди, че това сте вие, за да може да попълни данните ви за плащане.</translation>
-<translation id="6173208311907792313">Завършете покупката посредством Windows Hello</translation>
 <translation id="6175423614837252320">Снимката е запазена в Google Диск</translation>
 <translation id="6176387967264100435">Тази цена е висока</translation>
 <translation id="6177128806592000436">Връзката ви с този сайт не е защитена</translation>
@@ -3469,7 +3458,6 @@
 <translation id="6390200185239044127">Двойно Z-образно сгъване</translation>
 <translation id="6390533465682072118">Възстановяване</translation>
 <translation id="639068771471208680">Многокомпонентен формуляр</translation>
-<translation id="6391700400718590966">Листът за несъответстващи идентификационни данни за сигурни плащания е затворен</translation>
 <translation id="6391911601916058725">Винаги ли да се споделят уместните отворени раздели?</translation>
 <translation id="6392799395081100092">Хартия (Vellum)</translation>
 <translation id="6393156038355142111">Предложение за надеждна парола</translation>
@@ -3667,7 +3655,6 @@
 <translation id="6698097747703777657">Не получихте кода си? <ph name="BEGIN_LINK" />Получаване на нов код<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Създадено:</translation>
 <translation id="6698769547327354196">За да изключите PIX в Chrome, отворете <ph name="BEGIN_LINK1" />настройките за плащане<ph name="END_LINK1" /></translation>
-<translation id="669903922988126943">Запазете информацията си и извършвайте по-бързо различни неща, като например попълване на формуляри в продуктите на Google. Можете <ph name="MANAGE_INFO_LINK" /> в <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Времеви плъзгач</translation>
 <translation id="6702851555558236418">Софтуер за музика и аудиозаписи</translation>
 <translation id="6702919718839027939">Представяне</translation>
@@ -3996,7 +3983,6 @@
 <translation id="7210993021468939304">Може да инсталира и стартира приложения за Linux в контейнера, както и да вижда активността в него</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за този проблем.</translation>
 <translation id="7213191991901907140">Разкажете ни за впечатленията си</translation>
-<translation id="7217745192097460130">Искате ли да използвате Touch ID, за да потвърдите и завършите покупката си?</translation>
 <translation id="7219179957768738017">Връзката използва <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Обработва се</translation>
 <translation id="7221855153210829124">Показва известия</translation>
@@ -4731,7 +4717,6 @@
 <translation id="8332188693563227489">Достъпът до <ph name="HOST_NAME" /> бе отказан</translation>
 <translation id="833262891116910667">Открояване</translation>
 <translation id="8339163506404995330">Страниците на <ph name="LANGUAGE" /> няма да се превеждат</translation>
-<translation id="8339275256517065202">Завършете покупката посредством Touch ID</translation>
 <translation id="833935588477667012"><ph name="FIELD_LABEL" />, задължително</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4958,7 +4943,6 @@
 <translation id="8726549941689275341">Размер на страниците:</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731268612289859741">Код за сигурност</translation>
-<translation id="8731917264694569036">Завършете покупката посредством устройството си</translation>
 <translation id="8733345475331865475">Автомобилно застраховане</translation>
 <translation id="8733764070897080460">Можете да блокирате темите, които не искате да се споделят със сайтовете. Също така Chrome автоматично изтрива темите, по-стари от 4 седмици. Научете повече</translation>
 <translation id="8734529307927223492">Вашият <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" /></translation>
@@ -5195,7 +5179,6 @@
 <translation id="9114581008513152754">Този браузър не се управлява от дружество или друга организация. Възможно е активността на устройството да се управлява извън Chrome. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, натиснете Tab и след това Enter, за да продължите пътешествието си и да прегледате съответната активност в историята си в Chrome</translation>
 <translation id="9119042192571987207">Качено</translation>
-<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> иска да потвърди, че това сте вие</translation>
 <translation id="9119764377203471454">Прикачените файлове не могат да бъдат добавени</translation>
 <translation id="9120593907434185157">Запазване на адреса</translation>
 <translation id="912327514020027767">Поли</translation>
@@ -5210,6 +5193,7 @@
 <translation id="9140198744651252040">Браузърът Chrome иска да използва отпечатък при автоматично попълване на паролите</translation>
 <translation id="9141013498910525015">Управление на адресите</translation>
 <translation id="9141435142213469335">Запазване на адреса с повече информация</translation>
+<translation id="9141510259469546089">Минимална сума на покупката: <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="9141672681283222114">Достъпът до AR е разрешен този път</translation>
 <translation id="9143898823728499852">Данните за тази карта могат да се попълват автоматично, защото профилът ви в <ph name="CARD_ISSUER_NAME" /> е свързан с Google Pay</translation>
 <translation id="9144951720726881238">Дата на валидност:</translation>
@@ -5283,6 +5267,7 @@
 <translation id="937885410143139026">Данните са изпратени до конзолата за администратори</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="940524522703752213">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след <ph name="MINUTES" /> минути</translation>
+<translation id="943185096918807504">Максимална сума на покупката: <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="944578681290094302">Показване кои награди и предимства са налице за картите ви при плащане. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Научете повече за предимствата за картите<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945673208656386843">Автоматично попълване на тази карта за покупки в Chromium, когато данните ѝ са запазени на това устройство</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо сайт в Google Сайтове</translation>

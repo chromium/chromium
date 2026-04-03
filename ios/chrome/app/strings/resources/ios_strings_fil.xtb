@@ -80,6 +80,7 @@
 <translation id="1285320974508926690">Huwag isalin kailanman ang site na ito</translation>
 <translation id="1287229685519872919">Data sa Google Workspace</translation>
 <translation id="1291506870746876680">Mare-reset sa naka-off ang mga pahintulot sa <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> kapag umalis ka sa site na ito.</translation>
+<translation id="1293491796138057740">Ise-save ang iyong impormasyon sa Google Wallet para sa <ph name="USER_EMAIL" />. Puwede mo itong gamitin sa lahat ng produkto ng Google para mas mabilis na mapunan ang mga form.</translation>
 <translation id="1293556467332435079">Mga File</translation>
 <translation id="129553762522093515">Kamakailang isinara</translation>
 <translation id="1296581780163690620">I-download ang file? (<ph name="FILE_SIZE" />)</translation>
@@ -107,6 +108,7 @@
 <translation id="1369286077209859800">Ipakita ang lahat ng tab sa grupo ng tab</translation>
 <translation id="136942498637440594">Puwede mong hanapin ang mga larawan at kung ano ang makikita mo.</translation>
 <translation id="1373120905936431262">Mag-upload ng larawang ire-remix gamit ang Nano Banana</translation>
+<translation id="1377321085342047638">Numero ng Card</translation>
 <translation id="1377508275003315939">Mga Password</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} sa {count} address}one{{position} sa {count} address}other{{position} sa {count} na address}}</translation>
 <translation id="1383876407941801731">Hanapin</translation>

@@ -946,7 +946,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1637224376458524414">Get this bookmark on your iPhone</translation>
 <translation id="1637765355341780467">Something went wrong when opening your profile. Some features may be unavailable.</translation>
 <translation id="1639239467298939599">Loading</translation>
-<translation id="1640235262200048077"><ph name="IME_NAME" /> doesn’t work in Linux apps yet</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050">More actions for <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 other password wasn't imported because it's formatted incorrectly}other{{NUM_PASSWORDS} other passwords weren't imported because they're formatted incorrectly}}</translation>
@@ -2091,7 +2090,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2419131370336513030">View installed apps</translation>
 <translation id="2419706071571366386">For security, sign out when your computer isn't being used.</translation>
 <translation id="2421705177906985956">No sites to show right now</translation>
-<translation id="2422125132043002186">Linux restore cancelled</translation>
 <translation id="2423506062824112361">Failed to download content due to an unknown reason.</translation>
 <translation id="2423578206845792524">Sa&amp;ve image as...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Guest}other{Guest (#)}}</translation>
@@ -3071,6 +3069,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3076966043108928831">Save only on this device</translation>
 <translation id="3076977359333237641">Your sign-in data was deleted</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">No feature or extension shortcuts found</translation>
 <translation id="3080930813589868009">Per-user updater</translation>
 <translation id="3080933187214341848">This network is not synced to your account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">App name or ID</translation>
@@ -3974,7 +3973,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">You and Google</translation>
 <translation id="3721178866505920080">More info about turning on extended preloading</translation>
-<translation id="3722108462506185496">Error starting the virtual machine service. Please try again.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> instruction received</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
@@ -5623,7 +5621,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4868284252360267853">This dialogue is not currently focused. Press Command-Shift-Option A to focus this dialogue.</translation>
 <translation id="4868351661310357223">Install apps and games from Google Play on your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Read ChromeOS network information</translation>
-<translation id="4869175799055761881">This application can't be installed by the user. Please contact the developer</translation>
 <translation id="4870724079713069532">You can open and edit supported files with this app from File Explorer or other apps. To control which files open in this app by default, go to <ph name="BEGIN_LINK" />Windows settings<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and 1 other app.</translation>
 <translation id="4871308555310586478">Not from Chrome Web Store.</translation>
@@ -8291,7 +8288,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6781284683813954823">Doodle Link</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages and photos. Backup data will not count towards your child's Drive storage quota.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can turn this service off in Settings.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6781978626986383437">Linux backup cancelled</translation>
 <translation id="6783036716881942511">Forget this device?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive settings</translation>
 <translation id="6784523122863989144">Profile is supported</translation>
@@ -8561,7 +8557,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="695817292005698051">Gesture detection threshold</translation>
 <translation id="6959882218873172284">POST request</translation>
 <translation id="6960133692707095572">Visit without a ticket</translation>
-<translation id="6960507406838246615">Linux update required</translation>
 <translation id="6960648667961844909">Couldn’t download <ph name="LANGUAGE" /> speech files. Download will be attempted later. Speech is sent to Google for processing until download is completed.</translation>
 <translation id="696103774840402661">All files and local data for all users on this <ph name="DEVICE_TYPE" /> has been permanently deleted.</translation>
 <translation id="6961327401577924850">Sites usually look for Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker or a smart light bulb</translation>
@@ -9475,7 +9470,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7606639338662398635">Tab groups</translation>
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7608810328871051088">Android preferences</translation>
-<translation id="7609148976235050828">Please connect to the Internet and try again.</translation>
 <translation id="7610337976012700501">To use <ph name="FEATURE_NAME" /> with these contacts, add the email address linked with their Google Account to your contacts.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">All extensions</translation>
@@ -11824,7 +11818,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>
 <translation id="9187967020623675250">Keys don’t match. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Enable process isolation</translation>
-<translation id="9189618485998894982">This application has been blocked. Please contact the developer</translation>
 <translation id="9192019773545828776">Hear spoken feedback so that you can use your device without looking at the screen. Braille feedback is available with a connected device. Use Ctrl + Alt + Z to turn ChromeVox on and off. Use Search + Left arrow or Right arrow to navigate. Use Search + Space to select (activate).</translation>
 <translation id="9195969368671142407">When your organisation limits saving to your Google Account, you can’t share or join tab groups</translation>
 <translation id="919686179725692564">Learn more about backing up your apps</translation>

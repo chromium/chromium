@@ -28,7 +28,6 @@
 <translation id="1044897699341250361">Mitä tämä tarkoittaa</translation>
 <translation id="1046350918013988591">Kupongit ja alennusmyynnit</translation>
 <translation id="1050038467049342496">Sulje muita sovelluksia.</translation>
-<translation id="1053959602163383901">Valitsit todennuslaitteella vahvistamisen verkkosivustoilla, jotka käyttävät <ph name="PROVIDER_ORIGIN" /> ‐palvelua. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja, joille voit <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">K&amp;umoa lisäys</translation>
 <translation id="1056898198331236512">Varoitus</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina ensin sarkainta ja sitten Enter, niin voit pelata Dino Run ‑peliä Chromessa</translation>
@@ -665,7 +664,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2059202684901022309">22 x 34 tuumaa</translation>
 <translation id="2064568741209980952">Luotot ja lainanannot</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ehdotus}other{# ehdotusta}}</translation>
-<translation id="2066915425250589881">tehdä poistopyynnön</translation>
 <translation id="2066969741541525119">Organisaatiosi on merkinnyt tämän sivuston</translation>
 <translation id="2069913043427250781">Ajoneuvo‑ ja liikenneturvallisuus</translation>
 <translation id="2071156619270205202">Tälle kortille ei ole saatavilla virtuaalista korttinumeroa.</translation>
@@ -985,7 +983,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2512413427717747692">Valitse Chrome oletusselaimeksi ‑painike, painamalla Enter voit valita Chromen järjestelmän oletusselaimeksi iOS-asetuksista</translation>
 <translation id="2514548229949738417">Koti ja puutarha</translation>
 <translation id="2515629240566999685">Tarkista alueesi mobiilisignaali.</translation>
-<translation id="2515761554693942801">Valitsit vahvistuksen Touch ID:llä verkkosivustoilla, joilla on käytössä <ph name="PROVIDER_ORIGIN" />. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja, joille voit <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Kortti ei ole käytettävissä. Ota yhteyttä kortin myöntäjään.</translation>
 <translation id="2521385132275182522">Niitti oikeassa alareunassa</translation>
 <translation id="2521736961081452453">Luo lomake</translation>
@@ -1048,6 +1045,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2610561535971892504">Kopioi klikkaamalla</translation>
 <translation id="2612676031748830579">Kortin numero</translation>
 <translation id="2612993535136743634">Kaikki laitteelle ja Google-tilille tallennetut turvakoodit poistetaan</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Aktiivinen 1 minuutti sitten}other{Aktiivinen # minuuttia sitten}}</translation>
 <translation id="2614835674900828050">Ei käytettävissä tälle ostokselle</translation>
 <translation id="2616412942031748191">Hakukoneoptimointi ja ‑markkinointi</translation>
 <translation id="2618206371527040026">Tieteelliset konferenssit ja julkaisut</translation>
@@ -1446,7 +1444,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3237427677128462778">Google Walletiin tallentaminen ei onnistunut</translation>
 <translation id="3238395604961564389">Avaa linkki incognito-ikkunassa</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, muokkaa selaimen ulkoasua painamalla sarkainta ja sitten Enter</translation>
-<translation id="3240791268468473923">Suojatun maksun kirjautumistiedot eivät täsmää ‑kirjautumistietotaulukko on avattu</translation>
 <translation id="3243650379537999343">Piirrä</translation>
 <translation id="3248329428895535435">Älä näytä tällä sivustolla</translation>
 <translation id="3249102948665905108">Tiedostojen lataus tänne: <ph name="CLOUD_PROVIDER" /> valmis, mutta siinä tapahtui virheitä</translation>
@@ -1472,7 +1469,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3282085321714087552">Organisaatiosi (<ph name="ENROLLMENT_DOMAIN" />) on lähettänyt seuraaville verkkosivustoille joitakin tietoja, kuten asetuksia tai käytäntöjä.</translation>
 <translation id="3286372614333682499">pystysuunta</translation>
 <translation id="3287510313208355388">Lataa, kun verkkoyhteys on muodostettu</translation>
-<translation id="3288238092761586174"><ph name="URL" /> saattaa vaatia lisävaiheita maksun vahvistamiseksi</translation>
 <translation id="3289578402369490638">Muista verkkokaupoista</translation>
 <translation id="3293642807462928945">Lisätietoja käytännöstä: <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Katso ja hallinnoi salasanojasi Chromen asetuksissa</translation>
@@ -1522,7 +1518,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3378612801784846695">Aiheet perustuvat viimeaikaiseen selaushistoriaasi. Sivustot käyttävät historiaa personoitujen mainosten näyttämiseen paljastamatta henkilöllisyyttäsi</translation>
 <translation id="3380365263193509176">Tuntematon virhe</translation>
 <translation id="3380864720620200369">Asiakastunnus:</translation>
-<translation id="3381668585148405088">Todenna ostoksesi</translation>
 <translation id="3383566085871012386">Nykyinen järjestys</translation>
 <translation id="3383713837163550889">Paikalliset tiedostot poistetaan minuutin kuluttua</translation>
 <translation id="3384522979010096022">Organisaatiosi ei salli sinun nähdä tätä sivustoa</translation>
@@ -1538,7 +1533,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3409896703495473338">Muuta tietoturva-asetuksia</translation>
 <translation id="3410151451624226773">Hallinnoi Google Salasanoissa</translation>
 <translation id="3411091017011773343">Lataa <ph name="HOURS" /> tunnin kuluttua</translation>
-<translation id="341134412449102894">Tietosi on tallennettu tänne: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />)</translation>
 <translation id="3413466783792948876">Tällä sivustolle on turvallisinta käydä myöhemmin, jos käytät julkista verkkoa. Luotetut verkot, esimerkiksi kodin tai työpaikan Wi-Fi, ovat turvallisempia.</translation>
 <translation id="3414275587143250384">Jaettu tietojenkäsittely ja pilvipalvelut</translation>
 <translation id="3414952576877147120">Koko:</translation>
@@ -2602,7 +2596,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="505757197798929356">Lisää avaamisen syy (pakollinen)</translation>
 <translation id="5058282932481719070">lue lisää parannetusta automaattisesta täytöstä asetuksista</translation>
 <translation id="5060419232449737386">Tekstitysasetukset</translation>
-<translation id="5060483733937416656">Valitsit vahvistuksen Windows Hellolla verkkosivustoilla, joilla on käytössä <ph name="PROVIDER_ORIGIN" />. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja, joille voit <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Tarkoititko: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Tulostushistoria</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -2969,6 +2962,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5600044805561809264">Voit helposti esittää kysymyksiä jakamistasi välilehdistä selailun aikana.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> tai <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Hallintaa ei tueta</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Aktiivinen 1 tunti sitten}other{Aktiivinen # tuntia sitten}}</translation>
 <translation id="5605249000617390290">Lue lisää hintaseurannasta</translation>
 <translation id="5605670050355397069">Kierrevihko</translation>
 <translation id="5610142619324316209">Tarkista yhteys.</translation>
@@ -3023,7 +3017,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5689516760719285838">Sijainti</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates-arvo ei ole olennainen, eikä sitä käytetä, ellei DnsOverHttpsMode-käytännön arvoksi määritetä <ph name="SECURE_DNS_MODE_AUTOMATIC" /> tai <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Tallennuskortti avattu koko näytön kokoisena.</translation>
-<translation id="5695542892312572833">Todennetaanko ja viimeistelläänkö ostos Windows Hellolla?</translation>
 <translation id="5699628521141772782">Maitotuotteet ja kananmunat</translation>
 <translation id="5701381305118179107">Keskitä</translation>
 <translation id="5707154300732650394">Jatka toimintoa</translation>
@@ -3248,7 +3241,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6053584886670442526">Voit käyttää tallennettuja osoitteita kaikissa Googlen tuotteissa. Osoite on tallennettu Google-tilillesi, <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Tietosuojakäytännöstä voit lukea lisää siitä, miten Google suojaa dataasi.</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 ja RSA-salaus</translation>
-<translation id="6055888660316801977">Suojatun maksun kirjautumistiedot eivät täsmää ‑kirjautumistietotaulukko</translation>
 <translation id="6055982527635883756">Kirjekuori (arkistointi)</translation>
 <translation id="6057177372083677067">Verkkovideo</translation>
 <translation id="6058646026409894363">Maa‑ ja vesirakentaminen</translation>
@@ -3326,7 +3318,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6167577165590485365">Hakua yritetty viimeksi:</translation>
 <translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" ei ole kelvollinen arvo.</translation>
 <translation id="617256461084925519">Google Chrome yrittää vahvistaa henkilöllisyytesi, jotta se voi täyttää maksutietosi.</translation>
-<translation id="6173208311907792313">Suorita ostos loppuun Windows Hellon avulla</translation>
 <translation id="6175423614837252320">Kuva tallennettu Google Driveen</translation>
 <translation id="6176387967264100435">Tämä hinta on korkea</translation>
 <translation id="6177128806592000436">Sivustoon ei ole muodostettu turvallista yhteyttä.</translation>
@@ -3470,7 +3461,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6390200185239044127">Kolmoistaite puoliksi</translation>
 <translation id="6390533465682072118">Palautus</translation>
 <translation id="639068771471208680">Moniosainen lomake</translation>
-<translation id="6391700400718590966">Suojatun maksun kirjautumistiedot eivät täsmää ‑kirjautumistietotaulukko on suljettu</translation>
 <translation id="6391911601916058725">Jaetaanko relevantit avoimet välilehdet aina?</translation>
 <translation id="6392799395081100092">Paperi (veliini)</translation>
 <translation id="6393156038355142111">Ehdota vahvaa salasanaa</translation>
@@ -3526,6 +3516,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6456955391422100996">Mainos poistettu</translation>
 <translation id="6457206614190510200">Satulasidonta</translation>
 <translation id="6457455098507772300">Ilmoitukset hinnan laskusta näkyvät ponnahdusikkunailmoituksina tietokoneella</translation>
+<translation id="6458519747993638565">Aktiivinen nyt</translation>
 <translation id="6458606150257356946">Liitä silti</translation>
 <translation id="6462438303393708881">Peru lataus</translation>
 <translation id="6464094930452079790">kuvat</translation>
@@ -3668,7 +3659,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6698097747703777657">Etkö saanut koodia? <ph name="BEGIN_LINK" />Pyydä uusi koodi<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Luomispvm:</translation>
 <translation id="6698769547327354196">Voit laittaa Pixin pois päältä Chromessa <ph name="BEGIN_LINK1" />maksuasetuksista<ph name="END_LINK1" /></translation>
-<translation id="669903922988126943">Tallenna tietosi, niin voit hoitaa asioita nopeammin, esimerkiksi täyttää lomakkeita Googlen tuotteissa. Voit <ph name="MANAGE_INFO_LINK" /> (<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />, <ph name="ACCOUNT" />).</translation>
 <translation id="67007264085648978">Ajan liukusäädin</translation>
 <translation id="6702851555558236418">Audio‑ ja musiikkiohjelmistot</translation>
 <translation id="6702919718839027939">Esitystila</translation>
@@ -3997,7 +3987,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="7210993021468939304">Linux-toiminta säilön sisällä, ja voi asentaa ja suorittaa Linux-sovelluksia säilön sisällä</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /> ongelmasta.</translation>
 <translation id="7213191991901907140">Kerro meille kokemuksestasi</translation>
-<translation id="7217745192097460130">Vahvistetaanko ja viimeistelläänkö ostos Touch ID:llä?</translation>
 <translation id="7219179957768738017">Yhteys käyttää protokollaa <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Käsitellään.</translation>
 <translation id="7221855153210829124">Näytä ilmoitukset</translation>
@@ -4732,7 +4721,6 @@ Lisätietoja:
 <translation id="8332188693563227489">Sivuston <ph name="HOST_NAME" /> käyttöoikeus evättiin</translation>
 <translation id="833262891116910667">Korosta</translation>
 <translation id="8339163506404995330">Kielellä <ph name="LANGUAGE" /> kirjoitettuja sivuja ei käännetä.</translation>
-<translation id="8339275256517065202">Suorita ostos loppuun Touch ID:n avulla</translation>
 <translation id="833935588477667012"><ph name="FIELD_LABEL" />, vaaditaan</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -4960,7 +4948,6 @@ Lisätietoja:
 <translation id="8726549941689275341">Sivun koko:</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731268612289859741">Turvakoodi</translation>
-<translation id="8731917264694569036">Suorita ostos loppuun laitteellasi</translation>
 <translation id="8733345475331865475">Autovakuutukset</translation>
 <translation id="8733764070897080460">Voit estää aiheet, joita et halua jakaa sivustoille. Chrome myös poistaa yli neljä viikkoa vanhat aiheet automaattisesti. Lue lisää</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> ylläpitää laitetta (<ph name="DEVICE_TYPE" />)</translation>
@@ -5197,7 +5184,6 @@ Lisätietoja:
 <translation id="9114581008513152754">Yritys tai muu organisaatio ei ylläpidä selainta. Laitteen toimintaa saatetaan ylläpitää Chromen ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja Enter, niin voit jatkaa toimintoa ja nähdä oleelliset tapahtumat Chrome-historiassasi</translation>
 <translation id="9119042192571987207">Lähetetty</translation>
-<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> haluaa vahvistaa henkilöllisyytesi</translation>
 <translation id="9119764377203471454">Liitteiden lisääminen ei onnistu</translation>
 <translation id="9120593907434185157">Tallenna osoite</translation>
 <translation id="912327514020027767">Hameet</translation>

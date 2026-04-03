@@ -578,6 +578,7 @@
 <translation id="3577473026931028326">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="357889014807611375">従量制 Wi-Fi</translation>
 <translation id="3583278742022654445">電波が弱い状態です。Wi-Fi　信号の発生元に近づいてみてください。</translation>
+<translation id="3586931643579894722">詳細を非表示</translation>
 <translation id="3588034708467091142">インターネットに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> は、<ph name="APN_NAME" /> の名称をわかりやすくしたものです。</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
@@ -1161,6 +1162,7 @@
 <translation id="6136285399872347291">Backspace</translation>
 <translation id="6137614725462089991">サイバーパンク</translation>
 <translation id="6137767437444130246">ユーザー証明書</translation>
+<translation id="6140948187512243695">詳細を表示</translation>
 <translation id="6146993107019042706">終了するには、新しいパスワードを入力してください</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">インターネットに接続できません</translation>

@@ -578,6 +578,7 @@
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="3583278742022654445">ความแรงสัญญาณไม่ดี ลองขยับไปใกล้ๆ แหล่งสัญญาณ Wi-Fi มากขึ้น</translation>
+<translation id="3586931643579894722">ซ่อนรายละเอียด</translation>
 <translation id="3588034708467091142">ตรวจสอบว่าคุณได้เชื่อมต่ออินเทอร์เน็ตแล้ว และลองอีกครั้ง</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> คือชื่อที่เรียกง่ายของ <ph name="APN_NAME" /></translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
@@ -1161,6 +1162,7 @@
 <translation id="6136285399872347291">ลบถอยหลัง</translation>
 <translation id="6137614725462089991">ไซเบอร์พังก์</translation>
 <translation id="6137767437444130246">ใบรับรองของผู้ใช้</translation>
+<translation id="6140948187512243695">แสดงรายละเอียด</translation>
 <translation id="6146993107019042706">ป้อนรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">เชื่อมต่ออินเทอร์เน็ตไม่ได้</translation>

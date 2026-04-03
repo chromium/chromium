@@ -943,7 +943,6 @@
 <translation id="1637224376458524414">ଆପଣଙ୍କର iPhoneରେ ଏହି ବୁକ୍‌ମାର୍କ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1637765355341780467">ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍‌ ଖୋଲିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି। କିଛି ବୈଶିଷ୍ଟ୍ୟ ଉପଲବ୍ଧ ନଥାଇପାରେ।</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
-<translation id="1640235262200048077">ଏପର୍ଯ୍ୟନ୍ତ ସୁଦ୍ଧା Linux ଆପ୍ସରେ <ph name="IME_NAME" /> କାର୍ଯ୍ୟ କରୁ ନାହିଁ</translation>
 <translation id="1641113438599504367">ସେଫ୍ ବ୍ରାଉଜିଂ</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{ଅନ୍ୟ 1ଟି ପାସୱାର୍ଡକୁ ଇମ୍ପୋର୍ଟ କରାଯାଇନାହିଁ କାରଣ ଏହାକୁ ଭୁଲରେ ଫର୍ମାଟ କରାଯାଇଛି}other{ଅନ୍ୟ {NUM_PASSWORDS}ଟି ପାସୱାର୍ଡକୁ ଇମ୍ପୋର୍ଟ କରାଯାଇନାହିଁ କାରଣ ସେଗୁଡ଼ିକୁ ଭୁଲରେ ଫର୍ମାଟ କରାଯାଇଛି}}</translation>
@@ -2077,7 +2076,6 @@
 <translation id="2419131370336513030">ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଆପଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="2419706071571366386">ଯେତେବେଳେ, ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ ବ୍ୟବହାର ହେଉନାହିଁ, ସେତେବେଳେ ସୁରକ୍ଷା ପାଇଁ ସାଇନ୍‍ ଆଉଟ୍‍ କରନ୍ତୁ।</translation>
 <translation id="2421705177906985956">ବର୍ତ୍ତମାନ ଦେଖାଇବା ପାଇଁ କୌଣସି ସାଇଟ ନାହିଁ</translation>
-<translation id="2422125132043002186">Linuxର ରିଷ୍ଟୋର୍ ବାତିଲ୍ ହୋଇଯାଇଛି</translation>
 <translation id="2423506062824112361">ଏକ ଅଜଣା କାରଣ ଯୋଗୁଁ ବିଷୟବସ୍ତୁ ଡାଉନଲୋଡ କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2423578206845792524">&amp;ଇମେଜ ଏହି ଭାବେ ସେଭ କରନ୍ତୁ...</translation>
 <translation id="2424424966051154874">{0,plural, =1{ଅତିଥି}other{ଅତିଥି (#)}}</translation>
@@ -3960,7 +3958,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ଆପଣ ଏବଂ Google</translation>
 <translation id="3721178866505920080">ଏକ୍ସଟେଣ୍ଡେଡ ପ୍ରିଲୋଡିଂକୁ ଚାଲୁ କରିବା ବିଷୟରେ ଅଧିକ ସୂଚନା</translation>
-<translation id="3722108462506185496">ଭର୍ଚୁଆଲ୍ ମେସିନ୍ ସେବା ଆରମ୍ଭ କରିବାରେ ତ୍ରୁଟି। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> ନିର୍ଦ୍ଦେଶ ପ୍ରାପ୍ତ କରାଯାଇଛି</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
@@ -5607,7 +5604,6 @@
 <translation id="4868284252360267853">ବର୍ତ୍ତମାନ ଏହି ଡାଏଲଗକୁ ଫୋକସ୍ କରାଯାଇନାହିଁ। ଏହି ଡାଏଲଗକୁ ଫୋକସ୍ କରିବା ପାଇଁ Command-Shift-Option A ଦବାନ୍ତୁ।</translation>
 <translation id="4868351661310357223">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Google Playରୁ ଆପ୍ ଏବଂ ଗେମଗୁଡ଼ିକ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ।</translation>
 <translation id="4869170227080975044">ChromeOS ନେଟୱାର୍କ ସୂଚନା ପଢ଼ନ୍ତୁ</translation>
-<translation id="4869175799055761881">ଏହି ଆପ୍ଲିକେସନକୁ ୟୁଜରଙ୍କ ଦ୍ୱାରା ଇନଷ୍ଟଲ କରାଯାଇପାରିବ ନାହିଁ। ଦୟାକରି ଡେଭେଲପରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4870724079713069532">ଆପଣ ଏହି ଆପ ମାଧ୍ୟମରେ ଫାଇଲ ଏକ୍ସପ୍ଲୋରର କିମ୍ବା ଅନ୍ୟ ଆପ୍ସରୁ ସମର୍ଥିତ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିପାରିବେ ଏବଂ ଏଡିଟ କରିପାରିବେ। କେଉଁ ଫାଇଲଗୁଡ଼ିକ ଡିଫଲ୍ଟ ଭାବେ ଏହି ଆପରେ ଖୋଲିବ ତାହା ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ, <ph name="BEGIN_LINK" />Windows ସେଟିଂସ<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="4870995365819149457">କିଛି ସମର୍ଥିତ ଲିଙ୍କ ଏବେ ବି <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ଏବଂ ଅନ୍ୟ 1ଟି ଆପରେ ଖୋଲିବ।</translation>
 <translation id="4871308555310586478">Chrome ୱେବ୍ ଷ୍ଟୋର୍‌ରୁ ନୁହେଁ।</translation>
@@ -8274,7 +8270,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6781284683813954823">ଡୁଡଲ୍ ଲିଙ୍କ</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />ଯୋଗାଯୋଗ, ମେସେଜ ଏବଂ ଫଟୋଗୁଡ଼ିକ ପରି ଡାଟା ସମେତ, ଏକ ଆପ ଦ୍ୱାରା ସେଭ କରାଯାଇଥିବା (ଡେଭେଲପର ସେଟିଂସ ଆଧାରରେ) ଯେ କୌଣସି ଡାଟା ଆପ ଡାଟା ହୋଇପାରେ। ବ୍ୟାକଅପ ଡାଟାକୁ ଆପଣଙ୍କ ପିଲାର Drive ଷ୍ଟୋରେଜ କୋଟାରେ ଗଣନା କରାଯିବ ନାହିଁ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ଆପଣ ସେଟିଂସରେ ଏହି ସେବାକୁ ବନ୍ଦ କରିପାରିବେ।<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6781978626986383437">Linuxର ବ୍ୟାକ୍‌ଅପ୍ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6783036716881942511">ଏହି ଡିଭାଇସକୁ ଭୁଲି ଯିବେ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ସେଟିଂସ</translation>
 <translation id="6784523122863989144">ପ୍ରୋଫାଇଲ୍ ସମର୍ଥିତ ଅଟେ</translation>
@@ -8544,7 +8539,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="695817292005698051">ଜେଶ୍ଚର ଡିଟେକ୍ସନ ଥ୍ରେସହୋଲ୍ଡ</translation>
 <translation id="6959882218873172284">POST ଅନୁରୋଧ</translation>
 <translation id="6960133692707095572">ଏକ ଟିକେଟ ବିନା ଭିଜିଟ କରନ୍ତୁ</translation>
-<translation id="6960507406838246615">Linux ଅପଡେଟ୍ ଆବଶ୍ୟକ</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> ସ୍ପିଚ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିଲା ନାହିଁ। ଡାଉନଲୋଡ କରିବା ପାଇଁ ପରେ ଚେଷ୍ଟା କରାଯିବ। ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ନହେବା ପର୍ଯ୍ୟନ୍ତ ପ୍ରକ୍ରିୟାକରଣ ପାଇଁ Googleକୁ ସ୍ପିଚ ପଠାଯାଇଛି।</translation>
 <translation id="696103774840402661">ଏହି <ph name="DEVICE_TYPE" />ରେ ଥିବା ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କର ସବୁ ଫାଇଲ୍ ଏବଂ ସ୍ଥାନୀୟ ଡାଟାକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ୍ କରାଯାଇଛି।</translation>
 <translation id="6961327401577924850">ଏକ ଲୋ-ଏନର୍ଜି ବିକନ, ଏକ ସ୍ୱାସ୍ଥ୍ୟ ବା ଫିଟନେସ ଟ୍ରାକର କିମ୍ବା ଏକ ସ୍ମାର୍ଟ ଲାଇଟ ବଲବ ସେଟ ଅପ ବା ସିଙ୍କ କରିବା ପରି ଫିଚରଗୁଡ଼ିକ ପାଇଁ ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜିଥାଏ</translation>
@@ -9457,7 +9451,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7606639338662398635">ଟାବ ଗ୍ରୁପ</translation>
 <translation id="7607002721634913082">ଅଚଳିତ</translation>
 <translation id="7608810328871051088">Android ପସନ୍ଦଗୁଡ଼ିକ</translation>
-<translation id="7609148976235050828">ଦୟାକରି ଇଣ୍ଟର୍ନେଟ୍‌‍ ସହ ସଂଯୋଗ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7610337976012700501">ଏହି କଣ୍ଟାକ୍ଟଗୁଡ଼ିକ ସହ <ph name="FEATURE_NAME" /> ବ୍ୟବହାର କରିବାକୁ, ଆପଣଙ୍କ କଣ୍ଟାକ୍ଟରେ ସେମାନଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଇମେଲ ଠିକଣା ଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">ସମସ୍ତ ଏକ୍ସଟେନସନ</translation>
@@ -11805,7 +11798,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9186963452600581158">ଗୋଟିଏ ପିଲାର Google ଆକାଉଣ୍ଟ ସହିତ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="9187967020623675250">କୀଗୁଡ଼ିକ ମେଳ ହେଉନାହିଁ। <ph name="RESPONSE" /> ପାଇଁ ଯେ କୌଣସି କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="9188142767272053574">ପ୍ରକ୍ରିୟା ଆଇସୋଲେସନକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
-<translation id="9189618485998894982">ଏହି ଆପ୍ଲିକେସନକୁ ବ୍ଲକ କରାଯାଇଛି। ଦୟାକରି ଡେଭେଲପରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="9192019773545828776">କଥିତ ମତାମତ ଶୁଣନ୍ତୁ ଯାହା ଫଳରେ ଆପଣ ସ୍କ୍ରିନକୁ ନଦେଖି ଆପଣଙ୍କ ଡିଭାଇସ ବ୍ୟବହାର କରିପାରିବେ। ଏକ କନେକ୍ଟ ହୋଇଥିବା ଡିଭାଇସରେ ବ୍ରେଲି ମତାମତ ଉପଲବ୍ଧ ଅଛି। ChromeVoxକୁ ଚାଲୁ ଏବଂ ବନ୍ଦ କରିବା ପାଇଁ Ctrl + Alt + Z ବ୍ୟବହାର କରନ୍ତୁ। ନାଭିଗେଟ କରିବାକୁ Search + ବାମ ତୀର କିମ୍ବା ଡାହାଣ ତୀର ବ୍ୟବହାର କରନ୍ତୁ। ଚୟନ (ସକ୍ରିୟ) କରିବାକୁ Search + Space ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9195969368671142407">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରିବା ସୀମିତ କଲେ, ଆପଣ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ସେୟାର କରିପାରିବେ ନାହିଁ କିମ୍ବା ଏଥିରେ ଯୋଗ ଦେଇପାରିବେ ନାହିଁ</translation>
 <translation id="919686179725692564">ଆପଣଙ୍କ ଆପଗୁଡ଼ିକର ବ୍ୟାକଅପ ନେବା ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>

@@ -946,7 +946,6 @@
 <translation id="1637224376458524414">आपल्या iPhone वर हा बुकमार्क मिळवा</translation>
 <translation id="1637765355341780467">तुमचे प्रोफाइल उघडताना काहीतरी चूक झाली. काही वैशिष्ट्ये अनुपलब्ध असू शकतात.</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
-<translation id="1640235262200048077"><ph name="IME_NAME" /> सध्या Linux ॲप्समध्ये काम करत नाही</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> साठी आणखी कृती</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{आणखी एक पासवर्ड चुकीच्या पद्धतीने फॉरमॅट केल्यामुळे तो इंपोर्ट केला नाही}other{आणखी {NUM_PASSWORDS} पासवर्ड चुकीच्या पद्धतीने फॉरमॅट केल्यामुळे ते इंपोर्ट केले नाहीत}}</translation>
@@ -2091,7 +2090,6 @@
 <translation id="2419131370336513030">इंस्टॉल केलेली अ‍ॅप्स पहा</translation>
 <translation id="2419706071571366386">सुरक्षिततेसाठी, तुमचा काँप्युटर वापरला जात नसताना साइन आउट करा.</translation>
 <translation id="2421705177906985956">याक्षणी दाखवण्यासाठी कोणत्याही साइट नाहीत</translation>
-<translation id="2422125132043002186">Linux रिस्टोअर रद्द केले</translation>
 <translation id="2423506062824112361">अज्ञात कारणामुळे आशय डाउनलोड करता आला नाही.</translation>
 <translation id="2423578206845792524">म्हणून इमेज ज&amp;तन करा...</translation>
 <translation id="2424424966051154874">{0,plural, =1{अतिथी}other{अतिथी (#)}}</translation>
@@ -3071,6 +3069,7 @@
 <translation id="3076966043108928831">फक्त या डिव्हाइसवर सेव्ह करा</translation>
 <translation id="3076977359333237641">तुमचा साइन इन डेटा हटवला गेला</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">कोणतेही वैशिष्ट्य किंवा एक्स्टेंशन शॉर्टकट आढळले नाहीत</translation>
 <translation id="3080930813589868009">प्रति वापरकर्ता अपडेटर</translation>
 <translation id="3080933187214341848">हे नेटवर्क तुमच्या खात्याशी सिंक केलेले नाही. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">अ‍ॅपचे नाव किंवा आयडी</translation>
@@ -3974,7 +3973,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
 <translation id="3721178866505920080">विस्तारित प्रीलोड करणे सुरू करण्याबद्दल अधिक माहिती</translation>
-<translation id="3722108462506185496">व्हर्च्युअल मशीन सेवा सुरू करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> सूचना मिळाली आहे</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
@@ -5621,7 +5619,6 @@
 <translation id="4868284252360267853">हा डायलॉग सध्या फोकस केलेला नाही. हा डायलॉग फोकस करण्यासाठी, Command-Shift-Option A प्रेस करा.</translation>
 <translation id="4868351661310357223">Google Play वरून तुमच्या <ph name="DEVICE_TYPE" /> वर ॲप्स आणि गेम इंस्टॉल करा.</translation>
 <translation id="4869170227080975044">ChromeOS नेटवर्कशी संबंधित सूचना वाचा</translation>
-<translation id="4869175799055761881">हे अ‍ॅप्लिकेशन वापरकर्त्याद्वारे इंस्टॉल केले जाऊ शकत नाही. कृपया डेव्हलपरशी संपर्क साधा</translation>
 <translation id="4870724079713069532">तुम्ही सपोर्ट असलेल्या फाइल या अ‍ॅपद्वारे File Explorer किंवा इतर अ‍ॅप्समध्ये उघडू शकता आणि संपादित करू शकता. या ॲपमध्ये कोणत्या फाइल बाय डीफॉल्ट उघडल्या जाव्यात हे नियंत्रित करण्यासाठी, <ph name="BEGIN_LINK" />Windows सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="4870995365819149457">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> आणि आणखी एका अ‍ॅपमध्ये उघडतील.</translation>
 <translation id="4871308555310586478">Chrome वेब स्टोअरमधून नाही.</translation>
@@ -8292,7 +8289,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6781284683813954823">डूडल लिंक</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />अ‍ॅप डेटा म्हणजे अ‍ॅपने सेव्ह केलेला (डेव्हलपर सेटिंंग्जवर आधारित) कोणताही डेटा असू शकतो, ज्यामध्ये संपर्क, मेसेज आणि फोटो यांसारखा डेटा असतो. बॅकअप डेटा तुमच्या लहान मुलाच्या Drive स्टोरेजच्या कोटामध्ये मोजला जाणार नाही.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही सेटिंग्ज मध्ये ही सेवा बंद करू शकता.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6781978626986383437">Linux बॅकअप रद्द केले</translation>
 <translation id="6783036716881942511">हे डिव्हाइस विसरायचे आहे का?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive सेटिंग्ज</translation>
 <translation id="6784523122863989144">प्रोफाइलला सपोर्ट नाही</translation>
@@ -8562,7 +8558,6 @@ I feel - विटांची इमारत</translation>
 <translation id="695817292005698051">जेश्चर डिटेक्शन मर्यादा</translation>
 <translation id="6959882218873172284">POST विनंती</translation>
 <translation id="6960133692707095572">तिकीटाशिवाय भेट द्या</translation>
-<translation id="6960507406838246615">Linux अपडेट करण्याची आवश्यकता आहे</translation>
 <translation id="6960648667961844909"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड करता आल्या नाहीत. नंतर डाउनलोड करण्याचा प्रयत्न केला जाईल. डाउनलोड पूर्ण होईपर्यंत प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली आहे.</translation>
 <translation id="696103774840402661">या <ph name="DEVICE_TYPE" /> वरील सर्व वापरकर्त्यांसाठी सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला गेला आहे.</translation>
 <translation id="6961327401577924850">कमी ऊर्जेचे बीकन, आरोग्य किंवा फिटनेस ट्रॅकर अथवा स्मार्ट लाइट बल्ब सेट करणे किंवा सिंक करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे ब्लूटूथ डिव्‍हाइस शोधतात</translation>
@@ -9476,7 +9471,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7606639338662398635">टॅब गट</translation>
 <translation id="7607002721634913082">विराम द्या</translation>
 <translation id="7608810328871051088">Android प्राधान्ये</translation>
-<translation id="7609148976235050828">कृपया इंटरनेटशी कनेक्‍ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7610337976012700501">या संपर्कांसह <ph name="FEATURE_NAME" /> वापरण्यासाठी, त्यांच्या Google खाते शी लिंक केलेला ईमेल अ‍ॅड्रेस तुमच्या संपर्कांमध्ये जोडा.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">सर्व एक्स्टेंशन</translation>
@@ -11826,7 +11820,6 @@ I feel - विटांची इमारत</translation>
 <translation id="9186963452600581158">लहान मुलाचे Google खाते वापरून साइन इन करा</translation>
 <translation id="9187967020623675250">की जुळत नाही. <ph name="RESPONSE" /> साठी कोणतीही की प्रेस करा.</translation>
 <translation id="9188142767272053574">प्रक्रिया आयसोलेशन सुरू करा</translation>
-<translation id="9189618485998894982">हे अ‍ॅप्लिकेशन ब्लॉक केले गेले आहे. कृपया डेव्हलपरशी संपर्क साधा</translation>
 <translation id="9192019773545828776">वाचिक फीडबॅक ऐका, जेणेकरून तुम्हाला स्क्रीनकडे न पाहता तुमचे डिव्हाइस वापरता येईल. कनेक्ट केलेल्या डिव्हाइससह ब्रेल फीडबॅक उपलब्ध आहे. ChromeVox सुरू आणि बंद करण्यासाठी Ctrl + Alt + Z वापरा. नेव्हिगेट करण्यासाठी Search + लेफ्ट अ‍ॅरो किंवा राइट अ‍ॅरो वापरा. निवडण्यासाठी (अ‍ॅक्टिव्हेट करण्यासाठी) Search + Space प्रेस करा.</translation>
 <translation id="9195969368671142407">तुमची संस्था ही तुमच्या Google खाते मध्ये सेव्ह करणे मर्यादित करते, तेव्हा तुम्ही टॅब गट शेअर करू शकत नाही किंवा त्यामध्ये सामील होऊ शकत नाही</translation>
 <translation id="919686179725692564">तुमच्या अ‍ॅप्सचा बॅकअप घेण्याबद्दल अधिक जाणून घ्या</translation>

@@ -6475,6 +6475,22 @@ Ist die Richtlinie nicht konfiguriert, wird der Standardwert von 0 Grad verwend
 <translation id="5293285950307241933">Alle lokalen Nutzerdaten löschen</translation>
 <translation id="5293619885162445352">Erlauben, dass <ph name="PEPPER_NAME" /> den neuen Videodecoder verwendet.</translation>
 <translation id="529457411593078576">Nutzungsbedingungen während der ersten Ausführung für CCT aktivieren</translation>
+<translation id="529718811410033393">Mit dieser Richtlinie wird die maximale Anzahl gleichzeitiger Verbindungen pro Proxyserver für Nicht-WebSocket-Anfragen festgelegt.
+
+Informationen zum Ändern von WebSocket-Anfragelimits findest du unter <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Wird die Richtlinie nicht konfiguriert, gilt standardmäßig ein Wert von 32.
+
+Einige Webanwendungen nutzen viele Verbindungen mit „hängenden“ GET-Anfragen. Wird ein Wert unter 32 festgelegt, kann dies zu Netzwerkblockaden im Browser führen, wenn zu viele solcher Verbindungen gleichzeitig offen sind.
+Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dies lässt sich durch einen niedrigeren Wert für diese Richtlinie beheben.
+
+Der Wert sollte mindestens 6 betragen.
+Wird ein niedrigerer Wert festgelegt, wird stattdessen 6 verwendet.
+Das Reduzieren unter den Standardwert (32) erfolgt auf eigenes Risiko.
+
+Der Wert sollte höchstens 256 (99 in <ph name="PRODUCT_NAME" /> 147 und früher) betragen.
+Wird ein höherer Wert festgelegt, wird stattdessen 256 (99 in <ph name="PRODUCT_NAME" /> 147 und früher) verwendet.
+Das Erhöhen über den Standardwert (32) erfolgt auf eigenes Risiko.</translation>
 <translation id="5297873769621042075">Mit dieser Richtlinie kann eine Liste mit Hostnamen oder Hostnamenmustern (z. B. „[*.]beispiel.de“) angelegt werden, die nicht auf HTTPS umgestellt werden und für die kein Fehler-Interstitial angezeigt wird, wenn der HTTPS-First-Modus aktiviert ist. Organisationen können diese Richtlinie verwenden, um den Zugriff auf Server aufrechtzuerhalten, die HTTPS nicht unterstützen, ohne HTTPS-Umstellungen und/oder den HTTPS-First-Modus zu deaktivieren.
 
 Bereitgestellte Hostnamen müssen kanonisiert werden: Alle IDNs müssen in ihr A-Label-Format konvertiert und alle ASCII-Buchstaben kleingeschrieben werden.
@@ -7208,6 +7224,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables 
       Vital Product Data (VPD) sind Informationen zum Gerät selbst (z. B. Teile- und Seriennummern) und zur Konfiguration des Geräts.</translation>
 <translation id="5760861224093391268">Eigene Authentifizierung beim Erheben von Nutzersicherheitssignalen deaktivieren</translation>
 <translation id="5762969307102447459">Autofill für Adressdaten deaktivieren</translation>
+<translation id="5763723496957591166">Maximale Anzahl gleichzeitiger Verbindungen pro Proxyserver für WebSocket-Anfragen</translation>
 <translation id="5765780083710877561">Beschreibung:</translation>
 <translation id="5766438888216077649">Für Links, die <ph name="BLANK_PAGE_NAME" /> zum Ziel haben, sollte <ph name="WINDOW_OPENER_PROPERTY" /> nicht aktiviert werden</translation>
 <translation id="5767776869128458023">Alternative Fehlerseiten deaktivieren</translation>
@@ -9557,6 +9574,7 @@ Wenn ein Nutzer ein primäres Browserkonto mit einem Nutzernamen einrichten will
 
 Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, kann der Nutzer in <ph name="PRODUCT_NAME" /> jedes Google-Konto als primäres Browserkonto festlegen.</translation>
 <translation id="723103540848640830">Minimale Länge der Sperrbildschirm-PIN festlegen</translation>
+<translation id="7231449913899026849">Maximale Anzahl gleichzeitiger Verbindungen pro Proxyserver für Nicht-WebSocket-Anfragen</translation>
 <translation id="7234280155140786597">Namen der unzulässigen Hosts für natives Messaging (oder "*" für alle)</translation>
 <translation id="723621412149834592">Wenn die Richtlinie auf <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (Wert 2) gesetzt ist, wird die Berechtigung für die Fensterpositionierung automatisch auf allen Websites verweigert. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
 
@@ -10015,6 +10033,22 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 
       Bei nicht verwalteten Geräten ist es auch wichtig, ob der jeweilige Nutzer der Geräteeigentümer ist.</translation>
 <translation id="7570291542739287032">Nur Cloud</translation>
+<translation id="7571158727244273239">Mit dieser Richtlinie wird die maximale Anzahl gleichzeitiger Verbindungen pro Proxyserver für WebSocket-Anfragen festgelegt.
+
+Informationen zum Ändern von Nicht-WebSocket-Anfragelimits findest du unter <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Wird die Richtlinie nicht konfiguriert, gilt standardmäßig ein Wert von 32.
+
+Einige Webanwendungen nutzen viele Verbindungen mit „hängenden“ GET-Anfragen. Wird ein Wert unter 32 festgelegt, kann dies zu Netzwerkblockaden im Browser führen, wenn zu viele solcher Verbindungen gleichzeitig offen sind.
+Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dies lässt sich durch einen niedrigeren Wert für diese Richtlinie beheben.
+
+Der Wert sollte mindestens 6 betragen.
+Wird ein niedrigerer Wert festgelegt, wird stattdessen 6 verwendet.
+Das Reduzieren unter den Standardwert (32) erfolgt auf eigenes Risiko.
+
+Der Wert sollte höchstens 256 betragen.
+Wird ein höherer Wert festgelegt, wird stattdessen 256 verwendet.
+Das Erhöhen über den Standardwert (32) erfolgt auf eigenes Risiko.</translation>
 <translation id="7572641760104970905">Keine Komplexität</translation>
 <translation id="757395965347379751">Wenn diese Einstellung aktiviert ist, werden von <ph name="PRODUCT_NAME" /> SHA-1-signierte Zertifikate genehmigt, vorausgesetzt sie werden erfolgreich überprüft und bilden eine Kette zu einem lokal installierten CA-Zertifikat.
 

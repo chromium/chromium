@@ -6570,6 +6570,22 @@ Se non viene configurata, il valore predefinito è 0 e gli utenti sono liberi di
 <translation id="5293285950307241933">Cancella tutti i dati utente locali</translation>
 <translation id="5293619885162445352">Consenti a <ph name="PEPPER_NAME" /> di usare il nuovo decodificatore video.</translation>
 <translation id="529457411593078576">Attiva i TdS alla prima esecuzione di CCT</translation>
+<translation id="529718811410033393">La configurazione della policy consente di specificare il numero massimo di connessioni contemporanee per server proxy per le richieste non WebSocket.
+
+Per modificare i limiti delle richieste WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Se la policy non viene configurata, viene utilizzato il valore predefinito 32.
+
+Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo.
+Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare la policy su un numero inferiore per risolvere questo problema.
+
+Il valore deve essere uguale o superiore a 6.
+Se imposti un valore inferiore a questo limite, verrà utilizzato 6.
+È sconsigliato utilizzare un valore inferiore a quello predefinito (32).
+
+Il valore deve essere uguale o inferiore a 256 (99 in <ph name="PRODUCT_NAME" /> 147 e versioni precedenti).
+Se imposti un valore superiore a questo limite, verrà utilizzato 256 (99 in <ph name="PRODUCT_NAME" /> 147 e versioni precedenti).
+È sconsigliato utilizzare un valore superiore a quello predefinito (32).</translation>
 <translation id="5297873769621042075">Questa policy consente di specificare un elenco di nomi host o pattern di nomi host (ad esempio "[*.]example.com") che non verranno aggiornati a HTTPS e non mostreranno un interstitial di errore se viene attivata la modalità HTTPS-First. Le organizzazioni possono utilizzare questa policy per mantenere l'accesso ai server che non supportano HTTPS, senza dover disattivare gli upgrade a HTTPS e/o la modalità HTTPS-First.
 
 I nomi host indicati devono essere canonicalizzati: ogni IDN deve essere convertito nel relativo formato A-label e tutte le lettere ASCII devono essere minuscole.
@@ -7307,6 +7323,7 @@ Se questa policy viene disattivata o se non viene configurata, i Glanceables non
       I Vital Product Data (VPD) sono una raccolta di dati informativi e di configurazione (come numeri di serie o di componenti) associati al dispositivo.</translation>
 <translation id="5760861224093391268">Disattiva l'autenticazione proprietaria quando invii segnalazioni di indicatori di sicurezza dell'utente</translation>
 <translation id="5762969307102447459">Disattiva la compilazione automatica per gli indirizzi</translation>
+<translation id="5763723496957591166">Numero massimo di connessioni contemporanee per server proxy per le richieste WebSocket</translation>
 <translation id="5765780083710877561">Descrizione:</translation>
 <translation id="5766438888216077649">Non impostare <ph name="WINDOW_OPENER_PROPERTY" /> per i link indirizzati alla pagina <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5767776869128458023">Disattiva pagine di errore sostitutive</translation>
@@ -9734,6 +9751,7 @@ Il supporto di questa impostazione delle policy terminerà con <ph name="PRODUCT
 
       Se questa norma non viene impostata o viene lasciata vuota, l'utente potrà impostare qualsiasi Account Google come account principale del browser in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Imposta la lunghezza minima del PIN per la schermata di blocco</translation>
+<translation id="7231449913899026849">Numero massimo di connessioni contemporanee per server proxy per richieste non WebSocket</translation>
 <translation id="7234280155140786597">Nomi degli host di messaggi nativi vietati (o * per indicarli tutti)</translation>
 <translation id="723621412149834592">Se la policy viene impostata su <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (valore 2), per impostazione predefinita viene automaticamente negata ai siti l'autorizzazione per il posizionamento delle finestre. Ciò limiterà la capacità dei siti di vedere le informazioni relative alle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
 
@@ -10197,6 +10215,22 @@ Se la policy viene lasciata vuota, non sono consentite eccezioni a <ph name="FLO
 
       Se il dispositivo dell'utente non è gestito, la disponibilità di questa funzionalità dipende anche dal fatto che l'utente sia o meno il proprietario del dispositivo.</translation>
 <translation id="7570291542739287032">Solo Google Cloud</translation>
+<translation id="7571158727244273239">La configurazione della policy consente di specificare il numero massimo di connessioni contemporanee per server proxy per le richieste WebSocket.
+
+Per modificare i limiti delle richieste non WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Se la policy non viene configurata, viene utilizzato il valore predefinito 32.
+
+Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo.
+Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare la policy su un numero inferiore per risolvere questo problema.
+
+Il valore deve essere uguale o superiore a 6.
+Se imposti un valore inferiore a questo limite, verrà utilizzato 6.
+È sconsigliato utilizzare un valore inferiore a quello predefinito (32).
+
+Il valore deve essere uguale o inferiore a 256.
+Se imposti un valore superiore a questo limite, verrà utilizzato 256.
+È sconsigliato utilizzare un valore superiore a quello predefinito (32).</translation>
 <translation id="7572641760104970905">Nessuna complessità</translation>
 <translation id="757395965347379751">Quando questa impostazione è attivata, <ph name="PRODUCT_NAME" /> consente l'utilizzo dei certificati SHA-1 firmati che sono convalidati e concatenati a certificati CA installati localmente.
 

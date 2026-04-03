@@ -24,7 +24,6 @@
 <translation id="1089606299949659462">समीक्षा गर्ने कार्य पूरा भयो!</translation>
 <translation id="1094555143448724771">आफूले अन्य डिभाइसमा खोलेका ट्याबहरू हेर्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="1095761715416917775">तपाईं आफूले सिंक गरेको डेटा जुनसुकै बेला प्रयोग गर्न तथा हेर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
-<translation id="1096091316906284742">Chrome Finds अन गर्ने विकल्पको पुछारको पाना</translation>
 <translation id="1100066534610197918">समूहमा नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="1103142993930332957">Chrome को गुणस्तर सुधार्न सघाउने हो?</translation>
 <translation id="1105960400813249514">स्क्रिन क्याप्चर</translation>
@@ -617,7 +616,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3635073343384702370">तपाईंले आफ्ना पासवर्डहरू सेभ गरेपछि मात्र Chrome ले तिनको जाँच गर्न सक्छ</translation>
 <translation id="3636940436873918441">रुचाइएका भाषाहरू</translation>
 <translation id="3637744895182738742">तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />आफ्नो खातामा भएको Chrome को डेटा मेटाउनुहोस्<ph name="END_LINK" />।</translation>
-<translation id="3641581193271938629">Chrome Finds अन गर्ने विकल्प बन्द गरिएको छ</translation>
 <translation id="3647019414263135904">सन्दर्भ पपअप खोल्नुहोस् वा बन्द गर्नुहोस्</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google एपको होममा जानुहोस्</translation>
@@ -800,7 +798,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4387647248986092471">कार प्रोफाइल लक बनाउनुहोस्</translation>
 <translation id="4387817230000841154">"डाउनलोड" पेज खोल्नुहोस्</translation>
 <translation id="4394049700291259645">असक्षम गर्नुहोस्</translation>
-<translation id="4395046795145457714">Chrome Finds अन गर्ने विकल्प पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, चयन गरिएको पिन गरिएको रेकर्डिङ इन्कोग्निटो ट्याब</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड गरिँदै छ…</translation>
 <translation id="4404568932422911380">कुनै पनि पुस्तक चिन्ह छैन</translation>
@@ -1369,7 +1366,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}other{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> छविको पूर्वावलोकन गर्नुहोस्</translation>
 <translation id="6659594942844771486">ट्याब</translation>
-<translation id="6661521899577697780">Chrome Finds अन गर्ने विकल्प आधा स्क्रिनमा खोलिएको छ</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
 <translation id="6669390930482049506">मलाई नोटिफिकेसन पठाउनुहोस्</translation>
 <translation id="6670767097276846646">केही एक्स्टेन्सनहरूले Chrome मा सर्च इन्जिन थप्न सक्छ</translation>

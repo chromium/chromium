@@ -578,6 +578,7 @@
 <translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
 <translation id="3583278742022654445">Šibka moč signala. Poskusite se premakniti bliže viru signala omrežja Wi-Fi.</translation>
+<translation id="3586931643579894722">Skrij podrobnosti</translation>
 <translation id="3588034708467091142">Zagotovite, da imate vzpostavljeno internetno povezavo, in poskusite znova.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je uporabniku prijazno ime za <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
@@ -1161,6 +1162,7 @@
 <translation id="6136285399872347291">vračalka</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Uporabniško potrdilo</translation>
+<translation id="6140948187512243695">Pokaži podrobnosti</translation>
 <translation id="6146993107019042706">Za dokončanje vnesite novo geslo</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">Internetne povezave ni mogoče vzpostaviti</translation>

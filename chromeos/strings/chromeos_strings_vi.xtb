@@ -578,6 +578,7 @@
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="357889014807611375">mạng Wi‑Fi có giới hạn dữ liệu</translation>
 <translation id="3583278742022654445">Cường độ tín hiệu yếu. Hãy thử di chuyển đến gần nguồn tín hiệu Wi-Fi hơn.</translation>
+<translation id="3586931643579894722">Ẩn chi tiết</translation>
 <translation id="3588034708467091142">Hãy kiểm tra để chắc chắn rằng bạn đã kết nối Internet, rồi thử lại.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> là tên thân thiện với người dùng của <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Pin đầy</translation>
@@ -1161,6 +1162,7 @@
 <translation id="6136285399872347291">phím xóa lùi</translation>
 <translation id="6137614725462089991">viễn tưởng công nghệ cao</translation>
 <translation id="6137767437444130246">Chứng chỉ người dùng</translation>
+<translation id="6140948187512243695">Hiển thị chi tiết</translation>
 <translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">Không thể kết nối Internet</translation>

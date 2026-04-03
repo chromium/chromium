@@ -944,7 +944,6 @@
 <translation id="1637224376458524414">‏این نشانک را در iPhone خود دریافت کنید</translation>
 <translation id="1637765355341780467">هنگام باز کردن نمایه‌تان خطایی رخ داد. ممکن است برخی از قابلیت‌ها در دسترس نباشند.</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
-<translation id="1640235262200048077">‏<ph name="IME_NAME" /> هنوز در برنامه‌های Linux کار نمی‌کند</translation>
 <translation id="1641113438599504367">مرور ایمن</translation>
 <translation id="1641496881756082050">کنش‌های بیشتر برای <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{یک گذرواژه دیگر درون‌برد نشد زیرا قالب‌بندی آن اشتباه است}one{{NUM_PASSWORDS} گذرواژه دیگر درون‌برد نشد زیرا قالب‌بندی آن اشتباه است}other{{NUM_PASSWORDS} گذرواژه دیگر درون‌برد نشد زیرا قالب‌بندی آن‌ها اشتباه است}}</translation>
@@ -2088,7 +2087,6 @@
 <translation id="2419131370336513030">مشاهده برنامه‌های نصب‌شده</translation>
 <translation id="2419706071571366386">برای حفظ امنیت، وقتی از رایانه استفاده نمی‌کنید از سیستم خارج شوید.</translation>
 <translation id="2421705177906985956">درحال‌حاضر سایتی برای نمایش نیست</translation>
-<translation id="2422125132043002186">‏بازیابی Linux لغو شد</translation>
 <translation id="2423506062824112361">محتوا به‌دلیل نامشخصی بارگیری نشد.</translation>
 <translation id="2423578206845792524">ذ&amp;خیره فایل تصویری به‌عنوان...</translation>
 <translation id="2424424966051154874">{0,plural, =1{مهمان}one{مهمان (#)}other{مهمان (#)}}</translation>
@@ -3971,7 +3969,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">‏شما و Google</translation>
 <translation id="3721178866505920080">اطلاعات بیشتر درباره روشن کردن پیش‌بارگذاری گسترده</translation>
-<translation id="3722108462506185496">هنگام شروع سرویس دستگاه مجازی خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="3722624153992426516">دستورالعمل <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> دریافت شده است</translation>
 <translation id="3726334084188857295">‫<ph name="SITE_ETLD_PLUS_ONE" /> - <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
@@ -5620,7 +5617,6 @@
 <translation id="4868284252360267853">‏درحال‌حاضر، این کادر گفتگو متمرکز نشده است. برای تمرکز کردن روی این کادر گفتگو، کلیدهای Command+Shift+Option A را فشار دهید.</translation>
 <translation id="4868351661310357223">‏برنامه‌ها و بازی‌ها را از Google Play در <ph name="DEVICE_TYPE" /> نصب کنید.</translation>
 <translation id="4869170227080975044">‏خواندن اطلاعات شبکه ChromeOS</translation>
-<translation id="4869175799055761881">این برنامه نمی‌تواند توسط کاربر نصب شود. لطفاً با توسعه‌دهنده تماس بگیرید</translation>
 <translation id="4870724079713069532">می‌توانید فایل‌های پشتیبانی‌شده را با این برنامه ازطریق «کاوشگر فایل» یا برنامه‌های دیگر باز کنید و ویرایش کنید. برای کنترل اینکه کدام فایل‌ها به‌طور پیش‌فرض در این برنامه باز شود، به <ph name="BEGIN_LINK" />تنظیمات پنجره‌ها<ph name="END_LINK" /> بروید.</translation>
 <translation id="4870995365819149457">برخی‌از پیوندهای پشتیبانی‌شده همچنان در <ph name="APP_NAME" />، <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" />، و یک برنامه دیگر باز خواهد شد.</translation>
 <translation id="4871308555310586478">‏از «نت‌بازار Chrome» نیست.</translation>
@@ -8290,7 +8286,6 @@
 <translation id="6781284683813954823">‏پیوند Doodle</translation>
 <translation id="6781658011335120230">‏<ph name="BEGIN_PARAGRAPH1" />داده‌های برنامه می‌تواند هر داده‌ای باشد که برنامه (براساس تنظیمات توسعه‌دهنده) ذخیره کرده است، ازجمله داده‌هایی مانند مخاطبین، پیام‌ها، و عکس‌ها. داده‌های پشتیبان جزو سهمیه فضای ذخیره‌سازی Drive فرزندتان حساب نمی‌شود.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />می‌توانید این سرویس را در «تنظیمات خاموش» کنید.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6781978626986383437">‏پشتیبان‌گیری Linux لغو شد</translation>
 <translation id="6783036716881942511">این دستگاه فراموش شود؟</translation>
 <translation id="6783667414610055871">‏تنظیمات Microsoft OneDrive</translation>
 <translation id="6784523122863989144">نمایه پشتیبانی می‌شود</translation>
@@ -8560,7 +8555,6 @@
 <translation id="695817292005698051">آستانه تشخیص اشاره</translation>
 <translation id="6959882218873172284">درخواست پست</translation>
 <translation id="6960133692707095572">بازدید بدون تیکت</translation>
-<translation id="6960507406838246615">‏Linux باید به‌روزرسانی شود</translation>
 <translation id="6960648667961844909">‏فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری نشد. بارگیری بعداً انجام خواهد شد. تا وقتی بارگیری تمام شود، گفتار برای پردازش به Google ارسال می‌شود.</translation>
 <translation id="696103774840402661">همه فایل‌ها و داده‌های محلی برای همه کاربران این <ph name="DEVICE_TYPE" /> به‌طور دائم حذف شده‌اند.</translation>
 <translation id="6961327401577924850">سایت‌ها معمولاً برای ارائه ویژگی‌هایی مثل راه‌اندازی یا همگام‌سازی نشان‌فرست کم‌مصرف، ردیاب سلامت یا تناسب اندام، یا چراغ حبابی هوشمند، دستگاه‌های بلوتوث را جستجو می‌کنند</translation>
@@ -9474,7 +9468,6 @@
 <translation id="7606639338662398635">گروه زبانه</translation>
 <translation id="7607002721634913082">متوقف</translation>
 <translation id="7608810328871051088">‏اولویت‌های Android</translation>
-<translation id="7609148976235050828">لطفاً به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="7610337976012700501">‏برای استفاده از <ph name="FEATURE_NAME" /> با این مخاطبین، نشانی ایمیل پیوندشده با «حساب Google» آن‌ها را به مخاطبین خود اضافه کنید.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">همه افزونه‌ها</translation>
@@ -11824,7 +11817,6 @@
 <translation id="9186963452600581158">‏ورود به سیستم با «حساب Google» فرزند</translation>
 <translation id="9187967020623675250">کلیدها مطابقت ندارند. برای <ph name="RESPONSE" />، یکی از کلیدها را فشار دهید.</translation>
 <translation id="9188142767272053574">فعال کردن «جداسازی پردازش»</translation>
-<translation id="9189618485998894982">این برنامه مسدود شده است. لطفاً با توسعه‌دهنده تماس بگیرید</translation>
 <translation id="9192019773545828776">‏با شنیدن بازخورد گفتاری می‌توانید بدون نگاه کردن به صفحه‌نمایش از دستگاهتان استفاده کنید. بازخورد بریل ازطریق دستگاه متصل دردسترس است. از کلیدهای «مهار + دگرساز + Z» برای روشن و خاموش کردن ChromeVox استفاده کنید. از «جستجو + کلید چپ‌بَر یا کلید راست‌بَر» برای پیمایش استفاده کنید. از کلیدهای «جستجو + فاصله» برای انتخاب (فعال کردن) استفاده کنید.</translation>
 <translation id="9195969368671142407">‏وقتی سازمانتان ذخیره‌سازی در «حساب Google» شما را محدود می‌کند، نمی‌توانید گروه‌های زبانه را هم‌رسانی کنید یا به آن‌ها بپیوندید</translation>
 <translation id="919686179725692564">درباره پشتیبان‌گیری از برنامه‌ها بیشتر بدانید</translation>

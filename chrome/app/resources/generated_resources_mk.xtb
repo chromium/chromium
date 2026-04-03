@@ -947,7 +947,6 @@
 <translation id="1637224376458524414">Преземете го обележувачов на вашиот iPhone</translation>
 <translation id="1637765355341780467">Нешто тргна наопаку при отворањето на профилот. Некои функции може да бидат недостапни.</translation>
 <translation id="1639239467298939599">Се вчитува</translation>
-<translation id="1640235262200048077"><ph name="IME_NAME" /> сѐ уште не функционира во апликациите на Linux</translation>
 <translation id="1641113438599504367">Безбедно прелистување</translation>
 <translation id="1641496881756082050">Повеќе дејства за <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 друга лозинка не е увезена бидејќи не е форматирана правилно}one{{NUM_PASSWORDS} други лозинки не се увезени бидејќи не се форматирани правилно}other{{NUM_PASSWORDS} други лозинки не се увезени бидејќи не се форматирани правилно}}</translation>
@@ -2092,7 +2091,6 @@
 <translation id="2419131370336513030">Приказ на инсталирани апликации</translation>
 <translation id="2419706071571366386">Од безбедносни причини, одјавете се од компјутерот кога не го користите.</translation>
 <translation id="2421705177906985956">Нема сајтови за прикажување во моментов</translation>
-<translation id="2422125132043002186">Враќањето на Linux е откажано</translation>
 <translation id="2423506062824112361">Преземањето на содржините не успеа поради непозната причина.</translation>
 <translation id="2423578206845792524">Сни&amp;ми слика како…</translation>
 <translation id="2424424966051154874">{0,plural, =1{Гостин}one{Гости (#)}other{Гости (#)}}</translation>
@@ -3975,7 +3973,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
 <translation id="3721178866505920080">Повеќе детали за вклучувањето „Проширено вчитување однапред“</translation>
-<translation id="3722108462506185496">Грешка при стартувањето на услугата за виртуелна машина. Обидете се повторно.</translation>
 <translation id="3722624153992426516">Примени се упатства од <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
@@ -5624,7 +5621,6 @@
 <translation id="4868284252360267853">Дијалогов не е нагласен во моментов. Притиснете Command-Shift-Опција A за да го нагласите дијалогов.</translation>
 <translation id="4868351661310357223">Инсталирајте апликации и игри од Google Play на вашиот уред <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">да чита податоци за мрежа на ChromeOS</translation>
-<translation id="4869175799055761881">Корисникот не може да ја инсталира апликацијава. Контактирајте со програмерот</translation>
 <translation id="4870724079713069532">Со апликацијава може да отворате и уредувате поддржани датотеки од File Explorer или од други апликации. За да контролирате кои датотеки стандардно се отвораат во апликацијава, одете на <ph name="BEGIN_LINK" />поставките за Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и 1 друга апликација.</translation>
 <translation id="4871308555310586478">Не од Веб-продавницата на Chrome.</translation>
@@ -8294,7 +8290,6 @@
 <translation id="6781284683813954823">Линк за Doodle</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />„Податоци од апликација“ се сите податоци што ги зачувала некоја апликација (според поставките на програмерот), вклучувајќи податоци како што се контакти, пораки и фотографии. Податоците од бекапот нема да се вбројуваат во квотата за складирање на Drive на вашето дете.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Услугава може да ја исклучите во „Поставки“.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6781978626986383437">Бекапот на Linux е откажан</translation>
 <translation id="6783036716881942511">Да се заборави уредов?</translation>
 <translation id="6783667414610055871">Поставки за Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Профилот е поддржан</translation>
@@ -8564,7 +8559,6 @@
 <translation id="695817292005698051">Праг на откривање движење</translation>
 <translation id="6959882218873172284">POST-барање</translation>
 <translation id="6960133692707095572">Отворете без билет</translation>
-<translation id="6960507406838246615">Потребно е ажурирање на Linux</translation>
 <translation id="6960648667961844909">Не може да се преземат датотеките за говор на <ph name="LANGUAGE" />. Подоцна ќе се изврши обид за преземање. Говорот се испраќа во Google за обработка додека да заврши преземањето.</translation>
 <translation id="696103774840402661">Сите датотеки и локални податоци за сите корисници на овој <ph name="DEVICE_TYPE" /> трајно се избришани.</translation>
 <translation id="6961327401577924850">Сајтовите обично бараат уреди со Bluetooth за функции, како поставување или синхронизирање предаватели со ниска потрошувачка на енергија, следач на здравје/фитнес или паметна светилка</translation>
@@ -9477,7 +9471,6 @@
 <translation id="7606639338662398635">Групи картички</translation>
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7608810328871051088">Поставки за Android</translation>
-<translation id="7609148976235050828">Поврзете се на интернет и обидете се повторно.</translation>
 <translation id="7610337976012700501">За да користите <ph name="FEATURE_NAME" /> со овие контакти, додајте ги адресите на е-пошта поврзани со нивните сметки на Google во вашите контакти.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">Сите екстензии</translation>
@@ -11827,7 +11820,6 @@
 <translation id="9186963452600581158">Најавете се со сметка на Google на дете</translation>
 <translation id="9187967020623675250">Клучевите не се совпаѓаат. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Овозможи ја Process Isolation</translation>
-<translation id="9189618485998894982">Апликацијава е блокирана. Контактирајте со програмерот</translation>
 <translation id="9192019773545828776">Слушајте говорни повратни информации за да може да го користите уредот без да гледате во екранот. Повратни информации со Брајово писмо се достапни со поврзан уред. Користете Ctrl + Alt + Z за да се вклучи или исклучи ChromeVox. Користете Search + стрелка налево или налево за да се движите. Користете Search + празно место за да изберете (активирате).</translation>
 <translation id="9195969368671142407">Кога вашата организација ќе го ограничи зачувувањето во вашата сметка на Google, нема да може да споделувате или да се придружувате во групи картички</translation>
 <translation id="919686179725692564">Дознајте повеќе за правењето бекап за апликациите</translation>

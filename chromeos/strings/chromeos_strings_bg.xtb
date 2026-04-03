@@ -578,6 +578,7 @@
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="357889014807611375">Wi-Fi мрежа с отчитане</translation>
 <translation id="3583278742022654445">Сигналът е слаб. Приближете се до източника на Wi-Fi сигнал.</translation>
+<translation id="3586931643579894722">Скриване на подробностите</translation>
 <translation id="3588034708467091142">Проверете дали имате връзка с интернет и опитайте отново.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> е лесното за използване име на <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
@@ -1161,6 +1162,7 @@
 <translation id="6136285399872347291">изтриване назад</translation>
 <translation id="6137614725462089991">киберпънк</translation>
 <translation id="6137767437444130246">Потребителски сертификат</translation>
+<translation id="6140948187512243695">Показване на подробностите</translation>
 <translation id="6146993107019042706">За да завършите процеса, въведете новата си парола</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">Не може да се установи връзка с интернет</translation>

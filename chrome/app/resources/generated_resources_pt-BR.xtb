@@ -947,7 +947,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1637224376458524414">Receber esse favorito no seu iPhone</translation>
 <translation id="1637765355341780467">Ocorreu um erro ao abrir seu perfil. É possível que alguns recursos estejam indisponíveis.</translation>
 <translation id="1639239467298939599">Carregando</translation>
-<translation id="1640235262200048077">O <ph name="IME_NAME" /> ainda não funciona com aplicativos do Linux</translation>
 <translation id="1641113438599504367">Navegação Segura</translation>
 <translation id="1641496881756082050">Mais ações para a rede <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 outra senha não foi importada porque está formatada incorretamente}one{{NUM_PASSWORDS} outra senha não foi importada porque está formatada incorretamente}other{{NUM_PASSWORDS} outras senhas não foram importadas porque estão formatadas incorretamente}}</translation>
@@ -2092,7 +2091,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2419131370336513030">Ver apps instalados</translation>
 <translation id="2419706071571366386">Por segurança, saia da sua conta quando seu computador não estiver sendo usado.</translation>
 <translation id="2421705177906985956">Nenhum site para mostrar no momento</translation>
-<translation id="2422125132043002186">Restauração do Linux cancelada</translation>
 <translation id="2423506062824112361">Falha ao baixar o conteúdo por um motivo desconhecido.</translation>
 <translation id="2423578206845792524">&amp;Salvar imagem como...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Visitante}one{Visitante (#)}other{Visitantes (#)}}</translation>
@@ -3071,6 +3069,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3076966043108928831">Salvar apenas neste dispositivo</translation>
 <translation id="3076977359333237641">Seus dados de login foram excluídos</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Nenhum atalho para recursos ou extensões foi encontrado.</translation>
 <translation id="3080930813589868009">Atualizador por usuário</translation>
 <translation id="3080933187214341848">A rede não está sincronizada com a conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Nome ou ID do app</translation>
@@ -3975,7 +3974,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Você e o Google</translation>
 <translation id="3721178866505920080">Mais informações sobre como ativar o pré-carregamento estendido</translation>
-<translation id="3722108462506185496">Erro ao iniciar o serviço da máquina virtual. Tente novamente.</translation>
 <translation id="3722624153992426516">Instrução <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> recebida</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
@@ -5624,7 +5622,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4868284252360267853">A caixa de diálogo não está em foco. Pressione Command + Shift + Option + A para focar na caixa de diálogo.</translation>
 <translation id="4868351661310357223">Instale apps e jogos do Google Play no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Ler informações de rede do ChromeOS</translation>
-<translation id="4869175799055761881">Este aplicativo não pode ser instalado pelo usuário. Entre em contato com o desenvolvedor.</translation>
 <translation id="4870724079713069532">Com este app, é possível abrir e editar arquivos com suporte usando o File Explorer ou outros apps. Para controlar quais arquivos são abertos nesse app por padrão, acesse as <ph name="BEGIN_LINK" />Configurações do Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Alguns links com suporte ainda serão abertos no app <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e em 1 outro app.</translation>
 <translation id="4871308555310586478">Não foi feita a partir da Chrome Web Store.</translation>
@@ -8295,7 +8292,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6781284683813954823">Link do doodle</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />Dados do app são as informações salvas pelo app (com base nas configurações do desenvolvedor), incluindo contatos, mensagens e fotos. Os dados de backup não são contabilizados na cota de armazenamento no Google Drive da criança.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Você pode desativar esse serviço nas Configurações.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6781978626986383437">Backup do Linux cancelado</translation>
 <translation id="6783036716881942511">Esquecer este dispositivo?</translation>
 <translation id="6783667414610055871">Configurações do Microsoft OneDrive</translation>
 <translation id="6784523122863989144">O perfil é compatível</translation>
@@ -8565,7 +8561,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="695817292005698051">Limite de detecção de gestos</translation>
 <translation id="6959882218873172284">Solicitação POST</translation>
 <translation id="6960133692707095572">Visita sem tíquete</translation>
-<translation id="6960507406838246615">É necessário atualizar o Linux</translation>
 <translation id="6960648667961844909">Não foi possível baixar os arquivos de fala em <ph name="LANGUAGE" />. O download será feito mais tarde. A fala será enviada ao Google para processamento até que o download seja concluído.</translation>
 <translation id="696103774840402661">Todos os arquivos e dados locais para todos os usuários neste <ph name="DEVICE_TYPE" /> foram excluídos permanentemente.</translation>
 <translation id="6961327401577924850">Os sites geralmente procuram dispositivos Bluetooth para recursos como a configuração ou sincronização de um sensor de baixa energia, um tracker de condicionamento físico e saúde ou uma lâmpada de iluminação inteligente</translation>
@@ -9479,7 +9474,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7606639338662398635">Grupos de guias</translation>
 <translation id="7607002721634913082">Pausado</translation>
 <translation id="7608810328871051088">Preferências do Android</translation>
-<translation id="7609148976235050828">Conecte-se à Internet e tente novamente.</translation>
 <translation id="7610337976012700501">Para usar o <ph name="FEATURE_NAME" /> com estes contatos, adicione o endereço de e-mail vinculado à Conta do Google deles.</translation>
 <translation id="7611713099524036757">tecla meta</translation>
 <translation id="7612050744024016345">Todas as extensões</translation>
@@ -11829,7 +11823,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9186963452600581158">Fazer login com a Conta do Google de uma criança</translation>
 <translation id="9187967020623675250">As teclas não correspondem. Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Ativar isolamento de processos</translation>
-<translation id="9189618485998894982">Este aplicativo foi bloqueado. Entre em contato com o desenvolvedor.</translation>
 <translation id="9192019773545828776">Ouça uma resposta falada para que você possa usar o dispositivo sem olhar para a tela. O feedback em braille está disponível quando há um dispositivo conectado. Use Ctrl + Alt + Z para ativar e desativar o ChromeVox. Use Pesquisa + seta para a esquerda ou direita para navegar. Use as teclas Pesquisa + espaço para selecionar (ativar).</translation>
 <translation id="9195969368671142407">Quando a organização limita o salvamento na sua Conta do Google, não é possível compartilhar ou participar de grupos de guias</translation>
 <translation id="919686179725692564">Saiba mais sobre como fazer backup dos seus apps.</translation>

@@ -24,7 +24,6 @@
 <translation id="1089606299949659462">Examinare finalizată!</translation>
 <translation id="1094555143448724771">Pentru a vedea filele de pe alte dispozitive, sincronizează filele și istoricul</translation>
 <translation id="1095761715416917775">Asigură-te că ai în permanență acces la datele sincronizate</translation>
-<translation id="1096091316906284742">Opțiunea de activare pentru Chrome Finds este în foaia din partea de jos.</translation>
 <translation id="1100066534610197918">Deschide în filă nouă în grup</translation>
 <translation id="1103142993930332957">Ajuți la îmbunătățirea Chrome?</translation>
 <translation id="1105960400813249514">Captură de ecran</translation>
@@ -617,7 +616,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3635073343384702370">Chrome îți poate verifica parolele dacă le salvezi</translation>
 <translation id="3636940436873918441">Limbi preferate</translation>
 <translation id="3637744895182738742">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
-<translation id="3641581193271938629">Opțiunea de activare pentru Chrome Finds este închisă.</translation>
 <translation id="3647019414263135904">Deschide sau închide fereastra pop-up contextuală</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Accesează pagina de pornire a aplicației Google</translation>
@@ -800,7 +798,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4387647248986092471">Creează o blocare a profilului mașinii</translation>
 <translation id="4387817230000841154">Deschide Descărcări</translation>
 <translation id="4394049700291259645">Dezactivează</translation>
-<translation id="4395046795145457714">Opțiunea de activare pentru Chrome Finds este deschisă la înălțime completă.</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, filă incognito de înregistrare fixată și selectată</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Se descarcă…</translation>
 <translation id="4404568932422911380">Niciun marcaj</translation>
@@ -1370,7 +1367,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Previzualizează imaginea <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">Filă</translation>
-<translation id="6661521899577697780">Opțiunea de activare pentru Chrome Finds este deschisă la jumătate din înălțime.</translation>
 <translation id="666731172850799929">Deschide în <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Doresc să primesc notificări</translation>
 <translation id="6670767097276846646">Unele extensii pot adăuga motoare de căutare în Chrome</translation>

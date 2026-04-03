@@ -24,7 +24,6 @@
 <translation id="1089606299949659462">Проверка выполнена</translation>
 <translation id="1094555143448724771">Синхронизируйте вкладки и историю, и вы сможете видеть здесь вкладки, открытые на других ваших устройствах.</translation>
 <translation id="1095761715416917775">Не теряйте доступ к синхронизированным данным</translation>
-<translation id="1096091316906284742">Нижний экран с предложением разрешить Chrome продолжить поиск</translation>
 <translation id="1100066534610197918">Открыть в новой вкладке группы</translation>
 <translation id="1103142993930332957">Помогите улучшить Chrome</translation>
 <translation id="1105960400813249514">Демонстрация экрана</translation>
@@ -617,7 +616,6 @@
 <translation id="3635073343384702370">Чтобы браузер Chrome мог проверять пароли, сохраните их</translation>
 <translation id="3636940436873918441">Предпочитаемые языки</translation>
 <translation id="3637744895182738742">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
-<translation id="3641581193271938629">Нижний экран с предложением разрешить Chrome продолжить поиск закрыт</translation>
 <translation id="3647019414263135904">Открыть или закрыть контекстное всплывающее окно</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="3674208116086565128">Открыть главную страницу приложения Google</translation>
@@ -642,6 +640,7 @@
 <translation id="3739455665973395693">В аккаунте Google нет раскрытых паролей</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />: добавлена закладка</translation>
 <translation id="3740525748616366977">Голосовой поиск недоступен на этом устройстве.</translation>
+<translation id="3763110477555836428">При оплате этой картой будет указан номер виртуальной. Это поможет защитить настоящие реквизиты. Изменить настройки можно в Google Кошельке. Подробнее <ph name="BEGIN_LINK1" />о виртуальных картах<ph name="END_LINK1" />…</translation>
 <translation id="376561056759077985">Некоторые данные ещё не сохранены</translation>
 <translation id="3770620323585347665">Добавить название окна</translation>
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
@@ -800,7 +799,6 @@
 <translation id="4387647248986092471">Настроить блокировку профиля для автомобиля</translation>
 <translation id="4387817230000841154">Открыть папку со скачанными файлами</translation>
 <translation id="4394049700291259645">Отключить</translation>
-<translation id="4395046795145457714">Нижний экран с предложением разрешить Chrome продолжить поиск открыт полностью</translation>
 <translation id="4398561997852463382">Выбранная и закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />", на которой ведется запись</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – скачивание…</translation>
 <translation id="4404568932422911380">Нет закладок</translation>
@@ -1370,7 +1368,6 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}one{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}few{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лица}many{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лиц}other{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактного лица}}</translation>
 <translation id="6649642165559792194">Просмотреть изображение <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">Tab</translation>
-<translation id="6661521899577697780">Нижний экран с предложением разрешить Chrome продолжить поиск открыт наполовину</translation>
 <translation id="666731172850799929">Открыть в <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Включить</translation>
 <translation id="6670767097276846646">Некоторые расширения могут добавлять поисковые системы в Chrome.</translation>

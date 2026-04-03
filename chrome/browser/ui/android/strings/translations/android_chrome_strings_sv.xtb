@@ -24,7 +24,6 @@
 <translation id="1089606299949659462">Granskningen är klar</translation>
 <translation id="1094555143448724771">Synkronisera flikar och historik om du vill se flikar från dina andra enheter</translation>
 <translation id="1095761715416917775">Se till att du alltid får åtkomst till din synkroniserade data</translation>
-<translation id="1096091316906284742">Ark på nedre delen av skärmen för att välja att använda Chrome Finds</translation>
 <translation id="1100066534610197918">Öppna i en ny flik i en grupp</translation>
 <translation id="1103142993930332957">Vill du hjälpa till att förbättra Chrome?</translation>
 <translation id="1105960400813249514">Skärmavbildning</translation>
@@ -617,7 +616,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3635073343384702370">Chrome kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="3636940436873918441">Föredragna språk</translation>
 <translation id="3637744895182738742">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
-<translation id="3641581193271938629">Arket på nedre delen av skärmen för att välja att använda Chrome Finds har stängts</translation>
 <translation id="3647019414263135904">Öppna eller stäng popup-fönstret för sammanhang</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Öppna startskärmen i Google-appen</translation>
@@ -801,7 +799,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4387647248986092471">Skapa ett profillås för bilen</translation>
 <translation id="4387817230000841154">Öppna Nedladdningar</translation>
 <translation id="4394049700291259645">Inaktivera</translation>
-<translation id="4395046795145457714">Arket på nedre delen av skärmen för att välja att använda Chrome Finds har öppnats över hela skärmen</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, vald fäst inkognitoflik som spelas in</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Laddar ned …</translation>
 <translation id="4404568932422911380">Inga bokmärken</translation>
@@ -1371,7 +1368,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}other{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}}</translation>
 <translation id="6649642165559792194">Förhandsgranska bild <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">Tabb</translation>
-<translation id="6661521899577697780">Arket på nedre delen av skärmen för att välja att använda Chrome Finds har öppnats över halva skärmen</translation>
 <translation id="666731172850799929">Öppna i <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Meddela mig</translation>
 <translation id="6670767097276846646">Vissa tillägg kan lägga till sökmotorer i Chrome</translation>
