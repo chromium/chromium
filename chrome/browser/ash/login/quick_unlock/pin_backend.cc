@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -79,6 +80,22 @@ void RecordUMAHistogram(PinBackend::BackfillEvent event) {
   base::UmaHistogramEnumeration("Ash.Login.PinAutosubmit.Backfill", event);
 }
 
+// Returns true if the cryptohome backend should be used. Sometimes the prefs
+// backend should be used even when cryptohome is available, ie, when there is
+// an non-migrated PIN key.
+bool ShouldUseCryptohome(bool is_cryptohome_backend_supported,
+                         const AccountId& account_id) {
+  if (!is_cryptohome_backend_supported) {
+    return false;
+  }
+
+  // Even if cryptohome is supported, the user may have registered a PIN with
+  // the prefs backend from a previous version. If that's the case, we should
+  // talk to the prefs backend instead of the cryptohome backend.
+  QuickUnlockStorage* storage = GetPrefsBackend(account_id);
+  return !storage || !storage->pin_storage_prefs()->IsPinSet();
+}
+
 }  // namespace
 
 // static
@@ -132,33 +149,33 @@ PinBackend::~PinBackend() {
 }
 
 void PinBackend::HasLoginSupport(BoolCallback result) {
-  if (resolving_backend_) {
+  if (cryptohome_state_.IsResolving()) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::HasLoginSupport, base::Unretained(this),
                        std::move(result)));
     return;
   }
 
-  PostResponse(std::move(result), !!cryptohome_backend_);
+  PostResponse(std::move(result), cryptohome_state_.IsSupported());
 }
 
 void PinBackend::IsSet(const AccountId& account_id, BoolCallback result) {
-  if (resolving_backend_) {
+  if (cryptohome_state_.IsResolving()) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::IsSet, base::Unretained(this), account_id,
                        std::move(result)));
     return;
   }
 
-  if (ShouldUseCryptohome(account_id)) {
+  if (ShouldUseCryptohome(cryptohome_state_.IsSupported(), account_id)) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
       NOTREACHED() << "IsSet called with invalid user";
     }
     auto user_context = std::make_unique<UserContext>(*user);
-    cryptohome_backend_->IsPinSetInCryptohome(std::move(user_context),
-                                              std::move(result));
+    cryptohome_state_.GetCryptohomeBackend().IsPinSetInCryptohome(
+        std::move(user_context), std::move(result));
   } else {
     QuickUnlockStorage* storage = GetPrefsBackend(account_id);
     PostResponse(std::move(result),
@@ -170,14 +187,14 @@ void PinBackend::Set(const AccountId& account_id,
                      const std::string& token,
                      const std::string& pin,
                      BoolCallback did_set) {
-  if (resolving_backend_) {
+  if (cryptohome_state_.IsResolving()) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::Set, base::Unretained(this), account_id,
                        token, pin, std::move(did_set)));
     return;
   }
 
-  if (cryptohome_backend_) {
+  if (cryptohome_state_.IsSupported()) {
     if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
       PostResponse(std::move(did_set), false);
       return;
@@ -201,7 +218,7 @@ void PinBackend::UpdateCryptohomePin(const AccountId& account_id,
                                      const std::string& token,
                                      const std::string& pin,
                                      BoolCallback did_update) {
-  if (resolving_backend_) {
+  if (cryptohome_state_.IsResolving()) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::UpdateCryptohomePin, base::Unretained(this),
                        account_id, token, pin, std::move(did_update)));
@@ -232,7 +249,7 @@ void PinBackend::UpdateCryptohomePinWithContext(
     return;
   }
 
-  cryptohome_backend_->SetPin(
+  cryptohome_state_.GetCryptohomeBackend().SetPin(
       std::move(user_context), pin, std::nullopt,
       base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
 
@@ -268,7 +285,7 @@ void PinBackend::SetWithContext(const AccountId& account_id,
     // cryptohome-based PIN.
     storage->pin_storage_prefs()->RemovePin();
   }
-  cryptohome_backend_->SetPin(
+  cryptohome_state_.GetCryptohomeBackend().SetPin(
       std::move(user_context), pin, std::nullopt,
       base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
   UpdatePinAutosubmitOnSet(account_id, pin.length());
@@ -320,7 +337,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
 void PinBackend::Remove(const AccountId& account_id,
                         const std::string& token,
                         BoolCallback did_remove) {
-  if (resolving_backend_) {
+  if (cryptohome_state_.IsResolving()) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::Remove, base::Unretained(this), account_id,
                        token, std::move(did_remove)));
@@ -330,7 +347,7 @@ void PinBackend::Remove(const AccountId& account_id,
   // Disable PIN auto submit when removing the pin.
   UpdatePinAutosubmitOnRemove(account_id);
 
-  if (cryptohome_backend_) {
+  if (cryptohome_state_.IsSupported()) {
     if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
       PostResponse(std::move(did_remove), false);
       return;
@@ -352,30 +369,31 @@ void PinBackend::RemoveWithContext(const AccountId& account_id,
                                    const std::string& token,
                                    BoolCallback did_remove,
                                    std::unique_ptr<UserContext> user_context) {
-  cryptohome_backend_->RemovePin(std::make_unique<UserContext>(*user_context),
-                                 base::BindOnce(&PinBackend::OnAuthOperation,
-                                                token, std::move(did_remove)));
+  cryptohome_state_.GetCryptohomeBackend().RemovePin(
+      std::make_unique<UserContext>(*user_context),
+      base::BindOnce(&PinBackend::OnAuthOperation, token,
+                     std::move(did_remove)));
 }
 
 void PinBackend::CanAuthenticate(const AccountId& account_id,
                                  Purpose purpose,
                                  AvailabilityCallback result_callback) {
-  if (resolving_backend_) {
+  if (cryptohome_state_.IsResolving()) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::CanAuthenticate, base::Unretained(this),
                        account_id, purpose, std::move(result_callback)));
     return;
   }
 
-  if (ShouldUseCryptohome(account_id)) {
+  if (ShouldUseCryptohome(cryptohome_state_.IsSupported(), account_id)) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
       NOTREACHED() << "CanAuthenticate called with invalid user";
     }
     auto user_context = std::make_unique<UserContext>(*user);
-    cryptohome_backend_->CanAuthenticate(std::move(user_context), purpose,
-                                         std::move(result_callback));
+    cryptohome_state_.GetCryptohomeBackend().CanAuthenticate(
+        std::move(user_context), purpose, std::move(result_callback));
   } else {
     QuickUnlockStorage* storage = GetPrefsBackend(account_id);
     // pref based pin should be immediately available.
@@ -394,16 +412,16 @@ void PinBackend::TryAuthenticate(std::unique_ptr<UserContext> user_context,
   DCHECK(user_context->GetAuthSessionId().empty());
   DCHECK(user_context->IsUsingPin());
   const AccountId& account_id = user_context->GetAccountId();
-  if (resolving_backend_) {
+  if (cryptohome_state_.IsResolving()) {
     on_cryptohome_support_received_.push_back(base::BindOnce(
         &PinBackend::TryAuthenticate, base::Unretained(this),
         std::move(user_context), key, purpose, std::move(result)));
     return;
   }
 
-  if (ShouldUseCryptohome(account_id)) {
+  if (ShouldUseCryptohome(cryptohome_state_.IsSupported(), account_id)) {
     // Safe because the PinBackend instance is never destroyed.
-    cryptohome_backend_->TryAuthenticate(
+    cryptohome_state_.GetCryptohomeBackend().TryAuthenticate(
         std::move(user_context), key, purpose,
         base::BindOnce(&PinBackend::OnCryptohomeAuthenticationResponse,
                        base::Unretained(this), key, std::move(result)));
@@ -425,17 +443,6 @@ void PinBackend::TryAuthenticate(std::unique_ptr<UserContext> user_context,
   }
 }
 
-bool PinBackend::ShouldUseCryptohome(const AccountId& account_id) {
-  if (!cryptohome_backend_)
-    return false;
-
-  // Even if cryptohome is supported, the user may have registered a PIN with
-  // the prefs backend from a previous version. If that's the case, we should
-  // talk to the prefs backend instead of the cryptohome backend.
-  QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  return !storage || !storage->pin_storage_prefs()->IsPinSet();
-}
-
 int PinBackend::GetExposedPinLength(const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
 
@@ -452,9 +459,14 @@ int PinBackend::GetExposedPinLength(const AccountId& account_id) {
 }
 
 void PinBackend::OnIsCryptohomeBackendSupported(bool is_supported) {
-  if (is_supported)
-    cryptohome_backend_ = std::make_unique<PinStorageCryptohome>();
-  resolving_backend_ = false;
+  CHECK(cryptohome_state_.IsResolving());
+
+  if (is_supported) {
+    cryptohome_state_.Set(std::make_unique<PinStorageCryptohome>());
+  } else {
+    cryptohome_state_.Set(nullptr);
+  }
+
   for (auto& callback : on_cryptohome_support_received_)
     std::move(callback).Run();
   on_cryptohome_support_received_.clear();
@@ -611,6 +623,38 @@ void PinBackend::OnAuthOperation(std::string auth_token,
                                  std::optional<AuthenticationError> error) {
   ash::AuthSessionStorage::Get()->Return(auth_token, std::move(user_context));
   std::move(callback).Run(!error.has_value());
+}
+
+PinBackend::CryptohomeBackendState::CryptohomeBackendState() = default;
+PinBackend::CryptohomeBackendState::~CryptohomeBackendState() = default;
+
+void PinBackend::CryptohomeBackendState::Set(
+    std::unique_ptr<PinStorageCryptohome> cryptohome_backend_or_null) {
+  CHECK(!is_supported_.has_value());
+
+  if (cryptohome_backend_or_null) {
+    is_supported_ = true;
+    CHECK(!cryptohome_backend_);
+    cryptohome_backend_ = std::move(cryptohome_backend_or_null);
+  } else {
+    is_supported_ = false;
+  }
+}
+
+bool PinBackend::CryptohomeBackendState::IsResolving() const {
+  return !is_supported_.has_value();
+}
+
+bool PinBackend::CryptohomeBackendState::IsSupported() const {
+  CHECK(is_supported_.has_value());
+  return is_supported_.value();
+}
+
+PinStorageCryptohome& PinBackend::CryptohomeBackendState::GetCryptohomeBackend()
+    const {
+  CHECK(is_supported_.has_value());
+  CHECK(is_supported_.value());
+  return CHECK_DEREF(cryptohome_backend_.get());
 }
 
 }  // namespace quick_unlock

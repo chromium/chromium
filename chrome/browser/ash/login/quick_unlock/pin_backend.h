@@ -98,11 +98,6 @@ class PinBackend : public ash::auth::PinBackendDelegate {
                        Purpose purpose,
                        AuthOperationCallback result);
 
-  // Returns true if the cryptohome backend should be used. Sometimes the prefs
-  // backend should be used even when cryptohome is available, ie, when there is
-  // an non-migrated PIN key.
-  bool ShouldUseCryptohome(const AccountId& account_id);
-
   // Resets any cached state for testing purposes.
   static void ResetForTesting();
 
@@ -126,6 +121,31 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   };
 
  private:
+  class CryptohomeBackendState {
+   public:
+    CryptohomeBackendState();
+    CryptohomeBackendState(const CryptohomeBackendState&) = delete;
+    CryptohomeBackendState& operator=(const CryptohomeBackendState&) = delete;
+    ~CryptohomeBackendState();
+
+    // If cryptohome backend is supported `cryptohome_backend_or_null` must be
+    // non-null. Otherwiser, it must be nullptr.
+    void Set(std::unique_ptr<PinStorageCryptohome> cryptohome_backend_or_null);
+
+    // Returns true until `Set` is called.
+    bool IsResolving() const;
+
+    // `Set` must be called beforehand.
+    bool IsSupported() const;
+
+    // `Set` must be called beforehand.
+    PinStorageCryptohome& GetCryptohomeBackend() const;
+
+   private:
+    std::optional<bool> is_supported_;
+    std::unique_ptr<PinStorageCryptohome> cryptohome_backend_;
+  };
+
   // Called when we know if the cryptohome supports PIN.
   void OnIsCryptohomeBackendSupported(bool is_supported);
 
@@ -196,17 +216,13 @@ class PinBackend : public ash::auth::PinBackendDelegate {
                               std::unique_ptr<UserContext>,
                               std::optional<AuthenticationError>);
 
-  // True if still trying to determine which backend should be used.
-  bool resolving_backend_ = true;
   // Determining if the device supports cryptohome-based keys requires an async
   // dbus call to cryptohome. If we receive a request before we know which
   // backend to use, the request will be pushed to this list and invoked once
   // the backend configuration is determined.
   std::vector<base::OnceClosure> on_cryptohome_support_received_;
 
-  // Non-null if we should use the cryptohome backend. If null, the prefs
-  // backend should be used.
-  std::unique_ptr<PinStorageCryptohome> cryptohome_backend_;
+  CryptohomeBackendState cryptohome_state_;
 };
 
 }  // namespace ash::quick_unlock
