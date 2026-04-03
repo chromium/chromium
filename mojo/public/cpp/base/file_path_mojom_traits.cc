@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace mojo {
@@ -21,7 +17,8 @@ bool StructTraits<mojo_base::mojom::FilePathDataView, base::FilePath>::Read(
 #if BUILDFLAG(IS_WIN)
   ArrayDataView<uint16_t> view;
   data.GetPathDataView(&view);
-  path_view = {reinterpret_cast<const wchar_t*>(view.data()), view.size()};
+  path_view = UNSAFE_TODO(base::FilePath::StringViewType(
+      reinterpret_cast<const wchar_t*>(view.data()), view.size()));
 #else
   if (!data.ReadPath(&path_view)) {
     return false;
@@ -38,8 +35,9 @@ StructTraits<mojo_base::mojom::RelativeFilePathDataView, base::FilePath>::path(
     const base::FilePath& path) {
   CHECK(!path.IsAbsolute());
   CHECK(!path.ReferencesParent());
-  return base::span(reinterpret_cast<const uint16_t*>(path.value().data()),
-                    path.value().size());
+  return UNSAFE_TODO(
+      base::span(reinterpret_cast<const uint16_t*>(path.value().data()),
+                 path.value().size()));
 }
 #else
 // static
@@ -59,7 +57,8 @@ bool StructTraits<mojo_base::mojom::RelativeFilePathDataView, base::FilePath>::
 #if BUILDFLAG(IS_WIN)
   ArrayDataView<uint16_t> view;
   data.GetPathDataView(&view);
-  path_view = {reinterpret_cast<const wchar_t*>(view.data()), view.size()};
+  path_view = UNSAFE_TODO(base::FilePath::StringViewType(
+      reinterpret_cast<const wchar_t*>(view.data()), view.size()));
 #else
   if (!data.ReadPath(&path_view)) {
     return false;

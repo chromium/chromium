@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // Implementation of a proto version of mojo_parse_message_fuzzer that sends
 // multiple messages per run.
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -49,7 +45,7 @@ void FuzzMessage(const MojoFuzzerMessages& mojo_fuzzer_messages,
                           static_cast<uint32_t>(message_str.size()), nullptr, 0,
                           &options, &buffer, &buffer_size);
     CHECK_GE(buffer_size, static_cast<uint32_t>(message_str.size()));
-    memcpy(buffer, message_str.data(), message_str.size());
+    UNSAFE_TODO(memcpy(buffer, message_str.data(), message_str.size()));
 
     // Run the message through header validation, payload validation, and
     // dispatch to the impl.

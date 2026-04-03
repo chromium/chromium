@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -39,7 +35,7 @@ void FuzzMessage(const uint8_t* data, size_t size, base::RunLoop* run) {
   MojoAppendMessageData(handle->value(), static_cast<uint32_t>(size), nullptr,
                         0, &options, &buffer, &buffer_size);
   CHECK_GE(buffer_size, static_cast<uint32_t>(size));
-  memcpy(buffer, data, size);
+  UNSAFE_TODO(memcpy(buffer, data, size));
 
   // Run the message through header validation, payload validation, and
   // dispatch to the impl.

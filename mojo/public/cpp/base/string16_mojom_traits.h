@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MOJO_PUBLIC_CPP_BASE_STRING16_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BASE_STRING16_MOJOM_TRAITS_H_
 
 #include <cstdint>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -25,8 +21,8 @@ template <>
 struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     StructTraits<mojo_base::mojom::String16DataView, std::u16string_view> {
   static base::span<const uint16_t> data(std::u16string_view str) {
-    return base::span(reinterpret_cast<const uint16_t*>(str.data()),
-                      str.size());
+    return UNSAFE_TODO(
+        base::span(reinterpret_cast<const uint16_t*>(str.data()), str.size()));
   }
 };
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/channel_linux.h"
 
 #include <fcntl.h>
@@ -27,6 +22,7 @@
 
 #include "base/bits.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -316,7 +312,9 @@ class ChannelLinux::SharedBuffer {
     return base::WrapUnique<SharedBuffer>(new SharedBuffer(ptr, size));
   }
 
-  uint8_t* usable_region_ptr() { return base_ptr_ + kReservedSpace; }
+  uint8_t* usable_region_ptr() {
+    return UNSAFE_TODO(base_ptr_ + kReservedSpace);
+  }
   size_t usable_len() const { return len_ - kReservedSpace; }
   bool is_valid() const { return base_ptr_ != nullptr && len_ > 0; }
 
@@ -379,13 +377,13 @@ class ChannelLinux::SharedBuffer {
     // the write position up to the end of the usable area and then we write the
     // remainder of the payload starting at position 0.
     if ((usable_len() - cur_write_pos) > len) {
-      memcpy(usable_region_ptr() + cur_write_pos, data, len);
+      UNSAFE_TODO(memcpy(usable_region_ptr() + cur_write_pos, data, len));
     } else {
       size_t copy1_len = usable_len() - cur_write_pos;
-      memcpy(usable_region_ptr() + cur_write_pos, data, copy1_len);
-      memcpy(usable_region_ptr(),
-             reinterpret_cast<const uint8_t*>(data) + copy1_len,
-             len - copy1_len);
+      UNSAFE_TODO(memcpy(usable_region_ptr() + cur_write_pos, data, copy1_len));
+      UNSAFE_TODO(memcpy(usable_region_ptr(),
+                         reinterpret_cast<const uint8_t*>(data) + copy1_len,
+                         len - copy1_len));
     }
 
     // Atomically update the write position.
@@ -428,19 +426,22 @@ class ChannelLinux::SharedBuffer {
     // continue reading from the 0 position up to the write position or the
     // maximum buffer size (bytes_available_to_read).
     if (cur_read_pos < cur_write_pos) {
-      memcpy(data, usable_region_ptr() + cur_read_pos, bytes_available_to_read);
+      UNSAFE_TODO(memcpy(data, usable_region_ptr() + cur_read_pos,
+                         bytes_available_to_read));
     } else {
       // We first start by reading to the end of the the usable area, if we
       // cannot read all the way (because our buffer is too small, we're done).
       uint32_t bytes_from_read_to_end = usable_len() - cur_read_pos;
       bytes_from_read_to_end =
           std::min(bytes_from_read_to_end, bytes_available_to_read);
-      memcpy(data, usable_region_ptr() + cur_read_pos, bytes_from_read_to_end);
+      UNSAFE_TODO(memcpy(data, usable_region_ptr() + cur_read_pos,
+                         bytes_from_read_to_end));
 
       if (bytes_from_read_to_end < bytes_available_to_read) {
-        memcpy(reinterpret_cast<uint8_t*>(data) + bytes_from_read_to_end,
-               usable_region_ptr(),
-               bytes_available_to_read - bytes_from_read_to_end);
+        UNSAFE_TODO(
+            memcpy(reinterpret_cast<uint8_t*>(data) + bytes_from_read_to_end,
+                   usable_region_ptr(),
+                   bytes_available_to_read - bytes_from_read_to_end));
       }
     }
 
@@ -758,8 +759,9 @@ void ChannelLinux::SharedMemReadReady() {
       while (bytes_read - data_offset > 0) {
         size_t read_size_hint;
         DispatchResult result = TryDispatchMessage(
-            base::span(reinterpret_cast<char*>(read_buf_.data() + data_offset),
-                       static_cast<size_t>(bytes_read - data_offset)),
+            UNSAFE_TODO(base::span(
+                reinterpret_cast<char*>(read_buf_.data() + data_offset),
+                static_cast<size_t>(bytes_read - data_offset))),
             &read_size_hint);
 
         // We cannot have a message parse failure, we KNOW that we wrote a
@@ -891,8 +893,9 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
   offer_msg.version = UpgradeOfferMessage::kEventFdNotifier;
   MessagePtr msg;
   DCHECK(is_for_ipcz());
-  auto data = base::span(reinterpret_cast<const uint8_t*>(&offer_msg),
-                         sizeof(UpgradeOfferMessage));
+  auto data =
+      UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(&offer_msg),
+                             sizeof(UpgradeOfferMessage)));
   msg = Message::CreateIpczMessage(data, std::move(*handles),
                                    Message::MessageType::UPGRADE_OFFER,
                                    IncrementLastSentChannelSequenceNumber());

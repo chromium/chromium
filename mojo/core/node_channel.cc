@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/node_channel.h"
 
 #include <cstring>
 #include <limits>
 #include <sstream>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -196,11 +192,11 @@ Channel::MessagePtr CreateMessage(MessageType type,
   Header* header = reinterpret_cast<Header*>(message->mutable_payload());
 
   // Make sure any header padding gets zeroed.
-  memset(header, 0, sizeof(Header));
+  UNSAFE_TODO(memset(header, 0, sizeof(Header)));
   header->type = type;
 
   // The out_data starts beyond the header.
-  *out_data = reinterpret_cast<void*>(header + 1);
+  *out_data = UNSAFE_TODO(reinterpret_cast<void*>(header + 1));
   return message;
 }
 
@@ -214,7 +210,7 @@ Channel::MessagePtr CreateMessage(MessageType type,
                                reinterpret_cast<void**>(out_data), capacity);
 
   // Since we know the type let's make sure any padding areas are zeroed.
-  memset(*out_data, 0, sizeof(DataType));
+  UNSAFE_TODO(memset(*out_data, 0, sizeof(DataType)));
 
   return msg_ptr;
 }
@@ -236,12 +232,13 @@ bool GetMessagePayloadMinimumSized(const void* bytes,
   // as we may not have the complete type. The default construction allows
   // fields to be default initialized to be resilient to older message
   // versions.
-  memset(out_data, 0, sizeof(*out_data));
+  UNSAFE_TODO(memset(out_data, 0, sizeof(*out_data)));
   new (out_data) DataType;
 
   // Overwrite any fields we received.
-  memcpy(out_data, static_cast<const uint8_t*>(bytes) + sizeof(Header),
-         std::min(sizeof(DataType), num_bytes - sizeof(Header)));
+  UNSAFE_TODO(memcpy(out_data,
+                     static_cast<const uint8_t*>(bytes) + sizeof(Header),
+                     std::min(sizeof(DataType), num_bytes - sizeof(Header))));
   return true;
 }
 
@@ -285,7 +282,7 @@ bool NodeChannel::GetEventMessageData(Channel::Message& message,
   if (message.payload_size() < sizeof(Header)) {
     return false;
   }
-  *data = reinterpret_cast<Header*>(message.mutable_payload()) + 1;
+  *data = UNSAFE_TODO(reinterpret_cast<Header*>(message.mutable_payload()) + 1);
   *num_data_bytes = message.payload_size() - sizeof(Header);
   return true;
 }
@@ -441,7 +438,7 @@ void NodeChannel::RequestPortMerge(const ports::PortName& connector_port_name,
       CreateMessage(MessageType::REQUEST_PORT_MERGE,
                     sizeof(RequestPortMergeData) + token.size(), 0, &data);
   data->connector_port_name = connector_port_name;
-  memcpy(data + 1, token.data(), token.size());
+  UNSAFE_TODO(memcpy(data + 1, token.data(), token.size()));
   WriteChannelMessage(std::move(message));
 }
 
@@ -480,7 +477,7 @@ void NodeChannel::Broadcast(Channel::MessagePtr message) {
   void* data;
   Channel::MessagePtr broadcast_message = CreateMessage(
       MessageType::BROADCAST_EVENT, message->data_num_bytes(), 0, &data);
-  memcpy(data, message->data(), message->data_num_bytes());
+  UNSAFE_TODO(memcpy(data, message->data(), message->data_num_bytes()));
   WriteChannelMessage(std::move(broadcast_message));
 }
 
@@ -511,7 +508,7 @@ void NodeChannel::RelayEventMessage(const ports::NodeName& destination,
   Channel::MessagePtr relay_message =
       CreateMessage(MessageType::RELAY_EVENT_MESSAGE, num_bytes, 0, &data);
   data->destination = destination;
-  memcpy(data + 1, message->data(), message->data_num_bytes());
+  UNSAFE_TODO(memcpy(data + 1, message->data(), message->data_num_bytes()));
 
   // When the handles are duplicated in the broker, the source handles will
   // be closed. If the broker never receives this message then these handles
@@ -535,12 +532,12 @@ void NodeChannel::EventMessageFromRelay(const ports::NodeName& source,
   size_t num_bytes =
       sizeof(EventMessageFromRelayData) + message->payload_size();
   EventMessageFromRelayData* data;
-  Channel::MessagePtr relayed_message =
+  auto relayed_message =
       CreateMessage(MessageType::EVENT_MESSAGE_FROM_RELAY, num_bytes,
                     message->num_handles(), &data);
   data->source = source;
   if (message->payload_size()) {
-    memcpy(data + 1, message->payload(), message->payload_size());
+    UNSAFE_TODO(memcpy(data + 1, message->payload(), message->payload_size()));
   }
   relayed_message->SetHandles(message->TakeHandles());
   WriteChannelMessage(std::move(relayed_message));
@@ -686,7 +683,7 @@ void NodeChannel::OnChannelMessage(
       Channel::MessagePtr message =
           Channel::Message::CreateMessage(payload_size, handles.size());
       message->SetHandles(std::move(handles));
-      memcpy(message->mutable_payload(), payload, payload_size);
+      UNSAFE_TODO(memcpy(message->mutable_payload(), payload, payload_size));
       delegate_->OnEventMessage(remote_node_name_, std::move(message));
       return;
     }
@@ -699,8 +696,8 @@ void NodeChannel::OnChannelMessage(
         if (token_size == 0) {
           break;
         }
-        std::string token(reinterpret_cast<const char*>(payload) +
-                              sizeof(Header) + sizeof(data),
+        std::string token(UNSAFE_TODO(reinterpret_cast<const char*>(payload) +
+                                      sizeof(Header) + sizeof(data)),
                           token_size);
         delegate_->OnRequestPortMerge(remote_node_name_,
                                       data.connector_port_name, token);
@@ -771,8 +768,9 @@ void NodeChannel::OnChannelMessage(
           handle_policy = channel_->handle_policy();
         }
 
-        const void* message_start = reinterpret_cast<const uint8_t*>(payload) +
-                                    sizeof(Header) + sizeof(data);
+        const void* message_start =
+            UNSAFE_TODO(reinterpret_cast<const uint8_t*>(payload) +
+                        sizeof(Header) + sizeof(data));
         Channel::MessagePtr message = Channel::Message::Deserialize(
             message_start, payload_size - sizeof(Header) - sizeof(data),
             handle_policy, from_process);
@@ -792,8 +790,8 @@ void NodeChannel::OnChannelMessage(
       if (payload_size <= sizeof(Header)) {
         break;
       }
-      const void* data = static_cast<const void*>(
-          reinterpret_cast<const Header*>(payload) + 1);
+      const void* data = UNSAFE_TODO(static_cast<const void*>(
+          reinterpret_cast<const Header*>(payload) + 1));
       Channel::MessagePtr message =
           Channel::Message::Deserialize(data, payload_size - sizeof(Header),
                                         Channel::HandlePolicy::kRejectHandles);
@@ -819,10 +817,10 @@ void NodeChannel::OnChannelMessage(
             Channel::Message::CreateMessage(num_bytes, handles.size());
         message->SetHandles(std::move(handles));
         if (num_bytes) {
-          memcpy(message->mutable_payload(),
-                 static_cast<const uint8_t*>(payload) + sizeof(Header) +
-                     sizeof(data),
-                 num_bytes);
+          UNSAFE_TODO(memcpy(message->mutable_payload(),
+                             static_cast<const uint8_t*>(payload) +
+                                 sizeof(Header) + sizeof(data),
+                             num_bytes));
         }
         delegate_->OnEventMessageFromRelay(remote_node_name_, data.source,
                                            std::move(message));

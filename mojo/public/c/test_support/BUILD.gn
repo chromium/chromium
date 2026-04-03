@@ -10,4 +10,6 @@ static_library("test_support") {
     "../../tests/test_support_private.h",
     "test_support.h",
   ]
+
+  deps = [ "//base:compiler_specific" ]
 }

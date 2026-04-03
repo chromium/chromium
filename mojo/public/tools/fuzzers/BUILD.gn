@@ -33,6 +33,7 @@ fuzzer_test("mojo_parse_message_fuzzer") {
   deps = [
     ":fuzz_mojom",
     ":test_support",
+    "//base",
     "//mojo/core/embedder",
   ]
   seed_corpus = "//mojo/public/tools/fuzzers/message_corpus"
@@ -62,6 +63,7 @@ fuzzer_test("mojo_parse_message_proto_fuzzer") {
     ":fuzz_mojom",
     ":mojo_fuzzer_proto",
     ":test_support",
+    "//base",
     "//mojo/core/embedder",
     "//third_party/libprotobuf-mutator",
   ]
