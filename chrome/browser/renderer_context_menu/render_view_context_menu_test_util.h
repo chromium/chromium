@@ -113,6 +113,10 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
     selection_navigation_url_ = url;
   }
 
+  void SetGlicItemExecutedForTesting(bool executed) {
+    glic_item_executed_ = executed;
+  }
+
   using RenderViewContextMenu::AppendImageItems;
   using RenderViewContextMenu::GetIsNewFeatureAtValue;
 

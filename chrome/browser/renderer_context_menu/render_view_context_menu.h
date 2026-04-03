@@ -128,6 +128,8 @@ class RenderViewContextMenu
 
   ~RenderViewContextMenu() override;
 
+  void MenuClosed(ui::SimpleMenuModel* source) override;
+
   // Adds the spell check service item to the context menu.
   static void AddSpellCheckServiceItem(ui::SimpleMenuModel* menu,
                                        bool is_checked);
@@ -623,6 +625,10 @@ class RenderViewContextMenu
            // Autofill commands.
            IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY});
   // LINT.ThenChange(//chrome/app/chrome_command_ids.h:ChromeCommandIds)
+
+  //  Used for CTR metrics of menu item for opening Glic.
+  bool glic_item_shown_ = false;
+  bool glic_item_executed_ = false;
 
   base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
 };
