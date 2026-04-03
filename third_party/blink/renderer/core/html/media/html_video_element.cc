@@ -432,6 +432,7 @@ void HTMLVideoElement::CreateVisibilityTrackerIfNeeded() {
   }
 
   if (visibility_tracker_) {
+    UpdateVideoVisibilityTracker();
     return;
   }
 
@@ -445,6 +446,7 @@ void HTMLVideoElement::CreateVisibilityTrackerIfNeeded() {
 
   visibility_tracker_ = MakeGarbageCollected<MediaVideoVisibilityTracker>(
       *this, kVisibilityThreshold, std::move(report_visibility_cb));
+  UpdateVideoVisibilityTracker();
 }
 
 void HTMLVideoElement::ReportVisibility(bool meets_visibility_threshold) {
@@ -460,6 +462,8 @@ void HTMLVideoElement::OnEncryptedMediaInitData() {
     return;
   }
 
+  // Need to create and attach the tracker for Encrypted Media Occlusion
+  // tracking.
   CreateVisibilityTrackerIfNeeded();
   if (visibility_tracker_) {
     visibility_tracker_->RequestVisibilityRatio(BindOnce(
@@ -489,8 +493,17 @@ void HTMLVideoElement::OnPlay() {
     UpdatePictureInPictureAvailability();
   }
 
-  CreateVisibilityTrackerIfNeeded();
-  UpdateVideoVisibilityTracker();
+  // The Video Visibility Tracker is shared by both Auto-PiP and Encrypted
+  // Media Occlusion Tracking. In OnPlay(), we only want to initialize it
+  // for AutoPictureInPictureVideoHeuristicsEnabled feature.
+  //
+  // For encrypted media, the tracker should only be created via
+  // OnEncryptedMediaInitData(). Initializing it here when only the
+  // kEncryptedMediaOcclusionTracking feature is enabled would incorrectly
+  // attach the tracker to clear videos.
+  if (RuntimeEnabledFeatures::AutoPictureInPictureVideoHeuristicsEnabled()) {
+    CreateVisibilityTrackerIfNeeded();
+  }
 
   if (!RuntimeEnabledFeatures::VideoAutoFullscreenEnabled() ||
       FastHasAttribute(html_names::kPlaysinlineAttr)) {
