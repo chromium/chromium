@@ -3294,8 +3294,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.SiteProtection.FamiliarityHeuristic.Engagement15OrVisitedBeforeTodayOrHighConfidence"
-    enum="BooleanMatched" expires_after="2026-04-05">
-  <owner>pkotwicz@chromium.org</owner>
+    enum="BooleanMatched" expires_after="2026-10-05">
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-core@google.com</owner>
   <summary>
     Logged after each non-off-the-record page navigation. Logs whether the site
