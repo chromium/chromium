@@ -934,6 +934,7 @@ libfuzzer_linux_asan_builder(
 libfuzzer_linux_asan_builder(
     name = "Libfuzzer Upload Linux ASan Schema v1",
     description_html = "This builder uploads linux libfuzzer fuzzers with archive schema v1, for x64 using ASan",
+    free_space = builders.free_space.high,
     gardener_rotations = args.ignore_default(None),
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
