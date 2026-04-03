@@ -40,6 +40,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/aim_icon.pb.h"
 #include "third_party/lens_server_proto/modality_chip_props.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -111,17 +112,17 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
   return context_items;
 }
 
-contextual_tasks::mojom::IconType IconTypeToMojom(lens::IconType icon_id) {
+contextual_tasks::mojom::IconType IconTypeToMojom(lens::AimIconType icon_id) {
   switch (icon_id) {
-    case lens::IconType::ICON_TYPE_ADD:
+    case lens::AimIconType::ICON_TYPE_ADD:
       return contextual_tasks::mojom::IconType::kAdd;
-    case lens::IconType::ICON_TYPE_CHECK:
+    case lens::AimIconType::ICON_TYPE_CHECK:
       return contextual_tasks::mojom::IconType::kCheck;
-    case lens::IconType::ICON_TYPE_FORMAT_QUOTE_FILLED:
+    case lens::AimIconType::ICON_TYPE_FORMAT_QUOTE_FILLED:
       return contextual_tasks::mojom::IconType::kFormatQuoteFilled;
-    case lens::IconType::ICON_TYPE_IMAGE:
+    case lens::AimIconType::ICON_TYPE_IMAGE:
       return contextual_tasks::mojom::IconType::kImage;
-    case lens::IconType::ICON_TYPE_DRIVE_PDF:
+    case lens::AimIconType::ICON_TYPE_DRIVE_PDF:
       return contextual_tasks::mojom::IconType::kDrivePdf;
     default:
       return contextual_tasks::mojom::IconType::kUnspecified;

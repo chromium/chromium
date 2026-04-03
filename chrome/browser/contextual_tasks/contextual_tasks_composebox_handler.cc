@@ -337,7 +337,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   // recontextualize the active tab.
   recontextualization_pending_count_++;
   recontextualizer_->Contextualize(
-      task_id, tabs_to_recontextualize, tabs_to_force_contextualize,
+      task_id, query, tabs_to_recontextualize, tabs_to_force_contextualize,
       session_handle,
       base::BindOnce(
           &ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage,

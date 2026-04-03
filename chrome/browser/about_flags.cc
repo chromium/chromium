@@ -8887,6 +8887,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensEnableSendRawFileMediaTypesDescription, kOsAll,
      FEATURE_VALUE_TYPE(lens::features::kLensSendRawFileMediaTypes)},
 
+    {"lens-enable-urls-in-composeboxes",
+     flag_descriptions::kLensEnableSendUrlsInComposeboxesName,
+     flag_descriptions::kLensEnableSendUrlsInComposeboxesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(lens::features::kLensSendUrlsInComposeboxes)},
+
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,

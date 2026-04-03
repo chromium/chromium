@@ -125,7 +125,8 @@ class ComposeboxQueryController
 
   // Returns the string representation of the mime type, for use in calculating
   // the AddedInputs proto.
-  static std::optional<std::string> MimeTypeToString(lens::MimeType mime_type);
+  static std::optional<std::string> MimeTypeStringFromFileInfo(
+      const contextual_search::FileInfo& file_info);
 
   uint16_t get_num_context_uploading() {
     return static_cast<uint16_t>(pending_context_uploads_.size());

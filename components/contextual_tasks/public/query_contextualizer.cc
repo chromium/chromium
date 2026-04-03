@@ -4,12 +4,13 @@
 
 #include "components/contextual_tasks/public/query_contextualizer.h"
 
-#include <set>
-
 #include "base/barrier_closure.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
@@ -17,8 +18,11 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
+#include "components/lens/lens_features.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/skia_util.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -40,6 +44,7 @@ QueryContextualizer::~QueryContextualizer() = default;
 
 void QueryContextualizer::Contextualize(
     const std::optional<base::Uuid>& task_id,
+    const std::string& query_text,
     const std::vector<TabId>& tabs_to_recontextualize,
     const std::vector<TabId>& tabs_to_force_contextualize,
     contextual_search::ContextualSearchSessionHandle* session_handle,
@@ -51,8 +56,8 @@ void QueryContextualizer::Contextualize(
   }
 
   if (!task_id.has_value()) {
-    OnContextRetrieved(/*task_id=*/std::nullopt, tabs_to_recontextualize,
-                       tabs_to_force_contextualize,
+    OnContextRetrieved(/*task_id=*/std::nullopt, query_text,
+                       tabs_to_recontextualize, tabs_to_force_contextualize,
                        session_handle ? session_handle->AsWeakPtr() : nullptr,
                        std::move(callback), /*context=*/nullptr);
     return;
@@ -63,7 +68,7 @@ void QueryContextualizer::Contextualize(
       {ContextualTaskContextSource::kSubmittedContextDecorator},
       std::move(context_decoration_params),
       base::BindOnce(&QueryContextualizer::OnContextRetrieved,
-                     weak_factory_.GetWeakPtr(), task_id,
+                     weak_factory_.GetWeakPtr(), task_id, query_text,
                      tabs_to_recontextualize, tabs_to_force_contextualize,
                      session_handle ? session_handle->AsWeakPtr() : nullptr,
                      std::move(callback)));
@@ -71,6 +76,7 @@ void QueryContextualizer::Contextualize(
 
 void QueryContextualizer::OnContextRetrieved(
     const std::optional<base::Uuid>& task_id,
+    const std::string& query_text,
     const std::vector<TabId>& tabs_to_recontextualize,
     const std::vector<TabId>& tabs_to_force_contextualize,
     base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
@@ -78,10 +84,48 @@ void QueryContextualizer::OnContextRetrieved(
     base::OnceClosure callback,
     std::unique_ptr<ContextualTaskContext> context) {
   // Fail early if the task id was specified but there was no context for the
-  // task.
+  // task. This indicates that the task was not available (i.e. was deleted)
+  // and no further action is needed.
   if (task_id.has_value() && !context) {
     std::move(callback).Run();
     return;
+  }
+
+  // Extract URLs from the query text and start upload flows for them.
+  if (session_handle && lens::features::IsLensSendUrlsInComposeboxesEnabled()) {
+    re2::StringPiece input(query_text);
+    std::string url_str;
+    // Regex to extract URLs.
+    // Matches http://, https://, ftp://, or www. followed by valid URL
+    // characters. Explicitly lists allowed characters instead of using ranges
+    // like #-; for readability. Allowed characters: alphanumeric, -, ., ~, :,
+    // /, ?, #, [, ], @, !, $, &, ', (, ), *, +, ,, ;, =, %
+    static const base::NoDestructor<re2::RE2> url_regex(
+        R"((?i)((?:(?:https?|ftp)://|www\.)[\w#$%'()*+,\-./:;!=?@\[\]_`{|}~]+))");
+
+    std::vector<GURL> extracted_urls;
+    base::flat_set<GURL> seen_urls;
+
+    while (RE2::FindAndConsume(&input, *url_regex, &url_str)) {
+      GURL url;
+      if (base::StartsWith(url_str, "www.",
+                           base::CompareCase::INSENSITIVE_ASCII)) {
+        url = GURL("http://" + url_str);
+      } else {
+        url = GURL(url_str);
+      }
+      if (url.is_valid() && seen_urls.insert(url).second) {
+        extracted_urls.push_back(url);
+      }
+    }
+
+    for (const GURL& url : extracted_urls) {
+      // TODO(crbug.com/495601934): QueryContextualizer should wait for all
+      // uploads (including tabs and URL uploads) to complete before running the
+      // callback.
+      session_handle->StartUrlContextUploadFlow(
+          session_handle->CreateContextToken(), url);
+    }
   }
 
   std::vector<TabUpdate> tabs_to_update = GetTabsToUpdate(

@@ -4719,6 +4719,166 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesAddedInputs) {
   EXPECT_EQ(lens_file.vsrid(), GetEncodedRequestInfoForToken(file_token));
 }
 
+TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesUnresolvedUrl) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (URL).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kUnknown;
+  input_data->page_url = GURL("https://example.com");
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForFileUpload(file_token, lens::MimeType::kUnknown);
+
+  // Act: Create search URL.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Verify vsrid param.
+  std::optional<lens::LensOverlayRequestId> request_id =
+      GetRequestIdFromUrl(search_url.spec());
+  ASSERT_TRUE(request_id.has_value());
+  EXPECT_EQ(request_id->media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_UNRESOLVED_URL);
+
+  // Verify AddedInputs param.
+  std::optional<lens::AddedInputs> added_inputs =
+      GetAddedInputsFromUrl(search_url);
+  ASSERT_TRUE(added_inputs.has_value());
+  EXPECT_EQ(added_inputs->added_inputs_size(), 0);
+  EXPECT_EQ(added_inputs->turn_title_thumbnail_size(), 1);
+  EXPECT_EQ(added_inputs->turn_title_thumbnail(0).title(),
+            "https://example.com/");
+  EXPECT_EQ(added_inputs->turn_title_thumbnail(0).icon().type(),
+            lens::AimIconType::ICON_TYPE_LINK);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_IncludesMultipleUnresolvedUrls) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (URL 1).
+  const base::UnguessableToken file_token_1 = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data_1 =
+      std::make_unique<lens::ContextualInputData>();
+  input_data_1->primary_content_type = lens::MimeType::kUnknown;
+  input_data_1->page_url = GURL("https://example1.com");
+  controller().StartFileUploadFlow(file_token_1, std::move(input_data_1),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForFileUpload(file_token_1, lens::MimeType::kUnknown);
+
+  // Act: Start the file upload flow (URL 2).
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data_2 =
+      std::make_unique<lens::ContextualInputData>();
+  input_data_2->primary_content_type = lens::MimeType::kUnknown;
+  input_data_2->page_url = GURL("https://example2.com");
+  controller().StartFileUploadFlow(file_token_2, std::move(input_data_2),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForFileUpload(file_token_2, lens::MimeType::kUnknown);
+
+  // Act: Create search URL.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->file_tokens.push_back(file_token_1);
+  search_url_request_info->file_tokens.push_back(file_token_2);
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Verify cinpts param.
+  lens::LensOverlayContextualInputs contextual_inputs =
+      GetContextualInputsFromUrl(search_url.spec());
+  EXPECT_EQ(contextual_inputs.inputs_size(), 2);
+  EXPECT_EQ(contextual_inputs.inputs(0).request_id().media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_UNRESOLVED_URL);
+  EXPECT_EQ(contextual_inputs.inputs(1).request_id().media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_UNRESOLVED_URL);
+
+  // Verify AddedInputs param.
+  std::optional<lens::AddedInputs> added_inputs =
+      GetAddedInputsFromUrl(search_url);
+  ASSERT_TRUE(added_inputs.has_value());
+  EXPECT_EQ(added_inputs->added_inputs_size(), 0);
+  EXPECT_EQ(added_inputs->turn_title_thumbnail_size(), 2);
+  EXPECT_EQ(added_inputs->turn_title_thumbnail(0).title(),
+            "https://example1.com/");
+  EXPECT_EQ(added_inputs->turn_title_thumbnail(0).icon().type(),
+            lens::AimIconType::ICON_TYPE_LINK);
+  EXPECT_EQ(added_inputs->turn_title_thumbnail(1).title(),
+            "https://example2.com/");
+  EXPECT_EQ(added_inputs->turn_title_thumbnail(1).icon().type(),
+            lens::AimIconType::ICON_TYPE_LINK);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequest_IncludesUnresolvedUrl) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (URL).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kUnknown;
+  input_data->page_url = GURL("https://example.com");
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForFileUpload(file_token, lens::MimeType::kUnknown);
+
+  // Create ClientToAimRequest.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify lens_image_query_data.
+  ASSERT_EQ(client_to_aim_message.submit_query()
+                .payload()
+                .lens_image_query_data_size(),
+            1);
+  const auto& lens_image_query_data =
+      client_to_aim_message.submit_query().payload().lens_image_query_data(0);
+  EXPECT_EQ(lens_image_query_data.request_id().media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_UNRESOLVED_URL);
+
+  // Verify AddedInputs param.
+  const auto& added_inputs =
+      client_to_aim_message.submit_query().payload().added_inputs();
+  EXPECT_EQ(added_inputs.added_inputs_size(), 0);
+  EXPECT_EQ(added_inputs.turn_title_thumbnail_size(), 1);
+  EXPECT_EQ(added_inputs.turn_title_thumbnail(0).title(),
+            "https://example.com/");
+  EXPECT_EQ(added_inputs.turn_title_thumbnail(0).icon().type(),
+            lens::AimIconType::ICON_TYPE_LINK);
+}
+
 #if !BUILDFLAG(IS_IOS)
 TEST_F(ComposeboxQueryControllerTest,
        CreateSearchUrl_ImageUpload_DoesNotIncludeAddedInputs) {
@@ -5368,24 +5528,43 @@ TEST_F(
   EXPECT_FALSE(payload.has_added_inputs());
 }
 
-TEST_F(ComposeboxQueryControllerTest, MimeTypeToString) {
-  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(lens::MimeType::kPdf),
+TEST_F(ComposeboxQueryControllerTest, MimeTypeStringFromFileInfo) {
+  contextual_search::FileInfo file_info;
+
+  file_info.mime_type = lens::MimeType::kPdf;
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
             "application/pdf");
-  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(lens::MimeType::kHtml),
+
+  file_info.mime_type = lens::MimeType::kHtml;
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
             "text/html");
-  EXPECT_EQ(
-      ComposeboxQueryController::MimeTypeToString(lens::MimeType::kPlainText),
-      "text/plain");
-  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(lens::MimeType::kImage),
+
+  file_info.mime_type = lens::MimeType::kPlainText;
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
+            "text/plain");
+
+  file_info.mime_type = lens::MimeType::kImage;
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
             "image/jpeg");
-  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(
-                lens::MimeType::kAnnotatedPageContent),
+
+  file_info.mime_type = lens::MimeType::kAnnotatedPageContent;
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
             "application/x-protobuf");
-  EXPECT_EQ(
-      ComposeboxQueryController::MimeTypeToString(lens::MimeType::kUnknown),
-      "image/jpeg");
-  EXPECT_EQ(ComposeboxQueryController::MimeTypeToString(
-                static_cast<lens::MimeType>(100)),
+
+  file_info.mime_type = lens::MimeType::kUnknown;
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
+            "image/jpeg");
+
+  file_info.mime_type = static_cast<lens::MimeType>(100);
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
+            std::nullopt);
+
+  // Test unresolved URL upload
+  file_info.mime_type = lens::MimeType::kUnknown;
+  file_info.input_data = std::make_unique<lens::ContextualInputData>();
+  file_info.input_data->primary_content_type = lens::MimeType::kUnknown;
+  file_info.input_data->page_url = GURL("https://example.com");
+  EXPECT_EQ(ComposeboxQueryController::MimeTypeStringFromFileInfo(file_info),
             std::nullopt);
 }
 
@@ -5586,6 +5765,37 @@ TEST_F(ComposeboxQueryControllerTest,
     EXPECT_EQ(added_inputs.added_inputs(0).lens_file().vsrid(),
               GetEncodedRequestInfoForToken(file_token));
   }
+}
+
+TEST_F(ComposeboxQueryControllerTest, CreateAddedInputs_UnresolvedUrlUpload) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (URL).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kUnknown;
+  input_data->page_url = GURL("https://example.com");
+  input_data->has_lens_usage_intent = true;
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kUnknown);
+
+  auto added_inputs = controller().CreateAddedInputs(
+      {file_token}, /*include_files_without_lens_usage_intent=*/true);
+
+  EXPECT_EQ(added_inputs.added_inputs_size(), 0);
+  ASSERT_EQ(added_inputs.turn_title_thumbnail_size(), 1);
+  EXPECT_EQ(added_inputs.turn_title_thumbnail(0).title(),
+            "https://example.com/");
+  EXPECT_TRUE(added_inputs.turn_title_thumbnail(0).has_icon());
+  EXPECT_EQ(added_inputs.turn_title_thumbnail(0).icon().type(),
+            lens::AimIconType::ICON_TYPE_LINK);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadRawFileRequestSuccess) {

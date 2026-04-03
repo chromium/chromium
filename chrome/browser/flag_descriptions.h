@@ -2694,6 +2694,11 @@ inline constexpr char kLensEnableSendRawFileMediaTypesName[] =
 inline constexpr char kLensEnableSendRawFileMediaTypesDescription[] =
     "Enables sending raw file media types in the Lens overlay.";
 
+inline constexpr char kLensEnableSendUrlsInComposeboxesName[] =
+    "Lens enable send urls in composeboxes";
+inline constexpr char kLensEnableSendUrlsInComposeboxesDescription[] =
+    "Enables sending urls in AIM composeboxes.";
+
 inline constexpr char kLensOverlayName[] = "Lens overlay";
 inline constexpr char kLensOverlayDescription[] =
     "Enables Lens search via an overlay on any page.";

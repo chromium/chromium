@@ -110,6 +110,12 @@ class ContextualSearchSessionHandle {
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
       std::optional<lens::ImageEncodingOptions> image_options);
 
+  // Starts the URL context upload flow for the given file token. The file
+  // token must have been previously returned by `CreateContextToken`.
+  virtual void StartUrlContextUploadFlow(
+      const base::UnguessableToken& file_token,
+      const GURL& url);
+
   // Starts the Modality Chip upload flow for the given file token. The file
   // token must have been previously returned by `CreateContextToken`.
   virtual void StartModalityChipUploadFlow(

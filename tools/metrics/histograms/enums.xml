@@ -10681,6 +10681,7 @@ from previous Chrome versions.
   <int value="-1294833121" label="AutofillEnableSupportForHomeAndWork:enabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
+  <int value="-1293304479" label="LensSendUrlsInComposeboxes:disabled"/>
   <int value="-1292766410" label="IntentChipSkipsPicker:disabled"/>
   <int value="-1292735488" label="HTMLPopoverAttribute:disabled"/>
   <int value="-1292615467"
@@ -11950,6 +11951,7 @@ from previous Chrome versions.
   <int value="-860534647" label="SiteDetails:enabled"/>
   <int value="-860319964"
       label="AutomotiveFullscreenToolbarImprovements:enabled"/>
+  <int value="-859751539" label="LensSendUrlsInComposeboxes:enabled"/>
   <int value="-859583725" label="WebRtcTimerUsesMetronome:enabled"/>
   <int value="-859193162" label="KeepSecondaryZeroSuggest:disabled"/>
   <int value="-858280894" label="DelayCompetingLowPriorityRequests:disabled"/>

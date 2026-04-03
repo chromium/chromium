@@ -795,7 +795,8 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
         int32_t active_tab_id =
             sessions::SessionTabHelper::IdForTab(active_web_contents).id();
         query_contextualizer_->Contextualize(
-            GetTaskId(), {active_tab_id}, {}, GetContextualSessionHandle(),
+            GetTaskId(), query_text, {active_tab_id}, {},
+            GetContextualSessionHandle(),
             base::BindOnce(&ContextualSearchboxHandler::ComputeAndOpenQueryUrl,
                            weak_ptr_factory_.GetWeakPtr(), query_text,
                            disposition, aim_entry_point,

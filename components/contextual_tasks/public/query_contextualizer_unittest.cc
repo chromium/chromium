@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
@@ -21,6 +22,7 @@
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_features.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +60,10 @@ class MockQueryContextualizerDelegate : public QueryContextualizer::Delegate {
 
 class QueryContextualizerTest : public testing::Test {
  public:
-  QueryContextualizerTest() = default;
+  QueryContextualizerTest() {
+    feature_list_.InitAndEnableFeature(
+        lens::features::kLensSendUrlsInComposeboxes);
+  }
 
   void SetUp() override {
     service_ =
@@ -86,6 +91,7 @@ class QueryContextualizerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<testing::NiceMock<MockContextualTasksService>> service_;
   std::unique_ptr<testing::NiceMock<MockQueryContextualizerDelegate>> delegate_;
   std::unique_ptr<QueryContextualizer> contextualizer_;
@@ -96,6 +102,153 @@ class QueryContextualizerTest : public testing::Test {
       contextual_search::MockContextualSearchContextController>>
       context_controller_;
 };
+
+TEST_F(QueryContextualizerTest, Contextualize_ExtractsUrls) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  int32_t tab_id = 100;
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  GURL kUrl("about:blank");
+  std::string kTitle = "about:blank";
+
+  // Setup context with a query containing URLs.
+  ContextualTask task(task_id);
+  UrlResource resource(kUrl, ResourceType::kWebpage);
+  resource.title = kTitle;
+  resource.tab_id = session_id;
+  task.AddUrlResource(resource);
+
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  EXPECT_CALL(*service_,
+              GetContextForTask(
+                  task_id,
+                  testing::Contains(
+                      ContextualTaskContextSource::kSubmittedContextDecorator),
+                  testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<ContextualTaskContextSource>& sources,
+              std::unique_ptr<ContextDecorationParams> params,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  EXPECT_CALL(*delegate_, GetTabUrl(tab_id))
+      .WillRepeatedly(testing::Return(kUrl));
+  EXPECT_CALL(*delegate_, GetTabSessionId(tab_id))
+      .WillRepeatedly(testing::Return(session_id));
+
+  // Expect StartUrlContextUploadFlow to be called for each unique URL in order.
+  {
+    testing::InSequence s;
+    EXPECT_CALL(
+        *session_handle_,
+        StartUrlContextUploadFlow(testing::_, GURL("https://example.com!")));
+    EXPECT_CALL(*session_handle_, StartUrlContextUploadFlow(
+                                      testing::_, GURL("http://test.org,")));
+    EXPECT_CALL(
+        *session_handle_,
+        StartUrlContextUploadFlow(testing::_, GURL("http://www.google.com.")));
+    EXPECT_CALL(*session_handle_, StartUrlContextUploadFlow(
+                                      testing::_, GURL("https://example.com")));
+  }
+
+  // Expect GetPageContext call to NOT be called since the tab is not expired
+  // and content hasn't changed. We mock GetFileInfoList to return the tab
+  // so it's not updated.
+  std::vector<const contextual_search::FileInfo*> file_info_list;
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id = session_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info_list.push_back(&file_info);
+  EXPECT_CALL(*context_controller_, GetFileInfoList())
+      .WillRepeatedly(testing::Return(file_info_list));
+
+  // Expect GetPageContext call to NOT be called.
+  EXPECT_CALL(*delegate_, GetPageContext(testing::_, testing::_)).Times(0);
+
+  base::MockCallback<base::OnceClosure> done_callback;
+  EXPECT_CALL(done_callback, Run());
+
+  contextualizer_->Contextualize(task_id,
+                                 "Check out https://example.com! Also "
+                                 "http://test.org, and www.google.com. "
+                                 "Duplicate: https://example.com",
+                                 {}, {}, session_handle_.get(),
+                                 done_callback.Get());
+}
+
+TEST_F(QueryContextualizerTest,
+       Contextualize_DoesNotExtractUrlsWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      lens::features::kLensSendUrlsInComposeboxes);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  int32_t tab_id = 100;
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  GURL kUrl("about:blank");
+  std::string kTitle = "about:blank";
+
+  // Setup context with a query containing URLs.
+  ContextualTask task(task_id);
+  UrlResource resource(kUrl, ResourceType::kWebpage);
+  resource.title = kTitle;
+  resource.tab_id = session_id;
+  task.AddUrlResource(resource);
+
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  EXPECT_CALL(*service_,
+              GetContextForTask(
+                  task_id,
+                  testing::Contains(
+                      ContextualTaskContextSource::kSubmittedContextDecorator),
+                  testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<ContextualTaskContextSource>& sources,
+              std::unique_ptr<ContextDecorationParams> params,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  EXPECT_CALL(*delegate_, GetTabUrl(tab_id))
+      .WillRepeatedly(testing::Return(kUrl));
+  EXPECT_CALL(*delegate_, GetTabSessionId(tab_id))
+      .WillRepeatedly(testing::Return(session_id));
+
+  // Expect StartUrlContextUploadFlow to NOT be called.
+  EXPECT_CALL(*session_handle_,
+              StartUrlContextUploadFlow(testing::_, testing::_))
+      .Times(0);
+
+  // Expect GetPageContext call to NOT be called since the tab is not expired
+  // and content hasn't changed. We mock GetFileInfoList to return the tab
+  // so it's not updated.
+  std::vector<const contextual_search::FileInfo*> file_info_list;
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id = session_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info_list.push_back(&file_info);
+  EXPECT_CALL(*context_controller_, GetFileInfoList())
+      .WillRepeatedly(testing::Return(file_info_list));
+
+  // Expect GetPageContext call to NOT be called.
+  EXPECT_CALL(*delegate_, GetPageContext(testing::_, testing::_)).Times(0);
+
+  base::MockCallback<base::OnceClosure> done_callback;
+  EXPECT_CALL(done_callback, Run());
+
+  contextualizer_->Contextualize(task_id,
+                                 "Check out https://example.com! Also "
+                                 "http://test.org, and www.google.com. "
+                                 "Duplicate: https://example.com",
+                                 {}, {}, session_handle_.get(),
+                                 done_callback.Get());
+}
 
 TEST_F(QueryContextualizerTest, Contextualize_RecontextualizeExpiredTab) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
@@ -176,8 +329,8 @@ TEST_F(QueryContextualizerTest, Contextualize_RecontextualizeExpiredTab) {
   base::MockCallback<base::OnceClosure> done_callback;
   EXPECT_CALL(done_callback, Run());
 
-  contextualizer_->Contextualize(task_id, {tab_id}, {}, session_handle_.get(),
-                                 done_callback.Get());
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 session_handle_.get(), done_callback.Get());
 }
 
 TEST_F(QueryContextualizerTest, Contextualize_RecontextualizeContentChanged) {
@@ -267,8 +420,8 @@ TEST_F(QueryContextualizerTest, Contextualize_RecontextualizeContentChanged) {
   base::MockCallback<base::OnceClosure> done_callback;
   EXPECT_CALL(done_callback, Run());
 
-  contextualizer_->Contextualize(task_id, {tab_id}, {}, session_handle_.get(),
-                                 done_callback.Get());
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 session_handle_.get(), done_callback.Get());
 }
 
 TEST_F(QueryContextualizerTest,
@@ -363,8 +516,8 @@ TEST_F(QueryContextualizerTest,
   base::MockCallback<base::OnceClosure> done_callback;
   EXPECT_CALL(done_callback, Run());
 
-  contextualizer_->Contextualize(task_id, {tab_id}, {}, session_handle_.get(),
-                                 done_callback.Get());
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 session_handle_.get(), done_callback.Get());
 }
 
 TEST_F(QueryContextualizerTest, Contextualize_ActiveTabNotInContext) {
@@ -407,8 +560,8 @@ TEST_F(QueryContextualizerTest, Contextualize_ActiveTabNotInContext) {
   base::MockCallback<base::OnceClosure> done_callback;
   EXPECT_CALL(done_callback, Run());
 
-  contextualizer_->Contextualize(task_id, {tab_id}, {}, session_handle_.get(),
-                                 done_callback.Get());
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 session_handle_.get(), done_callback.Get());
 }
 
 TEST_F(QueryContextualizerTest, Contextualize_ActiveTabUrlMismatch) {
@@ -457,8 +610,8 @@ TEST_F(QueryContextualizerTest, Contextualize_ActiveTabUrlMismatch) {
   base::MockCallback<base::OnceClosure> done_callback;
   EXPECT_CALL(done_callback, Run());
 
-  contextualizer_->Contextualize(task_id, {tab_id}, {}, session_handle_.get(),
-                                 done_callback.Get());
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 session_handle_.get(), done_callback.Get());
 }
 
 TEST_F(QueryContextualizerTest,
@@ -553,8 +706,8 @@ TEST_F(QueryContextualizerTest,
   base::MockCallback<base::OnceClosure> done_callback;
   EXPECT_CALL(done_callback, Run());
 
-  contextualizer_->Contextualize(task_id, {tab_id}, {}, session_handle_.get(),
-                                 done_callback.Get());
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 session_handle_.get(), done_callback.Get());
 }
 
 }  // namespace contextual_tasks

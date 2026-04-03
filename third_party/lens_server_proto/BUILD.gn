@@ -7,7 +7,9 @@ import("//third_party/protobuf/proto_library.gni")
 _proto_files = [
   "added_inputs.proto",
   "aim_communication.proto",
+  "aim_icon.proto",
   "aim_query.proto",
+  "aim_thumbnail.proto",
   "lens_overlay_client_context.proto",
   "lens_overlay_client_logs.proto",
   "lens_overlay_client_platform.proto",

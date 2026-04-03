@@ -130,6 +130,8 @@ BASE_FEATURE(kLensSendVitForSingleContextNextQueries,
 
 BASE_FEATURE(kLensSendRawFileMediaTypes, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSendUrlsInComposeboxes, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensRestrictAnnotatedPageContentToSameSiteFramesForNextQueries,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1333,6 +1335,10 @@ int GetLensOverlayNonBlockingPrivacyNoticeImpressionCap() {
 
 bool IsLensSendRawFileMediaTypesEnabled() {
   return base::FeatureList::IsEnabled(kLensSendRawFileMediaTypes);
+}
+
+bool IsLensSendUrlsInComposeboxesEnabled() {
+  return base::FeatureList::IsEnabled(kLensSendUrlsInComposeboxes);
 }
 
 }  // namespace lens::features

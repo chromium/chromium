@@ -1,0 +1,19 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "aim_icon.proto";
+
+message AimThumbnail {
+  oneof thumbnail {
+    AimIcon icon = 2;
+  }
+
+  string title = 3;
+}
