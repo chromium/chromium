@@ -1290,7 +1290,6 @@ void MediaSessionImpl::EnterPictureInPicture() {
     return;
   }
 
-  DCHECK_EQ(normal_players_.size(), 1u);
   if (normal_players_.size() != 1u) {
     // There should be one and only one player when we enter picture-in-picture.
     return;
@@ -1355,13 +1354,23 @@ void MediaSessionImpl::Raise() {
 }
 
 void MediaSessionImpl::SetMute(bool mute) {
-  DCHECK_EQ(normal_players_.size(), 1u);
+  // The SetMute action should only be available when there is one normal
+  // player, though due to the asynchronous nature of mojo, we may no longer
+  // have 1 normal player. In that case, just return.
+  if (normal_players_.size() != 1u) {
+    return;
+  }
   normal_players_.begin()->first.observer->OnSetMute(
       normal_players_.begin()->first.player_id, mute);
 }
 
 void MediaSessionImpl::RequestMediaRemoting() {
-  DCHECK_EQ(normal_players_.size(), 1u);
+  // The RequestMediaRemoting action should only be available when there is one
+  // normal player, though due to the asynchronous nature of mojo, we may no
+  // longer have 1 normal player. In that case, just return.
+  if (normal_players_.size() != 1u) {
+    return;
+  }
   normal_players_.begin()->first.observer->OnRequestMediaRemoting(
       normal_players_.begin()->first.player_id);
 }
