@@ -183,8 +183,15 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
     provider = ToBrowserAccessibilityWin(parent)->GetCOM();
     node = parent;
   }
+  // Skip the event listener check for Views (non-web) content.
+  // UIA only calls AdviseEventAdded on fragment roots it has
+  // already discovered, so transient HWNDs (e.g. popup menus)
+  // have empty listener maps and HasEventListenerForEvent
+  // returns false even when a client is listening. Views event
+  // volume is low enough that always firing is acceptable.
   if (!provider ||
-      !provider->HasEventListenerForEvent(UIA_NotificationEventId)) {
+      (delegate()->AccessibilityIsWebContentSource() &&
+       !provider->HasEventListenerForEvent(UIA_NotificationEventId))) {
     return;
   }
 

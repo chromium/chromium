@@ -16,6 +16,7 @@
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
+#include "ui/base/win/atl_module.h"
 
 namespace {
 
@@ -174,6 +175,48 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
   EXPECT_EQ(fragment_root->GetChildCount(), 1u);
   EXPECT_EQ(fragment_root->ChildAtIndex(0),
             root_document_root_node->GetNativeViewAccessible());
+}
+
+// Verifies that FireAriaNotificationEvent bypasses the UIA event listener
+// optimization when the source is not web content (e.g., Views). UIA only
+// calls AdviseEventAdded on fragment roots it has already discovered, so
+// transient HWNDs like popup menus have empty listener maps that would
+// incorrectly suppress events. See crbug.com/40672441.
+TEST_F(BrowserAccessibilityManagerWinTest,
+       AriaNotificationSkipsListenerCheckForNonWebContent) {
+  win::CreateATLModuleIfNeeded();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {::features::kUiaProvider, ::features::kUiaEventOptimization}, {});
+
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+  test_browser_accessibility_delegate_->is_web_content_source_ = false;
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(root), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  TestFragmentRootDelegate test_fragment_root_delegate(manager.get());
+
+  std::unique_ptr<AXPlatformNodeDelegate> fragment_root =
+      std::make_unique<AXFragmentRootWin>(gfx::kMockAcceleratedWidget,
+                                          &test_fragment_root_delegate);
+
+  auto* platform_node = static_cast<AXPlatformNodeWin*>(
+      manager->GetBrowserAccessibilityRoot()->GetAXPlatformNode());
+  ASSERT_FALSE(
+      platform_node->HasEventListenerForEvent(UIA_NotificationEventId));
+
+  manager->FireAriaNotificationEvent(
+      manager->GetBrowserAccessibilityRoot(), "test notification",
+      ax::mojom::AriaNotificationPriority::kNormal,
+      ax::mojom::AriaNotificationInterrupt::kNone, "");
 }
 
 }  // namespace ui
