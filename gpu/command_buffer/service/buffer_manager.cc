@@ -199,9 +199,7 @@ void Buffer::SetInfo(GLsizeiptr size,
   DCHECK_EQ(shadow_.size(), static_cast<size_t>(use_shadow ? size : 0u));
   size_ = size;
 
-  mapped_range_.reset(nullptr);
-  readback_shm_ = nullptr;
-  readback_shm_offset_ = 0;
+  ClearMapping();
 }
 
 bool Buffer::CheckRange(GLintptr offset, GLsizeiptr size) const {
@@ -361,6 +359,12 @@ void Buffer::RemoveMappedRange() {
   mapped_range_.reset(nullptr);
 }
 
+void Buffer::ClearMapping() {
+  mapped_range_.reset(nullptr);
+  readback_shm_ = nullptr;
+  readback_shm_offset_ = 0;
+}
+
 void Buffer::SetReadbackShadowAllocation(scoped_refptr<gpu::Buffer> shm,
                                          uint32_t shm_offset) {
   DCHECK(shm);
@@ -504,10 +508,20 @@ void BufferManager::DoBufferData(
   GLenum error = ERRORSTATE_PEEK_GL_ERROR(error_state, "glBufferData");
   if (error != GL_NO_ERROR) {
     DCHECK_EQ(static_cast<GLenum>(GL_OUT_OF_MEMORY), error);
-    size = 0;
     // TODO(zmo): This doesn't seem correct. There might be shadow data from
     // a previous successful BufferData() call.
     buffer->StageShadow(false, 0, nullptr);  // Also clear the shadow.
+    // SECURITY: Per ES 3.0.6 spec section 2.10.3.1, "Buffers are implicitly
+    // unmapped as a side effect of deletion or reinitialization (i.e. calling
+    // DeleteBuffers or BufferData)." The pointer in mapped_range_ is now
+    // stale, even if the subsequent allocation fails. Clear it here so that
+    // UnmapBufferHelper does not memcpy renderer-controlled SHM into freed
+    // driver memory. The success path below clears it via SetInfo().
+    buffer->ClearMapping();
+
+    // Since the driver deleted the existing data store, we must update our
+    // internal state to match.
+    buffer->size_ = 0;
     return;
   }
 

@@ -722,5 +722,64 @@ TEST_P(GLES3DecoderTest, CopyBufferSubDataValidArgs) {
   }
 }
 
+TEST_P(GLES3DecoderTest, BufferDataOOMOnMappedBufferLeavesStaleMappedRange) {
+  const GLenum kTarget = GL_ARRAY_BUFFER;
+  const GLsizeiptr kSize = 64;
+
+  DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
+  DoBufferData(kTarget, kSize);
+
+  // 1. MapBufferRange
+  const GLbitfield kAccess = GL_MAP_WRITE_BIT;
+  uint32_t result_shm_id = shared_memory_id_;
+  uint32_t result_shm_offset = kSharedMemoryOffset;
+  uint32_t data_shm_id = shared_memory_id_;
+  uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
+
+  auto driver_mapped_mem = std::make_unique<int8_t[]>(kSize);
+
+  EXPECT_CALL(*gl_,
+              MapBufferRange(kTarget, 0, kSize, kAccess | GL_MAP_READ_BIT))
+      .WillOnce(Return(driver_mapped_mem.get()));
+
+  cmds::MapBufferRange cmd;
+  cmd.Init(kTarget, 0, kSize, kAccess, data_shm_id, data_shm_offset,
+           result_shm_id, result_shm_offset);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  Buffer* buffer = GetBuffer(client_buffer_id_);
+  ASSERT_NE(buffer, nullptr);
+  ASSERT_NE(buffer->GetMappedRange(), nullptr);
+
+  // 2. BufferData while mapped triggers OOM
+  // Per ES 3.0 spec, the driver implicitly unmaps the buffer.
+  EXPECT_CALL(*gl_, BufferData(kTarget, kSize, _, GL_STREAM_DRAW))
+      .WillOnce(testing::InvokeWithoutArgs([&driver_mapped_mem]() {
+        // Driver unmaps.
+        driver_mapped_mem.reset();
+      }));
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(static_cast<GLenum>(GL_OUT_OF_MEMORY)))
+      .WillRepeatedly(Return(static_cast<GLenum>(GL_NO_ERROR)));
+
+  cmds::BufferData buffer_data_cmd;
+  buffer_data_cmd.Init(kTarget, kSize, 0, 0, GL_STREAM_DRAW);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(buffer_data_cmd));
+  EXPECT_EQ(static_cast<GLint>(GL_OUT_OF_MEMORY), GetGLError());
+
+  // 3. UnmapBuffer
+  // SECURITY: If fixed, buffer->GetMappedRange() should be null now.
+  // If not fixed, the following will trigger ASAN UAF in UnmapBufferHelper
+  // when it tries to memcpy into driver_mapped_mem.get().
+  EXPECT_EQ(buffer->GetMappedRange(), nullptr);
+  if (buffer->GetMappedRange() != nullptr) {
+    EXPECT_CALL(*gl_, UnmapBuffer(kTarget)).WillOnce(Return(GL_TRUE));
+    cmds::UnmapBuffer unmap_cmd;
+    unmap_cmd.Init(kTarget);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(unmap_cmd));
+  }
+}
+
 }  // namespace gles2
 }  // namespace gpu

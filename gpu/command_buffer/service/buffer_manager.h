@@ -102,6 +102,7 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
                       void* pointer, scoped_refptr<gpu::Buffer> shm,
                       unsigned int shm_offset);
   void RemoveMappedRange();
+  void ClearMapping();
   const MappedRange* GetMappedRange() const {
     return mapped_range_.get();
   }
