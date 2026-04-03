@@ -1991,6 +1991,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SubresourceLoader.FetchRequestRestarted"
+    enum="Boolean" expires_after="2027-04-03">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records true when OnConnectionClosed() is called and the fetch request is
+    restarted in the ServiceWorkerSubresourceLoader. Recorded in the destructor
+    of ServiceWorkerSubresourceLoader. This helps measure how often the
+    connection to the service worker gets disconnected while handling a
+    subresource fetch event.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SyntheticResponse.BlockedInlineResourceType"
     enum="ContentSecurityPolicyInlineType" expires_after="2026-07-19">
   <owner>sisidovski@chromium.org</owner>

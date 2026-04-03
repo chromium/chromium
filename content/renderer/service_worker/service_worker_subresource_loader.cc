@@ -344,7 +344,11 @@ ServiceWorkerSubresourceLoader::ServiceWorkerSubresourceLoader(
   StartRequest();
 }
 
-ServiceWorkerSubresourceLoader::~ServiceWorkerSubresourceLoader() = default;
+ServiceWorkerSubresourceLoader::~ServiceWorkerSubresourceLoader() {
+  base::UmaHistogramBoolean(
+      "ServiceWorker.SubresourceLoader.FetchRequestRestarted",
+      fetch_request_restarted_);
+}
 
 void ServiceWorkerSubresourceLoader::OnMojoDisconnect() {
   MaybeDeleteThis();
