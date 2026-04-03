@@ -21,10 +21,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/scoped_thread_priority.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/update_client/task_traits.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -153,21 +154,30 @@ void Unpacker::UncompressVerifiedContents() {
   TRACE_EVENT("update_client", "Unpacker::UncompressVerifiedContents",
               perfetto::Flow::FromPointer(this));
 
-  // Apply background priority if this is a background task.
-  std::optional<base::ScopedBoostPriority> priority;
-  if (!is_foreground_) {
-    priority.emplace(base::ThreadType::kBackground);
-  }
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      is_foreground_ ? kTaskTraits : kTaskTraitsBackgroundDecompression,
+      base::BindOnce(
+          [](scoped_refptr<Unpacker> unpacker,
+             scoped_refptr<base::SequencedTaskRunner> current_default) {
+            std::string verified_contents;
+            if (!compression::GzipUncompress(
+                    unpacker->compressed_verified_contents_,
+                    &verified_contents)) {
+              VLOG(1) << "Decompressing verified contents from header failed";
+              current_default->PostTask(
+                  FROM_HERE, base::BindOnce(&Unpacker::EndUnpacking, unpacker,
+                                            UnpackerError::kNone, 0));
+              return;
+            }
 
-  std::string verified_contents;
-  if (!compression::GzipUncompress(compressed_verified_contents_,
-                                   &verified_contents)) {
-    VLOG(1) << "Decompressing verified contents from header failed";
-    EndUnpacking(UnpackerError::kNone);
-    return;
-  }
-
-  StoreVerifiedContentsInExtensionDir(verified_contents);
+            current_default->PostTask(
+                FROM_HERE,
+                base::BindOnce(&Unpacker::StoreVerifiedContentsInExtensionDir,
+                               unpacker, verified_contents));
+          },
+          base::WrapRefCounted(this),
+          base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 void Unpacker::StoreVerifiedContentsInExtensionDir(

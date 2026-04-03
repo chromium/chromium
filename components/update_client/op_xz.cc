@@ -14,7 +14,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/update_client/op_zucchini.h"
@@ -75,16 +74,14 @@ base::OnceClosure XzOperation(
     std::unique_ptr<Unzipper> unzipper,
     base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
-    bool is_foreground,
+    bool /*is_foreground*/,
     const base::FilePath& in_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
-  // Apply background priority if this is a background task.
-  std::optional<base::ScopedBoostPriority> priority;
-  if (!is_foreground) {
-    priority.emplace(base::ThreadType::kBackground);
-  }
-
+  // `is_foreground` is unused right now since XZ is primarily used in
+  // foreground scenarios. If the unzipper component adds support for background
+  // scenarios in the future, `is_foreground` can be passed through to the
+  // unzipper component.
   state_tracker.Run(ComponentState::kDecompressing);
   base::FilePath dest_file = in_file.DirName().AppendUTF8("decoded_xz");
   Unzipper* unzipper_raw = unzipper.get();
