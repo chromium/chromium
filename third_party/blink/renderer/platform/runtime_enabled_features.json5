@@ -5423,7 +5423,7 @@
       // API for accessing the Custom Dictionary for spell checking purpose.
       // https://chromestatus.com/feature/6185007701557248
       name: "SpellCheckCustomDictionaryAPI",
-      status: "test",
+      status: "experimental",
       public: true,
     },
     {
