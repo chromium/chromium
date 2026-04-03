@@ -1591,6 +1591,10 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
         // TODO(crbug.com/40653515): Properly handle unbounded reference
         // space change events.
       }
+
+      if (mesh_manager_) {
+        mesh_manager_->OnReferenceSpaceChanged();
+      }
     } else if (event_data.type ==
                XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED) {
       XrEventDataInteractionProfileChanged* interaction_profile_changed =

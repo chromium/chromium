@@ -29,23 +29,6 @@ mojom::XRPlaneOrientation ToMojomPlaneOrientation(
   }
 }
 
-mojom::XRSemanticLabel ToMojomSemanticLabel(
-    const XrSpatialPlaneSemanticLabelEXT& label) {
-  switch (label) {
-    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_FLOOR_EXT:
-      return mojom::XRSemanticLabel::kFloor;
-    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_WALL_EXT:
-      return mojom::XRSemanticLabel::kWall;
-    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_CEILING_EXT:
-      return mojom::XRSemanticLabel::kCeiling;
-    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_TABLE_EXT:
-      return mojom::XRSemanticLabel::kTable;
-    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_UNCATEGORIZED_EXT:
-    default:
-      return mojom::XRSemanticLabel::kOther;
-  }
-}
-
 std::vector<XrSpatialComponentTypeEXT> GetAttachableComponentTypes(
     const OpenXrExtensionMethods& extension_methods,
     XrInstance instance,

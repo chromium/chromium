@@ -25,5 +25,10 @@ specific_include_rules = {
   # direct usage at this time.
   "openxr_spatial_.*" : [
     "+third_party/openxr/dev/xr_android.h",
+  ],
+  # openxr_util provides common helpers (e.g. ToMojomSemanticLabel) that need
+  # types defined in the android dev header.
+  "openxr_util\..*" : [
+    "+third_party/openxr/dev/xr_android.h",
   ]
 }

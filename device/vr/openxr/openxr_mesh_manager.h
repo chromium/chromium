@@ -21,6 +21,10 @@ class OpenXrMeshManager {
   virtual std::optional<XrLocation> GetXrLocationFromMesh(
       MeshId mesh_id,
       const gfx::Transform& mesh_id_from_object) const = 0;
+
+  // Called when a reference space change event is received (e.g. recenter),
+  // so the manager can invalidate cached poses.
+  virtual void OnReferenceSpaceChanged() = 0;
 };
 
 }  // namespace device

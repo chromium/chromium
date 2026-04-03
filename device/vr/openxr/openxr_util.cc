@@ -142,4 +142,38 @@ bool IsFeatureSupportedForMode(device::mojom::XRSessionFeature feature,
   return true;
 }
 
+mojom::XRSemanticLabel ToMojomSemanticLabel(
+    XrSpatialPlaneSemanticLabelEXT label) {
+  switch (label) {
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_FLOOR_EXT:
+      return mojom::XRSemanticLabel::kFloor;
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_WALL_EXT:
+      return mojom::XRSemanticLabel::kWall;
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_CEILING_EXT:
+      return mojom::XRSemanticLabel::kCeiling;
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_TABLE_EXT:
+      return mojom::XRSemanticLabel::kTable;
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_UNCATEGORIZED_EXT:
+    default:
+      return mojom::XRSemanticLabel::kOther;
+  }
+}
+
+mojom::XRSemanticLabel ToMojomSemanticLabel(
+    XrSceneMeshSemanticLabelANDROID label) {
+  switch (label) {
+    case XR_SCENE_MESH_SEMANTIC_LABEL_FLOOR_ANDROID:
+      return mojom::XRSemanticLabel::kFloor;
+    case XR_SCENE_MESH_SEMANTIC_LABEL_WALL_ANDROID:
+      return mojom::XRSemanticLabel::kWall;
+    case XR_SCENE_MESH_SEMANTIC_LABEL_CEILING_ANDROID:
+      return mojom::XRSemanticLabel::kCeiling;
+    case XR_SCENE_MESH_SEMANTIC_LABEL_TABLE_ANDROID:
+      return mojom::XRSemanticLabel::kTable;
+    case XR_SCENE_MESH_SEMANTIC_LABEL_OTHER_ANDROID:
+    default:
+      return mojom::XRSemanticLabel::kOther;
+  }
+}
+
 }  // namespace device
