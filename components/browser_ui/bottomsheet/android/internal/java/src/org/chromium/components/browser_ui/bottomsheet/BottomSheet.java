@@ -35,6 +35,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -79,6 +80,8 @@ class BottomSheet extends FrameLayout
     /** This is similar to {@link #THRESHOLD_TO_NEXT_STATE_3} but for 2 states instead of 3. */
     private static final float THRESHOLD_TO_NEXT_STATE_2 = 0.3f;
 
+    private static final GlowSpec DEFAULT_GLOW_SPEC = new GlowSpec(0, GlowSpec.ShadowSize.DEFAULT);
+
     /** The height ratio for the sheet in the SheetState.HALF state. */
     private static final float HALF_HEIGHT_RATIO = 0.75f;
 
@@ -108,6 +111,9 @@ class BottomSheet extends FrameLayout
 
     /** The view that contains the sheet background color. */
     private View mSheetBackground;
+
+    /** The view that contains the sheet background glow color. */
+    private ShadowLayerView mShadowLayer;
 
     /** For detecting scroll and fling events on the bottom sheet. */
     private final BottomSheetSwipeDetector mGestureDetector;
@@ -188,16 +194,21 @@ class BottomSheet extends FrameLayout
      */
     public static class ShadowLayerView extends View {
         /** The length of the shadow in any direction. */
-        private final int mShadowLength;
+        private int mShadowLength;
 
         /** Constructor to inflate from XML. */
         public ShadowLayerView(Context context, AttributeSet atts) {
             super(context, atts);
-            mShadowLength =
+            setShadowLength(
                     context.getResources()
-                            .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
+                            .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length));
+        }
+
+        public void setShadowLength(int length) {
+            mShadowLength = length;
             setTranslationX((LocalizationUtils.isLayoutRtl() ? 1 : -1) * mShadowLength);
             setTranslationY(-mShadowLength);
+            requestLayout();
         }
 
         @Override
@@ -333,6 +344,7 @@ class BottomSheet extends FrameLayout
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mSheetContainer = (ViewGroup) getParent();
         mSheetBackground = findViewById(R.id.background);
+        mShadowLayer = findViewById(R.id.shadow_layer);
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
@@ -1386,6 +1398,7 @@ class BottomSheet extends FrameLayout
         }
         // Update the color before notify the observers, as some might read the sheet bg color.
         updateBackgroundColor();
+        updateBackgroundGlow();
         for (BottomSheetObserver o : mObservers) {
             o.onSheetContentChanged(content);
         }
@@ -1503,6 +1516,36 @@ class BottomSheet extends FrameLayout
         mSheetBackground.setBackgroundTintList(ColorStateList.valueOf(mSheetBgColor));
     }
 
+    @VisibleForTesting
+    void updateBackgroundGlow() {
+        if (mSheetContent == null || mShadowLayer == null) return;
+
+        GlowSpec spec = mSheetContent.getSheetBackgroundGlowSpecOverride();
+        if (spec == null) {
+            spec = DEFAULT_GLOW_SPEC;
+        }
+
+        if (spec.equals(DEFAULT_GLOW_SPEC)) {
+            mShadowLayer.setBackgroundTintList(null);
+        } else {
+            mShadowLayer.setBackgroundTintList(ColorStateList.valueOf(spec.color));
+        }
+
+        int size;
+        if (spec.size == GlowSpec.ShadowSize.LONG) {
+            size =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length_large);
+        } else {
+            size =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
+        }
+        mShadowLayer.setShadowLength(size);
+    }
+
     private void ensureContentIsWrapped(boolean animate) {
         if (mCurrentState == SheetState.HIDDEN || mCurrentState == SheetState.PEEK) return;
 
@@ -1545,6 +1588,10 @@ class BottomSheet extends FrameLayout
 
     void setSheetBackgroundForTesting(View sheetBackground) {
         mSheetBackground = sheetBackground;
+    }
+
+    void setShadowLayerForTesting(ShadowLayerView shadowLayer) {
+        mShadowLayer = shadowLayer;
     }
 
     void setToolbarHolderForTesting(TouchRestrictingFrameLayout toolbarHolder) {
