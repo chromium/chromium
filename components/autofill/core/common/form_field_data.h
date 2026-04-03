@@ -191,10 +191,6 @@ class FormFieldData {
   // <select> elements.
   bool IsSelectElement() const;
 
-  // Returns true if the field is focusable to the user.
-  // This is an approximation of visibility with false positives.
-  bool IsFocusable() const;
-
   // The name by which autofill knows this field. This is generally either the
   // name attribute or the id_attribute value, which-ever is non-empty with
   // priority given to the name_attribute. This value is used when computing
