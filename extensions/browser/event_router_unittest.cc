@@ -1016,4 +1016,77 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
   EXPECT_EQ(0u, dispatched.size());
 }
 
+TEST_F(EventRouterDispatchTest, TestDispatchCallback_NoListeners) {
+  std::string ext1 = "ext1";
+  std::string event_name = "testapi.onEvent";
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("test extension").SetID(ext1).Build();
+  ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+
+  TestEventRouterObserver observer(event_router());
+
+  // A dispatch restricted to `ext1` should still trigger the callback when
+  // EventRouter has no listener to receive the event.
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::FOR_TEST, event_name, base::ListValue());
+  base::RunLoop run_loop;
+  bool callback_ran = false;
+  event->cannot_dispatch_callback = base::BindLambdaForTesting([&]() {
+    callback_ran = true;
+    run_loop.Quit();
+  });
+
+  event_router()->DispatchEventToExtension(ext1, std::move(event));
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_ran);
+  EXPECT_EQ(0u, observer.dispatched_events().size());
+}
+
+TEST_F(EventRouterDispatchTest, TestDispatchCallback_OtherExtensionListener) {
+  std::string ext1 = "ext1";
+  std::string ext2 = "ext2";
+  std::string event_name = "testapi.onEvent";
+  FeatureProvider provider;
+  auto feature = std::make_unique<SimpleFeature>();
+  feature->set_name("test feature");
+  provider.AddFeature(event_name, std::move(feature));
+
+  ExtensionAPI api;
+  api.RegisterDependencyProvider("api", &provider);
+  ExtensionAPI::OverrideSharedInstanceForTest scope(&api);
+
+  auto add_extension = [&](const std::string& id) {
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("test extension").SetID(id).Build();
+    ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+  };
+  add_extension(ext1);
+  add_extension(ext2);
+
+  TestEventRouterObserver observer(event_router());
+  // A listener for the same event name owned by `ext2` should not suppress the
+  // callback for a dispatch restricted to `ext1`.
+  event_router()->AddFilteredEventListener(
+      event_name, process(), mojom::EventListenerOwner::NewExtensionId(ext2),
+      /*service_worker_context=*/nullptr, base::DictValue(),
+      /*add_lazy_listener=*/false);
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::FOR_TEST, event_name, base::ListValue());
+  base::RunLoop run_loop;
+  bool callback_ran = false;
+  event->cannot_dispatch_callback = base::BindLambdaForTesting([&]() {
+    callback_ran = true;
+    run_loop.Quit();
+  });
+
+  event_router()->DispatchEventToExtension(ext1, std::move(event));
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_ran);
+  EXPECT_EQ(0u, observer.dispatched_events().size());
+}
+
 }  // namespace extensions

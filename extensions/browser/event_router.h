@@ -675,10 +675,11 @@ struct Event {
   // If specified, this is called after dispatching an event to each target.
   DidDispatchCallback did_dispatch_callback;
 
-  // Called if the event cannot be dispatched to a lazy listener. This happens
-  // if e.g. the extension registers an event listener from a lazy context
-  // asynchronously, which results in the active listener not being registered
-  // at the time the lazy context is spun back up.
+  // Called when the event cannot be delivered to a matching listener. This can
+  // happen if no matching listener is registered when dispatch begins, or if a
+  // lazy listener's context fails to start or starts without that listener
+  // still registered, e.g. because the extension registers event listeners
+  // asynchronously from the lazy context.
   CannotDispatchCallback cannot_dispatch_callback;
 
   // TODO(lazyboy): This sets `restrict_to_browser_context` to nullptr, this

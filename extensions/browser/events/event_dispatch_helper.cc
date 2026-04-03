@@ -172,6 +172,7 @@ void EventDispatchHelper::DispatchEventImpl(
     std::unique_ptr<Event> event) {
   std::set<const EventListener*> listeners(
       listeners_->GetEventListeners(*event));
+  bool did_handle_event = false;
 
   // We dispatch events for lazy background pages first because attempting to do
   // so will cause those that are being suspended to cancel that suspension.
@@ -181,24 +182,23 @@ void EventDispatchHelper::DispatchEventImpl(
   // first.
   for (const EventListener* listener : listeners) {
     if (listener->IsLazy()) {
-      DispatchEventToLazyListener(restrict_to_extension_id, restrict_to_url,
-                                  *event, listener);
+      did_handle_event |= DispatchEventToLazyListener(
+          restrict_to_extension_id, restrict_to_url, *event, listener);
     }
   }
 
   for (const EventListener* listener : listeners) {
     if (!listener->IsLazy()) {
-      DispatchEventToActiveListener(restrict_to_extension_id, restrict_to_url,
-                                    *event, listener);
+      did_handle_event |= DispatchEventToActiveListener(
+          restrict_to_extension_id, restrict_to_url, *event, listener);
     }
   }
 
-  // NOTE: this code mirrors the logic in `EventRouter::DispatchPendingEvent`.
-  if (!contexts_pending_dispatch_.empty() && event->cannot_dispatch_callback) {
-    // Even though a context was active, there was no registered listener
-    // associated with this event. This can happen if an extension
-    // asynchronously registers event listeners. In this case, notify the caller
-    // (if they subscribed via a callback) and drop the event.
+  if (!did_handle_event && event->cannot_dispatch_callback) {
+    // No matching listener handled this event. This can happen if the targeted
+    // listener was removed or if an extension asynchronously registers event
+    // listeners. In this case, notify the caller (if they subscribed via a
+    // callback) and drop the event.
     //
     // NOTE: we need to post a task rather than just executing the callback,
     // because the callback can rely on state that will be setup in the current
@@ -211,7 +211,7 @@ void EventDispatchHelper::DispatchEventImpl(
   }
 }
 
-void EventDispatchHelper::DispatchEventToLazyListener(
+bool EventDispatchHelper::DispatchEventToLazyListener(
     const ExtensionId& restrict_to_extension_id,
     const GURL& restrict_to_url,
     Event& event,
@@ -219,12 +219,12 @@ void EventDispatchHelper::DispatchEventToLazyListener(
   DCHECK(listener->IsLazy());
   if (!ListenerMeetsRestrictions(listener, restrict_to_extension_id,
                                  restrict_to_url)) {
-    return;
+    return false;
   }
 
   // Lazy listeners don't have a process, take the stored browser context
   // for lazy context.
-  TryQueueEventForLazyListener(
+  bool handled_event = TryQueueEventForLazyListener(
       event, LazyContextIdForListener(listener, *browser_context_),
       listener->filter());
 
@@ -234,13 +234,15 @@ void EventDispatchHelper::DispatchEventToLazyListener(
   BrowserContext* incognito_context =
       GetIncognitoContextIfAccessible(listener->extension_id());
   if (incognito_context) {
-    TryQueueEventForLazyListener(
+    handled_event |= TryQueueEventForLazyListener(
         event, LazyContextIdForListener(listener, *incognito_context),
         listener->filter());
   }
+
+  return handled_event;
 }
 
-void EventDispatchHelper::DispatchEventToActiveListener(
+bool EventDispatchHelper::DispatchEventToActiveListener(
     const ExtensionId& restrict_to_extension_id,
     const GURL& restrict_to_url,
     const Event& event,
@@ -248,7 +250,7 @@ void EventDispatchHelper::DispatchEventToActiveListener(
   DCHECK(!listener->IsLazy());
   if (!ListenerMeetsRestrictions(listener, restrict_to_extension_id,
                                  restrict_to_url)) {
-    return;
+    return false;
   }
 
   // Non-lazy listeners take the process browser context for context.
@@ -257,12 +259,8 @@ void EventDispatchHelper::DispatchEventToActiveListener(
 
   auto lazy_context_id = LazyContextIdForListener(listener, *listener_context);
   if (IsAlreadyQueued(lazy_context_id)) {
-    return;
+    return true;
   }
-  // The task wasn't queued in `DispatchEventToLazyListener` in expectation for
-  // dispatch to this active listener. We are about to process that dispatch,
-  // so we can remove the context from the set of pending ones.
-  contexts_pending_dispatch_.erase(lazy_context_id);
 
   // Determine the target context type.
   ProcessMap* listener_process_map = ProcessMap::Get(listener_context);
@@ -277,7 +275,7 @@ void EventDispatchHelper::DispatchEventToActiveListener(
   if (!CheckPermissions(extension, event, *listener_context, context_type) ||
       !CheckFeatureAvailability(event, extension, listener->listener_url(),
                                 *process, *listener_context, context_type)) {
-    return;
+    return false;
   }
 
   // Prepare event for dispatch, running the `will_dispatch_callback` if any.
@@ -287,7 +285,7 @@ void EventDispatchHelper::DispatchEventToActiveListener(
       &dispatch_separate_event);
   if (!dispatched_event) {
     // The event has been canceled.
-    return;
+    return true;
   }
 
   // Check if we've already dispatched this event to this active context.
@@ -302,22 +300,23 @@ void EventDispatchHelper::DispatchEventToActiveListener(
                       .browser_context = listener_context,
                       .listener_url = listener->listener_url()});
   if (dispatch_separate_event && !inserted) {
-    return;
+    return true;
   }
 
   dispatch_to_process_function_.Run(
       listener->extension_id(), listener->listener_url(), process,
       listener->service_worker_version_id(), listener->worker_thread_id(),
       std::move(dispatched_event), /*did_enqueue=*/false);
+  return true;
 }
 
-void EventDispatchHelper::TryQueueEventForLazyListener(
+bool EventDispatchHelper::TryQueueEventForLazyListener(
     Event& event,
     const LazyContextId& dispatch_context,
     const base::DictValue* listener_filter) {
   const Extension* extension = GetExtension(dispatch_context.extension_id());
   if (!extension) {
-    return;
+    return false;
   }
 
   // Check both the browser context to see if we should load a
@@ -326,7 +325,10 @@ void EventDispatchHelper::TryQueueEventForLazyListener(
   if (TryQueueEventDispatch(event, dispatch_context, extension,
                             listener_filter)) {
     RecordAlreadyQueued(dispatch_context);
+    return true;
   }
+
+  return false;
 }
 
 bool EventDispatchHelper::TryQueueEventDispatch(
@@ -352,10 +354,6 @@ bool EventDispatchHelper::TryQueueEventDispatch(
   event.lazy_background_active_on_dispatch =
       queue->IsReadyToRunTasks(browser_context, extension);
   if (!queue->ShouldEnqueueTask(browser_context, extension)) {
-    // Keep track of contexts for which we decided not to enqueue the task,
-    // because the context was active. We expect to dispatch later to the
-    // corresponding non-lazy listener.
-    contexts_pending_dispatch_.insert(dispatch_context);
     return false;
   }
 

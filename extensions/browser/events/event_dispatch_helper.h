@@ -98,20 +98,24 @@ class EventDispatchHelper {
 
   // Attempts to dispatch the given `event` to the specified lazy `listener`.
   // This will queue the event to be dispatched later if the lazy context
-  // is not currently running.
+  // is not currently running. Returns true if the event was handled for any
+  // matching lazy context (for example, it was queued or canceled), false
+  // otherwise.
   //
   // NOTE: this method will not dispatch to a lazy listener if the context
   // is active, so that it can be dispatched to the corresponding active
   // (non-lazy) listener instead.
-  void DispatchEventToLazyListener(const ExtensionId& restrict_to_extension_id,
+  bool DispatchEventToLazyListener(const ExtensionId& restrict_to_extension_id,
                                    const GURL& restrict_to_url,
                                    Event& event,
                                    const EventListener* listener);
 
-  // Dispatches the given `event` to the specified active `listener`. Avoids
-  // dispatching if an event has already been queued for a lazy listener with
-  // the same context.
-  void DispatchEventToActiveListener(
+  // Attempts to dispatch the given `event` to the specified active `listener`.
+  // Avoids dispatching if an event has already been queued for a lazy listener
+  // with the same context. Returns true if the event was handled for this
+  // active context (for example, it was dispatched, canceled, or already
+  // covered by a queued or de-duplicated dispatch), false otherwise.
+  bool DispatchEventToActiveListener(
       const ExtensionId& restrict_to_extension_id,
       const GURL& restrict_to_url,
       const Event& event,
@@ -124,11 +128,13 @@ class EventDispatchHelper {
   // not ready yet.
   //
   // If [dispatch_context| is for a service worker, it ensures the worker is
-  // started before dispatching the event.
+  // started before dispatching the event. Returns true if the event was
+  // handled for this lazy context (either queued or canceled), false
+  // otherwise.
   //
   // NOTE: this method will not dispatch to a lazy listener if the context
   // is active.
-  void TryQueueEventForLazyListener(Event& event,
+  bool TryQueueEventForLazyListener(Event& event,
                                     const LazyContextId& dispatch_context,
                                     const base::DictValue* listener_filter);
 
@@ -196,7 +202,6 @@ class EventDispatchHelper {
 
   std::set<LazyContextId> dispatched_ids_;
   std::set<ActiveContextId> dispatched_active_ids_;
-  std::set<LazyContextId> contexts_pending_dispatch_;
 };
 
 }  // namespace extensions
