@@ -7619,6 +7619,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
 
       <!-- NTP -->
+      <!-- Google Drive integration disclaimer for New Tab Page -->
+      <message name="IDS_NTP_DRIVE_CONNECT_TITLE" desc="Title of the dialog asking to connect Google Drive to AIM.">
+        Allow Search to Access Drive Content?
+      </message>
+      <message name="IDS_NTP_DRIVE_DISCLAIMER_BODY" desc="Body text explaining how Drive data is handled in AIM.">
+        Your Google Drive content is accessed only to provide this file search feature. It is not used to improve Google Search. Google will not access your Google Drive content unless you explicitly upload a file.
+      </message>
+      <message name="IDS_NTP_DRIVE_DISCLAIMER_CANCEL" desc="Label on the button to cancel the Google Drive connection to AIM.">
+        Cancel
+      </message>
+      <message name="IDS_NTP_DRIVE_DISCLAIMER_CONNECT" desc="Label on the button to proceed with connecting Google Drive.">
+        Connect
+      </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD" desc="The text displayed in the fakebox (on the New Tab page) when it is empty, Google is the default search engine, and the Material Design UI is enabled.">
         Search Google or type a URL
       </message>
