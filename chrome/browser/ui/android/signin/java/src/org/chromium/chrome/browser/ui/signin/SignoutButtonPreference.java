@@ -35,7 +35,6 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
     private Profile mProfile;
     private FragmentManager mFragmentManager;
     private ModalDialogManager mDialogManager;
-    private @Nullable SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
     private @Nullable OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
 
     public SignoutButtonPreference(Context context, AttributeSet attrs) {
@@ -48,13 +47,11 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
             Context context,
             Profile profile,
             FragmentManager fragmentManager,
-            ModalDialogManager dialogManager,
-            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
+            ModalDialogManager dialogManager) {
         mContext = context;
         mProfile = profile;
         mFragmentManager = fragmentManager;
         mDialogManager = dialogManager;
-        mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
     }
 
     public void setSnackbarManagerSupplier(
@@ -85,7 +82,6 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
                             mFragmentManager,
                             mDialogManager,
                             assertNonNull(mSnackbarManagerSupplier.get()),
-                            assumeNonNull(mSigninAndHistorySyncActivityLauncher),
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                             /* showConfirmDialog= */ false,
                             () -> {});

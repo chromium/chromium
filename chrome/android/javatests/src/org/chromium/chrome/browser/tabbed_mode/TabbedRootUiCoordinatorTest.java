@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
@@ -24,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -47,9 +50,14 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
+import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.policy.test.annotations.Policies.Add;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.ViewUtils;
 
 /** Tests for {@link TabbedRootUiCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -79,6 +87,8 @@ public class TabbedRootUiCoordinatorTest {
                     SearchEngineChoiceService.setInstanceForTests(mSearchEngineChoiceService);
                     doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
                 });
+
+        mBrowserTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
 
         BookmarkBarUtils.setBookmarkBarVisibleForTesting(true);
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
@@ -123,6 +133,20 @@ public class TabbedRootUiCoordinatorTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTopControlsHeightWithBookmarkBarWhenFlagIsEnabledOnTablet() {
         testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ true);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
+    public void testForcedSignin() {
+        // The user is already signed in at first, so the fullscreen signin prompt is not displayed.
+        mActivityTestRule.alreadyStartedOnBlankPage();
+        ViewFinder.waitForNoView(withText(R.string.signin_fre_title_signin_forced_by_policy));
+
+        // The fullscreen prompt should be displayed upon signout.
+        mBrowserTestRule.signOut();
+        ViewUtils.waitForVisibleView(withText(R.string.signin_fre_title_signin_forced_by_policy));
     }
 
     private void testTopControlsHeightWithBookmarkBar(boolean expectBookmarkBar) {

@@ -226,6 +226,7 @@ import org.chromium.chrome.browser.ui.side_panel_container.dev.SidePanelDevFeatu
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinatorFactory;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.chrome.browser.ui.signin.ForcedSigninController;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.user_education.UserEducationUtils;
@@ -353,6 +354,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ContextualTasksBridge mContextualTasksBridge;
     private @Nullable ActorOverlayCoordinator mActorOverlayCoordinator;
     private @Nullable ActorControlCoordinator mActorControlCoordinator;
+    private @Nullable ForcedSigninController mForcedSigninController;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -870,6 +872,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mGestureUserEducationIphController = null;
         }
 
+        if (mForcedSigninController != null) {
+            mForcedSigninController.destroy();
+            mForcedSigninController = null;
+        }
+
         destroySideUi();
 
         super.onDestroy();
@@ -1174,6 +1181,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     new ActorControlCoordinator(
                             mActivity, (v) -> {}, (v) -> {}, mTabBottomSheetManager);
         }
+
+        mForcedSigninController =
+                new ForcedSigninController(
+                        mActivity,
+                        mProfileSupplier.get().getOriginalProfile(),
+                        SigninAndHistorySyncActivityLauncherImpl.get());
     }
 
     @Override

@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
-import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -512,8 +511,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     requireContext(),
                     profile,
                     getActivity().getSupportFragmentManager(),
-                    ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                    SigninAndHistorySyncActivityLauncherImpl.get());
+                    ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
         }
         mSignOutPreference.setSnackbarManagerSupplier(assumeNonNull(mSnackbarManagerSupplier));
     }
@@ -853,7 +851,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 getActivity().getSupportFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
-                SigninAndHistorySyncActivityLauncherImpl.get(),
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                 /* showConfirmDialog= */ false,
                 CallbackUtils.emptyRunnable(),
@@ -871,7 +868,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 getActivity().getSupportFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
-                SigninAndHistorySyncActivityLauncherImpl.get(),
                 SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
                 /* showConfirmDialog= */ false,
                 CallbackUtils.emptyRunnable());
@@ -1101,7 +1097,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         getActivity().getSupportFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                         assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
-                        SigninAndHistorySyncActivityLauncherImpl.get(),
                         profile.isChild()
                                 ? SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS
                                 : SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,

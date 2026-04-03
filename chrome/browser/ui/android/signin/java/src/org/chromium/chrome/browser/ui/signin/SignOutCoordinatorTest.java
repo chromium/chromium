@@ -37,8 +37,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -51,10 +49,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
@@ -70,7 +66,6 @@ import java.util.Set;
 /** Instrumentation tests for {@link SignOutDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
 public class SignOutCoordinatorTest {
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -88,7 +83,6 @@ public class SignOutCoordinatorTest {
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private Runnable mOnSignOut;
-    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
 
     private final Set<Integer> mUnsyncedDataTypes = new HashSet<>();
     private SnackbarManager mSnackbarManager;
@@ -172,38 +166,6 @@ public class SignOutCoordinatorTest {
                                     .getString(R.string.sign_out_snackbar_message));
                 });
         verify(mOnSignOut).run();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
-    public void testFullscreenDialogShownAfterSignoutWhenRequiredByPolicy() {
-        setUpMocks();
-        @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
-        doReturn(true).when(mSigninManagerMock).isSignOutAllowed();
-        doReturn(true).when(mSigninManagerMock).isForceSigninEnabled();
-        doAnswer(
-                        args -> {
-                            args.getArgument(0, Runnable.class).run();
-                            return null;
-                        })
-                .when(mSigninManagerMock)
-                .runAfterOperationInProgress(any(Runnable.class));
-        doAnswer(
-                        args -> {
-                            SigninManager.SignOutCallback signOutCallback = args.getArgument(1);
-                            signOutCallback.signOutComplete();
-                            return null;
-                        })
-                .when(mSigninManagerMock)
-                .signOut(eq(signOutReason), any(SigninManager.SignOutCallback.class), eq(false));
-
-        startSignOutFlow(signOutReason, mOnSignOut, false);
-
-        verify(mOnSignOut).run();
-        verify(mSigninAndHistorySyncActivityLauncher)
-                .createFullscreenSigninIntent(
-                        any(), any(), any(), eq(SigninAccessPoint.FORCED_SIGNIN));
     }
 
     /**
@@ -511,7 +473,6 @@ public class SignOutCoordinatorTest {
                                 mFragmentManager,
                                 mActivityTestRule.getActivity().getModalDialogManager(),
                                 mSnackbarManager,
-                                mSigninAndHistorySyncActivityLauncher,
                                 signoutReason,
                                 showConfirmDialog,
                                 onSignOut,

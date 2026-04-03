@@ -94,8 +94,6 @@ public class SignOutDialogRenderTest {
 
     @Mock private SnackbarManager mSnackbarManagerMock;
 
-    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
-
     private SignOutDialogCoordinator mSignOutDialogCoordinator;
 
     @Before
@@ -133,7 +131,6 @@ public class SignOutDialogRenderTest {
                                 null,
                                 mActivityTestRule.getActivity().getModalDialogManager(),
                                 mSnackbarManagerMock,
-                                mSigninAndHistorySyncActivityLauncher,
                                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                                 /* showConfirmDialog= */ false,
                                 /* onSignOut= */ () -> {},

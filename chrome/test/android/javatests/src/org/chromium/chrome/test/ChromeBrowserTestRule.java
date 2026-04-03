@@ -43,4 +43,14 @@ public class ChromeBrowserTestRule implements TestRule {
     public void addAccountThenSignin(AccountInfo account) {
         mSigninTestRule.addAccountThenSignin(account);
     }
+
+    /** Adds, signs in and enables history sync for {@param account}. */
+    public void addAccountThenSigninAndEnableHistorySync(AccountInfo accountInfo) {
+        mSigninTestRule.addAccountThenSigninAndEnableHistorySync(accountInfo);
+    }
+
+    /** Signs the user out. */
+    public void signOut() {
+        mSigninTestRule.signOut();
+    }
 }

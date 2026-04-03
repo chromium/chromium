@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
-import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -216,7 +215,6 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                     getActivity().getSupportFragmentManager(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                     assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
-                    SigninAndHistorySyncActivityLauncherImpl.get(),
                     SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN,
                     /* showConfirmDialog= */ true,
                     () -> {

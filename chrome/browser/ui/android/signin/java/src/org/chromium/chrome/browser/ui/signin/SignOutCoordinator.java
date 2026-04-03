@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -59,8 +57,6 @@ public class SignOutCoordinator {
      * @param fragmentManager FragmentManager used by {@link SignOutDialogCoordinator}.
      * @param dialogManager A ModalDialogManager that manages the dialog.
      * @param snackbarManager The manager for displaying snackbars at the bottom of the activity.
-     * @param signinAndHistorySyncActivityLauncher launcher used to launch the {@link
-     *     SigninAndHistorySyncActivity}.
      * @param signOutReason The access point to sign out from.
      * @param showConfirmDialog Whether a confirm dialog should be shown before sign-out.
      * @param onSignOut A {@link Runnable} to run when the user presses the confirm button. Will be
@@ -74,7 +70,6 @@ public class SignOutCoordinator {
             FragmentManager fragmentManager,
             ModalDialogManager dialogManager,
             SnackbarManager snackbarManager,
-            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             @SignoutReason int signOutReason,
             boolean showConfirmDialog,
             Runnable onSignOut) {
@@ -84,7 +79,6 @@ public class SignOutCoordinator {
                 fragmentManager,
                 dialogManager,
                 snackbarManager,
-                signinAndHistorySyncActivityLauncher,
                 signOutReason,
                 showConfirmDialog,
                 onSignOut,
@@ -110,8 +104,6 @@ public class SignOutCoordinator {
      * @param dialogManager A ModalDialogManager that manages the dialog.
      * @param snackbarManager SnackbarManager for displaying snackbars at the bottom of the
      *     activity.
-     * @param signinAndHistorySyncActivityLauncher launcher used to launch the {@link
-     *     SigninAndHistorySyncActivity}.
      * @param signOutReason The access point to sign out from.
      * @param showConfirmDialog Whether a confirm dialog should be shown before sign-out.
      * @param onSignOut A {@link Runnable} to run when the user presses the confirm button. Will be
@@ -126,7 +118,6 @@ public class SignOutCoordinator {
             FragmentManager fragmentManager,
             ModalDialogManager dialogManager,
             SnackbarManager snackbarManager,
-            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             @SignoutReason int signOutReason,
             boolean showConfirmDialog,
             Runnable onSignOut,
@@ -148,7 +139,6 @@ public class SignOutCoordinator {
                     int uiState =
                             getUiState(
                                     identityManager,
-                                    signinManager,
                                     !unsyncedTypes.isEmpty(),
                                     showConfirmDialog,
                                     userActionableError);
@@ -185,14 +175,6 @@ public class SignOutCoordinator {
                                         profile,
                                         fragmentManager,
                                         dialogManager,
-                                        signOutReason,
-                                        onSignOut);
-                        case UiState.FULLSCREEN_DIALOG ->
-                                signOutAndShowFullscreenDialog(
-                                        context,
-                                        profile,
-                                        signinAndHistorySyncActivityLauncher,
-                                        signinManager,
                                         signOutReason,
                                         onSignOut);
                     }
@@ -299,7 +281,6 @@ public class SignOutCoordinator {
         UiState.UNSAVED_DATA,
         UiState.SHOW_CONFIRM_DIALOG,
         UiState.LEGACY_DIALOG,
-        UiState.FULLSCREEN_DIALOG,
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface UiState {
@@ -307,7 +288,6 @@ public class SignOutCoordinator {
         int UNSAVED_DATA = 1;
         int SHOW_CONFIRM_DIALOG = 2;
         int LEGACY_DIALOG = 3;
-        int FULLSCREEN_DIALOG = 4;
     }
 
     private static void validateSignOutReason(Profile profile, @SignoutReason int signOutReason) {
@@ -336,14 +316,9 @@ public class SignOutCoordinator {
 
     private static @UiState int getUiState(
             IdentityManager identityManager,
-            SigninManager signinManager,
             boolean hasUnsavedData,
             boolean showConfirmDialog,
             @UserActionableError int userActionableError) {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
-                && signinManager.isForceSigninEnabled()) {
-            return UiState.FULLSCREEN_DIALOG;
-        }
         if (userActionableError == UserActionableError.BOOKMARKS_LIMIT_EXCEEDED) {
             return UiState.UNSAVED_DATA;
         }
@@ -480,27 +455,6 @@ public class SignOutCoordinator {
                                     showSnackbar(context, snackbarManager, syncService);
                                 }
                                 onSignOut.run();
-                            });
-                });
-    }
-
-    private static void signOutAndShowFullscreenDialog(
-            Context context,
-            Profile profile,
-            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
-            SigninManager signinManager,
-            @SignoutReason int signOutReason,
-            Runnable onSignOut) {
-        signOut(
-                signinManager,
-                signOutReason,
-                () -> {
-                    PostTask.runOrPostTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                onSignOut.run();
-                                FullscreenSigninPromoLauncher.launchPromoIfForced(
-                                        context, profile, signinAndHistorySyncActivityLauncher);
                             });
                 });
     }
