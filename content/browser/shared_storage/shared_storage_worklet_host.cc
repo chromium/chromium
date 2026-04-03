@@ -1804,6 +1804,17 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
 bool SharedStorageWorkletHost::IsSharedStorageAllowed(
     std::string* out_debug_message,
     bool* out_block_is_site_setting_specific) {
+  if (needs_data_origin_opt_in_ &&
+      (!data_origin_opt_in_state_ || !data_origin_opt_in_state_->first)) {
+    if (out_debug_message) {
+      *out_debug_message =
+          data_origin_opt_in_state_
+              ? data_origin_opt_in_state_->second
+              : "SharedStorage cross-origin data opt-in check failed.";
+    }
+    return false;
+  }
+
   RenderFrameHost* rfh =
       document_service_ ? &(document_service_->render_frame_host()) : nullptr;
   return GetContentClient()->browser()->IsSharedStorageAllowed(
