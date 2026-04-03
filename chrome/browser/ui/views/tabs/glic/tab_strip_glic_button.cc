@@ -88,26 +88,15 @@ std::u16string GetLabelText() {
   return l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_LABEL);
 }
 
-bool ShouldUseAltIcon() {
-  // LINT.IfChange(ShouldUseAltIcon)
-  return EntrypointVariationsEnabled() &&
-         features::kGlicEntrypointVariationsAltIcon.Get();
-  // LINT.ThenChange(//chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.cc:ShouldUseGlicButtonAltIconBackgroundColor)
-}
-
 const gfx::VectorIcon& GlicVectorIcon() {
   return glic::GlicVectorIconManager::GetVectorIcon(
       IDR_GLIC_BUTTON_VECTOR_ICON);
 }
 
 ui::ImageModel GetNormalIcon() {
-  if (ShouldUseAltIcon()) {
-    return ui::ImageModel::FromImageSkia(
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_GLIC_BUTTON_ALT_ICON));
-  }
-  return ui::ImageModel::FromVectorIcon(GlicVectorIcon(), kForeground,
-                                        kIconSize);
+  return ui::ImageModel::FromImageSkia(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_GLIC_BUTTON_ALT_ICON));
 }
 
 ui::ImageModel GetIconForHighlight() {
@@ -586,16 +575,9 @@ void TabStripGlicButton::UpdateTextAndBackgroundColors() {
     return;
   }
 
-  if (ShouldUseAltIcon()) {
-    SetBackgroundFrameActiveColorId(ui::kColorSysBase);
-
-      SetForegroundFrameActiveColorId(kForegroundOnAltBackground);
-      SetTextColor(STATE_DISABLED, kTextDisabled);
-  } else {
-    SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
-    SetForegroundFrameActiveColorId(kForeground);
-    SetTextColor(STATE_DISABLED, kTextDisabled);
-  }
+  SetBackgroundFrameActiveColorId(ui::kColorSysBase);
+  SetForegroundFrameActiveColorId(kForegroundOnAltBackground);
+  SetTextColor(STATE_DISABLED, kTextDisabled);
 
   if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
       GetWidget()) {

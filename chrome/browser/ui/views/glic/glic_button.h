@@ -700,17 +700,9 @@ class GlicButton : public GlicBaseShim<T>,
       return;
     }
 
-    if (ShouldUseAltIcon()) {
-      SetBackgroundFrameActiveColorId(ui::kColorSysBase);
-
-        SetForegroundFrameActiveColorId(kForegroundOnAltBackground);
-        this->SetTextColor(views::Button::STATE_DISABLED, kTextDisabled);
-    } else {
-      SetBackgroundFrameActiveColorId(
-          kColorNewTabButtonCRBackgroundFrameActive);
-      SetForegroundFrameActiveColorId(kForeground);
-      this->SetTextColor(views::Button::STATE_DISABLED, kTextDisabled);
-    }
+    SetBackgroundFrameActiveColorId(ui::kColorSysBase);
+    SetForegroundFrameActiveColorId(kForegroundOnAltBackground);
+    this->SetTextColor(views::Button::STATE_DISABLED, kTextDisabled);
 
     if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
         this->GetWidget()) {
@@ -895,25 +887,14 @@ class GlicButton : public GlicBaseShim<T>,
     return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
   }
 
-  static bool ShouldUseAltIcon() {
-    return EntrypointVariationsEnabled() &&
-           features::kGlicEntrypointVariationsAltIcon.Get();
-  }
-
   static const gfx::VectorIcon& GlicVectorIcon() {
     return GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
   }
 
   ui::ImageModel GetNormalIcon() {
-    if (ShouldUseAltIcon()) {
-      return ui::ImageModel::FromImageSkia(
-          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_GLIC_BUTTON_ALT_ICON));
-    }
-    return ui::ImageModel::FromVectorIcon(
-        GlicVectorIcon(),
-        ShouldUseAltIcon() ? kForegroundOnAltBackground : kForeground,
-        GetGlicIconSize());
+    return ui::ImageModel::FromImageSkia(
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_GLIC_BUTTON_ALT_ICON));
   }
 
   ui::ImageModel GetIconForHighlight() {

@@ -224,12 +224,8 @@ gfx::Rect TabStripGlicActorTaskIcon::GetAnchorBoundsInScreen() const {
 }
 
 bool TabStripGlicActorTaskIcon::ShouldUseGlicButtonAltIconBackgroundColor() {
-  // LINT.IfChange(ShouldUseGlicButtonAltIconBackgroundColor)
   return base::FeatureList::IsEnabled(
-             kGlicActorTaskIconUseGlicButtonAltIconBackgroundColor) &&
-         base::FeatureList::IsEnabled(features::kGlicEntrypointVariations) &&
-         features::kGlicEntrypointVariationsAltIcon.Get();
-  // LINT.ThenChange(//chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.cc:ShouldUseAltIcon)
+      kGlicActorTaskIconUseGlicButtonAltIconBackgroundColor);
 }
 
 TabStripGlicActorTaskIcon::~TabStripGlicActorTaskIcon() = default;
