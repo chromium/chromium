@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef IOS_CHROME_BROWSER_DOWNLOAD_UI_UNOPENED_DOWNLOADS_TRACKER_H_
+#define IOS_CHROME_BROWSER_DOWNLOAD_UI_UNOPENED_DOWNLOADS_TRACKER_H_
+
 #import <set>
 
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -13,9 +16,6 @@ class WebStateListChangeDetach;
 namespace web {
 class DownloadTask;
 }  // namespace web
-
-#ifndef IOS_CHROME_BROWSER_DOWNLOAD_UI_UNOPENED_DOWNLOADS_TRACKER_H_
-#define IOS_CHROME_BROWSER_DOWNLOAD_UI_UNOPENED_DOWNLOADS_TRACKER_H_
 
 // Tracks download tasks which were not opened by the user yet. Reports various
 // metrics in DownloadTaskObserver callbacks.
