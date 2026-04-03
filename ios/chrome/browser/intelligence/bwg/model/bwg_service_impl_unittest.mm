@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_impl.h"
 
 #import <memory>
 
@@ -35,7 +35,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-class BwgServiceTest : public PlatformTest {
+class BwgServiceImplTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -68,7 +68,7 @@ class BwgServiceTest : public PlatformTest {
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAIHubEligibilityTriggered, false);
 
-    gemini_service_ = std::make_unique<BwgService>(
+    gemini_service_ = std::make_unique<BwgServiceImpl>(
         profile_.get(), auth_service_, identity_test_env_.identity_manager(),
         pref_service_.get(), optimization_guide_service_);
   }
@@ -133,7 +133,7 @@ class BwgServiceTest : public PlatformTest {
   // it is destroyed after `gemini_service_`, preventing a dangling pointer.
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<BwgService> gemini_service_;
+  std::unique_ptr<BwgServiceImpl> gemini_service_;
   raw_ptr<AuthenticationService> auth_service_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
 
@@ -142,7 +142,7 @@ class BwgServiceTest : public PlatformTest {
 
 // Tests that a user is considered eligible if they are signed in and their
 // account has the `can_use_model_execution_features` capability.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_WhenUserIsEligible) {
+TEST_F(BwgServiceImplTest, IsProfileEligibleForGemini_WhenUserIsEligible) {
   SignInUnmanagedAccountWithCapability(true);
   SetWorkspaceEligibility(/*is_disabled=*/false);
 
@@ -155,7 +155,7 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_WhenUserIsEligible) {
 
 // Tests that a user is ineligible if they are signed in but their account
 // capability is explicitly false.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByCapability) {
+TEST_F(BwgServiceImplTest, IsProfileEligibleForGemini_IneligibleByCapability) {
   SignInUnmanagedAccountWithCapability(false);
   SetWorkspaceEligibility(/*is_disabled=*/false);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy,
@@ -171,7 +171,8 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByCapability) {
 }
 
 // Tests that a user is ineligible if both of the Gemini policies are disabled.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByBothPolicies) {
+TEST_F(BwgServiceImplTest,
+       IsProfileEligibleForGemini_IneligibleByBothPolicies) {
   SignInUnmanagedAccountWithCapability(true);
   SetWorkspaceEligibility(/*is_disabled=*/false);
   pref_service_->SetInteger(
@@ -191,7 +192,8 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByBothPolicies) {
 }
 
 // Tests that a user is ineligible if the Gemini policy is disabled.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByGeminiPolicy) {
+TEST_F(BwgServiceImplTest,
+       IsProfileEligibleForGemini_IneligibleByGeminiPolicy) {
   SignInUnmanagedAccountWithCapability(true);
   SetWorkspaceEligibility(/*is_disabled=*/false);
   pref_service_->SetInteger(
@@ -208,7 +210,7 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByGeminiPolicy) {
 }
 
 // Tests that a user is ineligible if the GenAI policy is disabled.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByGenAIPolicy) {
+TEST_F(BwgServiceImplTest, IsProfileEligibleForGemini_IneligibleByGenAIPolicy) {
   SignInUnmanagedAccountWithCapability(true);
   SetWorkspaceEligibility(/*is_disabled=*/false);
   pref_service_->SetInteger(
@@ -225,7 +227,7 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByGenAIPolicy) {
 }
 
 // Tests that a user is eligible if both of the Gemini policies are enabled.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_EligibleByPolicy) {
+TEST_F(BwgServiceImplTest, IsProfileEligibleForGemini_EligibleByPolicy) {
   SignInUnmanagedAccountWithCapability(true);
   SetWorkspaceEligibility(/*is_disabled=*/false);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy,
@@ -244,7 +246,7 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_EligibleByPolicy) {
 
 // Tests that a user is ineligible if they are not signed in to a primary
 // account.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleWhenSignedOut) {
+TEST_F(BwgServiceImplTest, IsProfileEligibleForGemini_IneligibleWhenSignedOut) {
   // The default state is signed out.
   EXPECT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
@@ -260,7 +262,7 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleWhenSignedOut) {
 
 // Tests that a user is ineligible if they are signed in to a primary
 // account but their account capabilities are unknown.
-TEST_F(BwgServiceTest,
+TEST_F(BwgServiceImplTest,
        IsProfileEligibleForGemini_IneligibleWhenCapabilityIsUnknown) {
   // Sign in without setting any capabilities.
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
@@ -276,7 +278,7 @@ TEST_F(BwgServiceTest,
 }
 
 // Tests that a user is ineligible if the Gemini workspace is restricted.
-TEST_F(BwgServiceTest,
+TEST_F(BwgServiceImplTest,
        IsProfileEligibleForGemini_IneligibleWithRestrictedWorkspace) {
   // Sign in with workspace set to non eligible
   SignInUnmanagedAccountWithCapability(true);
@@ -293,7 +295,7 @@ TEST_F(BwgServiceTest,
 
 // Tests that for a managed account, the user is ineligible until the
 // workspace response arrives, but we don't log the workspace restriction.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_ManagedAccountPending) {
+TEST_F(BwgServiceImplTest, IsProfileEligibleForGemini_ManagedAccountPending) {
   SignInManagedAccountWithCapability(true);
   SetWorkspaceEligibility(/*is_disabled=*/std::nullopt);
 
@@ -313,7 +315,8 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_ManagedAccountPending) {
 
 // Tests that for a managed account, once the workspace response arrives and
 // confirms it is restricted, we do log the workspace restriction.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_ManagedAccountRestricted) {
+TEST_F(BwgServiceImplTest,
+       IsProfileEligibleForGemini_ManagedAccountRestricted) {
   SignInManagedAccountWithCapability(true);
   SetWorkspaceEligibility(/*is_disabled=*/true);
 
@@ -328,7 +331,7 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_ManagedAccountRestricted) {
 
 // Tests that LogUserConsentState correctly logs the consent flow state when
 // the profile is eligible.
-TEST_F(BwgServiceTest, LogUserConsentState_LogsWhenEligible) {
+TEST_F(BwgServiceImplTest, LogUserConsentState_LogsWhenEligible) {
   SignInUnmanagedAccountWithCapability(true);
   SetWorkspaceEligibility(/*is_disabled=*/false);
 
