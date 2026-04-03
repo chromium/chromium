@@ -49,7 +49,6 @@ static_library("autotest_private") {
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/banners",
-    "//chrome/browser/component_updater",
     "//chrome/browser/signin",
     "//chrome/browser/ui/aura/accessibility",
     "//chrome/browser/ui/toolbar",
