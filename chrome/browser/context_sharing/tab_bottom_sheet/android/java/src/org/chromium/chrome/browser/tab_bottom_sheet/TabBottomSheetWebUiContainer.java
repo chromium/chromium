@@ -31,6 +31,7 @@ public class TabBottomSheetWebUiContainer extends FrameLayout {
     }
 
     private @Nullable TouchHandler mTouchHandler;
+    private boolean mIsDispatchingToHandler;
 
     public TabBottomSheetWebUiContainer(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -43,8 +44,15 @@ public class TabBottomSheetWebUiContainer extends FrameLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (mTouchHandler != null && mTouchHandler.handleTouchEvent(this, event)) {
-            return true;
+        if (!mIsDispatchingToHandler && mTouchHandler != null) {
+            mIsDispatchingToHandler = true;
+            try {
+                if (mTouchHandler.handleTouchEvent(this, event)) {
+                    return true;
+                }
+            } finally {
+                mIsDispatchingToHandler = false;
+            }
         }
         return super.dispatchTouchEvent(event);
     }

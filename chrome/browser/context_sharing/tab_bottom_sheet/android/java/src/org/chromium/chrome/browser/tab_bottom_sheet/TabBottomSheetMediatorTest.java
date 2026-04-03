@@ -5,15 +5,20 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.view.ViewParent;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabBottomSheetMediator}. */
@@ -34,20 +40,23 @@ public class TabBottomSheetMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Context mContext;
-    private View mView;
     private PropertyModel mModel;
     private TabBottomSheetMediator mMediator;
 
     @Mock private CoBrowseViews mCoBrowseViews;
+    @Mock private TabBottomSheetWebUiContainer mView;
+    @Mock private ViewParent mParent;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mView = new FrameLayout(mContext);
+
         when(mCoBrowseViews.getView()).thenReturn(mView);
+        when(mView.getContext()).thenReturn(mContext);
+        when(mView.getParent()).thenReturn(mParent);
 
         mModel = TabBottomSheetProperties.createDefaultModel(mCoBrowseViews);
-        mMediator = new TabBottomSheetMediator(mContext, mModel);
+        mMediator = new TabBottomSheetMediator(mContext, mModel, mCoBrowseViews);
     }
 
     @Test
@@ -139,5 +148,58 @@ public class TabBottomSheetMediatorTest {
                         mModel.get(
                                 TabBottomSheetProperties
                                         .PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY));
+    }
+
+    @Test
+    public void testGetWebUiTouchHandler() {
+        Assert.assertNotNull(mMediator.getWebUiTouchHandler());
+    }
+
+    @Test
+    public void testDispatchToContent() {
+        mMediator.onSheetStateChanged(SheetState.FULL, false);
+        mMediator.setPeekHeight(100); // Gesture zone max(100, 48) = 100
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 200, 0);
+        boolean handled = mMediator.getWebUiTouchHandler().handleTouchEvent(mView, down);
+
+        Assert.assertTrue(
+                "Should be dispatched to content since it is below gesture zone", handled);
+        verify(mView, atLeastOnce()).dispatchTouchEvent(any(MotionEvent.class));
+        verify(mParent, atLeastOnce()).requestDisallowInterceptTouchEvent(true);
+    }
+
+    @Test
+    public void testInterceptBySheetWhenNotMaximized() {
+        mMediator.onSheetStateChanged(SheetState.PEEK, false);
+        mMediator.setPeekHeight(100); // Gesture zone max(100, 48) = 100
+        MotionEvent down =
+                MotionEvent.obtain(
+                        0, 0, MotionEvent.ACTION_DOWN, 100, 200, 0); // Below gesture zone
+        boolean handled = mMediator.getWebUiTouchHandler().handleTouchEvent(mView, down);
+
+        Assert.assertFalse("Should fallback to sheet since it is not maximized", handled);
+        verify(mParent, atLeastOnce()).requestDisallowInterceptTouchEvent(false);
+    }
+
+    @Test
+    public void testInterceptBySheetInGestureZone() {
+        mMediator.onSheetStateChanged(SheetState.FULL, false);
+        mMediator.setPeekHeight(100); // Gesture zone max(100, 48) = 100
+
+        // 1. ACTION_DOWN inside the gesture zone (Y = 50)
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 50, 0);
+        boolean handled = mMediator.getWebUiTouchHandler().handleTouchEvent(mView, down);
+
+        Assert.assertFalse("Should fallback to sheet since it is in gesture zone", handled);
+        verify(mParent, atLeastOnce()).requestDisallowInterceptTouchEvent(false);
+    }
+
+    @Test
+    public void testIsMaximized() {
+        mMediator.onSheetStateChanged(SheetState.PEEK, false);
+        Assert.assertFalse(mMediator.isMaximized());
+
+        mMediator.onSheetStateChanged(SheetState.FULL, false);
+        Assert.assertTrue(mMediator.isMaximized());
     }
 }

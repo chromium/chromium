@@ -75,7 +75,7 @@ public class TabBottomSheetCoordinator {
 
         mModel = TabBottomSheetProperties.createDefaultModel(coBrowseViews);
 
-        mMediator = new TabBottomSheetMediator(mContext, mModel);
+        mMediator = new TabBottomSheetMediator(mContext, mModel, coBrowseViews);
 
         coBrowseViews.setWebUiTouchHandler(mMediator.getWebUiTouchHandler());
     }
@@ -92,6 +92,9 @@ public class TabBottomSheetCoordinator {
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
 
         if (mBottomSheetController.requestShowContent(mSheetContent, animate)) {
+            // Set peek height for touch arbitration.
+            mMediator.setPeekHeight(mSheetContent.getPeekHeight());
+
             // If bottom sheet has never been initialized, its max height return 0.
             // We set it here, and if it changes later, we will update it in the observer.
             mContentView.post(

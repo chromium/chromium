@@ -10,13 +10,15 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.widget.R;
+import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for tab bottom sheet */
 @NullMarked
-public class TabBottomSheetMediator {
+public class TabBottomSheetMediator extends GestureStateListener {
     private static final int MIN_SHEET_HEIGHT_DP = 240;
 
     private final Context mContext;
@@ -26,8 +28,10 @@ public class TabBottomSheetMediator {
     private final float mKeyboardShowingHeightRatio;
 
     private @SheetState int mCurrentSheetState = SheetState.HIDDEN;
+    private int mPeekHeight;
 
-    public TabBottomSheetMediator(Context context, PropertyModel model) {
+    public TabBottomSheetMediator(
+            Context context, PropertyModel model, CoBrowseViews coBrowseViews) {
         mContext = context;
         mModel = model;
         mTouchArbitrator = new TouchArbitrator();
@@ -57,6 +61,11 @@ public class TabBottomSheetMediator {
         // TODO(crbug.com/494311176): Implement cross-fade animation for peek view.
         mModel.set(TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA, 0.0f);
         mModel.set(TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY, View.GONE);
+    }
+
+    /** Sets the peek state header height for touch arbitration. */
+    void setPeekHeight(int peekHeight) {
+        mPeekHeight = peekHeight;
     }
 
     /**
@@ -92,22 +101,48 @@ public class TabBottomSheetMediator {
         return mTouchArbitrator;
     }
 
+    boolean isMaximized() {
+        return mCurrentSheetState == SheetState.FULL;
+    }
+
     private boolean isShowing() {
         return mCurrentSheetState != SheetState.HIDDEN;
     }
 
     /** Inner class that arbitrates between scrolling the content and dragging the bottom sheet. */
     private class TouchArbitrator implements TabBottomSheetWebUiContainer.TouchHandler {
+        private boolean mInterceptForSheet;
+
         @Override
         public boolean handleTouchEvent(TabBottomSheetWebUiContainer v, MotionEvent e) {
-            if (!isShowing()) return false;
-
-            // Minimal implementation for Stage 1: Always allow intercept by parent if not
-            // specifically handled.
-            if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                v.getParent().requestDisallowInterceptTouchEvent(true);
+            if (!isShowing()) {
+                return false;
             }
-            return false;
+
+            if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                // Determine if the touch started in the "Gesture Zone".
+                int minTouchTargetPx =
+                        v.getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.min_touch_target_size);
+
+                // Use max() to ensure it meets the minimum touch target size of 48dp.
+                int gestureZoneHeight = Math.max(mPeekHeight, minTouchTargetPx);
+
+                // If the touch starts in the gesture zone (measured from the top of the
+                // container), intercept the gesture for the bottom sheet.
+                mInterceptForSheet = (!isMaximized() || e.getY() <= gestureZoneHeight);
+            }
+
+            if (mInterceptForSheet) {
+                v.getParent().requestDisallowInterceptTouchEvent(false);
+                return false;
+            }
+
+            // Lock to content and manually deliver.
+            v.getParent().requestDisallowInterceptTouchEvent(true);
+            v.dispatchTouchEvent(e);
+            return true;
         }
     }
 
