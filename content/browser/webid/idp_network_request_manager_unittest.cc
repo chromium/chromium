@@ -2491,6 +2491,53 @@ TEST_F(IdpNetworkRequestManagerTest, DisconnectRequest) {
   EXPECT_EQ(*disconnect_account_id, "accountId");
 }
 
+TEST_F(IdpNetworkRequestManagerTest, DisconnectRequestInjection) {
+  bool called = false;
+  auto interceptor = base::BindLambdaForTesting([&](const network::
+                                                        ResourceRequest&
+                                                            request) {
+    called = true;
+    EXPECT_EQ(GURL(kTestDisconnectEndpoint), request.url);
+
+    // Check that the request body is escaped.
+    ASSERT_NE(request.request_body, nullptr);
+    ASSERT_EQ(1ul, request.request_body->elements()->size());
+    const network::DataElement& elem = request.request_body->elements()->at(0);
+    ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
+    const network::DataElementBytes& byte_elem =
+        elem.As<network::DataElementBytes>();
+    // If it's not escaped, it would be
+    // "client_id=client&inject=id&account_hint=hint&inject=account" If it's
+    // escaped, it should be
+    // "client_id=client%26inject%3Did&account_hint=hint%26inject%3Daccount"
+    EXPECT_EQ(
+        "client_id=client%26inject%3Did&account_hint=hint%26inject%3Daccount",
+        byte_elem.AsStringPiece());
+  });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  const char test_disconnect_json[] = R"({
+  "account_id" : "accountId"
+  })";
+
+  GURL disconnect_endpoint(kTestDisconnectEndpoint);
+  AddResponse(disconnect_endpoint, net::HTTP_OK, "application/json",
+              test_disconnect_json);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&](FetchStatus response, const std::string& account_id) {
+        run_loop.Quit();
+      });
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendDisconnectRequest(disconnect_endpoint, "hint&inject=account",
+                                 "client&inject=id", std::move(callback));
+  run_loop.Run();
+
+  EXPECT_TRUE(called);
+}
+
 }  // namespace
 
 }  // namespace content::webid

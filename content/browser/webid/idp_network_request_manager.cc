@@ -1280,8 +1280,11 @@ void IdpNetworkRequestManager::SendDisconnectRequest(
     DisconnectCallback callback) {
   auto resource_request = CreateCredentialedResourceRequest(
       disconnect_url, CredentialedResourceRequestType::kOriginWithCORS);
+  // Generate the request body and make sure to escape all JavaScript-provided
+  // data in case it includes characters like &.
   std::string url_encoded_post_data =
-      "client_id=" + client_id + "&account_hint=" + account_hint;
+      "client_id=" + base::EscapeUrlEncodedData(client_id, true) +
+      "&account_hint=" + base::EscapeUrlEncodedData(account_hint, true);
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnDisconnectResponseParsed, std::move(callback)));
