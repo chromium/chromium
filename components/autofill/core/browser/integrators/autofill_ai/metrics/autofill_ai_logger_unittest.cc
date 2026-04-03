@@ -188,10 +188,9 @@ class BaseAutofillAiTest : public testing::Test {
 
   [[nodiscard]] std::unique_ptr<FormStructure> CreateOrderForm(
       std::string url = std::string(kDefaultUrl)) {
-    return CreateFormStructure(
-        {UNKNOWN_TYPE, ORDER_DATE, UNKNOWN_TYPE, ORDER_ID, UNKNOWN_TYPE,
-         ORDER_MERCHANT_NAME, UNKNOWN_TYPE},
-        std::move(url));
+    return CreateFormStructure({UNKNOWN_TYPE, ORDER_DATE, UNKNOWN_TYPE,
+                                ORDER_ID, UNKNOWN_TYPE, ORDER_MERCHANT_NAME},
+                               std::move(url));
   }
 
   [[nodiscard]] std::unique_ptr<FormStructure> CreateShipmentForm(

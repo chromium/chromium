@@ -392,12 +392,6 @@ EntityInstance GetOrderEntityInstance(OrderOptions options) {
         UNKNOWN_TYPE, options.product_names, std::string(options.app_locale),
         /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
   }
-  if (options.grand_total) {
-    attributes.emplace_back(AttributeType(kOrderGrandTotal));
-    attributes.back().SetInfo(
-        UNKNOWN_TYPE, options.grand_total, std::string(options.app_locale),
-        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
-  }
   return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 

@@ -112,7 +112,7 @@
   },
   {
     "name": "Order",
-    "attributes": [ "Id", "Account", "Date", "Merchant name", "Merchant domain", "Product names", "Grand total" ],
+    "attributes": [ "Id", "Account", "Date", "Merchant name", "Merchant domain", "Product names" ],
     "obfuscated attributes": [],
     "required fields": [
       [ "Id" ]
@@ -120,7 +120,7 @@
     "import constraints": [],
     "merge constraints": [],
     "strike keys": [],
-    "disambiguation order": [ "Merchant name", "Date", "Grand total" ],
+    "disambiguation order": [ "Merchant name", "Date" ],
     "experiment feature": "AutofillAiOrder",
     "read only": true
   },

@@ -189,7 +189,6 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kFlightReservationArrivalAirport:
     case AttributeTypeName::kKnownTravelerNumberNumber:
     case AttributeTypeName::kOrderAccount:
-    case AttributeTypeName::kOrderGrandTotal:
     case AttributeTypeName::kOrderId:
     case AttributeTypeName::kOrderMerchantDomain:
     case AttributeTypeName::kOrderMerchantName:
@@ -265,8 +264,6 @@ constexpr std::optional<FieldType> AttributeType::field_type() const {
       return std::nullopt;
     case AttributeTypeName::kOrderDate:
       return ORDER_DATE;
-    case AttributeTypeName::kOrderGrandTotal:
-      return std::nullopt;
     case AttributeTypeName::kOrderId:
       return ORDER_ID;
     case AttributeTypeName::kOrderMerchantDomain:

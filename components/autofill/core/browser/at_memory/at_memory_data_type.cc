@@ -93,7 +93,6 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kOrderMerchantName);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderMerchantDomain);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderProductNames);
-    INTENT_TO_ATTRIBUTE_TYPE(kOrderGrandTotal);
     INTENT_TO_ENTITY_TYPE(kShipmentFull, kShipment);
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentTrackingNumber);
     INTENT_TO_ATTRIBUTE_TYPE_WITH_NAME(kShipmentAssociatedOrderId,
@@ -107,6 +106,7 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     case accessibility_annotator::QueryIntentType::kCreditCardNickname:
     case accessibility_annotator::QueryIntentType::
         kFlightReservationArrivalDate:
+    case accessibility_annotator::QueryIntentType::kOrderGrandTotal:
     // TODO(crbug.com/484094746): Map `delivery_address` to
     // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
     // `std::string`, it's unclear how we can process this (here and in

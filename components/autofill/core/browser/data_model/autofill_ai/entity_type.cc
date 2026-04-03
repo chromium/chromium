@@ -54,7 +54,6 @@ std::u16string AttributeType::GetNameForI18n() const {
       return u"";
     case AttributeTypeName::kOrderDate:
     case AttributeTypeName::kOrderAccount:
-    case AttributeTypeName::kOrderGrandTotal:
     case AttributeTypeName::kOrderId:
     case AttributeTypeName::kOrderMerchantDomain:
     case AttributeTypeName::kOrderMerchantName:

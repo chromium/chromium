@@ -190,8 +190,8 @@ TEST(FromAccessibilityAnnotatorTest, EntityConversion_Order) {
               IsAttribute(AttributeType(kOrderMerchantName), u"Tante Emma"),
               IsAttribute(AttributeType(kOrderMerchantDomain),
                           u"https://foo.com/"),
-              IsAttribute(AttributeType(kOrderProductNames), u"Apple, Orange"),
-              IsAttribute(AttributeType(kOrderGrandTotal), u"$123,456")))));
+              IsAttribute(AttributeType(kOrderProductNames),
+                          u"Apple, Orange")))));
 }
 
 // Tests conversion of a shipment from Accessibility Annotator to Autofill AI.

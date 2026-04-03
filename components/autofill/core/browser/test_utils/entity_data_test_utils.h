@@ -187,7 +187,6 @@ struct OrderOptionsT {
   const char16_t* merchant_name = u"Example";
   const char16_t* merchant_domain = u"example.com";
   const char16_t* product_names = u"Product A, Product B";
-  const char16_t* grand_total = u"12.34";
   std::string_view guid = "00000000-0000-4000-8000-600000000000";
   std::string_view nickname = "Order";
   std::string_view app_locale = "en-US";

@@ -196,7 +196,6 @@ std::optional<EntityInstance> FromAccessibilityAnnotator(
             add(&aa::Order::merchant_name, kOrderMerchantName);
             add(&aa::Order::merchant_domain, kOrderMerchantDomain);
             add(&aa::Order::products, kOrderProductNames);
-            add(&aa::Order::grand_total, kOrderGrandTotal);
           },
 
           [&](const aa::Shipment& src) {
@@ -307,7 +306,6 @@ aa::QueryIntentType AttributeTypeToQueryIntentType(AttributeType type) {
     ATTRIBUTE_TO_QUERY_INTENT(kNationalIdCardExpirationDate);
     ATTRIBUTE_TO_QUERY_INTENT(kOrderAccount);
     ATTRIBUTE_TO_QUERY_INTENT(kOrderDate);
-    ATTRIBUTE_TO_QUERY_INTENT(kOrderGrandTotal);
     ATTRIBUTE_TO_QUERY_INTENT(kOrderId);
     ATTRIBUTE_TO_QUERY_INTENT(kOrderMerchantDomain);
     ATTRIBUTE_TO_QUERY_INTENT(kOrderMerchantName);
