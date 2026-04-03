@@ -65,12 +65,16 @@ CrNSProgressUserData* CreateOrGetNSProgress(download::DownloadItem* download) {
   // ship it.
   progress.pausable = NO;
 
+  // TODO(crbug.com/498376171): Mitigation for potential UAF by
+  // cancellationHandler below.
+  raw_ptr<download::DownloadItem> protected_download = download;
+
   // Do publish a cancellation handler. In icon view, the Finder provides a
   // little (X) button on the icon, and using it will cause this callback.
   progress.cancellable = YES;
   progress.cancellationHandler = ^{
     dispatch_async(dispatch_get_main_queue(), ^{
-      download->Cancel(/*user_cancel=*/true);
+      protected_download->Cancel(/*user_cancel=*/true);
     });
   };
 
