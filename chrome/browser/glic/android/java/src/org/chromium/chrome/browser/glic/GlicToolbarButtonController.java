@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.glic;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -31,9 +33,11 @@ import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -170,12 +174,26 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     }
 
     @Override
+    protected boolean shouldShowButton(@Nullable Tab tab) {
+        // TODO(crbug.com/499354469): Add proper checks for glic availability.
+        if (!AdaptiveToolbarFeatures.isGlicActionEnabled()) {
+            return false;
+        }
+        if (tab == null || tab.isOffTheRecord() || UrlUtilities.isNtpUrl(tab.getUrl())) {
+            return false;
+        }
+        return super.shouldShowButton(tab);
+    }
+
+    @Override
     public ButtonData get(@Nullable Tab tab) {
-        if (tab == null || tab.isOffTheRecord()) {
-            mButtonData.setCanShow(false);
-            return super.get(tab);
+        ButtonData buttonData = super.get(tab);
+        if (!buttonData.canShow()) {
+            return buttonData;
         }
 
+        // This can be assumed because shouldShowButton hides the entrypoint if there's no tab.
+        assumeNonNull(tab);
         updateActorServiceObservation(tab.getProfile());
         updateButtonState();
 
@@ -196,10 +214,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         }
         mButtonData.setButtonSpec(desiredSpec);
 
-        // TODO(haileywang): We should double check whether Glic is enabled.
-        mButtonData.setCanShow(true);
         mButtonData.setEnabled(true);
-        return super.get(tab);
+        return buttonData;
     }
 
     private void updateButtonState() {

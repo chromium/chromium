@@ -18,7 +18,7 @@ namespace {
 using proto::SegmentId;
 
 // Label input size
-constexpr int kLabelInputSize = 6;
+constexpr int kLabelInputSize = 5;
 // Default parameters for contextual page actions model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING;
@@ -30,8 +30,7 @@ constexpr std::array<const char*, kLabelInputSize>
         kContextualPageActionModelLabelPriceInsights,
         kContextualPageActionModelLabelPriceTracking,
         kContextualPageActionModelLabelReaderMode,
-        kContextualPageActionModelLabelTabGrouping,
-        kContextualPageActionModelLabelGlic};
+        kContextualPageActionModelLabelTabGrouping};
 
 // All stable buttons that can show in toolbar in Chrome tabbed activity.
 constexpr std::array<int32_t, 7> kNonContextualActionEnumIds = {
@@ -121,12 +120,6 @@ ContextualPageActionsModel::GetModelConfig() {
   (*tab_grouping_input->mutable_additional_args())["name"] =
       kContextualPageActionModelInputTabGrouping;
 
-  // Add Glic custom input.
-  proto::CustomInput* glic_input =
-      writer.AddCustomInput(CreateCustomInput("glic_input"));
-  (*glic_input->mutable_additional_args())["name"] =
-      kContextualPageActionModelInputGlic;
-
   writer.AddUmaFeatures(kUmaFeatures.data(), kUmaFeatures.size());
 
   // A threshold used to differentiate labels with score zero from non-zero
@@ -157,7 +150,6 @@ void ContextualPageActionsModel::ExecuteModelWithInput(
   bool can_track_price = inputs[2];
   bool has_reader_mode = inputs[3];
   bool has_tab_grouping_suggestions = inputs[4];
-  bool can_open_glic = inputs[5];
   // Start of UMA features
   float non_contextual_click_count = inputs[kLabelInputSize + 0];
   float tab_group_shown_count = inputs[kLabelInputSize + 1];
@@ -180,7 +172,6 @@ void ContextualPageActionsModel::ExecuteModelWithInput(
         !(tab_group_shown_count > 0 && tab_group_clicked_count == 0);
   }
   response[4] = show_tab_grouping;
-  response[5] = can_open_glic;
   // TODO(crbug.com/40249852): Set a classifier threshold.
 
   // TODO(shaktisahu): This class needs some rethinking to correctly associate

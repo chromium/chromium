@@ -45,9 +45,6 @@ AdaptiveToolbarButtonVariant ActionLabelToAdaptiveToolbarButtonVariant(
   } else if (label == segmentation_platform::
                           kContextualPageActionModelLabelTabGrouping) {
     action = AdaptiveToolbarButtonVariant::kTabGrouping;
-  } else if (label ==
-             segmentation_platform::kContextualPageActionModelLabelGlic) {
-    action = AdaptiveToolbarButtonVariant::kGlic;
   }
   return action;
 }

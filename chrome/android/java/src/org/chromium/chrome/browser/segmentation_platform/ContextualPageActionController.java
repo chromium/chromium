@@ -171,9 +171,6 @@ public class ContextualPageActionController {
                     AdaptiveToolbarButtonVariant.TAB_GROUPING,
                     new TabGroupingActionProvider(groupSuggestionButtonControllerSupplier));
         }
-        if (AdaptiveToolbarFeatures.isGlicActionEnabled()) {
-            mActionProviders.put(AdaptiveToolbarButtonVariant.GLIC, new GlicActionProvider());
-        }
     }
 
     @Nullable
@@ -213,12 +210,6 @@ public class ContextualPageActionController {
         return mSignalAccumulator == null
                 ? false
                 : mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.READER_MODE);
-    }
-
-    public boolean hasGlic() {
-        return mSignalAccumulator == null
-                ? false
-                : mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.GLIC);
     }
 
     private void removeProviders() {
@@ -291,12 +282,6 @@ public class ContextualPageActionController {
                 Constants.CONTEXTUAL_PAGE_ACTIONS_TAB_GROPING_INPUT,
                 ProcessedValue.fromFloat(
                         mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.TAB_GROUPING)
-                                ? 1.0f
-                                : 0.0f));
-        inputContext.addEntry(
-                Constants.CONTEXTUAL_PAGE_ACTIONS_GLIC_INPUT,
-                ProcessedValue.fromFloat(
-                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.GLIC)
                                 ? 1.0f
                                 : 0.0f));
         inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));

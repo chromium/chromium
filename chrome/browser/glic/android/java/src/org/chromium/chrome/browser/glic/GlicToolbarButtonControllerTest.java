@@ -26,18 +26,25 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link GlicToolbarButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({
+    ChromeFeatureList.GLIC,
+    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
+})
 public class GlicToolbarButtonControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -55,6 +62,7 @@ public class GlicToolbarButtonControllerTest {
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
         when(mTab.getProfile()).thenReturn(mProfile);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         ActorKeyedServiceFactory.setForTesting(mActorService);
     }
 
@@ -71,6 +79,17 @@ public class GlicToolbarButtonControllerTest {
         Assert.assertEquals(
                 mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label),
                 buttonData.getButtonSpec().getContentDescription());
+    }
+
+    @Test
+    public void testButtonData_Ntp() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        GlicToolbarButtonController controller =
+                new GlicToolbarButtonController(
+                        mContext, () -> mTab, mToggleGlicCallback, () -> mTracker);
+        ButtonData buttonData = controller.get(mTab);
+
+        Assert.assertFalse(buttonData.canShow());
     }
 
     @Test
@@ -160,6 +179,7 @@ public class GlicToolbarButtonControllerTest {
         Profile newProfile = mock(Profile.class);
         Tab newTab = mock(Tab.class);
         when(newTab.getProfile()).thenReturn(newProfile);
+        when(newTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
         // Let's just verify it removes the old observer.
         controller.get(newTab);

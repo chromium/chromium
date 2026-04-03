@@ -55,6 +55,7 @@ android_library("java") {
     "//chrome/browser/user_education:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
@@ -68,6 +69,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
   ]
 }
 
@@ -113,9 +115,11 @@ robolectric_library("junit") {
     ":java",
     ":java_resources",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:base_shared_preferences_java",
     "//chrome/browser/actor/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/glic:public_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -135,5 +139,7 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
   ]
 }
