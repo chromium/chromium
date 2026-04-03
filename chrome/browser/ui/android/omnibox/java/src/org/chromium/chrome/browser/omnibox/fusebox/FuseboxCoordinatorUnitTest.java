@@ -35,7 +35,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -63,7 +62,6 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -258,7 +256,7 @@ public class FuseboxCoordinatorUnitTest {
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mMediator).setToolbarVisible(false);
+        verify(mMediator).endInput();
     }
 
     @Test
@@ -270,27 +268,6 @@ public class FuseboxCoordinatorUnitTest {
 
         mCoordinator.beginInput(createSession());
         verify(mMediator).beginInput(any());
-    }
-
-    @Test
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
-    public void testWrappingChange() {
-        mCoordinator.beginInput(createSession());
-        mCoordinator.setMediatorForTesting(mMediator);
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
-
-        mCoordinator.onFuseboxTextWrappingChanged(true);
-        verify(mMediator).setUseCompactUi(false);
-
-        mCoordinator.onFuseboxTextWrappingChanged(false);
-        verify(mMediator).setUseCompactUi(true);
-
-        mCoordinator.onFuseboxTextWrappingChanged(true);
-        Mockito.clearInvocations(mMediator);
-
-        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
-        mCoordinator.onFuseboxTextWrappingChanged(false);
-        verify(mMediator).setUseCompactUi(false);
     }
 
     @Test

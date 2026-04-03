@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -68,10 +69,6 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey ADD_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** Whether the attachments toolbar is visible. */
-    public static final WritableBooleanPropertyKey ATTACHMENTS_TOOLBAR_VISIBLE =
-            new WritableBooleanPropertyKey();
-
     /** Whether the attachments RecyclerView is visible. */
     public static final WritableBooleanPropertyKey ATTACHMENTS_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -92,8 +89,9 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<@BrandedColorScheme Integer> COLOR_SCHEME =
             new WritableObjectPropertyKey<>();
 
-    /** Whether the UI is in compact mode. */
-    public static final WritableBooleanPropertyKey COMPACT_UI = new WritableBooleanPropertyKey();
+    /** The state the the UI of the fusebox should currently be in. */
+    public static final WritableObjectPropertyKey<@FuseboxState Integer> FUSEBOX_STATE =
+            new WritableObjectPropertyKey<>();
 
     /** Action to perform when the user clicks the Camera button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_CAMERA_CLICKED =
@@ -253,13 +251,12 @@ class FuseboxProperties {
         // go/keep-sorted start
         ADAPTER,
         ADD_BUTTON_VISIBLE,
-        ATTACHMENTS_TOOLBAR_VISIBLE,
         ATTACHMENTS_VISIBLE,
         AUTOCOMPLETE_REQUEST_TYPE,
         AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
         BUTTON_ADD_CLICKED,
         COLOR_SCHEME,
-        COMPACT_UI,
+        FUSEBOX_STATE,
         POPUP_ATTACH_CAMERA_CLICKED,
         POPUP_ATTACH_CAMERA_ENABLED,
         POPUP_ATTACH_CAMERA_VISIBLE,

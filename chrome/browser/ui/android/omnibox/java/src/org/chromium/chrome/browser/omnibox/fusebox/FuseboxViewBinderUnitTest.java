@@ -41,6 +41,7 @@ import org.robolectric.android.controller.ActivityController;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -104,7 +105,8 @@ public class FuseboxViewBinderUnitTest {
         mViewHolder = new FuseboxViewHolder(parent, mPopup);
 
         // Initialize workable defaults.
-        mModel.set(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, true);
+        mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, true);
+        mModel.set(FuseboxProperties.FUSEBOX_STATE, FuseboxState.EXPANDED);
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.SEARCH);
         mModel.set(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON, false);
         mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
@@ -131,7 +133,9 @@ public class FuseboxViewBinderUnitTest {
                 testCase == Variant.DEDICATED_BUTTON_WITH_HINT);
 
         // Reflect the active state of the fusebox toolbar.
-        mModel.set(FuseboxProperties.COMPACT_UI, testCase == Variant.COMPACT);
+        mModel.set(
+                FuseboxProperties.FUSEBOX_STATE,
+                testCase == Variant.COMPACT ? FuseboxState.COMPACT : FuseboxState.EXPANDED);
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, requestType);
         mModel.set(
                 FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON,
@@ -139,12 +143,12 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void toolbarVisible_setsVisibility() {
+    public void addButtonVisible_setsVisibility() {
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
-        mModel.set(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, true);
+        mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, true);
         assertEquals(View.VISIBLE, mViewHolder.addButton.getVisibility());
 
-        mModel.set(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false);
+        mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, false);
         assertEquals(View.GONE, mViewHolder.addButton.getVisibility());
     }
 

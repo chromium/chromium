@@ -168,7 +168,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mViewHolder = new FuseboxViewHolder(mParent, popup);
         mModel =
                 new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
-                        .with(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false)
+                        .with(FuseboxProperties.FUSEBOX_STATE, FuseboxState.DISABLED)
                         .with(
                                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
                                 AutocompleteRequestType.SEARCH)
@@ -296,8 +296,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mDefaultSearchEngineIsGoogle = isDseGoogle;
 
         if (mInput != null && !mDefaultSearchEngineIsGoogle) {
-            mInput.setRequestType(AutocompleteRequestType.SEARCH);
-            assumeNonNull(mMediator).setToolbarVisible(false);
+            endInput();
         }
     }
 
@@ -325,17 +324,12 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     }
 
     /**
-     * Called when fusebox text wrapping changes.
-     *
-     * @param isWrapping true if text is wrapping (should show expanded UI), false for compact UI
+     * @param isTextWrapping Whether the text is wrapping or not.
      */
-    public void onFuseboxTextWrappingChanged(boolean isWrapping) {
-        // We only care about url bar wrapping state when compact variant is enabled. Guard against
-        // entering compact mode when the variant is disabled by returning early.
-        if (mInput == null || !OmniboxFeatures.sCompactFusebox.getValue()) return;
-        assumeNonNull(mMediator)
-                .setUseCompactUi(
-                        !isWrapping && mInput.getRequestType() == AutocompleteRequestType.SEARCH);
+    public void onFuseboxTextWrappingChanged(boolean isTextWrapping) {
+        if (mMediator != null) {
+            mMediator.setIsTextWrapping(isTextWrapping);
+        }
     }
 
     public void notifyOmniboxSessionEnded(boolean userDidNavigate) {

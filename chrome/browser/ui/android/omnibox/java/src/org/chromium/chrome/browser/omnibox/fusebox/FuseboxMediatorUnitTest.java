@@ -8,6 +8,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -56,7 +57,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -147,7 +147,6 @@ public class FuseboxMediatorUnitTest {
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final SettableMonotonicObservableSupplier<InputState> mInputStateSupplier =
             ObservableSuppliers.createMonotonic();
-    private boolean mCompactModeEnabled;
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
     private final AutocompleteInput mInput = new AutocompleteInput();
 
@@ -322,35 +321,32 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void initialState_toolbarIsHidden() {
+    public void initialState_isDisabled() {
         mMediator.endInput();
-        assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
     }
 
     @Test
-    public void onUrlFocusChange_toolbarVisibleWhenFocused() {
-        mMediator.setToolbarVisible(true);
-        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+    public void beginInput_isNotDisabled() {
+        assertNotEquals(
+                FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
     }
 
     @Test
-    public void onUrlFocusChange_startInAiMode() {
+    public void startInAiMode_isExpanded() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
-        mMediator.setToolbarVisible(true);
-        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.COMPACT_UI));
+        recreateMediator();
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
     }
 
     @Test
-    public void onUrlFocusChange_viewsHiddenWhenNotFocused() {
-        // Show it first.
-        mMediator.setToolbarVisible(true);
-        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+    public void endInput_clearsState() {
+        assertNotEquals(
+                FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
 
-        // Then hide it.
-        mMediator.setToolbarVisible(false);
-        assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+        mMediator.endInput();
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
     }
 
     @Test
@@ -942,25 +938,23 @@ public class FuseboxMediatorUnitTest {
     public void testCompactMode() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
         recreateMediator();
-        Callback<@FuseboxState Integer> compactModeCallback =
-                (val) -> mCompactModeEnabled = val == FuseboxState.COMPACT;
-        mFuseboxStateSupplier.addSyncObserverAndCallIfNonNull(compactModeCallback);
-
-        mMediator.setToolbarVisible(true);
-        assertTrue(mModel.get(FuseboxProperties.COMPACT_UI));
-        assertTrue(mCompactModeEnabled);
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
 
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
-        assertFalse(mModel.get(FuseboxProperties.COMPACT_UI));
-        assertFalse(mCompactModeEnabled);
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
 
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        assertTrue(mModel.get(FuseboxProperties.COMPACT_UI));
-        assertTrue(mCompactModeEnabled);
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
 
-        mMediator.setUseCompactUi(false);
-        assertFalse(mModel.get(FuseboxProperties.COMPACT_UI));
-        assertFalse(mCompactModeEnabled);
+        mMediator.setIsTextWrapping(true);
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+    }
+
+    @Test
+    public void testExpandedMode() {
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.setIsTextWrapping(false);
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
     }
 
     @Test

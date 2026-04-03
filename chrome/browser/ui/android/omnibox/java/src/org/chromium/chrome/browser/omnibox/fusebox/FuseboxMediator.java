@@ -96,6 +96,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private final SnackbarManager mSnackbarManager;
     private final Snackbar mAttachmentUploadFailedSnackbar;
 
+    private boolean mIsTextWrapping;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private @Nullable Profile mProfile;
     private @Nullable AutocompleteInput mInput;
@@ -188,8 +189,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                 "mModelList",
                 "mComposeboxQueryControllerBridge",
                 "mMetrics"
-            },
-            result = true)
+            })
     private boolean isInInputSession() {
         return mProfile != null
                 && mInput != null
@@ -267,20 +267,20 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         setAutocompleteInput(session.getAutocompleteInput());
         setController(session.getComposeboxQueryControllerBridge());
         setModelList(session.getFuseboxAttachmentModelList());
-        setToolbarVisible(true);
-
+        updateFuseboxState();
         updateSnackbarStyling();
     }
 
     /** Called when the user stops interacting with the Omnibox. */
     /* package */ void endInput() {
         mPopup.dismiss();
-        setToolbarVisible(false);
         setModelList(null);
         setController(null);
         setAutocompleteInput(null);
         mProfile = null;
         mMetrics = null;
+        mIsTextWrapping = false;
+        updateFuseboxState();
     }
 
     private void setAutocompleteInput(@Nullable AutocompleteInput input) {
@@ -384,20 +384,26 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         trySetRequestType(AutocompleteRequestType.CANVAS);
     }
 
-    /**
-     * Show or hide the Fusebox toolbar.
-     *
-     * @param visible Whether the toolbar should be visible.
-     */
-    void setToolbarVisible(boolean visible) {
-        if (!isInInputSession()) return;
+    void setIsTextWrapping(boolean isTextWrapping) {
+        mIsTextWrapping = isTextWrapping;
+        updateFuseboxState();
+    }
 
-        mModel.set(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
-        // The omnibox can become focused with the autocomplete request type immediately set
-        // to AI_MODE. We check the mode here to avoid erroneously staying in compact mode.
-        setUseCompactUi(
-                OmniboxFeatures.sCompactFusebox.getValue()
-                        && mInput.getRequestType() == AutocompleteRequestType.SEARCH);
+    void updateFuseboxState() {
+        @FuseboxState int targetState;
+        if (!isInInputSession()) {
+            targetState = FuseboxState.DISABLED;
+        } else if (!OmniboxFeatures.sCompactFusebox.getValue()) {
+            targetState = FuseboxState.EXPANDED;
+        } else {
+            targetState =
+                    mIsTextWrapping || mInput.getRequestType() != AutocompleteRequestType.SEARCH
+                            ? FuseboxState.EXPANDED
+                            : FuseboxState.COMPACT;
+        }
+        mFuseboxStateSupplier.set(targetState);
+        mModel.set(FuseboxProperties.FUSEBOX_STATE, targetState);
+        mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, targetState != FuseboxState.DISABLED);
     }
 
     @VisibleForTesting
@@ -641,9 +647,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     }
 
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
-        setUseCompactUi(
-                type == AutocompleteRequestType.SEARCH
-                        && OmniboxFeatures.sCompactFusebox.getValue());
+        updateFuseboxState();
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
 
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
@@ -876,15 +880,6 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
             if (single != null) out.add(single);
         }
         return out;
-    }
-
-    void setUseCompactUi(boolean useCompactUi) {
-        boolean fuseboxActive = mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
-        mFuseboxStateSupplier.set(
-                fuseboxActive
-                        ? useCompactUi ? FuseboxState.COMPACT : FuseboxState.EXPANDED
-                        : FuseboxState.DISABLED);
-        mModel.set(FuseboxProperties.COMPACT_UI, useCompactUi);
     }
 
     private boolean isCurrentTab(Tab tab) {
