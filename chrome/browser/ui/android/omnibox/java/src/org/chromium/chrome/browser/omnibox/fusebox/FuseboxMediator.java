@@ -101,6 +101,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     private @Nullable AutocompleteInput mInput;
     private @Nullable FuseboxAttachmentModelList mModelList;
     private @Nullable ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
+    private @Nullable FuseboxMetrics mMetrics;
     private final ListObserver<Void> mListObserver =
             new ListObserver<>() {
                 @Override
@@ -181,13 +182,20 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     }
 
     @EnsuresNonNullIf(
-            value = {"mProfile", "mInput", "mModelList", "mComposeboxQueryControllerBridge"},
+            value = {
+                "mProfile",
+                "mInput",
+                "mModelList",
+                "mComposeboxQueryControllerBridge",
+                "mMetrics"
+            },
             result = true)
     private boolean isInInputSession() {
         return mProfile != null
                 && mInput != null
                 && mModelList != null
-                && mComposeboxQueryControllerBridge != null;
+                && mComposeboxQueryControllerBridge != null
+                && mMetrics != null;
     }
 
     private void setController(@Nullable ComposeboxQueryControllerBridge controller) {
@@ -254,6 +262,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
      *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
     /* package */ void beginInput(FuseboxSessionState session) {
+        mMetrics = session.getMetrics();
         mProfile = assertNonNull(session.getProfile());
         setAutocompleteInput(session.getAutocompleteInput());
         setController(session.getComposeboxQueryControllerBridge());
@@ -271,6 +280,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         setController(null);
         setAutocompleteInput(null);
         mProfile = null;
+        mMetrics = null;
     }
 
     private void setAutocompleteInput(@Nullable AutocompleteInput input) {
@@ -405,7 +415,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         }
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
-        FuseboxMetrics.notifyAttachmentsPopupToggled(mPopup.isShowing(), mModel, tracker);
+        mMetrics.notifyAttachmentsPopupToggled(mPopup.isShowing(), mModel, tracker);
     }
 
     private void updateModelForCurrentTab() {
@@ -444,7 +454,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
     private void onAddCurrentTab(Tab tab) {
         if (!isInInputSession()) return;
-        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CURRENT_TAB);
+        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CURRENT_TAB);
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
         Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
@@ -524,7 +534,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         if (!isInInputSession()) return;
 
         mPopup.dismiss();
-        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
+        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB)) return;
 
         Intent intent = ChromeItemPickerUtils.createChromeItemPickerIntent(mContext);
@@ -613,7 +623,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         if (!isInInputSession()) return;
 
         mPopup.dismiss();
-        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CAMERA);
+        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CAMERA);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
 
         if (mPermissionDelegate.hasPermission(Manifest.permission.CAMERA)) {
@@ -708,7 +718,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         if (!isInInputSession()) return;
 
         mPopup.dismiss();
-        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
+        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
 
         boolean allowMultipleAttachments =
@@ -755,7 +765,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         if (!isInInputSession()) return;
 
         mPopup.dismiss();
-        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.FILES);
+        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.FILES);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE)) return;
 
         var i =
@@ -792,7 +802,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         if (!isInInputSession()) return;
 
         mPopup.dismiss();
-        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CLIPBOARD);
+        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CLIPBOARD);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
 
         long startTime = SystemClock.elapsedRealtime();

@@ -9,6 +9,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
@@ -47,7 +49,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.ViewportRectProvider;
@@ -59,7 +60,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -87,6 +87,7 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private FuseboxMetrics mMetrics;
 
     private AutocompleteInput mAutocompleteInput;
     private ActivityController<TestActivity> mActivityController;
@@ -142,6 +143,7 @@ public class FuseboxCoordinatorUnitTest {
         lenient().doReturn(mAutocompleteController).when(session).getAutocompleteController();
         lenient().doReturn(mAutocompleteInput).when(session).getAutocompleteInput();
         lenient().doReturn(mComposebox).when(session).getComposeboxQueryControllerBridge();
+        lenient().doReturn(mMetrics).when(session).getMetrics();
         return session;
     }
 
@@ -306,23 +308,16 @@ public class FuseboxCoordinatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNotifyOmniboxSessionEnded() {
         mCoordinator.beginInput(createSession());
-        mCoordinator.setMediatorForTesting(mMediator);
-
-        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
-        mAutocompleteInput.setModelMode(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Omnibox.MobileFusebox.AutocompleteRequestTypeAtNavigation",
-                                AutocompleteRequestType.AI_MODE)
-                        .expectIntRecord(
-                                "Omnibox.MobileFusebox.ModelAtNavigation",
-                                ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
-                        .build();
-
         mCoordinator.notifyOmniboxSessionEnded(true);
 
-        histogramWatcher.assertExpected();
+        verify(mMetrics).notifyOmniboxSessionEnded(eq(true), anyInt(), anyInt());
+
+        mCoordinator.endInput();
+        clearInvocations(mMetrics);
+
+        mCoordinator.beginInput(createSession());
+        mCoordinator.notifyOmniboxSessionEnded(false);
+
+        verify(mMetrics).notifyOmniboxSessionEnded(eq(false), anyInt(), anyInt());
     }
 }

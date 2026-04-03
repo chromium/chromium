@@ -77,6 +77,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final SnackbarManager mSnackbarManager;
     private @Nullable ViewportRectProvider mViewportRectProvider;
+    private @Nullable FuseboxMetrics mMetrics;
 
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
     private @Nullable FuseboxMediator mMediator;
@@ -247,8 +248,11 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         ensureMediatorCreated();
 
         mInput = session.getAutocompleteInput();
+        mMetrics = session.getMetrics();
         mMediator.beginInput(session);
-        FuseboxMetrics.notifyOmniboxSessionStarted();
+        if (mMetrics != null) {
+            mMetrics.notifyOmniboxSessionStarted();
+        }
     }
 
     /** Called when the user stops interacting with the Omnibox. */
@@ -257,6 +261,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             mMediator.endInput();
         }
         mInput = null;
+        mMetrics = null;
     }
 
     // TemplateUrlServiceObserver
@@ -311,8 +316,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
     public void notifyOmniboxSessionEnded(boolean userDidNavigate) {
         // Skip cases where session should not be recorded (e.g. unsupported page class).
-        if (mInput == null) return;
-        FuseboxMetrics.notifyOmniboxSessionEnded(
+        if (mInput == null || mMetrics == null) return;
+        mMetrics.notifyOmniboxSessionEnded(
                 userDidNavigate, mInput.getRequestType(), mInput.getModelMode());
     }
 

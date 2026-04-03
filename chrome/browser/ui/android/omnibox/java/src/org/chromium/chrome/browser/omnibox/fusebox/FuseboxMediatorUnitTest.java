@@ -212,6 +212,7 @@ public class FuseboxMediatorUnitTest {
 
     private FuseboxSessionState createSession() {
         var session = mock(FuseboxSessionState.class);
+        var metrics = new FuseboxMetrics();
         lenient().doReturn(mAutocompleteController).when(session).getAutocompleteController();
         lenient().doReturn(mProfile).when(session).getProfile();
         lenient().doReturn(mInput).when(session).getAutocompleteInput();
@@ -220,6 +221,7 @@ public class FuseboxMediatorUnitTest {
                 .when(session)
                 .getComposeboxQueryControllerBridge();
         lenient().doReturn(mAttachments).when(session).getFuseboxAttachmentModelList();
+        lenient().doReturn(metrics).when(session).getMetrics();
         return session;
     }
 
