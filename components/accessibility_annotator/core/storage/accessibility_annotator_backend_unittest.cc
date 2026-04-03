@@ -43,12 +43,17 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
   std::string page_title = "Test Page Title";
   base::DictValue annotations;
   annotations.Set("1", "value1");
+  base::DictValue classifier_results;
+  classifier_results.Set("url_match_result", "test_category");
 
   // Cache should be empty initially.
   ASSERT_FALSE(backend_->GetContentAnnotationsCacheData(url).has_value());
 
-  backend_->SetContentAnnotationsCacheData(url, page_title,
-                                           annotations.Clone());
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+  data.page_title = page_title;
+  data.annotations = annotations.Clone();
+  data.classifier_results = classifier_results.Clone();
+  backend_->SetContentAnnotationsCacheData(url, std::move(data));
 
   base::optional_ref<
       const AccessibilityAnnotatorBackend::ContentAnnotationsData>
@@ -56,6 +61,7 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
   ASSERT_TRUE(cached_data.has_value());
   EXPECT_EQ(cached_data->page_title, page_title);
   EXPECT_EQ(cached_data->annotations, annotations);
+  EXPECT_EQ(cached_data->classifier_results, classifier_results);
 }
 
 TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataEmpty) {
@@ -70,8 +76,14 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
   base::DictValue annotations;
   annotations.Set("1", "value1");
   annotations.Set("2", "value2");
-  backend_->SetContentAnnotationsCacheData(url, page_title,
-                                           annotations.Clone());
+  base::DictValue classifier_results;
+  classifier_results.Set("url_match_result", "test category");
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+  data.page_title = page_title;
+  data.annotations = annotations.Clone();
+  data.classifier_results = classifier_results.Clone();
+  backend_->SetContentAnnotationsCacheData(url, std::move(data));
 
   base::Value result = backend_->GetDebugUICacheData();
   ASSERT_TRUE(result.is_list());
@@ -86,6 +98,12 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
   ASSERT_TRUE(annotations_dict);
   EXPECT_THAT(annotations_dict->FindString("1"), Pointee(Eq("value1")));
   EXPECT_THAT(annotations_dict->FindString("2"), Pointee(Eq("value2")));
+
+  const base::DictValue* classifier_results_dict =
+      entry.FindDict("classifier_results");
+  ASSERT_TRUE(classifier_results_dict);
+  EXPECT_THAT(classifier_results_dict->FindString("url_match_result"),
+              Pointee(Eq("test category")));
 }
 
 }  // namespace

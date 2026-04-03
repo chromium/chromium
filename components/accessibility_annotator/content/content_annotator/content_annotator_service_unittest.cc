@@ -590,6 +590,10 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
   EXPECT_EQ(cached_data->annotations,
             base::JSONReader::Read(data, base::JSON_PARSE_RFC)->GetDict());
   EXPECT_EQ(cached_data->page_title, "Test Title");
+
+  base::DictValue expected_classifier_results;
+  expected_classifier_results.Set("title_keyword_result", "test category");
+  EXPECT_EQ(cached_data->classifier_results, expected_classifier_results);
 }
 
 TEST_F(ContentAnnotatorServiceTest,

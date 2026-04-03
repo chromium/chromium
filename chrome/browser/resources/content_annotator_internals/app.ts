@@ -14,6 +14,7 @@ export interface AnnotationEntry {
   url: string;
   title: string;
   annotations: any;
+  classifier_results: any;
 }
 
 export class ContentAnnotatorInternalsAppElement extends CrLitElement {
@@ -86,8 +87,8 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
     return null;
   }
 
-  protected formatAnnotations_(annotations: any): string {
-    return JSON.stringify(annotations, null, 2);
+  protected formatJson_(data: any): string {
+    return JSON.stringify(data, null, 2);
   }
 }
 

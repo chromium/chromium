@@ -31,7 +31,7 @@ class TestAccessibilityAnnotatorBackend : public AccessibilityAnnotatorBackend {
               (const, override));
   MOCK_METHOD(void,
               SetContentAnnotationsCacheData,
-              (const GURL&, std::string, base::DictValue),
+              (const GURL&, ContentAnnotationsData),
               (override));
   MOCK_METHOD(base::Value, GetDebugUICacheData, (), (const, override));
   MOCK_METHOD(void,

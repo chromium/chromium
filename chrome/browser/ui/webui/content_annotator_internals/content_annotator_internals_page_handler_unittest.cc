@@ -99,9 +99,19 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
       AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
   ASSERT_TRUE(backend);
 
-  backend->SetContentAnnotationsCacheData(
-      GURL("https://example.com"), "Title",
-      base::DictValue().Set("key", "value"));
+  base::DictValue annotations;
+  annotations.Set("key", "value");
+  base::DictValue classifier_results;
+  classifier_results.Set("url_match_result", "test category");
+
+  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
+      data;
+  data.page_title = "Title";
+  data.annotations = std::move(annotations);
+  data.classifier_results = std::move(classifier_results);
+
+  backend->SetContentAnnotationsCacheData(GURL("https://example.com"),
+                                          std::move(data));
 
   base::RunLoop run_loop;
   handler()->GetAnnotatedContent(
@@ -112,9 +122,16 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
         const base::DictValue& entry = list[0].GetDict();
         EXPECT_THAT(entry.FindString("url"), Pointee(Eq("https://example.com/")));
         EXPECT_THAT(entry.FindString("title"), Pointee(Eq("Title")));
+
         const base::DictValue* annotations = entry.FindDict("annotations");
         ASSERT_TRUE(annotations);
         EXPECT_THAT(annotations->FindString("key"), Pointee(Eq("value")));
+
+        const base::DictValue* classifier_results =
+            entry.FindDict("classifier_results");
+        ASSERT_TRUE(classifier_results);
+        EXPECT_THAT(classifier_results->FindString("url_match_result"),
+                    Pointee(Eq("test category")));
         run_loop.Quit();
       }));
   run_loop.Run();

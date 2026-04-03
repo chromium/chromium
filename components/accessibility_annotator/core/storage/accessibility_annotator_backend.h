@@ -42,6 +42,7 @@ class AccessibilityAnnotatorBackend : public KeyedService {
 
     std::string page_title;
     base::DictValue annotations;
+    base::DictValue classifier_results;
   };
 
   ~AccessibilityAnnotatorBackend() override = default;
@@ -60,8 +61,7 @@ class AccessibilityAnnotatorBackend : public KeyedService {
 
   // Writes to Content Annotations cache.
   virtual void SetContentAnnotationsCacheData(const GURL& url,
-                                              std::string page_title,
-                                              base::DictValue annotations) = 0;
+                                              ContentAnnotationsData data) = 0;
 
   // Pulls cache data into a base::Value for use in the debug UI.
   virtual base::Value GetDebugUICacheData() const = 0;

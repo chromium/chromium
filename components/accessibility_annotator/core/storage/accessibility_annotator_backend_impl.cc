@@ -111,12 +111,8 @@ AccessibilityAnnotatorBackendImpl::GetContentAnnotationsCacheData(
 
 void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
     const GURL& url,
-    std::string page_title,
-    base::DictValue annotations) {
+    ContentAnnotationsData data) {
   // This automatically handles eviction of the oldest entries if full.
-  ContentAnnotationsData data;
-  data.page_title = std::move(page_title);
-  data.annotations = std::move(annotations);
   content_annotations_cache_.Put(url, std::move(data));
 }
 
@@ -128,6 +124,7 @@ base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
     entry.Set("url", item.first.spec());
     entry.Set("title", item.second.page_title);
     entry.Set("annotations", item.second.annotations.Clone());
+    entry.Set("classifier_results", item.second.classifier_results.Clone());
     result.Append(std::move(entry));
   }
   return base::Value(std::move(result));

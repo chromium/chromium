@@ -61,6 +61,24 @@ std::string StripMarkdown(std::string_view input) {
   return std::string(base::TrimWhitespaceASCII(result, base::TRIM_ALL));
 }
 
+base::DictValue ContentClassificationResultToDict(
+    const ContentClassificationResult& result) {
+  base::DictValue dict;
+  if (result.title_keyword_result.has_value()) {
+    dict.Set("title_keyword_result",
+             result.title_keyword_result->category.value_or("none"));
+  }
+  if (result.url_match_result.has_value()) {
+    dict.Set("url_match_result",
+             result.url_match_result->category.value_or("none"));
+  }
+  if (result.semantic_match_result.has_value()) {
+    dict.Set("semantic_match_result",
+             result.semantic_match_result->category.value_or("none"));
+  }
+  return dict;
+}
+
 }  // namespace
 
 // static
@@ -251,18 +269,23 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
                             reached_annotation);
   if (reached_annotation &&
       features::kContentAnnotatorEnableFullAnnotation.Get()) {
+    base::DictValue classifier_values =
+        ContentClassificationResultToDict(result);
+
     optimization_guide::proto::PageContext page_context;
     page_context.set_url(complete_data.url.spec());
     page_context.set_title(complete_data.page_title.value());
     *page_context.mutable_annotated_page_content() =
         complete_data.annotated_page_content->data;
-    GenerateAnnotations(std::move(page_context), complete_data.url);
+    GenerateAnnotations(std::move(page_context), complete_data.url,
+                        std::move(classifier_values));
   }
 }
 
 void ContentAnnotatorService::GenerateAnnotations(
     optimization_guide::proto::PageContext page_context,
-    const GURL& url) {
+    const GURL& url,
+    base::DictValue classifier_results) {
   std::string page_title = page_context.title();
   optimization_guide::proto::ContentAnnotationRequest request;
   *request.mutable_page_context() = std::move(page_context);
@@ -272,13 +295,14 @@ void ContentAnnotatorService::GenerateAnnotations(
       std::move(request),
       {.execution_timeout = features::kContentAnnotatorAnnotationTimeout.Get()},
       base::BindOnce(&ContentAnnotatorService::HandleModelExecutionResult,
-                     weak_ptr_factory_.GetWeakPtr(), url,
-                     std::move(page_title)));
+                     weak_ptr_factory_.GetWeakPtr(), url, std::move(page_title),
+                     std::move(classifier_results)));
 }
 
 void ContentAnnotatorService::HandleModelExecutionResult(
     const GURL& url,
     std::string page_title,
+    base::DictValue classifier_results,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (url.is_empty() || !url.is_valid()) {
@@ -297,8 +321,12 @@ void ContentAnnotatorService::HandleModelExecutionResult(
     std::optional<base::DictValue> validated_data =
         validator_->Validate(StripMarkdown(*extracted_data));
     if (validated_data.has_value()) {
+      AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+      data.page_title = std::move(page_title);
+      data.annotations = std::move(*validated_data);
+      data.classifier_results = std::move(classifier_results);
       accessibility_annotator_backend_->SetContentAnnotationsCacheData(
-          url, std::move(page_title), std::move(*validated_data));
+          url, std::move(data));
     }
   }
 }

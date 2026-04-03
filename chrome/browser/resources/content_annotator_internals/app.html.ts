@@ -9,17 +9,21 @@ import type {AnnotationEntry, ContentAnnotatorInternalsAppElement} from './app.j
 export function getHtml(this: ContentAnnotatorInternalsAppElement) {
   return html`
     <h1>Content Annotator Internals</h1>
-    ${this.errorMessage_ ? html`
+    ${
+      this.errorMessage_ ? html`
       <p class="error">${this.errorMessage_}</p>
-    ` : this.logContent_.length === 0 ? html`
+    ` :
+          this.logContent_.length === 0 ? html`
       <pre>The content annotations cache is currently empty.</pre>
-    ` : html`
+    ` :
+                                          html`
       <h2>Cached Annotations</h2>
       <table>
         <thead>
           <tr>
             <th>URL</th>
             <th>Title</th>
+            <th>Classifier Results</th>
             <th>Annotations</th>
           </tr>
         </thead>
@@ -29,7 +33,10 @@ export function getHtml(this: ContentAnnotatorInternalsAppElement) {
               <td>${entry.url}</td>
               <td>${entry.title}</td>
               <td>
-                <pre>${this.formatAnnotations_(entry.annotations)}</pre>
+                <pre>${this.formatJson_(entry.classifier_results)}</pre>
+              </td>
+              <td>
+                <pre>${this.formatJson_(entry.annotations)}</pre>
               </td>
             </tr>
           `)}
