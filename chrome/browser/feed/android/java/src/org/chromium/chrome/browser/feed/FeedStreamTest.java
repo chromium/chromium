@@ -521,7 +521,7 @@ public class FeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test
@@ -553,7 +553,7 @@ public class FeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
 
         assertEquals(
                 "someWebFeedName",
@@ -592,7 +592,7 @@ public class FeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
 
         assertEquals(
                 null,
@@ -664,7 +664,7 @@ public class FeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test
@@ -684,7 +684,7 @@ public class FeedStreamTest {
                         eq(true),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test
@@ -703,7 +703,7 @@ public class FeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test

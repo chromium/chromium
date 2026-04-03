@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app.creator;
 import android.app.Activity;
 import android.content.Intent;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -70,7 +69,7 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
             boolean inGroup,
             int pageId,
             PageLoadObserver pageLoadObserver,
-            Callback<VisitResult> onVisitComplete) {
+            int surfaceId) {
         // Back-of-card actions
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB
                 || disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB

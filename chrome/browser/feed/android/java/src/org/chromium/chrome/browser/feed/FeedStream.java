@@ -332,8 +332,7 @@ public class FeedStream implements Stream {
                                 inGroup,
                                 pageId,
                                 /* pageLoadObserver= */ this,
-                                visitResult ->
-                                        mBridge.reportOpenVisitComplete(visitResult.visitTimeMs));
+                                mBridge.surfaceId());
                     });
         }
 

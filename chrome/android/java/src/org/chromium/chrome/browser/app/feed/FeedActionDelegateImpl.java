@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app.feed;
 import android.app.Activity;
 import android.content.Intent;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -146,7 +145,7 @@ public class FeedActionDelegateImpl
             boolean inGroup,
             int pageId,
             PageLoadObserver pageLoadObserver,
-            Callback<VisitResult> onVisitComplete) {
+            int surfaceId) {
         params.setReferrer(
                 new Referrer(
                         SuggestionsConfig.getReferrerUrl(),
@@ -167,14 +166,8 @@ public class FeedActionDelegateImpl
 
         if (tab != null) {
             tab.addObserver(new FeedTabNavigationObserver(inNewTab, pageId, pageLoadObserver));
-            NavigationRecorder.record(
-                    tab,
-                    navigationResult -> {
-                        FeedActionDelegate.VisitResult result =
-                                new FeedActionDelegate.VisitResult();
-                        result.visitTimeMs = navigationResult.duration;
-                        onVisitComplete.onResult(result);
-                    });
+            Profile profile = mProfile;
+            NavigationRecorder.record(tab, profile, surfaceId);
         }
 
         BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.FEED);

@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.app.feed;
 
-
 import android.os.SystemClock;
 
-import org.chromium.base.Callback;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -21,15 +24,16 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.url.GURL;
 
 /**
  * Records stats related to a page visit, such as the time spent on the website, or if the user
- * comes back to the starting point. Use through {@link #record(Tab, Callback)}.
+ * comes back to the starting point. Use through {@link #record(Tab, Profile, int)}.
  */
+@JNINamespace("feed::android")
 @NullMarked
 public class NavigationRecorder extends EmptyTabObserver {
-    private final Callback<VisitData> mVisitEndCallback;
+    private @Nullable Profile mProfile;
+    private final int mSurfaceId;
 
     private final @Nullable WebContentsObserver mWebContentsObserver;
 
@@ -37,16 +41,19 @@ public class NavigationRecorder extends EmptyTabObserver {
 
     /**
      * Sets up visit recording for the provided tab.
+     *
      * @param tab Tab where the visit should be recorded
-     * @param visitEndCallback The callback where the visit data is sent when it completes.
+     * @param profile The current profile instance.
+     * @param surfaceId The ID of the Feeds surface.
      */
-    public static void record(Tab tab, Callback<VisitData> visitEndCallback) {
-        tab.addObserver(new NavigationRecorder(tab, visitEndCallback));
+    public static void record(Tab tab, Profile profile, int surfaceId) {
+        tab.addObserver(new NavigationRecorder(tab, profile, surfaceId));
     }
 
     /** Private because users should not hold to references to the instance. */
-    private NavigationRecorder(final Tab tab, Callback<VisitData> visitEndCallback) {
-        mVisitEndCallback = visitEndCallback;
+    private NavigationRecorder(final Tab tab, Profile profile, int surfaceId) {
+        mProfile = profile;
+        mSurfaceId = surfaceId;
 
         // onLoadUrl below covers many exit conditions to stop recording but not all,
         // such as navigating back. We therefore stop recording if a navigation stack change
@@ -66,7 +73,7 @@ public class NavigationRecorder extends EmptyTabObserver {
                             if (startStackIndex != navController.getLastCommittedEntryIndex()) {
                                 return;
                             }
-                            endRecording(tab, tab.getUrl());
+                            endRecording(tab);
                         }
                     };
         } else {
@@ -83,12 +90,12 @@ public class NavigationRecorder extends EmptyTabObserver {
 
     @Override
     public void onHidden(Tab tab, @TabHidingType int type) {
-        endRecording(tab, null);
+        endRecording(tab);
     }
 
     @Override
     public void onDestroyed(Tab tab) {
-        endRecording(tab, null);
+        endRecording(tab);
     }
 
     @Override
@@ -103,10 +110,10 @@ public class NavigationRecorder extends EmptyTabObserver {
                         | PageTransition.CHAIN_END
                         | PageTransition.FROM_API;
 
-        if ((params.getTransitionType() & transitionTypeMask) != 0) endRecording(tab, null);
+        if ((params.getTransitionType() & transitionTypeMask) != 0) endRecording(tab);
     }
 
-    private void endRecording(@Nullable Tab removeObserverFromTab, @Nullable GURL endUrl) {
+    private void endRecording(@Nullable Tab removeObserverFromTab) {
         if (removeObserverFromTab != null) {
             removeObserverFromTab.removeObserver(this);
             if (mWebContentsObserver != null) {
@@ -114,18 +121,16 @@ public class NavigationRecorder extends EmptyTabObserver {
             }
         }
 
-        long visitTimeMs = SystemClock.elapsedRealtime() - mStartTimeMs;
-        mVisitEndCallback.onResult(new VisitData(visitTimeMs, endUrl));
+        if (mProfile != null) {
+            long visitTimeMs = mStartTimeMs == 0 ? 0 : SystemClock.elapsedRealtime() - mStartTimeMs;
+            NavigationRecorderJni.get().reportOpenVisitComplete(mProfile, mSurfaceId, visitTimeMs);
+            mProfile = null;
+        }
     }
 
-    /** Plain holder for the data of a recorded visit. */
-    public static class VisitData {
-        public final long duration;
-        public final @Nullable GURL endUrl;
-
-        public VisitData(long duration, @Nullable GURL endUrl) {
-            this.duration = duration;
-            this.endUrl = endUrl;
-        }
+    @NativeMethods
+    public interface Natives {
+        void reportOpenVisitComplete(
+                @JniType("Profile*") Profile profile, int surfaceId, long visitTimeMs);
     }
 }

@@ -214,7 +214,7 @@ public class SingleWebFeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test
@@ -246,7 +246,7 @@ public class SingleWebFeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
 
         assertEquals(
                 "someWebFeedName",
@@ -285,7 +285,7 @@ public class SingleWebFeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
 
         assertEquals(
                 null,
@@ -333,7 +333,7 @@ public class SingleWebFeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test
@@ -353,7 +353,7 @@ public class SingleWebFeedStreamTest {
                         eq(true),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test
@@ -372,7 +372,7 @@ public class SingleWebFeedStreamTest {
                         eq(false),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test

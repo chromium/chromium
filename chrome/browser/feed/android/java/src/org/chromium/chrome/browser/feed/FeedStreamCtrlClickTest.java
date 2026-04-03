@@ -182,7 +182,7 @@ public class FeedStreamCtrlClickTest {
                         anyBoolean(),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test
@@ -213,7 +213,7 @@ public class FeedStreamCtrlClickTest {
                         anyBoolean(),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test
@@ -244,7 +244,7 @@ public class FeedStreamCtrlClickTest {
                         anyBoolean(),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 
     @Test
@@ -275,6 +275,6 @@ public class FeedStreamCtrlClickTest {
                         anyBoolean(),
                         anyInt(),
                         eq(handler),
-                        any());
+                        anyInt());
     }
 }

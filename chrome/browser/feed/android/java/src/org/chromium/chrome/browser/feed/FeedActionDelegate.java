@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.feed;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -59,7 +58,7 @@ public interface FeedActionDelegate {
      * @param inGroup Whether to open the url in a tab in group.
      * @param pageId An unique ID identifying the page to load.
      * @param pageLoadObserver Observer to get called with page load events.
-     * @param onVisitComplete Called when the user closes or navigates away from the page.
+     * @param surfaceId The surface ID of the feeds.
      */
     void openSuggestionUrl(
             int disposition,
@@ -67,7 +66,7 @@ public interface FeedActionDelegate {
             boolean inGroup,
             int pageId,
             PageLoadObserver pageLoadObserver,
-            Callback<VisitResult> onVisitComplete);
+            int surfaceId);
 
     /**
      * Opens a page.

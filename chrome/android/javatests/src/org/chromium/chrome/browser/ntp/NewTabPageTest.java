@@ -46,7 +46,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
@@ -161,7 +160,6 @@ public class NewTabPageTest {
     @Mock OmniboxStub mOmniboxStub;
     @Mock VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock FeedReliabilityLogger mFeedReliabilityLogger;
-    @Mock private Callback mOnVisitComplete;
     @Mock FeedActionDelegate.PageLoadObserver mPageLoadObserver;
     @Mock LogoBridge.Natives mLogoBridgeJniMock;
     @Mock private LogoBridge mLogoBridge;
@@ -688,6 +686,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     public void testRecordHistogramFeedClick_Ntp() {
+        int surfaceId = 1;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FeedActionDelegate feedActionDelegate = mNtp.getFeedActionDelegateForTesting();
@@ -701,7 +700,7 @@ public class NewTabPageTest {
                             false,
                             0,
                             mPageLoadObserver,
-                            mOnVisitComplete);
+                            surfaceId);
                     histogramWatcher.assertExpected(
                             HISTOGRAM_NTP_MODULE_CLICK
                                     + " is not recorded correctly when click on Feeds or long press"
@@ -715,7 +714,7 @@ public class NewTabPageTest {
                             false,
                             0,
                             mPageLoadObserver,
-                            mOnVisitComplete);
+                            surfaceId);
                     histogramWatcher.assertExpected(
                             HISTOGRAM_NTP_MODULE_CLICK
                                     + " is not recorded correctly when long press then open in new"
@@ -729,7 +728,7 @@ public class NewTabPageTest {
                             false,
                             0,
                             mPageLoadObserver,
-                            mOnVisitComplete);
+                            surfaceId);
                     histogramWatcher.assertExpected(
                             HISTOGRAM_NTP_MODULE_CLICK
                                     + " is not recorded correctly when long press then open in"
