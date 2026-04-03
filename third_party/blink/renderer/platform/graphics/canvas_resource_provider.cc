@@ -1039,6 +1039,7 @@ CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndSnapshot(
     return nullptr;
   }
 
+  FlushCanvas(/*is_overwrite=*/false);
   return Snapshot(orientation);
 }
 
