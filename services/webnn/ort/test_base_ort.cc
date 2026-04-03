@@ -4,12 +4,17 @@
 
 #include "services/webnn/ort/test_base_ort.h"
 
+#include "base/win/windows_version.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 
 namespace webnn::ort {
 
 void TestBaseOrt::SetUp() {
-  if (!PlatformFunctions::EnsureInitialized()) {
+  if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
+    GTEST_SKIP() << "The Windows version is too old.";
+  }
+
+  if (!PlatformFunctions::GetInstance()) {
     GTEST_SKIP() << "Failed to initialize ORT platform functions.";
   }
 }

@@ -532,11 +532,10 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
         ep_package_info_map) {
   SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.CreateEnvironment");
 
-  if (!PlatformFunctions::EnsureInitialized()) {
+  auto* platform_functions = PlatformFunctions::GetInstance();
+  if (!platform_functions) {
     return base::unexpected("Failed to get ONNX Runtime platform functions.");
   }
-
-  const auto* platform_functions = PlatformFunctions::GetInstance();
 
   OrtLoggingLevel ort_logging_level = GetOrtLoggingLevel();
 
