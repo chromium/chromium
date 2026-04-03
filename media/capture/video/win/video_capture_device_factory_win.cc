@@ -572,7 +572,8 @@ VideoCaptureDeviceFactoryWin::VideoCaptureDeviceFactoryWin()
       use_d3d11_with_media_foundation_(
           media::IsMediaFoundationD3D11VideoCaptureEnabled() &&
           switches::IsVideoCaptureUseGpuMemoryBufferEnabled()),
-      com_thread_("Windows Video Capture COM Thread") {
+      com_thread_("Windows Video Capture COM Thread",
+                  base::Thread::Restartable{}) {
   if (use_media_foundation_ && !PlatformSupportsMediaFoundation()) {
     use_media_foundation_ = false;
   }
