@@ -1080,10 +1080,6 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
   // while in this case we are simply returning the rendered CPU-side results to
   // the client.
   if (!is_accelerated_) {
-    if (!IsValid()) {
-      return nullptr;
-    }
-
     FlushCanvas(/*is_overwrite=*/false);
 
     cc::PaintImage paint_image;
