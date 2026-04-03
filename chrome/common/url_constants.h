@@ -358,7 +358,7 @@ inline constexpr char16_t kMyActivityUrlInHistory[] =
 
 // The URL for the Gemini Personal Context page.
 inline constexpr char16_t kGeminiPersonalContextUrl[] =
-    u"https://gemini.google.com/personal_intelligence";
+    u"https://gemini.google.com/personalization-settings";
 
 // The URL for "Your Gemini Apps Activity" page.
 inline constexpr char16_t kMyActivityGeminiAppsUrl[] =
