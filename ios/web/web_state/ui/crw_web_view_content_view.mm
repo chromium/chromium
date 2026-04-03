@@ -120,11 +120,11 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   }
 }
 
-- (UIEdgeInsets)obscuredInset {
+- (UIEdgeInsets)obscuredInsets {
   return _obscuredInsets;
 }
 
-- (void)setObscuredInset:(UIEdgeInsets)obscuredInsets {
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
   if (@available(iOS 26, *)) {
     [_webView setObscuredContentInsets:obscuredInsets];
   }
