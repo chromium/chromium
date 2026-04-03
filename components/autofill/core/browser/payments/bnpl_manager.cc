@@ -224,7 +224,7 @@ void BnplManager::OnIssuerAccepted(BnplIssuer issuer) {
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
-    ShowProgressUiForPayLaterTab();
+    ReplaceIssuerSuggestionsWithLoadingThrobber();
   }
 
   // When an issuer is accepted but no checkout amount is present, call
@@ -317,8 +317,34 @@ void BnplManager::OnCreditCardSuggestionsShown(
 }
 
 void BnplManager::OnUserDecisionToUseSavedCards() {
-  // TODO(crbug.com/477689220): Cancel all pending BNPL related server call and
-  // reset some cached data based on flow status.
+  CancelOngoingRequests();
+  CHECK(ongoing_flow_state_);
+
+  // Always go to issuer suggestions if there is a checkout amount present.
+  // Early return in this case to keep the checkout amount cached.
+  if (ongoing_flow_state_->final_checkout_amount) {
+    ongoing_flow_state_->issuer.reset();
+    ReplaceLoadingThrobberWithIssuerSuggestions(
+        GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
+                                   ongoing_flow_state_->final_checkout_amount));
+    return;
+  }
+
+  if (HasSeenAmountExtractionAiTerms()) {
+    // If the user has seen the AI terms before, and there is no checkout
+    // amount, make sure the loading throbber is showing.
+    ReplaceIssuerSuggestionsWithLoadingThrobber();
+  } else {
+    // For first time users, if there is no checkout amount, make sure the
+    // Pay Later tab is updated to show issuer suggestions.
+    ReplaceLoadingThrobberWithIssuerSuggestions(
+        GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
+                                   ongoing_flow_state_->final_checkout_amount));
+  }
+
+  // Reset flow cache to restart the flow if the user select the Pay Later tab
+  // again.
+  ongoing_flow_state_.reset();
 }
 
 void BnplManager::OnAmountExtractionReturned(
@@ -407,7 +433,7 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
           GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
                                      /*checkout_amount=*/std::nullopt,
                                      result.error());
-      UpdateSuggestionsOnAiAmountExtractionResponse(issuer_contexts);
+      ReplaceLoadingThrobberWithIssuerSuggestions(issuer_contexts);
     } else {
       using enum BnplStrategy::BeforeSwitchingViewAction;
       switch (payments_autofill_client()
@@ -458,7 +484,7 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
                                    ongoing_flow_state_->final_checkout_amount);
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnablePayNowPayLaterTabs)) {
-      UpdateSuggestionsOnAiAmountExtractionResponse(issuer_contexts);
+      ReplaceLoadingThrobberWithIssuerSuggestions(issuer_contexts);
     } else {
       bool is_amount_supported_by_any_issuer =
           IsExtractedAmountSupportedByAnyBnplIssuer(
@@ -1116,10 +1142,21 @@ void BnplManager::OnBnplPaymentInstrumentUpdated(
   }
 }
 
-void BnplManager::UpdateSuggestionsOnAiAmountExtractionResponse(
+void BnplManager::ReplaceLoadingThrobberWithIssuerSuggestions(
     const std::vector<payments::BnplIssuerContext>& issuer_contexts) {
   CHECK(!cached_suggestions_.empty());
   std::vector<Suggestion> new_suggestions = cached_suggestions_;
+
+  // If there is no loading suggestion, then no need to update the current
+  // suggestion list.
+  auto throbber_it =
+      std::find_if(new_suggestions.begin(), new_suggestions.end(),
+                   [](const Suggestion& suggestion) {
+                     return suggestion.type == SuggestionType::kLoadingThrobber;
+                   });
+  if (throbber_it == new_suggestions.end()) {
+    return;
+  }
 
   std::vector<Suggestion> bnpl_suggestions = GetSuggestionsForBnpl(
       issuer_contexts, browser_autofill_manager_->client().GetAppLocale(),
@@ -1128,14 +1165,7 @@ void BnplManager::UpdateSuggestionsOnAiAmountExtractionResponse(
   // Replace the loading throbber suggestion with the BNPL suggestions. This
   // ensures that suggestions such as footers are kept after the newly added
   // suggestions.
-  auto throbber_it =
-      std::find_if(new_suggestions.begin(), new_suggestions.end(),
-                   [](const Suggestion& suggestion) {
-                     return suggestion.type == SuggestionType::kLoadingThrobber;
-                   });
-  CHECK(throbber_it != new_suggestions.end());
   throbber_it = new_suggestions.erase(throbber_it);
-
   new_suggestions.insert(throbber_it,
                          std::make_move_iterator(bnpl_suggestions.begin()),
                          std::make_move_iterator(bnpl_suggestions.end()));
@@ -1143,10 +1173,9 @@ void BnplManager::UpdateSuggestionsOnAiAmountExtractionResponse(
   UpdateAndCacheSuggestions(std::move(new_suggestions));
 }
 
-void BnplManager::ShowProgressUiForPayLaterTab() {
-  // This function is only called to update the Pay Later tab suggestions after
-  // the user accepted an BNPL issuer. At this moment, there has to be
-  // suggestions showing.
+void BnplManager::ReplaceIssuerSuggestionsWithLoadingThrobber() {
+  // This function is only called after the Pay Later tab has been shown. At
+  // this moment, there has to be suggestions showing.
   CHECK(!cached_suggestions_.empty());
 
   auto type_is_bnpl_entry = [](const Suggestion& s) {
@@ -1160,10 +1189,19 @@ void BnplManager::ShowProgressUiForPayLaterTab() {
   auto bnpl_suggestions_start =
       std::find_if(cached_suggestions_.begin(), cached_suggestions_.end(),
                    type_is_bnpl_entry);
-  // This function is only called to update the Pay Later tab suggestions after
-  // the user accepted an issuer. At this moment, there has to be at least one
-  // BNPL suggestions showing.
-  CHECK(bnpl_suggestions_start != cached_suggestions_.end());
+
+  // If there is no BNPL suggestions in the suggestion list, there has to be a
+  // loading throbber suggestion. Therefore, no need to update the suggestion
+  // list.
+  if (bnpl_suggestions_start == cached_suggestions_.end()) {
+    CHECK(std::find_if(cached_suggestions_.begin(), cached_suggestions_.end(),
+                       [](const Suggestion& suggestion) {
+                         return suggestion.type ==
+                                SuggestionType::kLoadingThrobber;
+                       }) != cached_suggestions_.end());
+    return;
+  }
+
   // Find the end position of BNPL suggestions.
   auto bnpl_suggestions_end =
       std::find_if(bnpl_suggestions_start, cached_suggestions_.end(),

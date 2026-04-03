@@ -97,14 +97,17 @@ class BnplManagerTestApi {
     return bnpl_manager_->HasSeenAmountExtractionAiTerms();
   }
 
-  void UpdateSuggestionsOnAiAmountExtractionResponse(
+  void ReplaceLoadingThrobberWithIssuerSuggestions(
       const std::vector<BnplIssuerContext>& issuer_contexts) {
-    bnpl_manager_->UpdateSuggestionsOnAiAmountExtractionResponse(
-        issuer_contexts);
+    bnpl_manager_->ReplaceLoadingThrobberWithIssuerSuggestions(issuer_contexts);
   }
 
-  void ShowProgressUiForPayLaterTab() {
-    bnpl_manager_->ShowProgressUiForPayLaterTab();
+  void ReplaceIssuerSuggestionsWithLoadingThrobber() {
+    bnpl_manager_->ReplaceIssuerSuggestionsWithLoadingThrobber();
+  }
+
+  void SetIsCardNumberFieldEmpty(bool is_card_number_field_empty) {
+    bnpl_manager_->is_card_number_field_empty_ = is_card_number_field_empty;
   }
 
   void SetCachedSuggestions(std::vector<Suggestion> suggestions) {
