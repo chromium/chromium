@@ -1039,30 +1039,41 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 // Testing that the */.git/hooks are all blocked.
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       ConfirmSensitiveEntryAccess_SuffixBlock) {
+       ConfirmSensitiveEntryAccess_SuffixWriteBlock) {
+  // Parent folder is not blocked.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathInfo(FILE_PATH_LITERAL("\\\\.git")),
-                HandleType::kDirectory, UserAction::kOpen),
+                HandleType::kDirectory, UserAction::kSave),
             SensitiveDirectoryResult::kAllowed);
+  // .git/hooks is blocked for save.
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathInfo(FILE_PATH_LITERAL("\\\\.git\\hooks")),
+          HandleType::kDirectory, UserAction::kSave),
+      SensitiveDirectoryResult::kAbort);
+  // .git/hooks is not blocked for read.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathInfo(FILE_PATH_LITERAL("\\\\.git\\hooks")),
           HandleType::kDirectory, UserAction::kOpen),
-      SensitiveDirectoryResult::kAbort);
+      SensitiveDirectoryResult::kAllowed);
+  // .git/hooks inside another folder is blocked for save.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(),
                 PathInfo(FILE_PATH_LITERAL("\\\\a\\.git\\hooks")),
-                HandleType::kDirectory, UserAction::kOpen),
+                HandleType::kDirectory, UserAction::kSave),
             SensitiveDirectoryResult::kAbort);
+  // The subfolder under .git/hooks folder is blocked for save.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(),
                 PathInfo(FILE_PATH_LITERAL("\\\\a\\.git\\hooks\\b")),
-                HandleType::kDirectory, UserAction::kOpen),
+                HandleType::kDirectory, UserAction::kSave),
             SensitiveDirectoryResult::kAbort);
+  // Other suffix is allowed.
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathInfo(FILE_PATH_LITERAL("\\\\.git\\hook")),
-          HandleType::kDirectory, UserAction::kOpen),
+          HandleType::kDirectory, UserAction::kSave),
       SensitiveDirectoryResult::kAllowed);
 }
 #endif

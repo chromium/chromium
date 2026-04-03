@@ -136,7 +136,9 @@ class ChromeFileSystemAccessPermissionContext
     // directories are still blocked.
     kBlockNestedDirectories,
     // Only the given path and its parents are blocked.
-    kDontBlockChildren
+    kDontBlockChildren,
+    // Only write access to the given path and its children are blocked.
+    kBlockWrite,
   };
 
   // The initialization status of `block_path_rules_`.
@@ -504,6 +506,7 @@ class ChromeFileSystemAccessPermissionContext
   void CheckShouldBlockAccessToPathAndReply(
       base::FilePath path,
       HandleType handle_type,
+      UserAction user_action,
       std::vector<BlockPathRule> extra_rules,
       base::OnceCallback<void(bool)> callback,
       BlockPathRules block_path_rules);
@@ -513,6 +516,7 @@ class ChromeFileSystemAccessPermissionContext
   // whether the path is on the blocklist.
   void CheckPathAgainstBlocklist(const content::PathInfo& path_info,
                                  HandleType handle_type,
+                                 UserAction user_action,
                                  base::OnceCallback<void(bool)> callback);
   void DidCheckPathAgainstBlocklist(
       const url::Origin& origin,

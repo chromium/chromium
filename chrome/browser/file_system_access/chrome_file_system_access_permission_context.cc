@@ -117,6 +117,7 @@ using FileRequestData =
     FileSystemAccessPermissionRequestManager::FileRequestData;
 using RequestAccess = FileSystemAccessPermissionRequestManager::Access;
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
+using UserAction = content::FileSystemAccessPermissionContext::UserAction;
 using PersistedGrantStatus =
     ChromeFileSystemAccessPermissionContext::PersistedGrantStatus;
 using GrantType = ChromeFileSystemAccessPermissionContext::GrantType;
@@ -370,7 +371,7 @@ GenerateBlockPaths(bool should_normalize_file_path) {
                                 BlockType::kBlockNestedDirectories),
       // Block */.git/hooks on Windows, see crbug.com/465668234.
       BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/hooks"),
-                              BlockType::kBlockAllChildren),
+                              BlockType::kBlockWrite),
 #endif
 #if BUILDFLAG(IS_MAC)
       // Similar Mac specific blocks.
@@ -506,6 +507,7 @@ bool ShouldBlockAccessToPath(
     bool should_normalize_file_path,
     base::FilePath path,
     HandleType handle_type,
+    UserAction user_action,
     std::vector<ChromeFileSystemAccessPermissionContext::BlockPathRule>
         extra_rules,
     ChromeFileSystemAccessPermissionContext::BlockPathRules block_path_rules,
@@ -533,6 +535,11 @@ bool ShouldBlockAccessToPath(
   BlockType nearest_ancestor_block_type = BlockType::kDontBlockChildren;
   auto should_block_with_rule = [&](const base::FilePath& block_path,
                                     BlockType block_type) -> bool {
+    if (block_type == BlockType::kBlockWrite &&
+        user_action != UserAction::kSave) {
+      return false;
+    }
+
     if (path == block_path || path.IsParent(block_path)) {
       LOG(ERROR) << "Blocking access to " << path
                  << " because it is a parent of " << block_path;
@@ -2048,7 +2055,7 @@ void ChromeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
       &ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist,
       GetWeakPtr(), origin, path_info, handle_type, user_action, frame_id,
       start_time, std::move(callback));
-  CheckPathAgainstBlocklist(path_info, handle_type,
+  CheckPathAgainstBlocklist(path_info, handle_type, user_action,
                             std::move(after_blocklist_check_callback));
 }
 
@@ -2133,13 +2140,15 @@ void ChromeFileSystemAccessPermissionContext::
     CheckShouldBlockAccessToPathAndReply(
         base::FilePath path,
         HandleType handle_type,
+        UserAction user_action,
         std::vector<BlockPathRule> extra_rules,
         base::OnceCallback<void(bool)> callback,
         BlockPathRules block_path_rules) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ShouldBlockAccessToPath, should_normalize_file_path_,
-                     path, handle_type, extra_rules, block_path_rules,
+                     path, handle_type, user_action, extra_rules,
+                     block_path_rules,
                      profile_path_override_.value_or(profile_->GetPath())),
       std::move(callback));
 }
@@ -2147,6 +2156,7 @@ void ChromeFileSystemAccessPermissionContext::
 void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
     const content::PathInfo& path_info,
     HandleType handle_type,
+    UserAction user_action,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (path_info.type == content::PathType::kExternal) {
@@ -2185,9 +2195,9 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
     case BlockPathRulesStatus::kInitialized:
       // If the `block_path_rules_status_` is already initilizaed, we can just
       // post the task to a anonymous blocking traits.
-      CheckShouldBlockAccessToPathAndReply(path_info.path, handle_type,
-                                           extra_rules, std::move(callback),
-                                           *block_path_rules_.get());
+      CheckShouldBlockAccessToPathAndReply(
+          path_info.path, handle_type, user_action, extra_rules,
+          std::move(callback), *block_path_rules_.get());
       return;
 
     case BlockPathRulesStatus::kNotInitialized:
@@ -2201,11 +2211,11 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
     case BlockPathRulesStatus::kInitializationStarted:
       // The check must be performed after the rules initialization is done.
       block_rules_check_subscription_.push_back(
-          block_rules_check_callbacks_.Add(
-              base::BindOnce(&ChromeFileSystemAccessPermissionContext::
-                                 CheckShouldBlockAccessToPathAndReply,
-                             weak_factory_.GetWeakPtr(), path_info.path,
-                             handle_type, extra_rules, std::move(callback))));
+          block_rules_check_callbacks_.Add(base::BindOnce(
+              &ChromeFileSystemAccessPermissionContext::
+                  CheckShouldBlockAccessToPathAndReply,
+              weak_factory_.GetWeakPtr(), path_info.path, handle_type,
+              user_action, extra_rules, std::move(callback))));
   }
 }
 
