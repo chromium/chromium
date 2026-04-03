@@ -216,7 +216,7 @@ public class AwSettings {
 
     private long mBackForwardCacheTimeoutInSeconds;
     private int mBackForwardCacheMaxPagesInCache;
-    private boolean mBackForwardCacheKeepForwardEntries;
+    private boolean mBackForwardCacheKeepForwardEntries = true;
 
     private boolean mCssHexAlphaColorEnabled;
     private boolean mScrollTopLeftInteropEnabled;
