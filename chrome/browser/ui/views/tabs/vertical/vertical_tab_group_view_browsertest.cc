@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 
 #include "base/test/run_until.h"
+#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
@@ -25,6 +26,10 @@
 #include "ui/events/event_constants.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 class VerticalTabGroupViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
@@ -308,8 +313,22 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   EXPECT_FALSE(tab_group_header->OnMousePressed(mouse_press_event));
 }
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_EditorBubbleOpensOnEditorBubbleButtonPress \
+  EditorBubbleOpensOnEditorBubbleButtonPress
+#else
+#define MAYBE_EditorBubbleOpensOnEditorBubbleButtonPress \
+  DISABLED_EditorBubbleOpensOnEditorBubbleButtonPress
+#endif
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
-                       DISABLED_EditorBubbleOpensOnEditorBubbleButtonPress) {
+                       MAYBE_EditorBubbleOpensOnEditorBubbleButtonPress) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::GetInstance()->RunningOnWaylandForTest()) {
+    // The test constantly failing on wayland.
+    return;
+  }
+#endif
+
   CreateInactiveTabGroup();
 
   VerticalTabGroupHeaderView* const tab_group_header =

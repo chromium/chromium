@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 
 source_set("vertical") {
@@ -135,6 +136,10 @@ source_set("browser_tests") {
     "//testing/gmock",
     "//ui/events:test_support",
   ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 source_set("unit_tests") {
