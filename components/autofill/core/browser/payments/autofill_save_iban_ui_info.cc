@@ -62,13 +62,19 @@ AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForLocalSave(
 AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForUploadSave(
     const std::u16string& iban_value,
     const LegalMessageLines& legal_message_lines) {
+  bool is_wallet_branding_v2_enabled =
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2);
   return CreateAutofillSaveIbanUiInfo(
       /*is_server_save=*/true,
       base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-          ? IDR_AUTOFILL_GOOGLE_WALLET
+          ? is_wallet_branding_v2_enabled ? IDR_AUTOFILL_GOOGLE_WALLET_ICON
+                                          : IDR_AUTOFILL_GOOGLE_WALLET
           : IDR_AUTOFILL_GOOGLE_PAY,
       iban_value,
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER),
+      l10n_util::GetStringUTF16(
+          is_wallet_branding_v2_enabled
+              ? IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_PROMPT_TITLE
+              : IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER),
       l10n_util::GetStringUTF16(
           base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
               ? IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION

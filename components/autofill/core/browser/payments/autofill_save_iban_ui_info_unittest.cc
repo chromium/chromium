@@ -54,7 +54,10 @@ TEST(AutofillSaveIbanUiInfo, CreateForLocalSaveSetsProperties) {
 TEST(AutofillSaveIbanUiInfo,
      CreateForUploadSaveSetsProperties_WalletBrandingDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+  features.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillEnableWalletBranding,
+                             features::kAutofillEnableWalletBrandingV2});
 
   Iban local_iban(
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
@@ -82,9 +85,12 @@ TEST(AutofillSaveIbanUiInfo,
   EXPECT_THAT(ui_info.legal_message_lines, testing::ElementsAre());
 }
 
-TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableWalletBranding);
+TEST(AutofillSaveIbanUiInfo,
+     CreateForUploadSaveSetsProperties_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
 
   Iban local_iban(
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
@@ -102,6 +108,39 @@ TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
   EXPECT_EQ(
       ui_info.title_text,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION));
+  EXPECT_EQ(ui_info.accept_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT));
+  EXPECT_EQ(ui_info.cancel_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_NO_THANKS));
+  EXPECT_THAT(ui_info.legal_message_lines, testing::ElementsAre());
+}
+
+TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding,
+                            features::kAutofillEnableWalletBrandingV2},
+      /*disabled_features=*/{});
+
+  Iban local_iban(
+      Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  local_iban.set_value(u"FR7630006000011234567890189");
+
+  auto ui_info = AutofillSaveIbanUiInfo::CreateForUploadSave(
+      local_iban.GetIdentifierStringForAutofillDisplay(
+          /*is_value_masked=*/false),
+      LegalMessageLines());
+
+  EXPECT_TRUE(ui_info.is_server_save);
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_GOOGLE_WALLET_ICON);
+  EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_value),
+            u"FR76 3000 6000 0112 3456 7890 189");
+  EXPECT_EQ(
+      ui_info.title_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_PROMPT_TITLE));
   EXPECT_EQ(ui_info.description_text,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION));
