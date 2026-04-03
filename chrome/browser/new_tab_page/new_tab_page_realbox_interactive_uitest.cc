@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/check_deref.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -28,6 +30,7 @@
 #include "components/search/ntp_features.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
@@ -35,6 +38,7 @@
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 // To debug locally, you can run the test via:
 // `out/Default/interactive_ui_tests
@@ -66,6 +70,10 @@ static constexpr std::string_view kInputTypeAddImage = "Add image";
 static constexpr std::string_view kInputTypeAddFile = "Add file";
 static constexpr std::string_view kToolCreateImages = "Create images";
 static constexpr std::string_view kToolCanvas = "Canvas";
+static constexpr std::string_view kToolDeepSearch = "Deep search";
+// Files used for file upload tests.
+static constexpr std::string_view kImageFileName = "handbag.png";
+static constexpr std::string_view kPdfFileName = "download.pdf";
 
 std::string GetModeSelector(omnibox::ToolMode mode) {
   return ".dropdown-item[data-mode='" +
@@ -100,6 +108,25 @@ const DeepQuery kCreateImagesItem = {
 const DeepQuery kCanvasItem = {
     "ntp-app", "ntp-searchbox", "#context", "#menu",
     GetModeSelector(omnibox::ToolMode::TOOL_MODE_CANVAS)};
+const DeepQuery kDeepSearchItem = {
+    "ntp-app", "ntp-searchbox", "#context", "#menu",
+    GetModeSelector(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH)};
+const DeepQuery kComposeboxContextEntrypoint = {
+    "ntp-app", "#composebox", "#contextEntrypoint", "#entrypointButton",
+    "#entrypoint"};
+const DeepQuery kComposeboxCreateImagesItem = {
+    "ntp-app", "#composebox", "#contextEntrypoint", "#menu",
+    GetModeSelector(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN)};
+const DeepQuery kComposeboxDeepSearchItem = {
+    "ntp-app", "#composebox", "#contextEntrypoint", "#menu",
+    GetModeSelector(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH)};
+const DeepQuery kImageUploadItem = {"ntp-app", "ntp-searchbox", "#context",
+                                    "#menu", "#imageUpload"};
+const DeepQuery kFileUploadItem = {"ntp-app", "ntp-searchbox", "#context",
+                                   "#menu", "#fileUpload"};
+const DeepQuery kComposeboxFileThumbnail = {"ntp-app", "#composebox",
+                                            "cr-composebox-file-carousel",
+                                            "cr-composebox-file-thumbnail"};
 const DeepQuery kToolChipButton = {"ntp-app", "cr-composebox", "#context",
                                    "cr-composebox-tool-chip",
                                    "#toolEnabledButton"};
@@ -166,8 +193,19 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
   image_gen_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   image_gen_config->set_menu_label(std::string(kToolCreateImages));
   auto* image_gen_tool_rule = image_gen_config->mutable_rule();
-  image_gen_tool_rule->set_allow_all_input_types(true);
+  image_gen_tool_rule->add_allowed_input_types(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  image_gen_tool_rule->add_allowed_input_types(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
   image_gen_tool_rule->set_allow_all_models(true);
+
+  auto* deep_search_config = config->add_tool_configs();
+  deep_search_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  deep_search_config->set_menu_label(std::string(kToolDeepSearch));
+  auto* deep_search_tool_rule = deep_search_config->mutable_rule();
+  deep_search_tool_rule->add_allowed_input_types(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  deep_search_tool_rule->set_allow_all_models(true);
 
   auto* regular_config = config->add_model_configs();
   regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
@@ -208,25 +246,18 @@ std::unique_ptr<KeyedService> BuildMockContextualSearchServiceInstance(
 
             auto* query_controller_ptr = query_controller.get();
 
-            ON_CALL(*query_controller_ptr, StartFileUploadFlow)
+            ON_CALL(*query_controller_ptr, GetFileInfo)
                 .WillByDefault(
-                    [query_controller_ptr](
-                        const base::UnguessableToken& file_token,
-                        std::unique_ptr<lens::ContextualInputData> input,
-                        std::optional<lens::ImageEncodingOptions> options) {
-                      query_controller_ptr->NotifySuccess(file_token);
-                    });
+                    testing::Invoke(query_controller_ptr,
+                                    &MockQueryController::FakeGetFileInfo));
+            ON_CALL(*query_controller_ptr, StartFileUploadFlow)
+                .WillByDefault(testing::Invoke(
+                    query_controller_ptr,
+                    &MockQueryController::FakeStartFileUploadFlow));
             ON_CALL(*query_controller_ptr, CreateSearchUrl)
                 .WillByDefault(
-                    [](std::unique_ptr<
-                           MockQueryController::CreateSearchUrlRequestInfo>
-                           search_url_request_info,
-                       base::OnceCallback<void(GURL)> callback) {
-                      std::string query = search_url_request_info->query_text;
-                      base::ReplaceChars(query, " ", "+", &query);
-                      std::move(callback).Run(
-                          GURL("https://www.google.com/search?q=" + query));
-                    });
+                    testing::Invoke(query_controller_ptr,
+                                    &MockQueryController::FakeCreateSearchUrl));
 
             auto metrics_recorder =
                 std::make_unique<MockContextualSearchMetricsRecorder>();
@@ -477,10 +508,6 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, RealboxMultilineInputTest) {
 
 IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
                        ContextualEntrypointMenuHasOptions) {
-  const DeepQuery kImageUploadItem = {"ntp-app", "ntp-searchbox", "#context",
-                                      "#menu", "#imageUpload"};
-  const DeepQuery kFileUploadItem = {"ntp-app", "ntp-searchbox", "#context",
-                                     "#menu", "#fileUpload"};
   const DeepQuery kFastModelItem = {
       "ntp-app", "ntp-searchbox", "#context", "#menu",
       GetModelSelector(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR)};
@@ -511,6 +538,10 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
       CheckJsResultAt(kNtpElementId, kCanvasItem,
                       "(el) => el.textContent.trim() === '" +
                           std::string(kToolCanvas) + "'"),
+      WaitForElementToRender(kNtpElementId, kDeepSearchItem),
+      CheckJsResultAt(kNtpElementId, kDeepSearchItem,
+                      "(el) => el.textContent.trim() === '" +
+                          std::string(kToolDeepSearch) + "'"),
       WaitForElementToRender(kNtpElementId, kFastModelItem),
       CheckJsResultAt(kNtpElementId, kFastModelItem,
                       "(el) => el.textContent.trim() === '" +
@@ -579,18 +610,115 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
       // 12. Wait for submit button to be enabled and click it.
       WaitForStateChange(kNtpElementId, submit_enabled),
       ClickElement(kNtpElementId, kComposeboxSubmitButton),
-      // 13. Wait for navigation.
-      WaitForWebContentsNavigation(kNtpElementId),
-      // 14. Ensure tab navigates to a Google search results page.
-      CheckResult(
-          [this]() {
-            return browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL()
-                .spec();
-          },
-          testing::StartsWith("https://www.google.com/search?q=test")));
+      // 13. Ensure google search occurs.
+      WaitForGoogleSearch(kNtpElementId, "test"));
+}
+
+struct NtpRealboxUploadInteractiveTestParams {
+  DeepQuery upload_context_menu_item;
+  std::string file_name;
+};
+
+class NtpRealboxUploadInteractiveTest
+    : public NtpRealboxUiTestBase,
+      public testing::WithParamInterface<
+          NtpRealboxUploadInteractiveTestParams> {
+ public:
+  NtpRealboxUploadInteractiveTest() {
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NtpRealboxUploadInteractiveTest,
+    ValuesIn(std::vector<NtpRealboxUploadInteractiveTestParams>{
+        {
+            .upload_context_menu_item = kImageUploadItem,
+            .file_name = std::string(kImageFileName),
+        },
+        {
+            .upload_context_menu_item = kFileUploadItem,
+            .file_name = std::string(kPdfFileName),
+        },
+    }));
+
+IN_PROC_BROWSER_TEST_P(NtpRealboxUploadInteractiveTest,
+                       ContextualEntrypointUploadTriggersComposebox) {
+  base::FilePath test_data_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+  base::FilePath file_path = test_data_dir.AppendASCII(GetParam().file_name);
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSubmitEnabledEvent);
+
+  WebContentsInteractionTestUtil::StateChange submit_enabled;
+  submit_enabled.event = kSubmitEnabledEvent;
+  submit_enabled.where = kComposeboxSubmitButton;
+  submit_enabled.test_function =
+      "(el) => el && el.querySelector('#submitIcon') && "
+      "!el.querySelector('#submitIcon').hasAttribute('disabled')";
+
+  RunTestSequence(
+      // Open NTP.
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Assert NTP has loaded by waiting for the Realbox.
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      // Wait for Contextual Entrypoint Button to render and click it.
+      WaitForElementToRender(kNtpElementId, kContextualEntrypoint),
+      ClickElement(kNtpElementId, kContextualEntrypoint),
+      // Wait for the context menu to open.
+      WaitForDialogStateChange(kSearchboxContextMenuDialog,
+                               /*expected_open=*/true),
+      WaitForElementToRender(kNtpElementId,
+                             GetParam().upload_context_menu_item),
+      // Click on Upload item in context menu.
+      ClickElement(kNtpElementId, GetParam().upload_context_menu_item),
+      // Wait for searchbox context menu to close and composebox to open.
+      WaitForDialogStateChange(kSearchboxContextMenuDialog,
+                               /*expected_open=*/false),
+      // Wait for the file thumbnail to render in the composebox.
+      WaitForElementToRender(kNtpElementId, kComposeboxFileThumbnail),
+      // Open the composebox context menu to verify disabled states.
+      ClickElement(kNtpElementId, kComposeboxContextEntrypoint),
+      WaitForDialogStateChange(kComposeboxContextMenuDialog,
+                               /*expected_open=*/true),
+      // Check disabled states based on the uploaded file type.
+      GetParam().file_name == kImageFileName
+          // For image upload, Deep Search should be disabled.
+          ? Steps(WaitForElementToRender(kNtpElementId,
+                                         kComposeboxDeepSearchItem),
+                  CheckJsResultAt(kNtpElementId, kComposeboxDeepSearchItem,
+                                  "(el) => el.hasAttribute('disabled')"))
+          // For file upload, both Deep Search and Create Images should be
+          // disabled.
+          : Steps(WaitForElementToRender(kNtpElementId,
+                                         kComposeboxDeepSearchItem),
+                  CheckJsResultAt(kNtpElementId, kComposeboxDeepSearchItem,
+                                  "(el) => el.hasAttribute('disabled')"),
+                  WaitForElementToRender(kNtpElementId,
+                                         kComposeboxCreateImagesItem),
+                  CheckJsResultAt(kNtpElementId, kComposeboxCreateImagesItem,
+                                  "(el) => el.hasAttribute('disabled')")),
+      // Dismiss the composebox context menu.
+      SendKeyPress(kNtpElementId, ui::VKEY_ESCAPE),
+      WaitForDialogStateChange(kComposeboxContextMenuDialog,
+                               /*expected_open=*/false),
+      // Focus composebox input and type something.
+      FocusAndInputText(kNtpElementId, kComposeboxInput),
+      // Wait for submit button to be enabled and click it.
+      WaitForStateChange(kNtpElementId, submit_enabled),
+      ClickElement(kNtpElementId, kComposeboxSubmitButton),
+      // Ensure google search occurs.
+      WaitForGoogleSearch(kNtpElementId, "test"),
+      // Clean up.
+      Do([]() { ui::SelectFileDialog::SetFactory(nullptr); }));
 }
 
 class NtpRealboxSubmitInteractiveTest

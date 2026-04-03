@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -35,6 +36,35 @@ MockQueryController::MockQueryController(
           this, &MockQueryController::CreateSearchUrlBase));
 }
 MockQueryController::~MockQueryController() = default;
+
+const contextual_search::FileInfo* MockQueryController::FakeGetFileInfo(
+    const base::UnguessableToken& file_token) {
+  auto it = files_.find(file_token);
+  if (it != files_.end()) {
+    return it->second.get();
+  }
+  return nullptr;
+}
+
+void MockQueryController::FakeStartFileUploadFlow(
+    const base::UnguessableToken& file_token,
+    std::unique_ptr<lens::ContextualInputData> contextual_input,
+    std::optional<lens::ImageEncodingOptions> image_options) {
+  lens::MimeType mime_type = lens::MimeType::kHtml;
+  if (contextual_input && contextual_input->primary_content_type) {
+    mime_type = contextual_input->primary_content_type.value();
+  }
+  AddFileInfoForTesting(file_token, mime_type);
+  NotifySuccess(file_token, mime_type);
+}
+
+void MockQueryController::FakeCreateSearchUrl(
+    std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info,
+    base::OnceCallback<void(GURL)> callback) {
+  std::string query = search_url_request_info->query_text;
+  base::ReplaceChars(query, " ", "+", &query);
+  std::move(callback).Run(GURL("https://www.google.com/search?q=" + query));
+}
 
 content::WebContents* TestWebContentsDelegate::OpenURLFromTab(
     content::WebContents* source,
