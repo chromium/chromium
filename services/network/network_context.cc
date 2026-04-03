@@ -3772,35 +3772,16 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     return true;
   }
 
-  // Note: network_revocation_exemptions_ is only used for fenced frames and the
-  // disableUntrustedNetwork API for testing scenarios.
-  if (auto it = network_revocation_exemptions_.find(nonce);
-      it != network_revocation_exemptions_.end() &&
-      it->second.contains(url.GetWithoutFilename())) {
-    return true;
-  }
-
-  const NetworkRestriction& restriction =
-    network_revocation_nonces_.find(nonce)->second;
-
-  // Temporary disgusting hack: if we have a NetworkRestriction but we've not
-  // actually specified anything to be restricted, then this restriction must
-  // be for a fenced frame. Given that there were no fenced frames exemptions
-  // detected above, we can just return false here. The fenced frame portion of
-  // this function is slated for removal, so this will be cleaned up within
-  // 1-2 milestones. TODO(crbug.com/499191497): Remove this check.
-  if (!restriction.enforced_allowlisted_patterns.has_value() &&
-      !restriction.report_only_allowlisted_patterns.has_value()) {
-    return false;
-  }
-
   // For connection allowlist feature, network_revocation_nonces_ map contains
   // the allowed URL Patterns.
-  // Note that the network_revocation_exemptions_ check above which was added
+  // Note that the network_revocation_exemptions_ check below which was added
   // to enable fenced frames testing is orthogonal to this feature.
   // If there are no allowlisted URLs then it is assumed that all network URLs
   // are restricted (unless exempted for FF testing).
   if (base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    const NetworkRestriction& restriction =
+        network_revocation_nonces_.find(nonce)->second;
+
     // TODO(crbug.com/492439215): Implement reporting via
     // restriction.report_only_redirect_behavior.
     if (is_redirect) {
@@ -3809,11 +3790,6 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     }
 
     auto url_matches_patterns = [&url](auto& patterns) {
-      // If a Connection-Allowlist(-Report-Only) header was not provided, this
-      // optional will not have a value, so we don't need to examine it. If the
-      // header is provided but the list of patterns is empty, we will execute
-      // the second half of this statement, which will fail to find a pattern
-      // match.
       return !patterns.has_value() ||
              std::ranges::any_of(
                  *patterns,
@@ -3849,6 +3825,15 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     return !is_redirect;
   }
 
+  // If network has been revoked for the nonce, but the url is exempted, it's
+  // allowed.
+  if (auto it = network_revocation_exemptions_.find(nonce);
+      it != network_revocation_exemptions_.end() &&
+      it->second.contains(url.GetWithoutFilename())) {
+    return true;
+  }
+
+  // The nonce was revoked and the url isn't exempted.
   return false;
 }
 
