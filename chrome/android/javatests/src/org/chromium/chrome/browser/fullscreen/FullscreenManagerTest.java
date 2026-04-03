@@ -606,6 +606,7 @@ public class FullscreenManagerTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/485245305")
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
