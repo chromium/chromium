@@ -913,6 +913,30 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAccessibilityAnnotatorSettingsLinkRowVisible() {
+        AutofillOptionsFragment.setAutofillAiAccessibilityAnnotatorEnabledForTesting(true);
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        assertTrue(mFragment.getAutofillAiAccessibilityAnnotator().isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAccessibilityAnnotatorSettingsLinkRowNotVisible() {
+        AutofillOptionsFragment.setAutofillAiAccessibilityAnnotatorEnabledForTesting(false);
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        assertFalse(mFragment.getAutofillAiAccessibilityAnnotator().isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiToggleDisabledWhenUsingThirdPartyProvider() {
         doReturn(true).when(mMockEntityDataManager).isEligibleToAutofillAi();
         doReturn(true).when(mMockEntityDataManager).getAutofillAiOptInStatus();

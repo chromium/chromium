@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.autofill.options;
 
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR_VISIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_VISIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.FRAGMENT_TITLE;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR_CLICKED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
@@ -116,6 +118,21 @@ class AutofillOptionsViewBinder {
                                         .onResult((boolean) newValue);
                                 return true;
                             });
+        } else if (key == AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR_VISIBLE) {
+            Preference accessibilityAnnotatorPref = view.getAutofillAiAccessibilityAnnotator();
+            if (accessibilityAnnotatorPref != null) {
+                accessibilityAnnotatorPref.setVisible(
+                        model.get(AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR_VISIBLE));
+            }
+        } else if (key == ON_AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR_CLICKED) {
+            Preference accessibilityAnnotatorPref = view.getAutofillAiAccessibilityAnnotator();
+            if (accessibilityAnnotatorPref != null) {
+                accessibilityAnnotatorPref.setOnPreferenceClickListener(
+                        preference -> {
+                            model.get(ON_AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR_CLICKED).run();
+                            return true;
+                        });
+            }
         } else if (key == AUTOFILL_AI_VISIBLE) {
             boolean visible = model.get(AUTOFILL_AI_VISIBLE);
 

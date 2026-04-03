@@ -43,6 +43,8 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public static final String AUTOFILL_OPTIONS_REFERRER = "autofill-options-referrer";
     public static final String PREF_AUTOFILL_THIRD_PARTY_FILLING = "autofill_third_party_filling";
     public static final String PREF_THIRD_PARTY_TOGGLE_HINT = "third_party_toggle_hint";
+    public static final String PREF_AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR =
+            "autofill_ai_accessibility_annotator";
     public static final String PREF_AUTOFILL_AI_SWITCH = "autofill_ai_switch";
     public static final String PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH =
             "autofill_ai_authentication_switch";
@@ -97,6 +99,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                 findPreference(PREF_AUTOFILL_THIRD_PARTY_FILLING);
         assert thirdPartyFillingSwitch != null;
         return thirdPartyFillingSwitch;
+    }
+
+    @Nullable Preference getAutofillAiAccessibilityAnnotator() {
+        return findPreference(PREF_AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR);
     }
 
     ChromeSwitchPreference getAutofillAiSwitch() {
@@ -225,6 +231,22 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED);
     }
 
+    private static @Nullable Boolean sAutofillAiAccessibilityAnnotatorEnabledForTesting;
+
+    // TODO(b/493906853): Connect to accessibility annotator visibility.
+    static boolean isAutofillAiAccessibilityAnnotatorEnabled() {
+        if (sAutofillAiAccessibilityAnnotatorEnabledForTesting != null) {
+            return sAutofillAiAccessibilityAnnotatorEnabledForTesting;
+        }
+        return false;
+    }
+
+    public static void setAutofillAiAccessibilityAnnotatorEnabledForTesting(boolean enabled) {
+        sAutofillAiAccessibilityAnnotatorEnabledForTesting = enabled;
+        ResettersForTesting.register(
+                () -> sAutofillAiAccessibilityAnnotatorEnabledForTesting = null);
+    }
+
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     AutofillOptionsFragment.class.getName(), R.xml.autofill_options_preferences) {
@@ -237,11 +259,20 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                 public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
                     indexData.removeEntry(getUniqueId(PREF_THIRD_PARTY_TOGGLE_HINT));
                     if (!isAutofillAiEnabled()) {
+                        indexData.removeEntry(
+                                getUniqueId(PREF_AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_SWITCH));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SERVICE_PROVIDER_CETEGORY));
-                    } else if (!isAutofillAiReauthEnabled()) {
-                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
+                    } else {
+                        if (!isAutofillAiAccessibilityAnnotatorEnabled()) {
+                            indexData.removeEntry(
+                                    getUniqueId(PREF_AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR));
+                        }
+                        if (!isAutofillAiReauthEnabled()) {
+                            indexData.removeEntry(
+                                    getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
+                        }
                     }
                 }
             };
