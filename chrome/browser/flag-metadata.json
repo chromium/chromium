@@ -3084,7 +3084,7 @@
   },
   {
     "name": "enable-desks-templates",
-    "owners": [ "dandersson@chromium.org", "janetmac@chromium.org", "richui@chromium.org", "yongshun@chromium.org" ],
+    "owners": [ "dandersson@chromium.org", "janetmac@chromium.org", "richui@chromium.org", "yongshun@google.com", "chromeos-wm@google.com" ],
     "expiry_milestone": 150
   },
   {

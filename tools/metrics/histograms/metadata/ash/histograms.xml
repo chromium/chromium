@@ -2527,7 +2527,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.CustomNameCreated" enum="BooleanHit"
     expires_after="2026-05-21">
   <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user with more than one desk confirms the name of a desk to
@@ -2538,7 +2538,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.CustomNamePercentage" units="%"
     expires_after="2026-05-21">
   <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user with more than one desk changes the name of a desk to
@@ -2549,7 +2549,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.DeskButton.DeskBar.Enter.PresentationTime"
     units="ms" expires_after="2026-05-21">
   <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
@@ -2561,7 +2561,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.DeskButton.DeskBar.Exit.PresentationTime" units="ms"
     expires_after="2026-05-21">
   <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
@@ -2573,7 +2573,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.DeskButton.HiddenByUser" enum="BooleanHit"
     expires_after="2026-05-21">
   <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user decides to hide the desk button to specify how often
@@ -2584,7 +2584,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.DeskButton.Presses" enum="BooleanHit"
     expires_after="2026-05-21">
   <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user presses on the central button on the desk button to
@@ -2970,7 +2970,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Desks.{EntryPoint}.BarAction.{BarAction}"
     enum="BooleanHit" expires_after="2026-08-16">
   <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a user {BarAction} using the {EntryPoint} desk bar to specify
@@ -2998,7 +2998,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-05-21">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>Emitted when an admin template is launched.</summary>
 </histogram>
 
@@ -3214,7 +3214,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.SaveAsTemplatePressed" enum="BooleanHit"
     expires_after="2026-05-21">
   <owner>hewer@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted every time the &quot;Save desk as template&quot; option in the desk
     action context menu is pressed.
@@ -3224,7 +3225,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.SavedDeskButtonsShown" enum="BooleanHit"
     expires_after="2026-05-21">
   <owner>hewer@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted every time the desk action context menu opens and the saved desk
     options are shown.
@@ -3234,7 +3236,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.SavedDeskMenuOptionsShown" enum="BooleanHit"
     expires_after="2026-05-21">
   <owner>hewer@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted every time the desk action context menu opens and the saved desk
     options are not shown, but would have if the Saved Desk UI revamp feature
@@ -3245,7 +3248,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.SaveForLaterPressed" enum="BooleanHit"
     expires_after="2026-05-21">
   <owner>hewer@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted every time the &quot;Save desk for later&quot; option in the desk
     action context menu is pressed.
@@ -3255,7 +3259,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.ShowSavedDeskButtonsRevampDisabled"
     enum="BooleanHit" expires_after="2026-05-21">
   <owner>hewer@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted every time the saved desk buttons in the overview grid are shown.
   </summary>
@@ -3264,7 +3269,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.DeskTemplate.ShowSavedDeskButtonsRevampEnabled"
     enum="BooleanHit" expires_after="2026-05-21">
   <owner>hewer@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted every time the saved desk buttons in the overview grid are viable to
     be shown, but don't appear, as the Saved Desk UI revamp feature is enabled.
@@ -3557,7 +3563,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.FirstWebContentsProfile.Recorded" enum="Boolean"
     expires_after="2026-07-06">
   <owner>xiyuan@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Whether the Startup.FirstWebContents.* metrics were recorded for the first
     active web browser window in a ChromeOS session. Recorded once per ChromeOS
@@ -3713,7 +3719,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.FocusMode.Api.{Method}.Latency" units="ms"
     expires_after="2026-11-20">
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -3738,7 +3744,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.FocusMode.Api.{Method}.Result" enum="BooleanHit"
     expires_after="2026-11-20">
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -3763,7 +3769,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.FocusMode.Api.{Method}.RetryCount" units="count"
     expires_after="2026-11-20">
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -3787,7 +3793,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.FocusMode.Api.{Method}.Status" enum="ApiErrorCode"
     expires_after="2026-11-20">
-  <owner>yongshun@chromium.org</owner>
+  <owner>yongshun@google.com</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
