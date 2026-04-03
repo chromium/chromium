@@ -56,7 +56,7 @@ BASE_FEATURE(kXboxUseGameControllerDataFetcherMac,
 // Enable PlayStation gamepad support in
 // GameControllerDataFetcherMac
 BASE_FEATURE(kPlayStationUseGameControllerDataFetcherMac,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_APPLE)
 
 bool IsGamepadMultitouchEnabled() {
