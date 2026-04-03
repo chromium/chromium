@@ -27,7 +27,7 @@ bool IsUSCountryCode() {
 
 }  // namespace
 
-BASE_FEATURE(kEnableReaderModeInUS, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableReaderModeInUS, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReaderModeOmniboxEntryPointInUS,
              base::FEATURE_DISABLED_BY_DEFAULT);

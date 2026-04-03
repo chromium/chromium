@@ -511,7 +511,7 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   CreateMediator(/*incognito=*/NO);
   mediator_.model = model_;
 
-  NSUInteger number_of_action_items = 6;
+  NSUInteger number_of_action_items = 7;
 
   if (ios::provider::IsTextZoomEnabled()) {
     number_of_action_items++;
