@@ -8,6 +8,7 @@
 
 #import "base/no_destructor.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -39,6 +40,7 @@ IOSProfileSessionDurationsServiceFactory::
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(IOSProfileMetricsServiceFactory::GetInstance());
 }
 
 IOSProfileSessionDurationsServiceFactory::
@@ -51,6 +53,9 @@ IOSProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
       SyncServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
+  metrics::ProfileMetricsService* profile_metrics_service =
+      IOSProfileMetricsServiceFactory::GetForProfile(profile);
   return std::make_unique<IOSProfileSessionDurationsService>(
-      sync_service, profile->GetPrefs(), identity_manager);
+      sync_service, profile->GetPrefs(), identity_manager,
+      profile_metrics_service);
 }

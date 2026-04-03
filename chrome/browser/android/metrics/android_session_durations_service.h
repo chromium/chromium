@@ -27,6 +27,10 @@ namespace {
 class IncognitoSessionDurationsMetricsRecorder;
 }
 
+namespace metrics {
+class ProfileMetricsService;
+}
+
 // Tracks the duration of a browsing session.
 // For regular profiles, tracks the active browsing time that the user spends
 // signed in and/or syncing as fraction of their total browsing time. A session
@@ -44,9 +48,11 @@ class AndroidSessionDurationsService : public KeyedService {
   ~AndroidSessionDurationsService() override;
 
   // Callers must ensure that the parameters outlive this object.
-  void InitializeForRegularProfile(PrefService* pref_service,
-                                   syncer::SyncService* sync_service,
-                                   signin::IdentityManager* identity_manager);
+  void InitializeForRegularProfile(
+      PrefService* pref_service,
+      syncer::SyncService* sync_service,
+      signin::IdentityManager* identity_manager,
+      metrics::ProfileMetricsService* profile_metrics_service);
 
   void InitializeForIncognitoProfile();
 

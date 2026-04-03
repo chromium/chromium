@@ -31,15 +31,22 @@ namespace unified_consent {
 class MsbbSessionDurationsMetricsRecorder;
 }
 
+namespace metrics {
+class ProfileMetricsService;
+}
+
 // Tracks the active browsing time that the user spends signed in as fraction of
 // their total browsing time.
 class IOSProfileSessionDurationsService : public KeyedService {
  public:
   // Callers must ensure that the parameters outlive this object.
-  // `sync_service`, `pref_service` and `identity_manager` must be non-null.
-  IOSProfileSessionDurationsService(syncer::SyncService* sync_service,
-                                    PrefService* pref_service,
-                                    signin::IdentityManager* identity_manager);
+  // `sync_service`, `pref_service`, `identity_manager` and
+  // `profile_metrics_service` must be non-null.
+  IOSProfileSessionDurationsService(
+      syncer::SyncService* sync_service,
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      metrics::ProfileMetricsService* profile_metrics_service);
 
   IOSProfileSessionDurationsService(const IOSProfileSessionDurationsService&) =
       delete;

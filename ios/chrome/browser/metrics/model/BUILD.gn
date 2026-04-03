@@ -164,6 +164,7 @@ source_set("model") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/ntp/shared/metrics:utils",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",

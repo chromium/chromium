@@ -7,10 +7,12 @@
 #include <string>
 #include <string_view>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -31,8 +33,9 @@ base::TimeDelta SubtractInactiveTime(base::TimeDelta total_length,
 }
 
 void LogDuration(std::string_view histogram_suffix,
-                 base::TimeDelta session_length) {
-  base::UmaHistogramCustomTimes(
+                 base::TimeDelta session_length,
+                 metrics::ProfileMetricsService& profile_metrics_service) {
+  profile_metrics_service.UmaHistogramCustomTimes(
       base::StrCat({"Session.TotalDurationMax1Day.", histogram_suffix}),
       session_length, base::Milliseconds(1), base::Hours(24), 50);
 }
@@ -40,8 +43,11 @@ void LogDuration(std::string_view histogram_suffix,
 }  // namespace
 
 HistorySyncSessionDurationsMetricsRecorder::
-    HistorySyncSessionDurationsMetricsRecorder(SyncService* sync_service)
-    : sync_service_(sync_service) {
+    HistorySyncSessionDurationsMetricsRecorder(
+        SyncService* sync_service,
+        metrics::ProfileMetricsService* profile_metrics_service)
+    : sync_service_(sync_service),
+      profile_metrics_service_(CHECK_DEREF(profile_metrics_service)) {
   // `sync_service` can be null if sync is disabled by a command line flag.
   if (sync_service_) {
     sync_observation_.Observe(sync_service_.get());
@@ -128,25 +134,29 @@ HistorySyncSessionDurationsMetricsRecorder::DetermineHistorySyncStatus() const {
   return HistorySyncStatus::kEnabledWithoutError;
 }
 
-// static
 void HistorySyncSessionDurationsMetricsRecorder::LogHistorySyncDuration(
     HistorySyncStatus history_sync_status,
     base::TimeDelta session_length) {
   switch (history_sync_status) {
     case HistorySyncStatus::kDisabled:
-      LogDuration("WithoutHistorySync", session_length);
+      LogDuration("WithoutHistorySync", session_length,
+                  profile_metrics_service_.get());
       break;
     case HistorySyncStatus::kEnabledWithoutError:
-      LogDuration("WithHistorySyncWithoutAuthError", session_length);
+      LogDuration("WithHistorySyncWithoutAuthError", session_length,
+                  profile_metrics_service_.get());
       // "WithHistorySync" gets logged regardless of whether there is an auth
       // error or not.
-      LogDuration("WithHistorySync", session_length);
+      LogDuration("WithHistorySync", session_length,
+                  profile_metrics_service_.get());
       break;
     case HistorySyncStatus::kEnabledWithError:
-      LogDuration("WithHistorySyncAndAuthError", session_length);
+      LogDuration("WithHistorySyncAndAuthError", session_length,
+                  profile_metrics_service_.get());
       // "WithHistorySync" gets logged regardless of whether there is an auth
       // error or not.
-      LogDuration("WithHistorySync", session_length);
+      LogDuration("WithHistorySync", session_length,
+                  profile_metrics_service_.get());
       break;
   }
 }

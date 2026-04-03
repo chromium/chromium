@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
@@ -40,22 +41,40 @@ class HistorySyncSessionDurationsMetricsRecorderTest : public testing::Test {
     sync_service_.FireStateChanged();
   }
 
+  void ExpectUniqueTimeSample(const base::HistogramTester& ht,
+                              const std::string& metric_name,
+                              base::TimeDelta duration,
+                              int count) {
+    ht.ExpectUniqueTimeSample(metric_name, duration, count);
+    ht.ExpectUniqueTimeSample(metric_name + ".Profile1", duration, count);
+  }
+
+  void ExpectTotalCount(const base::HistogramTester& ht,
+                        const std::string& metric_name,
+                        int count) {
+    ht.ExpectTotalCount(metric_name, count);
+    ht.ExpectTotalCount(metric_name + ".Profile1", count);
+  }
+
  protected:
   TestSyncService sync_service_;
+  metrics::ProfileMetricsService profile_metrics_service_{1};
 };
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest, InitiallySignedOut) {
   sync_service_.SetSignedOut();
 
   base::HistogramTester ht;
-  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(
+      &sync_service_, &profile_metrics_service_);
+
   metrics_recorder.OnSessionStarted();
   metrics_recorder.OnSessionEnded(kSessionTime);
 
-  ht.ExpectUniqueTimeSample(kMetricNameWithoutHistorySync, kSessionTime, 1);
-  ht.ExpectTotalCount(kMetricNameWithHistorySync, 0);
-  ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
-  ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
+  ExpectUniqueTimeSample(ht, kMetricNameWithoutHistorySync, kSessionTime, 1);
+  ExpectTotalCount(ht, kMetricNameWithHistorySync, 0);
+  ExpectTotalCount(ht, kMetricNameWithHistorySyncWithoutAuthError, 0);
+  ExpectTotalCount(ht, kMetricNameWithHistorySyncAndAuthError, 0);
 }
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
@@ -63,14 +82,16 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
   SignIn(/*history_sync_enabled=*/false);
 
   base::HistogramTester ht;
-  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(
+      &sync_service_, &profile_metrics_service_);
+
   metrics_recorder.OnSessionStarted();
   metrics_recorder.OnSessionEnded(kSessionTime);
 
-  ht.ExpectUniqueTimeSample(kMetricNameWithoutHistorySync, kSessionTime, 1);
-  ht.ExpectTotalCount(kMetricNameWithHistorySync, 0);
-  ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
-  ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
+  ExpectUniqueTimeSample(ht, kMetricNameWithoutHistorySync, kSessionTime, 1);
+  ExpectTotalCount(ht, kMetricNameWithHistorySync, 0);
+  ExpectTotalCount(ht, kMetricNameWithHistorySyncWithoutAuthError, 0);
+  ExpectTotalCount(ht, kMetricNameWithHistorySyncAndAuthError, 0);
 }
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
@@ -78,15 +99,17 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
   SignIn(/*history_sync_enabled=*/true);
 
   base::HistogramTester ht;
-  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(
+      &sync_service_, &profile_metrics_service_);
+
   metrics_recorder.OnSessionStarted();
   metrics_recorder.OnSessionEnded(kSessionTime);
 
-  ht.ExpectUniqueTimeSample(kMetricNameWithHistorySync, kSessionTime, 1);
-  ht.ExpectUniqueTimeSample(kMetricNameWithHistorySyncWithoutAuthError,
-                            kSessionTime, 1);
-  ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
-  ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
+  ExpectUniqueTimeSample(ht, kMetricNameWithHistorySync, kSessionTime, 1);
+  ExpectUniqueTimeSample(ht, kMetricNameWithHistorySyncWithoutAuthError,
+                         kSessionTime, 1);
+  ExpectTotalCount(ht, kMetricNameWithoutHistorySync, 0);
+  ExpectTotalCount(ht, kMetricNameWithHistorySyncAndAuthError, 0);
 }
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
@@ -95,21 +118,24 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
   sync_service_.SetPersistentAuthError();
 
   base::HistogramTester ht;
-  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(
+      &sync_service_, &profile_metrics_service_);
+
   metrics_recorder.OnSessionStarted();
   metrics_recorder.OnSessionEnded(kSessionTime);
 
-  ht.ExpectUniqueTimeSample(kMetricNameWithHistorySync, kSessionTime, 1);
-  ht.ExpectUniqueTimeSample(kMetricNameWithHistorySyncAndAuthError,
-                            kSessionTime, 1);
-  ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
-  ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
+  ExpectUniqueTimeSample(ht, kMetricNameWithHistorySync, kSessionTime, 1);
+  ExpectUniqueTimeSample(ht, kMetricNameWithHistorySyncAndAuthError,
+                         kSessionTime, 1);
+  ExpectTotalCount(ht, kMetricNameWithoutHistorySync, 0);
+  ExpectTotalCount(ht, kMetricNameWithHistorySyncWithoutAuthError, 0);
 }
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
        SignInAndEnableHistorySync) {
   sync_service_.SetSignedOut();
-  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(
+      &sync_service_, &profile_metrics_service_);
 
   {
     base::HistogramTester ht;
@@ -118,10 +144,10 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
 
     SignIn(/*history_sync_enabled=*/true);
 
-    ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 1);
-    ht.ExpectTotalCount(kMetricNameWithHistorySync, 0);
-    ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
-    ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
+    ExpectTotalCount(ht, kMetricNameWithoutHistorySync, 1);
+    ExpectTotalCount(ht, kMetricNameWithHistorySync, 0);
+    ExpectTotalCount(ht, kMetricNameWithHistorySyncWithoutAuthError, 0);
+    ExpectTotalCount(ht, kMetricNameWithHistorySyncAndAuthError, 0);
   }
 
   {
@@ -139,7 +165,8 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest,
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest, EnterAuthError) {
   SignIn(/*history_sync_enabled=*/true);
-  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(
+      &sync_service_, &profile_metrics_service_);
 
   {
     base::HistogramTester ht;
@@ -147,28 +174,29 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest, EnterAuthError) {
     sync_service_.SetPersistentAuthError();
     sync_service_.FireStateChanged();
 
-    ht.ExpectTotalCount(kMetricNameWithHistorySync, 1);
-    ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 1);
-    ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
-    ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
+    ExpectTotalCount(ht, kMetricNameWithHistorySync, 1);
+    ExpectTotalCount(ht, kMetricNameWithHistorySyncWithoutAuthError, 1);
+    ExpectTotalCount(ht, kMetricNameWithoutHistorySync, 0);
+    ExpectTotalCount(ht, kMetricNameWithHistorySyncAndAuthError, 0);
   }
 
   {
     base::HistogramTester ht;
     metrics_recorder.OnSessionEnded(kSessionTime);
 
-    ht.ExpectUniqueTimeSample(kMetricNameWithHistorySync, kSessionTime, 1);
-    ht.ExpectUniqueTimeSample(kMetricNameWithHistorySyncAndAuthError,
-                              kSessionTime, 1);
-    ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
-    ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
+    ExpectUniqueTimeSample(ht, kMetricNameWithHistorySync, kSessionTime, 1);
+    ExpectUniqueTimeSample(ht, kMetricNameWithHistorySyncAndAuthError,
+                           kSessionTime, 1);
+    ExpectTotalCount(ht, kMetricNameWithHistorySyncWithoutAuthError, 0);
+    ExpectTotalCount(ht, kMetricNameWithoutHistorySync, 0);
   }
 }
 
 TEST_F(HistorySyncSessionDurationsMetricsRecorderTest, FixAuthError) {
   SignIn(/*history_sync_enabled=*/true);
   sync_service_.SetPersistentAuthError();
-  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(&sync_service_);
+  HistorySyncSessionDurationsMetricsRecorder metrics_recorder(
+      &sync_service_, &profile_metrics_service_);
 
   {
     base::HistogramTester ht;
@@ -176,21 +204,21 @@ TEST_F(HistorySyncSessionDurationsMetricsRecorderTest, FixAuthError) {
     sync_service_.ClearAuthError();
     sync_service_.FireStateChanged();
 
-    ht.ExpectTotalCount(kMetricNameWithHistorySync, 1);
-    ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 1);
-    ht.ExpectTotalCount(kMetricNameWithHistorySyncWithoutAuthError, 0);
-    ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
+    ExpectTotalCount(ht, kMetricNameWithHistorySync, 1);
+    ExpectTotalCount(ht, kMetricNameWithHistorySyncAndAuthError, 1);
+    ExpectTotalCount(ht, kMetricNameWithHistorySyncWithoutAuthError, 0);
+    ExpectTotalCount(ht, kMetricNameWithoutHistorySync, 0);
   }
 
   {
     base::HistogramTester ht;
     metrics_recorder.OnSessionEnded(kSessionTime);
 
-    ht.ExpectUniqueTimeSample(kMetricNameWithHistorySync, kSessionTime, 1);
-    ht.ExpectUniqueTimeSample(kMetricNameWithHistorySyncWithoutAuthError,
-                              kSessionTime, 1);
-    ht.ExpectTotalCount(kMetricNameWithoutHistorySync, 0);
-    ht.ExpectTotalCount(kMetricNameWithHistorySyncAndAuthError, 0);
+    ExpectUniqueTimeSample(ht, kMetricNameWithHistorySync, kSessionTime, 1);
+    ExpectUniqueTimeSample(ht, kMetricNameWithHistorySyncWithoutAuthError,
+                           kSessionTime, 1);
+    ExpectTotalCount(ht, kMetricNameWithoutHistorySync, 0);
+    ExpectTotalCount(ht, kMetricNameWithHistorySyncAndAuthError, 0);
   }
 }
 

@@ -14,6 +14,10 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
+namespace metrics {
+class ProfileMetricsService;
+}
+
 namespace syncer {
 
 // Tracks the active browsing time that the user spends with history sync
@@ -23,7 +27,8 @@ class HistorySyncSessionDurationsMetricsRecorder
  public:
   // Callers must ensure that the parameters outlive this object.
   explicit HistorySyncSessionDurationsMetricsRecorder(
-      SyncService* sync_service);
+      SyncService* sync_service,
+      metrics::ProfileMetricsService* profile_metrics_service);
 
   HistorySyncSessionDurationsMetricsRecorder(
       const HistorySyncSessionDurationsMetricsRecorder&) = delete;
@@ -49,10 +54,11 @@ class HistorySyncSessionDurationsMetricsRecorder
 
   HistorySyncStatus DetermineHistorySyncStatus() const;
 
-  static void LogHistorySyncDuration(HistorySyncStatus history_sync_status,
-                                     base::TimeDelta session_length);
+  void LogHistorySyncDuration(HistorySyncStatus history_sync_status,
+                              base::TimeDelta session_length);
 
   const raw_ptr<SyncService> sync_service_;
+  const base::raw_ref<metrics::ProfileMetricsService> profile_metrics_service_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};

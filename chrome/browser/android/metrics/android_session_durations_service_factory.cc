@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/metrics/android_session_durations_service.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -75,6 +76,7 @@ AndroidSessionDurationsServiceFactory::AndroidSessionDurationsServiceFactory()
               .Build()) {
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ProfileMetricsServiceFactory::GetInstance());
 }
 
 AndroidSessionDurationsServiceFactory::
@@ -94,7 +96,8 @@ AndroidSessionDurationsServiceFactory::BuildServiceInstanceForBrowserContext(
   } else {
     service->InitializeForRegularProfile(
         profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile),
-        IdentityManagerFactory::GetForProfile(profile));
+        IdentityManagerFactory::GetForProfile(profile),
+        ProfileMetricsServiceFactory::GetForProfile(profile));
   }
   return service;
 }

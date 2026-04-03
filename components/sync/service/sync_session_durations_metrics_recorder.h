@@ -16,6 +16,10 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
+namespace metrics {
+class ProfileMetricsService;
+}
+
 namespace syncer {
 
 // Tracks the active browsing time that the user spends signed in and/or syncing
@@ -29,7 +33,8 @@ class SyncSessionDurationsMetricsRecorder
   // Callers must ensure that the parameters outlive this object.
   SyncSessionDurationsMetricsRecorder(
       SyncService* sync_service,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      metrics::ProfileMetricsService* profile_metrics_service);
 
   SyncSessionDurationsMetricsRecorder(
       const SyncSessionDurationsMetricsRecorder&) = delete;
@@ -132,6 +137,8 @@ class SyncSessionDurationsMetricsRecorder
   // Tracks the elapsed active session time in the current sync and account
   // status. The timer is absent if there's no active session.
   std::optional<base::ElapsedTimer> sync_account_session_timer_;
+
+  const base::raw_ref<metrics::ProfileMetricsService> profile_metrics_service_;
 };
 
 }  // namespace syncer

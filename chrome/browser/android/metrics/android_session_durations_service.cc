@@ -91,7 +91,8 @@ AndroidSessionDurationsService::~AndroidSessionDurationsService() = default;
 void AndroidSessionDurationsService::InitializeForRegularProfile(
     PrefService* pref_service,
     syncer::SyncService* sync_service,
-    signin::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager,
+    metrics::ProfileMetricsService* profile_metrics_service) {
   DCHECK(!incognito_session_metrics_recorder_);
   DCHECK(!sync_session_metrics_recorder_);
   CHECK(!password_session_duration_metrics_recorder_);
@@ -99,7 +100,7 @@ void AndroidSessionDurationsService::InitializeForRegularProfile(
 
   sync_session_metrics_recorder_ =
       std::make_unique<syncer::SyncSessionDurationsMetricsRecorder>(
-          sync_service, identity_manager);
+          sync_service, identity_manager, profile_metrics_service);
 
   password_session_duration_metrics_recorder_ = std::make_unique<
       password_manager::PasswordSessionDurationsMetricsRecorder>(sync_service);

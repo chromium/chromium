@@ -769,8 +769,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Session.TotalDurationMax1Day.{HistorySyncState}" units="ms"
-    expires_after="2026-09-20">
+<histogram name="Session.TotalDurationMax1Day.{HistorySyncState}{Profile}"
+    units="ms" expires_after="2026-09-20">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -801,6 +801,8 @@ chromium-metrics-reviews@google.com.
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
     moment.
+
+    {Profile}
   </summary>
   <token key="HistorySyncState">
     <variant name="WithHistorySync"
@@ -811,10 +813,11 @@ chromium-metrics-reviews@google.com.
         summary="enabled and without persistent auth error"/>
     <variant name="WithoutHistorySync" summary="NOT enabled"/>
   </token>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
-<histogram name="Session.TotalDurationMax1Day.{IdentityState}" units="ms"
-    expires_after="2027-04-01">
+<histogram name="Session.TotalDurationMax1Day.{IdentityState}{Profile}"
+    units="ms" expires_after="2027-04-01">
   <owner>bsazonov@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
@@ -846,6 +849,8 @@ chromium-metrics-reviews@google.com.
     This histogram is of special interest to the chrome-analysis-team@ and
     chrome-signin-team@. Do not change its semantics or retire it without
     talking to them first.
+
+    {Profile}
   </summary>
   <token key="IdentityState">
     <variant name="NotOptedInToSyncWithAccount"
@@ -914,6 +919,7 @@ chromium-metrics-reviews@google.com.
                  for Guest and System profiles which wasn't intentional. This
                  was fixed in M93."/>
   </token>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{MsbbState}" units="ms"

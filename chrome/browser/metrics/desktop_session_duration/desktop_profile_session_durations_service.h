@@ -24,6 +24,7 @@ class SyncService;
 class PrefService;
 
 namespace metrics {
+class ProfileMetricsService;
 
 // Tracks the user's active browsing time and forwards session start/end events
 // to feature-specific recorders.
@@ -36,6 +37,7 @@ class DesktopProfileSessionDurationsService
       PrefService* pref_service,
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
+      ProfileMetricsService* profile_metrics_service,
       DesktopSessionDurationTracker* tracker);
 
   DesktopProfileSessionDurationsService(

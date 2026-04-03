@@ -66,4 +66,16 @@ void ProfileMetricsService::UmaHistogramSparse(std::string_view name,
   }
 }
 
+void ProfileMetricsService::UmaHistogramCustomTimes(std::string_view name,
+                                                    base::TimeDelta sample,
+                                                    base::TimeDelta min,
+                                                    base::TimeDelta max,
+                                                    size_t buckets) {
+  base::UmaHistogramCustomTimes(name, sample, min, max, buckets);
+  if (!histogram_suffix_.empty()) {
+    base::UmaHistogramCustomTimes(base::StrCat({name, histogram_suffix_}),
+                                  sample, min, max, buckets);
+  }
+}
+
 }  // namespace metrics

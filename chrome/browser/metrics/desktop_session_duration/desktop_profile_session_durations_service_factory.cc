@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -47,6 +48,7 @@ DesktopProfileSessionDurationsServiceFactory::
               .Build()) {
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ProfileMetricsServiceFactory::GetInstance());
 }
 
 DesktopProfileSessionDurationsServiceFactory::
@@ -73,8 +75,11 @@ std::unique_ptr<KeyedService> DesktopProfileSessionDurationsServiceFactory::
   DesktopSessionDurationTracker* tracker = DesktopSessionDurationTracker::Get();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
+  metrics::ProfileMetricsService* profile_metrics_service =
+      ProfileMetricsServiceFactory::GetForProfile(profile);
   return std::make_unique<DesktopProfileSessionDurationsService>(
-      profile->GetPrefs(), sync_service, identity_manager, tracker);
+      profile->GetPrefs(), sync_service, identity_manager,
+      profile_metrics_service, tracker);
 }
 
 }  // namespace metrics

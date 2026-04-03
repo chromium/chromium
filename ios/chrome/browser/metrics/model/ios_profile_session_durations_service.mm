@@ -12,14 +12,15 @@
 IOSProfileSessionDurationsService::IOSProfileSessionDurationsService(
     syncer::SyncService* sync_service,
     PrefService* pref_service,
-    signin::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager,
+    metrics::ProfileMetricsService* profile_metrics_service) {
   CHECK(sync_service);
   CHECK(pref_service);
   CHECK(identity_manager);
 
   sync_metrics_recorder_ =
       std::make_unique<syncer::SyncSessionDurationsMetricsRecorder>(
-          sync_service, identity_manager);
+          sync_service, identity_manager, profile_metrics_service);
 
   msbb_metrics_recorder_ =
       std::make_unique<unified_consent::MsbbSessionDurationsMetricsRecorder>(

@@ -62,6 +62,12 @@ class ProfileMetricsService : public KeyedService {
 
   void UmaHistogramSparse(std::string_view name, int sample);
 
+  void UmaHistogramCustomTimes(std::string_view name,
+                               base::TimeDelta sample,
+                               base::TimeDelta min,
+                               base::TimeDelta max,
+                               size_t buckets);
+
  private:
   const ProfileMetricsContext profile_metrics_context_;
 
