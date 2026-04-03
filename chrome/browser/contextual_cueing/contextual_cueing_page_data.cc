@@ -9,6 +9,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
@@ -111,7 +112,12 @@ void ContextualCueingPageData::FindMatchingConfig() {
     }
     auto decision = DidMatchCueingConditions(config);
     if (decision == kAllowed) {
-      if (kUseDynamicCues.Get() && config.has_dynamic_cue_label()) {
+      bool is_auto_open_eligible =
+          config.auto_open_eligible() &&
+          page().GetContentsMimeType() == pdf::kPDFMimeType &&
+          base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf);
+      if (is_auto_open_eligible ||
+          (kUseDynamicCues.Get() && config.has_dynamic_cue_label())) {
         CueingResult result;
         result.cue_label = config.dynamic_cue_label();
         result.prompt_suggestion = config.default_text();
