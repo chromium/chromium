@@ -119,8 +119,12 @@ std::optional<base::Value> Clone(const std::optional<base::Value>& original) {
 
 bool w3cMode(const std::string& session_id,
              const SessionThreadMap& session_thread_map) {
-  if (session_id.length() > 0 && session_thread_map.count(session_id) > 0)
-    return session_thread_map.at(session_id)->w3cMode();
+  if (session_id.length() > 0) {
+    if (auto it = session_thread_map.find(session_id);
+        it != session_thread_map.end()) {
+      return it->second->w3cMode();
+    }
+  }
   return kW3CDefault;
 }
 
