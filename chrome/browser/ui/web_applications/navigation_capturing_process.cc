@@ -80,6 +80,7 @@ bool IsDispositionValidForNavigationCapturing(
     case WindowOpenDisposition::IGNORE_ACTION:
     case WindowOpenDisposition::SWITCH_TO_TAB:
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+    case WindowOpenDisposition::NEW_SPLIT_VIEW:
       return false;
   }
 }
@@ -869,6 +870,7 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
       case WindowOpenDisposition::OFF_THE_RECORD:
       case WindowOpenDisposition::IGNORE_ACTION:
       case WindowOpenDisposition::SWITCH_TO_TAB:
+      case WindowOpenDisposition::NEW_SPLIT_VIEW:
         // These are not supposed to be reachable with IWA URLs.
         return true;
     }

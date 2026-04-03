@@ -814,6 +814,8 @@ std::string WindowOpenDispositionToString(WindowOpenDisposition disposition) {
       return kWindowOpenDispositionIgnoreAction;
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
       return kWindowOpenDispositionNewPictureInPicture;
+    case WindowOpenDisposition::NEW_SPLIT_VIEW:
+      return kWindowOpenDispositionUnknown;
   }
 }
 
@@ -1356,6 +1358,8 @@ SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
       return sync_pb::
           WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE;
+    case WindowOpenDisposition::NEW_SPLIT_VIEW:
+      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN;
   }
 }
 

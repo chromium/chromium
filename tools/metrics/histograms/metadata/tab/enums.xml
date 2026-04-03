@@ -349,6 +349,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="What's new"/>
   <int value="9" label="Keyboard shortcut"/>
   <int value="10" label="New tab button"/>
+  <int value="11" label="Link click shortcut"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/split_tab_metrics.h:SplitTabCreatedSource) -->

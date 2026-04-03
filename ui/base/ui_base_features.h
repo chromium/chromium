@@ -299,6 +299,11 @@ BASE_DECLARE_FEATURE_PARAM(int, kCompensationExpectedLatencyMs);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(int, kCompensationAcceptableLatencyMs);
 
+// When enabled, Ctrl+Alt+Click (Cmd+Alt+Click on macOS) opens a link in a
+// split view alongside the current tab.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kSplitViewLinkOpen);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

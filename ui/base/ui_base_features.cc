@@ -461,4 +461,6 @@ BASE_FEATURE_PARAM(int,
                    "acceptable_latency_ms",
                    50);
 
+BASE_FEATURE(kSplitViewLinkOpen, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

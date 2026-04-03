@@ -39,9 +39,12 @@ struct EnumTraits<ui::mojom::WindowOpenDisposition, WindowOpenDisposition> {
         return ui::mojom::WindowOpenDisposition::OFF_THE_RECORD;
       case WindowOpenDisposition::IGNORE_ACTION:
         return ui::mojom::WindowOpenDisposition::IGNORE_ACTION;
-      default:
-        NOTREACHED();
+      case WindowOpenDisposition::SWITCH_TO_TAB:
+        return ui::mojom::WindowOpenDisposition::SWITCH_TO_TAB;
+      case WindowOpenDisposition::NEW_SPLIT_VIEW:
+        return ui::mojom::WindowOpenDisposition::NEW_SPLIT_VIEW;
     }
+    NOTREACHED();
   }
 
   static WindowOpenDisposition FromMojom(
@@ -69,9 +72,12 @@ struct EnumTraits<ui::mojom::WindowOpenDisposition, WindowOpenDisposition> {
         return WindowOpenDisposition::OFF_THE_RECORD;
       case ui::mojom::WindowOpenDisposition::IGNORE_ACTION:
         return WindowOpenDisposition::IGNORE_ACTION;
-      default:
-        NOTREACHED();
+      case ui::mojom::WindowOpenDisposition::SWITCH_TO_TAB:
+        return WindowOpenDisposition::SWITCH_TO_TAB;
+      case ui::mojom::WindowOpenDisposition::NEW_SPLIT_VIEW:
+        return WindowOpenDisposition::NEW_SPLIT_VIEW;
     }
+    NOTREACHED();
   }
 };
 

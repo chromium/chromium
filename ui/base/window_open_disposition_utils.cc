@@ -4,7 +4,9 @@
 
 #include "ui/base/window_open_disposition_utils.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 
 namespace ui {
@@ -18,12 +20,20 @@ WindowOpenDisposition DispositionFromClick(
     WindowOpenDisposition disposition_for_current_tab) {
   // MacOS uses meta key (Command key) to spawn new tabs.
 #if BUILDFLAG(IS_APPLE)
-  if (middle_button || meta_key)
+  const bool new_tab_modifier = middle_button || meta_key;
+  const bool split_view_modifier = meta_key;
 #else
-  if (middle_button || ctrl_key)
+  const bool new_tab_modifier = middle_button || ctrl_key;
+  const bool split_view_modifier = ctrl_key;
 #endif
+  if (split_view_modifier && alt_key && !shift_key &&
+      base::FeatureList::IsEnabled(features::kSplitViewLinkOpen)) {
+    return WindowOpenDisposition::NEW_SPLIT_VIEW;
+  }
+  if (new_tab_modifier) {
     return shift_key ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                      : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  }
   if (shift_key)
     return WindowOpenDisposition::NEW_WINDOW;
   if (alt_key)

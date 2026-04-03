@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
@@ -44,6 +45,9 @@
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -2395,6 +2399,51 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateWithCallback) {
   EXPECT_EQ(GetGoogleURL(),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewSplitView) {
+  WebContents* old_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateParams params(MakeNavigateParams());
+  params.disposition = WindowOpenDisposition::NEW_SPLIT_VIEW;
+  Navigate(&params);
+
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_NE(old_contents, params.navigated_or_inserted_contents);
+
+  tabs::TabInterface* old_tab =
+      tabs::TabInterface::MaybeGetFromContents(old_contents);
+  tabs::TabInterface* new_tab = tabs::TabInterface::MaybeGetFromContents(
+      params.navigated_or_inserted_contents);
+  ASSERT_TRUE(old_tab);
+  ASSERT_TRUE(new_tab);
+  EXPECT_TRUE(old_tab->IsSplit());
+  EXPECT_TRUE(new_tab->IsSplit());
+  EXPECT_EQ(old_tab->GetSplit().value(), new_tab->GetSplit().value());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       Disposition_NewSplitView_AlreadySplit) {
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  WebContents* source_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  content::OpenURLParams open_params(GetGoogleURL(), content::Referrer(),
+                                     WindowOpenDisposition::NEW_SPLIT_VIEW,
+                                     ui::PAGE_TRANSITION_LINK, false);
+  WebContents* returned_contents = source_contents->OpenURL(open_params, {});
+
+  // Returning |source_contents| avoids DidOpenRequestedURL notifications,
+  // which are only intended for newly created tabs.
+  EXPECT_EQ(source_contents, returned_contents);
+  // No new tab should have been created; the other pane was navigated.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }
 
 }  // namespace

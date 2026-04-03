@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/page/create_window.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -106,6 +107,14 @@ class NavigationPolicyWithLinkPreviewEnabledTest : public NavigationPolicyTest {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kLinkPreview, {{"trigger_type", "alt_click"}});
+  }
+};
+
+class NavigationPolicyWithSplitViewEnabledTest : public NavigationPolicyTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({::features::kSplitViewLinkOpen},
+                                          {features::kLinkPreview});
   }
 };
 
@@ -448,6 +457,30 @@ TEST_F(NavigationPolicyWithLinkPreviewEnabledTest, EventAltClickWithUserEvent) {
   int modifiers = WebInputEvent::kAltKey;
   WebMouseEvent::Button button = WebMouseEvent::Button::kLeft;
   EXPECT_EQ(kNavigationPolicyLinkPreview,
+            GetPolicyFromEvent(modifiers, button, modifiers, button));
+}
+
+TEST_F(NavigationPolicyWithSplitViewEnabledTest,
+       EventAltControlOrMetaLeftClick) {
+#if BUILDFLAG(IS_MAC)
+  int modifiers = WebInputEvent::kMetaKey | WebInputEvent::kAltKey;
+#else
+  int modifiers = WebInputEvent::kControlKey | WebInputEvent::kAltKey;
+#endif
+  WebMouseEvent::Button button = WebMouseEvent::Button::kLeft;
+  EXPECT_EQ(kNavigationPolicyCurrentTab,
+            NavigationPolicyFromEvent(GetEvent(modifiers, button)));
+}
+
+TEST_F(NavigationPolicyWithSplitViewEnabledTest,
+       EventAltControlOrMetaLeftClickWithUserEvent) {
+#if BUILDFLAG(IS_MAC)
+  int modifiers = WebInputEvent::kMetaKey | WebInputEvent::kAltKey;
+#else
+  int modifiers = WebInputEvent::kControlKey | WebInputEvent::kAltKey;
+#endif
+  WebMouseEvent::Button button = WebMouseEvent::Button::kLeft;
+  EXPECT_EQ(kNavigationPolicySplitView,
             GetPolicyFromEvent(modifiers, button, modifiers, button));
 }
 

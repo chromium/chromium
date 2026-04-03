@@ -666,6 +666,7 @@ content::WebContents* FrameImpl::AddNewContents(
     case WindowOpenDisposition::OFF_THE_RECORD:
     case WindowOpenDisposition::IGNORE_ACTION:
     case WindowOpenDisposition::SWITCH_TO_TAB:
+    case WindowOpenDisposition::NEW_SPLIT_VIEW:
     case WindowOpenDisposition::UNKNOWN:
       NOTIMPLEMENTED() << "Dropped new web contents (disposition: "
                        << static_cast<int>(disposition) << ")";

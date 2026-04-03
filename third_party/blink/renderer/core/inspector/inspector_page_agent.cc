@@ -150,6 +150,8 @@ String NavigationPolicyToProtocol(NavigationPolicy policy) {
       return DispositionEnum::NewWindow;
     case kNavigationPolicyPictureInPicture:
       return DispositionEnum::NewWindow;
+    case kNavigationPolicySplitView:
+      return DispositionEnum::NewTab;
     case kNavigationPolicyLinkPreview:
       NOTREACHED();
   }

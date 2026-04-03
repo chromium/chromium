@@ -1945,6 +1945,29 @@ WebContents* Browser::OpenURLFromTab(
                                   std::move(navigation_handle_callback));
   }
 
+  // If the source is already split, navigate the other pane instead of
+  // creating a new tab. Return |source| so that WebContentsImpl::OpenURL()
+  // sees new_contents == this and skips the DidOpenRequestedURL notification,
+  // which is only meant for newly created WebContents.
+  if (params.disposition == WindowOpenDisposition::NEW_SPLIT_VIEW && source) {
+    tabs::TabInterface* const source_tab =
+        tabs::TabInterface::MaybeGetFromContents(source);
+    if (source_tab && source_tab->IsSplit()) {
+      const split_tabs::SplitTabId split_id = source_tab->GetSplit().value();
+      for (tabs::TabInterface* tab :
+           tab_strip_model()->GetSplitData(split_id)->ListTabs()) {
+        if (tab != source_tab) {
+          content::NavigationController::LoadURLParams load_params(params.url);
+          load_params.transition_type = params.transition;
+          load_params.referrer =
+              content::Referrer(params.referrer.url, params.referrer.policy);
+          tab->GetContents()->GetController().LoadURLWithParams(load_params);
+          return source;
+        }
+      }
+    }
+  }
+
   NavigateParams nav_params(this, params.url, params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(params);
   nav_params.source_contents = source;

@@ -26,8 +26,10 @@ enum class WindowOpenDisposition {
   SWITCH_TO_TAB,
   // Creates a new document picture-in-picture window showing a child WebView.
   NEW_PICTURE_IN_PICTURE,
+  // Opens a link in a split view alongside the current tab.
+  NEW_SPLIT_VIEW,
   // Update when adding a new disposition.
-  MAX_VALUE = NEW_PICTURE_IN_PICTURE,
+  MAX_VALUE = NEW_SPLIT_VIEW,
 };
 
 #endif  // UI_BASE_WINDOW_OPEN_DISPOSITION_H_

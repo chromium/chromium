@@ -27,7 +27,8 @@ enum class SplitTabCreatedSource {
   kWhatsNew = 8,
   kKeyboardShortcut = 9,
   kNewTabButton = 10,
-  kMaxValue = kNewTabButton
+  kLinkClick = 11,
+  kMaxValue = kLinkClick
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SplitTabCreatedSource)
 

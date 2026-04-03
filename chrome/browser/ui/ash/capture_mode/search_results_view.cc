@@ -70,6 +70,7 @@ content::WebContents* SearchResultsView::OpenURLFromTab(
     case WindowOpenDisposition::IGNORE_ACTION:
     case WindowOpenDisposition::SWITCH_TO_TAB:
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+    case WindowOpenDisposition::NEW_SPLIT_VIEW:
       // These other dispositions will open new windows / tabs, so use these
       // dispositions as-is.
       new_tab_params.disposition = params.disposition;

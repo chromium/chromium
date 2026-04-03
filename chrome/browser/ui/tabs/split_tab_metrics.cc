@@ -49,6 +49,8 @@ std::string_view GetMetricsSuffixForSource(SplitTabCreatedSource source) {
       return "KeyboardShortcut";
     case SplitTabCreatedSource::kNewTabButton:
       return "NewTabButton";
+    case SplitTabCreatedSource::kLinkClick:
+      return "LinkClick";
   }
 }
 }  // namespace

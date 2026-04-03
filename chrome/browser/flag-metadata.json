@@ -8596,6 +8596,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "split-view-link-open",
+    "owners": [ "helmut@januschka.com", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "startup-launch",
     "owners": [
       "top-chrome-desktop-ui@google.com",
