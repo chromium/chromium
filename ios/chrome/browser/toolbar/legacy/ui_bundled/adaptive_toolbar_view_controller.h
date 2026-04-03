@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_ui_updating.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_consumer.h"
@@ -30,7 +31,8 @@
 // dismissed on such events. For example, the tools menu is closed upon
 // rotation.
 @interface AdaptiveToolbarViewController
-    : UIViewController <FullscreenUIElement,
+    : UIViewController <FullscreenBrowserAgentObserving,
+                        FullscreenUIElement,
                         PopupMenuUIUpdating,
                         LegacyToolbarConsumer>
 

@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
@@ -232,6 +233,23 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   return self.view.expanded;
 }
 
+#pragma mark - FullscreenBrowserAgentObserving
+
+- (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
+  agent->AddObscuredInsetRange(UIRectEdgeTop, [self minHeight],
+                               [self maxHeight]);
+}
+
+- (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
+  [self updateForFullscreenProgress:agent->top_progress()];
+  [self.view layoutIfNeeded];
+  CGFloat minHeight = [self minHeight];
+  CGFloat maxHeight = [self maxHeight];
+  CGFloat currentHeight =
+      minHeight + (maxHeight - minHeight) * agent->top_progress();
+  agent->AddObscuredInset(UIRectEdgeTop, currentHeight);
+}
+
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
@@ -398,6 +416,22 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   PrimaryToolbarView* view = self.view;
   view.locationBarContainerHeight.constant = height;
   view.locationBarContainer.layer.cornerRadius = height / 2;
+}
+
+// The minimum height of this toolbar.
+- (CGFloat)minHeight {
+  UIContentSizeCategory category =
+      self.traitCollection.preferredContentSizeCategory;
+  return [self hasOmnibox] ? ToolbarCollapsedHeight(category) : 0;
+}
+
+// The maximum height of this toolbar.
+- (CGFloat)maxHeight {
+  CGFloat maxHeight = self.view.intrinsicContentSize.height;
+  if (!IsSplitToolbarMode(self) || CanShowTabStrip(self)) {
+    maxHeight += kTopToolbarUnsplitMargin;
+  }
+  return maxHeight;
 }
 
 #pragma mark - TabGroupIndicatorViewDelegate

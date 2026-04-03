@@ -14,6 +14,7 @@ include_rules = [
   "+ios/chrome/browser/find_in_page/model/find_in_page_util.h",
   "+ios/chrome/browser/first_run/model/first_run.h",
   "+ios/chrome/browser/fullscreen/internal",
+  "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/infobars/model/infobar_manager_impl.h",
   "+ios/chrome/browser/infobars/ui_bundled/test_infobar_delegate.h",

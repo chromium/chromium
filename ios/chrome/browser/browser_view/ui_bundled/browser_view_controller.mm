@@ -485,9 +485,12 @@ const CGFloat kTopDynamicIslandInset = 24;
            webStateList:self.webStateList];
     StartBroadcastingMainContentUI(self, broadcaster);
 
-    _fullscreenUIUpdater =
-        std::make_unique<FullscreenUIUpdater>(self.fullscreenController, self);
-    [self updateForFullscreenProgress:self.fullscreenController->GetProgress()];
+    if (!IsFullscreenRefactoringEnabled()) {
+      _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+          self.fullscreenController, self);
+      [self
+          updateForFullscreenProgress:self.fullscreenController->GetProgress()];
+    }
   } else {
     if (!IsRefactorToolbarsSize()) {
       StopBroadcastingToolbarsSize(broadcaster);
@@ -1886,18 +1889,38 @@ const CGFloat kTopDynamicIslandInset = 24;
 - (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
   CHECK(IsFullscreenRefactoringEnabled());
 
-  // Top obscured range: safe area top (with dynamic island adaptation) and
-  // primary toolbar, but excluding the tab strip.
+  // Add the safe area top (with dynamic island adaptation).
   CGFloat topInset = [self topInset];
-  CGFloat min =
-      topInset + self.toolbarCoordinator.collapsedPrimaryToolbarHeight;
-  CGFloat max = topInset + self.toolbarCoordinator.expandedPrimaryToolbarHeight;
-  agent->AddObscuredInsetRange(UIRectEdgeTop, min, max);
+  agent->AddObscuredInsetRange(UIRectEdgeTop, /*min=*/topInset,
+                               /*max=*/topInset);
 
-  CGFloat secondaryToolbarHeight = [self secondaryToolbarHeightWithInset];
-  agent->AddObscuredInsetRange(UIRectEdgeBottom,
-                               [self collapsedBottomToolbarHeight],
-                               secondaryToolbarHeight);
+  if (IsSplitToolbarMode(self)) {
+    CGFloat bottomInset = self.rootSafeAreaInsets.bottom;
+    if ([self collapsedBottomToolbarHeight] == 0.0) {
+      // If bottom toolbar collapses completely, then the safe area inset should
+      // collapse also.
+      agent->AddObscuredInsetRange(UIRectEdgeBottom, /*min=*/0,
+                                   /*max=*/bottomInset);
+    } else {
+      agent->AddObscuredInsetRange(UIRectEdgeBottom, /*min=*/bottomInset,
+                                   /*max=*/bottomInset);
+    }
+  }
+}
+
+- (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
+  CHECK(IsFullscreenRefactoringEnabled());
+  [self updateHeadersForFullscreenProgress:agent->top_progress()];
+  [self updateFootersForFullscreenProgress:agent->bottom_progress()];
+  CGFloat topInset = [self topInset];
+  agent->AddObscuredInset(UIRectEdgeTop, topInset);
+  if (IsSplitToolbarMode(self)) {
+    CGFloat bottomInset = self.rootSafeAreaInsets.bottom;
+    if ([self collapsedBottomToolbarHeight] == 0.0) {
+      bottomInset *= agent->bottom_progress();
+    }
+    agent->AddObscuredInset(UIRectEdgeBottom, bottomInset);
+  }
 }
 
 #pragma mark - FullscreenUIElement helpers

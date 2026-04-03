@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
@@ -269,6 +270,47 @@
                      toCoordinateSpace:toCoordinateSpace];
   return CGRectIntersection(keyboardFrameInWindow, self.view.window.bounds)
       .size.height;
+}
+
+// The minimum height of this toolbar.
+- (CGFloat)minHeight {
+  UIContentSizeCategory category =
+      self.traitCollection.preferredContentSizeCategory;
+  return self.hasOmnibox ? ToolbarCollapsedHeight(category) : 0;
+}
+
+// The maximum height of this toolbar.
+- (CGFloat)maxHeight {
+  UIContentSizeCategory category =
+      self.traitCollection.preferredContentSizeCategory;
+  CGFloat maxHeight = self.view.intrinsicContentSize.height;
+  if (self.hasOmnibox) {
+    maxHeight += ToolbarExpandedHeight(category);
+  }
+  return maxHeight;
+}
+
+#pragma mark - FullscreenBrowserAgentObserving
+
+- (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
+  if (!IsSplitToolbarMode(self)) {
+    return;
+  }
+  agent->AddObscuredInsetRange(UIRectEdgeBottom, [self minHeight],
+                               [self maxHeight]);
+}
+
+- (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
+  if (!IsSplitToolbarMode(self)) {
+    return;
+  }
+  [self updateForFullscreenProgress:agent->bottom_progress()];
+  [self.view layoutIfNeeded];
+  CGFloat minHeight = [self minHeight];
+  CGFloat maxHeight = [self maxHeight];
+  CGFloat currentHeight =
+      minHeight + (maxHeight - minHeight) * agent->bottom_progress();
+  agent->AddObscuredInset(UIRectEdgeBottom, currentHeight);
 }
 
 #pragma mark - ToolbarAnimatee

@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -32,6 +34,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_coordinator+subclassing.h"
@@ -64,6 +67,9 @@ using tab_groups::VersioningMessageController;
 @implementation AdaptiveToolbarCoordinator {
   // Observer that updates `toolbarViewController` for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
+  // Bridge to observe the FullscreenBrowserAgent.
+  std::unique_ptr<FullscreenBrowserAgentObserverBridge>
+      _fullscreenBrowserAgentObserverBridge;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -107,8 +113,14 @@ using tab_groups::VersioningMessageController;
              scenario:kMenuScenarioHistogramToolbarMenu];
   self.mediator.commandDispatcher = browser->GetCommandDispatcher();
 
-  _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-      FullscreenController::FromBrowser(browser), self.viewController);
+  if (IsFullscreenRefactoringEnabled()) {
+    _fullscreenBrowserAgentObserverBridge =
+        std::make_unique<FullscreenBrowserAgentObserverBridge>(
+            self.viewController, FullscreenBrowserAgent::FromBrowser(browser));
+  } else {
+    _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+        FullscreenController::FromBrowser(browser), self.viewController);
+  }
 
   self.viewController.menuProvider = self.mediator;
 
@@ -123,6 +135,7 @@ using tab_groups::VersioningMessageController;
   self.mediator = nil;
   [self.viewController disconnect];
   _fullscreenUIUpdater = nullptr;
+  _fullscreenBrowserAgentObserverBridge = nullptr;
   _started = NO;
 }
 
