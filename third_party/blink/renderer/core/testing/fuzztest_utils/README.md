@@ -43,11 +43,12 @@ functions, as well as support for other specifications, are encouraged.
     to false)
 - **`AnyDomScenarioForSpec()`** - Generates FuzzTest domains from specifications
 - **`DomScenarioRunner`** - Base class that executes `DomScenario` test cases
-  by creating initial DOM, applying modifications, and calling
-  `UpdateStyleAndLayoutTree()` after each phase. Subclasses can override
-  `CreateInitialDOM()` and `ApplyModifications()` to add custom behavior (e.g.,
-  dumping accessibility trees). Includes detailed logging (enabled with
-  `--enable-dom-fuzzer-logging`) and `DomScenario::ToString()` for debugging.
+  by creating initial DOM, applying modifications, and updating style
+  and layout after each phase. The animation clock is advanced 500ms
+  after each phase with a full lifecycle update. Subclasses can override
+  observer hooks to add custom behavior (e.g., dumping accessibility trees).
+  Includes detailed logging (enabled with `--enable-dom-fuzzer-logging`) and
+  `DomScenario::ToString()` for debugging.
 
 ## Usage Example
 

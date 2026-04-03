@@ -445,8 +445,9 @@ fuzztest::Domain<std::string> AnyCSSAnimationIterationCountValue() {
 
 fuzztest::Domain<std::string> AnyCSSAnimationNameValue() {
   return fuzztest::ElementOf<std::string>(
-      {"fuzz-fade", "fuzz-hide", "fuzz-reveal", "fuzz-shrink", "fuzz-move",
-       "fuzz-spin", "fuzz-pulse", "fuzz-recolor", "fuzz-toggle-display",
+      {"fuzz-fade", "fuzz-hide", "fuzz-reveal", "fuzz-shrink",
+       "fuzz-shrink-to-zero", "fuzz-move", "fuzz-move-offscreen", "fuzz-spin",
+       "fuzz-tilt", "fuzz-pulse", "fuzz-recolor", "fuzz-toggle-display",
        "none"});
 }
 

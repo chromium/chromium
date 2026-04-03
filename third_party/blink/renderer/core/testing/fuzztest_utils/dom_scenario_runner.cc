@@ -10,7 +10,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -60,9 +62,12 @@ void DomScenarioRunner::RunTest(const DomScenario& input) {
   HeapVector<Member<Element>> created_elements;
   shadow_host_counter_ = 0;
   LogIfEnabled(base::StrCat({"\n\n", input.ToString()}));
+  InjectKeyframesStylesheet();
   InjectCustomElementDefinitions();
   CreateInitialDOM(input, root, created_elements);
+  AdvanceAnimations();
   ApplyModifications(root, input.node_specs, created_elements);
+  AdvanceAnimations();
   GetDocument().body()->RemoveChildren();
   GetDocument().head()->RemoveChildren();
 }
@@ -307,6 +312,72 @@ void DomScenarioRunner::InjectCustomElementDefinitions() {
   script->setTextContent(AtomicString(kCustomElementsJS));
   document.head()->appendChild(script);
   document.UpdateStyleAndLayoutTree();
+}
+
+void DomScenarioRunner::InjectKeyframesStylesheet() {
+  static const char kKeyframesCSS[] = R"css(
+    @keyframes fuzz-fade {
+      from { opacity: 1 }
+      to { opacity: 0 }
+    }
+    @keyframes fuzz-hide {
+      from { visibility: visible }
+      to { visibility: hidden }
+    }
+    @keyframes fuzz-reveal {
+      from { content-visibility: hidden }
+      to { content-visibility: visible }
+    }
+    @keyframes fuzz-shrink-to-zero {
+      from { width: 100px; height: 100px }
+      to { width: 0; height: 0 }
+    }
+    @keyframes fuzz-shrink {
+      from { width: 100px; height: 100px }
+      to { width: 50px; height: 50px }
+    }
+    @keyframes fuzz-move {
+      from { transform: none }
+      to { transform: translateX(100px) }
+    }
+    @keyframes fuzz-move-offscreen {
+      from { transform: none }
+      to { transform: translateX(5000px) }
+    }
+    @keyframes fuzz-spin {
+      to { transform: rotate(360deg) }
+    }
+    @keyframes fuzz-tilt {
+      to { transform: rotate(45deg) }
+    }
+    @keyframes fuzz-pulse {
+      0%, 100% { transform: scale(1); opacity: 1 }
+      50% { transform: scale(1.15); opacity: 0.7 }
+    }
+    @keyframes fuzz-recolor {
+      0% { color: red }
+      25% { color: green }
+      50% { color: blue }
+      75% { color: yellow }
+      100% { color: red }
+    }
+    @keyframes fuzz-toggle-display {
+      from { display: block }
+      to { display: none }
+    }
+  )css";
+  Document& document = GetDocument();
+  Element* style = document.CreateRawElement(
+      html_names::TagToQualifiedName(html_names::HTMLTag::kStyle));
+  style->setTextContent(AtomicString(kKeyframesCSS));
+  document.head()->appendChild(style);
+}
+
+void DomScenarioRunner::AdvanceAnimations() {
+  auto& clock = GetAnimationClock();
+  clock.UpdateTime(clock.CurrentTime() + base::Milliseconds(500));
+  UpdateAllLifecyclePhasesForTest();
+  ObserveAnimationsAdvanced();
 }
 
 void DomScenarioRunner::LogIfEnabled(const std::string& message) {
