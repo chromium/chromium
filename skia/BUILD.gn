@@ -66,6 +66,7 @@ config("skia_config") {
 
     # Staging
     "SK_ENABLE_LEGACY_SHADERCONTEXT",
+    "SK_ENABLE_AVX512_OPTS",
 
     # Let Skia and Skia clients know whether to use `libpng`-based or
     # Rust-based PNG decoder and encoder.  This mimics what is done in
@@ -926,9 +927,10 @@ skia_source_set("skia_core_and_effects") {
 }
 
 # Bits that involve special vector-y hardware.
+# https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels
 if (current_cpu == "x86" || current_cpu == "x64") {
-  skia_source_set("skia_opts_hsw") {
-    sources = skia_opts.hsw_sources
+  skia_source_set("skia_opts_ml3") {
+    sources = skia_opts.ml3_sources
     if (!is_win) {
       cflags = [
         "-mavx2",
@@ -942,8 +944,8 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     }
     visibility = [ ":skia_opts" ]
   }
-  skia_source_set("skia_opts_skx") {
-    sources = skia_opts.skx_sources
+  skia_source_set("skia_opts_ml4") {
+    sources = skia_opts.ml4_sources
     configs += [ ":skia_avx512_flags" ]
     visibility = [ ":skia_opts" ]
   }
@@ -967,9 +969,9 @@ skia_source_set("skia_opts") {
   deps = [ "//base" ]
 
   if (current_cpu == "x86" || current_cpu == "x64") {
-    deps += [ ":skia_opts_hsw" ]
+    deps += [ ":skia_opts_ml3" ]
     if (allow_avx512) {
-      deps += [ ":skia_opts_skx" ]
+      deps += [ ":skia_opts_ml4" ]
     }
   } else if (current_cpu == "arm") {
     # The assembly uses the frame pointer register (r7 in Thumb/r11 in
