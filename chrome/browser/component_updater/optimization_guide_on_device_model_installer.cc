@@ -15,6 +15,7 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -64,6 +65,17 @@ constexpr uint8_t kClassifierModelPublicKeySHA256[32] = {
     0x53, 0x64, 0xef, 0xe7, 0x7b, 0xe1, 0x52, 0x44, 0x5b, 0x37};
 static_assert(std::size(kClassifierModelPublicKeySHA256) ==
               crypto::kSHA256Length);
+
+// Extension id is ceofaddefefcbblgcgnibnonglccbfja.
+constexpr char kOptimizationGuideModelsManifestName[] =
+    "Optimization Guide On DeviceModels Manifest";
+constexpr base::FilePath::CharType kManifestRelativeInstallDir[] =
+    FILE_PATH_LITERAL("OptimizationGuideModelsManifest");
+constexpr uint8_t kManifestPublicKeySHA256[32] = {
+    0x24, 0xe5, 0x03, 0x34, 0x54, 0x52, 0x11, 0xb6, 0x26, 0xd8, 0x1d,
+    0xed, 0x6b, 0x22, 0x15, 0x90, 0x9a, 0x44, 0xf0, 0x88, 0xdc, 0x19,
+    0xfa, 0x5d, 0xd4, 0x55, 0xf7, 0x95, 0x88, 0xff, 0xfd, 0x8a};
+static_assert(std::size(kManifestPublicKeySHA256) == crypto::kSHA256Length);
 
 bool IsModelAlreadyInstalled(ComponentUpdateService* cus,
                              const std::string& extension_id,
@@ -398,14 +410,64 @@ class ManifestComponentsInstallerPolicy final
   base::WeakPtr<optimization_guide::ManifestAssetManager> asset_manager_;
 };
 
+// Installer policy for the manifest component itself.
+class ManifestMonitorInstallerPolicy final
+    : public OptimizationGuideOnDeviceModelInstallerPolicy {
+ public:
+  explicit ManifestMonitorInstallerPolicy(
+      base::RepeatingCallback<void(base::FilePath)> on_ready_callback)
+      : on_ready_callback_(std::move(on_ready_callback)) {}
+
+  ManifestMonitorInstallerPolicy(const ManifestMonitorInstallerPolicy&) =
+      delete;
+  ManifestMonitorInstallerPolicy& operator=(
+      const ManifestMonitorInstallerPolicy&) = delete;
+
+ private:
+  bool VerifyInstallation(const base::DictValue& manifest,
+                          const base::FilePath& install_dir) const override {
+    return base::PathExists(
+        install_dir.Append(optimization_guide::kManifestFileName));
+  }
+
+  base::FilePath GetRelativeInstallDir() const override {
+    return base::FilePath(kManifestRelativeInstallDir);
+  }
+
+  void GetHash(std::vector<uint8_t>* hash) const override {
+    hash->assign(std::begin(kManifestPublicKeySHA256),
+                 std::end(kManifestPublicKeySHA256));
+  }
+
+  std::string GetName() const override {
+    return kOptimizationGuideModelsManifestName;
+  }
+
+  // Manifest should never be uninstalled.
+  void OnCustomUninstall() override {}
+
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& install_dir,
+                      base::DictValue manifest) override {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(on_ready_callback_, install_dir));
+  }
+
+  base::RepeatingCallback<void(base::FilePath)> on_ready_callback_;
+};
+
 class ManifestAssetManagerDelegateImpl final
     : public optimization_guide::ManifestAssetManager::Delegate {
  public:
   base::CallbackListSubscription ListenForManifestReady(
-      base::RepeatingCallback<void(base::FilePath)> on_ready) const override {
-    // TODO(crbug.com/489511247): Add a policy for manifest components. and
-    // update this.
-    return base::CallbackListSubscription();
+      base::RepeatingCallback<void(base::FilePath)> on_ready) override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    auto subscription = manifest_ready_callbacks_.Add(std::move(on_ready));
+    if (!manifest_dir_.empty()) {
+      manifest_ready_callbacks_.Notify(manifest_dir_);
+    }
+    MaybeRegisterManifestComponent();
+    return subscription;
   }
 
   void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteCount>)>
@@ -470,6 +532,44 @@ class ManifestAssetManagerDelegateImpl final
         is_background ? OnDemandUpdater::Priority::BACKGROUND
                       : OnDemandUpdater::Priority::FOREGROUND);
   }
+
+ private:
+  void MaybeRegisterManifestComponent() {
+    if (manifest_registered_) {
+      return;
+    }
+    manifest_registered_ = true;
+    if (!g_browser_process) {
+      return;
+    }
+
+    ComponentUpdateService* cus = g_browser_process->component_updater();
+    if (!cus) {
+      return;
+    }
+
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<ManifestMonitorInstallerPolicy>(base::BindRepeating(
+            &ManifestAssetManagerDelegateImpl::OnManifestReady,
+            weak_ptr_factory_.GetWeakPtr())));
+    installer->Register(
+        cus, base::BindOnce([] {
+          OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
+              crx_file::id_util::GenerateIdFromHash(kManifestPublicKeySHA256),
+              OnDemandUpdater::Priority::FOREGROUND);
+        }));
+  }
+
+  void OnManifestReady(base::FilePath install_dir) {
+    manifest_dir_ = std::move(install_dir);
+    manifest_ready_callbacks_.Notify(manifest_dir_);
+  }
+
+  base::FilePath manifest_dir_;
+  bool manifest_registered_ = false;
+  base::RepeatingCallbackList<void(base::FilePath)> manifest_ready_callbacks_;
+  base::WeakPtrFactory<ManifestAssetManagerDelegateImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace

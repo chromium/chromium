@@ -54,7 +54,7 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
   ~DelegateImpl() override = default;
 
   base::CallbackListSubscription ListenForManifestReady(
-      base::RepeatingCallback<void(base::FilePath)> on_ready) const override {
+      base::RepeatingCallback<void(base::FilePath)> on_ready) override {
     if (state_) {
       return state_->manifest_ready_callbacks_.Add(std::move(on_ready));
     }
