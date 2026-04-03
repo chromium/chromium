@@ -82,14 +82,36 @@ ShapeResult* ShapeForFit(const InlineItem& item,
             font.GetFontDescription().GetTextSpacingTrim()) &&
         Character::MaybeHanKerningOpen(text_content[start_offset]);
   }
+
+  ShapeResult* result = nullptr;
   if (segments) {
-    return segments->ShapeText(&shaper, &font, item.Direction(), start_offset,
-                               end_offset, item.Index(), options);
+    result = segments->ShapeText(&shaper, &font, item.Direction(), start_offset,
+                                 end_offset, item.Index(), options);
+  } else {
+    RunSegmenter::RunSegmenterRange range = item.CreateRunSegmenterRange();
+    range.end = end_offset;
+    result = shaper.Shape(&font, item.Direction(), start_offset, end_offset,
+                          range, options);
   }
-  RunSegmenter::RunSegmenterRange range = item.CreateRunSegmenterRange();
-  range.end = end_offset;
-  return shaper.Shape(&font, item.Direction(), start_offset, end_offset, range,
-                      options);
+
+  // Apply text-autospace. We add TextAutoSpaceInlineSize() of the new font
+  // to positions where the original ShapeResult has auto spacing.
+  const ShapeResult* original = item.TextShapeResult();
+  if (original) {
+    original->EnsurePositionData();
+    Vector<OffsetWithSpacing, 16> offsets;
+    float spacing = font.TextAutoSpaceInlineSize();
+    for (unsigned i = start_offset; i < end_offset; ++i) {
+      if (original->HasAutoSpacingAfter(i)) {
+        offsets.push_back(OffsetWithSpacing{i + 1, spacing});
+      }
+    }
+    if (!offsets.empty()) {
+      result->ApplyTextAutoSpacing(offsets);
+    }
+  }
+
+  return result;
 }
 
 std::optional<float> MinimumSize(bool is_grow, const InlineNode node) {
@@ -282,6 +304,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
         node.ItemsData(cursor.CurrentItem()->UsesFirstLineStyle());
     HarfBuzzShaper shaper(items_data.text_content);
     ShapeResultSpacing spacing(items_data.text_content);
+    bool did_reshape = false;
     const auto limit = MinimumSize(is_grow, node);
     for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;
          descendants.MoveToNextInlineLeaf()) {
@@ -306,6 +329,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
             ShapeForFit(**iter, start, end, shaper, *style.GetFont(),
                         items_data.segments.get(), is_start_of_paragraph);
         is_start_of_paragraph = false;
+        did_reshape = true;
         if (spacing.SetSpacing(
                 PercentageSpacingDescription(style.GetFontDescription()))) {
           nospacing_shape->ApplySpacing(spacing);
@@ -327,7 +351,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
                   flexible_total_size.ToFloat();
     if (scale < minimum_scale) {
       minimum_scale = scale;
-      if (fit_text.Method() == FitTextMethod::kFontSize) {
+      if (fit_text.Method() == FitTextMethod::kFontSize || did_reshape) {
         // This value should exclude letter-spacing because
         // ComputeAdditionalPaintTimeScale() is for the paint-time scaling,
         // which scales letter-spacing.
