@@ -143,8 +143,10 @@ class AnnounceTextView : public View {
 
     UpdateAccessibleRole(announce_role);
     GetViewAccessibility().SetIsInvisible(true);
-    GetViewAccessibility().SetLiveAtomic(true);
-    GetViewAccessibility().SetLiveStatus("polite");
+    GetViewAccessibility().SetLiveRegionContainer(
+        ViewAccessibility::LiveRegionStatus::kPolite,
+        ViewAccessibility::kLiveRegionRelevantDefault,
+        /*atomic=*/true);
 
     if (announce_text.empty()) {
       GetViewAccessibility().SetName(
@@ -152,27 +154,12 @@ class AnnounceTextView : public View {
     } else {
       GetViewAccessibility().SetName(announce_text);
     }
-
-    if (base::FeatureList::IsEnabled(
-            features::kAnnounceTextAdditionalAttributes)) {
-      GetViewAccessibility().SetContainerLiveStatus("polite");
-      GetViewAccessibility().SetLiveRelevant("additions text");
-      GetViewAccessibility().SetContainerLiveRelevant("additions text");
-    } else {
-      GetViewAccessibility().RemoveContainerLiveStatus();
-      GetViewAccessibility().RemoveLiveRelevant();
-      GetViewAccessibility().RemoveContainerLiveRelevant();
-    }
   }
 
   void UpdateAccessibleRole(ax::mojom::Role announce_role) {
 #if BUILDFLAG(IS_CHROMEOS)
     // On ChromeOS, kAlert role can invoke an unnecessary event on reparenting.
     GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
-#elif BUILDFLAG(IS_LINUX)
-    // TODO(crbug.com/40658933): Use live regions (do not use alerts).
-    // May require setting kLiveStatus, kContainerLiveStatus to "polite".
-    GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 #else
     GetViewAccessibility().SetRole(announce_role);
 #endif

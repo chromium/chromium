@@ -195,6 +195,10 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
       views::kMarginsKey, gfx::Insets::TLBR(kPrimaryMessageHeight, 0, 0, 0));
   primary_message_label_->SetMultiLine(false);
   primary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  primary_message_label_->GetViewAccessibility().SetLiveRegionContainer(
+      views::ViewAccessibility::LiveRegionStatus::kPolite,
+      views::ViewAccessibility::kLiveRegionRelevantDefault,
+      /*atomic=*/true);
   upper_container_view->AddChildViewRaw(primary_message_label_.get());
 
   views::View* secondary_message_container_view =
@@ -506,9 +510,6 @@ void BruschettaInstallerView::OnStateUpdated() {
   }
 
   DialogModelChanged();
-  primary_message_label_->NotifyAccessibilityEventDeprecated(
-      ax::mojom::Event::kLiveRegionChanged,
-      /* send_native_event = */ true);
 }
 
 void BruschettaInstallerView::AddedToWidget() {

@@ -11,10 +11,6 @@ namespace views::features {
 
 // Please keep alphabetized.
 
-// Used to enable additional a11y attributes when announcing text.
-BASE_FEATURE(kAnnounceTextAdditionalAttributes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Used to apply the initial URL to the WebContents in WebView. This is a kill
 // switch for this new logic, see crbug.com/456058558.
 // TODO(https://crbug.com/456058558): Remove this flag once the feature becomes

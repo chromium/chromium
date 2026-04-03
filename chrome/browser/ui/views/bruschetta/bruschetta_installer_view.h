@@ -73,6 +73,9 @@ class BruschettaInstallerView
   std::u16string GetPrimaryMessage() const;
   std::u16string GetSecondaryMessage() const;
   views::Link* GetLinkLabelForTesting() const { return link_label_; }
+  views::Label* primary_message_label_for_testing() const {
+    return primary_message_label_;
+  }
   void OnInstallationEnded();
 
   // Let tests inject mock installers.

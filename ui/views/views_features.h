@@ -12,7 +12,6 @@
 namespace views::features {
 
 // Please keep alphabetized.
-VIEWS_EXPORT BASE_DECLARE_FEATURE(kAnnounceTextAdditionalAttributes);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kApplyInitialUrlToWebContents);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableInputProtection);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableTouchDragCursorSync);

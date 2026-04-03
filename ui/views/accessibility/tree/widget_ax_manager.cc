@@ -31,6 +31,7 @@ bool ShouldSerializeEvent(Event event_type) {
   // Events that are serialized and forwarded to BrowserAccessibilityManager.
   switch (event_type) {
     // TODO(crbug.com/40672441): Add events that must be serialized directly.
+    case Event::kAlert:
     case Event::kControlsChanged:
     case Event::kEndOfTest:
     // TODO(crbug.com/40672441): kFocus is only needed here for tests while
@@ -53,6 +54,7 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kActiveDescendantChanged:
     case Event::kCheckedStateChanged:
     case Event::kChildrenChanged:
+    case Event::kLiveRegionChanged:
       return false;
     default:
       break;
@@ -78,11 +80,9 @@ bool ShouldSerializeEvent(Event event_type) {
   // Events fired by views on some platforms but not yet handled. These are
   // being addressed incrementally, one event at a time.
   switch (event_type) {
-    case Event::kAlert:
     case Event::kExpandedChanged:
     case Event::kFocusAfterMenuClose:
     case Event::kFocusContext:
-    case Event::kLiveRegionChanged:
     case Event::kMenuEnd:
     case Event::kMenuPopupEnd:
     case Event::kMenuPopupStart:

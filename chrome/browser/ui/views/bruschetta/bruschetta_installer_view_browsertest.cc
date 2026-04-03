@@ -24,8 +24,11 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/ax_event_counter.h"
 
 using testing::AnyNumber;
 using testing::AtLeast;
@@ -287,6 +290,42 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
                 ->GetViewAccessibility()
                 .GetCachedDescription(),
             view_->GetSecondaryMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
+                       A11yPrimaryMessageLabelLiveRegionAttributes) {
+  ShowUi("default");
+
+  auto* label = view_->primary_message_label_for_testing();
+  ASSERT_NE(label, nullptr);
+
+  ui::AXNodeData data;
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ("polite",
+            data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  EXPECT_EQ("polite", data.GetStringAttribute(
+                          ax::mojom::StringAttribute::kContainerLiveStatus));
+  EXPECT_EQ("additions text",
+            data.GetStringAttribute(ax::mojom::StringAttribute::kLiveRelevant));
+  EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
+}
+
+IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
+                       A11yLiveRegionChangedOnStateChange) {
+  ShowUi("default");
+  EXPECT_CALL(*installer_, Install);
+  EXPECT_CALL(*installer_, Cancel).Times(AtLeast(1));
+
+  auto* label = view_->primary_message_label_for_testing();
+  ASSERT_NE(label, nullptr);
+
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+
+  // Accept to start installing, which changes the primary message text and
+  // should trigger a kLiveRegionChanged event on the live region root.
+  view_->AcceptDialog();
+
+  EXPECT_GE(counter.GetCount(ax::mojom::Event::kLiveRegionChanged, label), 1);
 }
 
 }  // namespace
