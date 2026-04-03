@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/signin/ui/age_mismatch_prompt_mode.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
@@ -81,6 +82,9 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
 
   // Tracks if a sign-out from an age mismatch is currently in progress.
   BOOL _isAgeMismatchSignoutInProgress;
+
+  // Tracks if the Age Mismatch prompt has been shown at least once.
+  BOOL _hasShownAgeMismatchPrompt;
 
   // Tracks if External Privacy Contexts are currently being built
   // asynchronously.
@@ -389,9 +393,13 @@ constexpr base::TimeDelta kExternalPrivacyContextStalenessInterval =
         initWithBaseViewController:[_sceneUIProvider activeViewController]
                            browser:self.sceneState.browserProviderInterface
                                        .mainBrowserProvider.browser
-                          identity:identity];
+                          identity:identity
+                              mode:_hasShownAgeMismatchPrompt
+                                       ? AgeMismatchPromptMode::kFollowUp
+                                       : AgeMismatchPromptMode::kInitial];
     _ageMismatchSignoutCoordinator.delegate = self;
     [_ageMismatchSignoutCoordinator start];
+    _hasShownAgeMismatchPrompt = YES;
   }
 }
 

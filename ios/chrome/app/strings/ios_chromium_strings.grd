@@ -203,6 +203,12 @@
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_MESSAGE" desc="The error message to show in the account table when there is an authentication error. [iOS only]">
         To use and save Chromium data in your Google Account, verify it's you.
       </message>
+      <message name="IDS_IOS_AGE_MISMATCH_FOLLOW_UP_SUBTITLE" desc="Explanatory body copy in a full-screen notice. This string is shown to users who are using an iPhone that has age settings for a child, but their Chrome app is signed in to a Google Account with age settings for an adult. The user already saw the initial info screen, so this string emphasizes Chrome’s two available solutions: the user can use Chrome with child restrictions by signing in to a child’s account; or, they can use Chrome with child restrictions by signing out and using the basic child safety limits. The tone should be informative and neutral.">
+        To get child safety features, you can either use a Google Account that's set up for a child or use Chromium without an account. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_AGE_MISMATCH_SUBTITLE_PART1" desc="First part of the explanatory body copy in a full-screen notice shown to users whose device is set up for a child but Chrome is signed into an adult account. Provides solutions: use a child's Google Account or use without an account.">
+        To get child safety features in Chromium, you can either use a Google Account that's set up for a child or use Chromium without an account.
+      </message>
       <message name="IDS_IOS_APPLICATION_SHORTCUT_SET_DEFAULT_BROWSER" desc="The title of the spotlight item to set Chrome as a default browser. [Length: unlimited] [iOS only]." meaning="Spotlight item title for setting default browser.">
         Set Chromium as default browser
       </message>

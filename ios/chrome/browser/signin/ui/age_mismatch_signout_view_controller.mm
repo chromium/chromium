@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/signin/ui/age_mismatch_signout_view_controller.h"
 
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_view.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -15,14 +18,32 @@ namespace {
 
 constexpr CGFloat kIdentityViewCornerRadius = 8.0;
 
+// Default margin between subtitle and specific content.
+constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
+
+NSString* const kLearnMoreUrl = @"https://support.google.com/families/answer/"
+                                @"7087030#zippy=%2Ciphone-and-ipad";
+
 }  // namespace
 
 @interface AgeMismatchSignoutViewController ()
 // View displaying the identity that was signed out.
 @property(nonatomic, strong) IdentityView* identityView;
+// Text view displaying the subtitle with a link.
+@property(nonatomic, strong) UITextView* subtitleTextView;
 @end
 
-@implementation AgeMismatchSignoutViewController
+@implementation AgeMismatchSignoutViewController {
+  AgeMismatchPromptMode _mode;
+}
+
+- (instancetype)initWithMode:(AgeMismatchPromptMode)mode {
+  self = [super init];
+  if (self) {
+    _mode = mode;
+  }
+  return self;
+}
 
 #pragma mark - UIViewController
 
@@ -34,38 +55,65 @@ constexpr CGFloat kIdentityViewCornerRadius = 8.0;
   self.modalInPresentation = YES;
 
   BOOL isIPad = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-  self.titleText =
-      l10n_util::GetNSString(isIPad ? IDS_IOS_AGE_MISMATCH_HEADER_IPAD
-                                    : IDS_IOS_AGE_MISMATCH_HEADER_IPHONE);
 
-  self.subtitleText =
-      l10n_util::GetNSString(isIPad ? IDS_IOS_AGE_MISMATCH_SUBTITLE_IPAD
-                                    : IDS_IOS_AGE_MISMATCH_SUBTITLE_IPHONE);
+  switch (_mode) {
+    case AgeMismatchPromptMode::kFollowUp:
+      self.titleText =
+          l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_FOLLOW_UP_HEADER);
+      break;
+    case AgeMismatchPromptMode::kInitial:
+      self.titleText =
+          l10n_util::GetNSString(isIPad ? IDS_IOS_AGE_MISMATCH_HEADER_IPAD
+                                        : IDS_IOS_AGE_MISMATCH_HEADER_IPHONE);
+      break;
+  }
 
-  self.disclaimerText = l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_DISCLAIMER);
-
-  // TODO(crbug.com/483935544): Update the disclaimer URL.
-  self.disclaimerURLs = @[ [[NSURL alloc] initWithString:@""] ];
+  // Hide the default subtitle area.
+  self.subtitleBottomMargin = 0;
 
   self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_PRIMARY_BUTTON);
   self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_SECONDARY_BUTTON);
 
-  // Add the identity view.
-  [self.specificContentView addSubview:self.identityView];
+  [self.specificContentView addSubview:self.subtitleTextView];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [self.identityView.topAnchor
+  NSMutableArray<NSLayoutConstraint*>* constraints =
+      [[NSMutableArray alloc] init];
+  [constraints addObjectsFromArray:@[
+    [self.subtitleTextView.topAnchor
         constraintEqualToAnchor:self.specificContentView.topAnchor],
-    [self.identityView.centerXAnchor
-        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [self.identityView.widthAnchor
-        constraintEqualToAnchor:self.specificContentView.widthAnchor],
-    [self.identityView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentView
-                                              .bottomAnchor],
+    [self.subtitleTextView.leadingAnchor
+        constraintEqualToAnchor:self.specificContentView.leadingAnchor],
+    [self.subtitleTextView.trailingAnchor
+        constraintEqualToAnchor:self.specificContentView.trailingAnchor],
   ]];
+
+  // Add the identity view only for the follow up prompt.
+  switch (_mode) {
+    case AgeMismatchPromptMode::kFollowUp:
+      [self.specificContentView addSubview:self.identityView];
+      [constraints addObjectsFromArray:@[
+        [self.identityView.topAnchor
+            constraintEqualToAnchor:self.subtitleTextView.bottomAnchor
+                           constant:kDefaultSubtitleBottomMargin],
+        [self.identityView.centerXAnchor
+            constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+        [self.identityView.widthAnchor
+            constraintEqualToAnchor:self.specificContentView.widthAnchor],
+        [self.identityView.bottomAnchor
+            constraintLessThanOrEqualToAnchor:self.specificContentView
+                                                  .bottomAnchor],
+      ]];
+      break;
+    case AgeMismatchPromptMode::kInitial:
+      [constraints addObject:[self.subtitleTextView.bottomAnchor
+                                 constraintLessThanOrEqualToAnchor:
+                                     self.specificContentView.bottomAnchor]];
+      break;
+  }
+
+  [NSLayoutConstraint activateConstraints:constraints];
 
   [super viewDidLoad];
 }
@@ -91,6 +139,81 @@ constexpr CGFloat kIdentityViewCornerRadius = 8.0;
     heightConstraint.active = YES;
   }
   return _identityView;
+}
+
+- (UITextView*)subtitleTextView {
+  if (!_subtitleTextView) {
+    _subtitleTextView = [[UITextView alloc] initWithFrame:CGRectZero];
+    _subtitleTextView.translatesAutoresizingMaskIntoConstraints = NO;
+    _subtitleTextView.editable = NO;
+    _subtitleTextView.scrollEnabled = NO;
+    _subtitleTextView.backgroundColor = [UIColor clearColor];
+    _subtitleTextView.adjustsFontForContentSizeCategory = YES;
+    _subtitleTextView.textContainerInset = UIEdgeInsetsZero;
+    _subtitleTextView.textContainer.lineFragmentPadding = 0;
+    _subtitleTextView.delegate = self;
+    _subtitleTextView.accessibilityIdentifier =
+        kPromoStyleSubtitleAccessibilityIdentifier;
+
+    NSString* combinedText;
+    switch (_mode) {
+      case AgeMismatchPromptMode::kFollowUp:
+        combinedText =
+            l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_FOLLOW_UP_SUBTITLE);
+        break;
+      case AgeMismatchPromptMode::kInitial: {
+        NSString* part1 =
+            l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_SUBTITLE_PART1);
+        NSString* part2 =
+            l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_SUBTITLE_PART2);
+        combinedText = [NSString stringWithFormat:@"%@\n\n%@", part1, part2];
+        break;
+      }
+    }
+
+    NSMutableParagraphStyle* paragraphStyle =
+        [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+
+    NSDictionary* textAttributes = @{
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+      NSForegroundColorAttributeName : [UIColor colorNamed:kGrey800Color],
+      NSParagraphStyleAttributeName : paragraphStyle
+    };
+    NSDictionary* linkAttributes = @{
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+      NSLinkAttributeName : [NSURL URLWithString:kLearnMoreUrl]
+    };
+
+    _subtitleTextView.attributedText = AttributedStringFromStringWithLink(
+        combinedText, textAttributes, linkAttributes);
+  }
+  return _subtitleTextView;
+}
+
+#pragma mark - UITextViewDelegate
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction {
+  if (textView == self.subtitleTextView) {
+    NSURL* URL = textItem.link;
+    if ([self.delegate respondsToSelector:@selector(didTapURLInDisclaimer:)]) {
+      __weak __typeof(self) weakSelf = self;
+      return [UIAction actionWithHandler:^(UIAction* action) {
+        [weakSelf.delegate didTapURLInDisclaimer:URL];
+      }];
+    }
+  }
+
+  if ([super respondsToSelector:_cmd]) {
+    return [super textView:textView
+        primaryActionForTextItem:textItem
+                   defaultAction:defaultAction];
+  }
+
+  return defaultAction;
 }
 
 #pragma mark - AgeMismatchSignoutConsumer

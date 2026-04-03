@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SIGNIN_COORDINATOR_AGE_MISMATCH_SIGNOUT_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/signin/ui/age_mismatch_prompt_mode.h"
 
 @protocol SystemIdentity;
 @class AgeMismatchSignoutCoordinator;
@@ -22,10 +23,11 @@
 // Coordinator for the Age Mismatch Prompt.
 @interface AgeMismatchSignoutCoordinator : ChromeCoordinator
 
-// Initializes the coordinator with the given `identity`.
+// Initializes the coordinator.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   identity:(id<SystemIdentity>)identity
+                                      mode:(AgeMismatchPromptMode)mode
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

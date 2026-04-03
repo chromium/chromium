@@ -33,16 +33,21 @@
   // The identity to display the account details for.
   id<SystemIdentity> _identity;
 
+  // The mode of the prompt.
+  AgeMismatchPromptMode _mode;
+
   // Block the application UI when the Age Mismatch Prompt is visible.
   std::unique_ptr<ScopedUIBlocker> _applicationUIBlocker;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  identity:(id<SystemIdentity>)identity {
+                                  identity:(id<SystemIdentity>)identity
+                                      mode:(AgeMismatchPromptMode)mode {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _identity = identity;
+    _mode = mode;
   }
   return self;
 }
@@ -62,7 +67,8 @@
             initWithIdentity:_identity
       identityAvatarProvider:GetApplicationContext()
                                  ->GetIdentityAvatarProvider()];
-  _viewController = [[AgeMismatchSignoutViewController alloc] init];
+  _viewController =
+      [[AgeMismatchSignoutViewController alloc] initWithMode:_mode];
   _viewController.delegate = self;
   _mediator.consumer = _viewController;
   [self.baseViewController presentViewController:_viewController

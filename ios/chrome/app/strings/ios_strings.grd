@@ -323,26 +323,23 @@
       <message name="IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_MESSAGE" desc="Alert title to ask if the user really wants to cancel sign-in and sync.">
         Cancel sync? You can turn on sync anytime in settings.
       </message>
-      <message name="IDS_IOS_AGE_MISMATCH_DISCLAIMER" translateable="false" desc="Disclaimer text with Learn more link for the Age Mismatch Prompt.">
-        To continue with Chrome, sign in with a Google Account that’s also set up for a child or sign out. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      <message name="IDS_IOS_AGE_MISMATCH_FOLLOW_UP_HEADER" desc="Heading on a full-screen notice. The user already saw the initial info screen and tried to switch accounts, but chose another adult account. So this string emphasizes that the user can use Chrome with child restrictions by signing in to a child’s account. The tone should be informative and reassuring.">
+        Choose a different Google Account
       </message>
-      <message name="IDS_IOS_AGE_MISMATCH_HEADER_IPAD" translateable="false" desc="Title of the Age Mismatch Prompt on iPad.">
+      <message name="IDS_IOS_AGE_MISMATCH_HEADER_IPAD" desc="Heading on a full-screen notice on iPad. This string explains that age-related safety measures are active. Align ‘set up for a child’ phrasing with TC ID 8512022958027641166. The tone should be informative and reassuring.">
         This iPad is set up for a child
       </message>
-      <message name="IDS_IOS_AGE_MISMATCH_HEADER_IPHONE" translateable="false" desc="Title of the Age Mismatch Prompt on iPhone.">
+      <message name="IDS_IOS_AGE_MISMATCH_HEADER_IPHONE" desc="Heading on a full-screen notice on iPhone. This string explains that age-related safety measures are active. Align ‘set up for a child’ phrasing with TC ID 8512022958027641166. The tone should be informative and reassuring.">
         This iPhone is set up for a child
       </message>
-      <message name="IDS_IOS_AGE_MISMATCH_PRIMARY_BUTTON" translateable="false" desc="Primary button text of the Age Mismatch Prompt.">
-        Sign in to Chrome as a child
+      <message name="IDS_IOS_AGE_MISMATCH_PRIMARY_BUTTON" desc="Found on a primary button that users see on a full-screen notice. Tapping the button opens an account picker, allowing the user to sign in to Chrome with a different Google Account. ‘Use’ functions as an imperative verb. The tone is informative.">
+        Use another account
       </message>
-      <message name="IDS_IOS_AGE_MISMATCH_SECONDARY_BUTTON" translateable="false" desc="Secondary button text of the Age Mismatch Prompt.">
+      <message name="IDS_IOS_AGE_MISMATCH_SECONDARY_BUTTON" desc="Found on a secondary button that users see on a full-screen notice. Tapping the button allows the user to proceed to Chrome in a signed-out state. ‘Use’ functions as an imperative verb. The tone is informative.">
         Use without an account
       </message>
-      <message name="IDS_IOS_AGE_MISMATCH_SUBTITLE_IPAD" translateable="false" desc="Subtitle of the Age Mismatch Prompt on iPad.">
-        Your iPad uses the birthday in your Apple Account. If you're not a child, you may want to check the Apple Account on this device.
-      </message>
-      <message name="IDS_IOS_AGE_MISMATCH_SUBTITLE_IPHONE" translateable="false" desc="Subtitle of the Age Mismatch Prompt on iPhone.">
-        Your iPhone uses the birthday in your Apple Account. If you're not a child, you may want to check the Apple Account on this device.
+      <message name="IDS_IOS_AGE_MISMATCH_SUBTITLE_PART2" desc="Second part of the explanatory body copy in a full-screen notice. Suggests checking the age in the Apple Account if the user is not a child. Align ‘you may want to check the age` phrasing with TC ID 2620449093380639180.">
+        If you're not a child, you may want to check the age in the Apple Account on this device. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to always show pop-ups on this site in the AI hub.">
         Always show pop-ups on this site
