@@ -25,13 +25,18 @@ source_set("variations") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "composebox_fieldtrial_config_unittest.cc" ]
+  sources = [
+    "composebox_fieldtrial_config_unittest.cc",
+    "composebox_fieldtrial_unittest.cc",
+  ]
   deps = [
     ":variations",
     "//base/test:test_support",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
+    "//components/omnibox/browser:test_support",
+    "//content/test:test_support",
   ]
 }
 
