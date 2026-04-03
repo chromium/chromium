@@ -7298,6 +7298,45 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Ash.RefactoringHint.ProfilePolicyConnectorIsManaged.{PossibleCases}"
+    units="hash" expires_after="2027-04-01">
+  <owner>junis@google.com</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    As part of the ash refactoring effort, we are going to replace
+    ProfilePolicyConnector::IsManaged() with user_manager::User::is_managed() as
+    much as possible.
+
+    This histogram records the location hash of callers to
+    ProfilePolicyConnector::IsManaged() to find out cases where special
+    consideration is required.
+
+    Recorded for ChromeOS only.
+  </summary>
+  <token key="PossibleCases">
+    <variant name="Consistent" summary="Both states are consistent."/>
+    <variant name="DeviceLocalAccountUnexpected"
+        summary="Called for a device local account, but the policy store and
+                 user managed state are inconsistent."/>
+    <variant name="NonUserProfile"
+        summary="Called for a profile not associated with a user (e.g.,
+                 sign-in screen or lock-screen app profile)."/>
+    <variant name="RegularUserEarlyCallManaged"
+        summary="Called for a managed regular user before the policy system
+                 is fully initialized."/>
+    <variant name="RegularUserEarlyCallUnmanaged"
+        summary="Called for an unmanaged regular user before the policy
+                 system is fully initialized."/>
+    <variant name="RegularUserUnexpectedProfileIsManaged"
+        summary="Called for an unmanaged regular user, but the profile
+                 indicates it is managed."/>
+    <variant name="RegularUserUnexpectedUserIsManaged"
+        summary="Called for a managed regular user, but the profile indicates
+                 it is unmanaged."/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Report.InitializerState" enum="ReportState"
     expires_after="2025-09-01">
   <owner>troywang@google.com</owner>

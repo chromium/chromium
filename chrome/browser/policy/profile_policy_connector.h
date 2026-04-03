@@ -25,6 +25,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/location.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace user_manager {
 class User;
 }
@@ -77,7 +81,16 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
 
   // Returns true if this Profile is under any kind of policy management. You
   // must call this method only when the policies system is fully initialized.
-  bool IsManaged() const;
+  //
+  // ChromeOS specific code should use user_manager::User::is_managed() instead.
+  // For the safer migration, we record the code location of existing callers.
+  // It should be always called with FROM_HERE as default value.
+  // TODO(crbug.com/489635809): Remove the location parameter.
+  bool IsManaged(
+#if BUILDFLAG(IS_CHROMEOS)
+      base::Location caller_location = FROM_HERE
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ) const;
 
   // Returns true if the |policy_key| user policy is currently set via the
   // |configuration_policy_provider_| and isn't being overridden by a
