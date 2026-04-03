@@ -155,7 +155,8 @@ public class ActorNotificationFactory {
                 .setOngoing(false)
                 .setContentTitle(context.getString(R.string.actor_notification_title_task_complete))
                 .setContentText(body)
-                .setBigTextStyle(body);
+                .setBigTextStyle(body)
+                .setContentIntent(createTabRoutingIntent(context, id, task));
         addViewAction(builder, context, id, task);
         return builder.buildNotificationWrapper();
     }
@@ -164,7 +165,8 @@ public class ActorNotificationFactory {
             NotificationWrapperBuilder builder, Context context, ActorTask task) {
         String body =
                 context.getString(R.string.actor_notification_body_interrupted, task.getTitle());
-        builder.setOngoing(true)
+        builder.setAutoCancel(true)
+                .setOngoing(false)
                 .setContentTitle(
                         context.getString(R.string.actor_notification_title_task_interrupted))
                 .setContentText(body)

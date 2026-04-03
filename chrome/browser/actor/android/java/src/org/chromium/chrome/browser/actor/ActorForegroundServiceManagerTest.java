@@ -19,6 +19,8 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Notification;
 import android.os.Looper;
 
+import androidx.core.app.ServiceCompat;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,6 +51,8 @@ public class ActorForegroundServiceManagerTest {
     @Mock private ActorTask mTask;
     @Mock private Profile mProfile;
     @Mock private Notification mNotification;
+
+    private static final long sWaitTimeMs = TimeUnit.HOURS.toMillis(1);
 
     private ActorForegroundServiceManager mManager;
 
@@ -149,7 +153,7 @@ public class ActorForegroundServiceManagerTest {
         stopCallback.waitForOnly();
 
         assertFalse("Service should be unbound after delay.", mManager.isServiceBoundForTesting());
-        verify(mServiceController).stopActorForegroundService(anyInt());
+        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
         verify(mServiceController).unbindService();
     }
 
@@ -160,7 +164,7 @@ public class ActorForegroundServiceManagerTest {
         mManager.setStopCallbackForTesting(stopCallback::notifyCalled);
 
         // Override wait time to 1 hour
-        ActorForegroundServiceManager.setWaitTimeForTesting(60 * 60 * 1000);
+        ActorForegroundServiceManager.setWaitTimeForTesting(sWaitTimeMs);
 
         // Start service
         mManager.onTaskStateChanged(1, ActorTaskState.ACTING);
@@ -196,7 +200,7 @@ public class ActorForegroundServiceManagerTest {
         mManager.setKeyedServiceForTesting(mKeyedService);
 
         // Override wait time to 1 hour
-        ActorForegroundServiceManager.setWaitTimeForTesting(60 * 60 * 1000);
+        ActorForegroundServiceManager.setWaitTimeForTesting(sWaitTimeMs);
 
         // Start task 1
         mManager.onTaskStateChanged(1, ActorTaskState.ACTING);

@@ -252,8 +252,8 @@ public class ActorNotificationFactoryTest {
                 "Big text should match content text",
                 mContext.getString(R.string.actor_notification_body_interrupted, TASK_TITLE),
                 notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
-        assertTrue(
-                "Notification should be ongoing",
+        assertFalse(
+                "Notification should not be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
     }
 

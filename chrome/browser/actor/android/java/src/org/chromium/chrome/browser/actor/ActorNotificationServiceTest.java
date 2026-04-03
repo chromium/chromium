@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.app.Notification;
@@ -34,6 +36,7 @@ public class ActorNotificationServiceTest {
 
     @Mock private ActorKeyedService mKeyedService;
     @Mock private ActorTask mTask;
+    @Mock private ActorForegroundServiceController mServiceController;
 
     private ActorNotificationService mNotificationService;
     private MockNotificationManagerProxy mMockNotificationManager;
@@ -44,6 +47,7 @@ public class ActorNotificationServiceTest {
         mContext = RuntimeEnvironment.application;
         mMockNotificationManager = new MockNotificationManagerProxy();
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
+        ActorForegroundServiceController.setInstanceForTesting(mServiceController);
         mNotificationService = new ActorNotificationService(mKeyedService);
     }
 
@@ -108,9 +112,8 @@ public class ActorNotificationServiceTest {
 
         mNotificationService.updateNotificationForTask(taskId, ActorTaskState.FINISHED);
 
-        assertNull(mNotificationService.getCachedNotification(taskId));
-        // Should have been cancelled.
-        assertEquals(0, mMockNotificationManager.getNotifications().size());
+        // Task won't be removed from notification cache.
+        assertNotNull(mNotificationService.getCachedNotification(taskId));
     }
 
     @Test
@@ -170,7 +173,6 @@ public class ActorNotificationServiceTest {
 
         assertNull(mNotificationService.getCachedNotification(taskId1));
         assertNull(mNotificationService.getCachedNotification(taskId2));
-        assertEquals(0, mMockNotificationManager.getNotifications().size());
     }
 
     @Test
@@ -212,5 +214,54 @@ public class ActorNotificationServiceTest {
         // Now updateNotificationForTask with REFLECTING should be skipped.
         mNotificationService.updateNotificationForTask(taskId, ActorTaskState.REFLECTING);
         assertEquals(0, mMockNotificationManager.getMutationCountAndDecrement());
+    }
+
+    @Test
+    public void testUpdateNotificationForTask_TaskRemoved_TerminalState() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        // Task is known.
+        mNotificationService.updateNotificationForTask(taskId, ActorTaskState.ACTING);
+        assertEquals(1, mMockNotificationManager.getNotifications().size());
+
+        // Task is removed from KeyedService (native side).
+        when(mKeyedService.getTask(taskId)).thenReturn(null);
+
+        // Terminal state update should still work because of cache.
+        mNotificationService.updateNotificationForTask(taskId, ActorTaskState.FINISHED);
+
+        Notification notification = mNotificationService.getCachedNotification(taskId);
+        assertNotNull(notification);
+        assertEquals(
+                mContext.getString(R.string.actor_notification_title_task_complete),
+                notification.extras.getString(Notification.EXTRA_TITLE));
+        // Should NOT have been cancelled.
+        assertEquals(1, mMockNotificationManager.getNotifications().size());
+    }
+
+    @Test
+    public void testTerminalNotificationsAreDismissible() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+        when(mServiceController.createTrustedBringTabToFrontIntent(any()))
+                .thenReturn(new android.content.Intent());
+
+        int[] terminalStates = {
+            ActorTaskState.FINISHED, ActorTaskState.FAILED, ActorTaskState.CANCELLED
+        };
+
+        for (int state : terminalStates) {
+            mNotificationService.updateNotificationForTask(taskId, state);
+            Notification notification = mNotificationService.getCachedNotification(taskId);
+            assertNotNull("Notification should not be null for state: " + state, notification);
+            assertFalse(
+                    "Notification should NOT be ongoing for state: " + state,
+                    (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        }
     }
 }

@@ -22,6 +22,7 @@ import java.util.Map;
  */
 @NullMarked
 public class ActorNotificationService {
+    private final Map<Integer, ActorTask> mTaskCache = new HashMap<>();
     private final Map<Integer, NotificationWrapper> mNotificationCache = new HashMap<>();
     private final Map<Integer, Integer> mTaskStates = new HashMap<>();
     private static final String TAG = "ActNotification";
@@ -61,10 +62,17 @@ public class ActorNotificationService {
      */
     public void updateNotificationForTask(int taskId, @ActorTaskState int newState) {
         ActorTask task = mKeyedService.getTask(taskId);
+        if (task != null) {
+            mTaskCache.put(taskId, task);
+        } else {
+            task = mTaskCache.get(taskId);
+        }
+
         if (task == null) {
             mNotificationManager.cancel(taskId);
             mNotificationCache.remove(taskId);
             mTaskStates.remove(taskId);
+            mTaskCache.remove(taskId);
             return;
         }
 
@@ -93,20 +101,24 @@ public class ActorNotificationService {
         NotificationWrapper notification = mNotificationCache.get(taskId);
         if (notification == null) {
             ActorTask task = mKeyedService.getTask(taskId);
+            if (task == null) {
+                task = mTaskCache.get(taskId);
+            }
             if (task != null) {
                 int state = task.getState();
                 notification = ActorNotificationFactory.buildNotification(task, state);
                 mNotificationCache.put(taskId, notification);
                 mTaskStates.put(taskId, state);
+                mTaskCache.put(taskId, task);
             }
         }
         return notification != null ? notification.getNotification() : null;
     }
 
-    /** Cancels all active actor notifications and clears the local cache. */
+    /** Clears local cache for all actor notifications. */
     public void clearAll() {
-        mNotificationManager.cancelAll();
         mNotificationCache.clear();
         mTaskStates.clear();
+        mTaskCache.clear();
     }
 }

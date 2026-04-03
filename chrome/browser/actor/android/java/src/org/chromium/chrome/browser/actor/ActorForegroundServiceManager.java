@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Profile-scoped manager for the ActorForegroundService. Observes ActorKeyedService to start/stop
@@ -33,8 +34,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     private static final String TAG = "ActorFgsMngr";
     public static final int INVALID_NOTIFICATION_ID = -1;
     // Delay to ensure start/stop foreground doesn't happen too quickly.
-    private static final int ONE_HOUR_MS = 60 * 60 * 1000;
-    private static int sWaitTimeMs = ONE_HOUR_MS;
+    private static long sWaitTimeMs = TimeUnit.HOURS.toMillis(1);
 
     @Nullable private static ActorForegroundServiceManager sInstance;
 
@@ -143,13 +143,18 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mNotificationService.updateNotificationForTask(taskId, newState);
 
         // Any task that is not completed is considered active for the foreground service.
-        ActorTask task = mKeyedService.getTask(taskId);
-        if (task != null && !task.isCompleted()) {
+        if (!isCompletedState(newState)) {
             mActiveTaskIds.add(taskId);
         } else {
             mActiveTaskIds.remove(taskId);
         }
         processTaskUpdateQueue();
+    }
+
+    private boolean isCompletedState(@ActorTaskState int state) {
+        return state == ActorTaskState.FINISHED
+                || state == ActorTaskState.FAILED
+                || state == ActorTaskState.CANCELLED;
     }
 
     /** Process the current task state and initiate any needed service actions. */
@@ -194,6 +199,16 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                 startOrUpdateForegroundService(notificationId, notification);
             }
         } else {
+            // No active tasks. Update the foreground service with the latest notification
+            // (e.g. Success/Failed status) before we wait to stop it.
+            if (mPinnedNotificationId != INVALID_NOTIFICATION_ID) {
+                Notification notification =
+                        mNotificationService.getCachedNotification(mPinnedNotificationId);
+                if (notification != null) {
+                    startOrUpdateForegroundService(mPinnedNotificationId, notification);
+                }
+            }
+
             if (!mStopServiceDelayed) {
                 postMaybeStopServiceRunnable();
             }
@@ -229,7 +244,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         if (!mIsServiceBound) return;
         mIsServiceBound = false;
 
-        mServiceController.stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+        mServiceController.stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
         mServiceController.unbindService();
 
         mStartForegroundCalled = false;
@@ -285,8 +300,8 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
                 });
     }
 
-    static void setWaitTimeForTesting(int ms) {
-        int oldValue = sWaitTimeMs;
+    static void setWaitTimeForTesting(long ms) {
+        long oldValue = sWaitTimeMs;
         sWaitTimeMs = ms;
         ResettersForTesting.register(() -> sWaitTimeMs = oldValue);
     }
