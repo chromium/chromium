@@ -141,8 +141,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
   struct WriteSyncCallbackEntry;
   struct ReadDirectorySyncCallbackEntry;
 
-  void ContinueOpen(const url::Origin& origin,
-                    blink::mojom::FileSystemType file_system_type,
+  void ContinueOpen(blink::mojom::FileSystemType file_system_type,
                     mojo::ReportBadMessageCallback bad_message_callback,
                     OpenCallback callback,
                     const blink::StorageKey& storage_key,
