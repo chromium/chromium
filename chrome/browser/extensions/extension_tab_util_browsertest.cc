@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -160,24 +161,32 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(GetActiveWebContents()->GetURL(), expected_url);
 }
 
+// Verifies that `ExtensionTabUtil::NavigateToURL` successfully navigates
+// the current tab and new tabs to the specified URLs.
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
   content::WebContents* web_contents = GetActiveWebContents();
-
   int initial_tab_count = GetTabCount();
-  base::RunLoop loop1;
+
+  content::TestNavigationObserver version_page_observer(
+      GURL("chrome://version"));
+  version_page_observer.WatchWebContents(web_contents);
   ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::CURRENT_TAB,
                                   web_contents, GURL("chrome://version"),
-                                  loop1.QuitClosure());
-  loop1.Run();
+                                  base::DoNothing());
+  version_page_observer.Wait();
+
   EXPECT_EQ(initial_tab_count, GetTabCount());
   auto url1 = GetActiveWebContents()->GetURL();
   EXPECT_THAT(url1, GURL("chrome://version"));
 
-  base::RunLoop loop2;
+  content::TestNavigationObserver history_page_observer(
+      GURL("chrome://history"));
+  history_page_observer.StartWatchingNewWebContents();
   ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                   web_contents, GURL("chrome://history"),
-                                  loop2.QuitClosure());
-  loop2.Run();
+                                  base::DoNothing());
+  history_page_observer.Wait();
+
   EXPECT_EQ(initial_tab_count + 1, GetTabCount());
   auto url2 = GetActiveWebContents()->GetURL();
   EXPECT_THAT(url2, GURL("chrome://history"));
