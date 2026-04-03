@@ -123,7 +123,7 @@ BrowserWidget::BrowserWidget(BrowserView* browser_view)
   // `ThemeServiceFactory::GetForProfile(browser_view_->browser()->GetProfile()`
   // will not change.
   CHECK(theme_service_);
-  set_is_secondary_widget(false);
+
   // Don't focus anything on creation, selecting a tab will set the focus.
   set_focus_on_creation(false);
 }

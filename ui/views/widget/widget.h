@@ -1054,16 +1054,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   View* GetRootView();
   const View* GetRootView() const;
 
-  // A secondary widget is one that is automatically closed (via Close()) when
-  // all non-secondary widgets are closed.
-  // Default is true.
-  // TODO(beng): This is an ugly API, should be handled implicitly via
-  //             transience.
-  void set_is_secondary_widget(bool is_secondary_widget) {
-    is_secondary_widget_ = is_secondary_widget;
-  }
-  bool is_secondary_widget() const { return is_secondary_widget_; }
-
   // Returns whether the Widget is mapped by the window server. It doesn't
   // necessarily mean the window's pixels are currently visible on a physical
   // display to the user.
@@ -1672,9 +1662,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // See class documentation for Widget above for a note about ownership.
   InitParams::Ownership ownership_ = InitParams::NATIVE_WIDGET_OWNS_WIDGET;
-
-  // See set_is_secondary_widget().
-  bool is_secondary_widget_ = true;
 
   // If set, overrides this value is used instead of the one from NativeTheme
   // when constructing a ColorProvider.

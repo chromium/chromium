@@ -1613,10 +1613,6 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Init) {
   EXPECT_DCHECK_DEATH(widget()->Init(std::move(params)));
 }
 
-TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, is_secondary_widget) {
-  widget()->is_secondary_widget();
-}
-
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, IsActive) {
   widget()->IsActive();
 }
