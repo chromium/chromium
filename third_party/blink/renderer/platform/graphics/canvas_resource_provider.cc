@@ -1706,7 +1706,8 @@ CanvasResourceProvider::CanvasResourceProvider(
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   max_recorded_op_bytes_for_canvas_2d_ =
       static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
-  max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
+  max_pinned_image_bytes_for_canvas_2d_ =
+      static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
 
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
@@ -1745,7 +1746,7 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
   if (recorder_for_canvas_2d_->ReleasableOpBytesUsed() >
           max_recorded_op_bytes_for_canvas_2d_ ||
       recorder_for_canvas_2d_->ReleasableImageBytesUsed() >
-          max_pinned_image_bytes_) [[unlikely]] {
+          max_pinned_image_bytes_for_canvas_2d_) [[unlikely]] {
     FlushCanvas2D();
   }
 }

@@ -310,7 +310,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Parameters for the auto-flushing heuristic.
   size_t max_recorded_op_bytes_for_canvas_2d_;
-  size_t max_pinned_image_bytes_;
+  size_t max_pinned_image_bytes_for_canvas_2d_;
 
   bool clear_frame_for_canvas2d_ = true;
   std::optional<cc::PaintRecord> last_recording_for_canvas2d_;
