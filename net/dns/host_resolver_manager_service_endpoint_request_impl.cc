@@ -7,10 +7,12 @@
 #include <sstream>
 
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/memory/safe_ref.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/dns_task_results_manager.h"
@@ -49,7 +51,9 @@ HostResolverManager::ServiceEndpointRequestImpl::ServiceEndpointRequestImpl(
     const base::TickClock* tick_clock)
     : host_(std::move(host)),
       network_anonymization_key_(
-          NetworkAnonymizationKey::IsPartitioningEnabled()
+          NetworkAnonymizationKey::IsPartitioningEnabled() &&
+                  base::FeatureList::IsEnabled(
+                      features::kSplitHostCacheByNetworkAnonymizationKey)
               ? std::move(network_anonymization_key)
               : NetworkAnonymizationKey()),
       net_log_(std::move(net_log)),

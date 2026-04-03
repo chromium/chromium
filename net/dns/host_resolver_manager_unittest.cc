@@ -3857,15 +3857,36 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyWriteToHostCache) {
   const char kFirstDnsResult[] = "192.168.1.42";
   const char kSecondDnsResult[] = "192.168.1.43";
 
-  for (bool split_cache_by_network_anonymization_key : {false, true}) {
+  struct PartitioningMode {
+    bool partition_connections;
+    bool split_host_cache;
+  };
+  const PartitioningMode kPartitioningModes[] = {
+      {false, false}, {true, true}, {true, false}};
+
+  for (const auto& mode : kPartitioningModes) {
     base::test::ScopedFeatureList feature_list;
-    if (split_cache_by_network_anonymization_key) {
-      feature_list.InitAndEnableFeature(
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (mode.partition_connections) {
+      enabled_features.push_back(
           features::kPartitionConnectionsByNetworkIsolationKey);
     } else {
-      feature_list.InitAndDisableFeature(
+      disabled_features.push_back(
           features::kPartitionConnectionsByNetworkIsolationKey);
     }
+
+    if (mode.split_host_cache) {
+      enabled_features.push_back(
+          features::kSplitHostCacheByNetworkAnonymizationKey);
+    } else {
+      disabled_features.push_back(
+          features::kSplitHostCacheByNetworkAnonymizationKey);
+    }
+
+    feature_list.InitWithFeatures(enabled_features, disabled_features);
+    bool split_cache_by_network_anonymization_key = mode.split_host_cache;
     proc_->AddRuleForAllFamilies("just.testing", kFirstDnsResult);
     proc_->SignalMultiple(1u);
 
@@ -3992,15 +4013,36 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
                                         base::Days(1));
   }
 
-  for (bool split_cache_by_network_anonymization_key : {false, true}) {
+  struct PartitioningMode {
+    bool partition_connections;
+    bool split_host_cache;
+  };
+  const PartitioningMode kPartitioningModes[] = {
+      {false, false}, {true, true}, {true, false}};
+
+  for (const auto& mode : kPartitioningModes) {
     base::test::ScopedFeatureList feature_list;
-    if (split_cache_by_network_anonymization_key) {
-      feature_list.InitAndEnableFeature(
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (mode.partition_connections) {
+      enabled_features.push_back(
           features::kPartitionConnectionsByNetworkIsolationKey);
     } else {
-      feature_list.InitAndDisableFeature(
+      disabled_features.push_back(
           features::kPartitionConnectionsByNetworkIsolationKey);
     }
+
+    if (mode.split_host_cache) {
+      enabled_features.push_back(
+          features::kSplitHostCacheByNetworkAnonymizationKey);
+    } else {
+      disabled_features.push_back(
+          features::kSplitHostCacheByNetworkAnonymizationKey);
+    }
+
+    feature_list.InitWithFeatures(enabled_features, disabled_features);
+    bool split_cache_by_network_anonymization_key = mode.split_host_cache;
 
     // A request that uses kNetworkAnonymizationKey1 will return cache entry 1
     // if the NetworkAnonymizationKeys are being used, and cache entry 0
@@ -4060,15 +4102,36 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyTwoRequestsAtOnce) {
 
   const char kDnsResult[] = "192.168.1.42";
 
-  for (bool split_cache_by_network_anonymization_key : {false, true}) {
+  struct PartitioningMode {
+    bool partition_connections;
+    bool split_host_cache;
+  };
+  const PartitioningMode kPartitioningModes[] = {
+      {false, false}, {true, true}, {true, false}};
+
+  for (const auto& mode : kPartitioningModes) {
     base::test::ScopedFeatureList feature_list;
-    if (split_cache_by_network_anonymization_key) {
-      feature_list.InitAndEnableFeature(
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (mode.partition_connections) {
+      enabled_features.push_back(
           features::kPartitionConnectionsByNetworkIsolationKey);
     } else {
-      feature_list.InitAndDisableFeature(
+      disabled_features.push_back(
           features::kPartitionConnectionsByNetworkIsolationKey);
     }
+
+    if (mode.split_host_cache) {
+      enabled_features.push_back(
+          features::kSplitHostCacheByNetworkAnonymizationKey);
+    } else {
+      disabled_features.push_back(
+          features::kSplitHostCacheByNetworkAnonymizationKey);
+    }
+
+    feature_list.InitWithFeatures(enabled_features, disabled_features);
+    bool split_cache_by_network_anonymization_key = mode.split_host_cache;
     proc_->AddRuleForAllFamilies("just.testing", kDnsResult);
 
     // Start resolving a host using kNetworkAnonymizationKey1.

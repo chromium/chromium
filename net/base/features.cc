@@ -131,6 +131,9 @@ BASE_FEATURE(kSplitCodeCacheByNetworkIsolationKey,
 BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSplitHostCacheByNetworkAnonymizationKey,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSearchEnginePreconnectInterval,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

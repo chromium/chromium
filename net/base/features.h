@@ -193,6 +193,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCodeCacheByNetworkIsolationKey);
 // See https://github.com/MattMenke2/Explainer---Partition-Network-State.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
 
+// Splits HostCache and DNS resolution requests by the request's
+// NetworkAnonymizationKey if one is available.
+NET_EXPORT BASE_DECLARE_FEATURE(kSplitHostCacheByNetworkAnonymizationKey);
+
 // Changes the interval between two search engine preconnect attempts.
 NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
 

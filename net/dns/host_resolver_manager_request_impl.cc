@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/linked_list.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +20,7 @@
 #include "base/time/tick_clock.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/dns_alias_utility.h"
@@ -46,7 +48,9 @@ HostResolverManager::RequestImpl::RequestImpl(
     : source_net_log_(std::move(source_net_log)),
       request_host_(std::move(request_host)),
       network_anonymization_key_(
-          NetworkAnonymizationKey::IsPartitioningEnabled()
+          NetworkAnonymizationKey::IsPartitioningEnabled() &&
+                  base::FeatureList::IsEnabled(
+                      features::kSplitHostCacheByNetworkAnonymizationKey)
               ? std::move(network_anonymization_key)
               : NetworkAnonymizationKey()),
       parameters_(optional_parameters ? std::move(optional_parameters).value()
