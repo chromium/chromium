@@ -365,7 +365,8 @@ void HTMLSlotElement::AttachLayoutTreeForSlotChildren(AttachContext& context) {
 void HTMLSlotElement::DetachLayoutTree(bool performing_reattach) {
   if (SupportsAssignment()) {
     auto* host = OwnerShadowHost();
-    const HeapVector<Member<Node>>& flat_tree_children = assigned_nodes_;
+    // Defensive copy to prevent UAF from sync recalc. See crbug.com/497830330.
+    const HeapVector<Member<Node>> flat_tree_children = assigned_nodes_;
     for (auto& node : flat_tree_children) {
       // Don't detach the assigned node if the node is no longer a child of the
       // host.
