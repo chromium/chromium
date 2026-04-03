@@ -527,7 +527,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Set LCP Critical Path Predictor hint data to be passed along to the
   // renderer process on the navigation commit.
   virtual void SetLCPPNavigationHint(
-      const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint) = 0;
+      blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr hint) = 0;
 
   // Peek into LCP Critical Path Predictor hint data attached to the navigation.
   virtual const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&

@@ -3643,6 +3643,10 @@ void NavigationRequest::OnRequestRedirected(
   // for the redirected one.
   commit_params_->not_restored_reasons = nullptr;
 
+  // Reset the LCPP hint as the hint is for the original page and not for the
+  // redirected one.
+  commit_params_->lcpp_hint = nullptr;
+
   // Reset the tentative origin_to_commit, as the redirected one is different.
   tentative_data_origin_to_commit_ = std::nullopt;
 
@@ -9526,10 +9530,10 @@ void NavigationRequest::SetRequestHeader(std::string_view header_name,
 }
 
 void NavigationRequest::SetLCPPNavigationHint(
-    const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint) {
+    blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr hint) {
   CHECK(WILL_START_REQUEST == state_ || WILL_REDIRECT_REQUEST == state_)
       << state_;
-  commit_params_->lcpp_hint = hint.Clone();
+  commit_params_->lcpp_hint = std::move(hint);
 }
 
 const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&

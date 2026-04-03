@@ -1133,7 +1133,7 @@ void WebTestControlHost::RenderViewDeleted(RenderViewHost* render_view_host) {
 void WebTestControlHost::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   if (lcpp_hint_) {
-    navigation_handle->SetLCPPNavigationHint(lcpp_hint_.value());
+    navigation_handle->SetLCPPNavigationHint(lcpp_hint_->Clone());
   }
 }
 

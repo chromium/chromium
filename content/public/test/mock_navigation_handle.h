@@ -30,6 +30,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
@@ -181,7 +182,7 @@ class MockNavigationHandle : public NavigationHandle {
   }
   MOCK_METHOD1(
       SetLCPPNavigationHint,
-      void(const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint&));
+      void(blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr));
   MOCK_METHOD0(
       GetLCPPNavigationHint,
       const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&());

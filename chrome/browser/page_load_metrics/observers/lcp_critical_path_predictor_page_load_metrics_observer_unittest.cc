@@ -107,7 +107,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
   void ProvideLCPPHint(content::NavigationSimulator* navigation) {
     blink::mojom::LCPCriticalPathPredictorNavigationTimeHint hint;
     hint.lcp_element_locators = {"foo"};
-    navigation->GetNavigationHandle()->SetLCPPNavigationHint(hint);
+    navigation->GetNavigationHandle()->SetLCPPNavigationHint(hint.Clone());
   }
 
   void SetMockLcpElementLocator(

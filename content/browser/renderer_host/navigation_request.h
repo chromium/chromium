@@ -427,7 +427,7 @@ class CONTENT_EXPORT NavigationRequest
   void SetRequestHeader(std::string_view header_name,
                         std::string_view header_value) override;
   void SetLCPPNavigationHint(
-      const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint& hint)
+      blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr hint)
       override;
   const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&
   GetLCPPNavigationHint() override;
