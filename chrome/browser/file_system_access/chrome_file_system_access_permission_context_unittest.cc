@@ -1036,6 +1036,35 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
 }
+
+// Testing that the */.git/hooks are all blocked.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_SuffixBlock) {
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(FILE_PATH_LITERAL("\\\\.git")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathInfo(FILE_PATH_LITERAL("\\\\.git\\hooks")),
+          HandleType::kDirectory, UserAction::kOpen),
+      SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\a\\.git\\hooks")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\a\\.git\\hooks\\b")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathInfo(FILE_PATH_LITERAL("\\\\.git\\hook")),
+          HandleType::kDirectory, UserAction::kOpen),
+      SensitiveDirectoryResult::kAllowed);
+}
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -3945,8 +3974,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #if BUILDFLAG(IS_WIN)
 // Regression test for crbug.com/428455312.
 // `GetUserDocumentsDirectory()` may return invalid paths on Windows by calling
-// `SHGetFolderPath()` Windows OS API, which may return a path value that customers and
-// enterprises can override to be an invalid path like "C:PC\\Documents".
+// `SHGetFolderPath()` Windows OS API, which may return a path value that
+// customers and enterprises can override to be an invalid path like
+// "C:PC\\Documents".
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DontBlockOnInvalidPath) {
   base::FilePath home_dir(FILE_PATH_LITERAL("C:PC\\Documents"));

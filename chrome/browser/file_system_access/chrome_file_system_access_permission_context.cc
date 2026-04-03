@@ -368,6 +368,9 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       // directory, but not whole directories.
       BlockPath::CreateRelative(base::DIR_IE_INTERNET_CACHE,
                                 BlockType::kBlockNestedDirectories),
+      // Block */.git/hooks on Windows, see crbug.com/465668234.
+      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/hooks"),
+                              BlockType::kBlockAllChildren),
 #endif
 #if BUILDFLAG(IS_MAC)
       // Similar Mac specific blocks.
@@ -478,7 +481,9 @@ GenerateBlockPaths(bool should_normalize_file_path) {
         break;
       }
       case ChromeFileSystemAccessPermissionContext::BlockPathType::kSuffix: {
-        NOTREACHED() << "kSuffix is not supported yet";
+        block_path_rules->suffix_block_path_rules_.emplace_back(
+            blocked_path.path, blocked_path.block_type);
+        continue;
       }
     }
 
@@ -556,6 +561,45 @@ bool ShouldBlockAccessToPath(
             rule.path ? profile_path.Append(rule.path) : profile_path,
             rule.type)) {
       return true;
+    }
+  }
+
+  std::vector<base::FilePath::StringType> path_components =
+      path.GetComponents();
+
+  // Checks if the path components contain the components of the suffix rule.
+  // For example, if the rule is `.git/hooks`, it will block paths like
+  // `/foo/bar/.git/hooks`. The `std::search` identifies the matching subrange
+  // and constructs a `current_path` from the root up to the end of the matched
+  // subrange (e.g., `/foo/bar/.git/hooks`). This path is then evaluated against
+  // the regular block rules.
+  for (const auto& rule : block_path_rules.suffix_block_path_rules_) {
+    base::FilePath rule_path(rule.path);
+    std::vector<base::FilePath::StringType> rule_components =
+        rule_path.GetComponents();
+    if (rule_components.empty()) {
+      continue;
+    }
+
+    auto it = path_components.begin();
+    while (true) {
+      it = std::search(it, path_components.end(), rule_components.begin(),
+                       rule_components.end());
+      if (it == path_components.end()) {
+        break;
+      }
+
+      base::FilePath current_path = base::FilePath(path_components[0]);
+      for (auto path_it = path_components.begin() + 1;
+           path_it != it + rule_components.size(); ++path_it) {
+        current_path = current_path.Append(*path_it);
+      }
+
+      if (should_block_with_rule(current_path, rule.type)) {
+        return true;
+      }
+
+      ++it;
     }
   }
 
