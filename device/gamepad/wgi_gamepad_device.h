@@ -9,6 +9,8 @@
 #include <wrl/client.h>
 #include <wrl/event.h>
 
+#include <string_view>
+
 #include "base/memory/weak_ptr.h"
 #include "base/win/core_winrt_util.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
@@ -18,8 +20,9 @@ namespace device {
 class DEVICE_GAMEPAD_EXPORT WgiGamepadDevice final
     : public AbstractHapticGamepad {
  public:
-  explicit WgiGamepadDevice(
-      Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> gamepad);
+  WgiGamepadDevice(
+      Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> gamepad,
+      std::string product_identifier);
   WgiGamepadDevice(const WgiGamepadDevice& other) = delete;
   WgiGamepadDevice& operator=(const WgiGamepadDevice& other) = delete;
   ~WgiGamepadDevice() override;
@@ -32,8 +35,11 @@ class DEVICE_GAMEPAD_EXPORT WgiGamepadDevice final
     return gamepad_;
   }
 
+  std::string_view GetProductIdentifier() const { return product_identifier_; }
+
  private:
   Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> gamepad_;
+  std::string product_identifier_;
 
   base::WeakPtrFactory<WgiGamepadDevice> weak_factory_{this};
 };

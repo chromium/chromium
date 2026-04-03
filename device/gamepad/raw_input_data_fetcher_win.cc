@@ -15,6 +15,7 @@
 #include "device/gamepad/gamepad_standard_mappings.h"
 #include "device/gamepad/gamepad_uma.h"
 #include "device/gamepad/nintendo_controller.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
 
 namespace device {
 
@@ -201,6 +202,14 @@ void RawInputDataFetcher::EnumerateDevices() {
         if (filter_xinput_ && device_name.contains(L"IG_")) {
           new_device->Shutdown();
           continue;
+        }
+
+        if (base::FeatureList::IsEnabled(
+                features::kClaimDuplicateGamepadsProductIdentifier)) {
+          // Claim HID gamepads enumerated by this data fetcher to avoid
+          // double-enumeration in WgiDataFetcherWin.
+          ClaimProductIdentifier(
+              GamepadIdList::GetProductIdentifier(vendor_int, product_int));
         }
 
         PadState* state = GetPadState(source_id, is_recognized);

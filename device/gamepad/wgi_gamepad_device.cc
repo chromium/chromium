@@ -10,8 +10,10 @@
 namespace device {
 
 WgiGamepadDevice::WgiGamepadDevice(
-    Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> gamepad)
-    : gamepad_(std::move(gamepad)) {}
+    Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> gamepad,
+    std::string product_identifier)
+    : gamepad_(std::move(gamepad)),
+      product_identifier_(std::move(product_identifier)) {}
 
 WgiGamepadDevice::~WgiGamepadDevice() = default;
 

@@ -132,6 +132,13 @@ class DEVICE_GAMEPAD_EXPORT GamepadIdList {
   // Returns a singleton instance of the GamepadId list.
   static GamepadIdList& Get();
 
+#if BUILDFLAG(IS_WIN)
+  // Returns a unique product identifier for a given gamepad from the vendor and
+  // product id.
+  static std::string GetProductIdentifier(uint16_t vendor_id,
+                                          uint16_t product_id);
+#endif  // BUILDFLAG(IS_WIN)
+
   GamepadIdList(const GamepadIdList& entry) = delete;
   GamepadIdList& operator=(const GamepadIdList& entry) = delete;
 

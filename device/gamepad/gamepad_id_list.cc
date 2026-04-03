@@ -6,9 +6,11 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/strings/stringprintf.h"
 
 namespace device {
 
@@ -647,6 +649,14 @@ constexpr auto kGamepadInfo = base::MakeFixedFlatMap<
 GamepadIdList& GamepadIdList::Get() {
   return g_singleton.Get();
 }
+
+#if BUILDFLAG(IS_WIN)
+// static
+std::string GamepadIdList::GetProductIdentifier(uint16_t vendor_id,
+                                                uint16_t product_id) {
+  return base::StringPrintf("%04x:%04x", vendor_id, product_id);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 XInputType GamepadIdList::GetXInputType(uint16_t vendor_id,
                                         uint16_t product_id) const {

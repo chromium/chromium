@@ -71,7 +71,13 @@ GetRawGameController(ABI::Windows::Gaming::Input::IGamepad* gamepad,
   return raw_game_controller;
 }
 
-std::optional<GamepadId> GetGamepadId(
+struct GamepadDetails {
+  GamepadId gamepad_id;
+  uint16_t vendor_id;
+  uint16_t product_id;
+};
+
+std::optional<GamepadDetails> GetGamepadDetails(
     const std::u16string& product_name,
     ABI::Windows::Gaming::Input::IGamepad* gamepad,
     WgiDataFetcherWin::GetActivationFactoryFunction
@@ -97,8 +103,9 @@ std::optional<GamepadId> GetGamepadId(
     return std::nullopt;
   }
 
-  return GamepadIdList::Get().GetGamepadId(product_name_string, vendor_id,
-                                           product_id);
+  return GamepadDetails{GamepadIdList::Get().GetGamepadId(
+                            product_name_string, vendor_id, product_id),
+                        vendor_id, product_id};
 }
 
 // Check if the gamepad should be added by Windows.Gaming.Input. In the
@@ -242,22 +249,26 @@ void WgiDataFetcherWin::OnGamepadAdded(
     return;
 
   const std::u16string display_name = GetGamepadDisplayName(gamepad);
-  std::optional<GamepadId> gamepad_id_optional =
-      GetGamepadId(display_name, gamepad, get_activation_factory_function_);
+  auto gamepad_details_optional = GetGamepadDetails(
+      display_name, gamepad, get_activation_factory_function_);
 
-  // If `gamepad_id_optional` has std::nullopt, it means that an error has
+  // If `gamepad_details_optional` has std::nullopt, it means that an error has
   // happened when calling the Windows API's.
-  if (!gamepad_id_optional.has_value()) {
+  if (!gamepad_details_optional.has_value()) {
     return;
   }
 
-  GamepadId gamepad_id = gamepad_id_optional.value();
+  auto [gamepad_id, vendor_id, product_id] = gamepad_details_optional.value();
   if (!ShouldEnumerateGamepad(gamepad_id)) {
     return;
   }
 
+  std::string product_identifier =
+      GamepadIdList::GetProductIdentifier(vendor_id, product_id);
+
   int source_id = next_source_id_++;
-  PadState* state = GetPadState(source_id);
+  PadState* state =
+      GetPadState(source_id, /*new_pad_recognized=*/true, product_identifier);
   if (!state)
     return;
   state->is_initialized = true;
@@ -273,7 +284,8 @@ void WgiDataFetcherWin::OnGamepadAdded(
 
   pad.vibration_actuator.not_null = true;
   pad.mapping = GamepadMapping::kStandard;
-  devices_[source_id] = std::make_unique<WgiGamepadDevice>(gamepad);
+  devices_[source_id] = std::make_unique<WgiGamepadDevice>(
+      gamepad, std::move(product_identifier));
 }
 
 void WgiDataFetcherWin::OnGamepadRemoved(
@@ -303,7 +315,14 @@ void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
   // redirect any detected meta button presses to it.
   PadState* lowest_index_wgi_pad_state = nullptr;
   for (const auto& map_entry : devices_) {
-    PadState* state = GetPadState(map_entry.first);
+    const auto& [source_id, wgi_gamepad_device] = map_entry;
+    std::optional<std::string_view> product_identifier;
+    if (base::FeatureList::IsEnabled(
+            features::kClaimDuplicateGamepadsProductIdentifier)) {
+      product_identifier = wgi_gamepad_device->GetProductIdentifier();
+    }
+    PadState* state =
+        GetPadState(source_id, /*new_pad_recognized=*/true, product_identifier);
     if (!state)
       continue;
 
