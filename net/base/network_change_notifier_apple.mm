@@ -350,12 +350,12 @@ void NetworkChangeNotifierApple::Forwarder::CleanUpOnNotifierThread() {
 
 void NetworkChangeNotifierApple::SetInitialConnectionType() {
   // Called on notifier thread.
-#if defined(COMPILE_OLD_NOTIFIER_IMPL)
   if (EnsureNetworkPathMonitorStarted()) {
     WaitOnInitialConnectionType();
     return;
   }
 
+#if defined(COMPILE_OLD_NOTIFIER_IMPL)
   // Try to reach 0.0.0.0. This is the approach taken by Firefox:
   //
   // http://mxr.mozilla.org/mozilla2.0/source/netwerk/system/mac/nsNetworkLinkService.mm
@@ -382,8 +382,6 @@ void NetworkChangeNotifierApple::SetInitialConnectionType() {
     connection_type_initialized_ = true;
     initial_connection_type_cv_.Broadcast();
   }
-#else
-  WaitOnInitialConnectionType();
 #endif  // defined(COMPILE_OLD_NOTIFIER_IMPL)
 }
 
