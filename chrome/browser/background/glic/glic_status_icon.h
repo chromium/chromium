@@ -30,9 +30,7 @@ class GlicController;
 // status icon being clicked or menu item being triggered.
 class GlicStatusIcon : public StatusIconObserver,
                        public StatusIconMenuModel::Delegate,
-                       public BrowserCollectionObserver,
-                       public GlicProfileManager::Observer,
-                       public GlicWindowController::StateObserver {
+                       public BrowserCollectionObserver {
  public:
   static std::unique_ptr<GlicStatusIcon> Create(GlicController* controller,
                                                 StatusTray* status_tray);
@@ -56,18 +54,9 @@ class GlicStatusIcon : public StatusIconObserver,
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
-  // GlicProfileManager::Observer
-  void OnLastActiveGlicProfileChanged(Profile* profile) override;
-
-  // GlicWindowController::StateObserver
-  void PanelStateChanged(
-      const mojom::PanelState& panel_state,
-      const GlicWindowController::PanelStateContext& context) override;
-
   void UpdateHotkey(const ui::Accelerator& hotkey);
 
   void UpdateVisibilityOfExitInContextMenu();
-  void UpdateVisibilityOfShowAndCloseInContextMenu();
 
   StatusIconMenuModel* GetContextMenuForTesting() { return context_menu_; }
 
@@ -81,11 +70,6 @@ class GlicStatusIcon : public StatusIconObserver,
 
   raw_ptr<GlicController> controller_;
 
-  base::ScopedObservation<GlicProfileManager, GlicProfileManager::Observer>
-      profile_observer_{this};
-  base::ScopedObservation<GlicWindowController,
-                          GlicWindowController::StateObserver>
-      panel_state_observer_{this};
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 

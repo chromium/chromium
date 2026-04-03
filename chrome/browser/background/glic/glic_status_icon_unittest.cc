@@ -73,9 +73,9 @@ class MockGlicController : public GlicController {
 }  // namespace
 
 // TODO(b/489122337): Fix this test.
-class DISABLED_GlicStatusIconTest : public testing::Test {
+class GlicStatusIconTest : public testing::Test {
  public:
-  ~DISABLED_GlicStatusIconTest() override = default;
+  ~GlicStatusIconTest() override = default;
 
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
@@ -90,7 +90,7 @@ class DISABLED_GlicStatusIconTest : public testing::Test {
             features::kGlicShowStatusTrayIcon
 #endif
         },
-        /*disabled_features=*/{features::kGlicMultiInstance});
+        /*disabled_features=*/{});
     glic_status_icon_->Init();
   }
 
@@ -120,24 +120,25 @@ class DISABLED_GlicStatusIconTest : public testing::Test {
 };
 
 #if !BUILDFLAG(IS_LINUX)
-TEST_F(DISABLED_GlicStatusIconTest, OnStatusIconClicked) {
+TEST_F(GlicStatusIconTest, OnStatusIconClicked) {
   EXPECT_CALL(*glic_controller(), Toggle).Times(1);
   status_icon()->DispatchClickEvent();
 }
 #endif
 
-TEST_F(DISABLED_GlicStatusIconTest, ExecuteCommand) {
-  EXPECT_CALL(*glic_controller(), Show).Times(1);
+TEST_F(GlicStatusIconTest, ExecuteCommand) {
+  EXPECT_CALL(*glic_controller(), Toggle).Times(1);
   base::UserActionTester user_action_tester;
   auto* context_menu = status_icon()->GetContextMenuForTesting();
-  context_menu->ExecuteCommand(IDC_GLIC_STATUS_ICON_MENU_SHOW, 0);
+  context_menu->ExecuteCommand(IDC_GLIC_STATUS_ICON_MENU_TOGGLE, 0);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "GlicOsEntrypoint.ContextMenuSelection.OpenGlic"));
+                   "GlicOsEntrypoint.ContextMenuSelection.ToggleGlic"));
 }
 
-TEST_F(DISABLED_GlicStatusIconTest, ContextMenu) {
+TEST_F(GlicStatusIconTest, ContextMenu) {
   auto* context_menu = status_icon()->GetContextMenuForTesting();
-  EXPECT_TRUE(context_menu->IsCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_SHOW));
+  EXPECT_TRUE(
+      context_menu->IsCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_TOGGLE));
   EXPECT_TRUE(context_menu->IsCommandIdVisible(
       IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT));
   EXPECT_TRUE(
@@ -146,14 +147,14 @@ TEST_F(DISABLED_GlicStatusIconTest, ContextMenu) {
       context_menu->IsCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_SETTINGS));
 }
 
-TEST_F(DISABLED_GlicStatusIconTest, UpdateHotkey) {
+TEST_F(GlicStatusIconTest, UpdateHotkey) {
   auto* context_menu = status_icon()->GetContextMenuForTesting();
   ui::Accelerator new_accelerator(ui::VKEY_A,
                                   ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   glic_status_icon()->UpdateHotkey(new_accelerator);
-  ui::Accelerator show_accelerator;
+  ui::Accelerator toggle_accelerator;
   EXPECT_TRUE(context_menu->GetAcceleratorForCommandId(
-      IDC_GLIC_STATUS_ICON_MENU_SHOW, &show_accelerator));
-  EXPECT_EQ(show_accelerator, new_accelerator);
+      IDC_GLIC_STATUS_ICON_MENU_TOGGLE, &toggle_accelerator));
+  EXPECT_EQ(toggle_accelerator, new_accelerator);
 }
 }  // namespace glic

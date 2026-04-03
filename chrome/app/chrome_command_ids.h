@@ -590,12 +590,10 @@
 #define IDC_SET_BROWSER_AS_DEFAULT 53300
 
 // Glic status tray icon menu
-#define IDC_GLIC_STATUS_ICON_MENU_SHOW                        53310
 #define IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT 53311
 #define IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON                 53312
 #define IDC_GLIC_STATUS_ICON_MENU_SETTINGS                    53313
 #define IDC_GLIC_STATUS_ICON_MENU_EXIT                        53314
-#define IDC_GLIC_STATUS_ICON_MENU_CLOSE                       53315
 #define IDC_GLIC_STATUS_ICON_MENU_TOGGLE                      53316
 
 // Glic button context menu and tabstrip context menu

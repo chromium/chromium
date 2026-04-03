@@ -125,7 +125,6 @@ if (!is_android) {
     sources = [
       "glic_background_mode_manager_interactive_uitest.cc",
       "glic_controller_interactive_uitest.cc",
-      "glic_status_icon_interactive_uitest.cc",
     ]
     deps = [
       ":glic",
