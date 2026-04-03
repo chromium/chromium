@@ -491,8 +491,6 @@ void LayoutBoxRareData::Trace(Visitor* visitor) const {
 }
 
 LayoutBox::LayoutBox(ContainerNode* node) : LayoutBoxModelObject(node) {
-  if (blink::IsA<HTMLLegendElement>(node))
-    SetIsHTMLLegendElement();
 }
 
 void LayoutBox::Trace(Visitor* visitor) const {

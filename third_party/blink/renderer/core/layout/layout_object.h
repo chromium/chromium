@@ -1646,11 +1646,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return bitfields_.IsGlobalRootScroller();
   }
 
-  bool IsHTMLLegendElement() const {
-    NOT_DESTROYED();
-    return bitfields_.IsHTMLLegendElement();
-  }
-
   // Returns true if this can be used as a rendered legend.
   bool IsRenderedLegendCandidate() const {
     NOT_DESTROYED();
@@ -1658,8 +1653,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // case where the legend is a flex/grid item, LayoutObject::IsFloating()
     // could get set to false, even if the legend's computed style indicates
     // that it is floating.
-    return IsHTMLLegendElement() && !IsOutOfFlowPositioned() &&
-           !StyleRef().IsFloating();
+    const Node* node = GetNode();
+    return !IsOutOfFlowPositioned() && !StyleRef().IsFloating() && node &&
+           node->HasTagName(html_names::kLegendTag);
   }
 
   // Return true if this is the "rendered legend" of a fieldset. They get
@@ -2090,10 +2086,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void SetIsGlobalRootScroller(bool is_global_root_scroller) {
     NOT_DESTROYED();
     bitfields_.SetIsGlobalRootScroller(is_global_root_scroller);
-  }
-  void SetIsHTMLLegendElement() {
-    NOT_DESTROYED();
-    bitfields_.SetIsHTMLLegendElement(true);
   }
   void SetWhitespaceChildrenMayChange(bool b) {
     NOT_DESTROYED();
@@ -3831,7 +3823,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           is_effective_root_scroller_(false),
           is_global_root_scroller_(false),
           registered_as_first_line_image_observer_(false),
-          is_html_legend_element_(false),
           being_destroyed_(false),
           is_table_column_constraints_dirty_(false),
           is_grid_placement_dirty_(true),
@@ -4100,10 +4091,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // observer.
     ADD_BOOLEAN_BITFIELD(registered_as_first_line_image_observer_,
                          RegisteredAsFirstLineImageObserver);
-
-    // Whether this object's |Node| is a HTMLLegendElement. Used to increase
-    // performance of |IsRenderedLegend| which is performance sensitive.
-    ADD_BOOLEAN_BITFIELD(is_html_legend_element_, IsHTMLLegendElement);
 
     // True at start of |Destroy()| before calling |WillBeDestroyed()|.
     ADD_BOOLEAN_BITFIELD(being_destroyed_, BeingDestroyed);
