@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
@@ -826,8 +827,16 @@ public class OmniboxResourceProvider {
             Context context, @BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+
         @DrawableRes
-        int resId = isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
+        int resId =
+                OmniboxFeatures.sShowBottomSheetPopup.getValue()
+                        ? isIncognito
+                                ? R.drawable.fusebox_popup_bg_tinted_on_dark_bg
+                                : R.drawable.fusebox_popup_bg_tinted
+                        : isIncognito
+                                ? R.drawable.menu_bg_tinted_on_dark_bg
+                                : R.drawable.menu_bg_tinted;
         return getDrawable(context, resId);
     }
 

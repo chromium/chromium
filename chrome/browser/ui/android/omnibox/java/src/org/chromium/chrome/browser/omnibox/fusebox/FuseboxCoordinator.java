@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 
 import androidx.annotation.IntDef;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.window.layout.WindowMetricsCalculator;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -29,6 +32,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -119,26 +123,46 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mDeferredInitialized) return;
         mDeferredInitialized = true;
 
-        var contextButton = mParent.findViewById(R.id.location_bar_attachments_add);
-        var rectProvider = new ViewRectProvider(mParent);
-        Resources res = mContext.getResources();
-        rectProvider.setInsetPx(
-                0, res.getDimensionPixelSize(R.dimen.fusebox_vertical_space_above_popup), 0, 0);
+        RectProvider rectProvider;
+
+        if (OmniboxFeatures.sShowBottomSheetPopup.getValue()) {
+            Activity activity = assumeNonNull(ContextUtils.activityFromContext(mContext));
+            var windowMetrics =
+                    WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
+            var bounds = new Rect(windowMetrics.getBounds());
+            bounds.top = bounds.bottom; // Anchor popup to the bottom of the window.
+            rectProvider = new RectProvider(bounds);
+        } else {
+            var viewRectProvider = new ViewRectProvider(mParent);
+            Resources res = mContext.getResources();
+            viewRectProvider.setInsetPx(
+                    0, res.getDimensionPixelSize(R.dimen.fusebox_vertical_space_above_popup), 0, 0);
+            rectProvider = viewRectProvider;
+        }
+
         var popupView = LayoutInflater.from(mContext).inflate(R.layout.fusebox_context_popup, null);
         mViewportRectProvider = new ViewportRectProvider(mContext);
+        var contextButton = mParent.findViewById(R.id.location_bar_attachments_add);
 
         var popupWindowBuilder =
                 new AnchoredPopupWindow.Builder(
-                        mContext,
-                        contextButton.getRootView(),
-                        AppCompatResources.getDrawable(mContext, R.drawable.menu_bg_tinted),
-                        () -> popupView,
-                        rectProvider);
-        popupWindowBuilder.setOutsideTouchable(true);
-        popupWindowBuilder.setAnimateFromAnchor(true);
-        popupWindowBuilder.setPreferredHorizontalOrientation(
-                HorizontalOrientation.LAYOUT_DIRECTION);
-        popupWindowBuilder.setViewportRectProvider(mViewportRectProvider);
+                                mContext,
+                                contextButton.getRootView(),
+                                OmniboxResourceProvider.getPopupBackgroundDrawable(
+                                        mContext, BrandedColorScheme.APP_DEFAULT),
+                                () -> popupView,
+                                rectProvider)
+                        .setOutsideTouchable(true)
+                        .setAnimateFromAnchor(true)
+                        .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
+                        .setViewportRectProvider(mViewportRectProvider)
+                        .setDesiredContentWidth(
+                                OmniboxFeatures.sShowBottomSheetPopup.getValue()
+                                        ? rectProvider.getRect().width()
+                                        : mContext.getResources()
+                                                .getDimensionPixelSize(R.dimen.fusebox_popup_width))
+                        .setHorizontalOverlapAnchor(true)
+                        .setVerticalOverlapAnchor(true);
 
         var popup = new FuseboxPopup(mContext, popupWindowBuilder.build(), popupView);
         mViewHolder = new FuseboxViewHolder(mParent, popup);

@@ -51,14 +51,6 @@ class FuseboxPopup {
 
     FuseboxPopup(Context context, AnchoredPopupWindow popupWindow, View contentView) {
         mPopupWindow = popupWindow;
-        // `match_parent` and `wrap_content` don't exactly work well in our case.
-        // Marking buttons `wrap_content` always narrows down button area, producing inconsistent
-        // sizing, and asking for `match_parent` results in text wrapping, as the parent is unable
-        // to determine the minimum child size accurately.
-        mPopupWindow.setDesiredContentSize(
-                context.getResources().getDimensionPixelSize(R.dimen.fusebox_popup_width), 0);
-        mPopupWindow.setHorizontalOverlapAnchor(true);
-        mPopupWindow.setVerticalOverlapAnchor(true);
         mViewGroup = contentView.findViewById(R.id.fusebox_view_group);
 
         mAddCurrentTab = contentView.findViewById(R.id.fusebox_add_current_tab);

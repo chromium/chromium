@@ -165,6 +165,9 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sShowModelPicker =
             newBooleanParam(sOmniboxMultimodalInput, "show_model_picker", false);
 
+    public static final BooleanCachedFeatureParam sShowBottomSheetPopup =
+            newBooleanParam(sOmniboxMultimodalInput, "show_bottom_sheet_popup", false);
+
     public static final CachedFlag sMultilineEditField =
             newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_PROD);
 
