@@ -40,10 +40,8 @@ struct FileData {
 };
 
 // ComposeboxHandler for the Contextual Tasks UI.
-class ContextualTasksComposeboxHandler
-    : public ComposeboxHandler,
-      public ui::SelectFileDialog::Listener,
-      public contextual_tasks::QueryContextualizer::Delegate {
+class ContextualTasksComposeboxHandler : public ComposeboxHandler,
+                                         public ui::SelectFileDialog::Listener {
  public:
   friend class ContextualTasksComposeboxHandlerTest;
   using TakeInputStateModelCallback =
