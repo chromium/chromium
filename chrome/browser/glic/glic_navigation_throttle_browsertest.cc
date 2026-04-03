@@ -58,6 +58,40 @@ GURL BuildContinueUrl(const GURL& target_url,
   return GURL(features::kGlicWebContinuityUrl.Get() + query);
 }
 
+class NavigationParamsObserver : public content::WebContentsObserver {
+ public:
+  NavigationParamsObserver(content::WebContents* web_contents,
+                           const GURL& target_url)
+      : content::WebContentsObserver(web_contents), target_url_(target_url) {}
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (navigation_handle->GetURL() == target_url_) {
+      captured_initiator_origin_ = navigation_handle->GetInitiatorOrigin();
+      captured_is_renderer_initiated_ =
+          navigation_handle->IsRendererInitiated();
+      captured_user_gesture_ = navigation_handle->HasUserGesture();
+      run_loop_.Quit();
+    }
+  }
+
+  void WaitForNavigation() { run_loop_.Run(); }
+
+  std::optional<url::Origin> captured_initiator_origin() const {
+    return captured_initiator_origin_;
+  }
+  std::optional<bool> captured_is_renderer_initiated() const {
+    return captured_is_renderer_initiated_;
+  }
+
+ private:
+  std::optional<url::Origin> captured_initiator_origin_;
+  std::optional<bool> captured_is_renderer_initiated_;
+  std::optional<bool> captured_user_gesture_;
+  GURL target_url_;
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 class MockGlicKeyedService : public GlicKeyedService {
@@ -430,6 +464,42 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTestWithPref,
   // Clear the pref to avoid affecting other tests.
   g_browser_process->local_state()->ClearPref(
       prefs::kGlicWebContinuityOriginatingHostUrlPreset);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
+                       InterceptGlicContinueUrlFromGemini_PreservesParams) {
+  base::HistogramTester histogram_tester;
+  MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+                                                   /*create=*/true));
+  ASSERT_TRUE(mock_service);
+
+  std::string cid = "123";
+  GURL target_url("https://www.google.com/");
+  GURL continue_url = BuildContinueUrl(target_url, cid, std::nullopt);
+
+  NavigationParamsObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(), target_url);
+
+  EXPECT_CALL(*mock_service, Invoke(_, _)).Times(1);
+
+  content::NavigationController::LoadURLParams params(continue_url);
+  url::Origin expected_origin = url::Origin::Create(
+      GURL(features::kGlicWebContinuityOriginatingHost.Get()));
+  params.initiator_origin = expected_origin;
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  params.is_renderer_initiated = true;
+
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .LoadURLWithParams(params);
+
+  observer.WaitForNavigation();
+
+  EXPECT_EQ(observer.captured_initiator_origin(), expected_origin);
+  EXPECT_TRUE(observer.captured_is_renderer_initiated());
 }
 
 }  // namespace glic
