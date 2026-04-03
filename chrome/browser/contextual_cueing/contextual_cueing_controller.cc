@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -20,6 +21,7 @@
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 
@@ -139,6 +141,30 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
       active_web_contents->GetLastCommittedURL().spec());
   request.mutable_active_tab_page_context()->set_title(
       base::UTF16ToUTF8(active_web_contents->GetTitle()));
+  for (int i = 0; i < tab_list_interface_->GetTabCount(); ++i) {
+    tabs::TabInterface* tab = tab_list_interface_->GetTab(i);
+    if (tab == tab_list_interface_->GetActiveTab()) {
+      // Active tab already added to the request.
+      continue;
+    }
+    content::WebContents* tab_contents = tab ? tab->GetContents() : nullptr;
+    if (!tab_contents) {
+      continue;
+    }
+    if (!tab_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab_contents);
+    if (!tab_id.is_valid()) {
+      continue;
+    }
+    auto* background_tab = request.add_background_tabs();
+    background_tab->set_url(tab_contents->GetURL().spec());
+    background_tab->set_title(base::UTF16ToUTF8(tab_contents->GetTitle()));
+    background_tab->set_tab_id(tab_id.id());
+  }
+  LOCAL_HISTOGRAM_COUNTS_100("ContextualCueing.V2.NumRequestedBackgroundTabs",
+                             request.background_tabs_size());
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextualCueing, request,
       /*options=*/{},
@@ -175,9 +201,15 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
 
   if (response->has_anchored_message_cue()) {
     MODEL_EXECUTION_LOG(base::StringPrintf(
-        "Showing cue for CUJ %s: [%s] %s", response->suggested_cuj(),
+        "Showing cue for CUJ %s: %s [%s]", response->suggested_cuj(),
         response->anchored_message_cue().anchored_message_text(),
         response->anchored_message_cue().action_text()));
+  }
+  if (response->has_gemini_in_chrome_surface() &&
+      !response->gemini_in_chrome_surface().prompt().empty()) {
+    MODEL_EXECUTION_LOG(
+        base::StringPrintf("Prompt for Gemini in Chrome surface: %s",
+                           response->gemini_in_chrome_surface().prompt()));
   }
   RecordContextualCueingDecision(ContextualCueingDecision::kSuccess);
 }

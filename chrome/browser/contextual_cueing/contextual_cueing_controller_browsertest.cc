@@ -9,6 +9,7 @@
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -16,6 +17,7 @@
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace contextual_cueing {
 namespace {
@@ -132,8 +134,20 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        PassesFilterButModelExecutionSucceeded) {
+  // Navigate current Chrome tab to a valid URL (and will be in the background
+  // in final state).
   ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://www.example.com")));
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.someurl.com")));
+
+  // Create a new tab (will be in the background in final state).
+  chrome::NewTab(browser());
+
+  // Navigate to a new eligible tab to be in the foreground (current active
+  // tab).
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.example.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   base::HistogramTester histogram_tester;
 
@@ -169,6 +183,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
                                       ContextualCueingDecision::kSuccess, 1);
+  // There are three total tabs (one is active, one is valid as a background
+  // tab, and the other is a new tab). Active and non HTTP/HTTPS tabs are
+  // skipped.
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.NumRequestedBackgroundTabs", 1, 1);
 }
 
 }  // namespace

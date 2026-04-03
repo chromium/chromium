@@ -15,6 +15,7 @@ source_set("contextual_cueing") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/page_content_annotations/core",
+    "//components/sessions",
   ]
 }
 
