@@ -268,12 +268,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // The last time accessibility was active, used to calculate active time.
   base::TimeTicks accessibility_last_usage_time_;
 
-  // The time accessibility was enabled, for statistics.
-  base::TimeTicks accessibility_enabled_time_;
-
-  // The time accessibility was auto-disabled, for statistics.
-  base::TimeTicks accessibility_disabled_time_;
-
   base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
       focus_changed_callbacks_;
 

@@ -779,26 +779,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Accessibility.AutoDisabled.DisabledTime" units="ms"
-    expires_after="2025-05-04">
-  <owner>abigailbklein@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    The total amount of time accessibility was disabled due to being
-    auto-disabled, before being enabled again.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.AutoDisabled.EnabledTime" units="ms"
-    expires_after="2025-05-04">
-  <owner>abigailbklein@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    The total amount of time accessibility was enabled before being
-    auto-disabled.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.AutoDisabled.EventCount" units="count"
     expires_after="2026-06-01">
   <owner>abigailbklein@google.com</owner>

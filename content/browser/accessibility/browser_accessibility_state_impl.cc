@@ -598,12 +598,6 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
     if (features::IsAutoDisableAccessibilityEnabled()) {
       base::UmaHistogramCounts1000("Accessibility.AutoDisabled.EventCount",
                                    user_input_event_count_);
-      DCHECK(!accessibility_enabled_time_.is_null());
-      base::UmaHistogramLongTimes("Accessibility.AutoDisabled.EnabledTime",
-                                  now - accessibility_enabled_time_);
-
-      accessibility_disabled_time_ = now;
-
       // TODO(accessibility) Reimplement by making a11y dormant as opposed to
       // turning off flags, which leads to thrashing.
     }
@@ -955,17 +949,6 @@ void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
 
   // Handle additions to the process's mode flags.
   if (const auto additions = new_mode & ~old_mode; !additions.is_mode_off()) {
-    // Keep track of the total time accessibility is enabled, and the time
-    // it was previously disabled.
-    if (old_mode.is_mode_off()) {
-      base::TimeTicks now = ui::EventTimeForNow();
-      accessibility_enabled_time_ = now;
-      if (!accessibility_disabled_time_.is_null()) {
-        base::UmaHistogramLongTimes("Accessibility.AutoDisabled.DisabledTime",
-                                    now - accessibility_disabled_time_);
-      }
-    }
-
     // Broadcast the new mode flags, if any, to the AXModeObservers.
     ax_platform_.NotifyModeAdded(additions);
   }
