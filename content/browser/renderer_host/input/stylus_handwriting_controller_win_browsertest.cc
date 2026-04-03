@@ -355,7 +355,9 @@ IN_PROC_BROWSER_TEST_P(StylusHandwritingControllerWinCreationTest,
 
 // Tests that using a pen and performing a stroke in a textfield notifies
 // Shell Handwriting API of a stroke.
-IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest, BasicStroke) {
+// TODO(crbug.com/498290679): Investigate test flakiness
+IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest,
+                       DISABLED_BasicStroke) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/stylus_handwriting_test.html"));
   const gfx::Point point = gfx::ToRoundedPoint(GetPointInsideEmptyTextField());
   FocusEmptyTextField();
@@ -365,7 +367,9 @@ IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest, BasicStroke) {
 
 // Tests that using a pen and performing a stroke in a textfield without focus,
 // does notify the Shell Handwriting API of a stroke.
-IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest, BasicStrokeNoFocus) {
+// TODO(crbug.com/498290679): Investigate test flakiness
+IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest,
+                       DISABLED_BasicStrokeNoFocus) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/stylus_handwriting_test.html"));
   const gfx::Point point = gfx::ToRoundedPoint(GetPointInsideEmptyTextField());
   ExpectStrokeCallSequence(1);
