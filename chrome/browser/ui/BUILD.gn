@@ -4701,8 +4701,6 @@ static_library("ui") {
       "views/web_apps/web_app_diy_install_dialog.cc",
       "views/web_apps/web_app_icon_name_and_origin_view.cc",
       "views/web_apps/web_app_icon_name_and_origin_view.h",
-      "views/web_apps/web_app_identity_update_confirmation_view.cc",
-      "views/web_apps/web_app_identity_update_confirmation_view.h",
       "views/web_apps/web_app_install_dialog_delegate.cc",
       "views/web_apps/web_app_install_dialog_delegate.h",
       "views/web_apps/web_app_install_dialog_flow_view.cc",

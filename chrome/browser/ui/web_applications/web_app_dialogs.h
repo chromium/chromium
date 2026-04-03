@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
-#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
@@ -79,23 +78,6 @@ void ShowCreateShortcutDialog(
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback);
 
-// When an app changes its icon or name, that is considered an app identity
-// change which (for some types of apps) needs confirmation from the user.
-// This function shows that confirmation dialog. |app_id| is the unique id of
-// the app that is updating and |title_change| and |icon_change| specify which
-// piece of information is changing. Can be one or the other, or both (but
-// both cannot be |false|). |old_title| and |new_title|, as well as |old_icon|
-// and |new_icon| show the 'before' and 'after' values. A response is sent
-// back via the |callback|.
-void ShowWebAppIdentityUpdateDialog(const std::string& app_id,
-                                    bool title_change,
-                                    bool icon_change,
-                                    const std::u16string& old_title,
-                                    const std::u16string& new_title,
-                                    const SkBitmap& old_icon,
-                                    const SkBitmap& new_icon,
-                                    content::WebContents* web_contents,
-                                    AppIdentityDialogCallback callback);
 
 // Shows the an app update review dialog that always shows the name, icon, and
 // start url of the before and after states of the app. The user can accept,

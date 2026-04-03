@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
-#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -120,24 +119,6 @@ Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
   return nullptr;
 }
 
-void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
-    const std::string& app_id,
-    bool title_change,
-    bool icon_change,
-    const std::u16string& old_title,
-    const std::u16string& new_title,
-    const SkBitmap& old_icon,
-    const SkBitmap& new_icon,
-    content::WebContents* web_contents,
-    AppIdentityDialogCallback callback) {
-  auto identity_update_dialog_action_for_testing =
-      GetIdentityUpdateDialogActionForTesting();
-  if (!identity_update_dialog_action_for_testing) {
-    return;
-  }
-
-  std::move(callback).Run(identity_update_dialog_action_for_testing.value());
-}
 
 void FakeWebAppUiManager::ShowSubAppsInstallDialog(
     content::WebContents* initiating_web_contents,

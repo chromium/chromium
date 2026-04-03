@@ -85,16 +85,6 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const GURL& protocol_url,
       const webapps::AppId& app_id,
       WebAppLaunchAcceptanceCallback launch_callback) override {}
-  void ShowWebAppIdentityUpdateDialog(
-      const std::string& app_id,
-      bool title_change,
-      bool icon_change,
-      const std::u16string& old_title,
-      const std::u16string& new_title,
-      const SkBitmap& old_icon,
-      const SkBitmap& new_icon,
-      content::WebContents* web_contents,
-      AppIdentityDialogCallback callback) override;
   void ShowSubAppsInstallDialog(
       content::WebContents* initiating_web_contents,
       const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,

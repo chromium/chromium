@@ -49,7 +49,6 @@
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
@@ -366,20 +365,6 @@ void WebAppUiManagerImpl::ShowWebAppProtocolLaunchDialog(
                                             std::move(launch_callback));
 }
 
-void WebAppUiManagerImpl::ShowWebAppIdentityUpdateDialog(
-    const std::string& app_id,
-    bool title_change,
-    bool icon_change,
-    const std::u16string& old_title,
-    const std::u16string& new_title,
-    const SkBitmap& old_icon,
-    const SkBitmap& new_icon,
-    content::WebContents* web_contents,
-    web_app::AppIdentityDialogCallback callback) {
-  ::web_app::ShowWebAppIdentityUpdateDialog(
-      app_id, title_change, icon_change, old_title, new_title, old_icon,
-      new_icon, web_contents, std::move(callback));
-}
 
 void WebAppUiManagerImpl::ShowSubAppsInstallDialog(
     content::WebContents* initiating_web_contents,

@@ -14,6 +14,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/extend.h"
@@ -115,7 +116,6 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"

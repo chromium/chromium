@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -35,7 +34,6 @@
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -83,9 +81,7 @@ class FeaturePromoDialogTest : public TestBase {
   FeaturePromoDialogTest()
       // Specifying features to enable is not important because a mock
       // FeatureEngagementTracker is used.
-      : TestBase(UseMockTracker()),
-        update_dialog_scope_(web_app::SetIdentityUpdateDialogActionForTesting(
-            web_app::AppIdentityUpdate::kSkipped)) {
+      : TestBase(UseMockTracker()) {
     feature_ = GetFeatureForTest();
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features =*/{*feature_},
@@ -172,8 +168,6 @@ class FeaturePromoDialogTest : public TestBase {
 
   raw_ptr<const base::Feature> feature_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::AutoReset<std::optional<web_app::AppIdentityUpdate>>
-      update_dialog_scope_;
 };
 
 // Adding new tests for your promo

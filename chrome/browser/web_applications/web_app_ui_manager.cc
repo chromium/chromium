@@ -4,36 +4,11 @@
 
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 
-#include "base/auto_reset.h"
 #include "base/feature_list.h"
-#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/common/chrome_switches.h"
 
 namespace web_app {
 
-namespace {
-
-// Keeps track of whether the testing code has set an action to be performed
-// when the app identity update confirmation dialog is set to show. The behavior
-// is determined by the IdentityUpdateDialogAction enum in
-// web_app_ui_manager.h.
-std::optional<AppIdentityUpdate>
-    g_auto_resolve_app_identity_update_dialog_for_testing = std::nullopt;
-
-}  // namespace
-
-base::AutoReset<std::optional<AppIdentityUpdate>>
-SetIdentityUpdateDialogActionForTesting(  // IN-TEST
-    std::optional<AppIdentityUpdate> auto_accept_action) {
-  return base::AutoReset<std::optional<AppIdentityUpdate>>(
-      &g_auto_resolve_app_identity_update_dialog_for_testing,
-      auto_accept_action);
-}
-
-std::optional<AppIdentityUpdate>
-GetIdentityUpdateDialogActionForTesting() {  // IN-TEST
-  return g_auto_resolve_app_identity_update_dialog_for_testing;
-}
 
 // static
 apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(

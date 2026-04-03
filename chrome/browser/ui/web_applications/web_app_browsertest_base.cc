@@ -28,7 +28,7 @@
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -60,13 +60,7 @@ WebAppBrowserTestBase::WebAppBrowserTestBase()
 
 WebAppBrowserTestBase::WebAppBrowserTestBase(
     const std::vector<base::test::FeatureRef>& enabled_features,
-    const std::vector<base::test::FeatureRef>& disabled_features)
-    // TODO(crbug.com/40874949): Fix the manifest update process by ensuring
-    // during test installs, an app is installed from the manifest so that the
-    // identity update dialog is not triggered after navigation. This will
-    // ensure removal of update_dialog_scope_.
-    : update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
-          AppIdentityUpdate::kSkipped)) {
+    const std::vector<base::test::FeatureRef>& disabled_features) {
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
-#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -62,13 +60,6 @@ using WebAppLaunchAcceptanceCallback =
     base::OnceCallback<void(bool allowed, bool remember_user_choice)>;
 using FirstRunServiceCompletedCallback = base::OnceCallback<void(bool success)>;
 
-// Overrides the app identity update dialog's behavior for testing, allowing the
-// test to auto-accept or auto-skip the dialog.
-base::AutoReset<std::optional<AppIdentityUpdate>>
-SetIdentityUpdateDialogActionForTesting(
-    std::optional<AppIdentityUpdate> auto_accept_action);
-
-std::optional<AppIdentityUpdate> GetIdentityUpdateDialogActionForTesting();
 
 class WebAppUiManagerObserver : public base::CheckedObserver {
  public:
@@ -204,16 +195,6 @@ class WebAppUiManager {
       const webapps::AppId& app_id,
       WebAppLaunchAcceptanceCallback launch_callback) = 0;
 
-  virtual void ShowWebAppIdentityUpdateDialog(
-      const std::string& app_id,
-      bool title_change,
-      bool icon_change,
-      const std::u16string& old_title,
-      const std::u16string& new_title,
-      const SkBitmap& old_icon,
-      const SkBitmap& new_icon,
-      content::WebContents* web_contents,
-      AppIdentityDialogCallback callback) = 0;
 
   // Shows the dialog for installing sub-apps.
   virtual void ShowSubAppsInstallDialog(
