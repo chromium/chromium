@@ -107,6 +107,7 @@ class StaleHostResolver : public HostResolver {
 
   HostCache* GetHostCache() override;
   base::DictValue GetDnsConfigAsValue() const override;
+  void SetDohFallbackUpgradeAllowed(bool allowed) override;
   void SetRequestContext(URLRequestContext* request_context) override;
   bool IsHappyEyeballsV3Enabled() const override;
   std::unique_ptr<HostResolver::ProbeRequest> CreateDohProbeRequest() override;

@@ -73,6 +73,7 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
   HostCache* GetHostCache() override;
   base::DictValue GetDnsConfigAsValue() const override;
+  void SetDohFallbackUpgradeAllowed(bool allowed) override;
   void SetRequestContext(URLRequestContext* request_context) override;
   bool IsHappyEyeballsV3Enabled() const override;
   HostResolverManager* GetManagerForTesting() override;

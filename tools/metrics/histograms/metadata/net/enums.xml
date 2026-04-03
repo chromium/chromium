@@ -447,6 +447,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Fallback preferred: canary domain check pending"/>
   <int value="3" label="Fallback preferred: canary domain check negative"/>
   <int value="4" label="Fallback preferred: no available Doh servers"/>
+  <int value="5"
+      label="Fallback preferred: DoH to the fallback provider not allowed"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/dns/dns_client.cc:FallbackFromSecureTransactionPreferredReason) -->

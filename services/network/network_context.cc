@@ -80,6 +80,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/dns/context_host_resolver.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
@@ -851,6 +852,8 @@ NetworkContext::NetworkContext(
 
   SetBlockTrustTokens(params_->block_trust_tokens);
 
+  SetDohFallbackUpgradeAllowed(params_->doh_fallback_upgrade_allowed);
+
   if (params_ && params_->http_cache_file_operations_factory) {
     http_cache_file_operations_factory_ =
         base::MakeRefCounted<MojoBackendFileOperationsFactory>(
@@ -1274,6 +1277,13 @@ void NetworkContext::DeleteStoredTrustTokens(
 
 void NetworkContext::SetBlockTrustTokens(bool block) {
   block_trust_tokens_ = block;
+}
+
+void NetworkContext::SetDohFallbackUpgradeAllowed(bool allowed) {
+  if (url_request_context_->host_resolver()) {
+    url_request_context_->host_resolver()->SetDohFallbackUpgradeAllowed(
+        allowed);
+  }
 }
 
 void NetworkContext::OnProxyLookupComplete(

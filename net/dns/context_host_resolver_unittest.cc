@@ -192,7 +192,7 @@ TEST_F(ContextHostResolverTest, CreateCanaryDomainService) {
 
   // Change mode to SECURE.
   config.secure_dns_mode = SecureDnsMode::kSecure;
-  config.should_perform_doh_fallback_upgrade = true;
+  config.should_perform_doh_fallback_upgrade = false;
   session = base::MakeRefCounted<DnsSession>(
       config, base::BindRepeating([](int, int) -> int { return 0; }),
       /*net_log=*/nullptr);

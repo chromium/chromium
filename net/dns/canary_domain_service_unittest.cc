@@ -267,7 +267,6 @@ TEST_F(CanaryDomainServiceDisabledTest, NoProbeWhenConfigDisallows) {
   // Set up a session with mode SECURE (not AUTOMATIC).
   DnsConfig config;
   config.secure_dns_mode = SecureDnsMode::kSecure;
-  config.should_perform_doh_fallback_upgrade = true;
   session_ = base::MakeRefCounted<DnsSession>(
       config, base::BindRepeating([](int min, int max) -> int { return 0; }),
       /*net_log=*/nullptr);

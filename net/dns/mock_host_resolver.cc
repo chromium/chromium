@@ -882,6 +882,12 @@ HostCache* MockHostResolverBase::GetHostCache() {
   return cache_.get();
 }
 
+void MockHostResolverBase::SetDohFallbackUpgradeAllowed(bool allowed) {
+  if (resolve_context_) {
+    resolve_context_->set_doh_fallback_upgrade_allowed(allowed);
+  }
+}
+
 bool MockHostResolverBase::IsHappyEyeballsV3Enabled() const {
   return base::FeatureList::IsEnabled(features::kHappyEyeballsV3);
 }
@@ -1689,6 +1695,8 @@ HangingHostResolver::CreateDohProbeRequest() {
 
 void HangingHostResolver::SetRequestContext(
     URLRequestContext* url_request_context) {}
+
+void HangingHostResolver::SetDohFallbackUpgradeAllowed(bool allowed) {}
 
 bool HangingHostResolver::IsHappyEyeballsV3Enabled() const {
   return base::FeatureList::IsEnabled(features::kHappyEyeballsV3);

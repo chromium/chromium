@@ -209,6 +209,10 @@ size_t ContextHostResolver::CacheSize() const {
                                         : 0;
 }
 
+void ContextHostResolver::SetDohFallbackUpgradeAllowed(bool allowed) {
+  resolve_context_->set_doh_fallback_upgrade_allowed(allowed);
+}
+
 void ContextHostResolver::SetHostResolverSystemParamsForTest(
     const HostResolverSystemTask::Params& host_resolver_system_params) {
   manager_->set_host_resolver_system_params_for_test(  // IN-TEST

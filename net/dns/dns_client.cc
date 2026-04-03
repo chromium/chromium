@@ -50,7 +50,8 @@ enum class FallbackFromSecureTransactionPreferredReason {
   kFallbackPreferredCanaryDomainCheckPending = 2,
   kFallbackPreferredCanaryDomainCheckNegative = 3,
   kFallbackPreferredNoAvailableDohServers = 4,
-  kMaxValue = kFallbackPreferredNoAvailableDohServers,
+  kFallbackPreferredDohFallbackUpgradeNotAllowed = 5,
+  kMaxValue = kFallbackPreferredDohFallbackUpgradeNotAllowed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:FallbackFromSecureTransactionPreferredReason)
 
@@ -233,6 +234,14 @@ class DnsClientImpl : public DnsClient {
         case CanaryDomainCheckStatus::kInactive:
           NOTREACHED();
       }
+    }
+
+    if (context->IsDohConfigFromFallbackDohNameservers() &&
+        !context->doh_fallback_upgrade_allowed()) {
+      RecordFallbackFromSecureTransactionPreferred(
+          FallbackFromSecureTransactionPreferredReason::
+              kFallbackPreferredDohFallbackUpgradeNotAllowed);
+      return true;
     }
 
     // Otherwise, fall back to insecure DNS if there are no available DoH

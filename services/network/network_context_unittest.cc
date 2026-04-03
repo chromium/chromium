@@ -5683,7 +5683,6 @@ TEST_F(NetworkContextTest,
   {
     net::DnsConfig config;
     config.secure_dns_mode = net::SecureDnsMode::kSecure;
-    config.should_perform_doh_fallback_upgrade = true;
     auto session = base::MakeRefCounted<net::DnsSession>(
         config, base::BindRepeating([](int min, int max) -> int { return 0; }),
         nullptr);

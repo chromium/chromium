@@ -257,11 +257,22 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     doh_fallback_canary_domain_check_status_ = status;
   }
 
+  void set_doh_fallback_upgrade_allowed(bool allowed) {
+    doh_fallback_upgrade_allowed_ = allowed;
+  }
+  bool doh_fallback_upgrade_allowed() const {
+    return doh_fallback_upgrade_allowed_;
+  }
+
   // Gets the status of a canary domain check for allowing DoH fallback.
   // A positive status indicates that Secure DNS DoH fallback is allowed.
   CanaryDomainCheckStatus doh_fallback_canary_domain_check_status() const {
     return doh_fallback_canary_domain_check_status_;
   }
+
+  // Returns true if the current DoH configuration was added from the fallback
+  // DoH nameservers as part of the fallback-to-default-provider functionality.
+  bool IsDohConfigFromFallbackDohNameservers() const;
 
   // Returns true if a canary domain probe should be performed for the purpose
   // of determining whether to allow DoH fallback.
@@ -378,6 +389,8 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // Status of a canary domain check to allow DoH fallback for Secure DNS.
   CanaryDomainCheckStatus doh_fallback_canary_domain_check_status_ =
       CanaryDomainCheckStatus::kInactive;
+
+  bool doh_fallback_upgrade_allowed_ = false;
 
   base::WeakPtrFactory<ResolveContext> weak_ptr_factory_{this};
 };

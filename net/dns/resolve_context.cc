@@ -722,14 +722,24 @@ void ResolveContext::EmitDohAutoupgradeSuccessMetrics() {
 }
 
 bool ResolveContext::IsDohFallbackProbeEnabled() const {
+  return IsDohConfigFromFallbackDohNameservers() &&
+         doh_fallback_canary_domain_check_status_ !=
+             CanaryDomainCheckStatus::kInactive;
+}
+
+bool ResolveContext::IsDohConfigFromFallbackDohNameservers() const {
   if (!current_session_) {
     return false;
   }
-  return current_session_->config().secure_dns_mode ==
-             SecureDnsMode::kAutomatic &&
-         current_session_->config().should_perform_doh_fallback_upgrade &&
-         doh_fallback_canary_domain_check_status_ !=
-             CanaryDomainCheckStatus::kInactive;
+
+  if (current_session_->config().should_perform_doh_fallback_upgrade) {
+    // This is a fallback upgrade, which only happens in Automatic mode.
+    CHECK_EQ(current_session_->config().secure_dns_mode,
+             net::SecureDnsMode::kAutomatic);
+    return true;
+  }
+
+  return false;
 }
 
 // static

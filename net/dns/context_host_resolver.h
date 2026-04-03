@@ -88,6 +88,8 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   // Returns the number of entries in the host cache, or 0 if there is no cache.
   size_t CacheSize() const;
 
+  void SetDohFallbackUpgradeAllowed(bool allowed) override;
+
   void SetHostResolverSystemParamsForTest(
       const HostResolverSystemTask::Params& host_resolver_system_params);
   void SetTickClockForTesting(const base::TickClock* tick_clock);
