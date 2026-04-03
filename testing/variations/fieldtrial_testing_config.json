@@ -9478,6 +9478,21 @@
             ]
         }
     ],
+    "EnablePixInCct": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePixInCct"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableShoppingListIOSM119": [
         {
             "platforms": [
