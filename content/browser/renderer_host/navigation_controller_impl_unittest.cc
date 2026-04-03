@@ -4439,4 +4439,59 @@ TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
   BrowserURLHandlerImpl::GetInstance()->RemoveHandlerForTesting(&URLRewriter);
 }
 
+TEST_F(NavigationControllerTest, NavigationApiHistoryEntries_OpaqueOrigin) {
+  NavigationControllerImpl& controller = controller_impl();
+
+  // 1. Navigate main frame to a.com.
+  const GURL url_a("http://a.com");
+  NavigationSimulator::NavigateAndCommitFromDocument(url_a, main_test_rfh());
+  EXPECT_EQ(1U, navigation_entry_committed_counter_);
+  navigation_entry_committed_counter_ = 0;
+
+  // 2. Append a child frame and navigate it to a.com/subframe1.
+  // This updates the current entry (Entry 1).
+  const GURL subframe_url1("http://a.com/subframe1");
+  TestRenderFrameHost* subframe = static_cast<TestRenderFrameHost*>(
+      main_test_rfh()->AppendChild("subframe"));
+  subframe = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(subframe_url1,
+                                                         subframe));
+  EXPECT_EQ(1U, navigation_entry_changed_counter_);
+  navigation_entry_changed_counter_ = 0;
+
+  // 3. Navigate the child frame to a.com/subframe2.
+  // This creates a new entry (Entry 2).
+  const GURL subframe_url2("http://a.com/subframe2");
+  subframe = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(subframe_url2,
+                                                         subframe));
+  EXPECT_EQ(1U, navigation_entry_committed_counter_);
+  navigation_entry_committed_counter_ = 0;
+  EXPECT_EQ(2, controller.GetEntryCount());
+
+  // 4. Navigate the child frame to the same URL but with an opaque origin
+  // (sandboxed).
+  blink::FramePolicy sandbox_policy;
+  sandbox_policy.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  subframe->frame_tree_node()->SetPendingFramePolicy(sandbox_policy);
+
+  subframe = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(subframe_url2,
+                                                         subframe));
+  EXPECT_EQ(1U, navigation_entry_changed_counter_);
+  navigation_entry_changed_counter_ = 0;
+  navigation_entry_committed_counter_ = 0;
+
+  // 5. Call GetNavigationApiHistoryEntryVectors for the child frame.
+  blink::mojom::NavigationApiHistoryEntryArraysPtr arrays =
+      controller.GetNavigationApiHistoryEntryVectors(
+          subframe->frame_tree_node(), nullptr);
+
+  // The returned arrays should be empty because the current origin is opaque,
+  // preventing it from matching any same-origin entries (even though the URL
+  // looks same-origin).
+  EXPECT_TRUE(arrays->back_entries.empty());
+  EXPECT_TRUE(arrays->forward_entries.empty());
+}
+
 }  // namespace content

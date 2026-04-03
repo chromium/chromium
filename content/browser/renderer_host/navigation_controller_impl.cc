@@ -5448,9 +5448,9 @@ blink::mojom::NavigationApiHistoryEntryArraysPtr
 NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
     FrameTreeNode* node,
     NavigationRequest* request) {
-  url::Origin pending_origin = request
-                                   ? request->GetOriginToCommit().value()
-                                   : url::Origin::Create(node->current_url());
+  url::Origin pending_origin =
+      request ? request->GetOriginToCommit().value()
+              : node->current_frame_host()->GetLastCommittedOrigin();
 
   scoped_refptr<SiteInstance> site_instance =
       node->current_frame_host()->GetSiteInstance();
