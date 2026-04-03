@@ -13,6 +13,7 @@ import type {BrowserProxy} from './browser_proxy.js';
 export interface AnnotationEntry {
   url: string;
   title: string;
+  tab_id?: number;
   annotations: any;
   classifier_results: any;
 }

@@ -27,6 +27,8 @@
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "content/public/browser/page.h"
 
@@ -178,6 +180,16 @@ void ContentAnnotatorService::OnPageContentExtracted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(page_content);
 
+  std::optional<int> tab_id;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
+  if (web_contents) {
+    SessionID id = sessions::SessionTabHelper::IdForTab(web_contents);
+    if (id.is_valid()) {
+      tab_id = id.id();
+    }
+  }
+
   CacheIterator it =
       GetOrCreateJoinEntry(page.GetMainDocument().GetLastCommittedURL());
   if (page_content->data.has_main_frame_data()) {
@@ -186,6 +198,7 @@ void ContentAnnotatorService::OnPageContentExtracted(
 
   it->second.annotated_page_content = std::move(page_content);
   it->second.ukm_source_id = page.GetMainDocument().GetPageUkmSourceId();
+  it->second.tab_id = tab_id;
   MaybeAnnotate(it);
 }
 
@@ -278,13 +291,14 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
     *page_context.mutable_annotated_page_content() =
         complete_data.annotated_page_content->data;
     GenerateAnnotations(std::move(page_context), complete_data.url,
-                        std::move(classifier_values));
+                        complete_data.tab_id, std::move(classifier_values));
   }
 }
 
 void ContentAnnotatorService::GenerateAnnotations(
     optimization_guide::proto::PageContext page_context,
     const GURL& url,
+    std::optional<int> tab_id,
     base::DictValue classifier_results) {
   std::string page_title = page_context.title();
   optimization_guide::proto::ContentAnnotationRequest request;
@@ -295,12 +309,13 @@ void ContentAnnotatorService::GenerateAnnotations(
       std::move(request),
       {.execution_timeout = features::kContentAnnotatorAnnotationTimeout.Get()},
       base::BindOnce(&ContentAnnotatorService::HandleModelExecutionResult,
-                     weak_ptr_factory_.GetWeakPtr(), url, std::move(page_title),
-                     std::move(classifier_results)));
+                     weak_ptr_factory_.GetWeakPtr(), url, tab_id,
+                     std::move(page_title), std::move(classifier_results)));
 }
 
 void ContentAnnotatorService::HandleModelExecutionResult(
     const GURL& url,
+    std::optional<int> tab_id,
     std::string page_title,
     base::DictValue classifier_results,
     optimization_guide::OptimizationGuideModelExecutionResult result,
@@ -323,6 +338,7 @@ void ContentAnnotatorService::HandleModelExecutionResult(
     if (validated_data.has_value()) {
       AccessibilityAnnotatorBackend::ContentAnnotationsData data;
       data.page_title = std::move(page_title);
+      data.tab_id = tab_id;
       data.annotations = std::move(*validated_data);
       data.classifier_results = std::move(classifier_results);
       accessibility_annotator_backend_->SetContentAnnotationsCacheData(

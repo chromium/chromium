@@ -123,6 +123,9 @@ base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
     base::DictValue entry;
     entry.Set("url", item.first.spec());
     entry.Set("title", item.second.page_title);
+    if (item.second.tab_id) {
+      entry.Set("tab_id", *item.second.tab_id);
+    }
     entry.Set("annotations", item.second.annotations.Clone());
     entry.Set("classifier_results", item.second.classifier_results.Clone());
     result.Append(std::move(entry));

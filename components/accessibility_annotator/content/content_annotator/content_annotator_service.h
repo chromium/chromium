@@ -6,6 +6,7 @@
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/lru_cache.h"
@@ -124,11 +125,13 @@ class ContentAnnotatorService
   // `page_context`.
   void GenerateAnnotations(optimization_guide::proto::PageContext page_context,
                            const GURL& url,
+                           std::optional<int> tab_id,
                            base::DictValue classifier_results);
 
   // Handles the result of the model execution from `GenerateAnnotations`.
   void HandleModelExecutionResult(
       const GURL& url,
+      std::optional<int> tab_id,
       std::string page_title,
       base::DictValue classifier_results,
       optimization_guide::OptimizationGuideModelExecutionResult result,

@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import { html } from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {AnnotationEntry, ContentAnnotatorInternalsAppElement} from './app.js';
+import type { AnnotationEntry, ContentAnnotatorInternalsAppElement } from './app.js';
 
 export function getHtml(this: ContentAnnotatorInternalsAppElement) {
   return html`
     <h1>Content Annotator Internals</h1>
-    ${
-      this.errorMessage_ ? html`
+    ${this.errorMessage_ ? html`
       <p class="error">${this.errorMessage_}</p>
     ` :
-          this.logContent_.length === 0 ? html`
+      this.logContent_.length === 0 ? html`
       <pre>The content annotations cache is currently empty.</pre>
     ` :
-                                          html`
+        html`
       <h2>Cached Annotations</h2>
       <table>
         <thead>
           <tr>
             <th>URL</th>
             <th>Title</th>
+            <th>Tab ID</th>
             <th>Classifier Results</th>
             <th>Annotations</th>
           </tr>
@@ -32,6 +32,7 @@ export function getHtml(this: ContentAnnotatorInternalsAppElement) {
             <tr>
               <td>${entry.url}</td>
               <td>${entry.title}</td>
+              <td>${entry.tab_id || 'N/A'}</td>
               <td>
                 <pre>${this.formatJson_(entry.classifier_results)}</pre>
               </td>

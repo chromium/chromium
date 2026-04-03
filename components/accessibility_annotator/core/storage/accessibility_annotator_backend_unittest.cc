@@ -51,6 +51,7 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
 
   AccessibilityAnnotatorBackend::ContentAnnotationsData data;
   data.page_title = page_title;
+  data.tab_id = 123;
   data.annotations = annotations.Clone();
   data.classifier_results = classifier_results.Clone();
   backend_->SetContentAnnotationsCacheData(url, std::move(data));
@@ -60,6 +61,8 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
       cached_data = backend_->GetContentAnnotationsCacheData(url);
   ASSERT_TRUE(cached_data.has_value());
   EXPECT_EQ(cached_data->page_title, page_title);
+  ASSERT_TRUE(cached_data->tab_id.has_value());
+  EXPECT_EQ(*cached_data->tab_id, 123);
   EXPECT_EQ(cached_data->annotations, annotations);
   EXPECT_EQ(cached_data->classifier_results, classifier_results);
 }
@@ -81,6 +84,7 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
 
   AccessibilityAnnotatorBackend::ContentAnnotationsData data;
   data.page_title = page_title;
+  data.tab_id = 123;
   data.annotations = annotations.Clone();
   data.classifier_results = classifier_results.Clone();
   backend_->SetContentAnnotationsCacheData(url, std::move(data));
@@ -93,6 +97,7 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
   const base::DictValue& entry = list[0].GetDict();
   EXPECT_THAT(entry.FindString("url"), Pointee(Eq(url.spec())));
   EXPECT_THAT(entry.FindString("title"), Pointee(Eq(page_title)));
+  EXPECT_THAT(entry.FindInt("tab_id"), 123);
 
   const base::DictValue* annotations_dict = entry.FindDict("annotations");
   ASSERT_TRUE(annotations_dict);

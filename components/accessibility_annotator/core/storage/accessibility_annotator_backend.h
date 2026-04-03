@@ -32,15 +32,16 @@ class AccessibilityAnnotationSyncBridge;
 class AccessibilityAnnotatorBackend : public KeyedService {
  public:
   struct ContentAnnotationsData {
-    ContentAnnotationsData() = default;
-    ~ContentAnnotationsData() = default;
-    ContentAnnotationsData(ContentAnnotationsData&& other) = default;
-    ContentAnnotationsData& operator=(ContentAnnotationsData&& other) = default;
+    ContentAnnotationsData();
+    ~ContentAnnotationsData();
+    ContentAnnotationsData(ContentAnnotationsData&& other);
+    ContentAnnotationsData& operator=(ContentAnnotationsData&& other);
 
     ContentAnnotationsData(const ContentAnnotationsData&) = delete;
     ContentAnnotationsData& operator=(const ContentAnnotationsData&) = delete;
 
     std::string page_title;
+    std::optional<int> tab_id;
     base::DictValue annotations;
     base::DictValue classifier_results;
   };

@@ -44,6 +44,7 @@ struct ContentClassificationInput {
 
   GURL url;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+  std::optional<int> tab_id;
   // LINT.IfChange
   std::optional<float> sensitivity_score;
   std::optional<base::Time> navigation_timestamp;

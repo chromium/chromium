@@ -107,6 +107,7 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
   accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
       data;
   data.page_title = "Title";
+  data.tab_id = 123;
   data.annotations = std::move(annotations);
   data.classifier_results = std::move(classifier_results);
 
@@ -122,7 +123,7 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
         const base::DictValue& entry = list[0].GetDict();
         EXPECT_THAT(entry.FindString("url"), Pointee(Eq("https://example.com/")));
         EXPECT_THAT(entry.FindString("title"), Pointee(Eq("Title")));
-
+        EXPECT_THAT(entry.FindInt("tab_id"), 123);
         const base::DictValue* annotations = entry.FindDict("annotations");
         ASSERT_TRUE(annotations);
         EXPECT_THAT(annotations->FindString("key"), Pointee(Eq("value")));
