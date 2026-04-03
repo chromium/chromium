@@ -1337,9 +1337,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #if BUILDFLAG(IS_WIN)
   // Browser process only, since this is the one we want to prevent from
   // crashing the most (as it takes down all the tabs).
-  if (base::FeatureList::IsEnabled(
-          base::features::kPageAllocatorRetryOnCommitFailure) &&
-      process_type.empty()) {
+  if (process_type.empty() &&
+      base::FeatureList::IsEnabled(
+          base::features::kPageAllocatorRetryOnCommitFailure)) {
     partition_alloc::SetRetryOnCommitFailure(true);
   }
 #endif
