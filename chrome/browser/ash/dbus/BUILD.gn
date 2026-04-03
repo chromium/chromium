@@ -204,7 +204,7 @@ static_library("dbus") {
     ]
   }
 
-  if (is_cuttlefish) {
+  if (is_cuttlefish || is_squid) {
     deps += [
       "//chrome/browser/ash/login/fjord_oobe",
       "//chrome/browser/ash/login/fjord_oobe/proto",
