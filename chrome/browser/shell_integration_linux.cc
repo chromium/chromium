@@ -180,15 +180,20 @@ std::string GetDesktopBaseName(const std::string& desktop_file_name) {
 std::string QuoteArgForDesktopFileExec(const std::string& arg) {
   // http://standards.freedesktop.org/desktop-entry-spec/latest/ar01s06.html
 
+  // Literal % characters must be escaped as %%.
+  std::string arg_copy = arg;
+  RE2::GlobalReplace(&arg_copy, "%", "%%");
+
   // Quoting is only necessary if the argument has a reserved character.
-  if (arg.find_first_of(" \t\n\"'\\><~|&;$*?#()`") == std::string::npos)
-    return arg;  // No quoting necessary.
+  if (arg_copy.find_first_of(" \t\n\"'\\><~|&;$*?#()`") == std::string::npos) {
+    return arg_copy;  // No quoting necessary.
+  }
 
   std::string quoted = "\"";
-  for (size_t i = 0; i < arg.size(); ++i) {
+  for (size_t i = 0; i < arg_copy.size(); ++i) {
     // Note that the set of backslashed characters is smaller than the
     // set of reserved characters.
-    switch (arg[i]) {
+    switch (arg_copy[i]) {
       case '"':
       case '`':
       case '$':
@@ -196,7 +201,7 @@ std::string QuoteArgForDesktopFileExec(const std::string& arg) {
         quoted += '\\';
         break;
     }
-    quoted += arg[i];
+    quoted += arg_copy[i];
   }
   quoted += '"';
 
@@ -247,8 +252,6 @@ void SetActionsForDesktopApplication(
                           info.name.c_str());
 
     std::string launch_url_str = info.exec_launch_url.spec();
-    // Escape % as %%.
-    RE2::GlobalReplace(&launch_url_str, "%", "%%");
     base::CommandLine current_cmd(command_line);
     current_cmd.AppendSwitchASCII(switches::kAppLaunchUrlForShortcutsMenuItem,
                                   launch_url_str);
@@ -597,6 +600,7 @@ std::string GetDesktopFileContentsForCommand(
   base::CommandLine modified_command_line(command_line);
 
   // Set the "MimeType" key.
+  bool include_U = false;
   if (!mime_type.empty() && mime_type.find("\n") == std::string::npos &&
       mime_type.find("\r") == std::string::npos) {
     std::string full_mime_type = mime_type;
@@ -614,12 +618,15 @@ std::string GetDesktopFileContentsForCommand(
     // Note: We only include this parameter if the application is actually able
     // to handle files, to prevent it showing up in the list of all applications
     // which can handle files.
-    modified_command_line.AppendArg("%U");
+    include_U = true;
   }
 
   // Set the "Exec" key.
   std::string final_path =
       QuoteCommandLineForDesktopFileExec(modified_command_line);
+  if (include_U) {
+    final_path += " %U";
+  }
   g_key_file_set_string(key_file, kDesktopEntry, "Exec", final_path.c_str());
 
   // Set the "Icon" key.
