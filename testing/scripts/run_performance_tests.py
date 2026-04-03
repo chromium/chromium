@@ -1024,6 +1024,11 @@ class CrossbenchTest(object):
                                           stdoutfile=output_paths.logs)
       else:
         with open(output_paths.logs, 'w') as handle:
+          if self._is_alum():
+            # TODO(crbug.com/435031130): Remove after experimenting
+            test_env.run_command_output_to_handle([ADB_TOOL, 'devices'],
+                                                  handle,
+                                                  env=env)
           return_code = test_env.run_command_output_to_handle(command,
                                                               handle,
                                                               env=env)
