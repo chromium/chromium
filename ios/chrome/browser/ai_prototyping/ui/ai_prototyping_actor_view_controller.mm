@@ -17,8 +17,10 @@ NSString* const kToolHistoryBack = @"History Back";
 NSString* const kToolHistoryForward = @"History Forward";
 NSString* const kToolType = @"Type";
 
-NSSet* const kWebActuationTools =
-    [NSSet setWithObjects:kToolClick, kToolType, nil];
+bool IsWebActuationTool(NSString* tool) {
+  return [tool isEqualToString:kToolClick] || [tool isEqualToString:kToolType];
+}
+
 }  // namespace
 
 @interface AIPrototypingActorViewController () <UITextViewDelegate> {
@@ -538,7 +540,7 @@ NSSet* const kWebActuationTools =
   _frameIdContainer.hidden = YES;
   _jsonContainer.hidden = YES;
 
-  BOOL isWebActuationTool = [kWebActuationTools containsObject:toolName];
+  BOOL isWebActuationTool = IsWebActuationTool(toolName);
   _updateAPCDebugData.hidden = !isWebActuationTool;
   _framesAndContentNodesContainer.hidden = !isWebActuationTool;
   _framesAndContentNodesLabel.hidden = !isWebActuationTool;
