@@ -428,7 +428,7 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
         Use Chromium for iPad by default
       </message>
       <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_PROMO_TEXT" desc="The text of the screen prompting the user to learn more about the basics of the app. [iOS only]">
-          Learn the helpful Chromium basics to get you started
+          Learn helpful Chromium basics to get you started
       </message>
       <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_PROMO_TITLE" desc="Title of the screen welcoming the user to the app. [iOS only]">
         Welcome to Chromium
