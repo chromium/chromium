@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/collaboration/public/messaging/activity_log.h"
+#include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"

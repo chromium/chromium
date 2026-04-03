@@ -3,14 +3,16 @@
 # found in the LICENSE file.
 
 source_set("comments") {
-  sources = [
-    "comments_service_factory.cc",
-    "comments_service_factory.h",
-  ]
+  sources = [ "comments_service_factory.h" ]
 
   public_deps = [ "//chrome/browser/profiles:profile" ]
+}
+
+source_set("impl") {
+  sources = [ "comments_service_factory.cc" ]
 
   deps = [
+    ":comments",
     "//base",
     "//components/collaboration/internal",
     "//components/collaboration/public",
@@ -25,6 +27,7 @@ source_set("unit_tests") {
   sources = [ "comments_service_factory_unittest.cc" ]
   deps = [
     ":comments",
+    ":impl",
     "//base/test:test_support",
     "//chrome/test:test_support",
     "//components/collaboration/public",

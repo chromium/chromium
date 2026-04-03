@@ -3,17 +3,19 @@
 # found in the LICENSE file.
 
 source_set("messaging") {
-  sources = [
-    "messaging_backend_service_factory.cc",
-    "messaging_backend_service_factory.h",
-  ]
+  sources = [ "messaging_backend_service_factory.h" ]
 
   public_deps = [
     "//chrome/browser/profiles:profile",
     "//components/collaboration/public",
   ]
+}
+
+source_set("impl") {
+  sources = [ "messaging_backend_service_factory.cc" ]
 
   deps = [
+    ":messaging",
     "//base",
     "//chrome/browser/data_sharing",
     "//chrome/browser/profiles",
@@ -30,6 +32,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "messaging_backend_service_factory_unittest.cc" ]
   deps = [
+    ":impl",
     ":messaging",
     "//base/test:test_support",
     "//chrome/test:test_support",

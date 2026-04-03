@@ -216,13 +216,14 @@ if (is_android) {
 }
 
 source_set("collaboration") {
-  sources = [
-    "collaboration_service_factory.cc",
-    "collaboration_service_factory.h",
-    "delegate_factory.h",
-  ]
+  sources = [ "collaboration_service_factory.h" ]
   public_deps = [ "//chrome/browser/profiles:profile" ]
+}
+
+source_set("impl") {
+  sources = [ "collaboration_service_factory.cc" ]
   deps = [
+    ":collaboration",
     "//base",
     "//chrome/browser/data_sharing",
     "//chrome/browser/signin",
@@ -258,6 +259,7 @@ source_set("unit_tests") {
   sources = [ "collaboration_service_factory_unittest.cc" ]
   deps = [
     ":collaboration",
+    ":impl",
     "//base/test:test_support",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",

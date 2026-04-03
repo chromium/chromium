@@ -24,6 +24,7 @@
 #include "components/collaboration/internal/messaging/tab_group_change_notifier_impl.h"
 #include "components/collaboration/public/features.h"
 #include "components/collaboration/public/messaging/empty_messaging_backend_service.h"
+#include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_COLLABORATION_MESSAGING_MESSAGING_BACKEND_SERVICE_FACTORY_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/collaboration/public/messaging/messaging_backend_service.h"
 
 namespace base {
 template <typename T>
