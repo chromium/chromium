@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -172,14 +173,13 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   void UpdateResponseContentSize(const URLRequest* request,
                                  int64_t response_size);
 
-  // Returns true if downstream throughput can be recorded. In that case,
-  // `downstream_kbps` is set to the computed downstream throughput (in
-  // kilobits per second). If a downstream throughput observation is taken,
-  // then the throughput observation window is reset so as to continue
-  // tracking throughput. A throughput observation can be taken only if the
-  // time-window is currently active, and enough bytes have accumulated in
-  // that window. `downstream_kbps` should not be null.
-  bool MaybeGetThroughputObservation(int32_t* downstream_kbps);
+  // Returns the computed downstream throughput in kilobits per second if it
+  // can be recorded.
+  // A throughput observation can be taken only if the time-window is currently
+  // active, and enough bytes have accumulated in that window.
+  // If a downstream throughput observation is taken, then the throughput
+  // observation window is reset so as to continue tracking throughput.
+  std::optional<int32_t> ComputeThroughput();
 
   // Starts the throughput observation window that keeps track of network
   // bytes if the following conditions are true:
