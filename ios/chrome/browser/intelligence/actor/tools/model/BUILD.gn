@@ -213,6 +213,24 @@ source_set("java_script_features") {
   ]
 }
 
+source_set("actor_tool_java_script_feature_test_base") {
+  testonly = true
+  sources = [
+    "actor_tool_java_script_feature_test_base.h",
+    "actor_tool_java_script_feature_test_base.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/test:ios_chrome_test_with_web_state",
+    "//ios/web/common:features",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test:util",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
