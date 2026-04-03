@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
+#include "chrome/browser/ash/printing/fake_local_printer.h"
 #include "chrome/browser/ash/printing/local_printer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/printing/print_test_utils.h"
@@ -110,7 +111,7 @@ class TestCrosLocalPrinter : public FakeLocalPrinter {
   crosapi::mojom::PrintServersConfigPtr config_;
 };
 
-class TestLocalPrinter : public ash::LocalPrinter {
+class TestLocalPrinter : public ash::FakeLocalPrinter {
  public:
   TestLocalPrinter() = default;
   TestLocalPrinter(TestLocalPrinter&) = delete;
@@ -124,18 +125,6 @@ class TestLocalPrinter : public ash::LocalPrinter {
   void GetPrinters(const AccountId& accountId,
                    ash::LocalPrinter::GetPrintersCallback cb) override {
     std::move(cb).Run(printers_);
-  }
-
-  void GetCapability(const AccountId& accountId,
-                     const std::string& id,
-                     ash::LocalPrinter::GetCapabilityCallback cb) override {
-    NOTREACHED() << "Should not be called by this unittest.";
-  }
-
-  void GetStatus(const AccountId& accountId,
-                 const std::string& id,
-                 ash::LocalPrinter::GetStatusCallback cb) override {
-    NOTREACHED() << "Should not be called by this unittest.";
   }
 
  private:

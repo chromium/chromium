@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -17,16 +18,25 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
+#include "chrome/browser/ash/printing/ipp_client_info_calculator.h"
 #include "chrome/browser/ash/printing/local_printer.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/backend/print_backend.h"
@@ -41,6 +51,23 @@
 namespace printing {
 
 namespace {
+
+bool IsManagedPrinter(const chromeos::Printer& printer) {
+  return printer.source() == chromeos::Printer::SRC_POLICY;
+}
+
+bool IsSecureIppPrinter(const chromeos::Printer& printer) {
+  return printer.GetProtocol() == chromeos::Printer::PrinterProtocol::kIpps ||
+         printer.GetProtocol() == chromeos::Printer::PrinterProtocol::kIppUsb;
+}
+
+bool IsActiveUserAffiliated() {
+  const user_manager::User* user =
+      user_manager::UserManager::IsInitialized()
+          ? user_manager::UserManager::Get()->GetActiveUser()
+          : nullptr;
+  return user ? user->IsAffiliated() : false;
+}
 
 void OnGetPrintersComplete(
     LocalPrinterHandlerChromeos::AddedPrintersCallback callback,
@@ -66,12 +93,9 @@ base::DictValue AddProfileUsernameToJobSettings(
 
 base::DictValue AddOAuthTokenToJobSettings(
     base::DictValue settings,
-    crosapi::mojom::GetOAuthAccessTokenResultPtr oauth_result) {
-  if (oauth_result->is_token()) {
-    settings.Set(kSettingChromeOSAccessOAuthToken,
-                 oauth_result->get_token()->token);
-  } else if (oauth_result->is_error()) {
-    LOG(ERROR) << "Error when obtaining an oauth token for a local printer";
+    base::optional_ref<const std::string> oauth_token) {
+  if (oauth_token.has_value() && !oauth_token->empty()) {
+    settings.Set(kSettingChromeOSAccessOAuthToken, *oauth_token);
   }
   return settings;
 }
@@ -222,9 +246,6 @@ LocalPrinterHandlerChromeos::Create(
     content::WebContents* preview_web_contents) {
   auto handler =
       std::make_unique<LocalPrinterHandlerChromeos>(preview_web_contents);
-  DCHECK(crosapi::CrosapiManager::IsInitialized());
-  handler->cros_local_printer_ =
-      crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
 #if BUILDFLAG(USE_CUPS)
   handler->local_printer_ = ash::LocalPrinter::Get();
 #endif
@@ -233,11 +254,12 @@ LocalPrinterHandlerChromeos::Create(
 
 std::unique_ptr<LocalPrinterHandlerChromeos>
 LocalPrinterHandlerChromeos::CreateForTesting(
-    crosapi::mojom::LocalPrinter* cros_local_printer,
-    ash::LocalPrinter* local_printer) {
+    ash::LocalPrinter* local_printer,
+    std::unique_ptr<ash::printing::IppClientInfoCalculator>
+        ipp_client_info_calculator) {
   auto handler = std::make_unique<LocalPrinterHandlerChromeos>(nullptr);
-  handler->cros_local_printer_ = cros_local_printer;
   handler->local_printer_ = local_printer;
+  handler->ipp_client_info_calculator_ = std::move(ipp_client_info_calculator);
   return handler;
 }
 
@@ -386,7 +408,7 @@ void LocalPrinterHandlerChromeos::StartGetPrinters(
       // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
       // TODO(crbug.com/479647640): Check if we should use current user than
       // primary user.
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id(),
       base::BindOnce(OnGetPrintersComplete, std::move(callback))
           .Then(std::move(done_callback)));
 }
@@ -404,7 +426,7 @@ void LocalPrinterHandlerChromeos::StartGetCapability(
       // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
       // TODO(crbug.com/479647640): Check if we should use current user than
       // primary user.
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id(),
       device_name, base::BindOnce(CapabilityToValue).Then(std::move(callback)));
 }
 
@@ -439,7 +461,7 @@ void LocalPrinterHandlerChromeos::GetAshJobSettings(
     std::string printer_id,
     AshJobSettingsCallback callback,
     base::DictValue settings) {
-  if (!cros_local_printer_) {
+  if (!local_printer_) {
     LOG(ERROR) << "Local printer not available";
     std::move(callback).Run(std::move(settings));
     return;
@@ -465,8 +487,24 @@ void LocalPrinterHandlerChromeos::GetUsernamePerPolicy(
       base::BindOnce(AddProfileUsernameToJobSettings, std::move(settings))
           .Then(std::move(callback));
 
-  cros_local_printer_->GetUsernamePerPolicy(
-      std::move(add_profile_username_callback));
+  if (!session_manager::SessionManager::Get() ||
+      !session_manager::SessionManager::Get()->GetActiveSession()) {
+    LOG(ERROR) << "Session manager not initialized or no active session";
+    std::move(add_profile_username_callback).Run(std::nullopt);
+    return;
+  }
+  auto account =
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id();
+  auto* user = user_manager::UserManager::Get()->FindUser(account);
+  CHECK(user);
+  auto* profile_prefs = user->GetProfilePrefs();
+  if (profile_prefs &&
+      profile_prefs->GetBoolean(
+          ash::prefs::kPrintingSendUsernameAndFilenameEnabled)) {
+    std::move(add_profile_username_callback).Run(user->display_email());
+  } else {
+    std::move(add_profile_username_callback).Run(std::nullopt);
+  }
 }
 
 void LocalPrinterHandlerChromeos::GetOAuthToken(
@@ -477,26 +515,50 @@ void LocalPrinterHandlerChromeos::GetOAuthToken(
       base::BindOnce(AddOAuthTokenToJobSettings, std::move(settings))
           .Then(std::move(callback));
 
-  cros_local_printer_->GetOAuthAccessToken(printer_id,
-                                           std::move(add_oauth_token_callback));
+  local_printer_->GetOAuthAccessToken(
+      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+      // TODO(crbug.com/479647640): Check if we should use current user than
+      // primary user.
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id(),
+      printer_id, std::move(add_oauth_token_callback));
 }
 
 void LocalPrinterHandlerChromeos::GetIppClientInfo(
     const std::string& printer_id,
     AshJobSettingsCallback callback,
     base::DictValue settings) const {
-  auto add_ipp_client_info_callback =
-      base::BindOnce(AddIppClientInfoToJobSettings, std::move(settings))
-          .Then(std::move(callback));
-
   if (printer_id.empty()) {
     LOG(ERROR) << "Cannot call GetIppClientInfo: empty printer_id";
-    std::move(add_ipp_client_info_callback).Run({});
+    std::move(callback).Run(std::move(settings));
     return;
   }
 
-  cros_local_printer_->GetIppClientInfo(
-      printer_id, std::move(add_ipp_client_info_callback));
+  std::optional<chromeos::Printer> printer = local_printer_->GetPrinter(
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id(),
+      printer_id);
+  if (!printer) {
+    LOG(ERROR) << "Cannot call GetIppClientInfo: printer not found";
+    std::move(callback).Run(std::move(settings));
+    return;
+  }
+
+  std::vector<mojom::IppClientInfoPtr> client_infos;
+  auto os_info = GetIppClientInfoCalculator()->GetOsInfo();
+  if (os_info) {
+    client_infos.emplace_back(std::move(os_info));
+  }
+  if (IsManagedPrinter(*printer) && IsSecureIppPrinter(*printer) &&
+      // TODO(crbug.com/354842935): Revisit to ensure if we should check
+      // ActiveUser or PrimaryUser.
+      IsActiveUserAffiliated()) {
+    auto device_info = GetIppClientInfoCalculator()->GetDeviceInfo();
+    if (device_info) {
+      client_infos.push_back(std::move(device_info));
+    }
+  }
+
+  std::move(callback).Run(AddIppClientInfoToJobSettings(
+      std::move(settings), std::move(client_infos)));
 }
 
 void LocalPrinterHandlerChromeos::CallStartLocalPrint(
@@ -511,15 +573,19 @@ void LocalPrinterHandlerChromeos::StartGetEulaUrl(
     const std::string& destination_id,
     GetEulaUrlCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!cros_local_printer_) {
+  if (!local_printer_) {
     PRINTER_LOG(ERROR) << "Local printer not available (StartGetEulaUrl)";
     std::move(callback).Run("");
     return;
   }
-  cros_local_printer_->GetEulaUrl(destination_id,
-                                  base::BindOnce([](const GURL& url) {
-                                    return url.spec();
-                                  }).Then(std::move(callback)));
+  local_printer_->GetEulaUrl(
+      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+      // TODO(crbug.com/479647640): Check if we should use current user than
+      // primary user.
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id(),
+      destination_id, base::BindOnce([](const GURL& url) {
+                        return url.spec();
+                      }).Then(std::move(callback)));
 }
 
 void LocalPrinterHandlerChromeos::StartPrinterStatusRequest(
@@ -540,6 +606,15 @@ void LocalPrinterHandlerChromeos::StartPrinterStatusRequest(
       printer_id, base::BindOnce([](const chromeos::CupsPrinterStatus& status) {
                     return StatusToValue(status);
                   }).Then(std::move(callback)));
+}
+
+ash::printing::IppClientInfoCalculator*
+LocalPrinterHandlerChromeos::GetIppClientInfoCalculator() const {
+  if (!ipp_client_info_calculator_) {
+    ipp_client_info_calculator_ =
+        ash::printing::IppClientInfoCalculator::Create();
+  }
+  return ipp_client_info_calculator_.get();
 }
 
 }  // namespace printing

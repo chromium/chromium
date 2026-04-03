@@ -27,9 +27,6 @@ class ProfileManager;
 namespace ash {
 struct PrintServersConfig;
 
-namespace printing {
-class IppClientInfoCalculator;
-}
 }  // namespace ash
 
 namespace chromeos {
@@ -87,8 +84,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   void OnLocalPrintersUpdated() override;
 
   // crosapi::mojom::LocalPrinter:
-  void GetEulaUrl(const std::string& printer_id,
-                  GetEulaUrlCallback callback) override;
   void ShowSystemPrintSettings(
       ShowSystemPrintSettingsCallback callback) override;
   void CreatePrintJob(mojom::PrintJobPtr job,
@@ -103,7 +98,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
       mojo::PendingRemote<mojom::PrintServerObserver> remote,
       AddPrintServerObserverCallback callback) override;
   void GetPolicies(GetPoliciesCallback callback) override;
-  void GetUsernamePerPolicy(GetUsernamePerPolicyCallback callback) override;
   void GetPrinterTypeDenyList(GetPrinterTypeDenyListCallback callback) override;
   void AddPrintJobObserver(mojo::PendingRemote<mojom::PrintJobObserver> remote,
                            mojom::PrintJobSource source,
@@ -111,10 +105,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   void AddLocalPrintersObserver(
       mojo::PendingRemote<mojom::LocalPrintersObserver> remote,
       AddLocalPrintersObserverCallback callback) override;
-  void GetOAuthAccessToken(const std::string& printer_id,
-                           GetOAuthAccessTokenCallback callback) override;
-  void GetIppClientInfo(const std::string& printer_id,
-                        GetIppClientInfoCallback callback) override;
 
  private:
   void NotifyPrintJobUpdate(base::WeakPtr<ash::CupsPrintJob> job,
@@ -124,15 +114,12 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   virtual Profile* GetProfile();
   virtual scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
       Profile* profile);
-  virtual ash::printing::IppClientInfoCalculator* GetIppClientInfoCalculator();
 
   base::ScopedObservation<ProfileManager, LocalPrinterAsh>
       profile_manager_observer_{this};
 
   bool observers_registered_ = false;
 
-  std::unique_ptr<ash::printing::IppClientInfoCalculator>
-      ipp_client_info_calculator_;
 
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.

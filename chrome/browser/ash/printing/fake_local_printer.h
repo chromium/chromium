@@ -1,34 +1,31 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PRINTING_LOCAL_PRINTER_IMPL_H_
-#define CHROME_BROWSER_ASH_PRINTING_LOCAL_PRINTER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_PRINTING_FAKE_LOCAL_PRINTER_H_
+#define CHROME_BROWSER_ASH_PRINTING_FAKE_LOCAL_PRINTER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/printing/local_printer.h"
-
-class Profile;
-
-namespace chromeos {
-class PpdProvider;
-}
 
 namespace ash {
 
-class LocalPrinterImpl : public LocalPrinter {
+class FakeLocalPrinter : public LocalPrinter {
  public:
-  LocalPrinterImpl();
-  LocalPrinterImpl(const LocalPrinterImpl&) = delete;
-  LocalPrinterImpl& operator=(const LocalPrinterImpl&) = delete;
-  ~LocalPrinterImpl() override;
+  FakeLocalPrinter();
+  FakeLocalPrinter(const FakeLocalPrinter&) = delete;
+  FakeLocalPrinter& operator=(const FakeLocalPrinter&) = delete;
+  ~FakeLocalPrinter() override;
 
-  // LocalPrinter override:
-  // Guest users are not supported for all functions.
+  // LocalPrinter overrides:
+  // FakeLocalPrinter overrides all LocalPrinter methods as NOTREACHED(), which
+  // will just crash by default if called. Each test can inherit this
+  // FakeLocalPrinter and override the minimal methods it wants to mock.
+  // TODO(crbug.com/479070409): provide fake implementations for this class
+  // across multiple unittests.
   void GetPrinters(const AccountId& accountId,
                    GetPrintersCallback callback) override;
   std::optional<chromeos::Printer> GetPrinter(
@@ -46,12 +43,8 @@ class LocalPrinterImpl : public LocalPrinter {
   void GetOAuthAccessToken(const AccountId& accountId,
                            const std::string& printer_id,
                            GetOAuthAccessTokenCallback callback) override;
-
- protected:
-  virtual scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
-      Profile* profile);
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_PRINTING_LOCAL_PRINTER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_PRINTING_FAKE_LOCAL_PRINTER_H_

@@ -35,6 +35,8 @@ static_library("printing") {
     "cups_printers_manager_proxy.h",
     "fake_cups_print_job_manager.cc",
     "fake_cups_print_job_manager.h",
+    "fake_local_printer.cc",
+    "fake_local_printer.h",
     "ipp_client_info_calculator.cc",
     "ipp_client_info_calculator.h",
     "local_printer.cc",

@@ -38,10 +38,6 @@ class MockLocalPrinter : public FakeLocalPrinter {
                CancelPrintJobCallback callback),
               (override));
   MOCK_METHOD(void, GetPolicies, (GetPoliciesCallback callback), (override));
-  MOCK_METHOD(void,
-              GetEulaUrl,
-              (const std::string& destination_id, GetEulaUrlCallback callback),
-              (override));
 };
 
 #endif  // CHROME_TEST_CHROMEOS_PRINTING_MOCK_LOCAL_PRINTER_CHROMEOS_H_

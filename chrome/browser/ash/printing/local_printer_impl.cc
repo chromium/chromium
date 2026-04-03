@@ -12,14 +12,34 @@
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
+#include "chrome/browser/ash/printing/ppd_provider_factory.h"
 #include "chrome/browser/ash/printing/printer_authenticator.h"
+#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_setup_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/printing/ppd_provider.h"
 #include "components/account_id/account_id.h"
+#include "url/gurl.h"
 
 namespace ash {
 
 namespace {
+
+// Generates and returns a url for a PPD license which is empty if
+// an error occurs e.g. the ppd provider callback failed.
+// When bound to a ppd provider scoped refptr, the reference count
+// will be decremented once the callback is done executing and the
+// ppd provider destroyed if it hits zero.
+GURL GenerateEulaUrl(scoped_refptr<chromeos::PpdProvider>,
+                     chromeos::PpdProvider::CallbackResultCode result,
+                     const std::string& license) {
+  if (result != chromeos::PpdProvider::CallbackResultCode::SUCCESS ||
+      license.empty()) {
+    return GURL();
+  }
+  return ash::PrinterConfigurer::GeneratePrinterEulaUrl(license);
+}
 
 std::vector<chromeos::Printer> GetLocalPrinters(const AccountId& accountId) {
   static constexpr chromeos::PrinterClass printer_classes_to_fetch[] = {
@@ -29,6 +49,7 @@ std::vector<chromeos::Printer> GetLocalPrinters(const AccountId& accountId) {
       ash::CupsPrintersManagerFactory::GetForBrowserContext(
           ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
               accountId));
+  CHECK(printers_manager);
   std::vector<chromeos::Printer> printers;
   for (chromeos::PrinterClass pc : printer_classes_to_fetch) {
     for (const chromeos::Printer& p : printers_manager->GetPrinters(pc)) {
@@ -137,6 +158,23 @@ void OnPrinterAuthenticated(
                               printers_manager, std::move(callback), printer));
 }
 
+void OnOAuthAccessTokenObtained(
+    std::unique_ptr<ash::printing::PrinterAuthenticator> authenticator,
+    LocalPrinter::GetOAuthAccessTokenCallback callback,
+    ash::printing::oauth2::StatusCode status,
+    std::string access_token) {
+  if (status != ash::printing::oauth2::StatusCode::kOK) {
+    LOG(ERROR) << "Failed to obtain access token: " << static_cast<int>(status);
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  if (access_token.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(access_token);
+}
+
 }  // namespace
 
 LocalPrinterImpl::LocalPrinterImpl() = default;
@@ -148,6 +186,17 @@ void LocalPrinterImpl::GetPrinters(const AccountId& accountId,
   std::move(callback).Run(GetLocalPrinters(accountId));
 }
 
+std::optional<chromeos::Printer> LocalPrinterImpl::GetPrinter(
+    const AccountId& accountId,
+    const std::string& printer_id) {
+  content::BrowserContext* context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(accountId);
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(context);
+  CHECK(printers_manager);
+  return printers_manager->GetPrinter(printer_id);
+}
+
 void LocalPrinterImpl::GetCapability(
     const AccountId& accountId,
     const std::string& printer_id,
@@ -156,7 +205,7 @@ void LocalPrinterImpl::GetCapability(
       ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(accountId);
   ash::CupsPrintersManager* printers_manager =
       ash::CupsPrintersManagerFactory::GetForBrowserContext(context);
-  DCHECK(printers_manager);
+  CHECK(printers_manager);
   std::optional<chromeos::Printer> printer =
       printers_manager->GetPrinter(printer_id);
   if (!printer) {
@@ -169,7 +218,7 @@ void LocalPrinterImpl::GetCapability(
     ash::printing::oauth2::AuthorizationZonesManager* auth_manager =
         ash::printing::oauth2::AuthorizationZonesManagerFactory::
             GetForBrowserContext(context);
-    DCHECK(auth_manager);
+    CHECK(auth_manager);
     auto authenticator = std::make_unique<ash::printing::PrinterAuthenticator>(
         printers_manager, auth_manager, *printer);
     ash::printing::PrinterAuthenticator* authenticator_ptr =
@@ -184,6 +233,29 @@ void LocalPrinterImpl::GetCapability(
   }
 }
 
+void LocalPrinterImpl::GetEulaUrl(const AccountId& accountId,
+                                  const std::string& printer_id,
+                                  LocalPrinter::GetEulaUrlCallback callback) {
+  content::BrowserContext* context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(accountId);
+  Profile* profile = Profile::FromBrowserContext(context);
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(context);
+  CHECK(printers_manager);
+  std::optional<chromeos::Printer> printer =
+      printers_manager->GetPrinter(printer_id);
+  if (!printer) {
+    // If the printer does not exist, fetching for the license will fail.
+    std::move(callback).Run(GURL());
+    return;
+  }
+  scoped_refptr<chromeos::PpdProvider> ppd_provider =
+      CreatePpdProvider(profile);
+  ppd_provider->ResolvePpdLicense(
+      printer->ppd_reference().effective_make_and_model,
+      base::BindOnce(GenerateEulaUrl, ppd_provider).Then(std::move(callback)));
+}
+
 void LocalPrinterImpl::GetStatus(const AccountId& accountId,
                                  const std::string& printer_id,
                                  LocalPrinter::GetStatusCallback callback) {
@@ -191,7 +263,46 @@ void LocalPrinterImpl::GetStatus(const AccountId& accountId,
       ash::CupsPrintersManagerFactory::GetForBrowserContext(
           ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
               accountId));
+  CHECK(printers_manager);
   printers_manager->FetchPrinterStatus(printer_id, std::move(callback));
+}
+
+void LocalPrinterImpl::GetOAuthAccessToken(
+    const AccountId& accountId,
+    const std::string& printer_id,
+    LocalPrinter::GetOAuthAccessTokenCallback callback) {
+  if (!ash::features::IsOAuthIppEnabled()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  auto* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(accountId);
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(browser_context);
+  CHECK(printers_manager);
+  std::optional<chromeos::Printer> printer =
+      printers_manager->GetPrinter(printer_id);
+  if (!printer) {
+    // If the printer does not exist, fetching for the license will fail.
+    LOG(ERROR) << "Printer " << printer_id << " not found";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  ash::printing::oauth2::AuthorizationZonesManager* auth_manager =
+      ash::printing::oauth2::AuthorizationZonesManagerFactory::
+          GetForBrowserContext(browser_context);
+  CHECK(auth_manager);
+  auto authenticator = std::make_unique<ash::printing::PrinterAuthenticator>(
+      printers_manager, auth_manager, *printer);
+  ash::printing::PrinterAuthenticator* authenticator_ptr = authenticator.get();
+  authenticator_ptr->ObtainAccessTokenIfNeeded(
+      base::BindOnce(OnOAuthAccessTokenObtained, std::move(authenticator),
+                     std::move(callback)));
+}
+
+scoped_refptr<chromeos::PpdProvider> LocalPrinterImpl::CreatePpdProvider(
+    Profile* profile) {
+  return ash::CreatePpdProvider(profile);
 }
 
 }  // namespace ash

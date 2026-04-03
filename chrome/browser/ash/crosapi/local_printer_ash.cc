@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
-#include "chrome/browser/ash/printing/ipp_client_info_calculator.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
@@ -69,62 +68,6 @@ namespace crosapi {
 
 namespace {
 
-// Generates and returns a url for a PPD license which is empty if
-// an error occurs e.g. the ppd provider callback failed.
-// When bound to a ppd provider scoped refptr, the reference count
-// will be decremented once the callback is done executing and the
-// ppd provider destroyed if it hits zero.
-GURL GenerateEulaUrl(scoped_refptr<chromeos::PpdProvider>,
-                     chromeos::PpdProvider::CallbackResultCode result,
-                     const std::string& license) {
-  if (result != chromeos::PpdProvider::CallbackResultCode::SUCCESS ||
-      license.empty()) {
-    return GURL();
-  }
-  return ash::PrinterConfigurer::GeneratePrinterEulaUrl(license);
-}
-
-void OnOAuthAccessTokenObtained(
-    std::unique_ptr<ash::printing::PrinterAuthenticator> /* authenticator */,
-    mojom::LocalPrinter::GetOAuthAccessTokenCallback callback,
-    ash::printing::oauth2::StatusCode status,
-    std::string access_token) {
-  if (status != ash::printing::oauth2::StatusCode::kOK) {
-    // An error occurred.
-    std::move(callback).Run(
-        mojom::GetOAuthAccessTokenResult::NewError(mojom::OAuthError::New()));
-    return;
-  }
-  if (access_token.empty()) {
-    std::move(callback).Run(mojom::GetOAuthAccessTokenResult::NewNone(
-        mojom::OAuthNotNeeded::New()));
-  } else {
-    std::move(callback).Run(mojom::GetOAuthAccessTokenResult::NewToken(
-        mojom::OAuthAccessToken::New(std::move(access_token))));
-  }
-}
-
-bool IsActiveUserAffiliated() {
-  // TODO(b/265832837): Figure out if we can rely on `UserManager` always being
-  // initialized at this point. Currently it is initialized before
-  // `LocalPrinterAsh` so `UserManager::IsInitialized()` may be unnecessary.
-  // Also figure out if `GetActiveUser()` can return nullptr. This could happen
-  // if this function is called before login.
-  const user_manager::User* user =
-      user_manager::UserManager::IsInitialized()
-          ? user_manager::UserManager::Get()->GetActiveUser()
-          : nullptr;
-  return user ? user->IsAffiliated() : false;
-}
-
-bool IsManagedPrinter(const chromeos::Printer& printer) {
-  return printer.source() == chromeos::Printer::SRC_POLICY;
-}
-
-bool IsSecureIppPrinter(const chromeos::Printer& printer) {
-  return printer.GetProtocol() == chromeos::Printer::PrinterProtocol::kIpps ||
-         printer.GetProtocol() == chromeos::Printer::PrinterProtocol::kIppUsb;
-}
 
 std::vector<chromeos::Printer> GetLocalPrinters(Profile* profile) {
   CHECK(profile);
@@ -307,25 +250,6 @@ void LocalPrinterAsh::OnLocalPrintersUpdated() {
   }
 }
 
-void LocalPrinterAsh::GetEulaUrl(const std::string& printer_id,
-                                 GetEulaUrlCallback callback) {
-  Profile* profile = GetProfile();
-  DCHECK(profile);
-  ash::CupsPrintersManager* printers_manager =
-      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
-  std::optional<chromeos::Printer> printer =
-      printers_manager->GetPrinter(printer_id);
-  if (!printer) {
-    // If the printer does not exist, fetching for the license will fail.
-    std::move(callback).Run(GURL());
-    return;
-  }
-  scoped_refptr<chromeos::PpdProvider> ppd_provider =
-      CreatePpdProvider(profile);
-  ppd_provider->ResolvePpdLicense(
-      printer->ppd_reference().effective_make_and_model,
-      base::BindOnce(GenerateEulaUrl, ppd_provider).Then(std::move(callback)));
-}
 
 void LocalPrinterAsh::ShowSystemPrintSettings(
     ShowSystemPrintSettingsCallback callback) {
@@ -481,17 +405,6 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
   std::move(callback).Run(std::move(policies));
 }
 
-void LocalPrinterAsh::GetUsernamePerPolicy(
-    GetUsernamePerPolicyCallback callback) {
-  Profile* profile = GetProfile();
-  const std::string username =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile)->display_email();
-  std::move(callback).Run(
-      profile->GetPrefs()->GetBoolean(
-          ash::prefs::kPrintingSendUsernameAndFilenameEnabled)
-          ? std::make_optional(username)
-          : std::nullopt);
-}
 
 void LocalPrinterAsh::GetPrinterTypeDenyList(
     GetPrinterTypeDenyListCallback callback) {
@@ -565,78 +478,10 @@ void LocalPrinterAsh::AddLocalPrintersObserver(
   std::move(callback).Run(ConvertPrintersToMojom(GetLocalPrinters(profile)));
 }
 
-void LocalPrinterAsh::GetOAuthAccessToken(
-    const std::string& printer_id,
-    GetOAuthAccessTokenCallback callback) {
-  if (!ash::features::IsOAuthIppEnabled()) {
-    std::move(callback).Run(mojom::GetOAuthAccessTokenResult::NewNone(
-        mojom::OAuthNotNeeded::New()));
-    return;
-  }
-  Profile* profile = GetProfile();
-  DCHECK(profile);
-  ash::CupsPrintersManager* printers_manager =
-      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
-  DCHECK(printers_manager);
-  std::optional<chromeos::Printer> printer =
-      printers_manager->GetPrinter(printer_id);
-  if (!printer) {
-    // If the printer was removed, the lookup will fail.
-    std::move(callback).Run(
-        mojom::GetOAuthAccessTokenResult::NewError(mojom::OAuthError::New()));
-    return;
-  }
-  ash::printing::oauth2::AuthorizationZonesManager* auth_manager =
-      ash::printing::oauth2::AuthorizationZonesManagerFactory::
-          GetForBrowserContext(profile);
-  DCHECK(auth_manager);
-  auto authenticator = std::make_unique<ash::printing::PrinterAuthenticator>(
-      printers_manager, auth_manager, *printer);
-  ash::printing::PrinterAuthenticator* authenticator_ptr = authenticator.get();
-  authenticator_ptr->ObtainAccessTokenIfNeeded(
-      base::BindOnce(OnOAuthAccessTokenObtained, std::move(authenticator),
-                     std::move(callback)));
-}
-
-void LocalPrinterAsh::GetIppClientInfo(const std::string& printer_id,
-                                       GetIppClientInfoCallback callback) {
-  Profile* profile = GetProfile();
-  DCHECK(profile);
-  ash::CupsPrintersManager* printers_manager =
-      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
-  DCHECK(printers_manager);
-  std::optional<chromeos::Printer> printer =
-      printers_manager->GetPrinter(printer_id);
-  if (!printer) {
-    std::move(callback).Run({});
-    return;
-  }
-  std::vector<printing::mojom::IppClientInfoPtr> result;
-  result.emplace_back(GetIppClientInfoCalculator()->GetOsInfo());
-  if (IsManagedPrinter(*printer) && IsSecureIppPrinter(*printer) &&
-      IsActiveUserAffiliated()) {
-    printing::mojom::IppClientInfoPtr device_info =
-        GetIppClientInfoCalculator()->GetDeviceInfo();
-    if (device_info) {
-      result.push_back(std::move(device_info));
-    }
-  }
-
-  std::move(callback).Run(std::move(result));
-}
-
 scoped_refptr<chromeos::PpdProvider> LocalPrinterAsh::CreatePpdProvider(
     Profile* profile) {
   return ash::CreatePpdProvider(profile);
 }
 
-ash::printing::IppClientInfoCalculator*
-LocalPrinterAsh::GetIppClientInfoCalculator() {
-  if (!ipp_client_info_calculator_) {
-    ipp_client_info_calculator_ =
-        ash::printing::IppClientInfoCalculator::Create();
-  }
-  return ipp_client_info_calculator_.get();
-}
 
 }  // namespace crosapi

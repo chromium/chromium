@@ -4,18 +4,24 @@
 
 #include "chrome/browser/ash/printing/local_printer_impl.h"
 
-#include "base/barrier_closure.h"
-#include "base/run_loop.h"
+#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
+#include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
+#include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "chromeos/printing/uri.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
@@ -44,20 +50,49 @@ constexpr auto kAccountId =
     AccountId::Literal::FromUserEmailGaiaId(kEmail,
                                             GaiaId::Literal("123456789"));
 
-void RecordPrinterList(std::vector<chromeos::Printer>& printers_out,
-                       std::vector<chromeos::Printer> printers) {
-  printers_out = std::move(printers);
-}
+// Fake `PpdProvider` backend. This fake `PpdProvider` is used to fake fetching
+// the PPD EULA license of a destination. If `effective_make_and_model` is
+// empty, it will return with NOT_FOUND and an empty string. Otherwise, it will
+// return SUCCESS with `effective_make_and_model` as the PPD license.
+class FakePpdProvider : public chromeos::PpdProvider {
+ public:
+  FakePpdProvider() = default;
 
-void RecordGetCapability(
-    std::optional<chromeos::Printer>& printer_out,
-    std::optional<printing::PrinterSemanticCapsAndDefaults>& capability_out,
-    base::optional_ref<const chromeos::Printer> printer,
-    const std::optional<printing::PrinterSemanticCapsAndDefaults>& capability) {
-  printer_out =
-      printer.has_value() ? std::make_optional(*printer) : std::nullopt;
-  capability_out = capability;
-}
+  void ResolvePpdLicense(std::string_view effective_make_and_model,
+                         ResolvePpdLicenseCallback cb) override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(cb),
+                       effective_make_and_model.empty() ? PpdProvider::NOT_FOUND
+                                                        : PpdProvider::SUCCESS,
+                       std::string(effective_make_and_model)));
+  }
+
+  // These methods are not used by `CupsPrintersManager`.
+  void ResolvePpd(const chromeos::Printer::PpdReference& reference,
+                  ResolvePpdCallback cb) override {}
+  void ResolvePpdReference(const chromeos::PrinterSearchData& search_data,
+                           ResolvePpdReferenceCallback cb) override {}
+  void ResolveManufacturers(ResolveManufacturersCallback cb) override {}
+  void ResolvePrinters(const std::string& manufacturer,
+                       ResolvePrintersCallback cb) override {}
+  void ReverseLookup(const std::string& effective_make_and_model,
+                     ReverseLookupCallback cb) override {}
+
+ private:
+  ~FakePpdProvider() override = default;
+};
+
+class TestLocalPrinterImpl : public LocalPrinterImpl {
+ public:
+  TestLocalPrinterImpl() = default;
+  ~TestLocalPrinterImpl() override = default;
+
+  scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
+      Profile* profile) override {
+    return base::MakeRefCounted<FakePpdProvider>();
+  }
+};
 
 chromeos::Printer CreateTestPrinter(const std::string& id,
                                     const std::string& name,
@@ -78,15 +113,36 @@ chromeos::Printer CreateEnterprisePrinter(const std::string& id,
   return printer;
 }
 
+void RecordCapabilityToFuture(
+    base::test::TestFuture<
+        std::optional<chromeos::Printer>,
+        std::optional<::printing::PrinterSemanticCapsAndDefaults>>* future,
+    base::optional_ref<const chromeos::Printer> printer,
+    const std::optional<::printing::PrinterSemanticCapsAndDefaults>& caps) {
+  future->SetValue(
+      printer.has_value() ? std::make_optional(*printer) : std::nullopt, caps);
+}
+
+void RecordOAuthTokenToFuture(
+    base::test::TestFuture<std::optional<std::string>>* future,
+    base::optional_ref<const std::string> token) {
+  future->SetValue(token.has_value() ? std::make_optional(*token)
+                                     : std::nullopt);
+}
+
 }  // namespace
 
 class LocalPrinterImplTestBase : public testing::Test {
  public:
-  const std::vector<printing::PrinterSemanticCapsAndDefaults::Paper> kPapers = {
-      {"bar", "vendor", gfx::Size(600, 600), gfx::Rect(0, 0, 600, 600)}};
+  const std::vector<::printing::PrinterSemanticCapsAndDefaults::Paper> kPapers =
+      {{"bar", "vendor", gfx::Size(600, 600), gfx::Rect(0, 0, 600, 600)}};
 
-  LocalPrinterImplTestBase(bool use_service, bool support_fallback)
-      : use_service_(use_service), support_fallback_(support_fallback) {}
+  LocalPrinterImplTestBase(bool use_service,
+                           bool support_fallback,
+                           bool enable_oauth = false)
+      : use_service_(use_service),
+        support_fallback_(support_fallback),
+        enable_oauth_(enable_oauth) {}
   LocalPrinterImplTestBase(const LocalPrinterImplTestBase&) = delete;
   LocalPrinterImplTestBase& operator=(const LocalPrinterImplTestBase&) = delete;
   ~LocalPrinterImplTestBase() override = default;
@@ -112,17 +168,23 @@ class LocalPrinterImplTestBase : public testing::Test {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (use_service_) {
       features_to_enable.emplace_back(base::test::FeatureRefAndParams(
-          printing::features::kEnableOopPrintDrivers,
-          {{printing::features::kEnableOopPrintDriversSandbox.name, "true"}}));
+          ::printing::features::kEnableOopPrintDrivers,
+          {{::printing::features::kEnableOopPrintDriversSandbox.name,
+            "true"}}));
     } else {
-      features_to_disable.push_back(printing::features::kEnableOopPrintDrivers);
+      features_to_disable.push_back(
+          ::printing::features::kEnableOopPrintDrivers);
     }
 #endif
+    if (enable_oauth_) {
+      features_to_enable.emplace_back(
+          base::test::FeatureRefAndParams(ash::features::kEnableOAuthIpp, {}));
+    }
     feature_list_.InitWithFeaturesAndParameters(features_to_enable,
                                                 features_to_disable);
 
     sandboxed_test_backend_ =
-        base::MakeRefCounted<printing::TestPrintBackend>();
+        base::MakeRefCounted<::printing::TestPrintBackend>();
     ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactoryAndUse(
         profile_,
         base::BindLambdaForTesting([this](content::BrowserContext* context)
@@ -132,33 +194,45 @@ class LocalPrinterImplTestBase : public testing::Test {
           printers_manager_ = printers_manager.get();
           return printers_manager;
         }));
-    local_printer_ = std::make_unique<LocalPrinterImpl>();
+
+    if (enable_oauth_) {
+      ash::printing::oauth2::AuthorizationZonesManagerFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile_,
+              base::BindRepeating([](content::BrowserContext* context)
+                                      -> std::unique_ptr<KeyedService> {
+                return std::make_unique<testing::StrictMock<
+                    ash::printing::oauth2::MockAuthorizationZoneManager>>();
+              }));
+    }
+
+    local_printer_ = std::make_unique<TestLocalPrinterImpl>();
 
     if (use_service_) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandboxed_print_backend_service_ =
-          printing::PrintBackendServiceTestImpl::LaunchForTesting(
+          ::printing::PrintBackendServiceTestImpl::LaunchForTesting(
               sandboxed_test_remote_, sandboxed_test_backend_,
               /*sandboxed=*/true);
 
       if (support_fallback_) {
         unsandboxed_test_backend_ =
-            base::MakeRefCounted<printing::TestPrintBackend>();
+            base::MakeRefCounted<::printing::TestPrintBackend>();
 
         unsandboxed_print_backend_service_ =
-            printing::PrintBackendServiceTestImpl::LaunchForTesting(
+            ::printing::PrintBackendServiceTestImpl::LaunchForTesting(
                 unsandboxed_test_remote_, unsandboxed_test_backend_,
                 /*sandboxed=*/false);
       }
 
       service_manager_client_id_ =
-          printing::PrintBackendServiceManager::GetInstance()
+          ::printing::PrintBackendServiceManager::GetInstance()
               .RegisterQueryClient();
 #else
       NOTREACHED();
 #endif
     } else {
-      printing::PrintBackend::SetPrintBackendForTesting(
+      ::printing::PrintBackend::SetPrintBackendForTesting(
           sandboxed_test_backend_.get());
     }
   }
@@ -166,11 +240,11 @@ class LocalPrinterImplTestBase : public testing::Test {
   void TearDown() override {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (use_service_) {
-      printing::PrintBackendServiceManager::GetInstance().UnregisterClient(
+      ::printing::PrintBackendServiceManager::GetInstance().UnregisterClient(
           service_manager_client_id_);
     }
 
-    printing::PrintBackendServiceManager::ResetForTesting();
+    ::printing::PrintBackendServiceManager::ResetForTesting();
 #endif
 
     local_printer_ = nullptr;
@@ -186,17 +260,17 @@ class LocalPrinterImplTestBase : public testing::Test {
                   const std::string& display_name,
                   const std::string& description,
                   bool requires_elevated_permissions) {
-    auto caps = std::make_unique<printing::PrinterSemanticCapsAndDefaults>();
+    auto caps = std::make_unique<::printing::PrinterSemanticCapsAndDefaults>();
     caps->papers = kPapers;
-    auto basic_info = std::make_unique<printing::PrinterBasicInfo>(
-        id, display_name, description, printing::PrinterBasicInfoOptions{});
+    auto basic_info = std::make_unique<::printing::PrinterBasicInfo>(
+        id, display_name, description, ::printing::PrinterBasicInfoOptions{});
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (support_fallback_) {
       auto caps_unsandboxed =
-          std::make_unique<printing::PrinterSemanticCapsAndDefaults>(*caps);
+          std::make_unique<::printing::PrinterSemanticCapsAndDefaults>(*caps);
       auto basic_info_unsandboxed =
-          std::make_unique<printing::PrinterBasicInfo>(*basic_info);
+          std::make_unique<::printing::PrinterBasicInfo>(*basic_info);
       unsandboxed_test_backend_->AddValidPrinter(
           id, std::move(caps_unsandboxed), std::move(basic_info_unsandboxed));
     }
@@ -212,7 +286,7 @@ class LocalPrinterImplTestBase : public testing::Test {
   }
 
   ash::FakeCupsPrintersManager& printers_manager() {
-    DCHECK(printers_manager_);
+    CHECK(printers_manager_);
     return *printers_manager_;
   }
 
@@ -231,26 +305,43 @@ class LocalPrinterImplTestBase : public testing::Test {
   }
 #endif
 
+  ash::printing::oauth2::MockAuthorizationZoneManager& auth_manager() {
+    return *static_cast<testing::StrictMock<
+        ash::printing::oauth2::MockAuthorizationZoneManager>*>(
+        ash::printing::oauth2::AuthorizationZonesManagerFactory::
+            GetForBrowserContext(profile_));
+  }
+
+  std::optional<std::string> GetOAuthAccessToken(
+      const std::string& printer_id) {
+    base::test::TestFuture<std::optional<std::string>> future;
+    local_printer_->GetOAuthAccessToken(
+        kAccountId, printer_id,
+        base::BindOnce(&RecordOAuthTokenToFuture, base::Unretained(&future)));
+    return future.Take();
+  }
+
  private:
   const bool use_service_;
   const bool support_fallback_;
+  const bool enable_oauth_;
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  scoped_refptr<printing::TestPrintBackend> sandboxed_test_backend_;
-  scoped_refptr<printing::TestPrintBackend> unsandboxed_test_backend_;
+  scoped_refptr<::printing::TestPrintBackend> sandboxed_test_backend_;
+  scoped_refptr<::printing::TestPrintBackend> unsandboxed_test_backend_;
   std::unique_ptr<ash::LocalPrinter> local_printer_;
   raw_ptr<TestingProfile> profile_ = nullptr;
   raw_ptr<ash::FakeCupsPrintersManager> printers_manager_ = nullptr;
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  mojo::Remote<printing::mojom::PrintBackendService> sandboxed_test_remote_;
-  mojo::Remote<printing::mojom::PrintBackendService> unsandboxed_test_remote_;
-  std::unique_ptr<printing::PrintBackendServiceTestImpl>
+  mojo::Remote<::printing::mojom::PrintBackendService> sandboxed_test_remote_;
+  mojo::Remote<::printing::mojom::PrintBackendService> unsandboxed_test_remote_;
+  std::unique_ptr<::printing::PrintBackendServiceTestImpl>
       sandboxed_print_backend_service_;
-  std::unique_ptr<printing::PrintBackendServiceTestImpl>
+  std::unique_ptr<::printing::PrintBackendServiceTestImpl>
       unsandboxed_print_backend_service_;
-  printing::PrintBackendServiceManager::ClientId service_manager_client_id_;
+  ::printing::PrintBackendServiceManager::ClientId service_manager_client_id_;
 #endif
 };
 
@@ -306,10 +397,10 @@ TEST_F(LocalPrinterImplTest, GetPrinters) {
   printers_manager().AddPrinter(automatic_printer,
                                 chromeos::PrinterClass::kAutomatic);
 
-  std::vector<chromeos::Printer> printers;
-  local_printer()->GetPrinters(
-      kAccountId, base::BindOnce(&RecordPrinterList, std::ref(printers)));
+  base::test::TestFuture<std::vector<chromeos::Printer>> printers_future;
+  local_printer()->GetPrinters(kAccountId, printers_future.GetCallback());
 
+  const std::vector<chromeos::Printer>& printers = printers_future.Get();
   ASSERT_EQ(3u, printers.size());
 
   EXPECT_EQ("printer1", printers[0].id());
@@ -334,6 +425,22 @@ TEST_F(LocalPrinterImplTest, GetPrinters) {
   EXPECT_EQ(kPrinterUri, printers[2].uri().GetNormalized());
 }
 
+TEST_F(LocalPrinterImplTest, GetPrinterTest) {
+  chromeos::Printer saved_printer =
+      CreateTestPrinter("printer1", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, chromeos::PrinterClass::kSaved);
+
+  std::optional<chromeos::Printer> printer =
+      local_printer()->GetPrinter(kAccountId, "printer1");
+  ASSERT_TRUE(printer);
+  EXPECT_EQ("printer1", printer->id());
+  EXPECT_EQ("saved", printer->display_name());
+  EXPECT_EQ("description1", printer->description());
+  EXPECT_EQ(chromeos::Printer::SRC_USER_PREFS, printer->source());
+  ASSERT_TRUE(printer->HasUri());
+  EXPECT_EQ(kPrinterUri, printer->uri().GetNormalized());
+}
+
 TEST_F(LocalPrinterImplTest, GetStatus) {
   chromeos::CupsPrinterStatus printer1("printer1");
   printer1.AddStatusReason(crosapi::mojom::StatusReason::Reason::kPaperJam,
@@ -351,6 +458,40 @@ TEST_F(LocalPrinterImplTest, GetStatus) {
   EXPECT_EQ(printer1.GetPrinterId(), printer_status->GetPrinterId());
   EXPECT_EQ(printer1.GetTimestamp(), printer_status->GetTimestamp());
   EXPECT_EQ(printer1.GetStatusReasons(), printer_status->GetStatusReasons());
+}
+
+TEST_F(LocalPrinterImplTest, GetEulaUrlPrinterNotFound) {
+  base::test::TestFuture<const GURL&> future;
+  local_printer()->GetEulaUrl(kAccountId, "invalid_printer",
+                              future.GetCallback());
+
+  EXPECT_TRUE(future.Get().is_empty());
+}
+
+TEST_F(LocalPrinterImplTest, GetEulaUrlPrinterWithoutPpd) {
+  chromeos::Printer saved_printer =
+      CreateTestPrinter("printer1", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, chromeos::PrinterClass::kSaved);
+
+  base::test::TestFuture<const GURL&> future;
+  local_printer()->GetEulaUrl(kAccountId, "printer1", future.GetCallback());
+
+  // No effective_make_and_model -> NOT_FOUND -> empty url
+  EXPECT_TRUE(future.Get().is_empty());
+}
+
+TEST_F(LocalPrinterImplTest, GetEulaUrlSuccess) {
+  chromeos::Printer saved_printer =
+      CreateTestPrinter("printer1", "saved", "description1");
+  saved_printer.mutable_ppd_reference()->effective_make_and_model =
+      "license_info";
+  printers_manager().AddPrinter(saved_printer, chromeos::PrinterClass::kSaved);
+
+  base::test::TestFuture<const GURL&> future;
+  local_printer()->GetEulaUrl(kAccountId, "printer1", future.GetCallback());
+
+  ASSERT_FALSE(future.Get().is_empty());
+  EXPECT_EQ(future.Get().spec(), "chrome://os-credits/#license_info");
 }
 
 // Tests that fetching capabilities for non-installed printers is successful
@@ -377,40 +518,34 @@ TEST_P(LocalPrinterImplProcessScopeTest, GetCapabilityForNonInstalledPrinters) {
 
   // Try to fetch capabilities for both printers but only the autoconf printer
   // should succeed.
-  std::optional<chromeos::Printer> autoconf_fetched_printer;
-  std::optional<printing::PrinterSemanticCapsAndDefaults> autoconf_fetched_caps;
-  base::RunLoop run_loop;
-  auto quit_closure = base::BarrierClosure(2, run_loop.QuitClosure());
+  base::test::TestFuture<
+      std::optional<chromeos::Printer>,
+      std::optional<::printing::PrinterSemanticCapsAndDefaults>>
+      autoconf_future;
+  base::test::TestFuture<
+      std::optional<chromeos::Printer>,
+      std::optional<::printing::PrinterSemanticCapsAndDefaults>>
+      non_autoconf_future;
+
   local_printer()->GetCapability(
       kAccountId, autoconf_printer_id,
-      base::BindLambdaForTesting(
-          [&](base::optional_ref<const chromeos::Printer> printer,
-              const std::optional<printing::PrinterSemanticCapsAndDefaults>&
-                  caps) {
-            RecordGetCapability(autoconf_fetched_printer, autoconf_fetched_caps,
-                                printer, caps);
-            quit_closure.Run();
-          }));
+      base::BindOnce(&RecordCapabilityToFuture,
+                     base::Unretained(&autoconf_future)));
 
-  std::optional<chromeos::Printer> non_autoconf_fetched_printer;
-  std::optional<printing::PrinterSemanticCapsAndDefaults>
-      non_autoconf_fetched_caps;
   local_printer()->GetCapability(
       kAccountId, non_autoconf_printer_id,
-      base::BindLambdaForTesting(
-          [&](base::optional_ref<const chromeos::Printer> printer,
-              const std::optional<printing::PrinterSemanticCapsAndDefaults>&
-                  caps) {
-            RecordGetCapability(non_autoconf_fetched_printer,
-                                non_autoconf_fetched_caps, printer, caps);
-            quit_closure.Run();
-          }));
-  run_loop.Run();
+      base::BindOnce(&RecordCapabilityToFuture,
+                     base::Unretained(&non_autoconf_future)));
 
-  EXPECT_TRUE(autoconf_fetched_printer);
-  EXPECT_TRUE(autoconf_fetched_caps);
-  EXPECT_FALSE(non_autoconf_fetched_printer);
-  EXPECT_FALSE(non_autoconf_fetched_caps);
+  auto [autoconf_fetched_printer, autoconf_fetched_caps] =
+      autoconf_future.Take();
+  auto [non_autoconf_fetched_printer, non_autoconf_fetched_caps] =
+      non_autoconf_future.Take();
+
+  EXPECT_TRUE(autoconf_fetched_printer.has_value());
+  EXPECT_TRUE(autoconf_fetched_caps.has_value());
+  EXPECT_FALSE(non_autoconf_fetched_printer.has_value());
+  EXPECT_FALSE(non_autoconf_fetched_caps.has_value());
 }
 
 // Tests that fetching capabilities for an existing installed printer is
@@ -425,22 +560,17 @@ TEST_P(LocalPrinterImplProcessScopeTest, GetCapabilityValidPrinter) {
   AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/false);
 
-  std::optional<chromeos::Printer> fetched_printer;
-  std::optional<printing::PrinterSemanticCapsAndDefaults> fetched_caps;
-  base::RunLoop run_loop;
+  base::test::TestFuture<
+      std::optional<chromeos::Printer>,
+      std::optional<::printing::PrinterSemanticCapsAndDefaults>>
+      future;
   local_printer()->GetCapability(
       kAccountId, "printer1",
-      base::BindLambdaForTesting(
-          [&](base::optional_ref<const chromeos::Printer> printer,
-              const std::optional<printing::PrinterSemanticCapsAndDefaults>&
-                  caps) {
-            RecordGetCapability(fetched_printer, fetched_caps, printer, caps);
-            run_loop.Quit();
-          }));
+      base::BindOnce(&RecordCapabilityToFuture, base::Unretained(&future)));
 
-  run_loop.Run();
+  auto [fetched_printer, fetched_caps] = future.Take();
 
-  ASSERT_TRUE(fetched_printer);
+  ASSERT_TRUE(fetched_printer.has_value());
   EXPECT_FALSE(fetched_printer->HasSecureProtocol());
   EXPECT_EQ("printer1", fetched_printer->id());
   EXPECT_EQ("saved", fetched_printer->display_name());
@@ -449,7 +579,7 @@ TEST_P(LocalPrinterImplProcessScopeTest, GetCapabilityValidPrinter) {
   ASSERT_TRUE(fetched_printer->HasUri());
   EXPECT_EQ(kPrinterUri, fetched_printer->uri().GetNormalized());
 
-  ASSERT_TRUE(fetched_caps);
+  ASSERT_TRUE(fetched_caps.has_value());
   EXPECT_EQ(kPapers, fetched_caps->papers);
 }
 
@@ -468,52 +598,39 @@ TEST_P(LocalPrinterImplProcessScopeTest, GetCapabilityPrinterNotInstalled) {
 
   EXPECT_FALSE(printers_manager().IsPrinterInstalled(discovered_printer));
 
-  std::optional<chromeos::Printer> fetched_printer;
-  std::optional<printing::PrinterSemanticCapsAndDefaults> fetched_caps;
+  base::test::TestFuture<
+      std::optional<chromeos::Printer>,
+      std::optional<::printing::PrinterSemanticCapsAndDefaults>>
+      future;
   // Install printer and fetch capabilities.
-  base::RunLoop run_loop;
   local_printer()->GetCapability(
       kAccountId, "printer1",
-      base::BindLambdaForTesting(
-          [&](base::optional_ref<const chromeos::Printer> printer,
-              const std::optional<printing::PrinterSemanticCapsAndDefaults>&
-                  caps) {
-            RecordGetCapability(fetched_printer, fetched_caps, printer, caps);
-            run_loop.Quit();
-          }));
+      base::BindOnce(&RecordCapabilityToFuture, base::Unretained(&future)));
 
-  run_loop.Run();
+  auto [fetched_printer, fetched_caps] = future.Take();
 
   EXPECT_TRUE(printers_manager().IsPrinterInstalled(discovered_printer));
-  ASSERT_TRUE(fetched_printer);
+  ASSERT_TRUE(fetched_printer.has_value());
   EXPECT_EQ("printer1", fetched_printer->id());
-  ASSERT_TRUE(fetched_caps);
+  ASSERT_TRUE(fetched_caps.has_value());
   EXPECT_EQ(kPapers, fetched_caps->papers);
 }
 
 // In this test we expect the `GetCapability` to bail early because the
 // provided printer can't be found in the `CupsPrintersManager`.
 TEST_P(LocalPrinterImplProcessScopeTest, GetCapabilityInvalidPrinter) {
-  std::optional<chromeos::Printer> fetched_printer =
-      CreateTestPrinter("invalid printer", "invalid", "invalid");
-  std::optional<printing::PrinterSemanticCapsAndDefaults> fetched_caps;
-  fetched_caps
-      .emplace();  // Intentionally set to non-empty to test the callback.
-  base::RunLoop run_loop;
+  base::test::TestFuture<
+      std::optional<chromeos::Printer>,
+      std::optional<::printing::PrinterSemanticCapsAndDefaults>>
+      future;
   local_printer()->GetCapability(
       kAccountId, "invalid printer",
-      base::BindLambdaForTesting(
-          [&](base::optional_ref<const chromeos::Printer> printer,
-              const std::optional<printing::PrinterSemanticCapsAndDefaults>&
-                  caps) {
-            RecordGetCapability(fetched_printer, fetched_caps, printer, caps);
-            run_loop.Quit();
-          }));
+      base::BindOnce(&RecordCapabilityToFuture, base::Unretained(&future)));
 
-  run_loop.Run();
+  auto [fetched_printer, fetched_caps] = future.Take();
 
-  EXPECT_FALSE(fetched_printer);
-  EXPECT_FALSE(fetched_caps);
+  EXPECT_FALSE(fetched_printer.has_value());
+  EXPECT_FALSE(fetched_caps.has_value());
 }
 
 // Tests that no capabilities are returned if a printer is unreachable from
@@ -525,25 +642,19 @@ TEST_P(LocalPrinterImplProcessScopeTest, GetCapabilityUnreachablePrinter) {
   printers_manager().AddPrinter(saved_printer, chromeos::PrinterClass::kSaved);
   printers_manager().MarkInstalled(saved_printer.id());
 
-  std::optional<chromeos::Printer> fetched_printer;
-  std::optional<printing::PrinterSemanticCapsAndDefaults> fetched_caps;
-  base::RunLoop run_loop;
+  base::test::TestFuture<
+      std::optional<chromeos::Printer>,
+      std::optional<::printing::PrinterSemanticCapsAndDefaults>>
+      future;
   local_printer()->GetCapability(
-      kAccountId,
-      /*destination_id=*/"printer1",
-      base::BindLambdaForTesting(
-          [&](base::optional_ref<const chromeos::Printer> printer,
-              const std::optional<printing::PrinterSemanticCapsAndDefaults>&
-                  caps) {
-            RecordGetCapability(fetched_printer, fetched_caps, printer, caps);
-            run_loop.Quit();
-          }));
+      kAccountId, "printer1",
+      base::BindOnce(&RecordCapabilityToFuture, base::Unretained(&future)));
 
-  run_loop.Run();
+  auto [fetched_printer, fetched_caps] = future.Take();
 
-  ASSERT_TRUE(fetched_printer);
+  ASSERT_TRUE(fetched_printer.has_value());
   EXPECT_EQ("printer1", fetched_printer->id());
-  EXPECT_FALSE(fetched_caps);
+  EXPECT_FALSE(fetched_caps.has_value());
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -562,24 +673,19 @@ TEST_F(LocalPrinterImplServiceTest, GetCapabilityTerminatedService) {
   // Set up for service to terminate on next use.
   SetTerminateServiceOnNextInteraction();
 
-  std::optional<chromeos::Printer> fetched_printer;
-  std::optional<printing::PrinterSemanticCapsAndDefaults> fetched_caps;
-  base::RunLoop run_loop;
+  base::test::TestFuture<
+      std::optional<chromeos::Printer>,
+      std::optional<::printing::PrinterSemanticCapsAndDefaults>>
+      future;
   local_printer()->GetCapability(
       kAccountId, "printer1",
-      base::BindLambdaForTesting(
-          [&](base::optional_ref<const chromeos::Printer> printer,
-              const std::optional<printing::PrinterSemanticCapsAndDefaults>&
-                  caps) {
-            RecordGetCapability(fetched_printer, fetched_caps, printer, caps);
-            run_loop.Quit();
-          }));
+      base::BindOnce(&RecordCapabilityToFuture, base::Unretained(&future)));
 
-  run_loop.Run();
+  auto [fetched_printer, fetched_caps] = future.Take();
 
-  ASSERT_TRUE(fetched_printer);
+  ASSERT_TRUE(fetched_printer.has_value());
   EXPECT_EQ("printer1", fetched_printer->id());
-  EXPECT_FALSE(fetched_caps);
+  EXPECT_FALSE(fetched_caps.has_value());
 }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
@@ -596,24 +702,19 @@ TEST_P(LocalPrinterImplProcessScopeTest, GetCapabilityAccessDenied) {
   AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/true);
 
-  std::optional<chromeos::Printer> fetched_printer;
-  std::optional<printing::PrinterSemanticCapsAndDefaults> fetched_caps;
-  base::RunLoop run_loop;
+  base::test::TestFuture<
+      std::optional<chromeos::Printer>,
+      std::optional<::printing::PrinterSemanticCapsAndDefaults>>
+      future;
   local_printer()->GetCapability(
       kAccountId, "printer1",
-      base::BindLambdaForTesting(
-          [&](base::optional_ref<const chromeos::Printer> printer,
-              const std::optional<printing::PrinterSemanticCapsAndDefaults>&
-                  caps) {
-            RecordGetCapability(fetched_printer, fetched_caps, printer, caps);
-            run_loop.Quit();
-          }));
+      base::BindOnce(&RecordCapabilityToFuture, base::Unretained(&future)));
 
-  run_loop.Run();
+  auto [fetched_printer, fetched_caps] = future.Take();
 
-  ASSERT_TRUE(fetched_printer);
+  ASSERT_TRUE(fetched_printer.has_value());
   EXPECT_EQ("printer1", fetched_printer->id());
-  EXPECT_FALSE(fetched_caps);
+  EXPECT_FALSE(fetched_caps.has_value());
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -628,34 +729,105 @@ TEST_F(LocalPrinterImplServiceTest, GetCapabilityElevatedPermissionsSucceeds) {
              /*requires_elevated_permissions=*/true);
 
   // Note that printer does not initially show as requiring elevated privileges.
-  EXPECT_FALSE(printing::PrintBackendServiceManager::GetInstance()
+  EXPECT_FALSE(::printing::PrintBackendServiceManager::GetInstance()
                    .PrinterDriverFoundToRequireElevatedPrivilege("printer1"));
 
-  std::optional<chromeos::Printer> fetched_printer;
-  std::optional<printing::PrinterSemanticCapsAndDefaults> fetched_caps;
-  base::RunLoop run_loop;
+  base::test::TestFuture<
+      std::optional<chromeos::Printer>,
+      std::optional<::printing::PrinterSemanticCapsAndDefaults>>
+      future;
   local_printer()->GetCapability(
       kAccountId, "printer1",
-      base::BindLambdaForTesting(
-          [&](base::optional_ref<const chromeos::Printer> printer,
-              const std::optional<printing::PrinterSemanticCapsAndDefaults>&
-                  caps) {
-            RecordGetCapability(fetched_printer, fetched_caps, printer, caps);
-            run_loop.Quit();
-          }));
+      base::BindOnce(&RecordCapabilityToFuture, base::Unretained(&future)));
 
-  run_loop.Run();
+  auto [fetched_printer, fetched_caps] = future.Take();
 
   // Verify that this printer now shows up as requiring elevated privileges.
-  EXPECT_TRUE(printing::PrintBackendServiceManager::GetInstance()
+  EXPECT_TRUE(::printing::PrintBackendServiceManager::GetInstance()
                   .PrinterDriverFoundToRequireElevatedPrivilege("printer1"));
 
   // Getting capabilities should succeed when fallback is supported.
-  ASSERT_TRUE(fetched_printer);
+  ASSERT_TRUE(fetched_printer.has_value());
   EXPECT_EQ("printer1", fetched_printer->id());
-  ASSERT_TRUE(fetched_caps);
+  ASSERT_TRUE(fetched_caps.has_value());
   EXPECT_EQ(kPapers, fetched_caps->papers);
 }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
+class LocalPrinterImplWithOAuth2Test : public LocalPrinterImplTestBase {
+ public:
+  LocalPrinterImplWithOAuth2Test()
+      : LocalPrinterImplTestBase(
+            /*use_service=*/false,
+            /*support_fallback=*/false,
+            /*enable_oauth=*/true) {}
+  ~LocalPrinterImplWithOAuth2Test() override = default;
+};
+
+TEST_F(LocalPrinterImplWithOAuth2Test, GetOAuthAccessTokenUnknownPrinter) {
+  const std::optional<std::string> result = GetOAuthAccessToken("printer_id");
+  EXPECT_FALSE(result);
+}
+
+TEST_F(LocalPrinterImplWithOAuth2Test, GetOAuthAccessTokenNonOAuthPrinter) {
+  chromeos::Printer saved_printer =
+      CreateTestPrinter("printer_id", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, chromeos::PrinterClass::kSaved);
+
+  chromeos::CupsPrinterStatus printer_status("printer_id");
+  printers_manager().SetPrinterStatus(printer_status);
+
+  const std::optional<std::string> result = GetOAuthAccessToken("printer_id");
+  EXPECT_FALSE(result);
+}
+
+TEST_F(LocalPrinterImplWithOAuth2Test,
+       GetOAuthAccessTokenOAuthConnectionError) {
+  chromeos::Printer saved_printer =
+      CreateTestPrinter("printer_id", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, chromeos::PrinterClass::kSaved);
+
+  chromeos::CupsPrinterStatus printer_status("printer_id");
+  printer_status.SetAuthenticationInfo({"https://server/url", "scope"});
+  printers_manager().SetPrinterStatus(printer_status);
+
+  EXPECT_CALL(auth_manager(), GetEndpointAccessToken(testing::_, testing::_,
+                                                     "scope", testing::_))
+      .WillOnce([](const GURL& auth_server, const chromeos::Uri& ipp_endpoint,
+                   const std::string& scope,
+                   ash::printing::oauth2::StatusCallback callback) {
+        EXPECT_EQ(auth_server.spec(), "https://server/url");
+        std::move(callback).Run(
+            ash::printing::oauth2::StatusCode::kConnectionError,
+            "error_message");
+      });
+
+  const std::optional<std::string> result = GetOAuthAccessToken("printer_id");
+  EXPECT_FALSE(result);
+}
+
+TEST_F(LocalPrinterImplWithOAuth2Test, GetOAuthAccessTokenSuccess) {
+  chromeos::Printer saved_printer =
+      CreateTestPrinter("printer_id", "saved", "description1");
+  printers_manager().AddPrinter(saved_printer, chromeos::PrinterClass::kSaved);
+
+  chromeos::CupsPrinterStatus printer_status("printer_id");
+  printer_status.SetAuthenticationInfo({"https://server/url", "scope"});
+  printers_manager().SetPrinterStatus(printer_status);
+
+  EXPECT_CALL(auth_manager(), GetEndpointAccessToken(testing::_, testing::_,
+                                                     "scope", testing::_))
+      .WillOnce([](const GURL& auth_server, const chromeos::Uri& ipp_endpoint,
+                   const std::string& scope,
+                   ash::printing::oauth2::StatusCallback callback) {
+        EXPECT_EQ(auth_server.spec(), "https://server/url");
+        std::move(callback).Run(ash::printing::oauth2::StatusCode::kOK,
+                                "access_token");
+      });
+
+  const std::optional<std::string> result = GetOAuthAccessToken("printer_id");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result.value(), "access_token");
+}
 
 }  // namespace ash

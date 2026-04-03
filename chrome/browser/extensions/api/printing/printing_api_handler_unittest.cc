@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/printing/fake_local_printer.h"
 #include "chrome/browser/chromeos/printing/test_cups_wrapper.h"
 #include "chrome/browser/extensions/api/printing/fake_print_job_controller.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
@@ -337,7 +338,7 @@ class TestCrosLocalPrinter : public FakeLocalPrinter {
   std::vector<JobInfo> jobs_cancelled_;
 };
 
-class TestLocalPrinter : public ash::LocalPrinter {
+class TestLocalPrinter : public ash::FakeLocalPrinter {
  public:
   TestLocalPrinter() = default;
   TestLocalPrinter(TestLocalPrinter&) = delete;

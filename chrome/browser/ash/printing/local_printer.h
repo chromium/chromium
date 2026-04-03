@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/types/optional_ref.h"
+#include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "printing/backend/print_backend.h"
 
@@ -28,6 +29,9 @@ class LocalPrinter {
       const std::optional<::printing::PrinterSemanticCapsAndDefaults>&)>;
   using GetStatusCallback =
       base::OnceCallback<void(const chromeos::CupsPrinterStatus&)>;
+  using GetEulaUrlCallback = base::OnceCallback<void(const GURL&)>;
+  using GetOAuthAccessTokenCallback =
+      base::OnceCallback<void(base::optional_ref<const std::string>)>;
 
   LocalPrinter();
   virtual ~LocalPrinter();
@@ -41,6 +45,11 @@ class LocalPrinter {
   virtual void GetPrinters(const AccountId& accountId,
                            GetPrintersCallback callback) = 0;
 
+  // Gets a single printer.
+  virtual std::optional<chromeos::Printer> GetPrinter(
+      const AccountId& accountId,
+      const std::string& printer_id) = 0;
+
   // Gets capabilities for a printer as a PrinterSemanticCapsAndDefaults
   // object.
   virtual void GetCapability(const AccountId& accountId,
@@ -50,7 +59,17 @@ class LocalPrinter {
   // Gets status for a printer as a CupsPrinterStatus object.
   virtual void GetStatus(const AccountId& accountId,
                          const std::string& printer_id,
-                         GetStatusCallback) = 0;
+                         GetStatusCallback callback) = 0;
+
+  // Gets the EULA URL for a printer.
+  virtual void GetEulaUrl(const AccountId& accountId,
+                          const std::string& printer_id,
+                          GetEulaUrlCallback callback) = 0;
+
+  // Gets the OAuth Access Token for a printer.
+  virtual void GetOAuthAccessToken(const AccountId& accountId,
+                                   const std::string& printer_id,
+                                   GetOAuthAccessTokenCallback callback) = 0;
 };
 
 }  // namespace ash

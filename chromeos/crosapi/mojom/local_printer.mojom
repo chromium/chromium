@@ -358,25 +358,11 @@ interface LocalPrintersObserver {
   OnLocalPrintersUpdated@0(array<LocalDestinationInfo> printers);
 };
 
-// This union of structs represents the OAuth-related status of a printer.
-struct OAuthNotNeeded {};
-struct OAuthError {};
-struct OAuthAccessToken { string token; };
-union GetOAuthAccessTokenResult {
-  OAuthNotNeeded  none;
-  OAuthError error;
-  OAuthAccessToken token;
-};
-
 // This interface is used to query information about local printers
 // associated with the current Ash profile that can be used for
 // printing from Lacros.
 [Uuid="81aea7f5-a52b-4f88-8037-951f3c174f1e"]
 interface LocalPrinter {
-  // Gets the PPD license url for a printer.
-  // An empty url is returned if no such url exists.
-  GetEulaUrl@2(string printer_id) => (url.mojom.Url url);
-
   // Opens a system print settings window.
   ShowSystemPrintSettings@4() => ();
 
@@ -403,12 +389,6 @@ interface LocalPrinter {
   // Gets print policies.
   GetPolicies@9() => (Policies policies);
 
-  // Checks if |kPrintingSendUsernameAndFilenameEnabled| is enabled for the
-  // current Ash profile. Returns the profile's corresponding username if pref
-  // enabled.
-  [MinVersion=1]
-  GetUsernamePerPolicy@10() => (string? username);
-
   // Gets list of printers types included in the deny list policy.
   [MinVersion=2]
   GetPrinterTypeDenyList@11() => (array<printing.mojom.PrinterType> deny_list);
@@ -418,17 +398,6 @@ interface LocalPrinter {
   AddPrintJobObserver@13(
     pending_remote<PrintJobObserver> observer,
     PrintJobSource source) => ();
-
-  // Checks if the printer requires an OAuth. If yes, returns the access token.
-  [MinVersion=4]
-  GetOAuthAccessToken@14(string printer_id)
-    => (GetOAuthAccessTokenResult oauth_result);
-
-  // Returns an array of IPP 'client-info' values to be sent to the print
-  // destination.
-  [MinVersion=5]
-  GetIppClientInfo@15(string printer_id)
-    => (array<printing.mojom.IppClientInfo> settings);
 
   // Adds a local printers observer.
   [MinVersion=7]

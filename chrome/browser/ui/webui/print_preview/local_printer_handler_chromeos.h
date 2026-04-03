@@ -16,7 +16,6 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 
 namespace content {
@@ -25,7 +24,10 @@ class WebContents;
 
 namespace ash {
 class LocalPrinter;
-}
+namespace printing {
+class IppClientInfoCalculator;
+}  // namespace printing
+}  // namespace ash
 
 namespace printing {
 
@@ -58,13 +60,15 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
   static std::unique_ptr<LocalPrinterHandlerChromeos> Create(
       content::WebContents* preview_web_contents);
 
-  // Creates an instance suitable for testing with the given mojo connection to
-  // Ash Chrome and with `preview_web_contents_` set to nullptr. PrinterHandler
-  // methods run input callbacks with reasonable defaults when the mojo
-  // connection is unavailable.
+  // Creates an instance suitable for testing with the `ash::LocalPrinter` and
+  // `ash::printing::IppClientInfoCalculator` and with
+  // `preview_web_contents_` set to nullptr. PrinterHandler methods run input
+  // callbacks with reasonable defaults when `ash::LocalPrinter` is unavailable.
+  // `local_printer` must be non-null and outlive the returned instance.
   static std::unique_ptr<LocalPrinterHandlerChromeos> CreateForTesting(
-      crosapi::mojom::LocalPrinter* cros_local_printer,
-      ash::LocalPrinter* local_printer);
+      ash::LocalPrinter* local_printer,
+      std::unique_ptr<ash::printing::IppClientInfoCalculator>
+          ipp_client_info_calculator);
 
   // Prefer using Create() above.
   explicit LocalPrinterHandlerChromeos(
@@ -126,17 +130,31 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
                          AshJobSettingsCallback callback,
                          base::DictValue settings);
 
-  // These functions call the corresponding `LocalPrinter` function, convert the
-  // result to a job setting, add it to `settings`, and call `callback` with the
-  // result.
+  // Step 1 of the `GetAshJobSettings` chain.
+  // Examines the `kPrintingSendUsernameAndFilenameEnabled` profile preference
+  // to determine if the user's email can be shared. If permitted, adds the
+  // email to `settings`. Invokes `callback` to proceed to `GetOAuthToken`.
   void GetUsernamePerPolicy(AshJobSettingsCallback callback,
                             base::DictValue settings) const;
+
+  // Step 2 of the `GetAshJobSettings` chain.
+  // Obtains an OAuth access token from ash::LocalPrinter to authorize the print
+  // job for the given printer. Adds the token to `settings` if available, and
+  // invokes `callback` to proceed to `GetIppClientInfo`.
   void GetOAuthToken(const std::string& printer_id,
                      AshJobSettingsCallback callback,
                      base::DictValue settings) const;
+
+  // Step 3 of the `GetAshJobSettings` chain.
+  // Populates client metadata (OS and device info) into `settings` using
+  // `IppClientInfoCalculator` and `LocalPrinter::GetPrinter()`. Device info
+  // is only added for managed printers with secure connections for affiliated
+  // users. Invokes the final `callback` to complete the settings gathering.
   void GetIppClientInfo(const std::string& printer_id,
                         AshJobSettingsCallback callback,
                         base::DictValue settings) const;
+
+  ash::printing::IppClientInfoCalculator* GetIppClientInfoCalculator() const;
 
   // Wrapper for `printing::StartLocalPrint()` to use as a callback bound to the
   // lifetime of `this`.
@@ -145,8 +163,13 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
                            base::DictValue settings);
 
   const raw_ptr<content::WebContents> preview_web_contents_;
-  raw_ptr<crosapi::mojom::LocalPrinter> cros_local_printer_ = nullptr;
   raw_ptr<ash::LocalPrinter> local_printer_ = nullptr;
+  // Lazy initialization of `IppClientInfoCalculator` because
+  // linux-chromeos browser_tests and interactive_ui_tests won't pass
+  // CHECK(IsRunningOnChromeOS()). These browser_tests tests the printing UI
+  // functions and does not really need the IPP client info.
+  mutable std::unique_ptr<ash::printing::IppClientInfoCalculator>
+      ipp_client_info_calculator_;
   base::WeakPtrFactory<LocalPrinterHandlerChromeos> weak_ptr_factory_{this};
 };
 
