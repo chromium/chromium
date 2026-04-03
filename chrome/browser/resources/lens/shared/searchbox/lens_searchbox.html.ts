@@ -12,42 +12,40 @@ export function getHtml(this: LensSearchboxElement) {
   return html`<!--_html_template_start_-->
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
     @keydown="${this.onInputWrapperKeydown}">
-  <div id="inputInnerContainer">
-    <cr-searchbox-icon id="icon" .match="${this.selectedMatch}"
-        default-icon="${this.searchboxIcon_}" in-searchbox>
-    </cr-searchbox-icon>
+  <cr-searchbox-input id="input"
+      exportparts="searchbox-input"
+      .inputAriaLive="${this.inputAriaLive}"
+      .searchboxIcon="${this.searchboxIcon_}"
+      .searchboxAriaDescription="${this.searchboxAriaDescription}"
+      .selectedMatch="${this.selectedMatch}"
+      .placeholderText="${this.computePlaceholderText_(this.placeholderText)}"
+      ?input-has-matches="${this.hasMatches()}"
+      ?multi-line-enabled="${this.multiLineEnabled}"
+      ?dropdown-is-visible="${this.dropdownIsVisible}"
+      @focusin="${this.onFocusin}"
+      @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated}"
+      @input-focus-changed="${this.onInputFocusChanged}">
     ${this.showThumbnail ? html`
-      <div id="thumbnailContainer">
-        <cr-searchbox-thumbnail thumbnail-url_="${this.thumbnailUrl_}"
-            ?is-deletable_="${this.isThumbnailDeletable_}"
+      <div id="thumbnailContainer" slot="thumbnail">
+        <cr-searchbox-thumbnail
+            thumbnail-url="${this.thumbnailUrl_}"
+            ?is-deletable="${this.isThumbnailDeletable_}"
             @remove-thumbnail-click="${this.onRemoveThumbnailClick_}"
             role="button" aria-label="${this.i18n('searchboxThumbnailLabel')}"
             tabindex="${this.getThumbnailTabindex_()}">
         </cr-searchbox-thumbnail>
       </div>
     ` : nothing}
-    <cr-searchbox-input id="input"
-        exportparts="searchbox-input"
-        .dropdownIsVisible="${this.dropdownIsVisible}"
-        .inputAriaLive="${this.inputAriaLive}"
-        .multiLineEnabled="${this.multiLineEnabled}"
-        .searchboxIcon="${this.searchboxIcon_}"
-        .inputHasMatches="${this.hasMatches()}"
-        .searchboxAriaDescription="${this.searchboxAriaDescription}"
-        .selectedMatch="${this.selectedMatch}"
-        .placeholderText="${this.computePlaceholderText_(this.placeholderText)}"
-        @input-focus-changed="${this.onInputFocusChanged}">
-    </cr-searchbox-input>
-  </div>
+    ${this.searchboxLensSearchEnabled_? html`
+      <div class="searchbox-icon-button-container lens">
+        <button id="lensSearchButton" class="searchbox-icon-button lens"
+            @click="${this.onLensSearchClick_}"
+            title="${this.i18n('lensSearchButtonLabel')}">
+        </button>
+      </div>
+    ` : ''}
+  </cr-searchbox-input>
   ${getDropdownHtml.bind(this as any)()}
-  ${this.searchboxLensSearchEnabled_? html`
-    <div class="searchbox-icon-button-container lens">
-    <button id="lensSearchButton" class="searchbox-icon-button lens"
-        @click="${this.onLensSearchClick_}"
-        title="${this.i18n('lensSearchButtonLabel')}">
-    </button>
-    </div>
-  ` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -18,7 +18,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './lens_searchbox.css.js';
 import {getHtml} from './lens_searchbox.html.js';
@@ -129,6 +129,10 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
     if (changedPrivateProperties.has('thumbnailUrl_')) {
       this.showThumbnail = !!this.thumbnailUrl_;
     }
+    if (changedPrivateProperties.has('result') ||
+        changedPrivateProperties.has('selectedMatchIndex')) {
+      this.selectedMatch = this.computeSelectedMatch_();
+    }
   }
 
   override onInputWrapperFocusout(e: FocusEvent) {
@@ -144,6 +148,15 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
     }
 
     super.onInputWrapperFocusout(e);
+  }
+
+  onFocusin() {
+    this.proxy_.handler.onFocusChanged(true);
+    this.focusInput();
+  }
+
+  blurInput() {
+    this.$.input.blur();
   }
 
   focusInput() {
@@ -183,7 +196,7 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
     this.queryAutocomplete(e.detail.value, e.detail.isComposing);
   }
 
-  override onInputWrapperKeydown(e: KeyboardEvent) {
+  override handleKeyNavigation(e: KeyboardEvent) {
     if (this.showThumbnail) {
       const thumbnail =
           this.shadowRoot.querySelector<HTMLElement>('cr-searchbox-thumbnail');
@@ -224,7 +237,27 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
         e.preventDefault();
       }
     }
-    super.onInputWrapperKeydown(e);
+    super.handleKeyNavigation(e);
+  }
+
+  queryInputAutocomplete() {
+    this.queryAutocomplete(this.$.input.inputElement.value, false);
+  }
+
+  isInputEmpty(): boolean {
+    // If this is called before first render, the input element will not exist.
+    if (!this.shadowRoot?.querySelector('#input') || !this.$.input ||
+        !this.$.input.lastInput()) {
+      return true;
+    }
+    return !this.$.input.lastInput()!.text.trim();
+  }
+
+  private computeSelectedMatch_(): AutocompleteMatch|null {
+    if (!this.result || !this.result.matches) {
+      return null;
+    }
+    return this.result.matches[this.selectedMatchIndex] || null;
   }
 
   //============================================================================

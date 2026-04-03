@@ -41,7 +41,7 @@ suite('Searchbox', () => {
     await waitAfterNextRender(lensOverlayElement);
   });
 
-  test('SearchboxIsFocusedInitially', async () => {
+  test('Searchbox is focused initially', async () => {
     assertTrue(isVisible(lensOverlayElement.$.searchbox));
 
     let focusInputCalled = false;
@@ -62,10 +62,10 @@ suite('Searchbox', () => {
     }));
     await waitAfterNextRender(lensOverlayElement);
 
-    assertTrue(focusInputCalled);
+    assertTrue(focusInputCalled, 'focus input should be called');
   });
 
-  test('SearchBoxHidesWhenSidePanelOpens', async () => {
+  test('Searchbox hides when side panel opens', async () => {
     assertTrue(isVisible(lensOverlayElement.$.searchbox));
 
     testBrowserProxy.page.notifyResultsPanelOpened();
@@ -116,11 +116,15 @@ suite('Searchbox', () => {
   });
 
   test('Escape on empty input blurs searchbox', async () => {
-    assertTrue(isVisible(lensOverlayElement.$.searchbox));
+    assertTrue(
+        isVisible(lensOverlayElement.$.searchbox),
+        'Searchbox should be visible');
 
     lensOverlayElement.setSearchboxFocusForTesting(true);
     await waitAfterNextRender(lensOverlayElement);
-    assertTrue(lensOverlayElement.isSearchboxFocused);
+    assertTrue(
+        lensOverlayElement.isSearchboxFocused,
+        'Searchbox should be focused after setting focus');
 
     let preventDefaultCalled = false;
     let blurCalled = false;
@@ -147,8 +151,8 @@ suite('Searchbox', () => {
     await waitAfterNextRender(lensOverlayElement);
 
     // Focus should have been removed from the searchbox.
-    assertTrue(blurCalled);
-    assertTrue(preventDefaultCalled);
+    assertTrue(blurCalled, 'Searchbox should have been blurred');
+    assertTrue(preventDefaultCalled, 'Default should have been prevented');
   });
 
   test('Ghost loader is shown when input is empty', async () => {
@@ -166,7 +170,10 @@ suite('Searchbox', () => {
 
     // Ghost loader should be visible since autocomplete started with empty
     // input.
-    assertTrue(isVisible(lensOverlayElement.$.searchboxGhostLoader));
+    assertTrue(
+        isVisible(lensOverlayElement.$.searchboxGhostLoader),
+        'Ghost loader should be visible when' +
+            'autocomplete starts with empty input');
   });
 
   test('Searchbox focus is maintained when focus moves to ghost loader', async () => {

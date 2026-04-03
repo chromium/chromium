@@ -77,6 +77,11 @@ cr-searchbox-input::part(searchbox-input):focus::placeholder {
   background-color: var(--color-searchbox-background);
 }
 
+cr-searchbox-input::part(searchbox-input) {
+  align-self: center;
+  padding-top: 2px;
+}
+
 cr-searchbox-icon {
   height: 100%;
   padding-inline-end: 4px;
@@ -127,4 +132,14 @@ cr-searchbox-icon,
   min-height: 48px;
   position: relative;
   width: 100%;
+}
+
+cr-searchbox-dropdown::part(dropdown-content) {
+  background-color: unset;
+  border-radius: unset;
+  box-shadow: unset;
+  gap: unset;
+  margin-bottom: unset;
+  overflow: unset;
+  padding-top: unset;
 }
