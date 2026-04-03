@@ -59,6 +59,7 @@ source_set("google") {
 
     deps += [
       "//chrome/app:generated_resources_grit",
+      "//chrome/browser/component_updater",
       "//chrome/common",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",

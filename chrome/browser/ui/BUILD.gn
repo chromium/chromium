@@ -290,6 +290,7 @@ static_library("ui") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce",
     "//chrome/browser/complex_tasks",
+    "//chrome/browser/component_updater",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/content_settings:content_settings_factory_impl",

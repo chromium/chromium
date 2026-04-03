@@ -493,6 +493,7 @@ source_set("extensions") {
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/component_updater",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/devtools",
     "//chrome/browser/download",

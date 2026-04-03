@@ -271,6 +271,7 @@ source_set("policy_specific_browser_tests") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser",
+    "//chrome/browser/component_updater",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/preloading:prefs",
