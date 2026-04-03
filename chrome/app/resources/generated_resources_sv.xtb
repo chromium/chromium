@@ -1691,7 +1691,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="211803431539496924">Vill du bekräfta utökade säkerhetsuppdateringar?</translation>
 <translation id="2118594521750010466">Åtgärda nu</translation>
 <translation id="2119461801241504254">Säker webbsökning är aktiverat och skyddar dig från skadliga webbplatser och nedladdningar</translation>
-<translation id="2119602978828978573">Språk som Live Caption har stöd för</translation>
+<translation id="2119602978828978573">Språk som Livetextning har stöd för</translation>
 <translation id="2120297377148151361">Aktivitet och interaktion</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> har blockerats</translation>
 <translation id="2121825465123208577">Ändra storlek</translation>
@@ -3590,7 +3590,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3414966631182382431">Din <ph name="BEGIN_LINK" />webbläsare hanteras<ph name="END_LINK" /> av <ph name="MANAGER" /></translation>
 <translation id="3414974735818878791">Mittenklicka</translation>
 <translation id="3415580428903497523">Använd importerade lokala certifikat från ditt operativsystem</translation>
-<translation id="341589277604221596">Live Caption – <ph name="LANGUAGE" /></translation>
+<translation id="341589277604221596">Livetextning – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Visa alltid hela webbadresser</translation>
 <translation id="3417835166382867856">Sök bland flikar</translation>
 <translation id="3417836307470882032">24-timmarsvisning</translation>
@@ -3687,7 +3687,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3479357084663933762">Deuteranopi</translation>
 <translation id="3479552764303398839">Inte nu</translation>
 <translation id="3479685872808224578">Utskriftsservern hittades inte. Kontrollera webbadressen och försök igen.</translation>
-<translation id="3480612136143976912">Anpassa storlek och format för Live Caption. Inställningen används även för vissa appar och webbplatser.</translation>
+<translation id="3480612136143976912">Anpassa storlek och format för Livetextning. Inställningen används även för vissa appar och webbplatser.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> flikar hittades</translation>
 <translation id="3481268647794498892">Öppnas i <ph name="ALTERNATIVE_BROWSER_NAME" /> om <ph name="COUNTDOWN_SECONDS" /> sekunder</translation>
 <translation id="348247802372410699">Välj en stil</translation>
@@ -5270,7 +5270,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="452750746583162491">Granska din synkroniserade data</translation>
 <translation id="4528494169189661126">Översättningsförslag</translation>
 <translation id="4528638190900283934">Logga in för fler funktioner</translation>
-<translation id="4529455689802245339">Chrome Live Caption kanske inte fungerar</translation>
+<translation id="4529455689802245339">Chrome Livetextning kanske inte fungerar</translation>
 <translation id="4531451811601110068">Försök igen eller kontakta administratören för att få hjälp</translation>
 <translation id="4531924570968473143">Vem vill du lägga till på denna <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532183705767666195">{COUNT,plural, =1{1 nyckel}other{{COUNT} nycklar}}</translation>
@@ -6849,7 +6849,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5621272825308610394">Inget visningsnamn</translation>
 <translation id="5621350029086078628">Det här är en experimentell AI-funktion.</translation>
 <translation id="5622357006621202569">Aktivera permanent delning av USB-enheter med gäster.</translation>
-<translation id="562250930904332809">&amp;Inaktivera Live Caption</translation>
+<translation id="562250930904332809">&amp;Inaktivera Livetextning</translation>
 <translation id="5623282979409330487">Den här webbplatsen använder enhetens rörelsesensorer.</translation>
 <translation id="5623842676595125836">Logg</translation>
 <translation id="5624120631404540903">Hantera lösenord</translation>
@@ -8505,7 +8505,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6785739405821760313">Visar sparade skrivbord. Tryck på tabb för att navigera.</translation>
 <translation id="6785915470941880363">Omvänd rullning <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violett</translation>
-<translation id="6786480815699355166">Endast språk som Live Caption har stöd för kan översättas</translation>
+<translation id="6786480815699355166">Endast språk som Livetextning har stöd för kan översättas</translation>
 <translation id="6786747875388722282">Tillägg</translation>
 <translation id="6787531944787756058">användarnamnet <ph name="USER_EMAIL" /> sparas endast på den här enheten. Se information</translation>
 <translation id="6787839852456839824">Kortkommandon</translation>
@@ -10553,7 +10553,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8157849462797352650">Enheten får de senaste säkerhets-, stabilitets- och prestandauppdateringarna</translation>
 <translation id="8158117992543756526">Enheten får inga automatiska program- eller säkerhetsuppdateringar sedan <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Få återkoppling i form av vibration vid åtgärder som att dela upp skärmen eller byta skrivbord. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
-<translation id="8160775796528709999">Få ljud- och videouppspelning textad genom att aktivera Live Caption i inställningarna</translation>
+<translation id="8160775796528709999">Få ljud- och videouppspelning textad genom att aktivera Livetextning i inställningarna</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Fortsätt surfa</translation>
 <translation id="8161604891089629425">Konturfont</translation>
@@ -11576,7 +11576,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8846132060409673887">Läsa information om datorns tillverkare och modell</translation>
 <translation id="8846163936679269230">Återställ eSIM-profiler</translation>
-<translation id="8846239054091760429">Monoljud, start, Live Caption med mera</translation>
+<translation id="8846239054091760429">Monoljud, start, Livetextning med mera</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8848709220963126773">Byte av Skift-tangentens läge</translation>
 <translation id="8849001918648564819">Dold</translation>
@@ -11764,7 +11764,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8970887620466824814">Något gick fel.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Kontrollera med nätverksadministratören att brandväggen inte blockerar nedladdning från Googles servrar.</translation>
-<translation id="8973263196882835828">&amp;Aktivera Live Caption</translation>
+<translation id="8973263196882835828">&amp;Aktivera Livetextning</translation>
 <translation id="8973557916016709913">Ta bort zoomnivå</translation>
 <translation id="8973596347849323817">Du kan anpassa enheten efter dina behov. Tillgänglighetsfunktionerna kan ändras senare under Inställningar.</translation>
 <translation id="8973648401056792381">Webbappen har installerats av enhetsadministratören.</translation>

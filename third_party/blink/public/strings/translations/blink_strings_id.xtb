@@ -11,7 +11,7 @@
 <translation id="1637811476055996098">Pilih File</translation>
 <translation id="1729654308190250600">Jangan mengosongkan bidang alamat email.</translation>
 <translation id="1758486001363313524">Lainnya...</translation>
-<translation id="1921819250265091946">hh</translation>
+<translation id="1921819250265091946">dd</translation>
 <translation id="1938124657309484470">Tanggal harus <ph name="MAXIMUM_DATE_OR_TIME" /> atau lebih awal.</translation>
 <translation id="1993104285338243655">Dialihkan ke pencerminan</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' digunakan pada posisi yang salah di '<ph name="INVALIDDOMAIN" />'.</translation>
@@ -32,7 +32,7 @@
 <translation id="310520048233152454">Masukkan URL.</translation>
 <translation id="3321030238473337787">Kecepatan pemutaran</translation>
 <translation id="3450233048674729344">Nilai harus lebih kecil atau sama dengan <ph name="MAXIMUM" />.</translation>
-<translation id="3732799496749320381">bb</translation>
+<translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Keluar dari mode picture-in-picture</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3822383571486410024">Perpanjang teks ini hingga <ph name="MIN_CHARACTERS" /> karakter atau lebih (saat ini Anda menggunakan <ph name="CURRENT_LENGTH" /> karakter).</translation>

@@ -232,7 +232,7 @@
 <translation id="1148464196693569530">Разрешить пользовательские скрипты</translation>
 <translation id="1148624853678088576">Готово!</translation>
 <translation id="1148669835763563782">После установки защита Chromebook повысится, на нем появятся новые функции и настраивать его станет проще.</translation>
-<translation id="1149401351239820326">Срок действия: месяц</translation>
+<translation id="1149401351239820326">Месяц окончания</translation>
 <translation id="1149483087970735785">Специальные возможности</translation>
 <translation id="1149725087019908252">Сканирование файла "<ph name="FILE_NAME" />"</translation>
 <translation id="1150490752229770117">Это последнее автоматическое обновление ПО и безопасности для устройства <ph name="DEVICE_TYPE" />. Если вы хотите получать обновления в дальнейшем, перейдите на более новую модель. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -10396,7 +10396,7 @@
 <translation id="8054609631325628928">Эти коды можно использовать для активации сервиса.</translation>
 <translation id="8054883179223321715">Совместимо только с определенными сайтами</translation>
 <translation id="8054921503121346576">USB-клавиатура подключена</translation>
-<translation id="8058655154417507695">Срок действия: год</translation>
+<translation id="8058655154417507695">Год окончания</translation>
 <translation id="8058986560951482265">Нестабильное</translation>
 <translation id="8059417245945632445">&amp;Проверка устройств</translation>
 <translation id="8059456211585183827">Нет принтеров, доступных для сохранения.</translation>

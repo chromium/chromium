@@ -17,7 +17,7 @@
 <translation id="1138691154716715755">यो महिनाको सुरुवातमा</translation>
 <translation id="1150565364351027703">शीतल चस्मा</translation>
 <translation id="115443833402798225">हंगुल Ahnmatae</translation>
-<translation id="1155759005174418845">क्याटालान</translation>
+<translation id="1155759005174418845">क्याटलन</translation>
 <translation id="1168100932582989117">Google का नामसम्बन्धी सर्भरहरू</translation>
 <translation id="1170788066030116158">फोटो खिचिएको मिति</translation>
 <translation id="1172970565351728681">लगभग <ph name="REMAINING_TIME" /> बाँकी</translation>
@@ -120,8 +120,8 @@
 <translation id="1920670151694390848">मलयालम लिपि रूपान्तरण</translation>
 <translation id="1920798810075583923">खरबुजा</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> फर्म्याट गरियो</translation>
-<translation id="1931134289871235022">स्लोभाक</translation>
-<translation id="1936717151811561466">समाप्त गर्नुहोस्</translation>
+<translation id="1931134289871235022">स्लोभाकियाली</translation>
+<translation id="1936717151811561466">फिनिस</translation>
 <translation id="1942765061641586207">छविको रिजोल्युसन</translation>
 <translation id="1972984168337863910">फाइलका प्रतिक्रियाका प्यानलहरू विस्तृत गर्नुहोस्</translation>
 <translation id="1995337122023280937">फाइल रहेको स्थानमा जानुहोस्</translation>
@@ -285,7 +285,7 @@
 <translation id="3293023191599135697">WEP नेटवर्कमा कनेक्ट गर्न मिल्दैन</translation>
 <translation id="3295006446256079333">यो भोल्युम</translation>
 <translation id="3295357220137379386">डिभाइस व्यस्त छ</translation>
-<translation id="3296763833017966289">जोर्जियन</translation>
+<translation id="3296763833017966289">जर्जियाली</translation>
 <translation id="3307875152560779385">युक्रेनियाली</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> जिप गर्दै...</translation>
 <translation id="3335337277364016868">रेकर्ड गरिएको वर्ष</translation>
@@ -704,7 +704,7 @@
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> मा एक्स्ट्रयाक्ट गरिँदै छ</translation>
 <translation id="6499681088828539489">साझा नेटवर्कहरूमा प्रोक्सीलाई अनुमति नदिनुहोस्</translation>
 <translation id="6503285896705205014">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल कपी गर्न पाइँदैन</translation>
-<translation id="6509122719576673235">नर्वेयन</translation>
+<translation id="6509122719576673235">नर्वेली</translation>
 <translation id="6528513914570774834">यस डिभाइसका अन्य प्रयोगकर्ताहरूलाई यो नेटवर्क प्रयोग गर्न दिनुहोस्</translation>
 <translation id="6549689063733911810">हालै</translation>
 <translation id="6558280019477628686">एउटा त्रुटि भयो। केही वस्तुहरू नमेटिएका हुनसक्छन्।</translation>
@@ -736,7 +736,7 @@
 <translation id="6806796368146926706">जापानी अल्फान्युमेरिक किबोर्ड</translation>
 <translation id="6808193438228982088">स्याल</translation>
 <translation id="6823166707458800069">यो फोल्डरमा सुरक्षित गरिएका सबै फाइलहरू स्वतः अनलाइनमा ब्याकअप गरिन्छ।</translation>
-<translation id="6825883775269213504">रसियाली</translation>
+<translation id="6825883775269213504">रुसी</translation>
 <translation id="6847101934483209767">चयनबाट <ph name="ENTRY_NAME" /> हटाइयो।</translation>
 <translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> ले आफ्नो Google Workspace को भण्डारण पूरै प्रयोग गरिसकेको छ।</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
@@ -913,7 +913,7 @@
 <translation id="8055538340801153769">यो फोल्डर</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> सम्बन्धी जानकारी सङ्कलन गरिँदै छ...</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> डाउनलोड गर्नुहोस्</translation>
-<translation id="8106045200081704138">मसँग साझा गरिएको</translation>
+<translation id="8106045200081704138">मसँग सेयर गरिएको</translation>
 <translation id="8116072619078571545">बरफजस्तो चिसो पानी</translation>
 <translation id="8120392982188717723">सीमा तोकिएका नेटवर्कहरूमा सिंक गर्ने अनुमति दिनुहोस्</translation>
 <translation id="8124093710070495550">सिंकसम्बन्धी समस्या</translation>
@@ -944,7 +944,7 @@
 <translation id="8285791779547722821">इन्क्रिप्ट गरिएको <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8297012244086013755">हंगुल 3 सेट (सिफ्ट छैन)</translation>
-<translation id="8299269255470343364">जापानिज</translation>
+<translation id="8299269255470343364">जापानी</translation>
 <translation id="8300849813060516376">OTASP असफल</translation>
 <translation id="8312871300878166382">फोल्डर भित्र पेस्ट गर्नुहोस्</translation>
 <translation id="8329978297633540474">सादा पाठ</translation>
@@ -988,7 +988,7 @@
 <translation id="854655314928502177">वेब प्रोक्सी स्वतः खोजको URL</translation>
 <translation id="8547747809824590510">तपाईंका एड्मिनले प्रोक्सी ओभरराइडसम्बन्धी नियमहरू सेट गर्नुभएको छ</translation>
 <translation id="8549186985808798022">इटालियन</translation>
-<translation id="8551494947769799688">लाट्भियन</translation>
+<translation id="8551494947769799688">लात्भियाली</translation>
 <translation id="8560515948038859357">क्यान्टोनिज</translation>
 <translation id="8561206103590473338">हात्ती</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नलको क्षमता: <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले ब्लक गरेको, विवरणहरू</translation>

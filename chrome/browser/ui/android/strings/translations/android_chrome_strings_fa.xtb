@@ -59,7 +59,7 @@
 <translation id="1202892408424955784">محصولات پیگیری‌شده</translation>
 <translation id="1204037785786432551">بارگیری پیوند</translation>
 <translation id="1206892813135768548">کپی نوشتار پیوند</translation>
-<translation id="1209206284964581585">فعلاً پنهان شود</translation>
+<translation id="1209206284964581585">فعلاً پنهان کردن</translation>
 <translation id="1227058898775614466">سابقه پیمایش</translation>
 <translation id="123724288017357924">بار کردن مجدد صفحه اصلی با نادیده گرفتن محتوای حافظه پنهان</translation>
 <translation id="1239792311949352652">به‌سرعت این صفحه را هم‌رسانی کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
@@ -780,7 +780,7 @@
 <translation id="4398561997852463382">‫<ph name="TAB_TITLE" />، زبانه ناشناس ضبط سنجاق‌شده انتخابی</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - درحال بارگیری…</translation>
 <translation id="4404568932422911380">هیچ نشانکی موجود نیست</translation>
-<translation id="4405224443901389797">انتقال به…</translation>
+<translation id="4405224443901389797">بردن به…</translation>
 <translation id="4405636711880428279">کارت مجازی حذف شود؟</translation>
 <translation id="4408965460206576430">این فایل حاوی بدافزار است یا از سایت مشکوکی دریافت شده است</translation>
 <translation id="4409014848144759297">‫<ph name="WEBSITE_TITLE" /> و <ph name="TAB_COUNT" /> برگه دیگر</translation>
@@ -1049,7 +1049,7 @@
 <translation id="5548606607480005320">بررسی ایمنی</translation>
 <translation id="5554520618550346933">‏وقتی از گذرواژه‌ای استفاده کنید، Chrome به شما هشدار می‌دهد آیا این گذرواژه در فضای آنلاین منتشر شده است یا نه. هنگام انجام این کار، نام‌های کاربری و گذرواژه‌های شما رمزگذاری می‌شود تا اشخاص دیگر، ازجمله Google نتوانند آن‌ها را بخوانند.</translation>
 <translation id="5555525474779371165">انتخاب ویژگی حفاظتی «مرور ایمن»</translation>
-<translation id="5556459405103347317">بار کردن مجدد</translation>
+<translation id="5556459405103347317">مجدد بار کردن</translation>
 <translation id="555671485580955310">همگام‌سازی سابقه و زبانه‌ها</translation>
 <translation id="555816257274242153">پیگیری قیمت متوقف شد</translation>
 <translation id="5559778750856177186">سنجاق میان‌بر برداشته شد</translation>

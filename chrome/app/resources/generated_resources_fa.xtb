@@ -313,7 +313,7 @@
 <translation id="1193927020065025187">شاید این سایت تلاش می‌کند شما را برای مجاز کردن اعلان‌های مزاحم فریب دهد.</translation>
 <translation id="11947597112837849">نشانی ایمیل</translation>
 <translation id="1195210374336998651">رفتن به تنظیمات برنامه</translation>
-<translation id="1195447618553298278">خطای ناشناس.</translation>
+<translation id="1195447618553298278">خطای ناشناخته.</translation>
 <translation id="1195558154361252544">اعلان‌ها به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="11978075283960463">داده‌های ذخیره‌شده در برنامه: <ph name="APP_SIZE" /></translation>
@@ -5090,7 +5090,7 @@
 <translation id="4403775189117163360">پوشه دیگری را انتخاب کنید</translation>
 <translation id="4404843640767531781">ولی‌تان <ph name="APP_NAME" /> را مسدود کرده است. از ولی‌تان بخواهید استفاده از این برنامه را مجاز کند.</translation>
 <translation id="4405117686468554883">‏‎*.jpeg،‏ ‎*.jpg،‏ ‎*.png</translation>
-<translation id="4405224443901389797">انتقال به…</translation>
+<translation id="4405224443901389797">بردن به…</translation>
 <translation id="4405580203042711503">زبانه جدید در زیر</translation>
 <translation id="4405781821077215583">موارد روی صفحه‌نمایش (ازجمله نوشتار) را بزرگ‌تر یا کوچک‌تر می‌کند.</translation>
 <translation id="4406308048672435032">برای دیدن دوباره فهرست کامل، می‌توانید این زبانه را غیرفعال یا بازآوری کنید</translation>
@@ -6751,7 +6751,7 @@
 <translation id="5555639311269196631">خاموش کردن نقطه اتصال</translation>
 <translation id="5555760010546505198">وارونگی رنگ، تصحیح رنگ، ذره‌بین، و تنظیمات نمایش</translation>
 <translation id="555604722231274592">فعال کردن <ph name="FEATURE_NAME" /></translation>
-<translation id="5556459405103347317">بار کردن مجدد</translation>
+<translation id="5556459405103347317">مجدد بار کردن</translation>
 <translation id="555671485580955310">همگام‌سازی سابقه و زبانه‌ها</translation>
 <translation id="5558129378926964177">&amp;بزرگنمایی</translation>
 <translation id="5558594314398017686">پیش‌فرض سیستم‌عامل (درصورت وجود)</translation>
@@ -11691,7 +11691,7 @@
 <translation id="891931289445130855">حذف داده‌ها و اجازه‌ها</translation>
 <translation id="8919468987486771003">بارگذاری نشد. بررسی‌های اعتبارسنجی ناموفق بود و فایل بارگذاری نشد.</translation>
 <translation id="8920133120839850939">زبانه «اشاره‌های بیشتر» را انتخاب کنید، سپس «تند کشیدن بین صفحه‌ها» را برای پیمایش به‌عقب و جلو روشن کنید</translation>
-<translation id="8921369299636221117">‏سرویس Concierge دردسترس نیست.</translation>
+<translation id="8921369299636221117">خدمات مسئول اطلاعات دردسترس نیست.</translation>
 <translation id="8922348435910470639">دوبار رزرو</translation>
 <translation id="8922624386829239660">حرکت صفحه زمانی که موشواره به لبه‌های صفحه می‌رسد</translation>
 <translation id="8923670289674436542">بهبودیافته: سفارشی</translation>
