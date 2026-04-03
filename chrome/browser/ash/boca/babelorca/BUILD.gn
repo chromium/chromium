@@ -21,6 +21,7 @@ static_library("babelorca") {
   deps = [
     "//ash",
     "//chrome/browser/ash/accessibility/live_caption",
+    "//chrome/browser/speech",
     "//chromeos/ash/components/boca/babelorca",
     "//chromeos/ash/components/boca/babelorca:soda_installer",
     "//components/live_caption",
@@ -39,6 +40,7 @@ source_set("unit_tests") {
     ":babelorca",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/speech",
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca/babelorca:soda_installer",
     "//chromeos/ash/components/boca/babelorca:soda_test_support",

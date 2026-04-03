@@ -45,6 +45,7 @@ static_library("a11y") {
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/speech",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chromeos/components/kiosk",

@@ -99,5 +99,6 @@ static_library("keyed_service") {
     # Currently ArcApps is a KeyedService.
     # TODO(crbug.com/442761233): Resolve the dependency.
     "//chrome/browser/apps/app_service/publishers",
+    "//chrome/browser/speech",
   ]
 }

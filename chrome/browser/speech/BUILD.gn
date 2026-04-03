@@ -1,0 +1,175 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("speech") {
+  public = [
+    "chrome_speech_recognition_manager_delegate.h",
+    "on_device_speech_recognition_impl.h",
+    "on_device_speech_recognition_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//media/mojo/mojom:web_speech_recognition",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  if (!is_android) {
+    public += [
+      "chrome_speech_recognition_service.h",
+      "speech_recognition_client_browser_interface.h",
+      "speech_recognition_client_browser_interface_factory.h",
+      "speech_recognition_service.h",
+      "speech_recognition_service_factory.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/profiles:profile",
+      "//components/optimization_guide/core:model_execution",
+      "//components/optimization_guide/core:ondevice",
+      "//components/soda",
+      "//components/soda:constants",
+      "//media/mojo/mojom",
+      "//media/mojo/mojom:speech_recognition",
+    ]
+  }
+
+  if (is_chromeos) {
+    public += [
+      "cros_speech_recognition_service.h",
+      "cros_speech_recognition_service_factory.h",
+      "network_speech_recognizer.h",
+      "speech_recognition_constants.h",
+      "speech_recognition_recognizer_client_impl.h",
+      "speech_recognizer.h",
+      "speech_recognizer_delegate.h",
+      "tts_chromeos.h",
+      "tts_controller_delegate_impl.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/ash/accessibility",
+      "//chromeos/services/tts/public/mojom",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    public += [
+      "extension_api/tts_engine_extension_api.h",
+      "extension_api/tts_extension_api.h",
+      "extension_api/tts_extension_api_constants.h",
+    ]
+
+    public_deps += [
+      "//extensions/browser",
+      "//extensions/buildflags",
+    ]
+  }
+
+  if (is_chromeos && enable_extensions) {
+    public += [
+      "extension_api/tts_engine_extension_api_chromeos.h",
+      "extension_api/tts_engine_extension_observer_chromeos.h",
+      "extension_api/tts_engine_extension_observer_chromeos_factory.h",
+    ]
+  }
+}
+
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "chrome_speech_recognition_manager_delegate.cc",
+    "on_device_speech_recognition_impl.cc",
+    "on_device_speech_recognition_util.cc",
+  ]
+
+  deps = [
+    ":speech",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/services/speech/buildflags",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//media/mojo/mojom:speech_recognition",
+    "//media/mojo/mojom:web_speech_recognition",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "chrome_speech_recognition_service.cc",
+      "speech_recognition_client_browser_interface.cc",
+      "speech_recognition_client_browser_interface_factory.cc",
+      "speech_recognition_service_factory.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/profiles:profile",
+      "//components/content_settings/core/browser",
+      "//components/keyed_service/content",
+      "//components/keyed_service/core",
+      "//components/live_caption:constants",
+      "//components/live_caption:utils",
+      "//components/prefs",
+      "//components/soda",
+      "//components/soda:constants",
+      "//components/soda:utils",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "cros_speech_recognition_service.cc",
+      "cros_speech_recognition_service_factory.cc",
+      "network_speech_recognizer.cc",
+      "speech_recognition_constants.cc",
+      "speech_recognition_recognizer_client_impl.cc",
+      "speech_recognizer.cc",
+      "tts_chromeos.cc",
+      "tts_controller_delegate_impl.cc",
+    ]
+
+    deps += [
+      "//chrome/services/speech:lib",
+      "//chromeos/ash/experiences/arc/session",
+      "//components/keyed_service/content",
+      "//components/keyed_service/core",
+      "//components/language/core/common",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "extension_api/tts_engine_extension_api.cc",
+      "extension_api/tts_extension_api.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
+
+  if (is_chromeos && enable_extensions) {
+    sources += [
+      "extension_api/tts_engine_extension_api_chromeos.cc",
+      "extension_api/tts_engine_extension_observer_chromeos.cc",
+      "extension_api/tts_engine_extension_observer_chromeos_factory.cc",
+    ]
+
+    deps += [
+      "//chromeos/services/tts/public/mojom",
+      "//components/keyed_service/content",
+    ]
+  }
+}

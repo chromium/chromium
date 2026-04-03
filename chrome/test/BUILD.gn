@@ -1738,6 +1738,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/reading_list",
       "//chrome/browser/sessions",
+      "//chrome/browser/speech",
       "//chrome/browser/sync",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui:browser_navigator_params_headers",
@@ -4206,6 +4207,7 @@ if (!is_android) {
         "../browser/accessibility/live_caption/live_caption_language_identification_browsertest.cc",
         "../browser/speech/on_device_speech_recognition_impl_browsertest.cc",
       ]
+      deps += [ "//chrome/browser/speech" ]
     }
 
     if (enterprise_cloud_content_analysis) {
@@ -4248,6 +4250,7 @@ if (!is_android) {
     # If this target is used on Android in the future, these browser / speech/*
     # files will probably not be applicable.
     sources += [ "../browser/speech/speech_recognition_browsertest.cc" ]
+    deps += [ "//chrome/browser/speech" ]
 
     if (enable_click_to_call) {
       sources += [ "../browser/ui/views/sharing/click_to_call_browsertest.cc" ]
@@ -5716,6 +5719,7 @@ if (!is_android) {
         "//chrome/browser/policy/messaging_layer/proto:login_logout_event_proto",
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
         "//chrome/browser/smart_card:browser_tests",
+        "//chrome/browser/speech",
         "//chrome/browser/support_tool/ash:browser_tests",
         "//chrome/browser/ui/ash:browser_tests",
         "//chrome/browser/ui/ash:test_support",
@@ -8512,6 +8516,7 @@ test("unit_tests") {
       "//chrome/browser/send_tab_to_self:unit_tests",
       "//chrome/browser/serial",
       "//chrome/browser/signin:signin_promo",
+      "//chrome/browser/speech",
       "//chrome/browser/tab_contents",
       "//chrome/browser/tab_contents:unit_tests",
       "//chrome/browser/tab_group_sync:factories",

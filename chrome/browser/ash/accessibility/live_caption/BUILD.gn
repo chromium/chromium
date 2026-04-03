@@ -17,6 +17,7 @@ static_library("live_caption") {
   deps = [
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/speech",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/settings_ui",
     "//components/live_caption",
@@ -48,6 +49,7 @@ source_set("browser_tests") {
     ":live_caption",
     "//base",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/speech",
     "//chrome/test:test_support",
     "//components/live_caption",
     "//components/live_caption:constants",
