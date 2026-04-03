@@ -978,6 +978,31 @@ bool ResultInterfaceResponseValidator::Accept(mojo::Message* message) {
 }
 
 
+
+ResultInterfaceBridge::ResultInterfaceBridge(ResultInterfaceDirectReturnStub* stub)
+        : stub_(stub) {
+    CHECK(stub_);
+}
+
+ResultInterfaceBridge::~ResultInterfaceBridge() = default;
+
+
+void ResultInterfaceBridge::Method(bool a, MethodCallback callback) {
+
+    stub_->Method(std::move(a), std::move(callback));
+    ));
+}
+
+void ResultInterfaceBridge::SyncMethod(bool a, SyncMethodCallback callback) {
+
+    std::move(callback).Run(stub_->SyncMethod(
+      std::move(a)
+
+    ));
+}
+
+
+
 }  // golden
 
 

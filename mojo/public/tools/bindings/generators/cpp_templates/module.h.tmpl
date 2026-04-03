@@ -115,6 +115,9 @@
 {#--- Interfaces -#}
 {%  for interface in interfaces %}
 {%    include "interface_declaration.tmpl" %}
+{%-   if interface | should_generate_direct_return_stub %}
+{%-     include "interface_direct_return_stub_with_bridge.tmpl" %}
+{%-   endif %}
 {%- endfor %}
 
 {#--- Interface Proxies -#}

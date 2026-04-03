@@ -117,6 +117,40 @@ base::expected<
 
 
 
+
+class ResultInterfaceDirectReturnStub {
+ public:
+   virtual ~ResultInterfaceDirectReturnStub() = default;
+
+
+   using MethodResult = ResultInterface::MethodResult;
+   using MethodCallback = ResultInterface::MethodCallback;
+   virtual void Method(bool a, MethodCallback callback) = 0;
+
+   using SyncMethodResult = ResultInterface::SyncMethodResult;
+   virtual ResultInterface::SyncMethodResult SyncMethod(bool a) = 0;
+
+};
+
+class ResultInterfaceBridge : public ResultInterface {
+ public:
+   // The bridge owns the direct return stub. Use the bridge to manage the
+   // lifetime of the service, as if it was a normal mojo service impl.
+   ResultInterfaceBridge(ResultInterfaceDirectReturnStub* stub);
+   ResultInterfaceBridge(const ResultInterfaceBridge&) = delete;
+   ResultInterfaceBridge operator=(const ResultInterfaceBridge&) = delete;
+   ~ResultInterfaceBridge() override;
+
+
+   void Method(bool a, MethodCallback callback) override;
+   void SyncMethod(bool a, SyncMethodCallback callback) override;
+
+ private:
+   ResultInterfaceDirectReturnStub* stub_;
+};
+
+
+
 class  ResultInterfaceProxy
     : public ResultInterface {
  public:

@@ -78,6 +78,9 @@ constexpr {{constant.kind|cpp_pod_type}} {{struct.name}}::{{constant.name}};
 {#--- Interface definitions #}
 {%- for interface in interfaces %}
 {%-   include "interface_definition.tmpl" %}
+{%-   if interface | should_generate_direct_return_stub %}
+{%-      include "interface_direct_return_stub_bridge_definition.tmpl" %}
+{%-   endif %}
 {%- endfor %}
 
 {{namespace_end(namespaces_as_array, variant)}}

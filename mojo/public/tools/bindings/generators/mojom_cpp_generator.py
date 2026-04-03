@@ -179,6 +179,25 @@ def ShouldInlineUnion(union):
   return not any(mojom.IsReferenceKind(field.kind) for field in union.fields)
 
 
+def ShouldGenerateDirectReturnStub(iface):
+  marked_for_direct_return_stub = \
+    iface.attributes and ('GenerateDirectReturnStub' in iface.attributes)
+
+  # Note that this is not clean code, we should not be doing validation inside
+  # of this method. But since this is experimental atm, we'll just use this
+  # to ensure that the interface has the correct shape.
+  if marked_for_direct_return_stub:
+    for method in iface.methods:
+      if method.result_response is None:
+        raise Exception(
+            "GenerateDirectReturnStub requires every method to return result<T,E>"
+        )
+
+  return marked_for_direct_return_stub
+
+def ShouldUseCbPattern(method):
+  return method.attributes and ('UseCbReturn' in method.attributes)
+
 def _IpcHash(message_name):
   sha256_hash = hashlib.sha256(message_name.encode('utf-8'))
   return f'0x{sha256_hash.hexdigest()[:8]}'
@@ -497,6 +516,8 @@ class Generator(generator.Generator):
         "requires_context_for_data_view": RequiresContextForDataView,
         "should_inline": ShouldInlineStruct,
         "should_inline_union": ShouldInlineUnion,
+        "should_generate_direct_return_stub": ShouldGenerateDirectReturnStub,
+        "should_use_cb_pattern": ShouldUseCbPattern,
         "ipc_hash": _IpcHash,
         "is_array_kind": mojom.IsArrayKind,
         "is_bool_kind": mojom.IsBoolKind,

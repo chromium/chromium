@@ -1,0 +1,45 @@
+{%- import "interface_macros.tmpl" as interface_macros %}
+
+{% set class_scope = interface.name + "Bridge" %}
+
+{{class_scope}}::{{interface.name}}Bridge({{interface.name}}DirectReturnStub* stub)
+        : stub_(stub) {
+    CHECK(stub_);
+}
+
+{{class_scope}}::~{{interface.name}}Bridge() = default;
+
+{% for method in interface.methods %}
+void {{class_scope}}::{{method.name}}({{interface_macros.declare_request_params("", method)}}) {
+{%-  if method | should_use_cb_pattern %}
+
+    stub_->{{method.name}}(
+{%-    for param in method.parameters -%}
+{%-      if param.kind|is_non_const_ref_kind -%}
+           const_cast<{{param.kind|cpp_wrapper_param_type}}>({{param.name}})
+{%-      else -%}
+           std::move({{param.name}})
+{%-      endif %}{%- if not loop.last -%}, {% endif -%}
+{%-    endfor -%}
+{%-    if method.response_parameters != None -%}
+{%-      if method.parameters %}, {% endif -%}
+         std::move(callback)
+{%-    endif -%}
+    );
+
+{%-  else %}
+
+    std::move(callback).Run(stub_->{{method.name}}(
+{%-    for param in method.parameters -%}
+{%-      if param.kind|is_non_const_ref_kind %}
+      {{param.name}}
+{%-      else %}
+      std::move({{param.name}})
+{%       endif %}
+{%-      if not loop.last %}, {% endif %}
+{%-    endfor %}
+
+{%-  endif%}
+    ));
+}
+{% endfor %}

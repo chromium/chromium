@@ -1,0 +1,36 @@
+{%- import "interface_macros.tmpl" as interface_macros %}
+
+{# A direct return stub which allows better integration with expected_macros.h #}
+{# Since this is targetting expected macros, the initial version will only    #}
+{# work with interfaces that only have result return types                    #}
+class {{interface.name}}DirectReturnStub {
+ public:
+   virtual ~{{interface.name}}DirectReturnStub() = default;
+
+{% for method in interface.methods %}
+   using {{method.name}}Result = {{interface.name}}::{{method.name}}Result;
+{%-   if method | should_use_cb_pattern %}
+   using {{method.name}}Callback = {{interface.name}}::{{method.name}}Callback;
+   virtual void {{method.name}}({{interface_macros.declare_request_params("", method)}}) = 0;
+{%   else %}
+   virtual {{interface.name}}::{{method.name}}Result {{method.name}}({{interface_macros.declare_params("", method.parameters)}}) = 0;
+{%   endif %}
+{%-endfor %}
+};
+
+class {{interface.name}}Bridge : public {{interface.name}} {
+ public:
+   // The bridge owns the direct return stub. Use the bridge to manage the
+   // lifetime of the service, as if it was a normal mojo service impl.
+   {{interface.name}}Bridge({{interface.name}}DirectReturnStub* stub);
+   {{interface.name}}Bridge(const {{interface.name}}Bridge&) = delete;
+   {{interface.name}}Bridge operator=(const {{interface.name}}Bridge&) = delete;
+   ~{{interface.name}}Bridge() override;
+
+{% for method in interface.methods %}
+   void {{method.name}}({{interface_macros.declare_request_params("", method)}}) override;
+{%-endfor %}
+
+ private:
+   {{interface.name}}DirectReturnStub* stub_;
+};

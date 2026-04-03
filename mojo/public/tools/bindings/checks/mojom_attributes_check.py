@@ -36,6 +36,9 @@ _ENUMVAL_ATTRIBUTES = _COMMON_ATTRIBUTES | {
 
 _INTERFACE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'DispatchDebugAlias',
+    'DirectReceiver',
+    # Experimental, do not use without mojo owner approval.
+    'GenerateDirectReturnStub',
     'RenamedFrom',
     'RequireContext',
     'RuntimeFeature',
@@ -54,6 +57,11 @@ _METHOD_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'SupportsUrgent',
     'Sync',
     'UnlimitedSize',
+    # Experimental, do not use without mojo owner approval.
+    # Used in conjunction with GenerateDirectReturnStub. This turns the return
+    # back into a cb pattern. This is necessary if, for whatever reason, the
+    # implementer needs to return by callback.
+    'UseCbReturn',
 }
 
 _MODULE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
