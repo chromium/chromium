@@ -55,9 +55,6 @@ BASE_FEATURE(kUnoPhase2FollowUp,
 );
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-BASE_FEATURE(kSyncAutofillWalletCredentialData,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, shows a user-actionable error when the bookmarks count limit is
 // exceeded.
 BASE_FEATURE(kSyncShowBookmarksLimitExceededError,

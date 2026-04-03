@@ -125,17 +125,6 @@ TEST_P(WebDataServiceWrapperFeatureTest, SyncAutofillValuableMetadata) {
   task_environment_.RunUntilIdle();
 }
 
-// Verifies that CreateWebDataServiceWrapper works with
-// kSyncAutofillWalletCredentialData enabled and disabled.
-TEST_P(WebDataServiceWrapperFeatureTest, SyncAutofillWalletCredentialData) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(syncer::kSyncAutofillWalletCredentialData,
-                                    GetParam());
-  auto web_data_service_wrapper = CreateWebDataServiceWrapper();
-  web_data_service_wrapper->Shutdown();
-  task_environment_.RunUntilIdle();
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          WebDataServiceWrapperFeatureTest,
                          testing::Bool());

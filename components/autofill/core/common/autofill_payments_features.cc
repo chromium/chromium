@@ -136,16 +136,6 @@ BASE_FEATURE(kAutofillEnableCardBenefitsSync,
 BASE_FEATURE(kAutofillEnableCardInfoRuntimeRetrieval,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, we will store CVC for both local and server credit cards. This
-// will also allow the users to autofill their CVCs on checkout pages.
-BASE_FEATURE(kAutofillEnableCvcStorageAndFilling,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, will enhance CVV storage project. Provide better suggestion,
-// resolve conflict with COF project and add logging.
-BASE_FEATURE(kAutofillEnableCvcStorageAndFillingEnhancement,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, this will enhance the CVV storage project. The enhancement will
 // enable CVV storage suggestions for standalone CVC fields.
 BASE_FEATURE(kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement,

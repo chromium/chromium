@@ -69,9 +69,6 @@ BASE_DECLARE_FEATURE(kSyncAccessibilityAnnotation);
 BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// Controls whether to enable syncing of Autofill Wallet Credential Data.
-BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
-
 // If enabled, the error that the bookmarks count exceeded the limit during the
 // last initial merge is reset after a certain period.
 BASE_DECLARE_FEATURE(kSyncResetBookmarksInitialMergeLimitExceededError);

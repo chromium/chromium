@@ -885,19 +885,6 @@ inline constexpr char
         [] = "When enabled, the second line of a BNPL suggestion is updated to "
              "include the issuer names for better brand recognition.";
 
-inline constexpr char kAutofillEnableCvcStorageAndFillingName[] =
-    "Enable CVC storage and filling for payments autofill";
-inline constexpr char kAutofillEnableCvcStorageAndFillingDescription[] =
-    "When enabled, we will store CVC for both local and server credit cards. "
-    "This will also allow the users to autofill their CVCs on checkout pages.";
-
-inline constexpr char kAutofillEnableCvcStorageAndFillingEnhancementName[] =
-    "Enable CVC storage and filling enhancement for payments autofill";
-inline constexpr char
-    kAutofillEnableCvcStorageAndFillingEnhancementDescription[] =
-        "When enabled, will enhance CVV storage project. Provide better "
-        "suggestion, resolve conflict with COF project and add logging.";
-
 inline constexpr char
     kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[] =
         "Enable CVC storage and filling standalone form enhancement for "
@@ -4228,11 +4215,6 @@ inline constexpr char kSyncAutofillValuableMetadataName[] =
     "Sync autofill valuable metadata";
 inline constexpr char kSyncAutofillValuableMetadataDescription[] =
     "Enables syncing valuable metadata for autofill to the server.";
-
-inline constexpr char kSyncAutofillWalletCredentialDataName[] =
-    "Sync Autofill Wallet Credential Data";
-inline constexpr char kSyncAutofillWalletCredentialDataDescription[] =
-    "When enabled, allows syncing of the autofill wallet credential data type.";
 
 inline constexpr char kSyncWalletFlightReservationsName[] =
     "Sync wallet flight reservations";

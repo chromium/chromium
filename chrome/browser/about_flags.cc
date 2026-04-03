@@ -9493,11 +9493,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kGoogleOneOfferFilesBanner)},
 #endif
 
-    {"sync-autofill-wallet-credential-data",
-     flag_descriptions::kSyncAutofillWalletCredentialDataName,
-     flag_descriptions::kSyncAutofillWalletCredentialDataDescription, kOsAll,
-     FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletCredentialData)},
-
     {"sync-account-settings", flag_descriptions::kSyncAccountSettingsName,
      flag_descriptions::kSyncAccountSettingsDescription, kOsAll,
      FEATURE_VALUE_TYPE(syncer::kSyncAccountSettings)},
@@ -9636,12 +9631,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          extensions_features::kExtensionDisableUnsupportedDeveloper)},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-    {"autofill-enable-cvc-storage-and-filling",
-     flag_descriptions::kAutofillEnableCvcStorageAndFillingName,
-     flag_descriptions::kAutofillEnableCvcStorageAndFillingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableCvcStorageAndFilling)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"drive-fs-mirroring", flag_descriptions::kDriveFsMirroringName,
@@ -10343,14 +10332,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrosContentAdjustedRefreshRateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kCrosContentAdjustedRefreshRate)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-    {"autofill-enable-cvc-storage-and-filling-enhancement",
-     flag_descriptions::kAutofillEnableCvcStorageAndFillingEnhancementName,
-     flag_descriptions::
-         kAutofillEnableCvcStorageAndFillingEnhancementDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableCvcStorageAndFillingEnhancement)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"discount-on-navigation",

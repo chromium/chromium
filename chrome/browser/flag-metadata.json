@@ -867,22 +867,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-enable-cvc-storage-and-filling",
-    "owners": [
-      "koulvipul@google.com", "yiwenqian@google.com",
-      "payments-autofill-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "autofill-enable-cvc-storage-and-filling-enhancement",
-    "owners": [
-      "jialihuang@google.com", "yiwenqian@google.com",
-      "payments-autofill-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "autofill-enable-cvc-storage-and-filling-standalone-form-enhancement",
     "owners": [
       "jialihuang@google.com","yiwenqian@google.com",
@@ -8730,14 +8714,6 @@
     "name": "sync-autofill-valuable-metadata",
     "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160
-  },
-  {
-    "name": "sync-autofill-wallet-credential-data",
-    "owners": [
-      "koulvipul@google.com", "treib@chromium.org",
-      "yiwenqian@google.com", "payments-autofill-team@google.com"
-    ],
-    "expiry_milestone": 150
   },
   {
     "name": "sync-gemini-threads",

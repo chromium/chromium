@@ -412,8 +412,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   features.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableWalletBranding,
                             features::kAutofillEnableWalletBrandingV2},
-
-      /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling});
+      /*disabled_features=*/{});
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
       is_chrome_branded());
@@ -656,9 +655,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveOnlyBottomSheet_WalletBrandingV2Disabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableWalletBranding},
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
       /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
@@ -753,9 +750,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveWithCvcBottomSheet_WalletBrandingV2Disabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableCvcStorageAndFilling,
-       features::kAutofillEnableWalletBranding},
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
       /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
