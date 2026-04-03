@@ -99,6 +99,10 @@ class PrinterConfigurer {
   virtual void SetUpPrinterInCups(const chromeos::Printer& printer,
                                   PrinterSetupCallback callback) = 0;
 
+  // Return the PPD file basename that was used during the last
+  // call to SetUpPrinterInCups(), or an empty string if not available.
+  virtual std::string GetLastPpdBasename() const = 0;
+
   // Return an opaque fingerprint of the fields used to set up a printer with
   // CUPS.  The idea here is that if this fingerprint changes for a printer, we
   // need to reconfigure CUPS.  This fingerprint is not guaranteed to be stable

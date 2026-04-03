@@ -158,6 +158,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     DCHECK(printer.HasUri());
     PRINTER_LOG(USER) << printer.id() << ": Printer setup requested for "
                       << printer.make_and_model();
+    ppd_filename_.clear();
 
     if (!printer.IsIppEverywhere()) {
       if (!printer.ppd_reference().user_supplied_ppd_url.empty()) {
@@ -236,14 +237,20 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                       const std::string& hplip_plugin_path,
                       PrinterSetupCallback cb,
                       PpdProvider::CallbackResultCode result,
-                      const std::string& ppd_contents) {
+                      const std::string& ppd_contents,
+                      const std::string& ppd_filename) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    ppd_filename_ = ppd_filename;
+
     PRINTER_LOG(EVENT) << printer.id() << " PPD Resolution Result: "
                        << PpdProvider::CallbackResultCodeName(result);
     switch (result) {
       case PpdProvider::SUCCESS:
         DCHECK(!ppd_contents.empty());
         {
+          PRINTER_LOG(DEBUG)
+              << printer.id() << " PPD filename: " << ppd_filename;
           // Use PpdLineReader to ungzip the content (if gzipped).
           auto reader = chromeos::PpdLineReader::Create(ppd_contents);
           std::string ppd = reader->RemainingContent();
@@ -344,8 +351,11 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     }
   }
 
+  std::string GetLastPpdBasename() const override { return ppd_filename_; }
+
   scoped_refptr<PpdProvider> ppd_provider_;
   raw_ptr<DlcserviceClient> dlc_service_client_;
+  std::string ppd_filename_;
   base::WeakPtrFactory<PrinterConfigurerImpl> weak_factory_{this};
 };
 

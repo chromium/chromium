@@ -118,11 +118,12 @@ class FakePpdProvider : public chromeos::PpdProvider {
     for (auto kv : ppds_) {
       if (kv.second == reference.effective_make_and_model) {
         std::move(cb).Run(chromeos::PpdProvider::CallbackResultCode::SUCCESS,
-                          "ppd content");
+                          "ppd content", "");
         return;
       }
     }
-    std::move(cb).Run(chromeos::PpdProvider::CallbackResultCode::NOT_FOUND, "");
+    std::move(cb).Run(chromeos::PpdProvider::CallbackResultCode::NOT_FOUND, "",
+                      "");
   }
 
   // These methods are not used by AutomaticUsbPrinterConfigurer.

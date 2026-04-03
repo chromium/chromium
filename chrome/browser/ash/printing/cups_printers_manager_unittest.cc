@@ -299,7 +299,8 @@ class FakePpdProvider : public PpdProvider {
 
   void ResolvePpd(const Printer::PpdReference& reference,
                   ResolvePpdCallback cb) override {
-    std::move(cb).Run(PpdProvider::CallbackResultCode::SUCCESS, ppd_content_);
+    std::move(cb).Run(PpdProvider::CallbackResultCode::SUCCESS, ppd_content_,
+                      "");
   }
 
   void ResolvePpdLicense(std::string_view effective_make_and_model,

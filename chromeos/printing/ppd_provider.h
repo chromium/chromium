@@ -119,10 +119,11 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdProvider
 
   // Result of a ResolvePpd() call.
   // If the result code is SUCCESS, then:
-  //    string holds the contents of a PPD (that may or may not be gzipped).
+  //    the first string holds the contents of a PPD (that may or may not be
+  //    gzipped), the second string holds the ppd_file_name.
   // Otherwise, these fields will be empty.
-  using ResolvePpdCallback =
-      base::OnceCallback<void(CallbackResultCode, const std::string&)>;
+  using ResolvePpdCallback = base::OnceCallback<
+      void(CallbackResultCode, const std::string&, const std::string&)>;
 
   // Result of a ResolveManufacturers() call.  If the result code is SUCCESS,
   // then the vector contains a sorted list of manufacturers for which we have

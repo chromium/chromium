@@ -214,7 +214,8 @@ void PrinterEventTracker::set_logging(bool logging) {
 void PrinterEventTracker::RecordUsbPrinterInstalled(
     const chromeos::Printer::PpdReference& ppd_reference,
     const chromeos::PrinterSearchData& ppd_search_data,
-    SetupMode mode) {
+    SetupMode mode,
+    const std::string& ppd_filename) {
   base::AutoLock l(lock_);
   if (!logging_) {
     return;
@@ -224,13 +225,17 @@ void PrinterEventTracker::RecordUsbPrinterInstalled(
   SetEventType(&event, mode);
   SetPpdInfo(&event, ppd_reference);
   SetUsbInfo(&event, ppd_search_data);
+  if (!ppd_filename.empty()) {
+    event.set_ppd_file_name(ppd_filename);
+  }
   events_.push_back(event);
 }
 
 void PrinterEventTracker::RecordIppPrinterInstalled(
     const chromeos::Printer& printer,
     SetupMode mode,
-    const std::optional<chromeos::IppPrinterInfo>& ipp_printer_info) {
+    const std::optional<chromeos::IppPrinterInfo>& ipp_printer_info,
+    const std::string& ppd_filename) {
   base::AutoLock l(lock_);
   if (!logging_) {
     return;
@@ -242,6 +247,9 @@ void PrinterEventTracker::RecordIppPrinterInstalled(
   SetNetworkPrinterInfo(&event, printer);
   if (ipp_printer_info.has_value()) {
     SetIppPrinterInfo(&event, ipp_printer_info.value());
+  }
+  if (!ppd_filename.empty()) {
+    event.set_ppd_file_name(ppd_filename);
   }
   events_.push_back(event);
 }
