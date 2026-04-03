@@ -57,13 +57,6 @@
 
 namespace web_app {
 
-std::ostream& operator<<(std::ostream& os,
-                         const IsolatedWebAppApplyUpdateCommandError& error) {
-  return os << "IsolatedWebAppApplyUpdateCommandError { "
-               "message = \""
-            << error.message << "\" }.";
-}
-
 IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
     IsolatedWebAppUrlInfo url_info,
     std::unique_ptr<content::WebContents> web_contents,

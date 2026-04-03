@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/scheduler/isolated_web_app_apply_update_result.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -43,17 +44,6 @@ enum class InstallResultCode;
 namespace web_app {
 
 class FinalizeUpdateJob;
-
-// Represents an error during the application of a pending IWA update.
-struct IsolatedWebAppApplyUpdateCommandError {
-  std::string message;
-};
-
-std::ostream& operator<<(std::ostream& os,
-                         const IsolatedWebAppApplyUpdateCommandError& error);
-
-using IsolatedWebAppApplyUpdateCommandResult =
-    base::expected<void, IsolatedWebAppApplyUpdateCommandError>;
 
 // This command applies a pending update of an Isolated Web App. Information
 // about the pending update is read from
