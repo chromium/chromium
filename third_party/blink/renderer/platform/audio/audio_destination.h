@@ -31,7 +31,6 @@
 
 #include <memory>
 #include <optional>
-#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
