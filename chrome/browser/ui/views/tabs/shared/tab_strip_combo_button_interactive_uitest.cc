@@ -123,15 +123,8 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       CheckUserAction("TabStripComboButton.ProjectsPanel.Pinned", 1));
 }
 
-// TODO(crbug.com/498634793): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_UpdateStylesOnOrientationChange \
-  DISABLED_UpdateStylesOnOrientationChange
-#else
-#define MAYBE_UpdateStylesOnOrientationChange UpdateStylesOnOrientationChange
-#endif
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
-                       MAYBE_UpdateStylesOnOrientationChange) {
+                       UpdateStylesOnOrientationChange) {
   using FlatEdge = TabStripFlatEdgeButton::FlatEdge;
   RunTestSequence(
       EnsureBothButtonsVisible(),
