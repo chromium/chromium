@@ -40,6 +40,8 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   MetricIntegrationTest();
   ~MetricIntegrationTest() override;
 
+  static bool IsWebUISource(const ukm::UkmSource* source);
+
   // Override of BrowserTestBase::SetUpOnMainThread.
   void SetUpOnMainThread() override;
 
@@ -111,6 +113,9 @@ class MetricIntegrationTest : public InProcessBrowserTest {
                                           int64_t expected_value);
   void ExpectUKMPageLoadMetricLowerThan(std::string_view metric_name,
                                         int64_t expected_value);
+
+  bool ExtractUKMPageLoadMetric(std::string_view metric_name,
+                                int64_t* extracted_value);
 
   void ExpectUKMPageLoadMetricsInAscendingOrder(std::string_view metric_name1,
                                                 std::string_view metric_name2);

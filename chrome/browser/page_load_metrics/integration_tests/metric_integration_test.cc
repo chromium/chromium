@@ -40,6 +40,15 @@ using ukm::TestUkmRecorder;
 using ukm::builders::PageLoad;
 using ukm::mojom::UkmEntry;
 
+// static
+bool MetricIntegrationTest::IsWebUISource(const ukm::UkmSource* source) {
+  if (!source) {
+    return true;
+  }
+  return source->url().SchemeIs("chrome") ||
+         source->url().SchemeIs("chrome-untrusted");
+}
+
 MetricIntegrationTest::MetricIntegrationTest() {
   // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
   // disable this feature.
@@ -151,11 +160,18 @@ std::unique_ptr<HttpResponse> MetricIntegrationTest::HandleRequest(
 }
 
 const ukm::mojom::UkmEntryPtr MetricIntegrationTest::GetEntry() {
-  auto merged_entries =
-      ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
-  EXPECT_EQ(1ul, merged_entries.size());
-  const auto& kv = merged_entries.begin();
-  return std::move(kv->second);
+  auto merged_entries = ukm_recorder().GetMergedEntriesByName(
+      ukm::builders::PageLoad::kEntryName);
+
+  for (auto& kv : merged_entries) {
+    const ukm::UkmSource* source =
+        ukm_recorder().GetSourceForSourceId(kv.first);
+    if (IsWebUISource(source)) {
+      continue;
+    }
+    return std::move(kv.second);
+  }
+  return nullptr;
 }
 
 std::vector<double> MetricIntegrationTest::GetPageLoadMetricsAsList(
@@ -163,6 +179,11 @@ std::vector<double> MetricIntegrationTest::GetPageLoadMetricsAsList(
   std::vector<double> metrics;
   for (const ukm::mojom::UkmEntry* entry :
        ukm_recorder_->GetEntriesByName(ukm::builders::PageLoad::kEntryName)) {
+    const ukm::UkmSource* source =
+        ukm_recorder_->GetSourceForSourceId(entry->source_id);
+    if (IsWebUISource(source)) {
+      continue;
+    }
     if (auto* rs = ukm_recorder_->GetEntryMetric(entry, metric_name)) {
       metrics.push_back(*rs);
     }
@@ -189,8 +210,23 @@ void MetricIntegrationTest::
         std::string_view metric_name) {
   auto merged_entries =
       ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
-  EXPECT_EQ(expected_num_page_load_metrics, merged_entries.size());
+  int valid_entries = 0;
   for (const auto& kv : merged_entries) {
+    const ukm::UkmSource* source =
+        ukm_recorder().GetSourceForSourceId(kv.first);
+    if (IsWebUISource(source)) {
+      continue;
+    }
+    valid_entries++;
+  }
+  EXPECT_EQ(expected_num_page_load_metrics,
+            static_cast<unsigned long>(valid_entries));
+  for (const auto& kv : merged_entries) {
+    const ukm::UkmSource* source =
+        ukm_recorder().GetSourceForSourceId(kv.first);
+    if (IsWebUISource(source)) {
+      continue;
+    }
     EXPECT_FALSE(TestUkmRecorder::EntryHasMetric(kv.second.get(), metric_name));
   }
 }
@@ -198,7 +234,16 @@ void MetricIntegrationTest::
 void MetricIntegrationTest::ExpectUkmEventNotRecorded(
     std::string_view event_name) {
   auto merged_entries = ukm_recorder().GetMergedEntriesByName(event_name);
-  EXPECT_EQ(merged_entries.size(), 0u);
+  int valid_entries = 0;
+  for (const auto& kv : merged_entries) {
+    const ukm::UkmSource* source =
+        ukm_recorder().GetSourceForSourceId(kv.first);
+    if (IsWebUISource(source)) {
+      continue;
+    }
+    valid_entries++;
+  }
+  EXPECT_EQ(0, valid_entries);
 }
 
 void MetricIntegrationTest::ExpectUKMPageLoadMetricGreaterThan(
@@ -218,6 +263,22 @@ void MetricIntegrationTest::ExpectUKMPageLoadMetricLowerThan(
   EXPECT_LT(*value, expected_value);
 }
 
+bool MetricIntegrationTest::ExtractUKMPageLoadMetric(
+    std::string_view metric_name,
+    int64_t* extracted_value) {
+  ukm::mojom::UkmEntryPtr entry = GetEntry();
+  if (!entry) {
+    return false;
+  }
+  const int64_t* value =
+      TestUkmRecorder::GetEntryMetric(entry.get(), metric_name);
+  if (!value) {
+    return false;
+  }
+  *extracted_value = *value;
+  return true;
+}
+
 void MetricIntegrationTest::ExpectUKMPageLoadMetricsInAscendingOrder(
     std::string_view metric_name1,
     std::string_view metric_name2) {
@@ -234,6 +295,11 @@ void MetricIntegrationTest::ExpectUKMPageLoadMetricsInAscendingOrder(
 int64_t MetricIntegrationTest::GetUKMPageLoadMetricFlagSet(
     std::string_view metric_name) {
   ukm::mojom::UkmEntryPtr entry = GetEntry();
+  EXPECT_TRUE(entry);
+  if (!entry) {
+    return 0;
+  }
+
   const int64_t* flag_set =
       TestUkmRecorder::GetEntryMetric(entry.get(), metric_name);
   EXPECT_TRUE(flag_set != nullptr);

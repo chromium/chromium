@@ -55,6 +55,11 @@ std::map<int64_t, double> GetSoftNavigationMetrics(
   std::map<int64_t, double> source_id_to_metric_name;
   for (const ukm::mojom::UkmEntry* entry : ukm_recorder.GetEntriesByName(
            ukm::builders::SoftNavigation::kEntryName)) {
+    const ukm::UkmSource* source =
+        ukm_recorder.GetSourceForSourceId(entry->source_id);
+    if (MetricIntegrationTest::IsWebUISource(source)) {
+      continue;
+    }
     if (auto* rs = ukm_recorder.GetEntryMetric(entry, metric_name)) {
       source_id_to_metric_name[entry->source_id] = *rs;
     }
@@ -161,16 +166,13 @@ class SoftNavigationTest : public MetricIntegrationTest,
     int64_t INP_98th_value;
 
     bool extract_num_of_interaction = ExtractUKMPageLoadMetric(
-        ukm_recorder(),
         ukm::builders::PageLoad::kInteractiveTiming_NumInteractionsName,
         &INP_numOfInteraction_value);
     bool extract_worst_interaction = ExtractUKMPageLoadMetric(
-        ukm_recorder(),
         ukm::builders::PageLoad::
             kInteractiveTiming_WorstUserInteractionLatency_MaxEventDurationName,
         &INP_worst_value);
     bool extract_98th_interaction = ExtractUKMPageLoadMetric(
-        ukm_recorder(),
         ukm::builders::PageLoad::
             kInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDurationName,
         &INP_98th_value);
@@ -233,7 +235,6 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // Verify that num_of_interactions before soft nav is 2.
     int64_t INP_numOfInteraction_value_before_soft_nav;
     bool extract_num_of_interaction_before_soft_nav = ExtractUKMPageLoadMetric(
-        ukm_recorder(),
         ukm::builders::PageLoad::
             kInteractiveTimingBeforeSoftNavigation_NumInteractionsName,
         &INP_numOfInteraction_value_before_soft_nav);
@@ -244,7 +245,6 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // Verify that INP before soft nav exists.
     int64_t INP_before_soft_nav;
     bool extract_INP_before_soft_nav = ExtractUKMPageLoadMetric(
-        ukm_recorder(),
         ukm::builders::PageLoad::
             kInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDurationName,
         &INP_before_soft_nav);
@@ -259,23 +259,6 @@ class SoftNavigationTest : public MetricIntegrationTest,
 
     return true;
   }
-
-  bool ExtractUKMPageLoadMetric(const ukm::TestUkmRecorder& ukm_recorder,
-                                std::string_view metric_name,
-                                int64_t* extracted_value) {
-    std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-        ukm_recorder.GetMergedEntriesByName(
-            ukm::builders::PageLoad::kEntryName);
-    const auto& kv = merged_entries.begin();
-    auto* metric_value =
-        ukm::TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
-    if (!metric_value) {
-      return false;
-    }
-    *extracted_value = *metric_value;
-    return true;
-  }
-
   int64_t ExtractMaxInteractionDurationFromTrace(
       trace_analyzer::TraceEventVector events) {
     int64_t max_duration = 0;
@@ -365,7 +348,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
   void VerifySoftNavigationCount(int64_t expected_count) {
     int64_t soft_navigation_count;
     bool extract_soft_navigation_count = ExtractUKMPageLoadMetric(
-        ukm_recorder(), ukm::builders::PageLoad::kSoftNavigationCountName,
+        ukm::builders::PageLoad::kSoftNavigationCountName,
         &soft_navigation_count);
     EXPECT_TRUE(extract_soft_navigation_count);
     EXPECT_EQ(soft_navigation_count, expected_count);
@@ -456,7 +439,6 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // navigation.
     int64_t lcp;
     bool extract_lcp = ExtractUKMPageLoadMetric(
-        ukm_recorder(),
         ukm::builders::PageLoad::
             kPaintTiming_NavigationToLargestContentfulPaint2Name,
         &lcp);
@@ -472,7 +454,6 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // page load is complete.
     int64_t lcp_before_first_soft_nav;
     bool extract_lcp_before_first_soft_nav = ExtractUKMPageLoadMetric(
-        ukm_recorder(),
         ukm::builders::PageLoad::
             kPaintTimingBeforeSoftNavigation_NavigationToLargestContentfulPaint2Name,  // NOLINT
         &lcp_before_first_soft_nav);

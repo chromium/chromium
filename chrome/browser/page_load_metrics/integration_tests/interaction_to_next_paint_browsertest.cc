@@ -32,12 +32,6 @@ using ukm::builders::PageLoad;
 
 class InteractionToNextPaintTest : public MetricIntegrationTest {
  protected:
-  // This function will extract the target UKM value from ukm_recorder
-  // by the given metric_name in PageLoad.
-  bool ExtractUKMPageLoadMetric(const ukm::TestUkmRecorder& ukm_recorder,
-                                std::string_view metric_name,
-                                int64_t* extracted_value);
-
   // This function extract the maximum duration for EventTiming from
   // trace data.
   int ExtractMaxInteractionDurationFromTrace(TraceEventVector events);
@@ -54,21 +48,6 @@ class InteractionToNextPaintTest : public MetricIntegrationTest {
   // Perform hit test and frame waiter to ensure the frame is ready.
   void WaitForFrameReady();
 };
-
-bool InteractionToNextPaintTest::ExtractUKMPageLoadMetric(
-    const ukm::TestUkmRecorder& ukm_recorder,
-    std::string_view metric_name,
-    int64_t* extracted_value) {
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
-  const auto& kv = merged_entries.begin();
-  auto* metric_value =
-      ukm::TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
-  if (!metric_value)
-    return false;
-  *extracted_value = *metric_value;
-  return true;
-}
 
 int InteractionToNextPaintTest::ExtractMaxInteractionDurationFromTrace(
     TraceEventVector events) {
@@ -115,16 +94,13 @@ bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
   int64_t INP_98th_value;
 
   bool extract_num_of_interaction = ExtractUKMPageLoadMetric(
-      ukm_recorder(),
       ukm::builders::PageLoad::kInteractiveTiming_NumInteractionsName,
       &INP_numOfInteraction_value);
   bool extract_worst_interaction = ExtractUKMPageLoadMetric(
-      ukm_recorder(),
       ukm::builders::PageLoad::
           kInteractiveTiming_WorstUserInteractionLatency_MaxEventDurationName,
       &INP_worst_value);
   bool extract_98th_interaction = ExtractUKMPageLoadMetric(
-      ukm_recorder(),
       ukm::builders::PageLoad::
           kInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDurationName,
       &INP_98th_value);

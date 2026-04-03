@@ -132,6 +132,14 @@ using trace_analyzer::TraceEventVector;
 
 namespace {
 
+bool IsWebUISource(const ukm::UkmSource* source) {
+  if (!source) {
+    return true;
+  }
+  return source->url().SchemeIs("chrome") ||
+         source->url().SchemeIs("chrome-untrusted");
+}
+
 constexpr char kCacheablePathPrefix[] = "/cacheable";
 
 const char kResponseWithNoStore[] =
@@ -283,14 +291,24 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   int64_t GetUKMPageLoadMetric(std::string metric_name) {
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-        test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
+        test_ukm_recorder_->GetMergedEntriesByName(
+            ukm::builders::PageLoad::kEntryName);
 
-    EXPECT_EQ(1ul, merged_entries.size());
-    const auto& kv = merged_entries.begin();
-    const int64_t* recorded =
-        ukm::TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
-    EXPECT_TRUE(recorded != nullptr);
-    return (*recorded);
+    for (const auto& kv : merged_entries) {
+      const ukm::UkmSource* source =
+          test_ukm_recorder_->GetSourceForSourceId(kv.first);
+      if (IsWebUISource(source)) {
+        continue;
+      }
+      auto* metric_value =
+          ukm::TestUkmRecorder::GetEntryMetric(kv.second.get(), metric_name);
+      if (!metric_value) {
+        continue;
+      }
+      return *metric_value;
+    }
+    ADD_FAILURE() << "Could not find PageLoad UKM entry for " << metric_name;
+    return 0;
   }
 
   void MakeComponentFullscreen(const std::string& id) {
@@ -392,8 +410,14 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   void VerifyBasicPageLoadUkms(const GURL& expected_source_url) {
     const auto& entries =
         test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
-    EXPECT_EQ(1u, entries.size());
+    int checked_entries = 0;
     for (const auto& kv : entries) {
+      const ukm::UkmSource* source =
+          test_ukm_recorder_->GetSourceForSourceId(kv.first);
+      if (IsWebUISource(source)) {
+        continue;
+      }
+      checked_entries++;
       test_ukm_recorder_->ExpectEntrySourceHasUrl(kv.second.get(),
                                                   expected_source_url);
       EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
@@ -432,6 +456,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
       EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
           kv.second.get(), PageLoad::kSiteEngagementScoreName));
     }
+    EXPECT_EQ(1, checked_entries);
   }
 
   void VerifyNavigationMetrics(std::vector<GURL> expected_source_urls) {
@@ -494,9 +519,13 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
     const auto& entries = test_ukm_recorder_->GetMergedEntriesByName(
         NavigationTiming::kEntryName);
-    ASSERT_EQ(expected_source_urls.size(), entries.size());
     int i = 0;
     for (const auto& kv : entries) {
+      const ukm::UkmSource* source =
+          test_ukm_recorder_->GetSourceForSourceId(kv.first);
+      if (IsWebUISource(source)) {
+        continue;
+      }
       test_ukm_recorder_->ExpectEntrySourceHasUrl(kv.second.get(),
                                                   expected_source_urls[i++]);
 
@@ -506,6 +535,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
             test_ukm_recorder_->EntryHasMetric(kv.second.get(), metric));
       }
     }
+    ASSERT_EQ(expected_source_urls.size(), static_cast<size_t>(i));
   }
 
   content::WebContents* web_contents() const {

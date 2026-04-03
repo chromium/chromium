@@ -914,22 +914,23 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsTabId) {
                            sync_browser, &ukm_test_helper);
 
   // Tab ids are incremented starting from 1. Since we started a new sync
-  // browser, this is the second tab.
-  EXPECT_EQ(2, first_source->navigation_data().tab_id);
+  // browser, this is at least the second tab (or third if InitialWebUI is
+  // enabled).
+  int64_t initial_tab_id = first_source->navigation_data().tab_id;
+  EXPECT_GT(initial_tab_id, 0);
 
   // Ensure the tab id is constant in a single tab.
   const ukm::UkmSource* second_source =
       NavigateAndGetSource(embedded_test_server()->GetURL("/title2.html"),
                            sync_browser, &ukm_test_helper);
-  EXPECT_EQ(first_source->navigation_data().tab_id,
-            second_source->navigation_data().tab_id);
+  EXPECT_EQ(initial_tab_id, second_source->navigation_data().tab_id);
 
-  // Add a new tab, it should get a new tab id.
+  // Add a new tab, it should get a new tab id incremented by 1.
   chrome::NewTab(sync_browser);
   const ukm::UkmSource* third_source =
       NavigateAndGetSource(embedded_test_server()->GetURL("/title3.html"),
                            sync_browser, &ukm_test_helper);
-  EXPECT_EQ(3, third_source->navigation_data().tab_id);
+  EXPECT_EQ(initial_tab_id + 1, third_source->navigation_data().tab_id);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
