@@ -28,7 +28,7 @@
   height: 100%;
 }
 
-@media screen and ((max-width: 840px) or (max-height: 620px)) {
+@media screen and ((max-width: 870px) or (max-height: 630px)) {
   .background-shape {
     display: none;
   }
@@ -147,11 +147,11 @@
   right: 0;
   top: 50%;
   /* The image starts shrinking when space between the image and content is
-  equal to 25% of image's width. It pushes away the image 1px for every 2px of
+  equal to 50% of image's width. It pushes away the image 1px for every 2px of
   smaller screen size. Part "max(0px, calc(...))" prevents the image from being
   driven away to the left from the right edge */
   transform: translate(
-    max(0px, calc(25% - (50vw - var(--content-width) / 2) / 2)),
+    max(0px, calc(50% - (50vw - var(--content-width) / 2) / 2)),
     -50%);
   z-index: -1;
 }
@@ -164,7 +164,8 @@
   /* Same as above, but start point is 10% as we have more space vertically */
   transform: translate(
     -50%,
-    max(0px, calc(10% - (50vh - (var(--child-max-height) / 2 + var(--header-height))) / 2)));
+    max(0px, calc(10% - (50vh - (var(--child-max-height) / 2
+      + var(--header-height))) / 2)));
   width: 17%;
   z-index: -1;
 }
@@ -174,7 +175,7 @@
   left: 0;
   right: auto;
   transform: scaleX(-1) translate(
-    max(0px, calc(25% - (50vw - var(--content-width) / 2) / 2)),
+    max(0px, calc(50% - (50vw - var(--content-width) / 2) / 2)),
     -50%);
 }
 
@@ -183,7 +184,8 @@
   right: 75%;
   transform: scaleX(-1) translate(
     -50%,
-    max(0px, calc(10% - (50vh - (var(--child-max-height) / 2 + var(--header-height))) / 2)));
+    max(0px, calc(10% - (50vh - (var(--child-max-height) / 2
+      + var(--header-height))) / 2)));
 }
 
 :host-context([dir='rtl']) #illustration {
