@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -673,5 +674,11 @@ class VideoAcceleratorUtil {
         SupportedProfileAdapter[] profileArray = new SupportedProfileAdapter[profiles.size()];
         profiles.toArray(profileArray);
         return profileArray;
+    }
+
+    @CalledByNative
+    private static boolean isTemporalLayerEncodingEnabled() {
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        return delegate != null && delegate.isTemporalLayerEncodingEnabled();
     }
 }

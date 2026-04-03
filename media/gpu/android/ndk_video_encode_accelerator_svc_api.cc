@@ -5,12 +5,24 @@
 #include "media/gpu/android/ndk_video_encode_accelerator_svc_api.h"
 
 #include "base/android/android_info.h"
+#include "base/android/jni_android.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/native_library.h"
+#include "media/base/android/media_jni_headers/VideoAcceleratorUtil_jni.h"
 #include "media/base/media_switches.h"
 
 namespace media {
+
+namespace {
+bool IsTemporalLayerEncodingEnabled() {
+  static bool enabled = []() {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    return Java_VideoAcceleratorUtil_isTemporalLayerEncodingEnabled(env);
+  }();
+  return enabled;
+}
+}  // namespace
 
 // static
 const NdkVideoEncodeAcceleratorSvcApi* NdkVideoEncodeAcceleratorSvcApi::Get() {
@@ -19,10 +31,7 @@ const NdkVideoEncodeAcceleratorSvcApi* NdkVideoEncodeAcceleratorSvcApi::Get() {
 }
 
 NdkVideoEncodeAcceleratorSvcApi::NdkVideoEncodeAcceleratorSvcApi() {
-  if (__builtin_available(android 36, *)) {
-    // Best effort check to skip unnecessary dynamic loading. Even on API level
-    // 36, the functions might be missing as they are officially included in API
-    // level 37 (Android 17).
+  if (__builtin_available(android 37, *)) {
     base::NativeLibraryLoadError error;
     base::NativeLibrary lib =
         base::LoadNativeLibrary(base::FilePath("libmediandk.so"), &error);
@@ -60,7 +69,8 @@ NdkVideoEncodeAcceleratorSvcApi::NdkVideoEncodeAcceleratorSvcApi() {
 bool NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported() {
   if (__builtin_available(android 37, *)) {
     return base::FeatureList::IsEnabled(
-        media::kNdkVideoEncodeAcceleratorNativeSvc);
+               media::kNdkVideoEncodeAcceleratorNativeSvc) &&
+           IsTemporalLayerEncodingEnabled();
   }
 
   return false;
@@ -70,7 +80,8 @@ bool NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported() {
 bool NdkVideoEncodeAcceleratorSvcApi::IsBitrateLayeringSupported() {
   if (__builtin_available(android 37, *)) {
     return base::FeatureList::IsEnabled(
-        media::kNdkVideoEncodeAcceleratorBitrateLayering);
+               media::kNdkVideoEncodeAcceleratorBitrateLayering) &&
+           IsTemporalLayerEncodingEnabled();
   }
 
   return false;
