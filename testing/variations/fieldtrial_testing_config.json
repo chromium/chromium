@@ -21379,6 +21379,23 @@
             ]
         }
     ],
+    "SkillsAutocomplete": [
+        {
+            "platforms": [
+                "chromeos",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260401",
+                    "enable_features": [
+                        "SkillsAutocomplete"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipDefaultBrowserPromoInFirstRun": [
         {
             "platforms": [
