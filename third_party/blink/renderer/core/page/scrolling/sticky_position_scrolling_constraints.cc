@@ -17,6 +17,22 @@ BoxEdge RectToBoxEdge(PhysicalAxis axis, const PhysicalRect& rect) {
   return axis == PhysicalAxis::kHorizontal ? BoxEdge(rect.X(), rect.Width())
                                            : BoxEdge(rect.Y(), rect.Height());
 }
+
+const LayoutBoxModelObject* FindNearestStickyLayerShiftingStickyBox(
+    const StickyPositionScrollingConstraints::PerAxisData& data) {
+  return data.location_container->FindFirstStickyContainer(
+      data.sticky_container);
+}
+
+const LayoutBoxModelObject* FindNearestStickyLayerShiftingContainingBlock(
+    const StickyPositionScrollingConstraints::PerAxisData& data) {
+  const auto* scroll_container =
+      data.containing_scroll_container_layer->GetLayoutBox();
+  if (!scroll_container) {
+    return nullptr;
+  }
+  return data.sticky_container->FindFirstStickyContainer(scroll_container);
+}
 }  // namespace
 
 StickyPositionScrollingConstraints::PerAxisData::PerAxisData(
@@ -24,8 +40,8 @@ StickyPositionScrollingConstraints::PerAxisData::PerAxisData(
     const PhysicalRect& containing_block,
     const PhysicalRect& sticky_box,
     const PhysicalRect& constraining,
-    const LayoutBoxModelObject* nearest_sticky_layer_shifting_sticky_box,
-    const LayoutBoxModelObject* nearest_sticky_layer_shifting_containing_block,
+    const LayoutObject* location_container,
+    const LayoutBox* sticky_container,
     const PaintLayer* containing_scroll_container_layer,
     bool is_fixed_to_view,
     std::optional<LayoutUnit> min_inset,
@@ -42,10 +58,8 @@ StickyPositionScrollingConstraints::PerAxisData::PerAxisData(
       scroll_container_relative_sticky_box_range(
           RectToBoxEdge(axis, sticky_box)),
       constraining_range(RectToBoxEdge(axis, constraining)),
-      nearest_sticky_layer_shifting_sticky_box(
-          nearest_sticky_layer_shifting_sticky_box),
-      nearest_sticky_layer_shifting_containing_block(
-          nearest_sticky_layer_shifting_containing_block),
+      location_container(location_container),
+      sticky_container(sticky_container),
       containing_scroll_container_layer(containing_scroll_container_layer),
       is_fixed_to_view(is_fixed_to_view) {}
 
@@ -59,10 +73,11 @@ void StickyPositionScrollingConstraints::PerAxisData::ComputeOffset(
   // Adjust the cached rect locations for any sticky ancestor elements. The
   // sticky offset applied to those ancestors affects us as follows:
   //
-  //   1. |nearest_sticky_layer_shifting_sticky_box| is a sticky layer between
-  //      ourselves and our containing block, e.g. a nested inline parent.
-  //      It shifts only the sticky_box_rect and not the containing_block_rect.
-  //   2. |nearest_sticky_layer_shifting_containing_block| is a sticky layer
+  //   1. |FindNearestStickyLayerShiftingStickyBox()| finds a sticky layer
+  //      between ourselves and our containing block, e.g. a nested inline
+  //      parent. It shifts only the sticky_box_rect and not the
+  //      containing_block_rect.
+  //   2. |FindNearestStickyLayerShiftingContainingBlock()| finds a sticky layer
   //      between our containing block (inclusive) and our scroll ancestor
   //      (exclusive). As such, it shifts both the sticky_box_rect and the
   //      containing_block_rect.
@@ -165,20 +180,21 @@ PhysicalOffset StickyPositionScrollingConstraints::StickyOffset() const {
 
 void StickyPositionScrollingConstraints::PerAxisData::Trace(
     Visitor* visitor) const {
-  visitor->Trace(nearest_sticky_layer_shifting_sticky_box);
-  visitor->Trace(nearest_sticky_layer_shifting_containing_block);
+  visitor->Trace(location_container);
+  visitor->Trace(sticky_container);
   visitor->Trace(containing_scroll_container_layer);
 }
 
 LayoutUnit
 StickyPositionScrollingConstraints::PerAxisData::AncestorStickyBoxOffset()
     const {
+  const auto* nearest_sticky_layer_shifting_sticky_box =
+      FindNearestStickyLayerShiftingStickyBox(*this);
   if (!nearest_sticky_layer_shifting_sticky_box) {
     return LayoutUnit();
   }
   const auto constraints =
       nearest_sticky_layer_shifting_sticky_box->StickyConstraints();
-  DCHECK(constraints);
 
   if (const auto* ancestor_data = constraints.AxisData(axis)) {
     return ancestor_data->total_sticky_box_sticky_offset;
@@ -189,17 +205,36 @@ StickyPositionScrollingConstraints::PerAxisData::AncestorStickyBoxOffset()
 LayoutUnit
 StickyPositionScrollingConstraints::PerAxisData::AncestorContainingBlockOffset()
     const {
+  const auto* nearest_sticky_layer_shifting_containing_block =
+      FindNearestStickyLayerShiftingContainingBlock(*this);
   if (!nearest_sticky_layer_shifting_containing_block) {
     return LayoutUnit();
   }
   const auto constraints =
       nearest_sticky_layer_shifting_containing_block->StickyConstraints();
-  DCHECK(constraints);
 
   if (const auto* ancestor_data = constraints.AxisData(axis)) {
     return ancestor_data->total_containing_block_sticky_offset;
   }
   return LayoutUnit();
+}
+
+const LayoutBoxModelObject*
+StickyPositionScrollingConstraints::NearestStickyLayerShiftingStickyBox()
+    const {
+  if (const auto* data = PreferredAxisData()) {
+    return FindNearestStickyLayerShiftingStickyBox(*data);
+  }
+  return nullptr;
+}
+
+const LayoutBoxModelObject*
+StickyPositionScrollingConstraints::NearestStickyLayerShiftingContainingBlock()
+    const {
+  if (const auto* data = PreferredAxisData()) {
+    return FindNearestStickyLayerShiftingContainingBlock(*data);
+  }
+  return nullptr;
 }
 
 const StickyPositionScrollingConstraints::PerAxisData*
