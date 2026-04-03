@@ -184,9 +184,12 @@ TypeConverter<scoped_refptr<media::DecoderBuffer>,
   buffer->set_is_key_frame(mojo_buffer->is_key_frame);
 
   if (mojo_buffer->decrypt_config) {
-    buffer->set_decrypt_config(
-        mojo_buffer->decrypt_config
-            .To<std::unique_ptr<media::DecryptConfig>>());
+    auto decrypt_config =
+        mojo_buffer->decrypt_config.To<std::unique_ptr<media::DecryptConfig>>();
+    if (!decrypt_config) {
+      return nullptr;
+    }
+    buffer->set_decrypt_config(std::move(decrypt_config));
   }
 
   // TODO(dalecurtis): We intentionally do not deserialize the data section of

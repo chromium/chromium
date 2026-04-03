@@ -650,7 +650,8 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
   } else {
     for (size_t i = 0; i < decrypt_config.subsamples().size(); ++i) {
       const auto& subsamples = decrypt_config.subsamples()[i];
-      if (subsamples.cypher_bytes > std::numeric_limits<int32_t>::max()) {
+      if (subsamples.cypher_bytes > std::numeric_limits<int32_t>::max() ||
+          subsamples.clear_bytes > std::numeric_limits<int32_t>::max()) {
         return {MediaCodecResult::Codes::kError,
                 "Subsample size is too large."};
       }
