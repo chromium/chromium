@@ -22,9 +22,11 @@ public final class GlicKeyedServiceHandler {
      *
      * @param profile The current profile.
      * @param task The ChromeAndroidTask.
+     * @param preventClose Whether to prevent closing the UI if it's already open.
      * @return true if the UI was successfully toggled.
      */
-    public static boolean toggleGlic(Profile profile, @Nullable ChromeAndroidTask task) {
+    public static boolean toggleGlic(
+            Profile profile, @Nullable ChromeAndroidTask task, boolean preventClose) {
         GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
         if (service == null) {
             return false;
@@ -37,7 +39,7 @@ public final class GlicKeyedServiceHandler {
 
         long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(profile);
         // TODO(crbug.com/479863299): Create and pass in enum for invocationSource.
-        service.toggleUI(browserWindowPtr, profile, /* invocationSource= */ 7);
+        service.toggleUI(browserWindowPtr, preventClose, profile, /* invocationSource= */ 7);
         return true;
     }
 }

@@ -34,14 +34,15 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     }
 
     @Override
-    public void toggleUI(long browserWindowPtr, Profile profile, int invocationSource) {
+    public void toggleUI(
+            long browserWindowPtr, boolean preventClose, Profile profile, int invocationSource) {
         if (mNativePtr == 0) return;
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.notifyEvent(EventConstants.GLIC_ANDROID_USED);
 
         GlicKeyedServiceImplJni.get()
-                .toggleUI(mNativePtr, browserWindowPtr, profile, invocationSource);
+                .toggleUI(mNativePtr, browserWindowPtr, preventClose, profile, invocationSource);
     }
 
     @CalledByNative
@@ -54,6 +55,7 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         void toggleUI(
                 long nativeGlicKeyedServiceAndroid,
                 long browserWindowPtr,
+                boolean preventClose,
                 @JniType("Profile*") Profile profile,
                 int source);
     }

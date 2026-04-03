@@ -29,10 +29,12 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
   // already active.
   // `env` is the JNI environment.
   // `browser_window_ptr` is unpacked to call the cross-platform service.
+  // `prevent_close` whether to prevent closing the UI if it's already open.
   // `profile` associated with this request.
   // `source` for the UI toggle.
   void ToggleUI(JNIEnv* env,
                 int64_t browser_window_ptr,
+                bool prevent_close,
                 Profile* profile,
                 int32_t source);
 

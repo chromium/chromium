@@ -1212,7 +1212,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mModalDialogManagerSupplier,
                 // TODO(agrieve): See if this can be changed to a NonNullObservableSupplier.
                 (MonotonicObservableSupplier<Integer>) mTabStripVisibilitySupplier,
-                () -> toggleGlic());
+                () -> toggleGlic(false));
     }
 
     @Override
@@ -2355,12 +2355,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mActivity.finishAndRemoveTask();
             return true;
         } else if (id == R.id.glic_menu_id) {
-            return toggleGlic();
+            return toggleGlic(false);
         }
         return false;
     }
 
-    public boolean toggleGlic() {
+    /**
+     * Toggles the Glic UI.
+     *
+     * @param preventClose whether to prevent closing the Glic UI if it's already open.
+     * @return whether the UI was successfully toggled.
+     */
+    public boolean toggleGlic(boolean preventClose) {
         // TODO(crbug.com/489548570): Remove this entry point into SidePanelDevFeature.
         if (mSidePanelDevFeature != null) {
             mSidePanelDevFeature.toggle();
@@ -2370,7 +2376,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         Profile profile = mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
         assert profile != null;
 
-        return GlicKeyedServiceHandler.toggleGlic(profile, mChromeAndroidTaskSupplier.get());
+        return GlicKeyedServiceHandler.toggleGlic(
+                profile, mChromeAndroidTaskSupplier.get(), preventClose);
     }
 
     /* package */ KeyboardFocusRowManager getKeyboardFocusRowManagerForTesting() {

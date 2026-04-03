@@ -17,9 +17,11 @@ public interface GlicKeyedService {
      * Toggles the Glic user interface.
      *
      * @param browserWindowPtr The native pointer (long) to the BrowserWindowInterface.
+     * @param preventClose Whether to prevent closing the UI if it's already open.
      * @param profile The {@link Profile} associated with this service instance.
      * @param invocationSource An integer representing the {@code mojom::InvocationSource} mapping
      *     to how the UI was triggered.
      */
-    void toggleUI(long browserWindowPtr, Profile profile, int invocationSource);
+    void toggleUI(
+            long browserWindowPtr, boolean preventClose, Profile profile, int invocationSource);
 }

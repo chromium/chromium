@@ -60,12 +60,13 @@ GlicKeyedServiceAndroid::GetJavaObject() {
 
 void GlicKeyedServiceAndroid::ToggleUI(JNIEnv* env,
                                        int64_t browser_window_ptr,
+                                       bool prevent_close,
                                        Profile* profile,
                                        int32_t source) {
   auto* window = reinterpret_cast<BrowserWindowInterface*>(browser_window_ptr);
   CHECK(window);
 
-  service_->ToggleUI(window, /*prevent_close=*/false,
+  service_->ToggleUI(window, prevent_close,
                      static_cast<mojom::InvocationSource>(source));
 }
 
