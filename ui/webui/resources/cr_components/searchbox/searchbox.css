@@ -18,7 +18,6 @@
   --cr-searchbox-inner-icon-margin: 8px;
   --cr-searchbox-voice-icon-offset: 16px;
   --cr-searchbox-voice-search-button-width: 0px;
-  --cr-compose-button-width: 104px;
   --cr-searchbox-icon-spacing: 11px;
   border-radius: var(--cr-searchbox-border-radius);
   font-size: var(--cr-searchbox-font-size, 16px);
@@ -89,10 +88,6 @@
 :host([is-lens-searchbox_]) #inputWrapper {
   box-shadow: none;
   overflow: hidden;
-}
-
-:host([compose-button-enabled]) cr-searchbox-input::part(searchbox-input) {
-  padding-inline-end: 16px;
 }
 
 cr-searchbox-input::part(searchbox-input) {
@@ -194,15 +189,6 @@ cr-searchbox-input::part(icon) {
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 21px 21px;
   background-color: var(--color-searchbox-lens-voice-icon-background);
-}
-
-:host([use-webkit-search-icons_][compose-button-enabled]) #voiceSearchButton,
-:host([use-webkit-search-icons_][compose-button-enabled]) #lensSearchButton {
-  background-color: #1F1F1F;
-}
-
-:host([compose-button-enabled][searchbox-lens-search-enabled_]) {
-  --cr-searchbox-voice-icon-offset: calc(16px + 2 * var(--cr-searchbox-icon-spacing) + var(--cr-searchbox-icon-width) + var(--cr-compose-button-width));
 }
 
 #thumbnailContainer {

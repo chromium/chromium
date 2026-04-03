@@ -59,11 +59,6 @@ export function getHtml(this: SearchboxElement) {
         </button>
       </div>
     ` : ''}
-    ${this.composeButtonEnabled ? html`
-      <cr-searchbox-compose-button id="composeButton" slot="compose-button"
-          @compose-click="${this.onComposeClick_}">
-      </cr-searchbox-compose-button>
-    ` : ''}
   </cr-searchbox-input>
   <div class="dropdownContainer">
     ${getDropdownHtml.bind(this)()}

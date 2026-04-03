@@ -97,6 +97,7 @@ build_webui("build") {
   ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_histograms.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
