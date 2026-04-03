@@ -983,17 +983,10 @@ bool Canvas2DResourceProviderSharedImage::IsValid() const {
 
 bool CanvasNon2DResourceProviderSharedImage::IsValid() const {
   if (is_software_) {
-    // Software compositing (which always uses software raster).
     return !IsSoftwareSharedImageGpuChannelLost() && GetSkSurface();
   }
 
-  if (is_accelerated_) {
-    // GPU compositing and GPU raster.
-    return !IsGpuContextLost();
-  }
-
-  // GPU compositing and software raster.
-  return !IsGpuContextLost() && GetSkSurface();
+  return !IsGpuContextLost();
 }
 
 bool CanvasResourceProviderSharedImage::IsSingleBuffered() const {
