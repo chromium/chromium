@@ -17,5 +17,6 @@ found in the LICENSE file.
     <dimen name="extensions_toolbar_button_radius_inner">4dp</dimen>
     <dimen name="extensions_toolbar_button_radius_outer">20dp</dimen>
     <dimen name="extensions_request_access_button_margin_end">2dp</dimen>
-    <dimen name="extensions_request_access_button_padding">12dp</dimen>
+    <dimen name="extensions_request_access_button_padding_start">16dp</dimen>
+    <dimen name="extensions_request_access_button_padding_end">8dp</dimen>
 </resources>

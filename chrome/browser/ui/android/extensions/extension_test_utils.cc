@@ -10,12 +10,18 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/test_support_jni_headers/ExtensionTestUtils_jni.h"
@@ -71,6 +77,47 @@ static jint JNI_ExtensionTestUtils_GetRenderFrameHostCount(
   return extensions::ProcessManager::Get(profile)
       ->GetRenderFrameHostsForExtension(extension_id)
       .size();
+}
+
+static void JNI_ExtensionTestUtils_SetWithholdHostPermissions(
+    JNIEnv* env,
+    Profile* profile,
+    const std::string& extension_id,
+    jboolean withhold) {
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
+          extension_id);
+  extensions::ScriptingPermissionsModifier(profile,
+                                           base::WrapRefCounted(extension))
+      .SetWithholdHostPermissions(withhold);
+}
+
+static void JNI_ExtensionTestUtils_AddHostAccessRequest(
+    JNIEnv* env,
+    Profile* profile,
+    content::WebContents* web_contents,
+    const std::string& extension_id) {
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
+          extension_id);
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  extensions::PermissionsManager::Get(profile)->AddHostAccessRequest(
+      web_contents, tab_id, *extension);
+}
+
+static jboolean JNI_ExtensionTestUtils_HasGrantedHostPermission(
+    JNIEnv* env,
+    Profile* profile,
+    const std::string& extension_id,
+    const std::string& url) {
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
+          extension_id);
+  if (!extension) {
+    return false;
+  }
+  return extensions::PermissionsManager::Get(profile)->HasGrantedHostPermission(
+      *extension, GURL(url));
 }
 
 }  // namespace extensions

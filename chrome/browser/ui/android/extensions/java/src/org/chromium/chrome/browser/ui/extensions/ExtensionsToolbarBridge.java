@@ -175,6 +175,14 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 .getExtensionsMenuButtonState(mNativeExtensionsToolbarAndroid, webContents);
     }
 
+    public void onRequestAccessButtonClicked(WebContents webContents) {
+        if (mProfile.shutdownStarted()) {
+            return;
+        }
+        ExtensionsToolbarBridgeJni.get()
+                .onRequestAccessButtonClicked(mNativeExtensionsToolbarAndroid, webContents);
+    }
+
     public RequestAccessButtonParams getRequestAccessButtonParams(WebContents webContents) {
         assert mNativeExtensionsToolbarAndroid != 0;
         RequestAccessButtonParams params =
@@ -366,6 +374,10 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 long nativeExtensionsToolbarAndroid,
                 @JniType("std::string") String actionId,
                 int targetIndex);
+
+        void onRequestAccessButtonClicked(
+                long nativeExtensionsToolbarAndroid,
+                @JniType("content::WebContents*") WebContents webContents);
 
         RequestAccessButtonParams getRequestAccessButtonParams(
                 long nativeExtensionsToolbarAndroid,

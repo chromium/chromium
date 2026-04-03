@@ -13,9 +13,12 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/permissions_manager.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/events/android/key_event_android.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -246,10 +249,40 @@ bool ExtensionsToolbarAndroid::IsActionDraggable(
   return toolbar_view_model_->IsActionDraggable(action_id);
 }
 
+void ExtensionsToolbarAndroid::OnRequestAccessButtonClicked(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  ExtensionsToolbarViewModel::RequestAccessButtonParams params =
+      toolbar_view_model_->GetRequestAccessButtonParams(web_contents);
+
+  GrantSiteAccess(web_contents, params.extension_ids);
+}
+
 void ExtensionsToolbarAndroid::ExecuteUserAction(
     const ToolbarActionsModel::ActionId& action_id,
     ToolbarActionViewModel::InvocationSource source) {
   toolbar_view_model_->ExecuteUserAction(action_id, source);
+}
+
+// TODO(crbug.com/499007513): Move this logic to ExtensionsToolbarViewModel so
+// it can be shared and used by all delegates.
+void ExtensionsToolbarAndroid::GrantSiteAccess(
+    content::WebContents* web_contents,
+    const std::vector<std::string>& extension_ids) {
+  Profile* profile = browser_->GetProfile();
+  auto* registry = extensions::ExtensionRegistry::Get(profile);
+  std::vector<const extensions::Extension*> extensions_to_run;
+  for (const auto& id : extension_ids) {
+    const extensions::Extension* extension =
+        registry->enabled_extensions().GetByID(id);
+    if (extension) {
+      extensions_to_run.push_back(extension);
+    }
+  }
+
+  extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
+      extensions_to_run, web_contents,
+      extensions::PermissionsManager::UserSiteAccess::kOnSite);
 }
 
 void ExtensionsToolbarAndroid::RegisterIconObserverForAction(

@@ -307,9 +307,23 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
             TextView requestAccessButton =
                     mContainer.findViewById(R.id.extensions_request_access_button);
 
+            int heightSpec;
+            if (mContainer.getHeight() > 0) {
+                heightSpec =
+                        View.MeasureSpec.makeMeasureSpec(
+                                mContainer.getHeight(), View.MeasureSpec.EXACTLY);
+            } else {
+                int expectedHeight =
+                        mContainer
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        org.chromium.chrome.browser.toolbar.R.dimen
+                                                .toolbar_button_height);
+                heightSpec =
+                        View.MeasureSpec.makeMeasureSpec(expectedHeight, View.MeasureSpec.EXACTLY);
+            }
             requestAccessButton.measure(
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), heightSpec);
             int buttonWidth = requestAccessButton.getMeasuredWidth();
 
             boolean hasSpaceToShow = buttonWidth <= availableWidth;

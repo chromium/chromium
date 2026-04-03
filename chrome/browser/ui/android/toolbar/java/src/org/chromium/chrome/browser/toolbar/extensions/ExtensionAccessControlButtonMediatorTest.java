@@ -8,8 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,6 +41,7 @@ public class ExtensionAccessControlButtonMediatorTest {
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
+    @Mock private Context mContext;
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
 
@@ -50,6 +54,10 @@ public class ExtensionAccessControlButtonMediatorTest {
     public void setUp() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         mCurrentTabSupplier.set(mTab);
+        when(mContext.getString(
+                        org.chromium.chrome.browser.ui.extensions.R.string
+                                .extensions_request_access_button_dismissed_text))
+                .thenReturn("Allowed");
 
         when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
                 .thenReturn(new RequestAccessButtonParams(new String[0], ""));
@@ -63,7 +71,7 @@ public class ExtensionAccessControlButtonMediatorTest {
 
         mMediator =
                 new ExtensionAccessControlButtonMediator(
-                        mModel, mCurrentTabSupplier, mExtensionsToolbarBridge, (v) -> {});
+                        mContext, mModel, mCurrentTabSupplier, mExtensionsToolbarBridge, (v) -> {});
         verify(mExtensionsToolbarBridge).addObserver(mToolbarObserverCaptor.capture());
     }
 
@@ -94,7 +102,8 @@ public class ExtensionAccessControlButtonMediatorTest {
         assertEquals(
                 tooltip,
                 mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION));
-        assertEquals(1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TEXT));
+        assertEquals(
+                1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT));
     }
 
     @Test
@@ -122,6 +131,49 @@ public class ExtensionAccessControlButtonMediatorTest {
         assertEquals(
                 tooltip,
                 mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION));
-        assertEquals(1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TEXT));
+        assertEquals(
+                1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT));
+    }
+
+    @Test
+    public void testRequestAccessButton_TabSwitchClearsAllowedState() {
+        ExtensionsToolbarBridge.Observer observer = mToolbarObserverCaptor.getValue();
+
+        // 1. Initial state: Has requests on Tab A
+        RequestAccessButtonParams paramsWithRequests =
+                new RequestAccessButtonParams(new String[] {"a"}, "Tooltip");
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(mWebContents))
+                .thenReturn(paramsWithRequests);
+
+        observer.onActiveWebContentsChanged(mWebContents);
+        assertTrue(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
+        assertEquals(
+                1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT));
+
+        // 2. User clicks the button
+        android.view.View.OnClickListener listener =
+                mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CLICK_LISTENER);
+        listener.onClick(null);
+
+        // 3. Button changes to "Allowed" state (-1)
+        assertEquals(
+                -1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT));
+
+        // 4. Same tab reload (WebContents doesn't change) should NOT clear the "Allowed" text
+        observer.onActiveWebContentsChanged(mWebContents);
+        assertEquals(
+                -1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT));
+
+        // 5. Switch to a new tab (different WebContents)
+        WebContents newWebContents = mock(WebContents.class);
+        RequestAccessButtonParams paramsNewTab = new RequestAccessButtonParams(new String[0], "");
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(newWebContents))
+                .thenReturn(paramsNewTab);
+
+        observer.onActiveWebContentsChanged(newWebContents);
+
+        // State should be immediately cleared and the button should evaluate state for the new tab
+        // (no requests)
+        assertFalse(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
     }
 }

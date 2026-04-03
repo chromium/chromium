@@ -51,6 +51,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.extensions.common.ExtensionFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -307,6 +308,30 @@ public class ExtensionsToolbarTest {
         return installTestExtension(dir);
     }
 
+    /** Loads an extension with a content script that matches the given host. */
+    private String loadContentScriptExtension(
+            String dirName, String name, String actionTitle, String host) throws IOException {
+        File dir = mTempDir.newFolder(dirName);
+        writeFile(
+                new File(dir, "manifest.json"),
+                String.format(
+                        "{"
+                                + "  \"name\": \"%s\","
+                                + "  \"manifest_version\": 3,"
+                                + "  \"version\": \"0.1\","
+                                + "  \"permissions\": [\"test\"],"
+                                + "  \"host_permissions\": [\"%s\"],"
+                                + "  \"content_scripts\": [{"
+                                + "    \"matches\": [\"%s\"],"
+                                + "    \"js\": [\"content.js\"]"
+                                + "  }],"
+                                + "  \"action\": { \"default_title\": \"%s\" }"
+                                + "}",
+                        name, host, host, actionTitle));
+        writeFile(new File(dir, "content.js"), "console.log('injected');");
+        return installTestExtension(dir);
+    }
+
     /** Loads an extension that requests host permissions on a specific site. */
     private String loadHostPermissionsExtension(
             String dirName, String name, String actionTitle, String host) throws IOException {
@@ -542,5 +567,57 @@ public class ExtensionsToolbarTest {
 
         // Verify the icon is still visible after the menu is closed.
         ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    public void testRequestAccessButtonGrantsSiteAccess() throws IOException {
+        String url = mTestServer.getURL("/chrome/test/data/android/simple.html");
+        String extensionId =
+                loadContentScriptExtension("extension1", "Test Extension", "Test Action", url);
+
+        ExtensionTestUtils.setWithholdHostPermissions(mProfile, extensionId, true);
+
+        // Verify extension has no site access before
+        org.junit.Assert.assertFalse(
+                ExtensionTestUtils.hasGrantedHostPermission(mProfile, extensionId, url));
+
+        // Navigate to the site where the extension requests access.
+        mPage = mPage.loadWebPageProgrammatically(url);
+
+        // Add an active request for the extension
+        WebContents webContents =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getActivity().getActivityTab().getWebContents());
+        ExtensionTestUtils.addHostAccessRequest(mProfile, webContents, extensionId);
+
+        // Verify the request access button is visible and shows the count.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_request_access_button))
+                .check(matches(isDisplayed()))
+                .check(matches(withText("Allow 1?")));
+
+        // Click the request access button.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_request_access_button)).perform(click());
+
+        // Verify the button text changes to "Allowed" and it becomes disabled.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    android.widget.TextView btn =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.extensions_request_access_button);
+                    if (btn == null) return false;
+                    String expectedText =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getString(
+                                            R.string
+                                                    .extensions_request_access_button_dismissed_text);
+                    return !btn.isEnabled() && expectedText.equals(btn.getText().toString());
+                });
+
+        // Verify site access is granted after
+        org.junit.Assert.assertTrue(
+                ExtensionTestUtils.hasGrantedHostPermission(mProfile, extensionId, url));
     }
 }

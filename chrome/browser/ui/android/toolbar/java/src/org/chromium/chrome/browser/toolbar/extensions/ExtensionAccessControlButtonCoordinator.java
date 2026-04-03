@@ -45,7 +45,11 @@ public class ExtensionAccessControlButtonCoordinator implements Destroyable {
 
         mMediator =
                 new ExtensionAccessControlButtonMediator(
-                        model, currentTabSupplier, extensionsToolbarBridge, visibilityObserver);
+                        requestAccessButton.getContext(),
+                        model,
+                        currentTabSupplier,
+                        extensionsToolbarBridge,
+                        visibilityObserver);
     }
 
     @Override

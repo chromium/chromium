@@ -85,6 +85,8 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
                          const ToolbarActionsModel::ActionId& action_id);
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
                          ToolbarActionViewModel::InvocationSource source);
+  void OnRequestAccessButtonClicked(JNIEnv* env,
+                                    content::WebContents* web_contents);
   void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,
                         int target_index);
 
@@ -93,6 +95,10 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
       const ToolbarActionsModel::ActionId& action_id);
 
   void OnActionIconUpdated(const ToolbarActionsModel::ActionId& action_id);
+
+  // TODO(crbug.com/499007513): Move this logic to ExtensionsToolbarViewModel.
+  void GrantSiteAccess(content::WebContents* web_contents,
+                       const std::vector<std::string>& extension_ids);
 
   const raw_ptr<BrowserWindowInterface> browser_;
 

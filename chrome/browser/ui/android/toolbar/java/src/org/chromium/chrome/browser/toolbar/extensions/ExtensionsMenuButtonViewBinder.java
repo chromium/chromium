@@ -27,6 +27,10 @@ class ExtensionsMenuButtonViewBinder {
                                         .EXTENSIONS_MENU_BUTTON_DEFAULT_BACKGROUND);
                 if (defaultBg != 0) {
                     view.setBackgroundResource(defaultBg);
+                } else {
+                    view.setBackgroundResource(
+                            org.chromium.components.browser_ui.widget.R.drawable
+                                    .default_icon_background);
                 }
             }
         }

@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION;
-import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TEXT;
+import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT;
 
 import android.view.View;
 import android.widget.TextView;
@@ -22,15 +23,22 @@ class ExtensionAccessControlButtonViewBinder {
         if (key == IS_REQUEST_ACCESS_BUTTON_VISIBLE) {
             view.setVisibility(
                     model.get(IS_REQUEST_ACCESS_BUTTON_VISIBLE) ? View.VISIBLE : View.GONE);
-        } else if (key == REQUEST_ACCESS_BUTTON_TEXT) {
-            int count = model.get(REQUEST_ACCESS_BUTTON_TEXT);
-            String text =
-                    view.getContext()
-                            .getString(R.string.extensions_request_access_button)
-                            .replace("$1", String.valueOf(count));
+        } else if (key == REQUEST_ACCESS_BUTTON_EXTENSION_COUNT) {
+            int count = model.get(REQUEST_ACCESS_BUTTON_EXTENSION_COUNT);
+            // A count of -1 indicates that the user has dismissed the button.
+            if (count == -1) {
+                ((TextView) view).setText(R.string.extensions_request_access_button_dismissed_text);
+                return;
+            }
+            String text = view.getContext().getString(R.string.extensions_request_access_button);
+            text = text.replace("$1", String.valueOf(count));
             ((TextView) view).setText(text);
         } else if (key == REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION) {
             view.setContentDescription(model.get(REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION));
+        } else if (key == REQUEST_ACCESS_BUTTON_CLICK_LISTENER) {
+            View.OnClickListener listener = model.get(REQUEST_ACCESS_BUTTON_CLICK_LISTENER);
+            view.setOnClickListener(listener);
+            view.setEnabled(listener != null);
         }
     }
 }

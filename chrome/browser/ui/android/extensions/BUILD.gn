@@ -142,6 +142,7 @@ static_library("test_support") {
     ]
     deps += [
       "//base",
+      "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/android/extensions:test_support_jni_headers",

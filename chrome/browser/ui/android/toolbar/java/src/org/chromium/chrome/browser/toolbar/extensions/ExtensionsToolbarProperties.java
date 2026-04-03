@@ -15,8 +15,12 @@ class ExtensionsToolbarProperties {
     public static final WritableBooleanPropertyKey IS_REQUEST_ACCESS_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey("IS_REQUEST_ACCESS_BUTTON_VISIBLE");
 
-    public static final WritableIntPropertyKey REQUEST_ACCESS_BUTTON_TEXT =
+    // -1 is used as a sentinel value to indicate the "Allowed" confirmation state.
+    public static final WritableIntPropertyKey REQUEST_ACCESS_BUTTON_EXTENSION_COUNT =
             new WritableIntPropertyKey();
+
+    public static final WritableObjectPropertyKey<android.view.View.OnClickListener>
+            REQUEST_ACCESS_BUTTON_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String>
             REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION = new WritableObjectPropertyKey<>();
@@ -27,8 +31,9 @@ class ExtensionsToolbarProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_REQUEST_ACCESS_BUTTON_VISIBLE,
-                REQUEST_ACCESS_BUTTON_TEXT,
+                REQUEST_ACCESS_BUTTON_EXTENSION_COUNT,
                 REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION,
-                EXTENSIONS_MENU_BUTTON_DEFAULT_BACKGROUND
+                EXTENSIONS_MENU_BUTTON_DEFAULT_BACKGROUND,
+                REQUEST_ACCESS_BUTTON_CLICK_LISTENER
             };
 }

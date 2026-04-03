@@ -17,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.WebContents;
 
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
@@ -112,6 +113,55 @@ public class ExtensionTestUtils {
                 () -> {
                     return ExtensionTestUtilsJni.get()
                             .getRenderFrameHostCount(profile, extensionId);
+                });
+    }
+
+    /**
+     * Sets whether host permissions are withheld for the given extension.
+     *
+     * @param profile The profile the extension belongs to.
+     * @param extensionId The ID of the extension.
+     * @param withhold Whether to withhold host permissions.
+     */
+    public static void setWithholdHostPermissions(
+            Profile profile, String extensionId, boolean withhold) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ExtensionTestUtilsJni.get()
+                            .setWithholdHostPermissions(profile, extensionId, withhold);
+                });
+    }
+
+    /**
+     * Adds an active host access request for the given extension on the specified web contents.
+     *
+     * @param profile The profile the extension belongs to.
+     * @param webContents The web contents where the extension is requesting access.
+     * @param extensionId The ID of the extension requesting access.
+     */
+    public static void addHostAccessRequest(
+            Profile profile, WebContents webContents, String extensionId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ExtensionTestUtilsJni.get()
+                            .addHostAccessRequest(profile, webContents, extensionId);
+                });
+    }
+
+    /**
+     * Checks if the extension has been granted host permission for the given URL.
+     *
+     * @param profile The profile the extension belongs to.
+     * @param extensionId The ID of the extension.
+     * @param url The URL to check access for.
+     * @return True if the extension has granted host permission for the URL, false otherwise.
+     */
+    public static boolean hasGrantedHostPermission(
+            Profile profile, String extensionId, String url) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return ExtensionTestUtilsJni.get()
+                            .hasGrantedHostPermission(profile, extensionId, url);
                 });
     }
 
@@ -212,5 +262,20 @@ public class ExtensionTestUtils {
 
         int getRenderFrameHostCount(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
+
+        void setWithholdHostPermissions(
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") String extensionId,
+                boolean withhold);
+
+        void addHostAccessRequest(
+                @JniType("Profile*") Profile profile,
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("std::string") String extensionId);
+
+        boolean hasGrantedHostPermission(
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") String extensionId,
+                @JniType("std::string") String url);
     }
 }
