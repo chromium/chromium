@@ -373,6 +373,7 @@ static_library("ui") {
     "//chrome/browser/task_manager:impl",
     "//chrome/browser/task_manager/common",
     "//chrome/browser/task_manager/common:impl",
+    "//chrome/browser/translate:impl",
     "//chrome/browser/trusted_vault",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/autofill:impl",
@@ -814,6 +815,10 @@ static_library("ui") {
     # TODO(crbug.com/420905611): Remove this circular dependency when c/b/ui/browser_dialogs.h
     # gets componentized.
     "//chrome/browser/ui/extensions:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when
+    # translate's impl no longer includes headers from //chrome/browser/ui.
+    "//chrome/browser/translate:impl",
   ]
 
   if (enable_vr && is_win) {

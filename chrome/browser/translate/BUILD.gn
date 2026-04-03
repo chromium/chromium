@@ -2,15 +2,90 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 source_set("translate") {
-  sources = [ "chrome_translate_client.h" ]
+  public = [
+    "chrome_translate_client.h",
+    "translate_frame_binder.h",
+    "translate_ranker_factory.h",
+    "translate_ranker_metrics_provider.h",
+    "translate_service.h",
+  ]
+
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/language/core/browser",
     "//components/language_detection/content/browser",
+    "//components/language_detection/content/common",
+    "//components/metrics",
     "//components/translate/content/browser",
+    "//components/translate/content/common",
     "//components/translate/core/browser",
     "//components/translate/core/common",
+    "//components/web_resource",
     "//content/public/browser",
+    "//mojo/public/cpp/bindings",
   ]
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_translate_client.cc",
+    "translate_frame_binder.cc",
+    "translate_ranker_factory.cc",
+    "translate_ranker_metrics_provider.cc",
+    "translate_service.cc",
+  ]
+
+  public_deps = [
+    ":translate",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/language_detection",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui/translate",
+    "//chrome/common",
+    "//components/infobars/content",
+    "//components/keyed_service/core",
+    "//components/language/core/browser",
+    "//components/language_detection/core/browser:language_detection_model_service",
+    "//components/prefs",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//components/variations/service",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/metrics_proto",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/android:resource_mapper",
+      "//chrome/browser/translate/android",
+      "//components/translate/content/android",
+    ]
+  }
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/ash/components/file_manager:constants",
+      "//extensions/common:common_constants",
+    ]
+  }
 }

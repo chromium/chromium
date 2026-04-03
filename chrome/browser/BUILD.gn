@@ -1128,15 +1128,6 @@ static_library("browser") {
     "tab_group_sync/tab_group_sync_utils.h",
     "tab_group_sync/tab_group_trial.cc",
     "tab_group_sync/tab_group_trial.h",
-    "translate/chrome_translate_client.cc",
-    "translate/translate_frame_binder.cc",
-    "translate/translate_frame_binder.h",
-    "translate/translate_ranker_factory.cc",
-    "translate/translate_ranker_factory.h",
-    "translate/translate_ranker_metrics_provider.cc",
-    "translate/translate_ranker_metrics_provider.h",
-    "translate/translate_service.cc",
-    "translate/translate_service.h",
     "unexpire_flags.cc",
     "unexpire_flags.h",
     "universal_web_contents_observers.cc",
@@ -1253,6 +1244,15 @@ static_library("browser") {
     "//chrome/browser/storage_access_api",
     "//chrome/browser/task_manager:impl",
     "//chrome/browser/top_level_storage_access_api:permissions",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers from //chrome/browser get componentized:
+    # - c/b/language/accept_languages_service_factory.h
+    # - c/b/language/language_model_manager_factory.h
+    # - c/b/language/url_language_histogram_factory.h
+    # - c/b/net/system_network_context_manager.h
+    "//chrome/browser/translate:impl",
+
     "//chrome/browser/ui",
     "//chrome/browser/ui/autofill:impl",
     "//chrome/browser/ui/autofill/payments",
@@ -1755,6 +1755,7 @@ static_library("browser") {
     "//chrome/browser/tracing:impl",
     "//chrome/browser/transition_manager",
     "//chrome/browser/translate",
+    "//chrome/browser/translate:impl",
     "//chrome/browser/trusted_vault",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
