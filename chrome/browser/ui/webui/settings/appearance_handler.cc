@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_metrics.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/web_ui.h"
 

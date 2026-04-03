@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_METRICS_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_METRICS_H_
+#ifndef CHROME_BROWSER_UI_TABS_VERTICAL_TAB_STRIP_METRICS_H_
+#define CHROME_BROWSER_UI_TABS_VERTICAL_TAB_STRIP_METRICS_H_
 
 namespace tabs {
 
@@ -25,4 +25,4 @@ void RecordVerticalTabStripModeChanged(bool is_vertical,
 
 }  // namespace tabs
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_METRICS_H_
+#endif  // CHROME_BROWSER_UI_TABS_VERTICAL_TAB_STRIP_METRICS_H_
