@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -502,8 +501,6 @@ class FuseboxViewBinder {
             return;
         }
 
-        boolean showTryAiModeHintInDedicatedModeButton =
-                OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.getValue();
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
         Context context = view.parentView.getContext();
         Resources res = context.getResources();
@@ -542,19 +539,6 @@ class FuseboxViewBinder {
                 assumeNonNull(startDrawable).mutate().setTint(colorPrimary);
                 endDrawable.setTint(colorPrimary);
             }
-        } else if (showTryAiModeHintInDedicatedModeButton) {
-            text = res.getString(R.string.ai_mode_entrypoint_hint);
-            description = text;
-            buttonColor = Color.TRANSPARENT;
-            borderColor =
-                    OmniboxResourceProvider.getAiModeHintBorderColor(context, brandedColorScheme);
-            textAppearanceRes = OmniboxResourceProvider.getAiModeHintTextRes(brandedColorScheme);
-            startDrawable =
-                    assumeNonNull(context.getDrawable(R.drawable.search_spark_black_24dp)).mutate();
-            startDrawable.setTint(
-                    OmniboxResourceProvider.getAiModeHintIconTintColor(
-                            context, brandedColorScheme));
-            endDrawable = null;
         } else /* dedicated button with aimode off, no hint text changes. */ {
             text = res.getString(R.string.ai_mode_entrypoint_label);
             description = res.getString(R.string.accessibility_omnibox_enable_ai_mode);

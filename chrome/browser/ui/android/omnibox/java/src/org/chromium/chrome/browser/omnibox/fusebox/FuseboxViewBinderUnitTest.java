@@ -65,15 +65,13 @@ public class FuseboxViewBinderUnitTest {
     @IntDef({
         Variant.DEFAULT,
         Variant.DEDICATED_BUTTON,
-        Variant.DEDICATED_BUTTON_WITH_HINT,
         Variant.COMPACT,
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface Variant {
         int DEFAULT = 0;
         int DEDICATED_BUTTON = 1;
-        int DEDICATED_BUTTON_WITH_HINT = 2;
-        int COMPACT = 3;
+        int COMPACT = 2;
     }
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -127,10 +125,7 @@ public class FuseboxViewBinderUnitTest {
 
     private void configureFusebox(@Variant int testCase, @AutocompleteRequestType int requestType) {
         OmniboxFeatures.sShowDedicatedModeButton.setForTesting(
-                testCase == Variant.DEDICATED_BUTTON
-                        || testCase == Variant.DEDICATED_BUTTON_WITH_HINT);
-        OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.setForTesting(
-                testCase == Variant.DEDICATED_BUTTON_WITH_HINT);
+                testCase == Variant.DEDICATED_BUTTON);
 
         // Reflect the active state of the fusebox toolbar.
         mModel.set(
@@ -240,20 +235,6 @@ public class FuseboxViewBinderUnitTest {
         configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.CANVAS);
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("Canvas", mViewHolder.requestType.getText());
-    }
-
-    @Test
-    public void updateModeSelectorVisibility_dedicatedButtonWithHint_searchModeAndStyling() {
-        configureFusebox(Variant.DEDICATED_BUTTON_WITH_HINT, AutocompleteRequestType.SEARCH);
-        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
-        assertEquals("Try AI Mode", mViewHolder.requestType.getText());
-    }
-
-    @Test
-    public void updateModeSelectorVisibility_dedicatedButtonWithHint_aiModeAndStyling() {
-        configureFusebox(Variant.DEDICATED_BUTTON_WITH_HINT, AutocompleteRequestType.AI_MODE);
-        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
-        assertEquals("AI Mode", mViewHolder.requestType.getText());
     }
 
     @Test

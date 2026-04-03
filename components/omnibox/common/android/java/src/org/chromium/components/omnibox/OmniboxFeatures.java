@@ -138,9 +138,6 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sShowDedicatedModeButton =
             newBooleanParam(sOmniboxMultimodalInput, "show_dedicated_mode_button", false);
 
-    public static final BooleanCachedFeatureParam sShowTryAiModeHintInDedicatedModeButton =
-            newBooleanParam(sOmniboxMultimodalInput, "show_try_aimode_hint_in_mode_button", false);
-
     public static final BooleanCachedFeatureParam sShowImageGenerationButtonInIncognito =
             newBooleanParam(sOmniboxMultimodalInput, "show_image_gen_button_in_incognito", true);
 
@@ -148,7 +145,7 @@ public class OmniboxFeatures {
             newBooleanParam(sOmniboxMultimodalInput, "compact_fusebox", false);
 
     public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
-            newBooleanParam(sOmniboxMultimodalInput, "multi_context", false);
+            newBooleanParam(sOmniboxMultimodalInput, "multi_context", true);
 
     public static final BooleanCachedFeatureParam sRedirectComposeplateButton =
             newBooleanParam(sOmniboxMultimodalInput, "redirect_composeplate_button", true);
