@@ -1930,12 +1930,6 @@ inline constexpr char kWebRequestSecurityInfoDescription[] =
     "Enables SecurityInfo in WebRequest API for extensions, allowing "
     "listeners to retrieve certificate details of web requests.";
 
-inline constexpr char kEnableWindowsGamingInputDataFetcherName[] =
-    "Enable Windows.Gaming.Input";
-inline constexpr char kEnableWindowsGamingInputDataFetcherDescription[] =
-    "Enable Windows.Gaming.Input by default to provide game controller "
-    "support on Windows 10 desktop.";
-
 inline constexpr char kGamepadRawInputChangeEventName[] =
     "Gamepad Raw Input Change Event";
 inline constexpr char kGamepadRawInputChangeEventDescription[] =

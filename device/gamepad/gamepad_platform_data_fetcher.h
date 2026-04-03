@@ -22,7 +22,6 @@
 #include "device/gamepad/nintendo_data_fetcher.h"
 #include "device/gamepad/raw_input_data_fetcher_win.h"
 #include "device/gamepad/wgi_data_fetcher_win.h"
-#include "device/gamepad/xinput_data_fetcher_win.h"
 #elif BUILDFLAG(IS_APPLE)
 #include "device/gamepad/game_controller_data_fetcher_mac.h"
 #if BUILDFLAG(IS_MAC)
@@ -44,13 +43,7 @@ void AddGamepadPlatformDataFetchers(GamepadDataFetcherManager* manager) {
 
 #elif BUILDFLAG(IS_WIN)
 
-  // Windows.Gaming.Input is available in Windows 10.0.10240.0 and later.
-  if (base::FeatureList::IsEnabled(
-          features::kEnableWindowsGamingInputDataFetcher)) {
-    manager->AddFactory(new WgiDataFetcherWin::Factory());
-  } else {
-    manager->AddFactory(new XInputDataFetcherWin::Factory());
-  }
+  manager->AddFactory(new WgiDataFetcherWin::Factory());
   manager->AddFactory(new NintendoDataFetcher::Factory());
   manager->AddFactory(new RawInputDataFetcher::Factory());
 
