@@ -66,6 +66,8 @@ class CORE_EXPORT HTMLUserMediaElement
 // HTMLUserMediaElement appearing in a document that does not have the
 // UserMediaElement origin trial enabled (this would result in the creation of
 // an HTMLUnknownElement with the "usermedia" tag name).
+// See third_party/blink/renderer/core/html/Custom_element_type_helpers.md
+// for more details.
 template <>
 struct DowncastTraits<HTMLUserMediaElement> {
   static bool AllowFrom(const HTMLElement& element) {

@@ -76,6 +76,8 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
 // HTMLInstallElement appearing in a document that does not have the
 // InstallElement origin trial enabled (this would result in the creation of
 // an HTMLUnknownElement with the "install" tag name).
+// See third_party/blink/renderer/core/html/Custom_element_type_helpers.md
+// for more details.
 template <>
 struct DowncastTraits<HTMLInstallElement> {
   static bool AllowFrom(const HTMLElement& element) {
