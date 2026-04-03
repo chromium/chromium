@@ -16,6 +16,7 @@ static_library("utils") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/prefs",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//content/public/browser",
     "//content/public/common",

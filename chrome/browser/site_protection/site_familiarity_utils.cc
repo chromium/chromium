@@ -10,6 +10,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -90,11 +91,23 @@ ComputeDefaultJavascriptOptimizerSetting(Profile* profile) {
     return content_settings::JavascriptOptimizerSetting::kAllowed;
   }
 
-  return profile->GetPrefs()->GetBoolean(
-             prefs::kJavascriptOptimizerBlockedForUnfamiliarSites)
-             ? content_settings::JavascriptOptimizerSetting::
-                   kBlockedForUnfamiliarSites
-             : content_settings::JavascriptOptimizerSetting::kAllowed;
+  PrefService* prefs = profile->GetPrefs();
+  if (prefs->HasPrefPath(
+          prefs::kJavascriptOptimizerBlockedForUnfamiliarSites)) {
+    return prefs->GetBoolean(
+               prefs::kJavascriptOptimizerBlockedForUnfamiliarSites)
+               ? content_settings::JavascriptOptimizerSetting::
+                     kBlockedForUnfamiliarSites
+               : content_settings::JavascriptOptimizerSetting::kAllowed;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites)) {
+    return content_settings::JavascriptOptimizerSetting::
+        kBlockedForUnfamiliarSites;
+  }
+
+  return content_settings::JavascriptOptimizerSetting::kAllowed;
 }
 
 std::optional<bool> AreV8OptimizationsDisabled(
