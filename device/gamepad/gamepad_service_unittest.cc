@@ -1002,7 +1002,14 @@ TEST_F(GamepadServiceSimulationTest, Vibration) {
   EXPECT_EQ(disconnected_future.Get<0>(), 0u);
 }
 
-TEST_F(GamepadServiceSimulationTest, TokenNotFound) {
+// TODO(crbug.com/499019944): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+// Flaky on linux TSAN.
+#define MAYBE_TokenNotFound DISABLED_TokenNotFound
+#else
+#define MAYBE_TokenNotFound TokenNotFound
+#endif
+TEST_F(GamepadServiceSimulationTest, MAYBE_TokenNotFound) {
   // Mark `consumer` active.
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
