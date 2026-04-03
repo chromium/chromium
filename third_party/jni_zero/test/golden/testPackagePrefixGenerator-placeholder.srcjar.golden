@@ -11,7 +11,7 @@ package org.jni_zero;
 import javax.annotation.processing.Generated;
 
 @Generated("JNI Zero")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public interface SampleForTests {
   public interface AnnotationWithNamedNonStringParam {}
   public interface AnotherAnnotation {}
@@ -55,7 +55,7 @@ package android.graphics;
 import javax.annotation.processing.Generated;
 
 @Generated("JNI Zero")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public interface Rect {
 }
 
@@ -71,7 +71,7 @@ package org.jni_zero;
 import javax.annotation.processing.Generated;
 
 @Generated("JNI Zero")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public interface SampleUnderSamePackage {
 }
 

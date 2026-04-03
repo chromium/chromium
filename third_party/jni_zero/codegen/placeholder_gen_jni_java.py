@@ -19,7 +19,7 @@ import javax.annotation.processing.Generated;
 import org.jni_zero.internal.NullUnmarked;
 
 @Generated("JNI Zero")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({{"rawtypes", "unchecked"}})
 @NullUnmarked
 public class {gen_jni_class.name} {{
 """)

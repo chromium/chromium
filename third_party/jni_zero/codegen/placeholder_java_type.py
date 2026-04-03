@@ -28,7 +28,7 @@ package {java_class.class_without_prefix.package_with_dots};
 import javax.annotation.processing.Generated;
 
 @Generated("JNI Zero")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({{"rawtypes", "unchecked"}})
 public interface {java_class.name} {{
 """)
   if nested_classes:

@@ -17,7 +17,7 @@ import org.stubs.MyClass;
 
 @CheckDiscard("crbug.com/993421")
 @Generated("JNI Zero")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 @NullUnmarked
 class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Natives {
   private static @Nullable JniTestInstanceHolder sOverride;

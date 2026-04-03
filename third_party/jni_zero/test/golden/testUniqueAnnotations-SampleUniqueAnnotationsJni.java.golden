@@ -13,7 +13,7 @@ import org.jni_zero.internal.Nullable;
 
 @CheckDiscard("crbug.com/993421")
 @Generated("JNI Zero")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 @NullUnmarked
 class SampleUniqueAnnotationsJni implements SampleUniqueAnnotations.Natives {
   private static @Nullable JniTestInstanceHolder sOverride;

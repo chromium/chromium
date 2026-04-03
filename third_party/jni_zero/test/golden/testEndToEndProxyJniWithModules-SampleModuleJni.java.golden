@@ -12,7 +12,7 @@ import org.jni_zero.module_GEN_JNI;
 
 @CheckDiscard("crbug.com/993421")
 @Generated("JNI Zero")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 @NullUnmarked
 class SampleModuleJni implements SampleModule.Natives {
   private static @Nullable JniTestInstanceHolder sOverride;

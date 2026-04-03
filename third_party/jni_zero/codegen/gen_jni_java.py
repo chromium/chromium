@@ -67,7 +67,7 @@ package {full_gen_jni_class.package_with_dots};
 import javax.annotation.processing.Generated;
 
 @Generated("JNI Zero")
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({{"rawtypes", "unchecked"}})
 public class {full_gen_jni_class.name}""")
   with sb.block():
     short_class_with_dots = short_gen_jni_class.full_name_with_dots
