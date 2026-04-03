@@ -458,7 +458,211 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   return [self.headerView fakeboxButtonsSnapshot];
 }
 
-/// TODO(crbug.com/497819911): Combine the two private pragmas in this file.
+#pragma mark - UIIndirectScribbleInteractionDelegate
+
+- (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+              requestElementsInRect:(CGRect)rect
+                         completion:
+                             (void (^)(NSArray<UIScribbleElementIdentifier>*
+                                           elements))completion {
+  completion(@[ kScribbleFakeboxElementId ]);
+}
+
+- (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+                   isElementFocused:
+                       (UIScribbleElementIdentifier)elementIdentifier {
+  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
+  return self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder;
+}
+
+- (CGRect)
+    indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+                frameForElement:(UIScribbleElementIdentifier)elementIdentifier {
+  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
+
+  // Imitate the entire location bar being scribblable.
+  return interaction.view.bounds;
+}
+
+- (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+               focusElementIfNeeded:
+                   (UIScribbleElementIdentifier)elementIdentifier
+                     referencePoint:(CGPoint)focusReferencePoint
+                         completion:
+                             (void (^)(UIResponder<UITextInput>* focusedInput))
+                                 completion {
+  if (!self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder) {
+    [self.toolbarDelegate.fakeboxScribbleForwardingTarget becomeFirstResponder];
+  }
+
+  completion(self.toolbarDelegate.fakeboxScribbleForwardingTarget);
+}
+
+- (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+         shouldDelayFocusForElement:
+             (UIScribbleElementIdentifier)elementIdentifier {
+  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
+  return YES;
+}
+
+#pragma mark - SearchEngineLogoConsumer
+
+- (void)searchEngineLogoStateDidChange:(SearchEngineLogoState)logoState {
+  _searchEngineLogoState = logoState;
+  self.headerView.logoState = logoState;
+  [self.doodleHeightConstraint
+      setConstant:content_suggestions::DoodleHeight(_searchEngineLogoState,
+                                                    self.traitCollection)];
+  self.doodleTopMarginConstraint.constant =
+      content_suggestions::DoodleTopMargin(_searchEngineLogoState,
+                                           self.traitCollection);
+  self.headerViewHeightConstraint.constant =
+      content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
+                                               self.traitCollection);
+  self.fakeOmniboxTopMarginConstraint.constant =
+      -content_suggestions::SearchFieldTopMargin(_searchEngineLogoState);
+  // Trigger relayout so that it immediately returns the updated content height
+  // for the NTP to update content inset.
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
+  [self.commandHandler updateForHeaderSizeChange];
+  [self updateFakeboxDisplay];
+}
+
+#pragma mark - NewTabPageHeaderConsumer
+
+- (void)setSearchEngineLogoMediator:
+    (SearchEngineLogoMediator*)searchEngineLogoMediator {
+  _searchEngineLogoMediator = searchEngineLogoMediator;
+  _searchEngineLogoMediator.consumer = self;
+}
+
+- (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
+  if (_voiceSearchIsEnabled == voiceSearchIsEnabled) {
+    return;
+  }
+  _voiceSearchIsEnabled = voiceSearchIsEnabled;
+  [self updateVoiceSearchDisplay];
+}
+
+- (void)setDefaultSearchEngineName:(NSString*)defaultSearchEngineName {
+  if (_defaultSearchEngineName == defaultSearchEngineName) {
+    return;
+  }
+  _defaultSearchEngineName = defaultSearchEngineName;
+  self.headerView.placeholderText = self.placeholderText;
+  self.accessibilityButton.accessibilityLabel = self.placeholderText;
+}
+
+- (void)setDefaultSearchEngineImage:(UIImage*)image {
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
+    return;
+  }
+  // The header view might not be created yet. Store the logo image until it is
+  // consumed.
+  if (!self.headerView) {
+    _dseLogo = image;
+    return;
+  }
+
+  [self.headerView setDefaultSearchEngineLogo:image];
+}
+
+- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
+                                name:(NSString*)name
+                               email:(NSString*)email {
+  if (hasAccountError == _hasAccountError) {
+    return;
+  }
+
+  _hasAccountError = hasAccountError;
+  if (_hasAccountError) {
+    [self.headerView setIdentityDiscErrorBadge];
+  } else {
+    [self.headerView removeIdentityDiscErrorBadge];
+  }
+  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
+}
+
+- (void)setAIMAllowed:(BOOL)allowed {
+  [_headerView setAIMAllowed:allowed];
+  _isAIMAllowed = allowed;
+}
+
+#pragma mark - UserAccountImageUpdateDelegate
+
+- (void)setSignedOutAccountImage {
+  self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
+      kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconSize);
+
+  self.isSignedIn = NO;
+
+  self.identityDiscAccessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL);
+
+  // `self.identityDiscButton` should not be updated if the view has not been
+  // created yet.
+  if (self.identityDiscButton) {
+    [self updateIdentityDiscState];
+  }
+}
+
+- (void)updateAccountImage:(UIImage*)image
+                      name:(NSString*)name
+                     email:(NSString*)email {
+  DCHECK(image && image.size.width == ntp_home::kIdentityAvatarDimension &&
+         image.size.height == ntp_home::kIdentityAvatarDimension)
+      << base::SysNSStringToUTF8([image description]);
+  DCHECK(email);
+
+  self.identityDiscImage = image;
+
+  self.isSignedIn = YES;
+
+  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
+}
+
+#pragma mark UIPointerInteractionDelegate
+
+- (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
+                      regionForRequest:(UIPointerRegionRequest*)request
+                         defaultRegion:(UIPointerRegion*)defaultRegion {
+  return defaultRegion;
+}
+
+- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
+                       styleForRegion:(UIPointerRegion*)region {
+  // If the view is no longer in a window due to a race condition, no
+  // pointer style is needed.
+  if (!interaction.view.window) {
+    return nil;
+  }
+  // Without this, the hover effect looks slightly oversized.
+  CGRect rect = CGRectInset(interaction.view.bounds, 1, 1);
+  UIBezierPath* path =
+      [UIBezierPath bezierPathWithRoundedRect:rect
+                                 cornerRadius:rect.size.height];
+  UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
+  parameters.visiblePath = path;
+  UITargetedPreview* preview =
+      [[UITargetedPreview alloc] initWithView:interaction.view
+                                   parameters:parameters];
+  UIPointerHoverEffect* effect =
+      [UIPointerHoverEffect effectWithPreview:preview];
+  effect.prefersScaledContent = NO;
+  effect.prefersShadow = NO;
+  UIPointerShape* shape = [UIPointerShape
+      beamWithPreferredLength:interaction.view.bounds.size.height / 2
+                         axis:UIAxisVertical];
+  return [UIPointerStyle styleWithEffect:effect shape:shape];
+}
+
+#pragma mark - Getters
+
+- (UIButton*)customizationMenuButton {
+  return [self.headerView customizationMenuButton];
+}
+
 #pragma mark - Private
 
 // Initialize and add a search field tap target and a voice search button.
@@ -878,213 +1082,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       presentInProductHelpWithType:
           InProductHelpType::kSwitchAccountsWithNTPAccountParticleDisc];
 }
-
-#pragma mark - UIIndirectScribbleInteractionDelegate
-
-- (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-              requestElementsInRect:(CGRect)rect
-                         completion:
-                             (void (^)(NSArray<UIScribbleElementIdentifier>*
-                                           elements))completion {
-  completion(@[ kScribbleFakeboxElementId ]);
-}
-
-- (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-                   isElementFocused:
-                       (UIScribbleElementIdentifier)elementIdentifier {
-  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
-  return self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder;
-}
-
-- (CGRect)
-    indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-                frameForElement:(UIScribbleElementIdentifier)elementIdentifier {
-  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
-
-  // Imitate the entire location bar being scribblable.
-  return interaction.view.bounds;
-}
-
-- (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-               focusElementIfNeeded:
-                   (UIScribbleElementIdentifier)elementIdentifier
-                     referencePoint:(CGPoint)focusReferencePoint
-                         completion:
-                             (void (^)(UIResponder<UITextInput>* focusedInput))
-                                 completion {
-  if (!self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder) {
-    [self.toolbarDelegate.fakeboxScribbleForwardingTarget becomeFirstResponder];
-  }
-
-  completion(self.toolbarDelegate.fakeboxScribbleForwardingTarget);
-}
-
-- (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-         shouldDelayFocusForElement:
-             (UIScribbleElementIdentifier)elementIdentifier {
-  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
-  return YES;
-}
-
-#pragma mark - SearchEngineLogoConsumer
-
-- (void)searchEngineLogoStateDidChange:(SearchEngineLogoState)logoState {
-  _searchEngineLogoState = logoState;
-  self.headerView.logoState = logoState;
-  [self.doodleHeightConstraint
-      setConstant:content_suggestions::DoodleHeight(_searchEngineLogoState,
-                                                    self.traitCollection)];
-  self.doodleTopMarginConstraint.constant =
-      content_suggestions::DoodleTopMargin(_searchEngineLogoState,
-                                           self.traitCollection);
-  self.headerViewHeightConstraint.constant =
-      content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
-                                               self.traitCollection);
-  self.fakeOmniboxTopMarginConstraint.constant =
-      -content_suggestions::SearchFieldTopMargin(_searchEngineLogoState);
-  // Trigger relayout so that it immediately returns the updated content height
-  // for the NTP to update content inset.
-  [self.view setNeedsLayout];
-  [self.view layoutIfNeeded];
-  [self.commandHandler updateForHeaderSizeChange];
-  [self updateFakeboxDisplay];
-}
-
-#pragma mark - NewTabPageHeaderConsumer
-
-- (void)setSearchEngineLogoMediator:
-    (SearchEngineLogoMediator*)searchEngineLogoMediator {
-  _searchEngineLogoMediator = searchEngineLogoMediator;
-  _searchEngineLogoMediator.consumer = self;
-}
-
-- (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
-  if (_voiceSearchIsEnabled == voiceSearchIsEnabled) {
-    return;
-  }
-  _voiceSearchIsEnabled = voiceSearchIsEnabled;
-  [self updateVoiceSearchDisplay];
-}
-
-- (void)setDefaultSearchEngineName:(NSString*)defaultSearchEngineName {
-  if (_defaultSearchEngineName == defaultSearchEngineName) {
-    return;
-  }
-  _defaultSearchEngineName = defaultSearchEngineName;
-  self.headerView.placeholderText = self.placeholderText;
-  self.accessibilityButton.accessibilityLabel = self.placeholderText;
-}
-
-- (void)setDefaultSearchEngineImage:(UIImage*)image {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    return;
-  }
-  // The header view might not be created yet. Store the logo image until it is
-  // consumed.
-  if (!self.headerView) {
-    _dseLogo = image;
-    return;
-  }
-
-  [self.headerView setDefaultSearchEngineLogo:image];
-}
-
-- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
-                                name:(NSString*)name
-                               email:(NSString*)email {
-  if (hasAccountError == _hasAccountError) {
-    return;
-  }
-
-  _hasAccountError = hasAccountError;
-  if (_hasAccountError) {
-    [self.headerView setIdentityDiscErrorBadge];
-  } else {
-    [self.headerView removeIdentityDiscErrorBadge];
-  }
-  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
-}
-
-- (void)setAIMAllowed:(BOOL)allowed {
-  [_headerView setAIMAllowed:allowed];
-  _isAIMAllowed = allowed;
-}
-
-#pragma mark - UserAccountImageUpdateDelegate
-
-- (void)setSignedOutAccountImage {
-  self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
-      kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconSize);
-
-  self.isSignedIn = NO;
-
-  self.identityDiscAccessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL);
-
-  // `self.identityDiscButton` should not be updated if the view has not been
-  // created yet.
-  if (self.identityDiscButton) {
-    [self updateIdentityDiscState];
-  }
-}
-
-- (void)updateAccountImage:(UIImage*)image
-                      name:(NSString*)name
-                     email:(NSString*)email {
-  DCHECK(image && image.size.width == ntp_home::kIdentityAvatarDimension &&
-         image.size.height == ntp_home::kIdentityAvatarDimension)
-      << base::SysNSStringToUTF8([image description]);
-  DCHECK(email);
-
-  self.identityDiscImage = image;
-
-  self.isSignedIn = YES;
-
-  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
-}
-
-#pragma mark UIPointerInteractionDelegate
-
-- (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
-                      regionForRequest:(UIPointerRegionRequest*)request
-                         defaultRegion:(UIPointerRegion*)defaultRegion {
-  return defaultRegion;
-}
-
-- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
-                       styleForRegion:(UIPointerRegion*)region {
-  // If the view is no longer in a window due to a race condition, no
-  // pointer style is needed.
-  if (!interaction.view.window) {
-    return nil;
-  }
-  // Without this, the hover effect looks slightly oversized.
-  CGRect rect = CGRectInset(interaction.view.bounds, 1, 1);
-  UIBezierPath* path =
-      [UIBezierPath bezierPathWithRoundedRect:rect
-                                 cornerRadius:rect.size.height];
-  UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
-  parameters.visiblePath = path;
-  UITargetedPreview* preview =
-      [[UITargetedPreview alloc] initWithView:interaction.view
-                                   parameters:parameters];
-  UIPointerHoverEffect* effect =
-      [UIPointerHoverEffect effectWithPreview:preview];
-  effect.prefersScaledContent = NO;
-  effect.prefersShadow = NO;
-  UIPointerShape* shape = [UIPointerShape
-      beamWithPreferredLength:interaction.view.bounds.size.height / 2
-                         axis:UIAxisVertical];
-  return [UIPointerStyle styleWithEffect:effect shape:shape];
-}
-
-#pragma mark - Getters
-
-- (UIButton*)customizationMenuButton {
-  return [self.headerView customizationMenuButton];
-}
-
-#pragma mark - Private
 
 // Returns the default background color for buttons based on the current
 // appearance.
