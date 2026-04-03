@@ -32,7 +32,7 @@ Element* ScrollTargetElement(Element* scroll_marker) {
 mojom::blink::ScrollAlignment GetAlignmentForScrollTarget(
     ScrollOrientation axis,
     const LayoutObject* target_object) {
-  cc::ScrollSnapAlign snap = target_object->Style()->GetScrollSnapAlign();
+  cc::ScrollSnapAlign snap = target_object->StyleRef().GetScrollSnapAlign();
 
   cc::SnapAlignment x_snap_align =
       snap.alignment_inline == cc::SnapAlignment::kNone
@@ -49,7 +49,7 @@ mojom::blink::ScrollAlignment GetAlignmentForScrollTarget(
       scroll_into_view_util::SnapAlignmentToV8ScrollLogicalPosition(
           y_snap_align);
   return scroll_into_view_util::ResolveToPhysicalAlignment(
-      x_position, y_position, axis, *target_object->Style());
+      x_position, y_position, axis, target_object->StyleRef());
 }
 
 // Returns the ColumnPseudoElement that is the direct parent of this scroll
@@ -97,7 +97,7 @@ std::optional<double> ScrollMarkerChooser::GetScrollTargetPosition(
           : target_object;
   CHECK(bounding_box_object);
   PhysicalBoxStrut scroll_margin =
-      target_object->Style() ? target_object->Style()->ScrollMarginStrut()
+      target_object->Style() ? target_object->StyleRef().ScrollMarginStrut()
                              : PhysicalBoxStrut();
   // Ignore sticky position offsets for the purposes of scrolling elements
   // into view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
@@ -448,7 +448,7 @@ Element* ScrollMarkerGroupData::ChooseMarker(
   using ScrollAxis = ScrollMarkerChooser::ScrollAxis;
   // The primary axis is, by default, the block axis.
   ScrollAxis primary_axis =
-      IsHorizontalWritingMode(scroller_box->Style()->GetWritingMode())
+      IsHorizontalWritingMode(scroller_box->StyleRef().GetWritingMode())
           ? ScrollAxis::kY
           : ScrollAxis::kX;
 

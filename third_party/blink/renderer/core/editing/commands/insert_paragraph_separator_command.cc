@@ -553,8 +553,9 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   // causing the newline to be turned into a nbsp.
   if (leading_whitespace.IsNotNull()) {
     if (auto* text_node = DynamicTo<Text>(leading_whitespace.AnchorNode())) {
-      DCHECK(!text_node->GetLayoutObject() ||
-             text_node->GetLayoutObject()->Style()->ShouldCollapseWhiteSpaces())
+      DCHECK(
+          !text_node->GetLayoutObject() ||
+          text_node->GetLayoutObject()->StyleRef().ShouldCollapseWhiteSpaces())
           << text_node;
       ReplaceTextInNode(text_node,
                         leading_whitespace.ComputeOffsetInContainerNode(), 1,

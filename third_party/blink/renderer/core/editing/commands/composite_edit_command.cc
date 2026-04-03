@@ -755,7 +755,7 @@ bool CompositeEditCommand::CanRebalance(const Position& position) const {
     return false;
 
   LayoutText* layout_text = text_node->GetLayoutObject();
-  if (layout_text && layout_text->Style()->ShouldPreserveWhiteSpaces()) {
+  if (layout_text && layout_text->StyleRef().ShouldPreserveWhiteSpaces()) {
     return false;
   }
 
@@ -851,7 +851,7 @@ void CompositeEditCommand::PrepareWhitespaceAtPositionForSplit(
   if (text_node->length() == 0)
     return;
   LayoutText* layout_text = text_node->GetLayoutObject();
-  if (layout_text && layout_text->Style()->ShouldPreserveWhiteSpaces()) {
+  if (layout_text && layout_text->StyleRef().ShouldPreserveWhiteSpaces()) {
     return;
   }
 

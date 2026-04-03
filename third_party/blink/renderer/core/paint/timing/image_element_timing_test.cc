@@ -263,7 +263,7 @@ TEST_P(ImageElementTimingTest, BackgroundImageRemoved) {
       base_url_);
   LayoutObject* object = GetLayoutObjectById("target");
   ImageResourceContent* content =
-      object->Style()->BackgroundLayers().GetImage()->CachedImage();
+      object->StyleRef().BackgroundLayers().GetImage()->CachedImage();
   UpdateAllLifecyclePhases();
   EXPECT_EQ(ImagesNotifiedSize(), 1u);
   EXPECT_TRUE(

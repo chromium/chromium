@@ -434,7 +434,7 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   Node::AttachContext context;
   context.parent = text_layout_object->Parent();
   if (!text_node.TextLayoutObjectIsNeeded(context,
-                                          *text_layout_object->Style())) {
+                                          text_layout_object->StyleRef())) {
     return true;
   }
   if (text_layout_object->IsTextFragment()) {

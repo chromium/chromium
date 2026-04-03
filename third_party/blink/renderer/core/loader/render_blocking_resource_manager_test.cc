@@ -52,7 +52,7 @@ class RenderBlockingResourceManagerTest : public SimTest {
   }
 
   const Font& GetTargetFont() {
-    return *GetTarget()->GetLayoutObject()->Style()->GetFont();
+    return *GetTarget()->GetLayoutObject()->StyleRef().GetFont();
   }
 };
 

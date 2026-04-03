@@ -21,11 +21,12 @@ bool ShouldSkipInvisibleTextAt(const Text& text,
   const LayoutObject* layout_object = AssociatedLayoutObjectOf(text, offset);
   if (!layout_object)
     return true;
-  if (layout_object->Style()->Display() == EDisplay::kNone)
+  if (layout_object->StyleRef().Display() == EDisplay::kNone) {
     return true;
+  }
   if (ignores_visibility)
     return false;
-  return layout_object->Style()->Visibility() != EVisibility::kVisible;
+  return layout_object->StyleRef().Visibility() != EVisibility::kVisible;
 }
 
 String TextIgnoringCSSTextTransforms(const LayoutText& layout_text,

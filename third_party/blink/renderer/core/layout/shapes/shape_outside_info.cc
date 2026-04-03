@@ -207,7 +207,7 @@ static PhysicalRect GetShapeImagePhysicalMarginRect(
 PhysicalSize ShapeOutsideInfo::ReferenceBoxPhysicalSize() const {
   return ToPhysicalSize(
       reference_box_logical_size_,
-      layout_box_->ContainingBlock()->Style()->GetWritingMode());
+      layout_box_->ContainingBlock()->StyleRef().GetWritingMode());
 }
 
 std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
@@ -262,7 +262,7 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
 
   base::AutoReset<bool> is_in_computing_shape(&is_computing_shape_, true);
 
-  const ComputedStyle& style = *layout_box_->Style();
+  const ComputedStyle& style = layout_box_->StyleRef();
   DCHECK(layout_box_->ContainingBlock());
   const LayoutBlock& containing_block = *layout_box_->ContainingBlock();
   const ComputedStyle& containing_block_style = containing_block.StyleRef();

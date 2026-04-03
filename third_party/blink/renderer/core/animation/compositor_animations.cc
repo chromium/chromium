@@ -267,7 +267,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
   // Elements with subtrees containing will-change: contents are not
   // composited for animations as if the contents change the tiles
   // would need to be rerastered anyways.
-  if (layout_object && layout_object->Style()->SubtreeWillChangeContents()) {
+  if (layout_object && layout_object->StyleRef().SubtreeWillChangeContents()) {
     reasons |= kTargetHasInvalidCompositingState;
   }
 
@@ -410,7 +410,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
             // If a custom property is not used by CSS Paint, then we should not
             // support that on the compositor thread.
             if (layout_object && layout_object->Style() &&
-                !layout_object->Style()->HasCSSPaintImagesUsingCustomProperty(
+                !layout_object->StyleRef().HasCSSPaintImagesUsingCustomProperty(
                     property.CustomPropertyName(),
                     layout_object->GetDocument())) {
               DefaultToUnsupportedProperty(unsupported_properties_for_tracing,

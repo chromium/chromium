@@ -162,7 +162,7 @@ void LayoutTableColumn::UpdateFromElement() {
         layout_invalidation_reason::kAttributeChanged);
     if (LayoutTable* table = Table()) {
       table->GridBordersChanged();
-      if (Style()->HasBackground() || TableHasColumnsWithBackground(table)) {
+      if (StyleRef().HasBackground() || TableHasColumnsWithBackground(table)) {
         table->SetBackgroundNeedsFullPaintInvalidation();
       }
     }

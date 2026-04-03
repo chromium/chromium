@@ -3114,8 +3114,8 @@ bool AXNodeObject::IsLinked() const {
 }
 
 bool AXNodeObject::IsVisited() const {
-  return GetLayoutObject() && GetLayoutObject()->Style()->IsLink() &&
-         GetLayoutObject()->Style()->InsideLink() ==
+  return GetLayoutObject() && GetLayoutObject()->StyleRef().IsLink() &&
+         GetLayoutObject()->StyleRef().InsideLink() ==
              EInsideLink::kInsideVisitedLink;
 }
 
@@ -5621,7 +5621,7 @@ bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
     return false;
 
   if (!input->GetLayoutObject() ||
-      input->GetLayoutObject()->Style()->Visibility() !=
+      input->GetLayoutObject()->StyleRef().Visibility() !=
           EVisibility::kVisible) {
     return false;
   }

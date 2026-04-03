@@ -1762,7 +1762,8 @@ bool CheckTextAutosizingMultiplier(Document* document, float multiplier) {
   for (LayoutObject* layout_object = document->GetLayoutView(); layout_object;
        layout_object = layout_object->NextInPreOrder()) {
     if (layout_object->Style() && layout_object->IsText()) {
-      EXPECT_EQ(multiplier, layout_object->Style()->TextAutosizingMultiplier());
+      EXPECT_EQ(multiplier,
+                layout_object->StyleRef().TextAutosizingMultiplier());
       multiplier_checked = true;
     }
   }

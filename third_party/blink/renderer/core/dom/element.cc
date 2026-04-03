@@ -2818,7 +2818,7 @@ void Element::setScrollLeft(double new_left) {
       }
     }
 
-    ScrollOffset end_offset(new_left * box->Style()->EffectiveZoom(),
+    ScrollOffset end_offset(new_left * box->StyleRef().EffectiveZoom(),
                             scrollable_area->GetScrollOffset().y());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
@@ -2876,7 +2876,7 @@ void Element::setScrollTop(double new_top) {
     }
 
     ScrollOffset end_offset(scrollable_area->GetScrollOffset().x(),
-                            new_top * box->Style()->EffectiveZoom());
+                            new_top * box->StyleRef().EffectiveZoom());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
             scrollable_area->ScrollOffsetToPosition(end_offset), false, true);
@@ -3075,7 +3075,7 @@ bool Element::ScrollLayoutBoxBy(
 
   gfx::PointF current_position(scrollable_area->ScrollPosition().x(),
                                scrollable_area->ScrollPosition().y());
-  displacement.Scale(box->Style()->EffectiveZoom());
+  displacement.Scale(box->StyleRef().EffectiveZoom());
   gfx::PointF new_position = current_position + displacement;
 
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
@@ -3136,12 +3136,12 @@ bool Element::ScrollLayoutBoxTo(
   if (scroll_to_options->hasLeft()) {
     new_offset.set_x(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->left()) *
-        box->Style()->EffectiveZoom());
+        box->StyleRef().EffectiveZoom());
   }
   if (scroll_to_options->hasTop()) {
     new_offset.set_y(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->top()) *
-        box->Style()->EffectiveZoom());
+        box->StyleRef().EffectiveZoom());
   }
 
   new_offset = SnapScrollOffsetToPhysicalPixels(new_offset);
@@ -3263,7 +3263,7 @@ bool Element::HandleScrollByPageCommand(CommandEventType command) {
   }
 
   ScrollDirectionPhysical physical_direction =
-      GetPhysicalDirectionForCommand(command, *box->Style());
+      GetPhysicalDirectionForCommand(command, box->StyleRef());
 
   return scrollable_area->ScrollByPageWithSnap(physical_direction);
 }
@@ -8829,7 +8829,7 @@ void Element::SetHasFocusWithinUpToAncestor(bool has_focus_within,
     // focus even if its own HasFocusWithin state has not changed.
     if (element != this && need_snap_container_search) {
       if (const LayoutBox* box = element->GetLayoutBoxForScrolling()) {
-        if (box->Style() && !box->Style()->GetScrollSnapType().is_none) {
+        if (box->Style() && !box->StyleRef().GetScrollSnapType().is_none) {
           // TODO(crbug.com/340983092): We should be able to just call
           // LocalFrameView::AddPendingSnapUpdate, but that results in a snap
           // which cancels ongoing scroll animations.

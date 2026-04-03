@@ -350,7 +350,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
   while (node) {
     if (auto* counter = DynamicTo<LayoutCounter>(node)) {
       // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
-      if (counter->Style()->GetFont()->PrimaryFont()) {
+      if (counter->StyleRef().GetFont()->PrimaryFont()) {
         // According to
         // https://w3c.github.io/csswg-drafts/css-counter-styles/#simple-symbolic,
         // disclosure-* should have special rendering paths.

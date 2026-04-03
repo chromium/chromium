@@ -257,7 +257,7 @@ PhysicalDirection AbstractInlineTextBox::GetDirection() const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
     return PhysicalDirection::kRight;
-  return WritingDirectionMode(GetLayoutText()->Style()->GetWritingMode(),
+  return WritingDirectionMode(GetLayoutText()->StyleRef().GetWritingMode(),
                               cursor.Current().ResolvedDirection())
       .InlineEnd();
 }

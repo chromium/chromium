@@ -445,7 +445,7 @@ void ScrollableArea::ScrollToScrollInitialTarget(
     return;
   }
   cc::ScrollSnapAlign snap_alignment =
-      scroll_initial_target->Style()->GetScrollSnapAlign();
+      scroll_initial_target->StyleRef().GetScrollSnapAlign();
   switch (snap_alignment.alignment_block) {
     case cc::SnapAlignment::kStart:
       align_y = ScrollAlignment::TopAlways();

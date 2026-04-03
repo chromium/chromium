@@ -747,7 +747,7 @@ namespace {
 
 bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
   return layout_object->IsInTopOrViewTransitionLayer() ||
-         layout_object->Style()->IsInternalOverscrollPositionAuto();
+         layout_object->StyleRef().IsInternalOverscrollPositionAuto();
 }
 
 LayoutObject* NextSiblingLayoutObjectInternal(const Node& node) {

@@ -114,7 +114,7 @@ ScrollManager::ScrollChainResult ScrollManager::RecomputeScrollChain(
                 RespectOverscrollBehaviorForScrollBubblingEnabled()) {
           ScrollDirectionPhysical physical_direction = ToPhysicalDirection(
               direction, cur_box->IsHorizontalWritingMode(),
-              cur_box->Style()->IsFlippedBlocksWritingMode());
+              cur_box->StyleRef().IsFlippedBlocksWritingMode());
           bool is_vertical =
               physical_direction == ScrollDirectionPhysical::kScrollUp ||
               physical_direction == ScrollDirectionPhysical::kScrollDown;
@@ -206,7 +206,7 @@ LogicalScrollResult ScrollManager::LogicalScroll(
 
     ScrollDirectionPhysical physical_direction =
         ToPhysicalDirection(direction, box->IsHorizontalWritingMode(),
-                            box->Style()->IsFlippedBlocksWritingMode());
+                            box->StyleRef().IsFlippedBlocksWritingMode());
 
     ScrollableArea* scrollable_area = ScrollableArea::GetForScrolling(box);
     DCHECK(scrollable_area);

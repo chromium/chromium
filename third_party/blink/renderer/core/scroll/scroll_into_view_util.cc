@@ -414,7 +414,7 @@ bool ScrollRectToVisible(const LayoutObject& layout_object,
       params->type == mojom::blink::ScrollType::kProgrammatic;
 
   PhysicalBoxStrut scroll_margin =
-      layout_object.Style() ? layout_object.Style()->ScrollMarginStrut()
+      layout_object.Style() ? layout_object.StyleRef().ScrollMarginStrut()
                             : PhysicalBoxStrut();
   BubblingScrollResult result = PerformBubblingScrollIntoViewWithResult(
       *enclosing_box, absolute_rect_to_scroll, params, scroll_margin, container,
@@ -741,7 +741,7 @@ ScrollOffset GetScrollOffsetToExpose(
 mojom::blink::ScrollAlignment PhysicalAlignmentFromSnapAlignStyle(
     const LayoutObject& object,
     ScrollOrientation axis) {
-  cc::ScrollSnapAlign snap = object.Style()->GetScrollSnapAlign();
+  cc::ScrollSnapAlign snap = object.StyleRef().GetScrollSnapAlign();
   return ResolveToPhysicalAlignment(
       SnapAlignmentToV8ScrollLogicalPosition(snap.alignment_inline),
       SnapAlignmentToV8ScrollLogicalPosition(snap.alignment_block), axis,

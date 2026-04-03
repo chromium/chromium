@@ -39,7 +39,7 @@ namespace {
 
 bool IsTextSecurityNode(const Node& node) {
   return node.GetLayoutObject() &&
-         node.GetLayoutObject()->Style()->TextSecurity() !=
+         node.GetLayoutObject()->StyleRef().TextSecurity() !=
              ETextSecurity::kNone;
 }
 

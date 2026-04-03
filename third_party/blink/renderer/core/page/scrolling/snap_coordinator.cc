@@ -48,18 +48,20 @@ cc::SnapAlignment AdjustForRtlWritingMode(cc::SnapAlignment align) {
 // https://drafts.csswg.org/css-scroll-snap-1/#snap-axis
 cc::ScrollSnapType GetPhysicalSnapType(const LayoutBox& snap_container) {
   cc::ScrollSnapType scroll_snap_type =
-      snap_container.Style()->GetScrollSnapType();
+      snap_container.StyleRef().GetScrollSnapType();
   if (scroll_snap_type.axis == cc::SnapAxis::kInline) {
-    if (snap_container.Style()->IsHorizontalWritingMode())
+    if (snap_container.StyleRef().IsHorizontalWritingMode()) {
       scroll_snap_type.axis = cc::SnapAxis::kX;
-    else
+    } else {
       scroll_snap_type.axis = cc::SnapAxis::kY;
+    }
   }
   if (scroll_snap_type.axis == cc::SnapAxis::kBlock) {
-    if (snap_container.Style()->IsHorizontalWritingMode())
+    if (snap_container.StyleRef().IsHorizontalWritingMode()) {
       scroll_snap_type.axis = cc::SnapAxis::kY;
-    else
+    } else {
       scroll_snap_type.axis = cc::SnapAxis::kX;
+    }
   }
   // Writing mode does not affect the cases where axis is kX, kY or kBoth.
   return scroll_snap_type;

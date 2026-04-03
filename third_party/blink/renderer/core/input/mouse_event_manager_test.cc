@@ -102,7 +102,7 @@ TEST_F(MouseEventManagerTest, HoverEffectAfterNav) {
   Compositor().BeginFrame();
 
   Color color =
-      b->Style()->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+      b->StyleRef().VisitedDependentColor(GetCSSPropertyBackgroundColor());
   EXPECT_EQ("rgb(255, 0, 0)", color.SerializeAsCSSColor());
 }
 
@@ -134,7 +134,7 @@ TEST_F(MouseEventManagerTest,
   LayoutObject* target =
       GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
   Color hover_color =
-      target->Style()->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+      target->StyleRef().VisitedDependentColor(GetCSSPropertyBackgroundColor());
   // :hover pseudo-class should match when the pointer is over the element.
   EXPECT_EQ("rgb(255, 0, 0)", hover_color.SerializeAsCSSColor());
 
@@ -147,7 +147,7 @@ TEST_F(MouseEventManagerTest,
   GetEventHandler().MarkHoverStateDirty();
   GetEventHandler().RecomputeMouseHoverStateIfNeeded();
   hover_color =
-      target->Style()->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+      target->StyleRef().VisitedDependentColor(GetCSSPropertyBackgroundColor());
   EXPECT_EQ("rgb(128, 128, 128)", hover_color.SerializeAsCSSColor());
 
   // Move mouse back over element but with page inactive.
@@ -159,7 +159,7 @@ TEST_F(MouseEventManagerTest,
   GetEventHandler().MarkHoverStateDirty();
   GetEventHandler().RecomputeMouseHoverStateIfNeeded();
   hover_color =
-      target->Style()->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+      target->StyleRef().VisitedDependentColor(GetCSSPropertyBackgroundColor());
   // Same behavior is expected regardless of Page Active state. Per
   // W3C Pointer Events, § 4.4.6 “mouseenter”
   EXPECT_EQ("rgb(255, 0, 0)", hover_color.SerializeAsCSSColor());

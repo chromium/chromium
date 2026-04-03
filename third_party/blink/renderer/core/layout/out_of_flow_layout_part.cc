@@ -1843,7 +1843,7 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
           container_builder_->GetLayoutObject();
       CHECK(container_object);
       WritingDirectionMode writing_direction =
-          container_object->Style()->GetWritingDirection();
+          container_object->StyleRef().GetWritingDirection();
 
       FragmentBuilder::PropagateChildAnchors(
           fragment, stitched_offset, *container_object, writing_direction,

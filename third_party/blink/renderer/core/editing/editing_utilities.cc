@@ -959,7 +959,7 @@ TextDirection DirectionOfEnclosingBlockOfAlgorithm(
   if (!enclosing_block_element)
     return TextDirection::kLtr;
   LayoutObject* layout_object = enclosing_block_element->GetLayoutObject();
-  return layout_object ? layout_object->Style()->Direction()
+  return layout_object ? layout_object->StyleRef().Direction()
                        : TextDirection::kLtr;
 }
 
@@ -976,7 +976,7 @@ TextDirection PrimaryDirectionOf(const Node& node) {
   TextDirection primary_direction = TextDirection::kLtr;
   for (const LayoutObject* r = node.GetLayoutObject(); r; r = r->Parent()) {
     if (r->IsLayoutBlockFlow()) {
-      primary_direction = r->Style()->Direction();
+      primary_direction = r->StyleRef().Direction();
       break;
     }
   }

@@ -242,7 +242,7 @@ void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
   if (layout_text.HasEmptyText()) {
     return;
   }
-  if (layout_text.Style()->Visibility() != EVisibility::kVisible) {
+  if (layout_text.StyleRef().Visibility() != EVisibility::kVisible) {
     // TODO(editing-dev): Once we make ::first-letter don't apply "visibility",
     // we should get rid of this if-statement. http://crbug.com/866744
     return;

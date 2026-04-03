@@ -3536,7 +3536,7 @@ Node* PaintLayerScrollableArea::GetSnapTargetAlongAxis(
   if (!GetLayoutBox() || !GetLayoutBox()->Style()) {
     return nullptr;
   }
-  bool horiz = GetLayoutBox()->Style()->GetWritingDirection().IsHorizontal();
+  bool horiz = GetLayoutBox()->StyleRef().GetWritingDirection().IsHorizontal();
   if (ids.y && (axis == kY || (axis == kBlock && horiz) ||
                 (axis == kInline && !horiz))) {
     return DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(ids.y));

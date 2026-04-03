@@ -622,7 +622,7 @@ const LayoutIFrame* GetIFrame(const LayoutObject& object) {
 
 bool IsVisible(const LayoutObject& object) {
   // Don't add content when node is invisible.
-  return object.Style()->Visibility() == EVisibility::kVisible;
+  return object.StyleRef().Visibility() == EVisibility::kVisible;
 }
 
 bool AreChildrenBlockedByDisplayLock(const LayoutObject& object) {
@@ -1855,11 +1855,11 @@ void AIPageContentAgent::ContentBuilder::AddMetaData(
 bool AIPageContentAgent::ContentBuilder::IsGenericContainer(
     const LayoutObject& object,
     const mojom::blink::AIPageContentAttributes& attributes) const {
-  if (object.Style()->GetPosition() == EPosition::kFixed) {
+  if (object.StyleRef().GetPosition() == EPosition::kFixed) {
     return true;
   }
 
-  if (object.Style()->GetPosition() == EPosition::kSticky) {
+  if (object.StyleRef().GetPosition() == EPosition::kSticky) {
     return true;
   }
 
@@ -1873,7 +1873,7 @@ bool AIPageContentAgent::ContentBuilder::IsGenericContainer(
   //    making it scrollable.
   // TODO(khushalsagar): Consider removing this, no consumer relies on this
   // behaviour.
-  if (object.Style()->ScrollsOverflow()) {
+  if (object.StyleRef().ScrollsOverflow()) {
     return true;
   }
 
@@ -2041,7 +2041,7 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
 
   auto* child_layout_view = local_frame->ContentLayoutObject();
   if (child_layout_view) {
-    RecursionData child_recursion_data(*child_layout_view->Style());
+    RecursionData child_recursion_data(child_layout_view->StyleRef());
     // The aria attribute values don't pierce frame boundaries.
     child_recursion_data.is_aria_disabled = false;
     child_recursion_data.stack_depth = recursion_data.stack_depth + 1;
@@ -2712,10 +2712,10 @@ void AIPageContentAgent::ContentBuilder::MaybeAddPopupData(
   // popups because focus within transient popup windows is not tracked for
   // frame-level interactions.
   auto web_popup_root_node = MaybeGenerateContentNode(
-      *web_popup_layout_view, *web_popup_layout_view->Style());
+      *web_popup_layout_view, web_popup_layout_view->StyleRef());
   CHECK(web_popup_root_node);
   WalkChildren(*web_popup_layout_view, *web_popup_root_node,
-               *web_popup_layout_view->Style());
+               web_popup_layout_view->StyleRef());
 
   // Currently the geometry for popup nodes is relative to the popup, offset to
   // relative to the main frame.

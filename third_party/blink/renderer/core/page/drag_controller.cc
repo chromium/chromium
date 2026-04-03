@@ -926,7 +926,7 @@ Node* DragController::DraggableNode(const LocalFrame* src,
       return nullptr;
     }
     if (node->IsElementNode()) {
-      EUserDrag drag_mode = layout_object->Style()->UserDrag();
+      EUserDrag drag_mode = layout_object->StyleRef().UserDrag();
       if (drag_mode == EUserDrag::kNone)
         continue;
       // Even if the image is part of a selection, we always only drag the image

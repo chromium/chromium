@@ -3701,7 +3701,7 @@ TEST_F(EventHandlerSimTest, GestureTapHoverState) {
 
   auto ColorOf = [](const LayoutObject* lo) {
     const auto& bg_color_prop = GetCSSPropertyBackgroundColor();
-    Color color = lo->Style()->VisitedDependentColor(bg_color_prop);
+    Color color = lo->StyleRef().VisitedDependentColor(bg_color_prop);
     return color.SerializeAsCSSColor();
   };
   String rgb_white = "rgb(255, 255, 255)";

@@ -1168,7 +1168,7 @@ PhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
 
 LayoutBlock* LayoutBox::GetScrollMarkerGroup() {
   NOT_DESTROYED();
-  if (Style()->ScrollMarkerGroupNone()) {
+  if (StyleRef().ScrollMarkerGroupNone()) {
     return nullptr;
   }
   LayoutBox* content_box = ContentLayoutBox();
@@ -2131,7 +2131,7 @@ bool LayoutBox::ForegroundIsKnownToBeOpaqueInRect(
       continue;
     }
     if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-        child->Style()->HasCurrentBackgroundColorAnimation()) {
+        child->StyleRef().HasCurrentBackgroundColorAnimation()) {
       return false;
     }
     if (child_box->BackgroundIsKnownToBeOpaqueInRect(child_local_rect))
@@ -3174,7 +3174,7 @@ PhysicalRect LayoutBox::LocalCaretRect(int caret_offset,
       GetNode() &&
       !(EditingIgnoresContent(*GetNode()) || IsDisplayInsideTable(GetNode()));
 
-  WritingDirectionMode writing_direction = Style()->GetWritingDirection();
+  WritingDirectionMode writing_direction = StyleRef().GetWritingDirection();
   LogicalOffset offset;
   LayoutUnit content_inline_size = LogicalWidth();
   if (apply_border_padding) {
@@ -4475,8 +4475,8 @@ bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInY() const {
 
 WritingModeConverter LayoutBox::CreateWritingModeConverter() const {
   NOT_DESTROYED();
-  return WritingModeConverter({Style()->GetWritingMode(), TextDirection::kLtr},
-                              StitchedSize());
+  return WritingModeConverter(
+      {StyleRef().GetWritingMode(), TextDirection::kLtr}, StitchedSize());
 }
 
 PhysicalOffset LayoutBox::PhysicalLocation() const {

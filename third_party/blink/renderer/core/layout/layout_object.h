@@ -1566,7 +1566,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsScrollContainerWithScrollMarkerGroup() const {
     NOT_DESTROYED();
     return (IsScrollContainer() || IsDocumentElement()) &&
-           !Style()->ScrollMarkerGroupNone();
+           !StyleRef().ScrollMarkerGroupNone();
   }
 
   // Not returning StyleRef().HasTransformRelatedProperty() because some objects
@@ -1659,7 +1659,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // could get set to false, even if the legend's computed style indicates
     // that it is floating.
     return IsHTMLLegendElement() && !IsOutOfFlowPositioned() &&
-           !Style()->IsFloating();
+           !StyleRef().IsFloating();
   }
 
   // Return true if this is the "rendered legend" of a fieldset. They get

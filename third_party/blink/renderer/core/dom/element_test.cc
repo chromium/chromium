@@ -699,11 +699,11 @@ TEST_F(ElementTest, IsFocusableForInertInContentVisibility) {
   // Mark the element as inert. Due to content-visibility, the LayoutObject
   // will still think that it's not inert.
   target->SetBooleanAttribute(html_names::kInertAttr, true);
-  ASSERT_FALSE(target->GetLayoutObject()->Style()->IsInert());
+  ASSERT_FALSE(target->GetLayoutObject()->StyleRef().IsInert());
 
   // IsFocusable() should update the LayoutObject and notice that it's inert.
   ASSERT_FALSE(target->IsFocusable());
-  ASSERT_TRUE(target->GetLayoutObject()->Style()->IsInert());
+  ASSERT_TRUE(target->GetLayoutObject()->StyleRef().IsInert());
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrDefaultValuesWhenEmptyValue) {

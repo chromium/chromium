@@ -203,7 +203,7 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
       gfx::Vector2dF(To<LayoutBox>(layout_object)->PhysicalContentBoxOffset());
 
   // CSS zoom is not reflected in the map coordinates.
-  float scale_factor = 1 / layout_object->Style()->EffectiveZoom();
+  float scale_factor = 1 / layout_object->StyleRef().EffectiveZoom();
   map_point.Scale(scale_factor, scale_factor);
 
   // Negative coordinates are clamped to 0 such that clicks in the left and

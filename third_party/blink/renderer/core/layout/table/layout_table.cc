@@ -350,7 +350,7 @@ LayoutUnit LayoutTable::BorderLeft() const {
   // ScrollAnchoring fails this DCHECK.
   if (HasCollapsedBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
-        .ConvertToPhysical(Style()->GetWritingDirection())
+        .ConvertToPhysical(StyleRef().GetWritingDirection())
         .left;
   }
   return LayoutBlock::BorderLeft();
@@ -362,7 +362,7 @@ LayoutUnit LayoutTable::BorderRight() const {
   // ScrollAnchoring fails this DCHECK.
   if (HasCollapsedBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
-        .ConvertToPhysical(Style()->GetWritingDirection())
+        .ConvertToPhysical(StyleRef().GetWritingDirection())
         .right;
   }
   return LayoutBlock::BorderRight();
@@ -374,7 +374,7 @@ LayoutUnit LayoutTable::BorderTop() const {
   // ScrollAnchoring fails this DCHECK.
   if (HasCollapsedBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
-        .ConvertToPhysical(Style()->GetWritingDirection())
+        .ConvertToPhysical(StyleRef().GetWritingDirection())
         .top;
   }
   return LayoutBlock::BorderTop();
@@ -386,7 +386,7 @@ LayoutUnit LayoutTable::BorderBottom() const {
   // ScrollAnchoring fails this DCHECK.
   if (HasCollapsedBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
-        .ConvertToPhysical(Style()->GetWritingDirection())
+        .ConvertToPhysical(StyleRef().GetWritingDirection())
         .bottom;
   }
   return LayoutBlock::BorderBottom();

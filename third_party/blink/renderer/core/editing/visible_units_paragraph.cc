@@ -41,7 +41,7 @@ namespace {
 
 bool NodeIsUserSelectAll(const Node* node) {
   return node && node->GetLayoutObject() &&
-         node->GetLayoutObject()->Style()->UsedUserSelect() ==
+         node->GetLayoutObject()->StyleRef().UsedUserSelect() ==
              EUserSelect::kAll;
 }
 

@@ -4689,7 +4689,7 @@ bool PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
   // Descendant state depends on opacity being zero, so we can't do a direct
   // update if it changes
   bool old_opacity_is_zero = properties->Effect()->Opacity() == 0;
-  bool new_opacity_is_zero = object.Style()->Opacity() == 0;
+  bool new_opacity_is_zero = object.StyleRef().Opacity() == 0;
   if (old_opacity_is_zero != new_opacity_is_zero) {
     return false;
   }

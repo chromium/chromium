@@ -499,7 +499,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     }
 
     // The z-index should be greater than the threshold.
-    if (box->Style()->EffectiveZIndex() < kPopupOverlayZIndexThreshold) {
+    if (box->StyleRef().EffectiveZIndex() < kPopupOverlayZIndexThreshold) {
       return false;
     }
 

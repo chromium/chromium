@@ -89,7 +89,7 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
     <div id="target"></div>
   )HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  const ComputedStyle& style = *target->Style();
+  const ComputedStyle& style = target->StyleRef();
 
   auto* ident =
       MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("testpainter"));
@@ -123,7 +123,7 @@ TEST_P(CSSPaintValueTest, GetImageCalledOnMultipleDocuments) {
 
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  const ComputedStyle& style = *target->Style();
+  const ComputedStyle& style = target->StyleRef();
 
   auto* ident =
       MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("testpainter"));
@@ -185,7 +185,7 @@ TEST_P(CSSPaintValueTest, PrintingMustFallbackToMainThread) {
     <div id="target"></div>
   )HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  const ComputedStyle& style = *target->Style();
+  const ComputedStyle& style = target->StyleRef();
 
   auto* ident =
       MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("testpainter"));
@@ -227,7 +227,7 @@ TEST_P(CSSPaintValueTest, DoNotPaintForLink) {
     <a href="http://www.example.com" id="target"></a>
   )HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  const ComputedStyle& style = *target->Style();
+  const ComputedStyle& style = target->StyleRef();
   ASSERT_NE(style.InsideLink(), EInsideLink::kNotInsideLink);
 
   auto* ident =
@@ -256,7 +256,7 @@ TEST_P(CSSPaintValueTest, DoNotPaintWhenAncestorHasLink) {
     </a>
   )HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  const ComputedStyle& style = *target->Style();
+  const ComputedStyle& style = target->StyleRef();
   ASSERT_NE(style.InsideLink(), EInsideLink::kNotInsideLink);
 
   auto* ident =

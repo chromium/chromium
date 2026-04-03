@@ -99,7 +99,7 @@ bool IsNodeRendered(const Node& node) {
   if (!layout_object)
     return false;
 
-  return layout_object->Style()->Visibility() == EVisibility::kVisible;
+  return layout_object->StyleRef().Visibility() == EVisibility::kVisible;
 }
 
 bool IsInlineElement(const Node* node) {
@@ -179,8 +179,9 @@ static bool IsSpecialHTMLElement(const Node& n) {
   if (!layout_object)
     return false;
 
-  if (layout_object->Style()->IsDisplayTableBox())
+  if (layout_object->StyleRef().IsDisplayTableBox()) {
     return true;
+  }
 
   if (layout_object->IsFloating())
     return true;
@@ -278,7 +279,7 @@ bool LineBreakExistsAtPosition(const Position& position) {
 
   const auto* text_node = DynamicTo<Text>(position.AnchorNode());
   if (!text_node ||
-      text_node->GetLayoutObject()->Style()->ShouldCollapseBreaks()) {
+      text_node->GetLayoutObject()->StyleRef().ShouldCollapseBreaks()) {
     return false;
   }
 
@@ -347,7 +348,7 @@ Position LeadingCollapsibleWhitespacePosition(const Position& position,
     return Position();
   if (option == kNotConsiderNonCollapsibleWhitespace &&
       anchor_node->GetLayoutObject() &&
-      anchor_node->GetLayoutObject()->Style()->ShouldPreserveWhiteSpaces()) {
+      anchor_node->GetLayoutObject()->StyleRef().ShouldPreserveWhiteSpaces()) {
     return Position();
   }
   const String& string = anchor_text_node->data();

@@ -407,25 +407,22 @@ bool CanScrollInDirection(const Node* container,
     return false;
 
   DCHECK(container->GetLayoutObject());
+  const ComputedStyle& style = container->GetLayoutObject()->StyleRef();
   switch (direction) {
     case SpatialNavigationDirection::kLeft:
-      return (container->GetLayoutObject()->Style()->OverflowX() !=
-                  EOverflow::kHidden &&
+      return (style.OverflowX() != EOverflow::kHidden &&
               scrollable_area->GetScrollOffset().x() >
                   scrollable_area->MinimumScrollOffset().x());
     case SpatialNavigationDirection::kUp:
-      return (container->GetLayoutObject()->Style()->OverflowY() !=
-                  EOverflow::kHidden &&
+      return (style.OverflowY() != EOverflow::kHidden &&
               scrollable_area->GetScrollOffset().y() >
                   scrollable_area->MinimumScrollOffset().y());
     case SpatialNavigationDirection::kRight:
-      return (container->GetLayoutObject()->Style()->OverflowX() !=
-                  EOverflow::kHidden &&
+      return (style.OverflowX() != EOverflow::kHidden &&
               scrollable_area->GetScrollOffset().x() <
                   scrollable_area->MaximumScrollOffset().x());
     case SpatialNavigationDirection::kDown:
-      return (container->GetLayoutObject()->Style()->OverflowY() !=
-                  EOverflow::kHidden &&
+      return (style.OverflowY() != EOverflow::kHidden &&
               scrollable_area->GetScrollOffset().y() <
                   scrollable_area->MaximumScrollOffset().y());
     default:

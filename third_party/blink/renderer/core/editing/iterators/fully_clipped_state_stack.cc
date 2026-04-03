@@ -28,7 +28,7 @@ inline bool IgnoresContainerClip(const Node* node) {
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object || layout_object->IsText())
     return false;
-  return layout_object->Style()->HasOutOfFlowPosition();
+  return layout_object->StyleRef().HasOutOfFlowPosition();
 }
 
 template <typename Strategy>

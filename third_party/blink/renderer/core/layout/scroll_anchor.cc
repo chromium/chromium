@@ -105,7 +105,7 @@ void ScrollAnchor::SetScroller(ScrollableArea* scroller) {
 // adjust only on the block flow axis.  This could probably be refactored to
 // simply measure the movement of the block-start edge.
 static Corner CornerToAnchor(const ScrollableArea* scroller) {
-  auto writing_mode = ScrollerLayoutBox(scroller)->Style()->GetWritingMode();
+  auto writing_mode = ScrollerLayoutBox(scroller)->StyleRef().GetWritingMode();
   if (IsFlippedBlocksWritingMode(writing_mode)) {
     return Corner::kTopRight;
   }
@@ -814,7 +814,7 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
     // roughly the same.
     ScrollOffset current_offset = scroller_->GetScrollOffset();
     gfx::RectF bounding_box = anchor_object->AbsoluteBoundingBoxRectF();
-    WritingMode writing_mode = anchor_object->Style()->GetWritingMode();
+    WritingMode writing_mode = anchor_object->StyleRef().GetWritingMode();
     gfx::PointF location_point =
         IsFlippedBlocksWritingMode(writing_mode)   ? bounding_box.top_right()
         : writing_mode == WritingMode::kSidewaysLr ? bounding_box.bottom_left()
