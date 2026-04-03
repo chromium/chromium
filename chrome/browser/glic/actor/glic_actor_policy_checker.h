@@ -14,6 +14,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/enterprise_policy_content_checker.h"
 #include "chrome/browser/actor/enterprise_policy_url_checker.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
@@ -73,25 +74,7 @@ class GlicActorPolicyChecker : public actor::EnterprisePolicyUrlChecker,
   base::CallbackListSubscription AddUrlListsUpdateObserverForTesting(
       base::RepeatingClosure callback);
 
-  // LINT.IfChange(CannotActReason)
-  enum class CannotActReason {
-    // Browser can actuate.
-    kNone = 0,
-    // The enterprise policy disables the actuation feature. Only applicable to
-    // managed clients (Profile level, browser level or machine level).
-    kDisabledByPolicy = 1,
-    // The account is not eligible for the actuation.
-    kAccountCapabilityIneligible = 2,
-    // The account is not subscribed to one of the required AI subscription
-    // tiers.
-    kAccountMissingChromeBenefits = 3,
-    // An enterprise account is logged in but there is no management to deliver
-    // the policy. Actuation is disabled because the policy pref default value
-    // is disabled.
-    kEnterpriseWithoutManagement = 4,
-    kMaxValue = kEnterpriseWithoutManagement,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorTaskCreateFailedReason)
+  using CannotActReason = ::glic::CannotActReason;
 
   bool CanActOnWeb() const;
   CannotActReason CannotActOnWebReason() const;

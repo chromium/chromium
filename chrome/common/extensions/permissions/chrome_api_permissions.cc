@@ -96,6 +96,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kFontSettings, "fontSettings",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kGlicPrivate, "glicPrivate",
+     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kHistory, "history",
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kIdltest, "idltest"},

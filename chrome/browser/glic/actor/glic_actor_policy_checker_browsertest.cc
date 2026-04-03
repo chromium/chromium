@@ -25,6 +25,7 @@
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_test_util.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -296,9 +297,8 @@ IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestNonManagedBrowser,
   EXPECT_EQ(GetPolicyChecker().CanActOnWeb(), TestHasChromeBenefits());
   EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
             TestHasChromeBenefits()
-                ? GlicActorPolicyChecker::CannotActReason::kNone
-                : GlicActorPolicyChecker::CannotActReason::
-                      kAccountMissingChromeBenefits);
+                ? CannotActReason::kNone
+                : CannotActReason::kAccountMissingChromeBenefits);
 
   // Toggle the pref to kDisabled, but won't change the capability for
   // non-managed clients.
@@ -309,9 +309,8 @@ IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestNonManagedBrowser,
   EXPECT_EQ(GetPolicyChecker().CanActOnWeb(), TestHasChromeBenefits());
   EXPECT_THAT(GetPolicyChecker().CannotActOnWebReason(),
               TestHasChromeBenefits()
-                  ? GlicActorPolicyChecker::CannotActReason::kNone
-                  : GlicActorPolicyChecker::CannotActReason::
-                        kAccountMissingChromeBenefits);
+                  ? CannotActReason::kNone
+                  : CannotActReason::kAccountMissingChromeBenefits);
 
   // Set the user pref from Allowed to Disallowed or from Disallowed to Allowed.
   GetProfile()->GetPrefs()->SetInteger(
@@ -319,9 +318,8 @@ IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestNonManagedBrowser,
   EXPECT_NE(GetPolicyChecker().CanActOnWeb(), TestHasChromeBenefits());
   EXPECT_THAT(GetPolicyChecker().CannotActOnWebReason(),
               TestHasChromeBenefits()
-                  ? GlicActorPolicyChecker::CannotActReason::
-                        kAccountMissingChromeBenefits
-                  : GlicActorPolicyChecker::CannotActReason::kNone);
+                  ? CannotActReason::kAccountMissingChromeBenefits
+                  : CannotActReason::kNone);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -472,8 +470,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
   UpdateGeminiActOnWebPolicy(
       glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
   EXPECT_TRUE(GetPolicyChecker().CanActOnWeb());
-  EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
-            GlicActorPolicyChecker::CannotActReason::kNone);
+  EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(), CannotActReason::kNone);
 
   histogram_tester.ExpectBucketCount("Glic.Actor.ManagedUserActuationEnabled",
                                      true, 1);
@@ -497,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
       glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
   EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
   EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
-            GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
+            CannotActReason::kDisabledByPolicy);
 
   histogram_tester.ExpectBucketCount("Glic.Actor.ManagedUserActuationEnabled",
                                      false, 1);
@@ -873,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(
   // If the default pref is kForcedDisabled, the policy value is discarded.
   EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
   EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
-            GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
+            CannotActReason::kDisabledByPolicy);
 }
 
 // Makes sure that on policy-managed clients, when the policy is unset, the
@@ -912,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedPolicyNotSet,
   // Policy is unset. Fallback to the default pref value.
   EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
   EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
-            GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
+            CannotActReason::kDisabledByPolicy);
 }
 
 // Makes sure that on policy-managed clients, when the default pref is not
@@ -950,7 +947,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
   EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
-            GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
+            CannotActReason::kDisabledByPolicy);
 }
 
 // Exercise the policy checker for managed accounts (AccountInfo::IsManaged())
@@ -993,9 +990,8 @@ IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestWithManagedAccount,
                        CapabilityUpdatedForAccount) {
   // No account is signed in, thus no capability.
   EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
-  EXPECT_EQ(
-      GetPolicyChecker().CannotActOnWebReason(),
-      GlicActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible);
+  EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
+            CannotActReason::kAccountCapabilityIneligible);
 
   // Capability is calculated from the default pref value. Despite the account
   // being an enterprise account, the browser has no management. Fallsback to
@@ -1004,11 +1000,10 @@ IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestWithManagedAccount,
   EXPECT_EQ(GetPolicyChecker().CanActOnWeb(), IsPolicyDefaultPrefEnabled());
   if (IsPolicyDefaultPrefEnabled()) {
     EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
-              GlicActorPolicyChecker::CannotActReason::kNone);
+              CannotActReason::kNone);
   } else {
-    EXPECT_EQ(
-        GetPolicyChecker().CannotActOnWebReason(),
-        GlicActorPolicyChecker::CannotActReason::kEnterpriseWithoutManagement);
+    EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
+              CannotActReason::kEnterpriseWithoutManagement);
   }
 
 // Note: sign-out from enterprise account is not allowed in ChromeOS.
@@ -1046,9 +1041,8 @@ IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestWithManagedAccount,
   mutator.set_can_use_model_execution_features(false);
   identity_test_env_->UpdateAccountInfoForAccount(account_info);
   EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
-  EXPECT_EQ(
-      GetPolicyChecker().CannotActOnWebReason(),
-      GlicActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible);
+  EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
+            CannotActReason::kAccountCapabilityIneligible);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestWithManagedAccount,
@@ -1088,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(
       glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
   EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
   EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
-            GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
+            CannotActReason::kDisabledByPolicy);
 
 // Note: sign-out from enterprise account is not allowed in ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)

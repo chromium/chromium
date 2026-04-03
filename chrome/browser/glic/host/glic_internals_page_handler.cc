@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/fre/fre_util.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -55,7 +56,7 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
       profile->GetPrefs()->GetBoolean(prefs::kGlicUserEnabledActuationOnWeb) ==
       false;
 
-  using CannotActReason = GlicActorPolicyChecker::CannotActReason;
+  using CannotActReason = ::glic::CannotActReason;
   if (actor_policy_checker) {
     if (actor_policy_checker->CanActOnWeb()) {
       result->actuation_eligibility = mojom::ActuationEligibility::kEligible;

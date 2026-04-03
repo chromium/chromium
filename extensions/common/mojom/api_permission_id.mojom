@@ -289,6 +289,7 @@ enum APIPermissionID {
   kExperimentalActor = 262,
   kEnterpriseLogin = 263,
   kProxyOverrideRulesPrivate = 264,
+  kGlicPrivate = 265,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in

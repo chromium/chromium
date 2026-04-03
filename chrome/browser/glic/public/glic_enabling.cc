@@ -647,7 +647,6 @@ bool GlicEnabling::IsChromeOSProfileEligible(const Profile* profile) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-
 bool GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(Profile* profile) {
   return IsMultiInstanceEnabled() && !HasConsentedForProfile(profile) &&
          base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);

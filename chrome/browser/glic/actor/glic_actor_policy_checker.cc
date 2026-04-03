@@ -84,25 +84,24 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         GlicActorPolicyChecker::CannotActReason value) {
+std::ostream& operator<<(std::ostream& os, CannotActReason value) {
   switch (value) {
-    case GlicActorPolicyChecker::CannotActReason::kNone:
+    case CannotActReason::kNone:
       return os << "kNone";
-    case GlicActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible:
+    case CannotActReason::kAccountCapabilityIneligible:
       return os << "kAccountCapabilityIneligible";
-    case GlicActorPolicyChecker::CannotActReason::kAccountMissingChromeBenefits:
+    case CannotActReason::kAccountMissingChromeBenefits:
       return os << "kAccountMissingChromeBenefits";
-    case GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy:
+    case CannotActReason::kDisabledByPolicy:
       return os << "kDisabledByPolicy";
-    case GlicActorPolicyChecker::CannotActReason::kEnterpriseWithoutManagement:
+    case CannotActReason::kEnterpriseWithoutManagement:
       return os << "kEnterpriseWithoutManagement";
   }
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         std::variant<GlicActorPolicyChecker::CannotActReason,
-                                      std::string_view> value) {
+std::ostream& operator<<(
+    std::ostream& os,
+    std::variant<CannotActReason, std::string_view> value) {
   std::visit([&os](auto&& arg) { os << arg; }, value);
   return os;
 }
@@ -139,8 +138,8 @@ bool ActuationEnabledForManagedUser(Profile& profile,
       features::GlicActorEnterprisePrefDefault::kForcedDisabled) {
     is_enabled = false;
   } else {
-    is_enabled = capability_pref ==
-                  glic::prefs::GlicActuationOnWebPolicyState::kEnabled;
+    is_enabled =
+        capability_pref == glic::prefs::GlicActuationOnWebPolicyState::kEnabled;
   }
 
   // Log the behavior
@@ -345,8 +344,7 @@ bool GlicActorPolicyChecker::CanActOnWeb() const {
   return can_act_on_web_ != CanActOutcome::kNo;
 }
 
-GlicActorPolicyChecker::CannotActReason
-GlicActorPolicyChecker::CannotActOnWebReason() const {
+CannotActReason GlicActorPolicyChecker::CannotActOnWebReason() const {
   return cannot_act_on_web_reason_;
 }
 
@@ -359,8 +357,7 @@ void GlicActorPolicyChecker::OnPrefOrAccountChanged() {
   }
 }
 
-std::pair<GlicActorPolicyChecker::CanActOutcome,
-          GlicActorPolicyChecker::CannotActReason>
+std::pair<GlicActorPolicyChecker::CanActOutcome, CannotActReason>
 GlicActorPolicyChecker::ComputeActOnWebCapability() {
   auto log_and_return =
       [&](CanActOutcome outcome,
@@ -402,9 +399,8 @@ GlicActorPolicyChecker::ComputeActOnWebCapability() {
                   .account_id)
           .capabilities.can_use_model_execution_features();
   if (can_use_model_execution_features != signin::Tribool::kTrue) {
-    return log_and_return(
-        CanActOutcome::kNo,
-        GlicActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible);
+    return log_and_return(CanActOutcome::kNo,
+                          CannotActReason::kAccountCapabilityIneligible);
   }
 
   bool is_likely_dogfood_client = IsLikelyDogfoodClient();
