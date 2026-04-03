@@ -436,10 +436,23 @@ ci.builder(
             "x86-64",
         ],
         per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 10,
+                ),
+            ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--emulator-debug-tags=all",
                 ],
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
             ),
         },
     ),
