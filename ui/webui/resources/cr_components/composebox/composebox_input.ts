@@ -59,10 +59,26 @@ export class ComposeboxInputElement extends I18nMixinLit
   accessor entrypointName: string = '';
   accessor cancelButtonTitle: string = '';
 
+  private caretResizeObserver_: ResizeObserver|null = null;
+  private lastObservedInputWrapperWidth_: number = -1;
   private isRtl_: boolean = document.documentElement.dir === 'rtl';
 
   get inputElement(): HTMLInputElement|HTMLTextAreaElement {
     return this.$.input;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setupCaretResizeObserver_();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.caretResizeObserver_) {
+      this.caretResizeObserver_.disconnect();
+      this.caretResizeObserver_ = null;
+    }
+    this.lastObservedInputWrapperWidth_ = -1;
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -151,6 +167,34 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   protected onCancelClick_(e: Event) {
     this.dispatchEvent(new CustomEvent('cancel-click', {detail: e}));
+  }
+
+  // Recalculate the caret only when #inputWrapper's width changes.
+  // The width guard skips height-only changes (e.g. field-sizing: content
+  // growth Windows non-overlay scrollbar toggling) that would otherwise
+  // feed back into a ResizeObserver loop.
+  private setupCaretResizeObserver_() {
+    if (this.disableCaretColorAnimation) {
+      return;
+    }
+
+    const inputWrapper = this.shadowRoot.getElementById('inputWrapper');
+    if (!inputWrapper) {
+      return;
+    }
+
+    this.lastObservedInputWrapperWidth_ = inputWrapper.clientWidth;
+    this.caretResizeObserver_ = new ResizeObserver(() => {
+      const currentWidth = inputWrapper.clientWidth;
+      if (currentWidth === this.lastObservedInputWrapperWidth_) {
+        return;
+      }
+      this.lastObservedInputWrapperWidth_ = currentWidth;
+      requestAnimationFrame(() => {
+        this.updateCaret_();
+      });
+    });
+    this.caretResizeObserver_.observe(inputWrapper);
   }
 
   private updateMirror_() {
