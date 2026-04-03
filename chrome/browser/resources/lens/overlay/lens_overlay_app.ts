@@ -8,14 +8,13 @@ import './selection_overlay.js';
 import './translate_button.js';
 import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
-import '//resources/cr_components/searchbox/searchbox.js';
+import '/lens/shared/searchbox/lens_searchbox.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
-import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -25,6 +24,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {LensSearchboxElement} from '/lens/shared/searchbox/lens_searchbox.js';
 import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loader.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -55,7 +55,7 @@ export interface LensOverlayAppElement {
     moreOptionsButton: CrIconButtonElement,
     moreOptionsMenu: HTMLElement,
     privacyNotice: HTMLElement,
-    searchbox: SearchboxElement,
+    searchbox: LensSearchboxElement,
     searchboxContainer: HTMLElement,
     searchboxGhostLoader: SearchboxGhostLoaderElement,
     selectionOverlay: SelectionOverlayElement,
@@ -785,8 +785,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private focusSearchbox() {
-    const searchbox =
-        this.shadowRoot!.querySelector<SearchboxElement>('cr-searchbox');
+    const searchbox = this.shadowRoot!.querySelector<LensSearchboxElement>(
+        'cr-lens-searchbox');
     if (searchbox) {
       searchbox.focusInput();
     }

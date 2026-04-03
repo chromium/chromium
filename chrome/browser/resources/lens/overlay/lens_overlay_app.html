@@ -60,7 +60,7 @@
     transform-origin: top;
   }
 
-  :host([enable-csb-motion-tweaks]) cr-searchbox {
+  :host([enable-csb-motion-tweaks]) cr-lens-searchbox {
     display: block;
   }
 
@@ -486,7 +486,9 @@
    * Show the ghost loader when the searchbox is focused and the searchbox
    * dropdown isn't showing (no results available).
    */
-  :host([show-ghost-loader]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
+  :host([show-ghost-loader])
+      #searchboxContainer:has(cr-lens-searchbox:not([dropdown-is-visible]))
+          cr-searchbox-ghost-loader {
     display: block;
   }
 
@@ -494,7 +496,8 @@
    * When CSB motion tweaks are enabled, show the ghost loader when the
    * searchbox is focused.
    */
-  :host([enable-csb-motion-tweaks][show-ghost-loader]) cr-searchbox-ghost-loader {
+  :host([enable-csb-motion-tweaks][show-ghost-loader])
+      cr-searchbox-ghost-loader {
     display: block;
   }
 
@@ -517,14 +520,16 @@
   }
 
   /* Default values for the searchbox dropdown that enable the fade in animation. */
-  :host([enable-csb-motion-tweaks][show-ghost-loader]) cr-searchbox::part(searchbox-dropdown) {
+  :host([enable-csb-motion-tweaks][show-ghost-loader])
+      cr-lens-searchbox::part(searchbox-dropdown) {
     opacity: 0;
     display: block;
   }
 
   /* Fade in the searchbox dropdown once the dropdown becomes visible. */
   :host([enable-csb-motion-tweaks][show-ghost-loader])
-    #searchboxContainer:has(cr-searchbox[dropdown-is-visible]) cr-searchbox::part(searchbox-dropdown) {
+    #searchboxContainer:has(cr-lens-searchbox[dropdown-is-visible])
+        cr-lens-searchbox::part(searchbox-dropdown) {
     transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 1;
   }
@@ -596,12 +601,12 @@
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
   <div id="searchboxContainer" on-focusout="handleSearchboxBlurred">
-    <cr-searchbox
+    <cr-lens-searchbox
       id="searchbox"
       on-focusin="handleSearchboxFocused"
       placeholder-text="{{placeholderText}}"
       searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]">
-    </cr-searchbox>
+    </cr-lens-searchbox>
     <cr-searchbox-ghost-loader
       id="searchboxGhostLoader"
       tabindex="-1"

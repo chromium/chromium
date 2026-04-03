@@ -840,13 +840,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, NavigationsUpdateCSB) {
   // Paths to searchbox hint text.
   const DeepQuery kPathToOverlaySearchboxInput{
       "lens-overlay-app",
-      "cr-searchbox",
+      "cr-lens-searchbox",
       "cr-searchbox-input",
       "input",
   };
   const DeepQuery kPathToSidePanelSearchboxInput{
       "lens-side-panel-app",
-      "cr-searchbox",
+      "cr-lens-searchbox",
       "cr-searchbox-input",
       "input",
   };
@@ -1366,7 +1366,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerStraightToSrpTest,
 
   const DeepQuery kPathToSidePanelSearchboxInput{
       "lens-side-panel-app",
-      "cr-searchbox",
+      "cr-lens-searchbox",
       "cr-searchbox-input",
       "input",
   };
@@ -1439,7 +1439,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerStraightToSrpCustomQueryTest,
 
   const DeepQuery kPathToSidePanelSearchboxInput{
       "lens-side-panel-app",
-      "cr-searchbox",
+      "cr-lens-searchbox",
       "cr-searchbox-input",
       "input",
   };
@@ -1612,7 +1612,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
 
   const DeepQuery kPathToSidePanelSearchboxInput{
       "lens-side-panel-app",
-      "cr-searchbox",
+      "cr-lens-searchbox",
       "cr-searchbox-input",
       "input",
   };
@@ -1859,7 +1859,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
 
   const DeepQuery kPathToOverlaySearchboxInput{
       "lens-overlay-app",
-      "cr-searchbox",
+      "cr-lens-searchbox",
       "cr-searchbox-input",
       "input",
   };
@@ -2088,7 +2088,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCsbTest, ShowsCsbWhenEnabled) {
 
   const DeepQuery kPathToOverlaySearchboxInput{
       "lens-overlay-app",
-      "cr-searchbox",
+      "cr-lens-searchbox",
       "cr-searchbox-input",
       "input",
   };
@@ -2111,7 +2111,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCsbTest, HidesCsbWhenDisabled) {
 
   const DeepQuery kPathToOverlaySearchboxInput{
       "lens-overlay-app",
-      "cr-searchbox",
+      "cr-lens-searchbox",
       "cr-searchbox-input",
       "input",
   };

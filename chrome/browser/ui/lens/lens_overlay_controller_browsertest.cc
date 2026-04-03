@@ -265,7 +265,8 @@ constexpr char kCheckSidePanelThumbnailShownScript[] = R"(
       return false;
     }
 
-    const thumbnail = searchbox.shadowRoot.querySelector('#thumbnail');
+    const thumbnail =
+        searchbox.shadowRoot.querySelector('cr-searchbox-thumbnail');
     const imageSrc = thumbnail.shadowRoot.querySelector('#image').src;
     return window.getComputedStyle(thumbnailContainer).display !== 'none' &&
         imageSrc.startsWith('data:image/jpeg');
