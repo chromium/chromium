@@ -5586,6 +5586,7 @@ TEST_P(NetworkContextCanaryDomainTest, CanaryDomainServiceProbe) {
       nullptr);
   resolve_context.InvalidateCachesAndPerSessionData(session.get(),
                                                     /*network_change=*/false);
+  resolve_context.set_doh_fallback_upgrade_allowed(true);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(params));

@@ -100,6 +100,9 @@ void CanaryDomainService::OnSessionChanged() {
   // Cancel any asynchronous ProbeSecureDnsDomain() calls.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
+  // We should only be registered for `OnSessionChanged()` calls if the
+  // canary domain check feature is enabled.
+  CHECK(IsFeatureEnabled());
   resolve_context_->set_doh_fallback_canary_domain_check_status(
       CanaryDomainCheckStatus::kNotStarted);
 }

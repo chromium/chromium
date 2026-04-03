@@ -63,6 +63,7 @@ class CanaryDomainServiceTest : public ::testing::TestWithParam<bool>,
         config, base::BindRepeating([](int, int) -> int { return 0; }),
         /*net_log=*/nullptr);
     resolve_context_.InvalidateCachesAndPerSessionData(session_.get(), false);
+    resolve_context_.set_doh_fallback_upgrade_allowed(true);
 
     // Must be created after enabling the feature.
     canary_domain_service_ = std::make_unique<CanaryDomainService>(
@@ -290,6 +291,52 @@ TEST_F(CanaryDomainServiceDisabledTest, NoProbeWhenConfigDisallows) {
   EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
             CanaryDomainCheckStatus::kNotStarted);
   EXPECT_EQ(host_resolver_.num_resolve(), 0u);
+}
+
+TEST_F(CanaryDomainServiceDisabledTest, ProbeAllowanceChange) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kProbeSecureDnsCanaryDomain,
+      {{features::kSecureDnsCanaryDomainHost.name, "test.test"}});
+
+  // Initially disallowed.
+  resolve_context_.set_doh_fallback_upgrade_allowed(false);
+
+  std::unique_ptr<CanaryDomainService> canary_domain_service =
+      host_resolver_.CreateCanaryDomainService();
+  ASSERT_TRUE(canary_domain_service);
+
+  host_resolver_.rules()->AddRule("test.test", "1.2.3.4");
+
+  // Start doesn't trigger probe.
+  canary_domain_service->Start();
+  EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
+            CanaryDomainCheckStatus::kNotStarted);
+
+  // Event doesn't trigger probe.
+  {
+    base::test::TestFuture<void> probe_complete_future;
+    canary_domain_service->SetOnProbeCompleteCallbackForTesting(
+        probe_complete_future.GetCallback());
+    canary_domain_service->OnDohServerUnavailable(/*network_change=*/false);
+    EXPECT_TRUE(probe_complete_future.Wait());
+  }
+  EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
+            CanaryDomainCheckStatus::kNotStarted);
+  EXPECT_EQ(host_resolver_.num_resolve(), 0u);
+
+  // Allow and trigger.
+  resolve_context_.set_doh_fallback_upgrade_allowed(true);
+  {
+    base::test::TestFuture<void> probe_complete_future;
+    canary_domain_service->SetOnProbeCompleteCallbackForTesting(
+        probe_complete_future.GetCallback());
+    canary_domain_service->OnDohServerUnavailable(/*network_change=*/false);
+    EXPECT_TRUE(probe_complete_future.Wait());
+  }
+
+  EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
+            CanaryDomainCheckStatus::kPositive);
+  EXPECT_EQ(host_resolver_.num_resolve(), 1u);
 }
 
 }  // namespace net

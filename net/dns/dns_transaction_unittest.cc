@@ -32,6 +32,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/idempotency.h"
@@ -687,26 +688,47 @@ class DnsTransactionTestBase : public testing::Test {
   // HTTPResponse.
   void ConfigureDohServers(bool use_post,
                            size_t num_doh_servers = 1,
-                           bool make_available = true) {
-    GURL url(URLRequestMockDohJob::GetMockHttpsUrl("doh_test"));
+                           bool make_available = true,
+                           bool use_doh_fallback_upgrade = false) {
+    GURL url;
+    if (use_doh_fallback_upgrade) {
+      CHECK_EQ(config_.secure_dns_mode, SecureDnsMode::kAutomatic);
+      config_.should_perform_doh_fallback_upgrade = true;
+      config_.fallback_doh_nameservers = {
+          IPEndPoint(IPAddress(8, 8, 8, 8), 53)};
+      config_.doh_config =
+          DnsOverHttpsConfig(GetDohUpgradeServersFromNameservers(
+              config_.fallback_doh_nameservers));
+      // When using DoH fallback we don't have an easy way to switch between
+      // GET and POST since it's just based on what's in the hardcoded config,
+      // but we can at least ensure the parameter value provided matches what
+      // will actually be used.
+      CHECK_EQ(use_post, config_.doh_config.servers()[0].use_post());
+      url = GURL(GetURLFromTemplateWithoutParameters(
+          config_.doh_config.servers()[0].server_template()));
+    } else {
+      CHECK_LE(num_doh_servers, 255u);
+      std::vector<string> templates;
+      templates.reserve(num_doh_servers);
+      for (size_t i = 0; i < num_doh_servers; ++i) {
+        templates.push_back(URLRequestMockDohJob::GetMockHttpsUrl(
+                                base::StringPrintf("doh_test_%zu", i)) +
+                            (use_post ? "" : "{?dns}"));
+      }
+      config_.doh_config =
+          *DnsOverHttpsConfig::FromTemplatesForTesting(std::move(templates));
+      url = GURL(URLRequestMockDohJob::GetMockHttpsUrl("doh_test"));
+    }
+
     URLRequestFilter* filter = URLRequestFilter::GetInstance();
     filter->AddHostnameInterceptor(url.GetScheme(), url.GetHost(),
                                    std::make_unique<DohJobInterceptor>(this));
-    CHECK_LE(num_doh_servers, 255u);
-    std::vector<string> templates;
-    templates.reserve(num_doh_servers);
-    for (size_t i = 0; i < num_doh_servers; ++i) {
-      templates.push_back(URLRequestMockDohJob::GetMockHttpsUrl(
-                              base::StringPrintf("doh_test_%zu", i)) +
-                          (use_post ? "" : "{?dns}"));
-    }
-    config_.doh_config =
-        *DnsOverHttpsConfig::FromTemplatesForTesting(std::move(templates));
+
     ConfigureFactory();
 
     if (make_available) {
-      for (size_t server_index = 0; server_index < num_doh_servers;
-           ++server_index) {
+      for (size_t server_index = 0;
+           server_index < config_.doh_config.servers().size(); ++server_index) {
         resolve_context_->RecordServerSuccess(
             server_index, true /* is_doh_server */, session_.get());
       }
@@ -3464,6 +3486,130 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeUntilSuccess) {
   FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
   ASSERT_TRUE(doh_itr->AttemptAvailable());
   EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 0u);
+}
+
+TEST_F(DnsTransactionTestWithMockTime, ProbeSuppressedByContext) {
+  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
+  ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
+                      /*make_available=*/false,
+                      /*use_doh_fallback_upgrade=*/true);
+  ASSERT_FALSE(config_.doh_config.servers().empty());
+
+  resolve_context_->set_doh_fallback_upgrade_allowed(false);
+
+  size_t url_requests_started = 0;
+  SetUrlRequestStartedCallback(
+      base::BindLambdaForTesting([&] { url_requests_started++; }));
+
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  // Even after backoff delay, next attempts are suppressed.
+  FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
+  EXPECT_EQ(url_requests_started, 0u);
+  CheckServerOrder({});
+}
+
+TEST_F(DnsTransactionTestWithMockTime, ProbeSuppressionChange) {
+  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
+  ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
+                      /*make_available=*/false,
+                      /*use_doh_fallback_upgrade=*/true);
+  ASSERT_FALSE(config_.doh_config.servers().empty());
+
+  // Initially suppressed.
+  resolve_context_->set_doh_fallback_upgrade_allowed(false);
+
+  size_t url_requests_started = 0;
+  SetUrlRequestStartedCallback(
+      base::BindLambdaForTesting([&] { url_requests_started++; }));
+
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
+  EXPECT_EQ(url_requests_started, 0u);
+
+  // Change allowance.
+  resolve_context_->set_doh_fallback_upgrade_allowed(true);
+
+  // Still 0 even after backoff, because probes were not rescheduled while
+  // suppressed.
+  FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
+  EXPECT_EQ(url_requests_started, 0u);
+
+  // After a simulated network change (re-starting), the probe should finally go
+  // out.
+  AddQueryAndResponse(/*id=*/0, kT4HostName, kT4Qtype, kT4ResponseDatagram,
+                      ASYNC, Transport::HTTPS, /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+
+  runner->Start(/*network_change=*/true);
+  EXPECT_TRUE(base::test::RunUntil([&] { return url_requests_started == 1u; }));
+
+  EXPECT_TRUE(resolve_context_->GetDohServerAvailability(0, session_.get()));
+  CheckServerOrder({session_->config().nameservers.size()});
+}
+
+TEST_F(DnsTransactionTestWithMockTime,
+       ProbeNotSuppressedWithoutFallbackConfig) {
+  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
+  ConfigureDohServers(/*use_post=*/true, /*num_doh_servers=*/1,
+                      /*make_available=*/false,
+                      /*use_doh_fallback_upgrade=*/false);
+  ASSERT_FALSE(config_.doh_config.servers().empty());
+
+  // Even if false, standard DoH probes should NOT be suppressed.
+  resolve_context_->set_doh_fallback_upgrade_allowed(false);
+
+  AddQueryAndResponse(/*id=*/0, kT4HostName, kT4Qtype, kT4ResponseDatagram,
+                      ASYNC, Transport::HTTPS, /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+
+  size_t url_requests_started = 0;
+  SetUrlRequestStartedCallback(
+      base::BindLambdaForTesting([&] { url_requests_started++; }));
+
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  // The first probe attempt should NOT be suppressed.
+  EXPECT_TRUE(base::test::RunUntil([&] { return url_requests_started == 1u; }));
+  CheckServerOrder({session_->config().nameservers.size()});
+}
+
+TEST_F(DnsTransactionTestWithMockTime,
+       ProbeAllowedInitiallyWithFallbackConfig) {
+  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
+  ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
+                      /*make_available=*/false,
+                      /*use_doh_fallback_upgrade=*/true);
+  ASSERT_FALSE(config_.doh_config.servers().empty());
+
+  // Initially allowed.
+  resolve_context_->set_doh_fallback_upgrade_allowed(true);
+
+  AddQueryAndResponse(/*id=*/0, kT4HostName, kT4Qtype, kT4ResponseDatagram,
+                      ASYNC, Transport::HTTPS, /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+
+  size_t url_requests_started = 0;
+  SetUrlRequestStartedCallback(
+      base::BindLambdaForTesting([&] { url_requests_started++; }));
+
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  // The first probe attempt should NOT be suppressed.
+  EXPECT_TRUE(base::test::RunUntil([&] { return url_requests_started == 1u; }));
+  CheckServerOrder({session_->config().nameservers.size()});
 }
 
 TEST_F(DnsTransactionTestWithMockTime, ProbeCreationTriggersSuccessMetric) {

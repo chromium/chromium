@@ -723,6 +723,7 @@ void ResolveContext::EmitDohAutoupgradeSuccessMetrics() {
 
 bool ResolveContext::IsDohFallbackProbeEnabled() const {
   return IsDohConfigFromFallbackDohNameservers() &&
+         doh_fallback_upgrade_allowed() &&
          doh_fallback_canary_domain_check_status_ !=
              CanaryDomainCheckStatus::kInactive;
 }

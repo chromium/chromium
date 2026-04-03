@@ -256,6 +256,19 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
       return;
     }
 
+    // Also cancel the probe sequence if the DoH config corresponds to DoH
+    // fallback upgrade mode but the functionality is disabled. Note that this
+    // means that if the value of `context_->doh_fallback_upgrade_allowed()`
+    // changes the user will have to wait for a network change event or restart
+    // to have DoH auto-upgrade enabled, but this is acceptable since this
+    // approach to disabling is only intended to be used for a brief duration
+    // experiment.
+    if (context_->IsDohConfigFromFallbackDohNameservers() &&
+        !context_->doh_fallback_upgrade_allowed()) {
+      probe_stats_list_[doh_server_index] = nullptr;
+      return;
+    }
+
     // Schedule a new probe assuming this one will fail. The newly scheduled
     // probe will not run if an earlier probe has already succeeded. Probes may
     // take awhile to fail, which is why we schedule the next one here rather
