@@ -3479,6 +3479,15 @@ if (is_android) {
         "-Wl,--no-warn-symbol-ordering",
       ]
       inputs = [ chrome_orderfile_path ]
+
+      # These are txt files used by gclient to decide which version to download.
+      # They have zero effect on the build. We add them here merely so that
+      # GN-analyze recognizes them as dependencies when the version gets rolled.
+      if (current_cpu == "arm64" || current_cpu == "x64") {
+        inputs += [ "//chrome/build/android-arm64.orderfile.txt" ]
+      } else if (current_cpu == "arm" || current_cpu == "x86") {
+        inputs += [ "//chrome/build/android-arm.orderfile.txt" ]
+      }
     }
   }
 }
