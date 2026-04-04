@@ -1186,21 +1186,17 @@ void ContextualTasksUiService::OnTaskChanged(
         tab_list->GetActiveTab()->GetContents();
     SessionID active_id = SessionTabHelper::IdForTab(active_contents);
 
-    if (kTaskScopedSidePanel.Get()) {
-      // If the current tab is associated with any task, change associations for
-      // all tabs associated with that task.
-      std::optional<ContextualTask> current_task =
-          contextual_tasks_service_->GetContextualTaskForTab(active_id);
-      if (current_task) {
-        std::vector<SessionID> tab_ids =
-            contextual_tasks_service_->GetTabsAssociatedWithTask(
-                current_task->GetTaskId());
-        for (const auto& id : tab_ids) {
-          contextual_tasks_service_->AssociateTabWithTask(new_task_id, id);
-        }
+    // If the current tab is associated with any task, change associations for
+    // all tabs associated with that task.
+    std::optional<ContextualTask> current_task =
+        contextual_tasks_service_->GetContextualTaskForTab(active_id);
+    if (current_task) {
+      std::vector<SessionID> tab_ids =
+          contextual_tasks_service_->GetTabsAssociatedWithTask(
+              current_task->GetTaskId());
+      for (const auto& id : tab_ids) {
+        contextual_tasks_service_->AssociateTabWithTask(new_task_id, id);
       }
-    } else {
-      contextual_tasks_service_->AssociateTabWithTask(new_task_id, active_id);
     }
 
     controller->OnTaskChanged(web_contents, new_task_id);

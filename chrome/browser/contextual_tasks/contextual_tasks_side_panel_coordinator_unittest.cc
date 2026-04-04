@@ -388,36 +388,4 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, CleanUpUnusedWebContents) {
   EXPECT_EQ(1u, GetNumberOfActiveTasksForTesting(task_id2));
 }
 
-TEST_F(ContextualTasksSidePanelCoordinatorTest,
-       OnActiveTabChangedSuppressesPanelIfIsPanelSuppressedIsTrue) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kContextualTasks, {{"ContextualTasksTaskScopedSidePanel", "false"}});
-
-  // Ensure the coordinator knows the panel should be open for the active tab.
-  tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
-  SessionID active_tab_id =
-      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
-  base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
-      .WillRepeatedly(Return(ContextualTask(task_id)));
-  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_id))
-      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
-
-  // Set the panel to be open initially.
-  EXPECT_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
-      .WillRepeatedly(Return(true));
-
-  // Mock IsPanelSuppressed to return true.
-  EXPECT_CALL(*mock_panel_host_, IsPanelSuppressed()).WillOnce(Return(true));
-
-  // Verify that the panel is closed.
-  EXPECT_CALL(*mock_panel_host_,
-              Close(ContextualTasksPanelHost::AnimationStyle::kNoAnimation))
-      .Times(1);
-
-  // Trigger OnActiveTabChanged.
-  coordinator_->OnActiveTabChanged(*tab_list_bridge_, active_tab);
-}
-
 }  // namespace contextual_tasks

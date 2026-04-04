@@ -60,8 +60,7 @@ class ContextualTasksSidePanelCoordinator
     // Own the WebContents from the panel.
     std::unique_ptr<content::WebContents> web_contents;
 
-    // Whether the panel is open. Only used when FeatureParam
-    // `kTaskScopedSidePanel` is set to true.
+    // Whether the panel is open.
     bool is_open;
 
     // The time when the WebContents becomes inactive.
@@ -192,17 +191,11 @@ class ContextualTasksSidePanelCoordinator
   // Disassociate the tab from the task if it's associated with it.
   void DisassociateTabFromTask(content::WebContents* web_contents);
 
-  // Update open state of the panel, can be either task scoped or tab scoped
-  // based on FeatureParam `kTaskScopedSidePanel`.
+  // Update open state of the panel.
   void UpdateOpenState(bool is_open);
 
-  // Get the open state of the panel, can be either task scoped or tab
-  // scoped based on FeatureParam `kTaskScopedSidePanel`.
+  // Get the open state of the panel.
   bool ShouldBeOpen();
-
-  // Initialize the open state of the tab scoped panel if the active tab does
-  // not have an open state.
-  void MaybeInitTabScopedOpenState();
 
   // Closes any active Lens sessions for tabs associated with the given task.
   void CloseLensSessionsForTask(const ContextualTask& task);
@@ -240,10 +233,6 @@ class ContextualTasksSidePanelCoordinator
   // Different windows do not share the WebContents with the same task.
   std::map<base::Uuid, std::unique_ptr<WebContentsCacheItem>>
       task_id_to_web_contents_cache_;
-
-  // The tab scoped panel open state map. Only used when FeatureParam
-  // `kTaskScopedSidePanel` is set to false.
-  std::map<SessionID, bool> tab_scoped_open_state_;
 
   base::CallbackListSubscription eligibility_change_subscription_;
 

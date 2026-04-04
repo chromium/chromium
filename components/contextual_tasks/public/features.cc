@@ -189,11 +189,6 @@ const base::FeatureParam<ExpandButtonOption> kExpandButtonOptions(
     ExpandButtonOption::kToolbarCloseButton,
     &kExpandButtonOption);
 
-const base::FeatureParam<bool> kTaskScopedSidePanel(
-    &kContextualTasks,
-    "ContextualTasksTaskScopedSidePanel",
-    true);
-
 const base::FeatureParam<bool> kOpenSidePanelOnLinkClicked(
     &kContextualTasks,
     "ContextualTasksOpenSidePanelOnLinkClicked",

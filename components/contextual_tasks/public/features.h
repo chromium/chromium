@@ -99,13 +99,6 @@ extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
 // UI Options to expand the contextual tasks side panel to tab.
 extern const base::FeatureParam<ExpandButtonOption, true> kExpandButtonOptions;
 
-// If true, the side panel is task scoped. Meaning that for all tabs associated
-// with the same task, they will share the same side panel. If the side panel
-// changed to another task for one tab, all tabs associated with the former task
-// will become associated with the new task. When set to false, task change in
-// the side panel only affects the current tab.
-extern const base::FeatureParam<bool> kTaskScopedSidePanel;
-
 // Whether to open side panel when an external link is clicked on the contextual
 // task page.
 extern const base::FeatureParam<bool> kOpenSidePanelOnLinkClicked;

@@ -618,19 +618,6 @@ void ContextualTasksSidePanelCoordinator::CleanUpUnusedWebContents() {
     if (!associated_with_tab || (!is_active && expired)) {
       MaybeDetachWebContents(web_contents);
       it = task_id_to_web_contents_cache_.erase(it);
-      if (!kTaskScopedSidePanel.Get()) {
-        // Remove tab scoped open state for the current task.
-        for (auto tab_it = tab_scoped_open_state_.begin();
-             tab_it != tab_scoped_open_state_.end();) {
-          std::optional<ContextualTask> task =
-              contextual_tasks_service_->GetContextualTaskForTab(tab_it->first);
-          if (task && task->GetTaskId() == task_id) {
-            tab_it = tab_scoped_open_state_.erase(tab_it);
-          } else {
-            tab_it++;
-          }
-        }
-      }
     } else {
       ++it;
     }
@@ -721,7 +708,6 @@ ContextualTasksSidePanelCoordinator::GetPanelWebContentsForActiveTab() {
   }
 
   web_contents = it->second->web_contents.get();
-  MaybeInitTabScopedOpenState();
 
   return web_contents;
 }
@@ -827,95 +813,33 @@ void ContextualTasksSidePanelCoordinator::DisassociateTabFromTask(
     contextual_tasks_service_->DisassociateTabFromTask(task->GetTaskId(),
                                                        tab_id);
   }
-  if (!kTaskScopedSidePanel.Get()) {
-    tab_scoped_open_state_.erase(tab_id);
-  }
 }
 
 void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
-  if (kTaskScopedSidePanel.Get()) {
-    std::optional<ContextualTask> task = GetCurrentTask();
-    if (!task) {
-      return;
-    }
-    auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
-    if (it != task_id_to_web_contents_cache_.end()) {
-      it->second->is_open = is_open;
-    }
-
-    if (!is_open) {
-      CloseLensSessionsForTask(*task);
-    }
-  } else {
-    tabs::TabInterface* active_tab =
-        TabListInterface::From(browser_window_)->GetActiveTab();
-    if (!active_tab) {
-      return;
-    }
-    SessionID tab_id =
-        sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
-    auto it = tab_scoped_open_state_.find(tab_id);
-    if (it != tab_scoped_open_state_.end()) {
-      it->second = is_open;
-    } else {
-      tab_scoped_open_state_[tab_id] = is_open;
-    }
-
-#if !BUILDFLAG(IS_ANDROID)
-    if (auto* lens_controller = LensSearchController::From(active_tab)) {
-      if (!is_open && !lens_controller->IsOff()) {
-        lens_controller->CloseLensAsync(
-            lens::LensOverlayDismissalSource::kSidePanelCloseButton);
-      }
-    }
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-}
-
-void ContextualTasksSidePanelCoordinator::MaybeInitTabScopedOpenState() {
-  if (kTaskScopedSidePanel.Get()) {
+  std::optional<ContextualTask> task = GetCurrentTask();
+  if (!task) {
     return;
   }
-
-  tabs::TabInterface* active_tab =
-      TabListInterface::From(browser_window_)->GetActiveTab();
-  if (!active_tab) {
-    return;
+  auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
+  if (it != task_id_to_web_contents_cache_.end()) {
+    it->second->is_open = is_open;
   }
-  // If the open state of the active tab is not found, set the open state to the
-  // current open state of the panel.
-  SessionID tab_id =
-      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
-  auto it = tab_scoped_open_state_.find(tab_id);
-  if (it == tab_scoped_open_state_.end()) {
-    tab_scoped_open_state_[tab_id] = IsPanelOpenForContextualTask();
+
+  if (!is_open) {
+    CloseLensSessionsForTask(*task);
   }
 }
 
 bool ContextualTasksSidePanelCoordinator::ShouldBeOpen() {
-  if (kTaskScopedSidePanel.Get()) {
-    std::optional<ContextualTask> task = GetCurrentTask();
-    if (!task) {
-      return false;
-    }
-    auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
-    if (it != task_id_to_web_contents_cache_.end()) {
-      return it->second->is_open;
-    }
-    return false;
-  } else {
-    tabs::TabInterface* active_tab =
-        TabListInterface::From(browser_window_)->GetActiveTab();
-    if (!active_tab) {
-      return false;
-    }
-    auto it = tab_scoped_open_state_.find(
-        sessions::SessionTabHelper::IdForTab(active_tab->GetContents()));
-    if (it != tab_scoped_open_state_.end()) {
-      return it->second;
-    }
+  std::optional<ContextualTask> task = GetCurrentTask();
+  if (!task) {
     return false;
   }
+  auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
+  if (it != task_id_to_web_contents_cache_.end()) {
+    return it->second->is_open;
+  }
+  return false;
 }
 
 void ContextualTasksSidePanelCoordinator::CloseLensSessionsForTask(
