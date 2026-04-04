@@ -29,9 +29,9 @@ void NodeName::StoreRelease(const NodeName& name) {
 
 NodeName NodeName::LoadAcquire() {
   NodeName name;
-  name.high_ = reinterpret_cast<std::atomic<uint64_t>*>(&high_)->load(
-      std::memory_order_acquire);
   name.low_ = reinterpret_cast<std::atomic<uint64_t>*>(&low_)->load(
+      std::memory_order_acquire);
+  name.high_ = reinterpret_cast<std::atomic<uint64_t>*>(&high_)->load(
       std::memory_order_relaxed);
   return name;
 }
