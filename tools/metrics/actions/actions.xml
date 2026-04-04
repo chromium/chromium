@@ -896,6 +896,7 @@ should be able to be added at any place in this file.
 <variants name="UserEducation_WhatsNew_Module_Type">
   <variant name="" summary="aggregated"/>
   <variant name=".archive" summary="What's New archive"/>
+  <variant name=".ContextualTasks" summary="Contextual Tasks"/>
   <variant name=".FamilyLink" summary="Family Link"/>
   <variant name=".GANslate" summary="GANslate"/>
   <variant name=".GeminiShortcut" summary="Gemini Shortcut"/>
@@ -912,6 +913,7 @@ should be able to be added at any place in this file.
   <variant name=".iOSLensSWYS" summary="iOS Lens Search What You See"/>
   <variant name=".LensOverlayTranslateButton"
       summary="Lens Overlay Translate Button"/>
+  <variant name=".LightningVideo" summary="Lightning Video"/>
   <variant name=".PdfInk2" summary="PDF Ink Signatures (obsolete)"/>
   <variant name=".PdfSaveToDrive" summary="PDF Save to Drive"/>
   <variant name=".PerformanceInterventionUI"
@@ -933,6 +935,7 @@ should be able to be added at any place in this file.
   <variant name=".ToolbarPinning" summary="Toolbar Pinning"/>
   <variant name=".TranslationSettings" summary="Translation Settings"/>
   <variant name=".VerticalTabsLaunch" summary="Vertical Tabs"/>
+  <variant name=".WebUIOmniboxAimPopup" summary="WebUI Omnibox Aim Popup"/>
 </variants>
 
 <action name="AboutChrome">
@@ -53467,6 +53470,8 @@ should be able to be added at any place in this file.
   <token key="ActionType">
     <variant name="" summary="aggregated"/>
     <variant name=".GlicRollout" summary="Glic edition."/>
+    <variant name=".LightningTakeoverEdition"
+        summary="Lightning takeover edition."/>
     <variant name=".SafetyAwareness" summary="Safety Awareness edition."/>
     <variant name=".Spark" summary="Spark edition."/>
     <variant name=".TestEdition" summary="Test edition."/>

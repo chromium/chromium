@@ -65,6 +65,7 @@ source_set("impl") {
     "//chrome/common:version_header",
     "//components/performance_manager",
     "//components/prefs",
+    "//components/search",
     "//net",
     "//ui/base:features",
     "//url",
