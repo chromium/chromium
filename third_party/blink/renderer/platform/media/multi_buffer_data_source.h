@@ -14,10 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/time/tick_clock.h"
 #include "media/base/cross_origin_data_source.h"
 #include "media/base/data_source.h"
 #include "media/base/ranges.h"
 #include "media/base/tuneable.h"
+#include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -45,6 +47,34 @@ class PLATFORM_EXPORT MultiBufferDataSource
  public:
   using DownloadingCB = base::RepeatingCallback<void(bool)>;
   using RedirectCB = base::RepeatingCallback<void()>;
+
+  class Factory : public media::DataSource::Factory {
+   public:
+    using UrlDataCb = base::RepeatingCallback<void(
+        const GURL& url,
+        bool ignore_cache,
+        base::OnceCallback<void(scoped_refptr<UrlData>)>)>;
+
+    ~Factory() override;
+    Factory(media::MediaLog* media_log,
+            UrlDataCb get_url_data,
+            scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+            const base::TickClock* tick_clock);
+
+    void Create(const GURL& uri, bool ignore_cache, DataSourceCb cb) override;
+
+   private:
+    void OnUrlData(DataSourceCb cb,
+                   base::RepeatingCallback<void(bool)> download_cb,
+                   scoped_refptr<UrlData> data);
+
+    std::unique_ptr<media::MediaLog> media_log_;
+    UrlDataCb get_url_data_;
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+
+    std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
+    base::WeakPtrFactory<Factory> weak_factory_{this};
+  };
 
   // |url| and |cors_mode| are passed to the object. Buffered byte range changes
   // will be reported to |host|. |downloading_cb| will be called whenever the

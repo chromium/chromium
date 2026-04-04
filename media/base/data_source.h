@@ -38,6 +38,7 @@ class MEDIA_EXPORT DataSourceInfo {
 class MEDIA_EXPORT DataSource : public DataSourceInfo {
  public:
   using ReadCB = base::OnceCallback<void(int)>;
+  using DataSourceCb = base::OnceCallback<void(std::unique_ptr<DataSource>)>;
 
   enum { kReadError = -1, kAborted = -2 };
 
@@ -52,6 +53,14 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
     NONE,
     METADATA,
     AUTO,
+  };
+
+  class MEDIA_EXPORT Factory {
+   public:
+    virtual ~Factory();
+    virtual void Create(const GURL& uri,
+                        bool ignore_cache,
+                        DataSourceCb cb) = 0;
   };
 
   DataSource();

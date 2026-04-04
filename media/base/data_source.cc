@@ -13,6 +13,8 @@ DataSource::DataSource() = default;
 
 DataSource::~DataSource() = default;
 
+DataSource::Factory::~Factory() = default;
+
 bool DataSource::AssumeFullyBuffered() const {
   return true;
 }

@@ -112,13 +112,6 @@ component("media") {
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
   ]
-
-  if (enable_hls_demuxer) {
-    sources += [
-      "multi_buffer_data_source_factory.cc",
-      "multi_buffer_data_source_factory.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {

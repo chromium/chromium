@@ -53,7 +53,7 @@ void OnMultiBufferReadComplete(
 }  // namespace
 
 HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
-    std::unique_ptr<DataSourceFactory> factory)
+    std::unique_ptr<DataSource::Factory> factory)
     : data_source_factory_(std::move(factory)) {}
 
 HlsDataSourceProviderImpl::~HlsDataSourceProviderImpl() {
@@ -107,7 +107,7 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
     auto [new_uri, bypass_cache] = stream->GetNextSegmentURIAndCacheStatus();
     TRACE_EVENT_BEGIN("media", "HLS::CreateDataSource",
                       perfetto::Track::FromPointer(this), "uri", new_uri);
-    data_source_factory_->CreateDataSource(
+    data_source_factory_->Create(
         std::move(new_uri), bypass_cache,
         base::BindOnce(&HlsDataSourceProviderImpl::OnDataSourceCreated,
                        weak_factory_.GetWeakPtr(), std::move(stream),
@@ -161,6 +161,7 @@ void HlsDataSourceProviderImpl::OnDataSourceCreated(
     ReadCb callback,
     std::unique_ptr<DataSource> data_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(data_source);
   auto stream_id = stream->stream_id();
   auto old_data_source = data_source_map_.find(stream_id);
   if (old_data_source != data_source_map_.end()) {

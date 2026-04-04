@@ -78,11 +78,12 @@ namespace media {
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 namespace {
 
-class TestDataSourceFactory
-    : public HlsDataSourceProviderImpl::DataSourceFactory {
+class TestDataSourceFactory : public DataSource::Factory {
  public:
   ~TestDataSourceFactory() override = default;
-  void CreateDataSource(GURL uri, bool, DataSourceCb callback) override {
+  void Create(const GURL& uri,
+              bool,
+              DataSource::DataSourceCb callback) override {
     auto file_data_source = std::make_unique<FileDataSource>();
     base::FilePath file_path(
 #if BUILDFLAG(IS_WIN)

@@ -209,12 +209,13 @@ class FileHlsDataSourceStreamFactory {
       bool taint_origin = false);
 };
 
-class MockDataSourceFactory
-    : public HlsDataSourceProviderImpl::DataSourceFactory {
+class MockDataSourceFactory : public DataSource::Factory {
  public:
   ~MockDataSourceFactory() override;
   MockDataSourceFactory();
-  void CreateDataSource(GURL uri, bool ignore_cache, DataSourceCb cb) override;
+  void Create(const GURL& uri,
+              bool ignore_cache,
+              DataSource::DataSourceCb cb) override;
   void AddReadExpectation(size_t from, size_t to, int response);
   testing::NiceMock<MockDataSource>* PregenerateNextMock();
 
