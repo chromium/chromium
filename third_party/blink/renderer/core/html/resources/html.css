@@ -279,13 +279,11 @@ h6 {
 
 table {
     display: table;
-    box-sizing: border-box;
-    border-spacing: 2px;
     border-collapse: separate;
-    text-indent: initial;
-    @supports not blink-feature(TableDefaultBorderColorCurrentColor) {
-        border-color: gray;
-    }
+    border-spacing: 2px;
+    border-color: gray;
+    box-sizing: border-box;
+    text-indent: initial
 }
 
 thead {
