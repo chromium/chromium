@@ -24,7 +24,7 @@ export function getHtml(this: ComposeboxElement) {
         @delete-tab-context="${this.onDeleteTabContext_}"
         @tool-click="${this.onToolClick_}"
         @model-click="${this.onModelClick_}"
-        @get-tab-preview="${this.onGetTabPreview_}"
+        @get-tab-preview="${this.onGetTabPreview}"
         @context-menu-closed="${this.onContextMenuClosed_ }"
         @context-menu-opened="${this.onContextMenuOpened_}"
         .inputState="${this.inputState}"
