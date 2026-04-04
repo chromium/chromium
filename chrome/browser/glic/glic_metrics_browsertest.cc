@@ -8,6 +8,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -107,6 +109,109 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                                       mojom::InvocationSource::kOsButton, 1);
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Close"), 1);
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Toggle"), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
+                       InvokeAndOpenSourceMetrics_SidePanel) {
+  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = tabs::TabInterface::GetFromContents(web_contents);
+  ASSERT_TRUE(tab);
+
+  GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
+  options.conversation = DefaultConversation{};
+
+  glic_service->Invoke(tab, std::move(options));
+
+  // Verify that GlicInstanceMetrics::OnOpen was called with kNavigationCapture.
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Instance.SidePanel.OpenSource",
+      mojom::InvocationSource::kNavigationCapture, 1);
+
+  // Verify metrics logged in OnOpen.
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Instance.InitialInvocationSource",
+      mojom::InvocationSource::kNavigationCapture, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
+                       Invoke_NewConversationMetrics_SidePanel) {
+  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = tabs::TabInterface::GetFromContents(web_contents);
+  ASSERT_TRUE(tab);
+
+  // 1. Open the side panel first via ToggleUI.
+  glic_service->ToggleUI(browser(), /*prevent_close=*/false,
+                         mojom::InvocationSource::kOsButton);
+
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
+  histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.OpenSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+
+  // 2. Call Invoke with a NEW conversation.
+  GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
+  options.conversation = NewConversation{};
+
+  base::HistogramTester histogram_tester_invoke;
+  glic_service->Invoke(tab, std::move(options));
+
+  // 3. Verify that Glic.Instance.Open IS incremented because a new instance is
+  // created.
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 2);
+
+  // 4. Verify that OpenSource metric was logged for kNavigationCapture.
+  histogram_tester_invoke.ExpectUniqueSample(
+      "Glic.Instance.SidePanel.OpenSource",
+      mojom::InvocationSource::kNavigationCapture, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
+                       Invoke_CurrentConversation_SidePanel) {
+  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = tabs::TabInterface::GetFromContents(web_contents);
+  ASSERT_TRUE(tab);
+
+  // 1. Open the side panel first via ToggleUI.
+  glic_service->ToggleUI(browser(), /*prevent_close=*/false,
+                         mojom::InvocationSource::kOsButton);
+
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
+  histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.OpenSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+
+  // 2. Call Invoke with DefaultConversation (representing current
+  // conversation).
+  GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
+  options.conversation = DefaultConversation{};
+
+  glic_service->Invoke(tab, std::move(options));
+
+  // 3. Verify that Glic.Instance.Open is NOT incremented.
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,

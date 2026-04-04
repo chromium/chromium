@@ -233,6 +233,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
                 const ShowOptions& options,
                 bool is_showing);
 
+  // Called when the UI is shown and it was not already showing for this
+  // instance.
+  void OnOpen(glic::mojom::InvocationSource source, const ShowOptions& options);
+
   // Called when a tab that was bound to this instance is destroyed.
   void OnBoundTabDestroyed();
 
@@ -328,9 +332,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called by the session manager when it starts and ends.
   void OnSessionStarted();
   void OnSessionFinished();
-
-  // Called when the instance is opened from a closed state.
-  void OnOpen(glic::mojom::InvocationSource source, const ShowOptions& options);
 
   void OnPinnedTabsChanged(
       const std::vector<content::WebContents*>& pinned_contents);
