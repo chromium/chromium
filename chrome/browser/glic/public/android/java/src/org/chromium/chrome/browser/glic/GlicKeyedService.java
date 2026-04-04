@@ -24,4 +24,24 @@ public interface GlicKeyedService {
      */
     void toggleUI(
             long browserWindowPtr, boolean preventClose, Profile profile, int invocationSource);
+
+    /** Observer for global show/hide events. */
+    interface GlobalShowHideObserver {
+        /** Called when any Glic instance opens or closes. */
+        void onGlobalShowHide(boolean isOpened);
+    }
+
+    /** Adds an observer for global show/hide events. */
+    void addGlobalShowHideObserver(GlobalShowHideObserver observer);
+
+    /** Removes an observer for global show/hide events. */
+    void removeGlobalShowHideObserver(GlobalShowHideObserver observer);
+
+    /**
+     * Checks if the panel is showing for a specific browser window.
+     *
+     * @param browserWindowPtr The native pointer (long) to the BrowserWindowInterface.
+     * @return true if the panel is showing for the specified browser window.
+     */
+    boolean isPanelShowingForBrowser(long browserWindowPtr);
 }

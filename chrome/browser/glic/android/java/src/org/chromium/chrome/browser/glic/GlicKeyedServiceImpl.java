@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,6 +24,7 @@ import org.chromium.components.feature_engagement.Tracker;
 @NullMarked
 public class GlicKeyedServiceImpl implements GlicKeyedService {
     private long mNativePtr;
+    private final ObserverList<GlobalShowHideObserver> mObservers = new ObserverList<>();
 
     @CalledByNative
     private static GlicKeyedServiceImpl create(long nativePtr) {
@@ -45,9 +47,32 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
                 .toggleUI(mNativePtr, browserWindowPtr, preventClose, profile, invocationSource);
     }
 
+    @Override
+    public boolean isPanelShowingForBrowser(long browserWindowPtr) {
+        if (mNativePtr == 0) return false;
+        return GlicKeyedServiceImplJni.get().isPanelShowingForBrowser(mNativePtr, browserWindowPtr);
+    }
+
     @CalledByNative
     private void onNativeDestroyed() {
         mNativePtr = 0;
+    }
+
+    @Override
+    public void addGlobalShowHideObserver(GlobalShowHideObserver observer) {
+        mObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeGlobalShowHideObserver(GlobalShowHideObserver observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    @CalledByNative
+    private void onGlobalShowHide(boolean isOpened) {
+        for (GlobalShowHideObserver observer : mObservers) {
+            observer.onGlobalShowHide(isOpened);
+        }
     }
 
     @NativeMethods
@@ -58,5 +83,7 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
                 boolean preventClose,
                 @JniType("Profile*") Profile profile,
                 int source);
+
+        boolean isPanelShowingForBrowser(long nativeGlicKeyedServiceAndroid, long browserWindowPtr);
     }
 }
