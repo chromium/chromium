@@ -111,7 +111,7 @@ if (enable_extensions) {
       "certificate_provider_internal.webidl",
       "document_scan.webidl",
       "echo_private.json",
-      "enterprise_device_attributes.idl",
+      "enterprise_device_attributes.webidl",
       "enterprise_kiosk_input.idl",
       "enterprise_login.idl",
       "enterprise_networking_attributes.idl",
