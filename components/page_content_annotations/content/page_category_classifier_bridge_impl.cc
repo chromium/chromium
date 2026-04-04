@@ -4,6 +4,8 @@
 
 #include "components/page_content_annotations/content/page_category_classifier_bridge_impl.h"
 
+#include <vector>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/page_content_annotations/core/on_device_category_classifier.h"
@@ -37,14 +39,20 @@ void PageCategoryClassifierBridgeImpl::OnPageEmbeddingsAvailable(
   std::vector<PassageEmbedding> embeddings =
       page_embeddings_service_->GetEmbeddings(page);
 
-  for (const auto& embedding : embeddings) {
+  passage_embeddings::Embedding title_url_embedding;
+  std::vector<passage_embeddings::Embedding> passage_embeddings;
+  for (PassageEmbedding embedding : embeddings) {
     if (embedding.passage.second == EmbeddingPassageType::kTitleAndUrl) {
-      category_classifier_->OnPageEmbeddingAvailable(
-          page.GetMainDocument().GetLastCommittedURL(),
-          page.GetMainDocument().GetPageUkmSourceId(), embedding.embedding);
-      return;
+      title_url_embedding = std::move(embedding.embedding);
+    } else if (embedding.passage.second == EmbeddingPassageType::kPageContent) {
+      passage_embeddings.push_back(std::move(embedding.embedding));
     }
   }
+
+  category_classifier_->OnPageEmbeddingAvailable(
+      page.GetMainDocument().GetLastCommittedURL(),
+      page.GetMainDocument().GetPageUkmSourceId(),
+      std::move(title_url_embedding), std::move(passage_embeddings));
 }
 
 // TODO - crbug.com/434047312: Move the metrics recording to the actual user of

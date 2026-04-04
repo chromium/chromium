@@ -123,7 +123,7 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfEmbedderVersionMissing) {
 
   passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
   classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
-                                        /*source_id=*/0, embedding);
+                                        /*source_id=*/0, embedding, {});
 
   observer.Wait();
   EXPECT_TRUE(observer.last_categories().empty());
@@ -154,17 +154,69 @@ TEST_F(OnDeviceCategoryClassifierTest, ExecutesIfVersionsMatch) {
       optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
       *model_info);
 
+  model_provider_->PushModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_SHOPPING_CLASSIFIER,
+      *model_info);
+
   TestObserver observer;
   classifier_->AddObserver(&observer);
 
   passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
   classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
-                                        /*source_id=*/0, embedding);
+                                        /*source_id=*/0, embedding, {});
 
   observer.Wait();
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskExecutionLatency.EduClassifier", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency.ShoppingClassifier",
+      1);
+
+  classifier_->RemoveObserver(&observer);
+}
+
+TEST_F(OnDeviceCategoryClassifierTest, NoTitleUrlEmbedding) {
+  base::HistogramTester histogram_tester;
+  classifier_->EmbedderMetadataUpdated(passage_embeddings::EmbedderMetadata(
+      /*model_version=*/1, /*output_size=*/768));
+
+  // Update model with metadata.
+  optimization_guide::proto::CategoryClassifierMetadata metadata;
+  metadata.set_required_embedder_version(1);
+  optimization_guide::proto::Any any;
+  any.set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.proto.CategoryClassifierMetadata");
+  metadata.SerializeToString(any.mutable_value());
+
+  auto model_info =
+      optimization_guide::TestModelInfoBuilder()
+          .SetModelFilePath(base::FilePath(FILE_PATH_LITERAL("model.tflite")))
+          .SetModelMetadata(any)
+          .Build();
+
+  model_provider_->PushModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
+      *model_info);
+
+  model_provider_->PushModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_SHOPPING_CLASSIFIER,
+      *model_info);
+
+  TestObserver observer;
+  classifier_->AddObserver(&observer);
+
+  classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
+                                        /*source_id=*/0, {}, {});
+
+  observer.Wait();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency.EduClassifier", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency.ShoppingClassifier",
+      0);
 
   classifier_->RemoveObserver(&observer);
 }
@@ -197,7 +249,7 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfVersionsMismatch) {
 
   passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
   classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
-                                        /*source_id=*/0, embedding);
+                                        /*source_id=*/0, embedding, {});
 
   observer.Wait();
   EXPECT_TRUE(observer.last_categories().empty());
@@ -223,7 +275,7 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfModelMetadataMissing) {
 
   passage_embeddings::Embedding embedding(std::vector<float>(768, 0.1f));
   classifier_->OnPageEmbeddingAvailable(GURL("https://example.com"),
-                                        /*source_id=*/0, embedding);
+                                        /*source_id=*/0, embedding, {});
 
   observer.Wait();
   EXPECT_TRUE(observer.last_categories().empty());

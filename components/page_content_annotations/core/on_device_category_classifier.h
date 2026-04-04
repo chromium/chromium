@@ -55,10 +55,12 @@ class OnDeviceCategoryClassifier
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Invoked when an embedding has been successfully computed for the page.
-  void OnPageEmbeddingAvailable(const GURL& url,
-                                ukm::SourceId source_id,
-                                const passage_embeddings::Embedding& embedding);
+  // Invoked when embeddings have been successfully computed for the page.
+  void OnPageEmbeddingAvailable(
+      const GURL& url,
+      ukm::SourceId source_id,
+      passage_embeddings::Embedding title_url_embedding,
+      std::vector<passage_embeddings::Embedding> passage_embeddings);
 
   // passage_embeddings::EmbedderMetadataObserver:
   void EmbedderMetadataUpdated(
