@@ -373,11 +373,12 @@ suite('TopToolbarTest', () => {
     });
   });
 
-  suite('Expand button disabled', () => {
+  suite('Expand button and menu for lens flows disabled', () => {
     setup(() => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-      loadTimeData.overrideValues({expandButtonEnabled: false});
+      loadTimeData.overrideValues(
+          {expandButtonEnabled: false, hideMenuOnAiPageEnabled: false});
 
       topToolbar = document.createElement('top-toolbar');
       document.body.appendChild(topToolbar);
@@ -394,6 +395,32 @@ suite('TopToolbarTest', () => {
 
       const buttons = topToolbar.$.menu.get().querySelectorAll('button');
       assertEquals(3, buttons.length);
+    });
+  });
+
+  suite('Menu for lens flows only', () => {
+    setup(() => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+      loadTimeData.overrideValues(
+          {expandButtonEnabled: false, hideMenuOnAiPageEnabled: true});
+
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+    });
+
+    test('hides menu button on ai page, shown for lens', async () => {
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
+      assertTrue(!!moreButton);
+
+      topToolbar.isAiPage = true;
+      await microtasksFinished();
+      assertTrue(moreButton.hidden);
+
+      topToolbar.isAiPage = false;
+      await microtasksFinished();
+      assertFalse(moreButton.hidden);
     });
   });
 

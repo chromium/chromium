@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "build/buildflag.h"
 
 namespace {
 // Allow runtime override of the forced embedded page host.
@@ -91,6 +92,16 @@ BASE_FEATURE(kContextualTasksInsertWebContentsAt,
 BASE_FEATURE(kContextualTasksInsertWebContentsAt,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// On android the menu still needs to be shown in all cases. Enable the feature
+// everywhere else.
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kContextualTasksHideMenuOnAiPage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kContextualTasksHideMenuOnAiPage,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<bool> kContextualTasksLockAndUnlockInputCapability(
     &kContextualTasks,

@@ -429,6 +429,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                      contextual_tasks::GetEnableComposeboxJumpFix());
   source->AddBoolean("roundedClipPathEnabled",
                      contextual_tasks::IsRoundedClipPathEnabled());
+  source->AddBoolean("hideMenuOnAiPageEnabled",
+                     base::FeatureList::IsEnabled(
+                         contextual_tasks::kContextualTasksHideMenuOnAiPage));
 
   source->AddString(
       "composeboxSource",

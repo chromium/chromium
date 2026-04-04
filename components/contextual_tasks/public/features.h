@@ -67,6 +67,10 @@ BASE_DECLARE_FEATURE(kContextualTasksComposeboxJumpFix);
 // Enables the use of a rounded clip-path for the composebox.
 BASE_DECLARE_FEATURE(kContextualTasksRoundedClipPath);
 
+// Hides the the 3-dot (overflow) menu when viewing an ai page in the side
+// panel. The menu is still shown for lens flows.
+BASE_DECLARE_FEATURE(kContextualTasksHideMenuOnAiPage);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
