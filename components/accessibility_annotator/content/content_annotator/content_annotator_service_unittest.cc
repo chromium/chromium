@@ -597,6 +597,101 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
 }
 
 TEST_F(ContentAnnotatorServiceTest,
+       TestMaybeAnnotate_FullAnnotationReachedWithProto) {
+  // 1. Enable features::kContentAnnotatorEnableFullAnnotation flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kContentAnnotator,
+      {{"content_annotator_enable_full_annotation", "true"}});
+
+  GURL url("https://example.com/proto");
+  base::Time base_time = base::Time::Now();
+
+  // 2. Mock Classify to return a result that satisfies the `reached_annotation`
+  // condition.
+  ContentClassificationResult classifier_result;
+  classifier_result.title_keyword_result =
+      ContentClassificationResult::Result();
+  classifier_result.title_keyword_result->category = "test category";
+  classifier_result.is_sensitive = false;
+  classifier_result.is_in_target_language = true;
+
+  EXPECT_CALL(*mock_classifier_, Classify(_))
+      .WillOnce(Return(classifier_result));
+
+  // 3. Capture the callback passed to ExecuteModel.
+  base::OnceCallback<void(
+      optimization_guide::OptimizationGuideModelExecutionResult,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>)>
+      captured_callback;
+
+  EXPECT_CALL(
+      *mock_remote_model_executor_,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kContentAnnotation,
+          /*request_metadata=*/_,
+          /*options=*/_,
+          /*callback=*/_))
+      .Times(1)
+      .WillOnce([&captured_callback](
+                    auto feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const auto& options, auto callback) {
+        captured_callback = std::move(callback);
+      });
+
+  TriggerClassification(url, base_time);
+
+  // 4. Simulate the model execution by running the captured callback.
+  ASSERT_TRUE(captured_callback);
+  optimization_guide::proto::ContentAnnotationResponse mock_response_proto;
+  optimization_guide::proto::ContentAnnotation* content_annotation =
+      mock_response_proto.mutable_content_annotation();
+  content_annotation->set_description("Test description");
+  content_annotation->set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  optimization_guide::proto::Order* order =
+      content_annotation->mutable_structured_data()->add_orders();
+  order->set_id("order_123");
+
+  optimization_guide::proto::Any any_proto;
+  any_proto.set_type_url(base::StrCat(
+      {"type.googleapis.com/", mock_response_proto.GetTypeName()}));
+  any_proto.set_value(mock_response_proto.SerializeAsString());
+
+  optimization_guide::OptimizationGuideModelExecutionResult mock_result(
+      base::ok(any_proto), /*execution_info=*/nullptr);
+
+  // 5. Validator should NOT be called in this case because proto is validated
+  // server-side.
+  EXPECT_CALL(*mock_validator_, Validate(_)).Times(0);
+
+  ASSERT_NO_FATAL_FAILURE(std::move(captured_callback)
+                              .Run(std::move(mock_result),
+                                   /*log_entry=*/nullptr));
+
+  // 6. Verify that the data is cached in the backend.
+  base::optional_ref<
+      const AccessibilityAnnotatorBackend::ContentAnnotationsData>
+      cached_data =
+          accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
+  ASSERT_TRUE(cached_data.has_value());
+  ASSERT_TRUE(cached_data->content_annotation.has_value());
+  EXPECT_EQ(cached_data->content_annotation->description(), "Test description");
+  EXPECT_EQ(cached_data->content_annotation->status(),
+            optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  ASSERT_EQ(cached_data->content_annotation->structured_data().orders_size(),
+            1);
+  EXPECT_EQ(cached_data->content_annotation->structured_data().orders(0).id(),
+            "order_123");
+  EXPECT_EQ(cached_data->page_title, "Test Title");
+
+  base::DictValue expected_classifier_results;
+  expected_classifier_results.Set("title_keyword_result", "test category");
+  EXPECT_EQ(cached_data->classifier_results, expected_classifier_results);
+}
+
+TEST_F(ContentAnnotatorServiceTest,
        TestMaybeAnnotate_FullAnnotationNotTriggeredOnFailure) {
   // 1. Enable features::kContentAnnotatorEnableFullAnnotation flag.
   base::test::ScopedFeatureList feature_list;

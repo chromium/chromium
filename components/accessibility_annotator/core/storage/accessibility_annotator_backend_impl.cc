@@ -123,11 +123,14 @@ base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
     base::DictValue entry;
     entry.Set("url", item.first.spec());
     entry.Set("title", item.second.page_title);
+    entry.Set("classifier_results", item.second.classifier_results.Clone());
     if (item.second.tab_id) {
       entry.Set("tab_id", *item.second.tab_id);
     }
-    entry.Set("annotations", item.second.annotations.Clone());
-    entry.Set("classifier_results", item.second.classifier_results.Clone());
+    if (item.second.annotations) {
+      entry.Set("annotations", item.second.annotations->Clone());
+    }
+    // TODO(crbug.com/497903571): Add content annotation to entry.
     result.Append(std::move(entry));
   }
   return base::Value(std::move(result));

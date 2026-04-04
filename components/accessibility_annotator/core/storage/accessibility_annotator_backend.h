@@ -6,6 +6,7 @@
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_STORAGE_ACCESSIBILITY_ANNOTATOR_BACKEND_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/values.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/features/content_annotation.pb.h"
 #include "url/gurl.h"
 
 namespace syncer {
@@ -23,7 +25,7 @@ class DataTypeControllerDelegate;
 
 namespace sync_pb {
 class AccessibilityAnnotationSpecifics;
-}
+}  // namespace sync_pb
 
 namespace accessibility_annotator {
 
@@ -42,7 +44,9 @@ class AccessibilityAnnotatorBackend : public KeyedService {
 
     std::string page_title;
     std::optional<int> tab_id;
-    base::DictValue annotations;
+    std::optional<base::DictValue> annotations;
+    std::optional<optimization_guide::proto::ContentAnnotation>
+        content_annotation;
     base::DictValue classifier_results;
   };
 

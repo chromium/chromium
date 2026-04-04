@@ -324,23 +324,37 @@ void ContentAnnotatorService::HandleModelExecutionResult(
     return;
   }
 
-  std::optional<std::string> extracted_data =
+  std::optional<optimization_guide::proto::ContentAnnotationResponse> response =
       base::OptionalFromExpected(std::move(result.response))
-          .transform([](const optimization_guide::proto::Any& any) {
-            auto metadata = optimization_guide::ParsedAnyMetadata<
+          .and_then([](const optimization_guide::proto::Any& any) {
+            return optimization_guide::ParsedAnyMetadata<
                 optimization_guide::proto::ContentAnnotationResponse>(any);
-            return metadata->extracted_data();
           });
 
-  if (extracted_data.has_value() && !extracted_data->empty()) {
-    std::optional<base::DictValue> validated_data =
-        validator_->Validate(StripMarkdown(*extracted_data));
-    if (validated_data.has_value()) {
-      AccessibilityAnnotatorBackend::ContentAnnotationsData data;
-      data.page_title = std::move(page_title);
-      data.tab_id = tab_id;
-      data.annotations = std::move(*validated_data);
-      data.classifier_results = std::move(classifier_results);
+  if (!response) {
+    return;
+  }
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+  data.page_title = std::move(page_title);
+  data.tab_id = tab_id;
+  data.classifier_results = std::move(classifier_results);
+  if (response->has_content_annotation()) {
+    // Store ContentAnnotation if the response has one.
+    std::optional<optimization_guide::proto::ContentAnnotation>
+        content_annotation = response->content_annotation();
+    if (content_annotation.has_value()) {
+      data.content_annotation = std::move(content_annotation);
+      accessibility_annotator_backend_->SetContentAnnotationsCacheData(
+          url, std::move(data));
+    }
+  } else if (response->has_extracted_data() &&
+             !response->extracted_data().empty()) {
+    // TODO(crbug.com/497903571): Remove this once the new schema is enabled.
+    std::optional<base::DictValue> extracted_data =
+        validator_->Validate(StripMarkdown(response->extracted_data()));
+    if (extracted_data.has_value()) {
+      data.annotations = std::move(extracted_data);
       accessibility_annotator_backend_->SetContentAnnotationsCacheData(
           url, std::move(data));
     }
