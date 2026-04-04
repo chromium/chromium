@@ -85,6 +85,7 @@ class WebIdlDiffToolTest(unittest.TestCase):
          'enterprise_device_attributes.webidl'),
         ('enterprise_hardware_platform.idl',
          'enterprise_hardware_platform.webidl'),
+        ('enterprise_kiosk_input.idl', 'enterprise_kiosk_input.webidl'),
     ]
     # LoadAndReturnUnifiedDiff expects file paths relative to the repo root.
     converted_schema_path = 'tools/json_schema_compiler/test/converted_schemas/'
