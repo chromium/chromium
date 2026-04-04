@@ -56,9 +56,9 @@ gfx::Transform GetScaleTransformation(gfx::Rect bounds) {
   return transform;
 }
 
-bool IsCompatibleImageSize(const ui::ImageModel* image) {
+bool IsCompatibleImageSize(const ui::ImageModel& image) {
   const auto intended_size = toasts::ToastView::GetIconSize();
-  const auto image_size = image->Size();
+  const auto image_size = image.Size();
   return image_size.width() == intended_size &&
          image_size.height() == intended_size;
 }
@@ -106,14 +106,14 @@ ToastView::ToastView(
     views::View* anchor_view,
     const std::u16string& toast_text,
     const gfx::VectorIcon& icon,
-    const ui::ImageModel* image_override,
+    std::optional<ui::ImageModel> image_override,
     bool render_toast_over_web_contents,
     base::RepeatingCallback<void(ToastCloseReason)> toast_close_callback)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE),
       AnimationDelegateViews(this),
       toast_text_(toast_text),
       icon_(icon),
-      image_override_(image_override),
+      image_override_(std::move(image_override)),
       render_toast_over_web_contents_(render_toast_over_web_contents),
       toast_close_callback_(std::move(toast_close_callback)) {
   SetBackgroundColor(ui::kColorToastBackgroundProminent);
@@ -424,8 +424,9 @@ gfx::Rect ToastView::GetBubbleBounds() {
 void ToastView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
-  if (image_override_ != nullptr && IsCompatibleImageSize(image_override_)) {
-    icon_view_->SetImage(*image_override_);
+  if (image_override_.has_value() &&
+      IsCompatibleImageSize(image_override_.value())) {
+    icon_view_->SetImage(image_override_.value());
   } else {
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
         *icon_, color_provider->GetColor(ui::kColorToastForeground),

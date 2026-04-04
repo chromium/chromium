@@ -52,16 +52,16 @@ class ToastViewTest : public DialogBrowserTest {
     if (!options_.text.empty()) {
       toast_text = options_.text;
     }
+    std::optional<ui::ImageModel> image_override;
     if (options_.add_image_override) {
       int size = toasts::ToastView::GetIconSize();
-      image_override_ =
-          std::make_unique<ui::ImageModel>(ui::ImageModel::FromImage(
-              gfx::test::CreateImage(size, size, 0xff0000)));
+      image_override = ui::ImageModel::FromImage(
+          gfx::test::CreateImage(size, size, 0xff0000));
     }
     std::unique_ptr<toasts::ToastView> toast =
         std::make_unique<toasts::ToastView>(
             anchor_view_, toast_text, vector_icons::kLinkIcon,
-            image_override_.get(), false, base::DoNothing());
+            std::move(image_override), false, base::DoNothing());
     if (options_.add_close_button) {
       toast->AddCloseButton(base::DoNothing());
     }
@@ -99,7 +99,6 @@ class ToastViewTest : public DialogBrowserTest {
 
  private:
   raw_ptr<views::View> anchor_view_;
-  std::unique_ptr<ui::ImageModel> image_override_;
   raw_ptr<toasts::ToastView> toast_;
   raw_ptr<views::Widget> widget_;
   ToastOptions options_;

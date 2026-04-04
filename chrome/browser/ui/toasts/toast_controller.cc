@@ -302,10 +302,6 @@ void ToastController::CreateToast(ToastParams params,
     return;
   }
 
-  const ui::ImageModel* image_override = params.image_override.has_value()
-                                             ? &params.image_override.value()
-                                             : nullptr;
-
   const std::u16string body_string =
       params.body_string_override.has_value()
           ? params.body_string_override.value()
@@ -313,7 +309,7 @@ void ToastController::CreateToast(ToastParams params,
                          params.body_string_replacement_params,
                          params.body_string_cardinality_param);
   auto toast_view = std::make_unique<toasts::ToastView>(
-      anchor_view, body_string, spec->icon(), image_override,
+      anchor_view, body_string, spec->icon(), params.image_override,
       ShouldRenderToastOverWebContents(),
       base::BindRepeating(&RecordToastDismissReason, params.toast_id));
 
