@@ -113,7 +113,7 @@ if (enable_extensions) {
       "echo_private.json",
       "enterprise_device_attributes.webidl",
       "enterprise_kiosk_input.webidl",
-      "enterprise_login.idl",
+      "enterprise_login.webidl",
       "enterprise_networking_attributes.idl",
       "enterprise_platform_keys.idl",
       "enterprise_platform_keys_internal.idl",
