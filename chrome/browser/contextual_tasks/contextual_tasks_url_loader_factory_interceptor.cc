@@ -313,7 +313,13 @@ class ContextualTasksProxyingURLLoaderFactory
                "OnAccessTokenReceived with token empty="
             << (token.empty() ? "true" : "false");
     if (!token.empty()) {
-      request.headers.SetHeader(kAuthorizationHeader, kBearerPrefix + token);
+      std::string new_auth = kBearerPrefix + token;
+      std::optional<std::string> existing_auth =
+          request.headers.GetHeader(kAuthorizationHeader);
+      if (existing_auth.has_value() && !existing_auth.value().empty()) {
+        new_auth = base::StrCat({existing_auth.value(), ", ", new_auth});
+      }
+      request.headers.SetHeader(kAuthorizationHeader, new_auth);
     }
 
     // Clone the target factory to pass to the custom URLLoader.
