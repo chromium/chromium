@@ -88,9 +88,7 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
                                     mActivity.findViewById(R.id.bottom_sheet_snackbar_container);
                         }
                         assert mBottomSheetSnackbarContainer != null;
-                        // Dismiss all snackbars before overriding the parent view to avoid them
-                        // jumping to a new location.
-                        mSnackbarManager.dismissAllSnackbars();
+                        // TODO(499164555): Determine if we should call dismissAllSnackbars here.
 
                         mHasSnackbarOverride = true;
                         mSnackbarManager.pushParentViewOverride(
@@ -98,9 +96,12 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
                                 mBottomSheetSnackbarContainer,
                                 mZeroBottomMarginSupplier);
                     } else if (shouldPop && mHasSnackbarOverride) {
-                        // Dismiss all snackbars before popping the override stack to avoid them
-                        // jumping to a new location.
-                        mSnackbarManager.dismissAllSnackbars();
+                        // TODO(499164555): Determine if we should call dismissAllSnackbars here.
+                        // Keeping the active snackbar alive might cause a slight jump in the UI
+                        // when switching containers, but this is needed to match api expectations
+                        // prior to crrev.com/c/7712352. Namely snackbars shown as a sheet is
+                        // closing need to remain visible long enough for a user to interact with
+                        // them.
 
                         mSnackbarManager.popParentViewOverride(ParentOverrideSlot.BOTTOM_SHEET);
                         mHasSnackbarOverride = false;

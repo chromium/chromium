@@ -139,24 +139,21 @@ public class ChromeActivitySnackbarHelperUnitTest {
         observer.onSheetStateChanged(BottomSheetController.SheetState.HALF, 0);
         verify(mSnackbarManager)
                 .pushParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET), any(), any());
-        verify(mSnackbarManager).dismissAllSnackbars();
 
         // FULL state -> should not push again
         observer.onSheetStateChanged(BottomSheetController.SheetState.FULL, 0);
         verify(mSnackbarManager, times(1))
                 .pushParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET), any(), any());
-        verify(mSnackbarManager, times(1)).dismissAllSnackbars();
 
         // PEEK state -> pop override
         observer.onSheetStateChanged(BottomSheetController.SheetState.PEEK, 0);
         verify(mSnackbarManager).popParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET));
-        verify(mSnackbarManager, times(2)).dismissAllSnackbars();
 
         // HIDDEN state -> should not pop again
         observer.onSheetStateChanged(BottomSheetController.SheetState.HIDDEN, 0);
         verify(mSnackbarManager, times(1))
                 .popParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET));
-        verify(mSnackbarManager, times(2)).dismissAllSnackbars();
+        verify(mSnackbarManager, times(0)).dismissAllSnackbars();
     }
 
     @Test
@@ -202,7 +199,6 @@ public class ChromeActivitySnackbarHelperUnitTest {
         observer.onSheetContentChanged(mockContent);
         verify(mSnackbarManager)
                 .pushParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET), any(), any());
-        verify(mSnackbarManager).dismissAllSnackbars();
 
         // Switch to not allowed content -> pop override
         BottomSheetContent mockContent2 = mock(BottomSheetContent.class);
@@ -210,7 +206,7 @@ public class ChromeActivitySnackbarHelperUnitTest {
         when(mockContent2.allowInSheetContentSnackbars()).thenReturn(false);
         observer.onSheetContentChanged(mockContent2);
         verify(mSnackbarManager).popParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET));
-        verify(mSnackbarManager, times(2)).dismissAllSnackbars();
+        verify(mSnackbarManager, times(0)).dismissAllSnackbars();
     }
 
     @Test
