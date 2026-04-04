@@ -16,9 +16,10 @@ enum class VerticalTabStripEntryPoint {
   kSystemContextMenu = 2,
   kTabContextMenu = 3,
   kMacViewMenu = 4,
-  kMaxValue = kMacViewMenu,
+  kWhatsNew = 5,
+  kMaxValue = kWhatsNew,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:VerticalTabStripEntryPoint)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:VerticalTabStripEntryPoint)
 
 void RecordVerticalTabStripModeChanged(bool is_vertical,
                                        VerticalTabStripEntryPoint entry_point);

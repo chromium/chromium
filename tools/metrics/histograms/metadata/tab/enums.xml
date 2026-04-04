@@ -547,6 +547,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="SystemContextMenu"/>
   <int value="3" label="TabContextMenu"/>
   <int value="4" label="MacViewMenu"/>
+  <int value="5" label="WhatsNew"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/vertical_tab_strip_metrics.h:VerticalTabStripEntryPoint) -->

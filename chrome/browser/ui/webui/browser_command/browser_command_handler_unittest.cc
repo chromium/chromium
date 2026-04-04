@@ -21,7 +21,10 @@
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -60,11 +63,12 @@ std::vector<Command> supported_commands = {
 
 class TestCommandHandler : public BrowserCommandHandler {
  public:
-  explicit TestCommandHandler(Profile* profile)
+  explicit TestCommandHandler(Profile* profile,
+                              content::WebContents* web_contents = nullptr)
       : BrowserCommandHandler(mojo::PendingReceiver<CommandHandler>(),
                               profile,
                               supported_commands,
-                              /*web_contents=*/nullptr) {}
+                              web_contents) {}
   ~TestCommandHandler() override = default;
 
   void NavigateToEnhancedProtectionSetting() override {
@@ -203,7 +207,9 @@ class MockTutorialService : public TestTutorialService {
 
 class MockCommandHandler : public TestCommandHandler {
  public:
-  explicit MockCommandHandler(Profile* profile) : TestCommandHandler(profile) {}
+  explicit MockCommandHandler(Profile* profile,
+                              content::WebContents* web_contents = nullptr)
+      : TestCommandHandler(profile, web_contents) {}
   ~MockCommandHandler() override = default;
 
   MOCK_METHOD(void, StartTutorial, (StartTutorialInPage::Params params));
@@ -705,4 +711,16 @@ TEST_F(BrowserCommandHandlerTest, EnableVerticalTabsCommand) {
   ClickInfoPtr info = ClickInfo::New();
   EXPECT_CALL(*command_handler_, EnableVerticalTabs());
   EXPECT_TRUE(ExecuteCommand(Command::kEnableVerticalTabs, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, EnableVerticalTabsActualImplementation) {
+  base::HistogramTester histogram_tester;
+
+  auto handler = std::make_unique<TestCommandHandler>(&profile_);
+  ClickInfoPtr info = ClickInfo::New();
+  handler->ExecuteCommand(Command::kEnableVerticalTabs, std::move(info),
+                          base::DoNothing());
+
+  histogram_tester.ExpectBucketCount("TabStrip.Vertical.EnteredMode",
+                                     5 /* kWhatsNew */, 1);
 }

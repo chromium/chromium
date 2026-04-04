@@ -46,6 +46,11 @@ void RecordVerticalTabStripModeChanged(bool is_vertical,
           is_vertical ? "SwitchToVerticalTabStrip_FromMacMenu"
                       : "SwitchToHorizontalTabStrip_FromMacMenu"));
       break;
+    case VerticalTabStripEntryPoint::kWhatsNew:
+      base::RecordAction(base::UserMetricsAction(
+          is_vertical ? "SwitchToVerticalTabStrip_FromWhatsNew"
+                      : "SwitchToHorizontalTabStrip_FromWhatsNew"));
+      break;
     default:
       NOTREACHED();
   }

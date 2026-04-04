@@ -49746,6 +49746,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SwitchToHorizontalTabStrip_FromWhatsNew">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to horizontal tab strip mode via the What's
+    New page. This user action only applies to Desktop.
+  </description>
+</action>
+
 <action name="SwitchToVerticalTabStrip_FromAppMenu">
   <owner>kunaldaftari@google.com</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -49788,6 +49797,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user switches to vertical tab strip mode via the tab
     context menu. This user action only applies to Desktop.
+  </description>
+</action>
+
+<action name="SwitchToVerticalTabStrip_FromWhatsNew">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to vertical tab strip mode via the What's
+    New page. This user action only applies to Desktop.
   </description>
 </action>
 
