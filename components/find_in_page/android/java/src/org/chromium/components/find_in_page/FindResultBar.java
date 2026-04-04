@@ -25,8 +25,10 @@ import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.util.MotionEventUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -248,6 +250,15 @@ public class FindResultBar extends View {
                     mMatches[closest].centerX(), mMatches[closest].centerY());
         }
         return true; // Consume the event, whether or not we acted upon it.
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        if (UiAndroidFeatureList.sBlockMouseEventsOnView.isEnabled()
+                && MotionEventUtils.isPointerEvent(event)) {
+            return true;
+        }
+        return super.onGenericMotionEvent(event);
     }
 
     @Override

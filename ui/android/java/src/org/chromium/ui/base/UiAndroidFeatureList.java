@@ -41,6 +41,12 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
 
+    public static final CachedFlag sBlockMouseEventsOnView =
+            newCachedFlag(
+                    UiAndroidFeatures.BLOCK_MOUSE_EVENTS_ON_VIEW,
+                    /* defaultValue= */ true,
+                    /* defaultValueInTests= */ true);
+
     public static final CachedFlag sRefactorMinWidthContextOverride =
             newCachedFlag(
                     UiAndroidFeatures.REFACTOR_MIN_WIDTH_CONTEXT_OVERRIDE,

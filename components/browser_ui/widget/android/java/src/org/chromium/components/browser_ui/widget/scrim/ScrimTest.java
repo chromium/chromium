@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.GestureDetector;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.Observer;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
@@ -174,6 +176,49 @@ public class ScrimTest {
         assertTrue(
                 "The scrim view should have a listener to absorb context clicks.",
                 mScrimManager.getViewForTesting().performContextClick());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
+    @EnableFeatures({"BlockMouseEventsOnView"})
+    public void testGenericMotionEventInterception() throws TimeoutException {
+        PropertyModel model = buildModel(false, true, Color.RED);
+        showScrim(model, /* animate= */ false);
+
+        ScrimView scrimView = mScrimManager.getViewForTesting();
+
+        MotionEvent.PointerProperties pp = new MotionEvent.PointerProperties();
+        pp.id = 0;
+        pp.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+
+        MotionEvent.PointerCoords pc = new MotionEvent.PointerCoords();
+        pc.x = 0f;
+        pc.y = 0f;
+
+        MotionEvent mouseEvent =
+                MotionEvent.obtain(
+                        0,
+                        0,
+                        MotionEvent.ACTION_BUTTON_PRESS,
+                        1,
+                        new MotionEvent.PointerProperties[] {pp},
+                        new MotionEvent.PointerCoords[] {pc},
+                        0,
+                        MotionEvent.BUTTON_PRIMARY,
+                        1.0f,
+                        1.0f,
+                        0,
+                        0,
+                        InputDevice.SOURCE_MOUSE,
+                        0);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            "ScrimView should consume generic motion events for pointers",
+                            scrimView.dispatchGenericMotionEvent(mouseEvent));
+                });
     }
 
     @Test

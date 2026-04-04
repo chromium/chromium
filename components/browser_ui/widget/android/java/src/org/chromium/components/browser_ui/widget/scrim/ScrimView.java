@@ -17,6 +17,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.TouchEventDelegate;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.UiAndroidFeatureList;
+import org.chromium.ui.util.MotionEventUtils;
 
 /**
  * This view is used to obscure content and bring focus to a foreground view (i.e. the bottom sheet
@@ -95,5 +97,14 @@ public class ScrimView extends View {
     public boolean onTouchEvent(MotionEvent e) {
         if (mEventDelegate != null && mEventDelegate.onTouchEvent(e)) return true;
         return super.onTouchEvent(e);
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent e) {
+        if (UiAndroidFeatureList.sBlockMouseEventsOnView.isEnabled()) {
+            if (mEventDelegate != null && mEventDelegate.onTouchEvent(e)) return true;
+            if (MotionEventUtils.isPointerEvent(e)) return true;
+        }
+        return super.onGenericMotionEvent(e);
     }
 }

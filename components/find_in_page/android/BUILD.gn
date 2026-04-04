@@ -19,6 +19,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
+    "//components/cached_flags:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/jni_zero:jni_zero_java",

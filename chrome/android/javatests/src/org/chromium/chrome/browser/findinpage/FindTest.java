@@ -9,8 +9,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.Spannable;
 import android.text.style.StyleSpan;
+import android.view.InputDevice;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -37,6 +39,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.KeyUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -297,6 +300,50 @@ public class FindTest {
         KeyUtils.singleKeyEventView(
                 InstrumentationRegistry.getInstrumentation(), findQueryText, KeyEvent.KEYCODE_DEL);
         Assert.assertEquals(View.VISIBLE, resultBar.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FindInPage"})
+    @EnableFeatures({"BlockMouseEventsOnView"})
+    public void testResultsBarGenericMotionEventConsumed() {
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(FILEPATH));
+        findInPageFromMenu();
+        final FindToolbar findToolbar = getFindToolbar();
+        final View resultBar = findToolbar.getFindResultBar();
+        Assert.assertNotNull(resultBar);
+
+        MotionEvent.PointerProperties pp = new MotionEvent.PointerProperties();
+        pp.id = 0;
+        pp.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+
+        MotionEvent.PointerCoords pc = new MotionEvent.PointerCoords();
+        pc.x = 0f;
+        pc.y = 0f;
+
+        MotionEvent mouseEvent =
+                MotionEvent.obtain(
+                        0,
+                        0,
+                        MotionEvent.ACTION_BUTTON_PRESS,
+                        1,
+                        new MotionEvent.PointerProperties[] {pp},
+                        new MotionEvent.PointerCoords[] {pc},
+                        0,
+                        MotionEvent.BUTTON_PRIMARY,
+                        1.0f,
+                        1.0f,
+                        0,
+                        0,
+                        InputDevice.SOURCE_MOUSE,
+                        0);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "FindResultBar should consume generic motion events for pointers",
+                            resultBar.dispatchGenericMotionEvent(mouseEvent));
+                });
     }
 
     /**
