@@ -54,17 +54,17 @@ class PowerButtonTest : public NoSessionAshTestBase {
   void ShowSystemTrayBubble() {
     auto* system_tray = GetPrimaryUnifiedSystemTray();
     system_tray->ShowBubble();
-    button_ = system_tray->bubble()
-                  ->quick_settings_view()
-                  ->footer_for_testing()
-                  ->power_button_for_testing();
+  }
+
+  void BlockUserSession(UserSessionBlockReason block_reason) {
+    NoSessionAshTestBase::BlockUserSession(block_reason);
   }
 
   views::MenuItemView* GetMenuView() {
-    return button_->GetMenuViewForTesting();
+    return GetPowerButton()->GetMenuViewForTesting();
   }
 
-  bool IsMenuShowing() { return button_->IsMenuShowing(); }
+  bool IsMenuShowing() { return GetPowerButton()->IsMenuShowing(); }
 
   views::MenuItemView* GetEmailButton() {
     if (!IsMenuShowing()) {
@@ -101,19 +101,29 @@ class PowerButtonTest : public NoSessionAshTestBase {
     return GetMenuView()->GetMenuItemByID(VIEW_ID_QS_POWER_LOCK_MENU_BUTTON);
   }
 
-  PowerButton* GetPowerButton() { return button_; }
+  PowerButton* GetPowerButton() {
+    return GetPrimaryUnifiedSystemTray()
+        ->bubble()
+        ->quick_settings_view()
+        ->footer_for_testing()
+        ->power_button_for_testing();
+  }
 
   views::ImageView* GetPowerChevronIcon() {
-    auto* icon = button_->button_content_->GetViewByID(
+    auto* icon = GetPowerButton()->button_content_->GetViewByID(
         VIEW_ID_QS_POWER_BUTTON_CHEVRON_ICON);
     CHECK(icon);
     return static_cast<views::ImageView*>(icon);
   }
 
-  ui::Layer* GetBackgroundLayer() { return button_->background_view_->layer(); }
+  ui::Layer* GetBackgroundLayer() {
+    return GetPowerButton()->background_view_->layer();
+  }
 
   // Simulates mouse press event on the power button.
-  void SimulatePowerButtonPress() { LeftClickOn(button_->button_content_); }
+  void SimulatePowerButtonPress() {
+    LeftClickOn(GetPowerButton()->button_content_);
+  }
 
   ui::ImageModel GetExpectedChevronImageModel(bool use_up_chevron) {
     auto icon_color_id = use_up_chevron
@@ -138,9 +148,6 @@ class PowerButtonTest : public NoSessionAshTestBase {
   bool IsUpChevron() { return ChevronIconsMatch(/*use_up_chevron=*/true); }
 
   bool IsDownChevron() { return ChevronIconsMatch(/*use_up_chevron=*/false); }
-
-  // Owned by view hierarchy.
-  raw_ptr<PowerButton, DanglingUntriaged> button_ = nullptr;
 
   base::HistogramTester histogram_tester_;
 };
