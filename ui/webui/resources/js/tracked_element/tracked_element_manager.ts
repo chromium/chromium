@@ -183,6 +183,10 @@ export class TrackedElementManager {
     return TrackedElementManager.instance_;
   }
 
+  static setInstanceForTesting(instance: TrackedElementManager) {
+    TrackedElementManager.instance_ = instance;
+  }
+
   private trackedElementHandler_: TrackedElementHandlerInterface;
 
   // Mapped from native ID.

@@ -209,6 +209,8 @@ enum PinnedToolbarAction {
  kSidePanelShowCustomizeChrome,
  kSidePanelShowShoppingInsights,
  kSidePanelShowMerchantTrust,
+ kSendSharedTabGroupFeedback,
+ kSidePanelShowComments,
  kDivider, // A divider; not a clickable action.
 };
 
@@ -228,6 +230,9 @@ struct PinnedToolbarActionState {
 
   // Accessible name (aria-label) for the action.
   mojo_base.mojom.String16 accessibility_text;
+
+  // The ElementIdentifier for this action, if any.
+  string? element_id;
 };
 
 struct LocationBarState {
