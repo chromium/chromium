@@ -22,7 +22,7 @@ schema_sources_ = [
   "developer_private.webidl",
   "downloads_internal.webidl",
   "downloads.webidl",
-  "enterprise_hardware_platform.idl",
+  "enterprise_hardware_platform.webidl",
   "font_settings.json",
   "gcm.json",
   "glic_private.webidl",
