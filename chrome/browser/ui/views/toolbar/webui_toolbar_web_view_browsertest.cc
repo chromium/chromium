@@ -2403,6 +2403,23 @@ class WebUIPinnedToolbarActionsBrowserTest
            toolbar_ui_api::mojom::PinnedToolbarAction::kTaskManager},
           {kActionDevTools,
            toolbar_ui_api::mojom::PinnedToolbarAction::kDevTools},
+          {kActionSidePanelShowContextualTasks,
+           toolbar_ui_api::mojom::PinnedToolbarAction::
+               kSidePanelShowContextualTasks},
+          {kActionSidePanelShowLens,
+           toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowLens},
+          {kActionSidePanelShowAboutThisSite,
+           toolbar_ui_api::mojom::PinnedToolbarAction::
+               kSidePanelShowAboutThisSite},
+          {kActionSidePanelShowCustomizeChrome,
+           toolbar_ui_api::mojom::PinnedToolbarAction::
+               kSidePanelShowCustomizeChrome},
+          {kActionSidePanelShowShoppingInsights,
+           toolbar_ui_api::mojom::PinnedToolbarAction::
+               kSidePanelShowShoppingInsights},
+          {kActionSidePanelShowMerchantTrust,
+           toolbar_ui_api::mojom::PinnedToolbarAction::
+               kSidePanelShowMerchantTrust},
       };
 };
 
@@ -2511,6 +2528,64 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, EphemeralActions) {
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !IsPinnedButtonVisible(web_contents, mojom_action); }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       UpdateActionState) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  actions::ActionId action_id = kActionPrint;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
+
+  // Initially not pinned and not visible.
+  ASSERT_FALSE(model_->Contains(action_id));
+  ASSERT_FALSE(IsPinnedButtonVisible(web_contents, mojom_action));
+
+  // Activate action.
+  webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
+                                                                   true);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+  // Verify it's highlighted.
+  EXPECT_TRUE(EvalJsOnPinnedButton(web_contents, mojom_action,
+                                   "return !!btn && "
+                                   "btn.hasAttribute('is-menu-open');")
+                  .ExtractBool());
+
+  // Deactivate action.
+  webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
+                                                                   false);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+  model_->UpdatePinnedState(action_id, true);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+  // Verify it's not highlighted.
+  EXPECT_TRUE(EvalJsOnPinnedButton(web_contents, mojom_action,
+                                   "return !!btn && "
+                                   "!btn.hasAttribute('is-menu-open');")
+                  .ExtractBool());
+
+  // Activate action.
+  webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
+                                                                   true);
+
+  // Verify it's highlighted.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsOnPinnedButton(web_contents, mojom_action,
+                                "return !!btn && "
+                                "btn.hasAttribute('is-menu-open');")
+        .ExtractBool();
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,

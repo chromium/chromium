@@ -203,6 +203,12 @@ enum PinnedToolbarAction {
  kTaskManager,
  kDevTools,
  kTabSearch,
+ kSidePanelShowContextualTasks,
+ kSidePanelShowLens,
+ kSidePanelShowAboutThisSite,
+ kSidePanelShowCustomizeChrome,
+ kSidePanelShowShoppingInsights,
+ kSidePanelShowMerchantTrust,
 };
 
 // The state of a pinned toolbar action button that should be displayed.

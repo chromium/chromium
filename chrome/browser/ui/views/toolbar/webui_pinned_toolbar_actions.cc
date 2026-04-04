@@ -67,6 +67,23 @@ ActionIdToPinnedToolbarAction(actions::ActionId action) {
       return toolbar_ui_api::mojom::PinnedToolbarAction::kDevTools;
     case kActionTabSearch:
       return toolbar_ui_api::mojom::PinnedToolbarAction::kTabSearch;
+    case kActionSidePanelShowContextualTasks:
+      return toolbar_ui_api::mojom::PinnedToolbarAction::
+          kSidePanelShowContextualTasks;
+    case kActionSidePanelShowLens:
+      return toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowLens;
+    case kActionSidePanelShowAboutThisSite:
+      return toolbar_ui_api::mojom::PinnedToolbarAction::
+          kSidePanelShowAboutThisSite;
+    case kActionSidePanelShowCustomizeChrome:
+      return toolbar_ui_api::mojom::PinnedToolbarAction::
+          kSidePanelShowCustomizeChrome;
+    case kActionSidePanelShowShoppingInsights:
+      return toolbar_ui_api::mojom::PinnedToolbarAction::
+          kSidePanelShowShoppingInsights;
+    case kActionSidePanelShowMerchantTrust:
+      return toolbar_ui_api::mojom::PinnedToolbarAction::
+          kSidePanelShowMerchantTrust;
     default:
       return std::nullopt;
   }
@@ -119,6 +136,23 @@ std::optional<actions::ActionId> PinnedToolbarActionToActionId(
       return kActionDevTools;
     case toolbar_ui_api::mojom::PinnedToolbarAction::kTabSearch:
       return kActionTabSearch;
+    case toolbar_ui_api::mojom::PinnedToolbarAction::
+        kSidePanelShowContextualTasks:
+      return kActionSidePanelShowContextualTasks;
+    case toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowLens:
+      return kActionSidePanelShowLens;
+    case toolbar_ui_api::mojom::PinnedToolbarAction::
+        kSidePanelShowAboutThisSite:
+      return kActionSidePanelShowAboutThisSite;
+    case toolbar_ui_api::mojom::PinnedToolbarAction::
+        kSidePanelShowCustomizeChrome:
+      return kActionSidePanelShowCustomizeChrome;
+    case toolbar_ui_api::mojom::PinnedToolbarAction::
+        kSidePanelShowShoppingInsights:
+      return kActionSidePanelShowShoppingInsights;
+    case toolbar_ui_api::mojom::PinnedToolbarAction::
+        kSidePanelShowMerchantTrust:
+      return kActionSidePanelShowMerchantTrust;
   }
   return std::nullopt;
 }
@@ -175,7 +209,8 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
   };
 
   for (actions::ActionId id : model_->PinnedActionIds()) {
-    add_state(id, /*highlighted=*/false);
+    add_state(id,
+              /*highlighted=*/std::ranges::contains(popped_out_actions_, id));
   }
 
   for (actions::ActionId id : popped_out_actions_) {
@@ -215,7 +250,7 @@ bool WebUIPinnedToolbarActions::ShouldAnyButtonsOverflow(
 
 void WebUIPinnedToolbarActions::UpdateActionState(actions::ActionId id,
                                                   bool is_active) {
-  NOTIMPLEMENTED();
+  ShowActionEphemerallyInToolbar(id, is_active);
 }
 
 void WebUIPinnedToolbarActions::ShowActionEphemerallyInToolbar(
