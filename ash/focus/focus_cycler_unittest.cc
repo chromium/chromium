@@ -33,7 +33,10 @@ namespace {
 
 class PanedWidgetDelegate : public views::WidgetDelegate {
  public:
-  PanedWidgetDelegate(views::Widget* widget) : widget_(widget) {}
+  PanedWidgetDelegate() = default;
+  ~PanedWidgetDelegate() override = default;
+  PanedWidgetDelegate(const PanedWidgetDelegate&) = delete;
+  PanedWidgetDelegate& operator=(const PanedWidgetDelegate&) = delete;
 
   void SetAccessiblePanes(
       const std::vector<raw_ptr<views::View, VectorExperimental>>& panes) {
@@ -44,11 +47,8 @@ class PanedWidgetDelegate : public views::WidgetDelegate {
   void GetAccessiblePanes(std::vector<views::View*>* panes) override {
     std::ranges::copy(accessible_panes_, std::back_inserter(*panes));
   }
-  views::Widget* GetWidget() override { return widget_; }
-  const views::Widget* GetWidget() const override { return widget_; }
 
  private:
-  raw_ptr<views::Widget, DanglingUntriaged> widget_;
   std::vector<raw_ptr<views::View, VectorExperimental>> accessible_panes_;
 };
 
@@ -247,8 +247,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 
   std::unique_ptr<PanedWidgetDelegate> test_widget_delegate;
   std::unique_ptr<views::Widget> browser_widget(new views::Widget);
-  test_widget_delegate =
-      std::make_unique<PanedWidgetDelegate>(browser_widget.get());
+  test_widget_delegate = std::make_unique<PanedWidgetDelegate>();
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
@@ -353,7 +352,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes_MoveOntoNext) {
   std::unique_ptr<views::Widget> browser_widget =
       std::make_unique<views::Widget>();
   std::unique_ptr<PanedWidgetDelegate> test_widget_delegate =
-      std::make_unique<PanedWidgetDelegate>(browser_widget.get());
+      std::make_unique<PanedWidgetDelegate>();
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
