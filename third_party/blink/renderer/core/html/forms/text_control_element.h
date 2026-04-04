@@ -281,6 +281,14 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   }
 
   // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#barred-from-constraint-validation
+  //
+  // While the 'readonly' attribute technically applies only to specific input
+  // types (e.g., text), Blink and other browsers bar validation for
+  // all input types when the 'readonly' attribute is present. This behavior is
+  // maintained for web compatibility.
+  // See: https://github.com/web-platform-tests/wpt/pull/35389
+  //      https://github.com/whatwg/html/issues/8133
+  //      https://github.com/whatwg/html/issues/8089
   bool ReadOnlyPreventsConstraintValidation() const final { return true; }
 
   // Checks the current value and latches as a custom password field if it

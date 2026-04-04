@@ -117,10 +117,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool willValidate() const override;
 
   bool IsReadOnly() const;
-  // TODO(crbug.com/498262671, crbug.com/486228104): Move this to ListedElement
-  // so that it can be used in at least one of
-  // ListedElement::ReadonlyAttributeChanged or
-  // ListedElement::RecalcWillValidate.
   virtual bool SupportsReadOnly() const { return false; }
   bool IsDisabledOrReadOnly() const;
 
