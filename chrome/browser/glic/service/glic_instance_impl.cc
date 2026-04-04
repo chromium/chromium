@@ -715,6 +715,10 @@ void GlicInstanceImpl::OnUserInputSubmitted(mojom::WebClientMode mode) {
   for (auto& [key, entry] : embedders_) {
     entry.user_input_submitted_while_bound = true;
   }
+  // TODO(harringtond): The only subscriber to this event is the tab underline
+  // controller and I think it makes more sense for it to get that signal from
+  // sharing manager instead of going through the keyed service.
+  service_->OnUserInputSubmitted(mode);
 }
 
 void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {

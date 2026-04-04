@@ -400,22 +400,6 @@ void GlicInstanceCoordinatorImpl::CloseFloaty(const CloseOptions& options) {
   }
 }
 
-void GlicInstanceCoordinatorImpl::AddGlobalStateObserver(
-    StateObserver* observer) {
-  // TODO(b:448604727): The StateObserver needs to be split into two: one for if
-  // the floating window is showing and one for the state of an individual
-  // panel.
-  NOTIMPLEMENTED();
-}
-
-void GlicInstanceCoordinatorImpl::RemoveGlobalStateObserver(
-    StateObserver* observer) {
-  // TODO(b:448604727): The StateObserver needs to be split into two: one for if
-  // the floating window is showing and one for the state of an individual
-  // panel.
-  NOTIMPLEMENTED();
-}
-
 bool GlicInstanceCoordinatorImpl::IsDetached() const {
   return GetInstanceWithFloaty() != nullptr;
 }
@@ -428,13 +412,6 @@ bool GlicInstanceCoordinatorImpl::IsPanelShowingForBrowser(
     return instance->IsShowing();
   }
   return false;
-}
-
-base::CallbackListSubscription
-GlicInstanceCoordinatorImpl::AddWindowActivationChangedCallback(
-    WindowActivationChangedCallback callback) {
-  // TODO: Notification of this callback list is not yet implemented.
-  return window_activation_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription

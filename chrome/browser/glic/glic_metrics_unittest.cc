@@ -725,11 +725,7 @@ class GlicMetricsFeaturesEnabledTest : public GlicMetricsTestBase {
     glic_test_env_.SetupProfile(profile());
   }
 
-  GlicMetrics* metrics() {
-    return static_cast<GlicMetrics*>(
-        &GlicKeyedService::Get(profile())
-             ->instance_metrics_backwards_compatibility());
-  }
+  GlicMetrics* metrics() { return GlicKeyedService::Get(profile())->metrics(); }
 
  private:
   GlicUnitTestEnvironment glic_test_env_;

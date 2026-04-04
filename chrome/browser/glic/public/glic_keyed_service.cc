@@ -419,31 +419,7 @@ void GlicKeyedService::CloseFloatingPanel() {
   window_controller().Close({});
 }
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-void GlicKeyedService::PrepareForOpen() {
-  fre_controller().MaybePreconnect();
 
-  auto* active_web_contents =
-      sharing_manager_->GetFocusedTabData().focus()
-          ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
-          : nullptr;
-  if (contextual_cueing_service_ && active_web_contents) {
-    contextual_cueing_service_
-        ->PrepareToFetchContextualGlicZeroStateSuggestions(active_web_contents);
-  }
-}
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-glic::GlicInstanceMetrics* GlicKeyedService::instance_metrics() {
-  return nullptr;
-}
-
-glic::GlicInstanceMetricsBackwardsCompatibility&
-GlicKeyedService::instance_metrics_backwards_compatibility() {
-  return *metrics_;
-}
-#endif
 
 GlicWindowController& GlicKeyedService::window_controller() const {
   CHECK(window_controller_);
@@ -482,73 +458,7 @@ void GlicKeyedService::UnpinTabsFromAllInstances(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void GlicKeyedService::OnZeroStateSuggestionsFetched(
-    mojom::ZeroStateSuggestionsPtr suggestions,
-    mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
-        callback,
-    std::vector<std::string> returned_suggestions) {
-  std::vector<mojom::SuggestionContentPtr> output_suggestions;
-  for (const std::string& suggestion_string : returned_suggestions) {
-    output_suggestions.push_back(
-        mojom::SuggestionContent::New(suggestion_string));
-  }
-  suggestions->suggestions = std::move(output_suggestions);
 
-  std::move(callback).Run(std::move(suggestions));
-}
-
-void GlicKeyedService::FetchZeroStateSuggestions(
-    bool is_first_run,
-    std::optional<std::vector<std::string>> supported_tools,
-    mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
-        callback) {
-  auto* active_web_contents =
-      sharing_manager_->GetFocusedTabData().focus()
-          ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
-          : nullptr;
-
-  if (contextual_cueing_service_ && active_web_contents && IsWindowShowing()) {
-    auto suggestions = mojom::ZeroStateSuggestions::New();
-    suggestions->tab_id = GetTabId(active_web_contents);
-    suggestions->tab_url = active_web_contents->GetLastCommittedURL();
-    contextual_cueing_service_
-        ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
-            active_web_contents, is_first_run, supported_tools,
-            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                base::BindOnce(&GlicKeyedService::OnZeroStateSuggestionsFetched,
-                               GetWeakPtr(), std::move(suggestions),
-                               std::move(callback)),
-                std::vector<std::string>({})));
-
-  } else {
-    std::move(callback).Run(nullptr);
-  }
-}
-
-void GlicKeyedService::RegisterConversation(
-    glic::mojom::ConversationInfoPtr info,
-    mojom::WebClientHandler::RegisterConversationCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(mojom::RegisterConversationErrorReason::kUnknown);
-}
-
-void GlicKeyedService::GetZeroStateSuggestionsAndSubscribe(
-    bool has_active_subscription,
-    const mojom::ZeroStateSuggestionsOptions& options,
-    mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
-        callback) {
-  if (!zero_state_suggestions_manager()) {
-    NOTIMPLEMENTED()
-        << "Zero state suggestions not implemented for multi-instance.";
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  zero_state_suggestions_manager()->ObserveZeroStateSuggestions(
-      has_active_subscription, options.is_first_run, options.supported_tools,
-      std::move(callback));
-}
-#endif
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
   host_manager().GuestAdded(guest_contents);
@@ -663,106 +573,6 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
   context_access_indicator_callback_list_.Notify(show);
 }
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-void GlicKeyedService::CreateTask(
-    base::WeakPtr<actor::ActorTaskDelegate> delegate,
-    actor::webui::mojom::TaskOptionsPtr options,
-    mojom::WebClientHandler::CreateTaskCallback callback) {
-  if (actor_task_manager_) {
-    // No conversation id but this code path is going away so it's ok.
-    actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(),
-                                    /*conversation_id=*/"", std::move(options),
-                                    std::move(callback));
-  } else {
-    std::move(callback).Run(
-        base::unexpected(mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
-  }
-}
-
-void GlicKeyedService::PerformActions(
-    const std::vector<uint8_t>& actions_proto,
-    mojom::WebClientHandler::PerformActionsCallback callback) {
-  if (actor_task_manager_) {
-    actor_task_manager_->PerformActions(actions_proto, std::move(callback));
-  } else {
-    std::move(callback).Run(
-        base::unexpected(mojom::PerformActionsErrorReason::kUnknown));
-  }
-}
-
-void GlicKeyedService::CancelActions(
-    actor::TaskId task_id,
-    mojom::WebClientHandler::CancelActionsCallback callback) {
-  if (actor_task_manager_) {
-    actor_task_manager_->CancelActions(task_id, std::move(callback));
-  } else {
-    std::move(callback).Run(mojom::CancelActionsResult::kUnknown);
-  }
-}
-
-void GlicKeyedService::StopActorTask(actor::TaskId task_id,
-                                     mojom::ActorTaskStopReason stop_reason) {
-  if (actor_task_manager_) {
-    actor_task_manager_->StopActorTask(task_id, stop_reason);
-  }
-}
-
-void GlicKeyedService::PauseActorTask(actor::TaskId task_id,
-                                      mojom::ActorTaskPauseReason pause_reason,
-                                      tabs::TabInterface::Handle tab_handle) {
-  if (actor_task_manager_) {
-    actor_task_manager_->PauseActorTask(task_id, pause_reason, tab_handle);
-  }
-}
-
-void GlicKeyedService::ResumeActorTask(
-    actor::TaskId task_id,
-    const mojom::GetTabContextOptions& context_options,
-    glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
-  if (actor_task_manager_) {
-    actor_task_manager_->ResumeActorTask(task_id, context_options,
-                                         std::move(callback));
-  } else {
-    std::move(callback).Run(mojom::GetContextResultWithActionResultCode::New(
-        mojom::GetContextResult::NewErrorReason("Actor not enabled"),
-        std::nullopt));
-  }
-}
-
-void GlicKeyedService::InterruptActorTask(
-    actor::TaskId task_id,
-    std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) {
-  if (actor_task_manager_) {
-    actor_task_manager_->InterruptActorTask(task_id);
-  }
-}
-
-void GlicKeyedService::UninterruptActorTask(actor::TaskId task_id) {
-  if (actor_task_manager_) {
-    actor_task_manager_->UninterruptActorTask(task_id);
-  }
-}
-
-void GlicKeyedService::CreateActorTab(
-    actor::TaskId task_id,
-    bool open_in_background,
-    const std::optional<int32_t>& initiator_tab_id,
-    const std::optional<int32_t>& initiator_window_id,
-    glic::mojom::WebClientHandler::CreateActorTabCallback callback) {
-  if (actor_task_manager_) {
-    actor_task_manager_->CreateActorTab(task_id, open_in_background,
-                                        initiator_tab_id, initiator_window_id,
-                                        std::move(callback));
-  } else {
-    std::move(callback).Run(nullptr);
-  }
-}
-
-void GlicKeyedService::OnTabAddedToTask(
-    actor::TaskId task_id,
-    const tabs::TabInterface::Handle& tab_handle) {}
-#endif
-
 void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {
   user_input_submitted_callback_list_.Notify();
 }
@@ -773,6 +583,10 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
 }
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
+void GlicKeyedService::OnTabAddedToTask(
+    actor::TaskId task_id,
+    const tabs::TabInterface::Handle& tab_handle) {}
+
 void GlicKeyedService::CaptureRegion(
     tabs::TabInterface* tab,
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
@@ -939,26 +753,7 @@ void GlicKeyedService::Archive(
   window_controller().ArchiveInstanceWithFrame(outermost_render_frame_host);
 }
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-void GlicKeyedService::OnWebClientCleared() {
-  if (actor_task_manager_) {
-    actor_task_manager_->CancelTask();
-  }
-}
 
-void GlicKeyedService::OnInteractionModeChange(mojom::WebClientMode new_mode) {
-  // Unused in single instance mode.
-}
-
-bool GlicKeyedService::IsActive() {
-  // The `browser_is_active` signal was changed to `instance_is_active`. This
-  // the logic that originally backed `browser_is_active` for single-instance.
-  // This function will only be called from `GlicPageHandler` when in
-  // single-instance, and should be deleted when single-instance is deleted and
-  // GKS no longer implements `Host::InstanceDelegate`.
-  return sharing_manager().GetFocusedBrowser();
-}
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
 void GlicKeyedService::RequestToShowCredentialSelectionDialog(

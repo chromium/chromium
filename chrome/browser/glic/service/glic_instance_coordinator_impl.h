@@ -148,14 +148,11 @@ class GlicInstanceCoordinatorImpl
       content::RenderFrameHost* render_frame_host) override;
   void ArchiveInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
-  void AddGlobalStateObserver(StateObserver* observer) override;
-  void RemoveGlobalStateObserver(StateObserver* observer) override;
 
   bool IsDetached() const override;
   bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const override;
-  base::CallbackListSubscription AddWindowActivationChangedCallback(
-      WindowActivationChangedCallback callback) override;
+
   base::CallbackListSubscription AddGlobalShowHideCallback(
       base::RepeatingClosure callback) override;
   void Preload() override;
@@ -261,9 +258,6 @@ class GlicInstanceCoordinatorImpl
 
   // A unique ID for this coordinator, used to generate unique instance IDs.
   const uint64_t coordinator_uid_;
-
-  // List of callbacks to be notified when window activation has changed.
-  base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
   const raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;

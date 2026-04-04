@@ -67,10 +67,7 @@ class MockGlicWindowController
               IsPanelShowingForBrowser,
               (const BrowserWindowInterface&),
               (const, override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              AddWindowActivationChangedCallback,
-              (WindowActivationChangedCallback),
-              (override));
+
   MOCK_METHOD(base::CallbackListSubscription,
               AddGlobalShowHideCallback,
               (base::RepeatingClosure),
@@ -106,11 +103,7 @@ class MockGlicWindowController
               (const, override));
   MOCK_METHOD(base::Time, GetLastActivationTimestamp, (), (const, override));
   MOCK_METHOD(base::TimeDelta, GetTimeSinceLastActive, (), (const, override));
-  MOCK_METHOD(void, AddGlobalStateObserver, (PanelStateObserver*), (override));
-  MOCK_METHOD(void,
-              RemoveGlobalStateObserver,
-              (PanelStateObserver*),
-              (override));
+
   MOCK_METHOD(glic::GlicInstanceMetrics*, instance_metrics, (), (override));
   MOCK_METHOD(void, BindTabForTesting, (tabs::TabInterface * tab), (override));
 

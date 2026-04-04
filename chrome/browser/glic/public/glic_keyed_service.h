@@ -87,9 +87,6 @@ class GlicActorTaskManager;
 class GlicKeyedService : public KeyedService,
                          public GlicSharingManagerProvider,
                          public base::SupportsUserData,
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-                         public Host::InstanceDelegate,
-#endif
                          public base::MemoryPressureListener
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
     ,
@@ -210,7 +207,6 @@ class GlicKeyedService : public KeyedService,
     return is_context_access_indicator_enabled_;
   }
 
-  // Host::InstanceDelegate:
   // CreateTab is used by both the FRE page and the glic web client to open a
   // URL in a new tab. The source is the RenderFrameHost of the Glic
   // instance that is requesting the navigation - this gets set as the
@@ -219,77 +215,9 @@ class GlicKeyedService : public KeyedService,
       const ::GURL& url,
       bool open_in_background,
       const std::optional<int32_t>& window_id,
-      glic::mojom::WebClientHandler::CreateTabCallback callback)
-#if !BUILDFLAG(IS_ANDROID)
-      override;
-#else
-      ;  // multi instance doesn't use keyed service as an
-         // instance delegate, so it doesn't need the override keyword.
-#endif
+      glic::mojom::WebClientHandler::CreateTabCallback callback);
 
-#if !BUILDFLAG(IS_ANDROID)  // multi instance doesn't use keyed service as an
-                            // instance delegate
-  void CreateTask(
-      base::WeakPtr<actor::ActorTaskDelegate> delegate,
-      actor::webui::mojom::TaskOptionsPtr options,
-      mojom::WebClientHandler::CreateTaskCallback callback) override;
-  void PerformActions(
-      const std::vector<uint8_t>& actions_proto,
-      mojom::WebClientHandler::PerformActionsCallback callback) override;
-  void CancelActions(
-      actor::TaskId task_id,
-      mojom::WebClientHandler::CancelActionsCallback callback) override;
-  void StopActorTask(actor::TaskId task_id,
-                     mojom::ActorTaskStopReason stop_reason) override;
-  void PauseActorTask(actor::TaskId task_id,
-                      mojom::ActorTaskPauseReason pause_reason,
-                      tabs::TabInterface::Handle tab_handle) override;
-  // TODO(crbug.com/446696379) - The ResumeActorTask Glic API should, like the
-  // rest of actor observations, operate in terms of TabObservation rather than
-  // TabContext.
-  void ResumeActorTask(
-      actor::TaskId task_id,
-      const mojom::GetTabContextOptions& context_options,
-      glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) override;
-  void InterruptActorTask(
-      actor::TaskId task_id,
-      std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) override;
-  void UninterruptActorTask(actor::TaskId task_id) override;
-  void CreateActorTab(
-      actor::TaskId task_id,
-      bool open_in_background,
-      const std::optional<int32_t>& initiator_tab_id,
-      const std::optional<int32_t>& initiator_window_id,
-      glic::mojom::WebClientHandler::CreateActorTabCallback callback) override;
-  void FetchZeroStateSuggestions(
-      bool is_first_run,
-      std::optional<std::vector<std::string>> supported_tools,
-      glic::mojom::WebClientHandler::
-          GetZeroStateSuggestionsForFocusedTabCallback callback) override;
-  void GetZeroStateSuggestionsAndSubscribe(
-      bool has_active_subscription,
-      const mojom::ZeroStateSuggestionsOptions& options,
-      mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
-          callback) override;
-  void RegisterConversation(
-      glic::mojom::ConversationInfoPtr info,
-      mojom::WebClientHandler::RegisterConversationCallback callback) override;
-  void OnWebClientCleared() override;
-  void PrepareForOpen() override;
-  void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
-  glic::GlicInstanceMetrics* instance_metrics() override;
-  glic::GlicInstanceMetricsBackwardsCompatibility&
-  instance_metrics_backwards_compatibility() override;
-  bool IsActive() override;
-#endif
-
-  void OnUserInputSubmitted(glic::mojom::WebClientMode mode)
-// Override is only needed for single instance
-#if !BUILDFLAG(IS_ANDROID)
-      override;
-#else
-      ;
-#endif
+  void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
 
   // Registers a callback to be called any time user input is submitted in the
   // client. This is used to update UI effects on tabs that are being shared

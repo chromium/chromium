@@ -443,12 +443,8 @@ GlicSkillsManager& Host::skills_manager() {
 }
 
 Host::InstanceDelegate& Host::instance_delegate() {
-#if !BUILDFLAG(IS_ANDROID)
-  return instance_delegate_ ? *instance_delegate_ : glic_service();
-#else
-  // Multi-instance always uses instance_delegate_.
+  CHECK(instance_delegate_);
   return *instance_delegate_;
-#endif
 }
 
 GlicPageHandler* Host::page_handler() const {

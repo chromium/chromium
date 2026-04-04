@@ -112,13 +112,6 @@ class GlicWindowController {
   virtual bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const = 0;
 
-  using WindowActivationChangedCallback =
-      base::RepeatingCallback<void(bool active)>;
-
-  // Registers |callback| to be called whenever the window activation changes.
-  virtual base::CallbackListSubscription AddWindowActivationChangedCallback(
-      WindowActivationChangedCallback callback) = 0;
-
   // Registers a callback to be run when any instance opens or closes.
   virtual base::CallbackListSubscription AddGlobalShowHideCallback(
       base::RepeatingClosure callback) = 0;
@@ -175,13 +168,6 @@ class GlicWindowController {
     return base::FeatureList::IsEnabled(features::kGlicDetached) &&
            !GlicEnabling::IsMultiInstanceEnabled();
   }
-
-  // Same as GlicInstance::AddStateObserver, but applies globally, provides
-  // the aggregate panel state or the last active panel state.
-  // TODO(cuianthony): Implement for multi-instance and update this
-  // documentation.
-  virtual void AddGlobalStateObserver(PanelStateObserver* observer) = 0;
-  virtual void RemoveGlobalStateObserver(PanelStateObserver* observer) = 0;
 };
 
 // This class owns and manages the glic window. This class has the same lifetime
@@ -210,22 +196,5 @@ class GlicWindowControllerInterface : public GlicWindowController,
 };
 
 }  // namespace glic
-
-namespace base {
-
-template <>
-struct ScopedObservationTraits<glic::GlicWindowController,
-                               glic::PanelStateObserver> {
-  static void AddObserver(glic::GlicWindowController* source,
-                          glic::PanelStateObserver* observer) {
-    source->AddGlobalStateObserver(observer);
-  }
-  static void RemoveObserver(glic::GlicWindowController* source,
-                             glic::PanelStateObserver* observer) {
-    source->RemoveGlobalStateObserver(observer);
-  }
-};
-
-}  // namespace base
 
 #endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_CONTROLLER_H_
