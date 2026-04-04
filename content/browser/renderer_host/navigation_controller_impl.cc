@@ -3816,6 +3816,12 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
           false /* is_history_navigation_in_new_child */, initiator_frame_token,
           initiator_process_id, actual_navigation_start);
       request = navigation_request->GetWeakPtr();
+
+      // Ensure that no re-entrant calls or discards of the pending entry occur
+      // while calling `Navigator::Navigate` for a pending entry.
+      ScopedPendingEntryReentrancyGuard reentrancy_guard(
+          weak_factory_.GetSafeRef());
+
       root->navigator().Navigate(std::move(navigation_request),
                                  ReloadType::NONE);
 
@@ -3827,6 +3833,7 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
         unused_request->set_navigation_discard_reason(
             NavigationDiscardReason::kNeverStarted);
       }
+      // `reentrancy_guard` deleted here.
     }
 
     std::vector<base::WeakPtr<NavigationRequest>> bf_cache_requests;
