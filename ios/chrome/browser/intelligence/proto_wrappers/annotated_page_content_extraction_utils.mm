@@ -43,6 +43,7 @@ constexpr char kTableRowDataKey[] = "tableRowData";
 constexpr char kRowTypeKey[] = "rowType";
 constexpr char kCanvasDataKey[] = "canvasData";
 constexpr char kVideoDataKey[] = "videoData";
+constexpr char kAriaRoleKey[] = "ariaRole";
 constexpr char kLayoutSizeKey[] = "layoutSize";
 constexpr char kWidthKey[] = "width";
 constexpr char kHeightKey[] = "height";
@@ -729,6 +730,15 @@ void PopulateAPCNodeFromContentTree(
         destination_node->mutable_content_attributes()->add_annotated_roles(
             static_cast<optimization_guide::proto::AnnotatedRole>(*role_value));
       }
+    }
+  }
+
+  // Handle ARIA Role.
+  if (std::optional<int> aria_role =
+          ReadJsNumber(*content_attributes, kAriaRoleKey)) {
+    if (optimization_guide::proto::AXRole_IsValid(*aria_role)) {
+      destination_node->mutable_content_attributes()->set_aria_role(
+          static_cast<optimization_guide::proto::AXRole>(*aria_role));
     }
   }
 

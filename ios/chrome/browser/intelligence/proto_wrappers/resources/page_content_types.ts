@@ -10,9 +10,6 @@
  * Read the mojom files to get more documentation on these.
  */
 
-// TODO(crbug.com/473741676): Port the aria role definitions from
-// ui/accessibility/ax_enums.mojom.
-
 // Definitions from mojo/public/mojom/base/unguessable_token.mojom
 
 // TODO(crbug.com/473752555): Serialize the UnguessableToken as a 2 numbers
@@ -370,10 +367,9 @@ export interface PageContentFormControlData {
   redactionDecision: PageContentRedactionDecision;
 }
 
-// TODO(crbug.com/473741676): Support the aria role.
-// ariaRole?: Role;
 export interface PageContentAttributes {
   domNodeId?: number;
+  ariaRole?: AxRole;
   attributeType: PageContentAttributeType;
   geometry?: PageContentGeometry;
   nodeInteractionInfo?: PageContentNodeInteractionInfo;
@@ -427,4 +423,33 @@ export interface PageContentOptions {
   includeSameSiteOnly: boolean;
   mainFrameViewRectInDips: Rect;
   includePasswordsForRedaction: boolean;
+}
+
+/**
+ * Enum representing accessibility roles.
+ * The numbers are aligned with the AxRole enum in
+ * ui/accessibility/ax_enums.mojom.
+ */
+
+export enum AxRole {
+  AX_ROLE_NONE = 0,
+  AX_ROLE_UNKNOWN = 181, // The role has not been set.
+  AX_ROLE_BANNER = 7,
+  AX_ROLE_BUTTON = 9,
+  AX_ROLE_CHECK_BOX = 14,
+  AX_ROLE_LINK = 110,
+  AX_ROLE_MENU_ITEM = 124,
+  AX_ROLE_MENU_ITEM_CHECK_BOX = 125,
+  AX_ROLE_MENU_ITEM_RADIO = 126,
+  AX_ROLE_LIST_BOX_OPTION = 113,
+  AX_ROLE_RADIO_BUTTON = 141,
+  AX_ROLE_SWITCH = 163,
+  AX_ROLE_TAB = 164,
+  AX_ROLE_NAVIGATION = 130,
+  AX_ROLE_SEARCH = 152,
+  AX_ROLE_MAIN = 118,
+  AX_ROLE_ARTICLE = 5,
+  AX_ROLE_REGION = 143,
+  AX_ROLE_COMPLEMENTARY = 22,
+  AX_ROLE_CONTENT_INFO = 26,
 }

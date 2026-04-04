@@ -5274,6 +5274,122 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_LabelForDomNodeId) {
             "My Label");
 }
 
+// Tests that ARIA roles and content-visibility are correctly populated in the
+// PageContext proto.
+TEST_P(PageContextWrapperTest, PopulatePageContext_AnnotatedRoles) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "AnnotatedRoles",
+      RawHtml("  <header role=\"banner\">Header</header>"
+              "  <nav role=\"navigation\">Nav</nav>"
+              "  <div role=\"search\">Search</div>"
+              "  <main role=\"main\">Main</main>"
+              "  <article role=\"article\">Article</article>"
+              "  <section role=\"region\">Section</section>"
+              "  <aside role=\"complementary\">Aside</aside>"
+              "  <footer role=\"contentinfo\">Footer</footer>"
+              "  <div style=\"content-visibility: hidden;\">Hidden</div>"
+              "  <div role=\"unknown search\">Fallback</div>"
+              "  <footer role=\"banner\">Multi</footer>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 11);
+
+  const std::vector<std::vector<optimization_guide::proto::AnnotatedRole>>
+      expected_roles = {
+          {optimization_guide::proto::ANNOTATED_ROLE_HEADER},
+          {optimization_guide::proto::ANNOTATED_ROLE_NAV},
+          {optimization_guide::proto::ANNOTATED_ROLE_SEARCH},
+          {optimization_guide::proto::ANNOTATED_ROLE_MAIN},
+          {optimization_guide::proto::ANNOTATED_ROLE_ARTICLE},
+          {optimization_guide::proto::ANNOTATED_ROLE_SECTION},
+          {optimization_guide::proto::ANNOTATED_ROLE_ASIDE},
+          {optimization_guide::proto::ANNOTATED_ROLE_FOOTER},
+          {optimization_guide::proto::ANNOTATED_ROLE_CONTENT_HIDDEN},
+          // Skips "unknown", maps "search"
+          {optimization_guide::proto::ANNOTATED_ROLE_SEARCH},
+          // Gets FOOTER from tag, and HEADER from aria
+          {optimization_guide::proto::ANNOTATED_ROLE_FOOTER,
+           optimization_guide::proto::ANNOTATED_ROLE_HEADER},
+      };
+
+  for (int i = 0; i < static_cast<int>(expected_roles.size()); ++i) {
+    const auto& node = root_node.children_nodes(i);
+    ASSERT_EQ(node.content_attributes().annotated_roles_size(),
+              static_cast<int>(expected_roles[i].size()));
+
+    for (int j = 0; j < static_cast<int>(expected_roles[i].size()); ++j) {
+      EXPECT_EQ(node.content_attributes().annotated_roles(j),
+                expected_roles[i][j])
+          << "mismatch for child index " << i << " at role index " << j;
+    }
+  }
+}
+
+// Tests that the raw ARIA role is correctly mapped to the AXRole enum in the
+// PageContext proto when actionable mode is enabled.
+TEST_P(PageContextWrapperTest, PopulatePageContext_AriaRole_ActionableMode) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "AriaRoles",
+      RawHtml("  <div role=\"button\">Button</div>"
+              "  <div role=\"unknown_role\" tabindex=\"0\">Unknown</div>"
+              "  <div tabindex=\"0\">No Role</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 3);
+
+  // Button -> AX_ROLE_BUTTON.
+  EXPECT_EQ(root_node.children_nodes(0).content_attributes().aria_role(),
+            optimization_guide::proto::AX_ROLE_BUTTON);
+
+  // Unknown Role -> AX_ROLE_UNKNOWN. Node is preserved due to tabindex.
+  EXPECT_EQ(root_node.children_nodes(1).content_attributes().aria_role(),
+            optimization_guide::proto::AX_ROLE_UNKNOWN);
+
+  // No Role -> AX_ROLE_UNKNOWN. Node is preserved due to tabindex.
+  EXPECT_EQ(root_node.children_nodes(2).content_attributes().aria_role(),
+            optimization_guide::proto::AX_ROLE_UNKNOWN);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),

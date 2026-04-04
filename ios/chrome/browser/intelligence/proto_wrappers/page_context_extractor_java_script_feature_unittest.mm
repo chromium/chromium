@@ -686,7 +686,6 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
       "  <button aria-label=\"Direct Label\" aria-labelledby=\"label1 "
       "label2\">Click me</button>"
       "</body></html>";
-
   web::test::LoadHtml(base::SysUTF8ToNSString(html),
                       test_server_.GetURL(kMainPagePath), web_state());
 
@@ -746,6 +745,147 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
       button_node.FindStringByDottedPath("contentAttributes.label");
   ASSERT_TRUE(label);
   EXPECT_EQ(*label, "Direct Label");
+}
+
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_AriaRoles) {
+  const std::string html =
+      "<html><body>"
+      "  <header role=\"banner\">Header</header>"
+      "  <nav role=\"navigation\">Nav</nav>"
+      "  <div role=\"search\">Search</div>"
+      "  <main role=\"main\">Main</main>"
+      "  <article role=\"article\">Article</article>"
+      "  <section role=\"region\">Section</section>"
+      "  <aside role=\"complementary\">Aside</aside>"
+      "  <footer role=\"contentinfo\">Footer</footer>"
+      "  <div style=\"content-visibility: hidden;\">Hidden</div>"
+      "  <div role=\"unknown search\">Fallback</div>"
+      "  <footer role=\"banner\">Multi</footer>"
+      "</body></html>";
+
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(4));
+
+  ASSERT_TRUE(result_value->is_dict());
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 11u);
+
+  const std::vector<std::vector<int>> expected_roles = {
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_HEADER)},
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_NAV)},
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_SEARCH)},
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_MAIN)},
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_ARTICLE)},
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_SECTION)},
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_ASIDE)},
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_FOOTER)},
+      {static_cast<int>(
+          optimization_guide::proto::ANNOTATED_ROLE_CONTENT_HIDDEN)},
+      // Skips "unknown", maps "search"
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_SEARCH)},
+      // Gets FOOTER from tag, and HEADER from aria
+      {static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_FOOTER),
+       static_cast<int>(optimization_guide::proto::ANNOTATED_ROLE_HEADER)},
+  };
+
+  for (size_t i = 0; i < expected_roles.size(); ++i) {
+    const base::DictValue& node = (*children)[i].GetDict();
+    const base::ListValue* annotated_roles =
+        node.FindListByDottedPath("contentAttributes.annotatedRoles");
+    ASSERT_TRUE(annotated_roles);
+    ASSERT_EQ(annotated_roles->size(), expected_roles[i].size());
+
+    for (size_t j = 0; j < expected_roles[i].size(); ++j) {
+      EXPECT_EQ(static_cast<int>((*annotated_roles)[j].GetDouble()),
+                expected_roles[i][j])
+          << "mismatch for child " << i << " at role index " << j;
+    }
+  }
+}
+
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_AXRole_WithActionable) {
+  const std::string html =
+      "<html><body>"
+      "  <div role=\"button\">Button</div>"
+      "  <div role=\"random_unknown_role\" tabindex=\"0\">Unknown</div>"
+      "  <div tabindex=\"0\">No Role</div>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(4));
+
+  ASSERT_TRUE(result_value->is_dict());
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+
+  ASSERT_EQ(children->size(), 3u);
+
+  // Check the button node structure.
+  const base::DictValue& button_node = (*children)[0].GetDict();
+  std::optional<double> button_role =
+      button_node.FindDoubleByDottedPath("contentAttributes.ariaRole");
+  ASSERT_TRUE(button_role.has_value());
+  EXPECT_EQ(static_cast<int>(button_role.value()), 9);  // AX_ROLE_BUTTON
+
+  const base::ListValue* button_content_children =
+      button_node.FindList("childrenNodes");
+  ASSERT_TRUE(button_content_children);
+  ASSERT_EQ(button_content_children->size(), 1u);
+  const base::DictValue& button_text_node =
+      (*button_content_children)[0].GetDict();
+  const std::string* button_text = button_text_node.FindStringByDottedPath(
+      "contentAttributes.textInfo.textContent");
+  ASSERT_TRUE(button_text);
+  EXPECT_EQ(*button_text, "Button");
+
+  // Check the unknown role node structure.
+  const base::DictValue& unknown_node = (*children)[1].GetDict();
+  std::optional<double> unknown_role =
+      unknown_node.FindDoubleByDottedPath("contentAttributes.ariaRole");
+  ASSERT_TRUE(unknown_role.has_value());
+  EXPECT_EQ(static_cast<int>(unknown_role.value()), 181);  // AX_ROLE_UNKNOWN
+
+  const base::ListValue* unknown_content_children =
+      unknown_node.FindList("childrenNodes");
+  ASSERT_TRUE(unknown_content_children);
+  ASSERT_EQ(unknown_content_children->size(), 1u);
+  const base::DictValue& unknown_text_node =
+      (*unknown_content_children)[0].GetDict();
+  const std::string* unknown_text = unknown_text_node.FindStringByDottedPath(
+      "contentAttributes.textInfo.textContent");
+  ASSERT_TRUE(unknown_text);
+  EXPECT_EQ(*unknown_text, "Unknown");
+
+  // Check the node with NO role (Preserved due to tabindex)
+  const base::DictValue& no_role_node = (*children)[2].GetDict();
+  std::optional<double> missing_role =
+      no_role_node.FindDoubleByDottedPath("contentAttributes.ariaRole");
+  ASSERT_TRUE(missing_role.has_value());
+  EXPECT_EQ(static_cast<int>(missing_role.value()), 181);  // AX_ROLE_UNKNOWN
 }
 
 // Test the extraction of label elements and their associated control IDs.
