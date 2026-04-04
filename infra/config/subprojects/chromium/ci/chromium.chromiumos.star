@@ -596,6 +596,11 @@ ci.builder(
             "pthreadpool_unittests": targets.remove(
                 reason = "pthreadpool is not built for ChromeOS currently.",
             ),
+            "sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
             "unit_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 4,

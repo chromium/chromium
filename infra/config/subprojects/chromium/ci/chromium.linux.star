@@ -703,7 +703,7 @@ ci.thin_tester(
             ),
             "sync_integration_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 4,
+                    shards = 6,
                 ),
             ),
             "telemetry_perf_unittests": targets.mixin(
