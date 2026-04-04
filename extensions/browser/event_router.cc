@@ -1174,6 +1174,7 @@ void EventRouter::DecrementInFlightEventsForServiceWorker(
   if (event_will_run_in_lazy_background_page_script) {
     bad_message::ReceivedBadMessage(
         process, bad_message::ER_SW_INVALID_LAZY_BACKGROUND_PARAM);
+    return;
   }
 
   const bool worker_stopped = !ProcessManager::Get(process->GetBrowserContext())
