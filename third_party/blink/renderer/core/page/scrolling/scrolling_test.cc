@@ -2970,7 +2970,7 @@ TEST_P(ScrollingTest, ThumbInvalidatesLayer) {
   // Solid color scrollbars do not repaint (see:
   // |SolidColorScrollbarLayer::SetNeedsDisplayRect|).
   if (layer->GetScrollbarLayerType() != cc::ScrollbarLayerBase::kSolidColor) {
-    layer->ResetUpdateRectForTesting();
+    layer->ResetUpdateRect();
     ASSERT_TRUE(layer->update_rect().IsEmpty());
 
     auto* scrollable_area = ScrollableAreaByDOMElementId("scroller");

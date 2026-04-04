@@ -53,7 +53,9 @@ void PictureLayer::PushDirtyPropertiesTo(LayerImpl* base_layer,
 
     PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
-    if (!update_rect().IsEmpty()) {
+    auto iter = commit_state.layer_update_rects.find(id());
+    if (iter != commit_state.layer_update_rects.end() &&
+        !iter->second.IsEmpty()) {
       layer_impl->set_has_non_animated_image_update_rect();
     }
 

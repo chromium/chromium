@@ -203,8 +203,9 @@ void Layer::SetNeedsCommit() {
 
   SetNeedsPushProperties();
 
-  if (ignore_set_needs_commit_for_test_.Read(*this))
+  if (ignore_set_needs_commit_for_test_) {
     return;
+  }
 
   layer_tree_host()->SetNeedsCommit();
 }
@@ -1464,12 +1465,11 @@ void Layer::SetNeedsDisplayRect(const gfx::Rect& dirty_rect) {
   if (dirty_rect.IsEmpty())
     return;
 
-  SetNeedsPushProperties();
-  update_rect_.Write(*this).Union(dirty_rect);
+  update_rect_.Union(dirty_rect);
 
-  if (draws_content() && IsAttached() &&
-      !ignore_set_needs_commit_for_test_.Read(*this))
+  if (draws_content() && IsAttached() && !ignore_set_needs_commit_for_test_) {
     layer_tree_host()->SetNeedsUpdateLayers();
+  }
 }
 
 bool Layer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
@@ -1523,7 +1523,10 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
     // to call |SetScrollOffsetClobberActiveValue|.
     DCHECK(layer->layer_tree_impl()->lifecycle().AllowsPropertyTreeAccess());
 
-    layer->UnionUpdateRect(update_rect_.Read(*this));
+    auto iter = commit_state.layer_update_rects.find(id());
+    if (iter != commit_state.layer_update_rects.end()) {
+      layer->UnionUpdateRect(iter->second);
+    }
 
     // debug_info_->invalidations, if exist, will be cleared in the function.
     layer->UpdateDebugInfo(debug_info_.Write(*this).get());
@@ -1544,7 +1547,6 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
 
     // Reset any state that should be cleared for the next update.
     subtree_property_changed_.Write(*this) = false;
-    update_rect_.Write(*this) = gfx::Rect();
   }
 
   layer->SetNeedsPushProperties(dirty_flag);

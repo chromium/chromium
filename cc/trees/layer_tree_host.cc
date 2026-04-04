@@ -457,6 +457,18 @@ std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
   pending_commit_state()->benchmarks =
       micro_benchmark_controller_.CreateImplBenchmarks();
 
+  std::vector<std::pair<int, gfx::Rect>> layer_update_rects;
+  for (auto* layer : *this) {
+    if (!layer->update_rect().IsEmpty()) {
+      layer->SetNeedsPushProperties();
+      layer_update_rects.emplace_back(layer->id(), layer->update_rect());
+      layer->ResetUpdateRect();
+    }
+  }
+  std::sort(layer_update_rects.begin(), layer_update_rects.end());
+  pending_commit_state()->layer_update_rects = base::flat_map<int, gfx::Rect>(
+      base::sorted_unique_t(), std::move(layer_update_rects));
+
   // Snapshot PropertyTrees change tracking state prior to resetting it.
   property_trees()->GetChangeState(
       pending_commit_state()->property_trees_change_state);

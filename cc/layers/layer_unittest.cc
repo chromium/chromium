@@ -238,6 +238,9 @@ class LayerTest : public testing::Test {
   }
 
   void SimulateCommitForLayer(Layer* layer) {
+    layer_tree_host_->pending_commit_state()->layer_update_rects.insert(
+        std::make_pair(layer->id(), layer->update_rect()));
+    layer->ResetUpdateRect();
     layer->PushPropertiesTo(
         layer->CreateLayerImpl(host_impl_.active_tree()).get(),
         *layer_tree_host_->GetPendingCommitState());

@@ -276,13 +276,19 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   void SetNeedsDisplay() { SetNeedsDisplayRect(gfx::Rect(bounds())); }
   // Returns the union of previous calls to SetNeedsDisplayRect() and
   // SetNeedsDisplay() that have not been committed to the compositor thread.
-  const gfx::Rect& update_rect() const { return update_rect_.Read(*this); }
+  const gfx::Rect& update_rect() const {
+    DCHECK(!IsAttached() || IsMainThread());
+    return update_rect_;
+  }
+  void ResetUpdateRect() {
+    DCHECK(!IsAttached() || IsMainThread());
+    update_rect_ = gfx::Rect();
+  }
 
   // If this returns true, then `SetNeedsDisplay` will be called in response to
   // the HDR headroom of the display that the content is rendering to changing.
   virtual bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const;
 
-  void ResetUpdateRectForTesting() { update_rect_.Write(*this) = gfx::Rect(); }
 
   // For layer tree mode only.
   // Set or get the rounded corner radii which is applied to the layer and its
@@ -938,8 +944,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   }
 
   base::AutoReset<bool> IgnoreSetNeedsCommitForTest() {
-    return base::AutoReset<bool>(
-        &ignore_set_needs_commit_for_test_.Write(*this), true);
+    return base::AutoReset<bool>(&ignore_set_needs_commit_for_test_, true);
   }
 
   enum : uint8_t {
@@ -1180,7 +1185,11 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   ProtectedSequenceWritable<std::unique_ptr<LayerDebugInfo>> debug_info_;
 
   ProtectedSequenceReadable<Inputs> inputs_;
-  ProtectedSequenceWritable<gfx::Rect> update_rect_;
+
+  // update_rect_ doesn't need a ProtectedSequence wrapper because it is
+  // snapshotted on the main thread into CommitState::layer_update_rects and
+  // never touched on the compositor thread.
+  gfx::Rect update_rect_;
 
   const int layer_id_;
 
@@ -1196,7 +1205,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // When true, the layer is about to perform an update. Any commit requests
   // will be handled implicitly after the update completes. Not a bitfield
   // because it's used in base::AutoReset.
-  ProtectedSequenceReadable<bool> ignore_set_needs_commit_for_test_;
+  bool ignore_set_needs_commit_for_test_ = false;
   ProtectedSequenceWritable<bool> subtree_property_changed_;
 
 #if DCHECK_IS_ON()
