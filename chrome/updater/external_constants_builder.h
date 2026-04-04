@@ -5,14 +5,15 @@
 #ifndef CHROME_UPDATER_EXTERNAL_CONSTANTS_BUILDER_H_
 #define CHROME_UPDATER_EXTERNAL_CONSTANTS_BUILDER_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/values.h"
 
 namespace base {
+class FilePath;
 class TimeDelta;
 }
 

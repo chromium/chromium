@@ -5,7 +5,7 @@
 #ifndef CHROME_UPDATER_NET_FETCHER_CALLBACK_ADAPTER_H_
 #define CHROME_UPDATER_NET_FETCHER_CALLBACK_ADAPTER_H_
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/updater/net/mac/mojom/updater_fetcher.mojom.h"
 #include "components/update_client/network.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/ui/ui_util.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/updater/util/win_util.h"

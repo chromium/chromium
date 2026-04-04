@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"

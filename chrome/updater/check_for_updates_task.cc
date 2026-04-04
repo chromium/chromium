@@ -4,6 +4,7 @@
 
 #include "chrome/updater/check_for_updates_task.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -17,12 +18,10 @@
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
-#include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
-#include "chrome/updater/update_service_impl.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
-#include "components/prefs/pref_service.h"
 #include "components/update_client/update_client.h"
 
 namespace updater {

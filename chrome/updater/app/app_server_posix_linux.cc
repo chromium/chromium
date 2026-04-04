@@ -4,12 +4,11 @@
 
 #include "chrome/updater/app/app_server_posix.h"
 
-#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/updater/linux/systemd_util.h"
-#include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 
 namespace updater {

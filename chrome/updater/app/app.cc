@@ -4,7 +4,6 @@
 
 #include "chrome/updater/app/app.h"
 
-#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"

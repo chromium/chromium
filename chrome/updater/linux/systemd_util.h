@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_LINUX_SYSTEMD_UTIL_H_
 #define CHROME_UPDATER_LINUX_SYSTEMD_UTIL_H_
 
+#include <memory>
+
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"

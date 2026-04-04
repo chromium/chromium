@@ -5,7 +5,6 @@
 #ifndef CHROME_UPDATER_MAC_PRIVILEGED_HELPER_SERVER_H_
 #define CHROME_UPDATER_MAC_PRIVILEGED_HELPER_SERVER_H_
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"

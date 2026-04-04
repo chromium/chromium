@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "chrome/updater/branded_constants.h"

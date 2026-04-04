@@ -14,6 +14,10 @@
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/webbrowser.h"
 
+namespace base {
+class Version;
+}  // namespace base
+
 namespace updater::ui {
 
 // Represents a HTML/JS/CSS based progress window.

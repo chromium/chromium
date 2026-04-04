@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <optional>
+#include <string>
 
 #include "base/at_exit.h"
 #include "base/check.h"

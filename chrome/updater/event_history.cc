@@ -18,7 +18,6 @@
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/clamped_math.h"
 #include "base/rand_util.h"
@@ -35,6 +34,7 @@
 #include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 
 #if BUILDFLAG(IS_WIN)

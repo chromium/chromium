@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_OUT_OF_PROCESS_UNZIPPER_H_
 #define CHROME_UPDATER_OUT_OF_PROCESS_UNZIPPER_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/update_client/unzipper.h"

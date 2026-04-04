@@ -5,6 +5,7 @@
 #include "chrome/updater/crash_reporter.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -20,7 +21,6 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"

@@ -32,6 +32,7 @@
 #include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"

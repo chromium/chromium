@@ -13,9 +13,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace updater::tagging {
 namespace internal {

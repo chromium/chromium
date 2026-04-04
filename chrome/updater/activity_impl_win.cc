@@ -7,7 +7,6 @@
 #include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/activity.h"

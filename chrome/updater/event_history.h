@@ -6,7 +6,6 @@
 #define CHROME_UPDATER_EVENT_HISTORY_H_
 
 #include <concepts>
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -14,7 +13,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
-#include "base/logging.h"
 #include "base/process/process.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -43,6 +41,10 @@
 //        .SetAppId("my-app-id")
 //        .AddError({.category = 1, .code = 2, .extracode1 = 3})
 //        .Write();
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace updater {
 

@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"

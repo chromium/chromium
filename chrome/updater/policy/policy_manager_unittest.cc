@@ -10,8 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/get_updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -18,6 +18,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/update_client/update_client.h"

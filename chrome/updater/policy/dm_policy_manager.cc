@@ -11,7 +11,6 @@
 
 #include "base/enterprise_util.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"

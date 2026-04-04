@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <iterator>
 #include <string>
 #include <vector>
 

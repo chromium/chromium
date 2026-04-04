@@ -7,13 +7,22 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/updater/event_logger.h"
 #include "chrome/updater/policy/service.h"
 #include "components/update_client/network.h"
+
+class GURL;
+
+namespace base {
+class FilePath;
+}
 
 namespace updater {
 

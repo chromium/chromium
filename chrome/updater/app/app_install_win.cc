@@ -23,11 +23,11 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -380,8 +380,6 @@ class AppInstallControllerImpl : public AppInstallController,
   }
 
  private:
-  friend class base::RefCountedThreadSafe<AppInstallControllerImpl>;
-
   ~AppInstallControllerImpl() override;
 
   // Overrides for OmahaWndEvents. These functions are called on the UI thread.

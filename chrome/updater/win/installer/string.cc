@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"

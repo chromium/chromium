@@ -4,8 +4,18 @@
 
 #include "chrome/updater/net/network.h"
 
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/base64.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/updater/event_history.h"
+#include "url/gurl.h"
 
 namespace updater {
 

@@ -6,9 +6,13 @@
 
 #include <concepts>
 #include <cstddef>
+#include <functional>
 #include <memory>
 #include <ostream>
+#include <string>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

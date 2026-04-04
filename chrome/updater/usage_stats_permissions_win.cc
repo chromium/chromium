@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <cwchar>
-#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/logging.h"

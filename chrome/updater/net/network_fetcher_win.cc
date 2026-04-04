@@ -14,7 +14,9 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +25,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/updater/event_logger.h"

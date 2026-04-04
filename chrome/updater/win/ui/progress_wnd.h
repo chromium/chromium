@@ -34,6 +34,7 @@
 
 namespace base {
 class TimeDelta;
+class Version;
 }  // namespace base
 
 namespace updater::ui {

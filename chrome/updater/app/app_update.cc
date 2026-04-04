@@ -4,6 +4,8 @@
 
 #include "chrome/updater/app/app_update.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"

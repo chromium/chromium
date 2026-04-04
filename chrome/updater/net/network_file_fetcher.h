@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_NET_NETWORK_FILE_FETCHER_H_
 
 #include "base/files/file.h"
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "components/update_client/network.h"
 

@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/app_server.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,7 +13,9 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
@@ -20,6 +23,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/configurator.h"

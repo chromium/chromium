@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

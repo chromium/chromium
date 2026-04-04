@@ -16,10 +16,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/get_updater_scope.h"
@@ -33,7 +34,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/update_client/update_client.h"
-#include "persisted_data.h"
 
 namespace updater {
 

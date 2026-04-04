@@ -12,7 +12,7 @@
 
 #include "base/check.h"
 #include "base/debug/alias.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"

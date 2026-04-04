@@ -4,7 +4,7 @@
 
 #include "chrome/updater/win/ui/ui.h"
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "base/check_op.h"
 #include "base/logging.h"

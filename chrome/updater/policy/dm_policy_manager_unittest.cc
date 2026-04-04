@@ -4,11 +4,16 @@
 
 #include "chrome/updater/policy/dm_policy_manager.h"
 
+#include <cstdint>
+#include <memory>
 #include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/enterprise_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/constants.h"

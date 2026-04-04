@@ -9,7 +9,7 @@
 
 #include "base/functional/function_ref.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/updater/util/util.h"
+#include "chrome/updater/updater_scope.h"
 
 class PrefService;
 

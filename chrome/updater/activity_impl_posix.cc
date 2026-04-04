@@ -13,15 +13,15 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "chrome/updater/activity_impl_util_posix.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
-enum class UpdaterScope;
-
 void ClearActiveBit(const base::FilePath& home_dir, const std::string& id) {
   struct stat home_buffer = {0};
   if (stat(home_dir.value().c_str(), &home_buffer)) {

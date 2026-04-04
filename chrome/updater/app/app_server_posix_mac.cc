@@ -4,6 +4,9 @@
 
 #import "chrome/updater/app/app_server_posix.h"
 
+#include <optional>
+
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"

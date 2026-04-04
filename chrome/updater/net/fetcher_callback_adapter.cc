@@ -4,12 +4,14 @@
 
 #include "chrome/updater/net/fetcher_callback_adapter.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/process/process.h"
 #include "base/task/bind_post_task.h"

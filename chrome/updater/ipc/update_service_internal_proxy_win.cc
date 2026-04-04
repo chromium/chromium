@@ -14,9 +14,10 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"

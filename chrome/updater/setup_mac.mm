@@ -7,6 +7,8 @@
 #include <AvailabilityMacros.h>
 #import <Foundation/Foundation.h>
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/mac/mac_util.h"

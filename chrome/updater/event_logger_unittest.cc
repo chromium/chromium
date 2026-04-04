@@ -26,6 +26,7 @@
 #include "chrome/updater/prefs_impl.h"
 #include "chrome/updater/protos/omaha_usage_stats_event.pb.h"
 #include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/util/util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/network.h"

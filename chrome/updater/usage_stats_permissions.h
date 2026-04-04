@@ -5,13 +5,10 @@
 #ifndef CHROME_UPDATER_USAGE_STATS_PERMISSIONS_H_
 #define CHROME_UPDATER_USAGE_STATS_PERMISSIONS_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
-#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/updater/updater_scope.h"
 

@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/update_client/update_client.h"

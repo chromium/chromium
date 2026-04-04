@@ -19,6 +19,7 @@
 #include <wtsapi32.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <optional>
@@ -36,10 +37,12 @@
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"

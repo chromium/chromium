@@ -9,9 +9,13 @@
 #include <iomanip>
 #include <iostream>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"

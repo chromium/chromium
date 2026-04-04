@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"

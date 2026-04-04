@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "base/check.h"
+#include "base/files/file_path.h"
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"

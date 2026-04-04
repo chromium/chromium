@@ -22,6 +22,7 @@
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "base/win/scoped_localalloc.h"
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/app/app_install_util_win.h"

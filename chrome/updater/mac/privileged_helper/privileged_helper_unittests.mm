@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/updater/mac/privileged_helper/service.h"
 #include "chrome/updater/updater_branding.h"

@@ -4,6 +4,8 @@
 
 #include "chrome/updater/util/path_util.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 
 namespace updater {

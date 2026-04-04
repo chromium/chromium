@@ -4,16 +4,11 @@
 
 #include "chrome/updater/usage_stats_permissions.h"
 
-#include <memory>
 #include <optional>
-#include <utility>
+#include <string>
+#include <vector>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/sequence_checker.h"
-#include "base/task/thread_pool.h"
 #include "chrome/updater/external_constants.h"
-#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {

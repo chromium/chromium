@@ -16,13 +16,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/sequence_checker.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 
 #if BUILDFLAG(IS_WIN)

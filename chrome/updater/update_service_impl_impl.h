@@ -16,7 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 

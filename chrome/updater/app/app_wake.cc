@@ -5,7 +5,7 @@
 #include "chrome/updater/app/app_wake.h"
 
 #include "base/functional/bind.h"
-#include "build/build_config.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/service_proxy_factory.h"

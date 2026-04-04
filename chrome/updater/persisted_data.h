@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/update_client/persisted_data.h"

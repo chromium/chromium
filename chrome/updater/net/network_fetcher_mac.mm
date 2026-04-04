@@ -11,6 +11,8 @@
 #include <utility>
 
 #import "base/apple/foundation_util.h"
+#include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -19,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -27,8 +30,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"

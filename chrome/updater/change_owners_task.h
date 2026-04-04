@@ -5,7 +5,7 @@
 #ifndef CHROME_UPDATER_CHANGE_OWNERS_TASK_H_
 #define CHROME_UPDATER_CHANGE_OWNERS_TASK_H_
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/updater_scope.h"
 

@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_util.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/tag.h"

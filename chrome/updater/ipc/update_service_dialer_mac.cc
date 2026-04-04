@@ -5,6 +5,7 @@
 #include "chrome/updater/ipc/update_service_dialer.h"
 
 #include <optional>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"

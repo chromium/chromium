@@ -9,7 +9,6 @@
 #include "base/apple/bridging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/enterprise_util.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
