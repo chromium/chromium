@@ -153,6 +153,7 @@ TabModel::TabLaunchType GetTabLaunchType(const NavigateParams* params) {
 }
 
 // Helper to create/locate tabs.
+// If params->contents_to_insert is non-null, std::move() will be called on it.
 raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
     BrowserWindowInterface* bwi,
     NavigateParams* params) {
@@ -223,6 +224,7 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       // A new tab is already created when the new window is created on Android.
       // Just get the active tab.
       raw_ptr<tabs::TabInterface> active_tab = tab_model->GetActiveTab();
+      CHECK(active_tab);
       params->source_contents = active_tab->GetContents();
       return active_tab;
     }
@@ -232,35 +234,41 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
   }
 }
 
-base::WeakPtr<content::NavigationHandle> PerformNavigation(
-    raw_ptr<tabs::TabInterface> tab,
+base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
+    BrowserWindowInterface* bwi,
     NavigateParams* params) {
-  if (!tab || !params->source_contents) {
+  // TODO(crbug.com/499377980) Probably remove bwi from this call.
+  // At least CHECK(bwi == params->browser)
+  bool is_contents_inserted = params->contents_to_insert != nullptr;
+
+  tabs::TabInterface* tab = GetOrCreateTabForDisposition(bwi, params);
+  if (!tab || !tab->GetContents()) {
     return nullptr;
   }
-  content::WebContents* contents = tab->GetContents();
-  params->navigated_or_inserted_contents = contents;
-  // Perform the actual navigation on the determined source_contents.
+
+  params->navigated_or_inserted_contents = tab->GetContents();
+
+  // Skip navigation if we inserted existing contents.
+  if (is_contents_inserted || !params->source_contents) {
+    return nullptr;
+  }
+
+  // Perform navigation.
   content::NavigationController::LoadURLParams load_url_params =
       LoadURLParamsFromNavigateParams(params);
-  return contents->GetController().LoadURLWithParams(load_url_params);
+  return params->navigated_or_inserted_contents->GetController()
+      .LoadURLWithParams(load_url_params);
 }
 
-void GetTabAndPerformNavigation(
+void GetTabAndPerformNavigationAsync(
     NavigateParams* params,
     base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)> callback,
     BrowserWindowInterface* bwi) {
-  if (!bwi) {
-    // If no browser window is available, the navigation cannot proceed.
-    // The callback is run with nullptr to signal that the navigation was
-    // aborted.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), nullptr));
-    return;
+  base::WeakPtr<content::NavigationHandle> handle = nullptr;
+  if (bwi) {
+    handle = GetTabAndPerformNavigation(bwi, params);
   }
-  tabs::TabInterface* tab = GetOrCreateTabForDisposition(bwi, params);
-  base::WeakPtr<content::NavigationHandle> handle =
-      PerformNavigation(tab, params);
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), handle));
 }
@@ -277,9 +285,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
     return nullptr;
   }
-  auto tab = GetOrCreateTabForDisposition(params->browser, params);
 
-  return PerformNavigation(tab, params);
+  return GetTabAndPerformNavigation(params->browser, params);
 }
 
 void Navigate(NavigateParams* params,
@@ -290,7 +297,8 @@ void Navigate(NavigateParams* params,
         FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;
   }
+
   GetOrCreateBrowserWindowForDisposition(
-      params,
-      base::BindOnce(&GetTabAndPerformNavigation, params, std::move(callback)));
+      params, base::BindOnce(&GetTabAndPerformNavigationAsync, params,
+                             std::move(callback)));
 }

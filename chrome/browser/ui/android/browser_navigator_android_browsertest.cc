@@ -28,14 +28,6 @@
 
 namespace {
 
-// Navigates and waits for navigations to complete.
-void NavigateAndWait(NavigateParams* params) {
-  base::WeakPtr<content::NavigationHandle> handle = Navigate(params);
-  ASSERT_TRUE(handle);
-  content::TestNavigationObserver observer(handle->GetWebContents());
-  observer.Wait();
-}
-
 // Helper classes used to track tabs and navigations.
 class NavigationCounter : public content::WebContentsObserver {
  public:
@@ -861,7 +853,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
   // Navigate and wait for navigation to complete.
-  NavigateAndWait(&params);
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_FALSE(handle);
 
   // Verify the tab count increased.
   EXPECT_EQ(2, tab_list_->GetTabCount());
@@ -884,10 +877,57 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
 
   // Navigate and wait for navigation to complete.
-  NavigateAndWait(&params);
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_FALSE(handle);
 
   // Verify the tab count increased.
   EXPECT_EQ(2, tab_list_->GetTabCount());
+
+  // Verify the new tab used the existing WebContents.
+  EXPECT_EQ(params.navigated_or_inserted_contents,
+            tab_list_->GetTab(1)->GetContents());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Navigate_WithWebContents_DoesNotClobberNavigation) {
+  const GURL url1 = StartAtURL("/title1.html");
+  ASSERT_EQ(1, tab_list_->GetTabCount());
+
+  // Create a WebContents.
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  content::WebContents* raw_web_contents = web_contents.get();
+
+  // 1. Start navigating the WebContents to a target URL *before* inserting it.
+  // This simulates what extensions do before calling CreateTab().
+  const GURL target_url = embedded_test_server()->GetURL("/title2.html");
+  content::NavigationController::LoadURLParams load_params(target_url);
+  raw_web_contents->GetController().LoadURLWithParams(load_params);
+
+  // 2. Prepare to open a new foreground tab with the existing WebContents.
+  // Note: This NavigateParams constructor leaves params.url empty.
+  NavigateParams params(browser_window_, std::move(web_contents));
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+  content::TestNavigationObserver observer(raw_web_contents);
+
+  // 3. Execute Navigate.
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+
+  // Because the contents were inserted, Navigate() should intentionally skip
+  // the navigation step and return nullptr.
+  EXPECT_FALSE(handle);
+
+  // Wait for the original target_url navigation to finish.
+  observer.Wait();
+
+  // Verify the tab count increased.
+  EXPECT_EQ(2, tab_list_->GetTabCount());
+
+  // Verify the inserted WebContents survived.
+  EXPECT_EQ(raw_web_contents, tab_list_->GetTab(1)->GetContents());
+
+  // Verify the WebContents reached the target URL.
+  EXPECT_EQ(target_url, raw_web_contents->GetLastCommittedURL());
 
   // Verify the new tab used the existing WebContents.
   EXPECT_EQ(params.navigated_or_inserted_contents,
