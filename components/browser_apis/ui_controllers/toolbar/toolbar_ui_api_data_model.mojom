@@ -209,6 +209,7 @@ enum PinnedToolbarAction {
  kSidePanelShowCustomizeChrome,
  kSidePanelShowShoppingInsights,
  kSidePanelShowMerchantTrust,
+ kDivider, // A divider; not a clickable action.
 };
 
 // The state of a pinned toolbar action button that should be displayed.

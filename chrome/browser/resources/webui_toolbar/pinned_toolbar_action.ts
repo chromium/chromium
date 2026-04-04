@@ -49,6 +49,7 @@ export class PinnedToolbarActionElement extends CrLitElement {
     // TODO(crbug.com/474061420): Fill this in.
     switch (type) {
       case PinnedToolbarAction.kUnspecified:
+      case PinnedToolbarAction.kDivider:
         assertNotReached();
       case PinnedToolbarAction.kShowPasswordsBubbleOrPage:
         return 'cr20:password';

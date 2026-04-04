@@ -153,6 +153,8 @@ std::optional<actions::ActionId> PinnedToolbarActionToActionId(
     case toolbar_ui_api::mojom::PinnedToolbarAction::
         kSidePanelShowMerchantTrust:
       return kActionSidePanelShowMerchantTrust;
+    case toolbar_ui_api::mojom::PinnedToolbarAction::kDivider:
+      return std::nullopt;
   }
   return std::nullopt;
 }
@@ -211,6 +213,14 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
   for (actions::ActionId id : model_->PinnedActionIds()) {
     add_state(id,
               /*highlighted=*/std::ranges::contains(popped_out_actions_, id));
+  }
+
+  if (!states.empty()) {
+    auto state = toolbar_ui_api::mojom::PinnedToolbarActionState::New();
+    state->action = toolbar_ui_api::mojom::PinnedToolbarAction::kDivider;
+    state->highlighted = false;
+    state->enabled = true;
+    states.push_back(std::move(state));
   }
 
   for (actions::ActionId id : popped_out_actions_) {

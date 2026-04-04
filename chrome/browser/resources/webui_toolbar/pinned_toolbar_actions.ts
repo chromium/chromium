@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './pinned_toolbar_action.js';
+import './toolbar_divider.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 

@@ -40,6 +40,8 @@ build_webui("build") {
     "split_tabs_button.ts",
     "split_tabs_button_icons.html.ts",
     "toolbar_button.ts",
+    "toolbar_divider.html.ts",
+    "toolbar_divider.ts",
   ]
   css_files = [
     "app.css",
@@ -52,6 +54,7 @@ build_webui("build") {
     "reload_button.css",
     "split_tabs_button.css",
     "toolbar_button.css",
+    "toolbar_divider.css",
   ]
 
   # ts_composite is needed for JS tests to depend on this.

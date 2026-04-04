@@ -2744,3 +2744,104 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   EXPECT_EQ("", print_node->GetStringAttribute(
                     ax::mojom::StringAttribute::kDescription));
 }
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, ToolbarDivider) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  // Clear any default pinned actions.
+  std::vector<actions::ActionId> pinned_ids = model_->PinnedActionIds();
+  for (actions::ActionId id : pinned_ids) {
+    model_->UpdatePinnedState(id, false);
+  }
+
+  auto is_divider_visible = [&]() {
+    return content::EvalJs(
+               web_contents,
+               base::StrCat({GetButtonAppJS("#pinnedToolbarActions"),
+                             "?.shadowRoot?.querySelector('toolbar-"
+                             "divider') !== null"}))
+        .ExtractBool();
+  };
+
+  // Helper to check if divider is at expected position.
+  // returns index of divider or -1 if not found.
+  auto find_divider_index = [&]() {
+    return content::EvalJs(web_contents,
+                           base::StringPrintf(
+                               R"(
+      (() => {
+        const children = Array.from(%s?.shadowRoot?.children || [])
+                            .filter(el => ['pinned-toolbar-action',
+                                           'toolbar-divider'].includes(
+                                              el.tagName.toLowerCase()));
+        return children.findIndex(
+            el => el.tagName.toLowerCase() === 'toolbar-divider');
+      })();
+    )",
+                               GetButtonAppJS("#pinnedToolbarActions").c_str()))
+        .ExtractInt();
+  };
+
+  auto find_action_index =
+      [&](toolbar_ui_api::mojom::PinnedToolbarAction action) {
+        return content::EvalJs(
+                   web_contents,
+                   base::StringPrintf(
+                       R"(
+      (() => {
+        const shadowRoot = %s?.shadowRoot;
+        if (!shadowRoot) return -1;
+        const children = Array.from(shadowRoot.children)
+                            .filter(el => ['pinned-toolbar-action',
+                                           'toolbar-divider'].includes(
+                                              el.tagName.toLowerCase()));
+        return children.findIndex(el => el.state && el.state.action === %d);
+      })();
+    )",
+                       GetButtonAppJS("#pinnedToolbarActions").c_str(),
+                       static_cast<int>(action)))
+            .ExtractInt();
+      };
+
+  // 1) Initially no actions, no divider.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !is_divider_visible(); }));
+
+  // 2) Pin one action, divider should appear after it.
+  actions::ActionId action1 = kActionPrint;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action1 =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
+
+  model_->UpdatePinnedState(action1, true);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return is_divider_visible(); }));
+
+  int action1_index = find_action_index(mojom_action1);
+  int divider_index = find_divider_index();
+  EXPECT_EQ(divider_index, action1_index + 1);
+
+  // 3) Pop out another action, divider should be between them.
+  actions::ActionId action2 = kActionShowTranslate;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action2 =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kShowTranslate;
+
+  webui_toolbar_view->GetPinnedToolbarActions()->ShowActionEphemerallyInToolbar(
+      action2, true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return find_action_index(mojom_action2) != -1; }));
+
+  action1_index = find_action_index(mojom_action1);
+  divider_index = find_divider_index();
+  int action2_index = find_action_index(mojom_action2);
+
+  EXPECT_LT(action1_index, divider_index);
+  EXPECT_LT(divider_index, action2_index);
+  EXPECT_EQ(divider_index, action1_index + 1);
+  EXPECT_EQ(action2_index, divider_index + 1);
+
+  // 4) Unpin action1 and hide action2 ephemerally, divider should disappear.
+  model_->UpdatePinnedState(action1, false);
+  webui_toolbar_view->GetPinnedToolbarActions()->ShowActionEphemerallyInToolbar(
+      action2, false);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !is_divider_visible(); }));
+}
