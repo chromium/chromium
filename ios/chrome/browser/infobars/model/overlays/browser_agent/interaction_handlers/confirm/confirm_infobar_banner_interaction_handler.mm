@@ -13,15 +13,20 @@ using confirm_infobar_overlays::ConfirmBannerRequestConfig;
 
 #pragma mark - InfobarBannerInteractionHandler
 
-ConfirmInfobarBannerInteractionHandler::ConfirmInfobarBannerInteractionHandler()
+ConfirmInfobarBannerInteractionHandler::ConfirmInfobarBannerInteractionHandler(
+    InfobarType infobar_type)
     : InfobarBannerInteractionHandler(
-          ConfirmBannerRequestConfig::RequestSupport()) {}
+          ConfirmBannerRequestConfig::RequestSupport()),
+      infobar_type_(infobar_type) {}
 
 ConfirmInfobarBannerInteractionHandler::
     ~ConfirmInfobarBannerInteractionHandler() = default;
 
 void ConfirmInfobarBannerInteractionHandler::MainButtonTapped(
     InfoBarIOS* infobar) {
+  if (infobar->infobar_type() != infobar_type_) {
+    return;
+  }
   // Confirm Infobars don't need to update badge status.
   GetInfobarDelegate(infobar)->Accept();
 }
@@ -29,6 +34,9 @@ void ConfirmInfobarBannerInteractionHandler::MainButtonTapped(
 void ConfirmInfobarBannerInteractionHandler::BannerVisibilityChanged(
     InfoBarIOS* infobar,
     bool visible) {
+  if (infobar->infobar_type() != infobar_type_) {
+    return;
+  }
   if (!visible) {
     GetInfobarDelegate(infobar)->InfoBarDismissed();
   }

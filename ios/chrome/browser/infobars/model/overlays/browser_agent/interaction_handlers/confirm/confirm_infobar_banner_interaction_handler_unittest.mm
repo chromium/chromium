@@ -41,7 +41,8 @@ class ConfirmInfobarBannerInteractionHandlerTest : public PlatformTest {
   }
 
  protected:
-  ConfirmInfobarBannerInteractionHandler handler_;
+  ConfirmInfobarBannerInteractionHandler handler_{
+      InfobarType::kInfobarTypeConfirm};
   web::FakeWebState web_state_;
   raw_ptr<InfoBarIOS> infobar_;
 };
