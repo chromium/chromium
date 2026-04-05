@@ -859,6 +859,33 @@ TEST_F(PaymentLinkManagerTest,
       /*expected_bucket_count=*/1);
 }
 
+// Test that multiple calls to TriggerPaymentLinkPushPayment are ignored.
+TEST_F(PaymentLinkManagerTest,
+       TriggerPaymentLinkPushPayment_MultipleCalls_Ignored) {
+  GURL page_url("https://example.com/");
+  payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
+      /*instrument_id=*/100, u"nickname",
+      /*display_icon_url=*/page_url, u"ewallet_name", u"account_display_name",
+      /*supported_payment_link_uris=*/
+      {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+       u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+      /*is_fido_enrolled=*/true));
+  GURL supported_payment_link(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  // ShowPaymentLinkPrompt should be called exactly once.
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(1);
+
+  // First call should trigger the payment flow.
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
+
+  // Second call should be ignored because the UI state is no longer hidden.
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
+}
+
 // Test that eWalet payment prompt is shown for websites in the allowlist.
 TEST_F(PaymentLinkManagerTest,
        TriggerPaymentLinkPushPayment_UrlInAllowlist_EwalletPaymentPromptShown) {
@@ -1806,17 +1833,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
   ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
       .WillByDefault(testing::Return(2));
-
-  // Test that when `kFacilitatedPaymentsA2AEnabled` pref is true,
-  // `ShowPaymentLinkPrompt` is invoked.
-  pref_service_.get()->SetBoolean(
-      autofill::prefs::kFacilitatedPaymentsA2AEnabled, true);
-
-  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(1);
-
-  payment_link_manager_->TriggerPaymentLinkPushPayment(
-      supported_payment_link, GURL("https://www.example.com"),
-      ukm::UkmRecorder::GetNewSourceID());
 
   // Test that when `kFacilitatedPaymentsA2AEnabled` pref is false,
   // `ShowPaymentLinkPrompt` is not invoked.
