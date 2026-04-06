@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,6 +54,7 @@ ExtensionTelemetryServiceFactory::ExtensionTelemetryServiceFactory()
   DependsOn(extensions::ExtensionManagementFactory::GetInstance());
   DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
+  DependsOn(policy::ManagementServiceFactory::GetInstance());
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
   DependsOn(enterprise_connectors::ExtensionTelemetryEventRouterFactory::

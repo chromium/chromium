@@ -66,6 +66,7 @@ class ChromeOnDeviceModelServiceController;
 namespace safe_browsing {
 class ChromeSafeBrowsingUIManagerDelegate;
 class DownloadUrlSBClient;
+class ExtensionTelemetryService;
 class IncidentReportingService;
 class ServicesDelegateDesktop;
 
@@ -158,6 +159,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class UmaSessionStats;
   friend class safe_browsing::ChromeSafeBrowsingUIManagerDelegate;
   friend class safe_browsing::DownloadUrlSBClient;
+  friend class safe_browsing::ExtensionTelemetryService;
   friend class safe_browsing::IncidentReportingService;
   friend class safe_browsing::ServicesDelegateDesktop;
   friend class safe_browsing::internal::ReporterRunner;

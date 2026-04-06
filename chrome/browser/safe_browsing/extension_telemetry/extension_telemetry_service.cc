@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/activity_log_ingester.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
@@ -54,6 +55,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -1855,6 +1857,22 @@ void ExtensionTelemetryService::UpdateDOMActivityLoggingState() {
         std::make_unique<ActivityLogIngester>(profile_, this);
   } else if (!dom_telemetry_enabled && activity_log_ingester_) {
     activity_log_ingester_.reset();
+  }
+
+  auto* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile_);
+  bool is_cloud_managed =
+      management_service &&
+      (management_service->HasManagementAuthority(
+           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) ||
+       management_service->HasManagementAuthority(
+           policy::EnterpriseManagementAuthority::CLOUD));
+
+  if (is_cloud_managed) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "ExtensionDOMActivityTelemetry",
+        dom_telemetry_enabled ? "Enabled" : "Disabled",
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
 }
 
