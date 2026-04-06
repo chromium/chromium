@@ -106,6 +106,10 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
     return nullopt_result;
   }
 
+  std::optional<ResolutionDetails> GetResolutionDetails() const override {
+    return std::nullopt;
+  }
+
  private:
   const int error_;
 };
@@ -143,6 +147,10 @@ class FailingServiceEndpointRequestImpl
   }
 
   bool IsStaleWhileRefresing() const override { return false; }
+
+  std::optional<ResolutionDetails> GetResolutionDetails() const override {
+    return std::nullopt;
+  }
 
   void ChangeRequestPriority(RequestPriority priority) override {}
 

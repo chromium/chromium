@@ -27,6 +27,7 @@
 #include "net/dns/host_resolver_manager_job.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/resolution_details.h"
 #include "net/log/net_log_with_source.h"
 
 namespace net {
@@ -72,8 +73,10 @@ class HostResolverManager::RequestImpl
   net::ResolveErrorInfo GetResolveErrorInfo() const override;
   const std::optional<HostCache::EntryStaleness>& GetStaleInfo() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
+  std::optional<ResolutionDetails> GetResolutionDetails() const override;
 
-  void set_results(HostCache::Entry results);
+  void SetResults(HostCache::Entry results,
+                  ResolutionDetails resolution_details);
   void set_error_info(int error, bool is_secure_network_error);
   void set_stale_info(HostCache::EntryStaleness stale_info);
 
@@ -172,6 +175,7 @@ class HostResolverManager::RequestImpl
   bool complete_ = false;
   bool only_ipv6_reachable_ = false;
   std::optional<HostCache::Entry> results_;
+  std::optional<ResolutionDetails> resolution_details_;
   std::optional<HostCache::EntryStaleness> stale_info_;
   AddressList legacy_address_results_;
   std::vector<HostResolverEndpointResult> endpoint_results_;

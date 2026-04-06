@@ -1128,6 +1128,37 @@ void HostResolverManager::Job::CompleteRequests(
     std::optional<TaskType> task_type) {
   CHECK(resolver_.get());
 
+  ResolutionDetails resolution_details;
+  constexpr auto to_resolution_source = [](TaskType type) {
+    switch (type) {
+      case TaskType::SECURE_DNS:
+        return ResolutionSource::kSecure;
+      case TaskType::DNS:
+        return ResolutionSource::kInsecure;
+      case TaskType::SYSTEM:
+        return ResolutionSource::kSystem;
+      case TaskType::DNS_PLATFORM:
+        return ResolutionSource::kPlatform;
+      case TaskType::MDNS:
+        return ResolutionSource::kMdns;
+      case TaskType::NAT64:
+        return ResolutionSource::kNat64;
+      case TaskType::INSECURE_CACHE_LOOKUP:
+        return ResolutionSource::kCache;
+      case TaskType::SECURE_CACHE_LOOKUP:
+      case TaskType::CACHE_LOOKUP:
+      case TaskType::CONFIG_PRESET:
+      case TaskType::HOSTS:
+        // These task types should have been handled synchronously in
+        // ResolveLocally() prior to Job creation.
+        NOTREACHED() << "type=" << static_cast<int>(type);
+    }
+  };
+
+  if (task_type) {
+    resolution_details.source = to_resolution_source(*task_type);
+  }
+
   // This job must be removed from resolver's |jobs_| now to make room for a
   // new job with the same key in case one of the OnComplete callbacks decides
   // to spawn one. Consequently, if the job was owned by |jobs_|, the job
@@ -1168,8 +1199,9 @@ void HostResolverManager::Job::CompleteRequests(
     CHECK(key_ == req->GetJobKey());
 
     if (results.error() == OK && !req->parameters().is_speculative) {
-      req->set_results(
-          results.CopyWithDefaultPort(req->request_host().GetPort()));
+      req->SetResults(
+          results.CopyWithDefaultPort(req->request_host().GetPort()),
+          resolution_details);
     }
     req->OnJobCompleted(
         key_, results.error(),
@@ -1186,7 +1218,7 @@ void HostResolverManager::Job::CompleteRequests(
     ServiceEndpointRequestImpl* request =
         service_endpoint_requests_.head()->value();
     request->RemoveFromList();
-    request->OnJobCompleted(results, secure);
+    request->OnJobCompleted(results, secure, resolution_details);
     if (!resolver_.get()) {
       return;
     }

@@ -209,6 +209,11 @@ void FakeServiceEndpointRequest::ChangeRequestPriority(
   resolution_.set_priority(priority);
 }
 
+std::optional<ResolutionDetails>
+FakeServiceEndpointRequest::GetResolutionDetails() const {
+  return std::nullopt;
+}
+
 void FakeServiceEndpointRequest::CompleteAsync(int rv) {
   set_crypto_ready(true);
   CallOnServiceEndpointRequestFinished(rv);

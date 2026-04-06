@@ -277,6 +277,7 @@ source_set("host_resolver") {
     "host_cache.h",
     "host_resolver.h",
     "mapped_host_resolver.h",
+    "resolution_details.h",
   ]
   public = []
 

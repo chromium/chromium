@@ -496,6 +496,9 @@ TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTaskFallbackSecure) {
               ElementsAre(ExpectServiceEndpoint(
                   ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
                   ElementsAre(MakeIPEndPoint("::1", 443)))));
+  EXPECT_TRUE(requester.request()->GetResolutionDetails().has_value());
+  EXPECT_EQ(requester.request()->GetResolutionDetails()->source,
+            ResolutionSource::kSecure);
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, Ok) {
@@ -506,6 +509,9 @@ TEST_F(HostResolverServiceEndpointRequestTest, Ok) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   requester.WaitForFinished();
   EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_TRUE(requester.request()->GetResolutionDetails().has_value());
+  EXPECT_EQ(requester.request()->GetResolutionDetails()->source,
+            ResolutionSource::kInsecure);
   EXPECT_THAT(requester.finished_endpoints(),
               ElementsAre(ExpectServiceEndpoint(
                   ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
@@ -566,6 +572,9 @@ TEST_F(HostResolverServiceEndpointRequestTest, ResolveLocally) {
     EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
     requester.WaitForFinished();
     EXPECT_THAT(*requester.finished_result(), IsOk());
+    EXPECT_TRUE(requester.request()->GetResolutionDetails().has_value());
+    EXPECT_EQ(requester.request()->GetResolutionDetails()->source,
+              ResolutionSource::kInsecure);
     EXPECT_THAT(requester.finished_endpoints(),
                 ElementsAre(ExpectServiceEndpoint(
                     ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
@@ -580,6 +589,9 @@ TEST_F(HostResolverServiceEndpointRequestTest, ResolveLocally) {
     Requester requester = CreateRequester("https://ok", std::move(parameters));
     int rv = requester.Start();
     EXPECT_THAT(rv, IsOk());
+    EXPECT_TRUE(requester.request()->GetResolutionDetails().has_value());
+    EXPECT_EQ(requester.request()->GetResolutionDetails()->source,
+              ResolutionSource::kCache);
     EXPECT_THAT(requester.finished_endpoints(),
                 ElementsAre(ExpectServiceEndpoint(
                     ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),

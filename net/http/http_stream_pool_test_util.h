@@ -126,6 +126,7 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   const HostCache::EntryStaleness* GetStaleInfo() const override;
   bool IsStaleWhileRefresing() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
+  std::optional<ResolutionDetails> GetResolutionDetails() const override;
 
  private:
   friend class FakeServiceEndpointResolver;

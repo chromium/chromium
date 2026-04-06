@@ -386,6 +386,10 @@ class MockHostResolverBase::RequestImpl
   void ChangeRequestPriority(RequestPriority priority) override {
     priority_ = priority;
   }
+
+  std::optional<ResolutionDetails> GetResolutionDetails() const override {
+    return std::nullopt;
+  }
 };
 
 class MockHostResolverBase::ServiceEndpointRequestImpl
@@ -454,6 +458,10 @@ class MockHostResolverBase::ServiceEndpointRequestImpl
 
   void ChangeRequestPriority(RequestPriority priority) override {
     priority_ = priority;
+  }
+
+  std::optional<ResolutionDetails> GetResolutionDetails() const override {
+    return std::nullopt;
   }
 
  private:
@@ -1624,6 +1632,10 @@ class HangingHostResolver::RequestImpl
   }
 
   void ChangeRequestPriority(RequestPriority priority) override {}
+
+  std::optional<ResolutionDetails> GetResolutionDetails() const override {
+    return std::nullopt;
+  }
 
  private:
   // Use a WeakPtr as the resolver may be destroyed while there are still

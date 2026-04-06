@@ -57,11 +57,14 @@ class HostResolverManager::ServiceEndpointRequestImpl
   const HostCache::EntryStaleness* GetStaleInfo() const override;
   bool IsStaleWhileRefresing() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
+  std::optional<ResolutionDetails> GetResolutionDetails() const override;
   std::string DebugString() const override;
 
   // These should only be called from HostResolver::Job.
   void AssignJob(base::SafeRef<Job> job);
-  void OnJobCompleted(const HostCache::Entry& results, bool obtained_securely);
+  void OnJobCompleted(const HostCache::Entry& results,
+                      bool obtained_securely,
+                      ResolutionDetails resolution_details);
   void OnJobCancelled();
   void OnServiceEndpointsChanged();
 
@@ -134,6 +137,7 @@ class HostResolverManager::ServiceEndpointRequestImpl
 
   // Set when the endpoint results are finalized.
   std::optional<FinalizedResult> finalized_result_;
+  std::optional<ResolutionDetails> resolution_details_;
 
   // These fields are calculated by DoResolveLocally() and consumed by
   // DoStartJob().
