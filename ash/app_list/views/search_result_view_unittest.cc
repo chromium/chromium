@@ -38,7 +38,7 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
   void SetUp() override {
     views::test::WidgetTest::SetUp();
 
-    widget_ = CreateTopLevelPlatformWidget();
+    widget_ = base::WrapUnique(CreateTopLevelPlatformWidget());
 
     answer_card_view_ = std::make_unique<SearchResultView>(
         /*list_view=*/nullptr, /*view_delegate=*/nullptr,
@@ -56,7 +56,7 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
 
   void TearDown() override {
     answer_card_view_.reset();
-    widget_->CloseNow();
+    widget_.release()->CloseNow();
     views::test::WidgetTest::TearDown();
   }
 
@@ -149,7 +149,7 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
   int result_id = 0;
   std::unique_ptr<SearchResultView> answer_card_view_;
   std::unique_ptr<SearchResultView> search_result_view_;
-  raw_ptr<views::Widget, DanglingUntriaged> widget_;
+  std::unique_ptr<views::Widget> widget_;
 };
 
 TEST_F(SearchResultViewWidgetTest, SearchResultTextVectorUpdate) {
