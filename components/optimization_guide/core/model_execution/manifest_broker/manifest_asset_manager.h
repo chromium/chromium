@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MANIFEST_BROKER_MANIFEST_ASSET_MANAGER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MANIFEST_BROKER_MANIFEST_ASSET_MANAGER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "base/version.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -58,17 +60,27 @@ class ManifestAssetManager : public UsageTracker::Observer {
                                bool is_background) = 0;
   };
 
-  explicit ManifestAssetManager(PrefService& local_state,
-                                UsageTracker& usage_tracker,
-                                Delegate& delegate,
-                                Manifest manifest);
+  // Constructs a ManifestAssetManager, and begins provide assets to the given
+  // `factory`.
+  explicit ManifestAssetManager(
+      PrefService& local_state,
+      UsageTracker& usage_tracker,
+      Delegate& delegate,
+      std::unique_ptr<ManifestSolutionFactory> factory);
   ~ManifestAssetManager() override;
 
   ManifestAssetManager(const ManifestAssetManager&) = delete;
   ManifestAssetManager& operator=(const ManifestAssetManager&) = delete;
 
-  // Updates a new manifest and update registration for all eligible assets.
-  void UpdateManifest(Manifest manifest);
+  // Tells the manager to begin providing assets to a new solution factory.
+  // The `solution_factory` must not be null.
+  // The asset manager will take the following actions in order, potentially
+  // asynchronously.
+  //  1. Stop any prior factory from providing new Solutions.  It *may* defer
+  //     this action until some work completes.
+  //  2. Provide the new factory with an initial state by for each asset
+  //     via UpdateAssetState.
+  void UpdateSolutionFactory(std::unique_ptr<ManifestSolutionFactory> factory);
 
   // Returns the installation directory for `asset_id` if it is currently ready.
   std::optional<base::FilePath> GetInstallDirectory(
@@ -258,6 +270,11 @@ class ManifestAssetManager : public UsageTracker::Observer {
 
   void UninstallComponent(const std::string& public_key);
 
+  // Notifies the factory about the current state of the component with the
+  // given public key.
+  void NotifyFactory(const std::string& public_key,
+                     const ComponentContext& context);
+
   GlobalRegistrationCriteria ComputeGlobalRegistrationCriteria(
       std::optional<base::ByteCount> disk_space_free) const;
   ComponentRegistrationCriteria ComputeComponentRegistrationCriteria(
@@ -268,7 +285,9 @@ class ManifestAssetManager : public UsageTracker::Observer {
   const raw_ref<PrefService> local_state_;
   const raw_ref<UsageTracker> usage_tracker_;
   const raw_ref<Delegate> delegate_;
-  Manifest manifest_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<ManifestSolutionFactory> factory_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   PrefChangeRegistrar pref_change_registrar_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::ScopedObservation<UsageTracker, UsageTracker::Observer>

@@ -44,11 +44,9 @@ bool IsAllowedByPolicy(const PrefService& local_state) {
 
 ManifestMonitor::ManifestMonitor(PrefService& local_state,
                                  PerformanceClassifier& performance_classifier,
-                                 Delegate& delegate,
-                                 base::RepeatingClosure on_manifest_changed)
+                                 Delegate& delegate)
     : performance_classifier_(performance_classifier),
-      local_state_(local_state),
-      on_manifest_changed_(std::move(on_manifest_changed)) {
+      local_state_(local_state) {
   TRACE_EVENT("optimization_guide", "ManifestMonitor::ManifestMonitor",
               perfetto::Flow::FromPointer(this));
   pref_change_registrar_.Init(&local_state_.get());
@@ -69,11 +67,17 @@ ManifestMonitor::ManifestMonitor(PrefService& local_state,
   performance_classifier_->ListenForPerformanceClassAvailable(base::BindOnce(
       &ManifestMonitor::OnInputsChanged, weak_ptr_factory_.GetWeakPtr()));
 
-  OnInputsChanged();
+  delegate.GetFreeDiskSpace(base::BindOnce(
+      &ManifestMonitor::OnDiskSpaceEvaluated, weak_ptr_factory_.GetWeakPtr()));
 }
 ManifestMonitor::~ManifestMonitor() {
   TRACE_EVENT("optimization_guide", "ManifestMonitor::~ManifestMonitor",
               perfetto::TerminatingFlow::FromPointer(this));
+}
+
+void ManifestMonitor::SetCallback(base::RepeatingClosure on_manifest_changed) {
+  on_manifest_changed_ = std::move(on_manifest_changed);
+  OnInputsChanged();
 }
 
 void ManifestMonitor::OnDiskSpaceEvaluated(
@@ -94,6 +98,9 @@ void ManifestMonitor::OnManifestReady(base::FilePath manifest_dir) {
 void ManifestMonitor::OnInputsChanged() {
   TRACE_EVENT("optimization_guide", "ManifestMonitor::OnInputsChanged",
               perfetto::Flow::FromPointer(this));
+  if (!on_manifest_changed_) {
+    return;
+  }
   if (!IsAllowedByPolicy(*local_state_)) {
     UseUninstallManifest();
     return;

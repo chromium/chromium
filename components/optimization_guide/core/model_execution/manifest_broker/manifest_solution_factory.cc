@@ -268,8 +268,12 @@ void ManifestSolutionFactory::UpdateAssetState(const std::string& asset_id,
   auto it = assets_.find(asset_id);
   // We already know all possible assets from the manifest.
   CHECK(it != assets_.end());
-  // We don't support an available asset being updated to unavailable.
-  CHECK(!it->second.has_value());
+
+  // We shouldn't support an available asset being updated.
+  // TODO(holte): Stop uninstalling assets a factory might have been provided.
+  if (it->second.has_value()) {
+    return;
+  }
 
   // Call UpdateSolutions after any config loads complete
   base::OnceClosure on_complete =

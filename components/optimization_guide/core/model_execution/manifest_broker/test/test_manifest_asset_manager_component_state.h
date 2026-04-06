@@ -152,10 +152,12 @@ class TestManifestAssetManagerComponentState final {
   bool WasBackgroundUpdateRequested(const std::string& public_key) const;
 
   bool WaitForRegistration(const InstallTarget& target) const {
+    VLOG(1) << "WaitForRegistration";
     return base::test::RunUntil([&] { return IsRegistered(target); });
   }
 
   bool WaitForUninstall(const std::string& public_key) const {
+    VLOG(1) << "WaitForUninstall";
     return base::test::RunUntil(
         [&]() { return WasUninstallRequested(public_key); });
   }

@@ -37,6 +37,15 @@ base::expected<Manifest, Manifest::ParseError> ReadManifestFile(
   return Manifest::Create(directory, std::move(manifest), device_category);
 }
 
+absl::flat_hash_map<std::string, std::string> ComputeAssetIdByPublicKey(
+    const proto::Assets& assets) {
+  absl::flat_hash_map<std::string, std::string> asset_id_by_public_key;
+  for (const auto& [id, component] : assets.on_demand_components()) {
+    asset_id_by_public_key[component.public_key()] = id;
+  }
+  return asset_id_by_public_key;
+}
+
 proto::DeviceCategoryConfig SelectDeviceCategoryConfig(
     const proto::Manifest& manifest,
     DeviceCategory device_category) {
@@ -301,7 +310,8 @@ Manifest::Manifest(base::FilePath directory,
     : directory_(std::move(directory)),
       device_category_config_(std::move(device_category_config)),
       recipes_(std::move(recipes)),
-      assets_(std::move(assets)) {}
+      assets_(std::move(assets)),
+      asset_id_by_public_key_(ComputeAssetIdByPublicKey(assets_)) {}
 
 Manifest::~Manifest() = default;
 
@@ -312,6 +322,15 @@ Manifest& Manifest::operator=(Manifest&&) = default;
 
 bool Manifest::HasAssets() const {
   return !assets_.on_demand_components().empty();
+}
+
+const proto::OnDemandComponent* Manifest::GetAssetByPublicKey(
+    const std::string& public_key) const {
+  auto it = asset_id_by_public_key_.find(public_key);
+  if (it == asset_id_by_public_key_.end()) {
+    return nullptr;
+  }
+  return &assets_.on_demand_components().at(it->second);
 }
 
 std::optional<absl::flat_hash_set<Manifest::AssetId>>

@@ -328,8 +328,12 @@ class OnDeviceCapability {
   OnDeviceCapability();
   virtual ~OnDeviceCapability();
 
+  // Binds a model broker receiver to this capability.
   virtual void BindModelBroker(
       mojo::PendingReceiver<mojom::ModelBroker> receiver) {}
+
+  // Convenience method to bind a model broker receiver and pass the remote.
+  mojo::PendingRemote<mojom::ModelBroker> BindAndPassRemoteBroker();
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should

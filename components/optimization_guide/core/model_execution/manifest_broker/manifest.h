@@ -70,6 +70,10 @@ class Manifest final {
 
   // Returns true if the manifest defines any assets.
   bool HasAssets() const;
+  // Returns the OnDemandComponent for the given public key, or nullopt if it is
+  // not found in the manifest.
+  const proto::OnDemandComponent* GetAssetByPublicKey(
+      const std::string& public_key) const;
 
   // Returns the identifiers of the Assets required for a single use case.
   // Returns nullopt if the use case is not defined in the manifest.
@@ -98,6 +102,8 @@ class Manifest final {
   proto::DeviceCategoryConfig device_category_config_;
   proto::Recipes recipes_;
   proto::Assets assets_;
+  // A map from public key to the factory's manifest's OnDemandComponent.
+  absl::flat_hash_map<std::string, std::string> asset_id_by_public_key_;
 };
 
 }  // namespace optimization_guide

@@ -147,18 +147,22 @@ void ManifestAssetManager::AssetLedger::RemoveContext(
   update->Remove(public_key);
 }
 
-ManifestAssetManager::ManifestAssetManager(PrefService& local_state,
-                                           UsageTracker& usage_tracker,
-                                           Delegate& delegate,
-                                           Manifest manifest)
+ManifestAssetManager::ManifestAssetManager(
+    PrefService& local_state,
+    UsageTracker& usage_tracker,
+    Delegate& delegate,
+    std::unique_ptr<ManifestSolutionFactory> factory)
     : local_state_(local_state),
       usage_tracker_(usage_tracker),
       delegate_(delegate),
-      manifest_(std::move(manifest)),
       ledger_(local_state) {
   // Load persistent state from the ledger immediately on startup.
   ledger_.Load();
 
+  // Update with the initial factory. This will call UpdateRegistration.
+  UpdateSolutionFactory(std::move(factory));
+
+  // Register observers for when we might need to update the registrations.
   usage_tracker_observation_.Observe(&usage_tracker);
 
   pref_change_registrar_.Init(&local_state_.get());
@@ -175,16 +179,30 @@ ManifestAssetManager::ManifestAssetManager(PrefService& local_state,
                               OnGenAILocalFoundationalModelUserSettingChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   model_execution::prefs::PruneOldUsagePrefs(&local_state_.get());
-  // Start registration immediately because performance class computation is
-  // already complete when the manager is created.
-  UpdateRegistration();
 }
 
 ManifestAssetManager::~ManifestAssetManager() = default;
 
-void ManifestAssetManager::UpdateManifest(Manifest manifest) {
+void ManifestAssetManager::UpdateSolutionFactory(
+    std::unique_ptr<ManifestSolutionFactory> factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  manifest_ = std::move(manifest);
+  // TODO(holte): Potentially defer stopping the old factory from providing new
+  // solutions until we actually download assets for the new factory.
+  factory_ = std::move(factory);
+
+  // Mark the manifest asset as ready. This is deferred until now let the
+  // AssetManager decide when the factory can start providing solutions.
+  factory_->UpdateAssetState(kManifestAssetName,
+                             ManifestSolutionFactory::AssetInfo{
+                                 .path = factory_->manifest().GetDirectory()});
+
+  // Make sure the ledger tracks all assets in the new manifest.
+  for (const auto& [asset_id, component] :
+       factory_->manifest().GetAssets().on_demand_components()) {
+    ComponentContext& context =
+        *ledger_.GetOrCreateContext(component.public_key());
+    context.asset_id = asset_id;
+  }
   UpdateRegistration();
 }
 
@@ -192,8 +210,9 @@ std::optional<base::FilePath> ManifestAssetManager::GetInstallDirectory(
     const std::string& asset_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto component_it =
-      manifest_.GetAssets().on_demand_components().find(asset_id);
-  if (component_it == manifest_.GetAssets().on_demand_components().end()) {
+      factory_->manifest().GetAssets().on_demand_components().find(asset_id);
+  if (component_it ==
+      factory_->manifest().GetAssets().on_demand_components().end()) {
     // Asset not found in current manifest.
     return std::nullopt;
   }
@@ -246,12 +265,12 @@ absl::flat_hash_set<Manifest::AssetId> ManifestAssetManager::GetActiveAssets()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<Manifest::UseCaseName> active_use_cases;
   for (const auto& [use_case, _] :
-       manifest_.GetDeviceCategoryConfig().use_cases()) {
+       factory_->manifest().GetDeviceCategoryConfig().use_cases()) {
     if (usage_tracker_->WasUseCaseRecentlyUsed(use_case)) {
       active_use_cases.push_back(use_case);
     }
   }
-  return manifest_.GetRequiredAssets(active_use_cases);
+  return factory_->manifest().GetRequiredAssets(active_use_cases);
 }
 
 void ManifestAssetManager::ComputeAndUpdateComponentContexts(
@@ -263,32 +282,21 @@ void ManifestAssetManager::ComputeAndUpdateComponentContexts(
   // register into the ledger.
   component_registration_criteria_.clear();
 
-  // 1. Build a lookup map of public_key -> Component for current manifest
-  // assets.
-  absl::flat_hash_map<std::string, const proto::OnDemandComponent*>
-      manifest_map;
-  for (const auto& [asset_id, component] :
-       manifest_.GetAssets().on_demand_components()) {
-    manifest_map[component.public_key()] = &component;
-    ledger_.GetOrCreateContext(component.public_key())->asset_id = asset_id;
-  }
-
   std::vector<std::string> keys_to_save;
-  // 2. Iterate over all tracked components to compute criteria.
+  // All components in the manifest are already tracked in the ledger, so we
+  // only need to iterate over the ledger.
   for (auto& [public_key, context] : ledger_.GetMutableContexts()) {
-    auto it = manifest_map.find(public_key);
-    bool is_in_manifest = (it != manifest_map.end());
-
-    if (is_in_manifest) {
-      const auto& component = *it->second;
-      if (context.requested_version != component.target_version() &&
+    const proto::OnDemandComponent* component =
+        factory_->manifest().GetAssetByPublicKey(public_key);
+    if (component) {
+      if (context.requested_version != component->target_version() &&
           context.state != ComponentState::kRegistering &&
           context.state != ComponentState::kUninstalling) {
         // Re-register if target version has changed. If the component is
         // currently registering or uninstalling, handle in callbacks.
         context.state = ComponentState::kNotRegistered;
       }
-      context.requested_version = component.target_version();
+      context.requested_version = component->target_version();
     }
 
     const ComponentRegistrationCriteria criteria =
@@ -296,11 +304,14 @@ void ManifestAssetManager::ComputeAndUpdateComponentContexts(
             context,
             /*required_by_active_use_case=*/
             active_assets.contains(context.asset_id),
-            /*is_obsolete=*/!is_in_manifest);
+            /*is_obsolete=*/!component);
 
     if (criteria.GetInstallMode(*global_criteria_).has_value()) {
       context.last_eligible_time = base::Time::Now();
       keys_to_save.push_back(public_key);
+    } else if (component) {
+      // We don't plan to install the asset.
+      NotifyFactory(public_key, context);
     }
     component_registration_criteria_[public_key] = criteria;
   }
@@ -415,12 +426,25 @@ void ManifestAssetManager::InstallerRegistered(const std::string& public_key,
     LOG(ERROR) << "Installer registered for unknown public key: " << public_key;
     return;
   }
-  if (context->requested_version != version) {
-    // Register again if target version changed while registering.
+
+  const proto::OnDemandComponent* component =
+      factory_->manifest().GetAssetByPublicKey(public_key);
+  if (!component) {
+    // This component has become obsolete due to a manifest change.
+    // Update the state to unblock uninstallation.
     context->state = ComponentState::kNotRegistered;
+  } else if (component->target_version() != version) {
+    // Prepare to re-register for a new version.
+    context->state = ComponentState::kNotRegistered;
+    // We know we don't have the right version.
+    NotifyFactory(public_key, *context);
+  } else if (!is_already_installed) {
+    context->state = ComponentState::kRegistered;
+    // We know we don't have it installed.
+    NotifyFactory(public_key, *context);
   } else {
-    context->state = is_already_installed ? ComponentState::kReady
-                                          : ComponentState::kRegistered;
+    context->state = ComponentState::kReady;
+    // Factory update will happen in OnAssetReady.
   }
   EnforceRegistration();
 }
@@ -437,15 +461,47 @@ void ManifestAssetManager::OnAssetReady(const std::string& public_key,
   context->state = ComponentState::kReady;
   context->install_dir = install_dir;
   context->version = version;
+  NotifyFactory(public_key, *context);
+}
 
-  // TODO(crbug.com/489511499): notify `SolutionFactory` using context.asset_id.
+void ManifestAssetManager::NotifyFactory(const std::string& public_key,
+                                         const ComponentContext& context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const proto::OnDemandComponent* component =
+      factory_->manifest().GetAssetByPublicKey(public_key);
+  if (!component) {
+    return;
+  }
+  if (context.version && context.install_dir &&
+      component->target_version() == context.version->GetString()) {
+    factory_->UpdateAssetState(
+        context.asset_id,
+        ManifestSolutionFactory::AssetInfo{.path = *context.install_dir});
+  } else {
+    factory_->UpdateAssetState(
+        context.asset_id,
+        base::unexpected(
+            ManifestSolutionFactory::AssetUnavailableReason::kNotDownloaded));
+  }
 }
 
 void ManifestAssetManager::OnAssetUninstalled(const std::string& public_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   component_registration_criteria_.erase(public_key);
+  // TODO(holte): Don't remove uninstalled entries from the ledger if they
+  // are still in the manifest, just mark that they are uninstalled.
+  // const proto::OnDemandComponent* component =
+  //     factory_->manifest().GetAssetByPublicKey(public_key);
+  // if (component) {
+  //   // We've finished an uninstall, but the manifest might need this
+  //   component.
+  //   // Keep tracking it in the ledger, and check if we should install it
+  //   again. ledger_.GetContext(public_key)->state =
+  //   ComponentState::kNotRegistered; UpdateRegistration(); return;
+  // }
+  // The component is not in the manifest or on disk, so we can remove it from
+  // the ledger.
   ledger_.RemoveContext(public_key);
-  // TODO(crbug.com/489511499): notify consumers.
 }
 
 void ManifestAssetManager::OnDeviceEligibleUseCaseUsed(

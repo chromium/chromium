@@ -68,6 +68,7 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     if (!state_) {
       return;
     }
+    VLOG(2) << "Register " << public_key_hex << " V:" << target_version;
     Registration& registration = state_->registrations_[public_key_hex];
     CHECK(!registration.pending_registration);
     CHECK(!registration.pending_uninstall);
@@ -85,6 +86,7 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     if (!state_) {
       return;
     }
+    VLOG(2) << "Uninstall " << public_key_hex;
     Registration& registration = state_->registrations_[public_key_hex];
     CHECK(!registration.pending_registration);
     CHECK(!registration.pending_uninstall);
@@ -103,6 +105,7 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     if (!state_) {
       return;
     }
+    VLOG(2) << "RequestUpdate " << public_key_hex;
     Registration& registration = state_->registrations_[public_key_hex];
     if (is_background) {
       registration.has_background_update_requested = true;
@@ -295,6 +298,7 @@ void TestManifestAssetManagerComponentState::UpdateLanguageDetectionModel(
 }
 
 void TestManifestAssetManagerComponentState::SimulateRestart() {
+  VLOG(2) << "SimulateRestart";
   registrations_.clear();
 }
 

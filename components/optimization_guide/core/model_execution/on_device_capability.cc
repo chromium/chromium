@@ -149,6 +149,13 @@ OptimizationGuideModelStreamingExecutionResult::
 OnDeviceCapability::OnDeviceCapability() = default;
 OnDeviceCapability::~OnDeviceCapability() = default;
 
+mojo::PendingRemote<mojom::ModelBroker>
+OnDeviceCapability::BindAndPassRemoteBroker() {
+  mojo::PendingRemote<mojom::ModelBroker> remote;
+  BindModelBroker(remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
 std::unique_ptr<OnDeviceSession> OnDeviceCapability::StartSession(
     mojom::OnDeviceFeature feature,
     const SessionConfigParams& config_params,

@@ -47,9 +47,12 @@ class ManifestMonitor {
 
   ManifestMonitor(PrefService& local_state,
                   PerformanceClassifier& performance_classifier,
-                  Delegate& delegate,
-                  base::RepeatingClosure on_manifest_changed);
+                  Delegate& delegate);
   ~ManifestMonitor();
+
+  // Sets the callback to be called when the manifest changes.
+  // This is called once the ManifestBrokerState is fully constructed.
+  void SetCallback(base::RepeatingClosure on_manifest_changed);
 
   // Returns the current manifest, once selected.
   const std::optional<Manifest>& manifest() const { return manifest_; }

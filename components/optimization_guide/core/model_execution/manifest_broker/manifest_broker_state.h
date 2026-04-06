@@ -80,7 +80,6 @@ class ManifestBrokerState final : public OnDeviceCapability {
   std::vector<ModelBrokerImpl::InitCallback> init_callbacks_;
   ManifestMonitor manifest_monitor_;
   std::unique_ptr<ManifestAssetManager> asset_manager_;
-  std::unique_ptr<ManifestSolutionFactory> factory_;
   base::WeakPtrFactory<ManifestBrokerState> weak_ptr_factory_{this};
 };
 

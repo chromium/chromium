@@ -48,12 +48,10 @@ ManifestBrokerState::ManifestBrokerState(
                               base::Unretained(this)),
           base::DoNothing()),
       performance_classifier_(&local_state, service_client_.GetSafeRef()),
-      manifest_monitor_(
-          local_state,
-          performance_classifier_,
-          *delegate_,
-          base::BindRepeating(&ManifestBrokerState::OnManifestUpdated,
-                              base::Unretained(this))) {}
+      manifest_monitor_(local_state, performance_classifier_, *delegate_) {
+  manifest_monitor_.SetCallback(base::BindRepeating(
+      &ManifestBrokerState::OnManifestUpdated, weak_ptr_factory_.GetWeakPtr()));
+}
 
 ManifestBrokerState::~ManifestBrokerState() = default;
 
@@ -117,9 +115,12 @@ OnDeviceModelEligibilityReason ManifestBrokerState::GetOnDeviceModelEligibility(
   TRACE_EVENT("optimization_guide",
               "ManifestBrokerState::GetOnDeviceModelEligibility", "feature",
               base::ToString(feature));
-  if (factory_) {
-    factory_->UpdateSolutions();
-  }
+  // TODO(holte): We many want to flush factory to avoid kUnknown responses,
+  // but we might not actually need to.  Things should be moving away from
+  // this interface already.
+  // if (asset_manager_) {
+  //   asset_manager_->factory_->UpdateSolutions();
+  // }
 
   return model_broker_impl_.GetSolutionProvider(feature).solution().error_or(
       OnDeviceModelEligibilityReason::kSuccess);
@@ -154,21 +155,19 @@ void ManifestBrokerState::EnsureInitialization(
 void ManifestBrokerState::OnManifestUpdated() {
   TRACE_EVENT("optimization_guide", "ManifestBrokerState::OnManifestUpdated");
   CHECK(manifest_monitor_.manifest().has_value());
+
   // Init will complete the first time we finish loading all available assets
   // for a manifest.
-  factory_ = std::make_unique<ManifestSolutionFactory>(
+  auto factory = std::make_unique<ManifestSolutionFactory>(
       *manifest_monitor_.manifest(), model_broker_impl_, service_client_,
       base::BindOnce(&ManifestBrokerState::OnInitComplete,
                      weak_ptr_factory_.GetWeakPtr()));
-  factory_->UpdateAssetState(
-      kManifestAssetName,
-      ManifestSolutionFactory::AssetInfo{
-          .path = manifest_monitor_.manifest_dir().value()});
-  // TODO(b/489511247): Wire the factory into an asset manager.
-  // asset_manager_ = std::make_unique<ManifestAssetManager>(
-  //     &*local_state_, usage_tracker_, std::move(init_tasks_->delegate_),
-  //     factory_->manifest());
-  // asset_manager_->SetFactory(std::move(factory), barrier_closure);
+  if (!asset_manager_) {
+    asset_manager_ = std::make_unique<ManifestAssetManager>(
+        *local_state_, usage_tracker_, *delegate_, std::move(factory));
+  } else {
+    asset_manager_->UpdateSolutionFactory(std::move(factory));
+  }
 }
 
 void ManifestBrokerState::OnInitComplete() {
