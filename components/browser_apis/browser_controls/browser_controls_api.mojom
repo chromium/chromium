@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/error.mojom";
 
 // BrowserControlsService defines methods to be called from the WebUI to the
 // browser-side. This interface consolidates various browser control actions.
+[GenerateDirectReturnStub]
 interface BrowserControlsService {
   // Stops the current page from loading. If the page is not in a loading
   // state, it is a no-op.

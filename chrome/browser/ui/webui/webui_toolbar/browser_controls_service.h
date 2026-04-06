@@ -18,7 +18,8 @@ class MetricsReporter;
 
 namespace browser_controls_api {
 
-class BrowserControlsService : public mojom::BrowserControlsService {
+class BrowserControlsService
+    : public mojom::BrowserControlsServiceDirectReturnStub {
  public:
   class BrowserControlsServiceDelegate {
    public:
@@ -40,21 +41,18 @@ class BrowserControlsService : public mojom::BrowserControlsService {
   void SetDelegate(BrowserControlsServiceDelegate* delegate);
 
   // browser_controls_api::mojom::BrowserControlsService:
-  // TODO(crbug.com/445765534): migrate to straightline stub to eliminate the
-  // need for callbacks.
-  void ReloadFromClick(
+  ReloadFromClickResult ReloadFromClick(
       bool bypass_cache,
-      const std::vector<mojom::ClickDispositionFlag>& click_flags,
-      ReloadFromClickCallback callback) override;
-  void StopLoad(StopLoadCallback callback) override;
-  void Back(const std::vector<mojom::ClickDispositionFlag>& flags,
-            BackCallback callback) override;
-  void Forward(const std::vector<mojom::ClickDispositionFlag>& flags,
-               ForwardCallback callback) override;
-  void BackButtonHovered(BackButtonHoveredCallback callback) override;
-  void SplitActiveTab(SplitActiveTabCallback callback) override;
-  void NavigateHome(const std::vector<mojom::ClickDispositionFlag>& click_flags,
-                    NavigateHomeCallback callback) override;
+      const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
+  StopLoadResult StopLoad() override;
+  BackResult Back(
+      const std::vector<mojom::ClickDispositionFlag>& flags) override;
+  ForwardResult Forward(
+      const std::vector<mojom::ClickDispositionFlag>& flags) override;
+  BackButtonHoveredResult BackButtonHovered() override;
+  SplitActiveTabResult SplitActiveTab() override;
+  NavigateHomeResult NavigateHome(
+      const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
 
  private:
   // Callback for `MetricsReporter::Measure()`. Records the resulting
@@ -63,6 +61,7 @@ class BrowserControlsService : public mojom::BrowserControlsService {
                                    const std::string& start_mark,
                                    base::TimeDelta duration);
 
+  mojom::BrowserControlsServiceBridge bridge_{this};
   mojo::Receiver<browser_controls_api::mojom::BrowserControlsService> service_;
   std::unique_ptr<BrowserControlsAdapter> browser_adapter_;
 
