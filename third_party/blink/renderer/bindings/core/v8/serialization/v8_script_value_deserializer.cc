@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_quad.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_element_image.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fenced_frame_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file_list.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_quad.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
+#include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -564,6 +566,17 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       return transferred_image_bitmaps[index].Get();
     }
+    case kElementImageTransferTag: {
+      uint32_t index = 0;
+      if (!unpacked_value_) {
+        return nullptr;
+      }
+      const auto& transferred_element_images = unpacked_value_->ElementImages();
+      if (!ReadUint32(&index) || index >= transferred_element_images.size()) {
+        return nullptr;
+      }
+      return transferred_element_images[index].Get();
+    }
     case kImageDataTag: {
       SerializedPredefinedColorSpace predefined_color_space =
           SerializedPredefinedColorSpace::kSRGB;
@@ -1054,6 +1067,8 @@ bool V8ScriptValueDeserializer::ExecutionContextExposesInterface(
     case kImageBitmapTag:
     case kImageBitmapTransferTag:
       return V8ImageBitmap::IsExposed(execution_context);
+    case kElementImageTransferTag:
+      return V8ElementImage::IsExposed(execution_context);
     case kImageDataTag:
       return V8ImageData::IsExposed(execution_context);
     case kDOMPointTag:

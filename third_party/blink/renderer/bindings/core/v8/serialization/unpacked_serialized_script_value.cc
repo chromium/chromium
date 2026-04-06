@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
+#include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -44,6 +45,18 @@ UnpackedSerializedScriptValue::UnpackedSerializedScriptValue(
         });
     image_bitmap_contents.clear();
   }
+
+  auto& element_image_contents = value_->element_image_contents_array_;
+  if (!element_image_contents.empty()) {
+    element_images_.Grow(element_image_contents.size());
+    std::ranges::transform(
+        element_image_contents, element_images_.begin(),
+        [](CanvasChildPaintRecord& contents) {
+          return MakeGarbageCollected<ElementImage>(
+              std::make_unique<CanvasChildPaintRecord>(std::move(contents)));
+        });
+    element_image_contents.clear();
+  }
 }
 
 UnpackedSerializedScriptValue::~UnpackedSerializedScriptValue() = default;
@@ -51,6 +64,7 @@ UnpackedSerializedScriptValue::~UnpackedSerializedScriptValue() = default;
 void UnpackedSerializedScriptValue::Trace(Visitor* visitor) const {
   visitor->Trace(array_buffers_);
   visitor->Trace(image_bitmaps_);
+  visitor->Trace(element_images_);
 }
 
 v8::Local<v8::Value> UnpackedSerializedScriptValue::Deserialize(

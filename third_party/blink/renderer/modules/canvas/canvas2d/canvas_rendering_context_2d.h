@@ -126,6 +126,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     DCHECK(!Host() || !Host()->IsOffscreenCanvas());
     return static_cast<HTMLCanvasElement*>(Host());
   }
+
   V8RenderingContext* AsV8RenderingContext() final;
 
   bool ShouldAntialias() const;
@@ -207,46 +208,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void PreFinalizeFrame() override;
   void FinalizeFrame(FlushReason) override;
 
-  DOMMatrix* drawElement(Element* element,
-                         double x,
-                         double y,
-                         ExceptionState& exception_state);
-  DOMMatrix* drawElement(Element* element,
-                         double x,
-                         double y,
-                         double dwidth,
-                         double dheight,
-                         ExceptionState& exception_state);
-
-  DOMMatrix* drawElementImage(Element* element,
-                              double x,
-                              double y,
-                              ExceptionState& exception_state);
-  DOMMatrix* drawElementImage(Element* element,
-                              double x,
-                              double y,
-                              double dwidth,
-                              double dheight,
-                              ExceptionState& exception_state);
-  DOMMatrix* drawElementImage(Element* element,
-                              double sx,
-                              double sy,
-                              double swidth,
-                              double sheight,
-                              double x,
-                              double y,
-                              ExceptionState& exception_state);
-  DOMMatrix* drawElementImage(Element* element,
-                              double sx,
-                              double sy,
-                              double swidth,
-                              double sheight,
-                              double x,
-                              double y,
-                              double dwidth,
-                              double dheight,
-                              ExceptionState& exception_state);
-
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;
 
@@ -311,16 +272,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
 
-  DOMMatrix* DrawElementInternal(Element* element,
-                                 std::optional<double> sx,
-                                 std::optional<double> sy,
-                                 std::optional<double> swidth,
-                                 std::optional<double> sheight,
-                                 double dx,
-                                 double dy,
-                                 std::optional<double> dwidth,
-                                 std::optional<double> dheight,
-                                 ExceptionState& exception_state);
 
   void PruneLocalFontCache(size_t target_size);
 

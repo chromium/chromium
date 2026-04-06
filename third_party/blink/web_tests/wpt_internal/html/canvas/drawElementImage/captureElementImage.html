@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<title>canvas.captureElementImage returns a snapshot of an element that can be drawn into the canvas</title>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<style>
+#child {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+</style>
+<canvas id="canvas" width="200" height="200" layoutsubtree>
+  <div id="child"></div>
+</canvas>
+
+<script>
+'use strict';
+
+function waitForOneFrame() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      setTimeout(resolve, 0);
+    });
+  });
+}
+
+promise_test(async t => {
+  const child = document.getElementById('child');
+  t.add_cleanup(() => {
+    child.style.width = '100px';
+  });
+
+  // Wait a frame.
+  await waitForOneFrame();
+
+  let elementImageA = canvas.captureElementImage(child);
+  assert_equals(elementImageA.width, 100);
+  assert_equals(elementImageA.height, 100);
+
+  // Change the child size.
+  child.style.width = '150px';
+
+  // `captureElementImage` should still return the last painted element image.
+  let elementImageB = canvas.captureElementImage(child);
+  assert_equals(elementImageB.width, 100);
+  assert_equals(elementImageB.height, 100);
+
+  // Wait a frame.
+  await waitForOneFrame();
+
+  // `captureElementImage` should return the updated element image size.
+  let elementImageC = canvas.captureElementImage(child);
+  assert_equals(elementImageC.width, 150);
+  assert_equals(elementImageC.height, 100);
+
+  // The previous element images should not be affected by the changed size.
+  assert_equals(elementImageA.width, 100);
+  assert_equals(elementImageA.height, 100);
+  assert_equals(elementImageB.width, 100);
+  assert_equals(elementImageB.height, 100);
+}, 'captureElementImage size should be the most recently painted size');
+
+promise_test(async t => {
+  const child = document.getElementById('child');
+  t.add_cleanup(() => {
+    child.style.background = 'green';
+  });
+
+  let context = canvas.getContext('2d');
+  context.reset();
+
+  // Wait a frame.
+  await waitForOneFrame();
+
+  let greenElementImage = canvas.captureElementImage(child);
+  assert_equals(greenElementImage.width, 100);
+  assert_equals(greenElementImage.height, 100);
+  context.drawElementImage(greenElementImage, 0, 0);
+  assert_array_equals(context.getImageData(0, 0, 1, 1).data, [0, 128, 0, 255]);
+
+  // Change the child to blue.
+  child.style.background = 'blue';
+  // Wait a frame.
+  await waitForOneFrame();
+
+  let blueElementImage = canvas.captureElementImage(child);
+  assert_equals(blueElementImage.width, 100);
+  assert_equals(blueElementImage.height, 100);
+  context.drawElementImage(blueElementImage, 0, 0);
+  assert_array_equals(context.getImageData(0, 0, 1, 1).data, [0, 0, 255, 255]);
+
+  // `greenElementImage` should still be green.
+  assert_equals(greenElementImage.width, 100);
+  assert_equals(greenElementImage.height, 100);
+  context.drawElementImage(greenElementImage, 0, 0);
+  assert_array_equals(context.getImageData(0, 0, 1, 1).data, [0, 128, 0, 255],
+    'greenElementImage should still draw green');
+}, 'captureElementImage should return an object that can be drawn');
+
+promise_test(async t => {
+  // Wait a frame.
+  await waitForOneFrame();
+
+  let elementImage = canvas.captureElementImage(child);
+  assert_equals(elementImage.width, 100);
+  assert_equals(elementImage.height, 100);
+
+  assert_true('close' in elementImage,
+    'ElementImage should have a close method');
+
+  // Ensure an ElementImage cannot be drawn after `close()`.
+  elementImage.close();
+  assert_equals(elementImage.width, 0);
+  assert_equals(elementImage.height, 0);
+  assert_throws_dom('InvalidStateError',
+    () => canvas.getContext('2d').drawElementImage(elementImage, 0, 0),
+    'A closed ElementImage cannot be drawn.');
+}, 'ElementImage.close() invalidates the image for drawing');
+</script>

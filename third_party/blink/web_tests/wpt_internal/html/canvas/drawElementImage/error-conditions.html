@@ -37,21 +37,43 @@ promise_test(async () => {
     "Can't draw non-direct children.");
 
   canvas.toggleAttribute("layoutsubtree"); // Remove attribute.
-  assert_throws_js(TypeError,
+  assert_throws_dom("InvalidStateError",
     () => canvas.getContext("2d").drawElementImage(child, 20, 30),
     "Can't draw canvas children if layoutsubtree is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvas.captureElementImage(child),
+    "Can't capture element image if layoutsubtree is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvas.getElementTransform(child, new DOMMatrix()),
+    "Can't get element transform if layoutsubtree is not specified.");
 
   canvas.toggleAttribute("layoutsubtree"); // Add attribute.
   await new Promise(requestAnimationFrame);
   await new Promise(setTimeout);
   // Should not throw an exception.
   canvas.getContext("2d").drawElementImage(child, 20, 30);
+  let img = canvas.captureElementImage(child);
+  canvas.getElementTransform(child, new DOMMatrix());
 
   canvaswithoutlayout.removeAttribute("layoutsubtree");
-  assert_throws_js(TypeError,
+  assert_throws_dom("InvalidStateError",
     () => canvaswithoutlayout.getContext("2d").drawElementImage(
       child2, 20, 30),
     "Can't draw canvas children if layoutsubtree is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvaswithoutlayout.captureElementImage(child2),
+    "Can't capture element image if layoutsubtree is not specified.");
+  assert_throws_dom("InvalidStateError",
+    () => canvaswithoutlayout.getElementTransform(child2, new DOMMatrix()),
+    "Can't get element transform if layoutsubtree is not specified.");
+
+  // Also test wrong children exceptions
+  assert_throws_js(TypeError,
+    () => canvas.captureElementImage(grandchild),
+    "Can't capture non-direct children.");
+  assert_throws_js(TypeError,
+    () => canvas.getElementTransform(grandchild, new DOMMatrix()),
+    "Can't get transform for non-direct children.");
 });
 </script>
 </html>

@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
@@ -244,6 +245,11 @@ void SerializedScriptValue::SetImageBitmapContentsArray(
   image_bitmap_contents_array_ = std::move(contents);
 }
 
+void SerializedScriptValue::SetElementImageContentsArray(
+    ElementImageContentsArray contents) {
+  element_image_contents_array_ = std::move(contents);
+}
+
 SerializedScriptValue::DataBufferPtr SerializedScriptValue::AllocateBuffer(
     size_t buffer_size) {
   // SAFETY: BufferMalloc() always returns a pointer to at least
@@ -340,6 +346,39 @@ void SerializedScriptValue::TransferImageBitmaps(
     ExceptionState& exception_state) {
   image_bitmap_contents_array_ =
       TransferImageBitmapContents(isolate, image_bitmaps, exception_state);
+}
+
+SerializedScriptValue::ElementImageContentsArray
+SerializedScriptValue::TransferElementImageContents(
+    v8::Isolate* /*isolate*/,
+    const ElementImageArray& element_images,
+    ExceptionState& exception_state) {
+  ElementImageContentsArray contents;
+
+  if (!element_images.size()) {
+    return contents;
+  }
+
+  for (const auto& element_image : element_images) {
+    if (!element_image->PaintRecord()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                        "ElementImage is already closed.");
+      return contents;
+    }
+  }
+
+  for (const auto& element_image : element_images) {
+    contents.push_back(std::move(*element_image->TransferPaintRecord()));
+  }
+  return contents;
+}
+
+void SerializedScriptValue::TransferElementImages(
+    v8::Isolate* isolate,
+    const ElementImageArray& element_images,
+    ExceptionState& exception_state) {
+  element_image_contents_array_ =
+      TransferElementImageContents(isolate, element_images, exception_state);
 }
 
 void SerializedScriptValue::TransferOffscreenCanvas(

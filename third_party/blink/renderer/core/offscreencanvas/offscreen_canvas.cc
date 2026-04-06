@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -20,11 +21,13 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
+#include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
@@ -289,6 +292,32 @@ ScriptPromise<ImageBitmap> OffscreenCanvas::CreateImageBitmap(
           ? MakeGarbageCollected<ImageBitmap>(this, crop_rect, options)
           : nullptr,
       options, exception_state);
+}
+
+DOMMatrix* OffscreenCanvas::getElementTransform(
+    const V8UnionElementOrElementImage* element_or_image,
+    DOMMatrix* draw_transform,
+    ExceptionState& exception_state) {
+  if (element_or_image->IsElement()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Elements cannot be drawn into an OffscreenCanvas.");
+    return nullptr;
+  }
+
+  if (element_or_image->IsElementImage()) {
+    const auto& paint_record =
+        element_or_image->GetAsElementImage()->PaintRecord();
+    if (!paint_record) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "The ElementImage has been closed.");
+      return nullptr;
+    }
+    return MakeGarbageCollected<DOMMatrix>(GetElementTransform(
+        paint_record->paint_state, Size(), draw_transform->Matrix()));
+  }
+
+  return DOMMatrix::Create();
 }
 
 ScriptPromise<Blob> OffscreenCanvas::convertToBlob(

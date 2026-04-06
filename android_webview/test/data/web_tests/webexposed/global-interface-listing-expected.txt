@@ -1264,7 +1264,6 @@ interface CanvasRenderingContext2D
     method createMesh2DVertexBuffer
     method createPattern
     method createRadialGradient
-    method drawElement
     method drawElementImage
     method drawFocusIfNeeded
     method drawImage
@@ -2650,6 +2649,12 @@ interface Element : Node
 interface ElementBehavior
     attribute @@toStringTag
     method constructor
+interface ElementImage
+    attribute @@toStringTag
+    getter height
+    getter width
+    method close
+    method constructor
 interface ElementInternals
     attribute @@toStringTag
     getter ariaActiveDescendantElement
@@ -3712,6 +3717,7 @@ interface HTMLCanvasElement : HTMLElement
     getter layoutSubtree
     getter onpaint
     getter width
+    method captureElementImage
     method captureStream
     method configureHighDynamicRange
     method constructor
@@ -6851,6 +6857,7 @@ interface OffscreenCanvas : EventTarget
     method constructor
     method convertToBlob
     method getContext
+    method getElementTransform
     method transferToImageBitmap
     setter height
     setter oncontextlost
@@ -6904,6 +6911,7 @@ interface OffscreenCanvasRenderingContext2D
     method createMesh2DVertexBuffer
     method createPattern
     method createRadialGradient
+    method drawElementImage
     method drawImage
     method drawMesh
     method ellipse

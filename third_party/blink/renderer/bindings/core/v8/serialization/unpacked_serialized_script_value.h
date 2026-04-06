@@ -15,6 +15,7 @@ namespace blink {
 
 class DOMArrayBufferBase;
 class ImageBitmap;
+class ElementImage;
 
 // Represents the "unpacked" materialized objects created after receiving the
 // transferred contents of a SerializedScriptValue, e.g. from another thread.
@@ -51,6 +52,9 @@ class CORE_EXPORT UnpackedSerializedScriptValue final
   const HeapVector<Member<ImageBitmap>>& ImageBitmaps() const {
     return image_bitmaps_;
   }
+  const HeapVector<Member<ElementImage>>& ElementImages() const {
+    return element_images_;
+  }
 
   using DeserializeOptions = SerializedScriptValue::DeserializeOptions;
   v8::Local<v8::Value> Deserialize(
@@ -66,6 +70,7 @@ class CORE_EXPORT UnpackedSerializedScriptValue final
   // here.
   HeapVector<Member<DOMArrayBufferBase>> array_buffers_;
   HeapVector<Member<ImageBitmap>> image_bitmaps_;
+  HeapVector<Member<ElementImage>> element_images_;
 
   friend class SerializedScriptValue;
 };

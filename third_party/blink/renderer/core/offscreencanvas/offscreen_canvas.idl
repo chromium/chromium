@@ -15,6 +15,8 @@
     [CallWith=ScriptState, MeasureAs=OffscreenCanvasTransferToImageBitmap, RaisesException] ImageBitmap transferToImageBitmap();
     [CallWith=ScriptState, MeasureAs=OffscreenCanvasConvertToBlob, RaisesException] Promise<Blob> convertToBlob(optional ImageEncodeOptions options = {});
 
+    [RuntimeEnabled=CanvasDrawElement, RaisesException] DOMMatrix getElementTransform((Element or ElementImage) element, DOMMatrix draw_transform);
+
     attribute EventHandler oncontextlost;
     attribute EventHandler oncontextrestored;
 };

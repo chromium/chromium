@@ -569,6 +569,7 @@ html element button
     property value
     property willValidate
 html element canvas
+    property captureElementImage
     property captureStream
     property configureHighDynamicRange
     property getContext

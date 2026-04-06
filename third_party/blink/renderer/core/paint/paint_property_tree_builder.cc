@@ -1895,7 +1895,6 @@ FragmentPaintPropertyTreeBuilder::ParentForViewTransitionPseudoEffect() const {
 
 static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
                                           CanvasChildPaintState& paint_state) {
-  gfx::Size canvas_size = canvas->Size();
   gfx::Size canvas_device_pixel_content_box =
       ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
           LogicalSize(canvas->GetLayoutBox()->ContentLogicalWidth(),
@@ -1909,21 +1908,8 @@ static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
     canvas_content_size = canvas->GetLayoutBox()->PhysicalContentBoxRect();
   }
 
-  // As a special case, if the canvas is sized to its devicePixelContentBox,
-  // make sure the element's physical pixels are mapped 1:1 to the canvas
-  // grid to avoid any inadvertent fuzziness due to rounding.
-  gfx::Vector2dF canvas_grid_scale_factor = {1.f, 1.f};
-  if (canvas_size != canvas_device_pixel_content_box &&
-      canvas_content_size.Width().ToFloat() != 0.f &&
-      canvas_content_size.Height().ToFloat() != 0.f) {
-    canvas_grid_scale_factor = {
-        canvas_size.width() / canvas_content_size.Width().ToFloat(),
-        canvas_size.height() / canvas_content_size.Height().ToFloat()};
-  }
-
-  paint_state.canvas_size = canvas_size;
   paint_state.canvas_content_size = gfx::SizeF(canvas_content_size.size);
-  paint_state.canvas_grid_scale_factor = canvas_grid_scale_factor;
+  paint_state.canvas_device_pixel_content_box = canvas_device_pixel_content_box;
 }
 static void PopulateCanvasChildState(const LayoutObject& object,
                                      EffectPaintPropertyNode::State& state) {

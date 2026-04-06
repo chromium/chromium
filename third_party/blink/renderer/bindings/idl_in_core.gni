@@ -379,6 +379,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/assigned_nodes_options.idl",
   "//third_party/blink/renderer/core/html/canvas/baselines.idl",
   "//third_party/blink/renderer/core/html/canvas/canvas_paint_event.idl",
+  "//third_party/blink/renderer/core/html/canvas/element_image.idl",
   "//third_party/blink/renderer/core/html/canvas/high_dynamic_range_options.idl",
   "//third_party/blink/renderer/core/html/canvas/html_canvas_element.idl",
   "//third_party/blink/renderer/core/html/canvas/image_data.idl",

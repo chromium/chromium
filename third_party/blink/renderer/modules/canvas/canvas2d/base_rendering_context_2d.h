@@ -72,6 +72,7 @@ class V8CanvasDirection;
 class V8CanvasFontKerning;
 class V8CanvasFontVariantCaps;
 class V8GPUTextureFormat;
+class V8UnionElementOrElementImage;
 enum class PredefinedColorSpace;
 
 class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
@@ -218,6 +219,46 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   bool isContextLost() const final {
     return context_lost_mode_ != kNotLostContext;
   }
+
+  DOMMatrix* drawElementImage(const V8UnionElementOrElementImage* element,
+                              double dx,
+                              double dy,
+                              ExceptionState& exception_state);
+  DOMMatrix* drawElementImage(const V8UnionElementOrElementImage* element,
+                              double dx,
+                              double dy,
+                              double dwidth,
+                              double dheight,
+                              ExceptionState& exception_state);
+  DOMMatrix* drawElementImage(const V8UnionElementOrElementImage* element,
+                              double sx,
+                              double sy,
+                              double swidth,
+                              double sheight,
+                              double dx,
+                              double dy,
+                              ExceptionState& exception_state);
+  DOMMatrix* drawElementImage(const V8UnionElementOrElementImage* element,
+                              double sx,
+                              double sy,
+                              double swidth,
+                              double sheight,
+                              double dx,
+                              double dy,
+                              double dwidth,
+                              double dheight,
+                              ExceptionState& exception_state);
+
+  DOMMatrix* DrawElementInternal(const V8UnionElementOrElementImage* element,
+                                 std::optional<double> sx,
+                                 std::optional<double> sy,
+                                 std::optional<double> swidth,
+                                 std::optional<double> sheight,
+                                 double x,
+                                 double y,
+                                 std::optional<double> dwidth,
+                                 std::optional<double> dheight,
+                                 ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 

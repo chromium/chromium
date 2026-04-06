@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
-  <title>drawElementImage with ink overflow.</title>
+  <title>drawElementImage with ink overflow, in a worker thread.</title>
   <meta charset="utf-8" />
   <link rel="help" href="https://github.com/WICG/html-in-canvas" />
   <link rel="match" href="ink-overflow-ref.html" />
@@ -66,6 +66,28 @@
 import { computeScaledDestinationSize,
          resizeToPixelGrid } from "/wpt_internal/resources/canvas-draw-element/util.js";
 
+const workerCode = `
+  let ctx;
+  self.onmessage = function(e) {
+    if (e.data.canvas) {
+      ctx = e.data.canvas.getContext('2d');
+    }
+    if (e.data.elementImage) {
+      if (e.data.args.length === 8) {
+        ctx.drawElementImage(e.data.elementImage,
+          e.data.args[0], e.data.args[1], e.data.args[2], e.data.args[3],
+          e.data.args[4], e.data.args[5], e.data.args[6], e.data.args[7]);
+      } else {
+        ctx.drawElementImage(e.data.elementImage,
+          e.data.args[0], e.data.args[1], e.data.args[2], e.data.args[3],
+          e.data.args[4], e.data.args[5]);
+      }
+      self.postMessage('done');
+    }
+  };
+`;
+const workerUrl = URL.createObjectURL(new Blob([workerCode], { type: 'application/javascript' }));
+
 Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
   await resizeToPixelGrid(cvs);
   await new Promise(setTimeout);
@@ -79,23 +101,37 @@ Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
   const outset = Number.parseFloat(target.getAttribute("outset") || "0");
   const offset = Number.parseFloat(target.getAttribute("offset") || "0");
 
-  const ctx = cvs.getContext("2d");
-
+  let args = [];
   if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
     const scaleX = Number.parseFloat(target.getAttribute("xscale"));
     const scaleY = Number.parseFloat(target.getAttribute("yscale"));
     const [destWidth, destHeight] =
       computeScaledDestinationSize(cvs, target, scaleX, scaleY, 2*outset, 2*outset);
-    ctx.drawElementImage(target,
-                         -outset, -outset,
-                         targetWidth + 2*outset, targetHeight + 2*outset,
-                         offset, offset, destWidth, destHeight);
+    args = [-outset, -outset,
+            targetWidth + 2*outset, targetHeight + 2*outset,
+            offset, offset, destWidth, destHeight];
   } else {
-    ctx.drawElementImage(target,
-                         -outset, -outset,
-                         targetWidth + 2*outset, targetHeight + 2*outset,
-                         offset, offset);
+    args = [-outset, -outset,
+            targetWidth + 2*outset, targetHeight + 2*outset,
+            offset, offset];
   }
-})).then(takeScreenshot);
+
+  const worker = new Worker(workerUrl);
+  const offscreen = cvs.transferControlToOffscreen();
+  worker.postMessage({ canvas: offscreen }, [offscreen]);
+
+  return new Promise(resolve => {
+    worker.onmessage = () => {
+      resolve();
+    };
+    const elementImage = cvs.captureElementImage(target);
+    worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
+  });
+})).then(() => {
+  // Wait for the worker thread to update before taking a screenshot.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(takeScreenshot);
+  });
+});
 
 </script>

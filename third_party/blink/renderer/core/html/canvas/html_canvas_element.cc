@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -79,6 +80,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
+#include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
@@ -939,46 +941,71 @@ void HTMLCanvasElement::ResetLayer() {
 }
 
 DOMMatrix* HTMLCanvasElement::getElementTransform(
-    Element* element,
+    const V8UnionElementOrElementImage* element_or_image,
     DOMMatrix* draw_transform,
     ExceptionState& exception_state) {
-  if (!element) {
-    return nullptr;
+  if (element_or_image->IsElement()) {
+    if (!VerifyDrawElementImageEligibility(element_or_image->GetAsElement(),
+                                           "getElementTransform",
+                                           exception_state)) {
+      return nullptr;
+    }
+  } else if (element_or_image->IsElementImage()) {
+    if (!element_or_image->GetAsElementImage()->PaintRecord()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "The ElementImage has been closed.");
+      return nullptr;
+    }
   }
 
-  auto* paint_state = GetCanvasChildPaintState(element->GetDomNodeId());
+  const auto* paint_state = GetCanvasChildPaintState(element_or_image);
   if (!paint_state) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "No cached paint record for element.");
     return nullptr;
   }
 
-  gfx::Vector2dF physical_to_canvas_grid =
-      paint_state->canvas_grid_scale_factor;
-  float physical_to_css = 1.0f / paint_state->effective_zoom;
-  float canvas_grid_to_css_x = physical_to_css / physical_to_canvas_grid.x();
-  float canvas_grid_to_css_y = physical_to_css / physical_to_canvas_grid.y();
+  return MakeGarbageCollected<DOMMatrix>(
+      GetElementTransform(*paint_state, Size(), draw_transform->Matrix()));
+}
 
-  // 1. Change of basis for a transform in canvas pixel grid coordinates to a
-  // canvas in css coordinates. The general formula is:
-  //   T_css = S_canvas_to_css * T_canvas * S_canvas_to_css^-1
-  DOMMatrix* css_transform = DOMMatrix::Create();
-  css_transform->scaleSelf(canvas_grid_to_css_x, canvas_grid_to_css_y);
-  css_transform->multiplySelf(*draw_transform);
-  css_transform->scaleSelf(1.0f / canvas_grid_to_css_x,
-                           1.0f / canvas_grid_to_css_y);
+bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
+    Element* element,
+    const String& func_name,
+    ExceptionState& exception_state) const {
+  if (element->parentElement() != this) {
+    exception_state.ThrowTypeError(
+        "Only immediate children of the <canvas> element can be passed to " +
+        func_name + ".");
+    return false;
+  }
+  if (!layoutSubtree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        func_name +
+            " requires the canvas to have the layoutsubtree attribute.");
+    return false;
+  }
+  return true;
+}
 
-  // 2. Apply the transform relative to the transform origin.
-  DOMMatrix* result = DOMMatrix::Create();
-  result->translateSelf(-paint_state->transform_origin.x(),
-                        -paint_state->transform_origin.y(),
-                        -paint_state->transform_origin.z());
-  result->multiplySelf(*css_transform);
-  result->translateSelf(paint_state->transform_origin.x(),
-                        paint_state->transform_origin.y(),
-                        paint_state->transform_origin.z());
+ElementImage* HTMLCanvasElement::captureElementImage(
+    Element* element,
+    ExceptionState& exception_state) {
+  if (!VerifyDrawElementImageEligibility(element, "captureElementImage",
+                                         exception_state)) {
+    return nullptr;
+  }
 
-  return result;
+  std::optional<CanvasChildPaintRecord> child_paint_record =
+      GetCanvasChildPaintRecord(element->GetDomNodeId());
+  if (!child_paint_record) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "No cached paint record for element.");
+    return nullptr;
+  }
+  return MakeGarbageCollected<ElementImage>(
+      std::make_unique<CanvasChildPaintRecord>(std::move(*child_paint_record)));
 }
 
 bool HTMLCanvasElement::PaintsIntoCanvasBuffer() const {
@@ -1652,6 +1679,22 @@ const CanvasChildPaintState* HTMLCanvasElement::GetCanvasChildPaintState(
     }
   }
   return nullptr;
+}
+
+const CanvasChildPaintState* HTMLCanvasElement::GetCanvasChildPaintState(
+    const V8UnionElementOrElementImage* element_or_image) const {
+  if (!element_or_image) {
+    return nullptr;
+  }
+
+  if (element_or_image->IsElementImage()) {
+    const auto& paint_record =
+        element_or_image->GetAsElementImage()->PaintRecord();
+    return paint_record ? &paint_record->paint_state : nullptr;
+  }
+
+  return GetCanvasChildPaintState(
+      element_or_image->GetAsElement()->GetDomNodeId());
 }
 
 void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {

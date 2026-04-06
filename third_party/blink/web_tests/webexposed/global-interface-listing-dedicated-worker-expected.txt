@@ -433,6 +433,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method dispose
 [Worker]     method move
 [Worker]     method use
+[Worker] interface ElementImage
+[Worker]     attribute @@toStringTag
+[Worker]     getter height
+[Worker]     getter width
+[Worker]     method close
+[Worker]     method constructor
 [Worker] interface EncodedAudioChunk
 [Worker]     attribute @@toStringTag
 [Worker]     getter byteLength
@@ -1464,6 +1470,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method convertToBlob
 [Worker]     method getContext
+[Worker]     method getElementTransform
 [Worker]     method transferToImageBitmap
 [Worker]     setter height
 [Worker]     setter oncontextlost
@@ -1517,6 +1524,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createMesh2DVertexBuffer
 [Worker]     method createPattern
 [Worker]     method createRadialGradient
+[Worker]     method drawElementImage
 [Worker]     method drawImage
 [Worker]     method drawMesh
 [Worker]     method ellipse

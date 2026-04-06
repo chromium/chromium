@@ -1,0 +1,37 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+interface mixin CanvasDrawElementImage {
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElementImage((Element or ElementImage) element,
+                             unrestricted double dx,
+                             unrestricted double dy);
+
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElementImage((Element or ElementImage) element,
+                             unrestricted double dx,
+                             unrestricted double dy,
+                             unrestricted double dwidth,
+                             unrestricted double dheight);
+
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElementImage((Element or ElementImage) element,
+                             unrestricted double sx,
+                             unrestricted double sy,
+                             unrestricted double swidth,
+                             unrestricted double sheight,
+                             unrestricted double dx,
+                             unrestricted double dy);
+
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElementImage((Element or ElementImage) element,
+                             unrestricted double sx,
+                             unrestricted double sy,
+                             unrestricted double swidth,
+                             unrestricted double sheight,
+                             unrestricted double dx,
+                             unrestricted double dy,
+                             unrestricted double dwidth,
+                             unrestricted double dheight);
+};

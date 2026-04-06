@@ -9,7 +9,11 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
+
+namespace gfx {
+class Transform;
+class Vector2dF;
+}  // namespace gfx
 
 namespace blink {
 
@@ -22,10 +26,18 @@ struct PLATFORM_EXPORT CanvasChildPaintState {
   gfx::SizeF box_size;
 
   // Canvas state.
-  gfx::Size canvas_size;
   gfx::SizeF canvas_content_size;
-  gfx::Vector2dF canvas_grid_scale_factor;
+  gfx::Size canvas_device_pixel_content_box;
 };
+
+PLATFORM_EXPORT gfx::Transform GetElementTransform(
+    const CanvasChildPaintState&,
+    const gfx::Size& canvas_size,
+    const gfx::Transform& draw_transform);
+
+PLATFORM_EXPORT gfx::Vector2dF GetCanvasGridScaleFactor(
+    const CanvasChildPaintState&,
+    const gfx::Size& canvas_size);
 
 }  // namespace blink
 

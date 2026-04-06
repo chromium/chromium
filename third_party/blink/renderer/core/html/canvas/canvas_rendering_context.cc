@@ -99,26 +99,19 @@ CanvasRenderingContext::GetEnclosingContextForDrawElement(
     Element* element,
     const String& func_name,
     ExceptionState& exception_state) {
-  auto build_error = [&func_name](const char* format) {
-    StringBuilder builder;
-    UNSAFE_TODO(builder.AppendFormat(format, func_name.Utf8().c_str()));
-    return builder.ToString();
-  };
-
   HTMLCanvasElement* canvas =
       DynamicTo<HTMLCanvasElement>(element->parentNode());
   if (!canvas) {
-    exception_state.ThrowTypeError(build_error(
-        "Only immediate children of the <canvas> element can be passed "
-        "to %s."));
+    exception_state.ThrowTypeError(
+        "Only immediate children of the <canvas> element can be passed to " +
+        func_name + ".");
 
     return nullptr;
   }
   CanvasRenderingContext* context = canvas->RenderingContext();
   if (!context) {
     exception_state.ThrowTypeError(
-        build_error("%s: containing canvas does not have a rendering "
-                    "context."));
+        func_name + ": containing canvas does not have a rendering context.");
     return nullptr;
   }
   if (!context->IsDrawElementImageEligible(element, func_name,
@@ -133,6 +126,9 @@ bool CanvasRenderingContext::IsDrawElementImageEligible(
     const String& func_name,
     ExceptionState& exception_state) {
   if (!Host() || Host()->IsOffscreenCanvas()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Elements cannot be drawn into an OffscreenCanvas.");
     return false;
   }
 
@@ -141,26 +137,8 @@ bool CanvasRenderingContext::IsDrawElementImageEligible(
     return false;
   }
 
-  auto build_error = [&func_name](const char* format) {
-    StringBuilder builder;
-    UNSAFE_TODO(builder.AppendFormat(format, func_name.Utf8().c_str()));
-    return builder.ToString();
-  };
-
-  if (element->parentElement() != canvas_element) {
-    exception_state.ThrowTypeError(
-        build_error("Only immediate children of the <canvas> element can be "
-                    "passed to %s."));
-    return false;
-  }
-
-  if (!canvas_element->layoutSubtree()) {
-    exception_state.ThrowTypeError(build_error(
-        "<canvas> elements without layoutsubtree do not support %s."));
-    return false;
-  }
-
-  return true;
+  return canvas_element->VerifyDrawElementImageEligibility(element, func_name,
+                                                           exception_state);
 }
 
 std::optional<CanvasChildPaintRecord>
@@ -204,7 +182,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   // were it painted outside the canvas.
   gfx::SizeF intrinsic_size(src_rect.size());
   gfx::Vector2dF canvas_scale =
-      child_paint_record->paint_state.canvas_grid_scale_factor;
+      GetCanvasGridScaleFactor(child_paint_record->paint_state, Host()->Size());
   intrinsic_size.Scale(canvas_scale.x(), canvas_scale.y());
   gfx::Size intrinsic_dest_size = gfx::ToCeiledSize(intrinsic_size);
   gfx::Size dest_size(intrinsic_dest_size);
