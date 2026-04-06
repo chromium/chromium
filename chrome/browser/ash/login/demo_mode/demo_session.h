@@ -14,7 +14,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"

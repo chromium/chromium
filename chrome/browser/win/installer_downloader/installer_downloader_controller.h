@@ -11,7 +11,6 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_active_browser_window_tracker.h"
 #include "components/infobars/core/infobar_manager.h"
 

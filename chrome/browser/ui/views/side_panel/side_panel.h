@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"

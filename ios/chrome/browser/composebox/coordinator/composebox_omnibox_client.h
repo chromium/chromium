@@ -10,7 +10,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "base/scoped_multi_source_observation.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"

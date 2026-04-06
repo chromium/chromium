@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_BROWSER_AGENT_H_
 
 #import "base/memory/raw_ptr.h"
-#import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
