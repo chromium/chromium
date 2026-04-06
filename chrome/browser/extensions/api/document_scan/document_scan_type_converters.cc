@@ -61,6 +61,14 @@ CancelScanResponse ConvertLorgnetteCancelScanResponse(
   return output;
 }
 
+CloseScannerResponse ConvertLorgnetteCloseScannerResponse(
+    const lorgnette::CloseScannerResponse& input) {
+  CloseScannerResponse output;
+  output.scanner_handle = input.scanner().token();
+  output.result = ConvertLorgnetteOperationResult(input.result());
+  return output;
+}
+
 GetOptionGroupsResponse ConvertLorgnetteGetCurrentConfigResponse(
     const lorgnette::GetCurrentConfigResponse& input) {
   GetOptionGroupsResponse output;
@@ -522,16 +530,6 @@ TypeConverter<extensions::api::document_scan::GetOptionGroupsResponse,
     group_out.members = std::vector<std::string>(group_in->members.begin(),
                                                  group_in->members.end());
   }
-  return output;
-}
-
-extensions::api::document_scan::CloseScannerResponse
-TypeConverter<extensions::api::document_scan::CloseScannerResponse,
-              crosapi::mojom::CloseScannerResponsePtr>::
-    Convert(const crosapi::mojom::CloseScannerResponsePtr& input) {
-  document_scan::CloseScannerResponse output;
-  output.scanner_handle = input->scanner_handle;
-  output.result = ConvertTo<document_scan::OperationResult>(input->result);
   return output;
 }
 

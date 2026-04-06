@@ -516,17 +516,6 @@ TypeConverter<crosapi::mojom::OpenScannerResponsePtr,
   return output;
 }
 
-crosapi::mojom::CloseScannerResponsePtr
-TypeConverter<crosapi::mojom::CloseScannerResponsePtr,
-              lorgnette::CloseScannerResponse>::
-    Convert(const lorgnette::CloseScannerResponse& input) {
-  auto output = crosapi::mojom::CloseScannerResponse::New();
-  output->scanner_handle = input.scanner().token();
-  output->result =
-      ConvertTo<crosapi::mojom::ScannerOperationResult>(input.result());
-  return output;
-}
-
 crosapi::mojom::StartPreparedScanResponsePtr
 TypeConverter<crosapi::mojom::StartPreparedScanResponsePtr,
               lorgnette::StartPreparedScanResponse>::

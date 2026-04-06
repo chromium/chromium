@@ -208,10 +208,12 @@ void SimpleScanRunner::OnStartPreparedScanResponse(
   if (response->result != crosapi::mojom::ScannerOperationResult::kSuccess ||
       !response->job_handle.has_value()) {
     // Closing the scanner will also return the response to the caller.
-    document_scan_->CloseScanner(
-        scanner_handle_,
-        base::BindOnce(&SimpleScanRunner::OnCloseScannerResponse,
-                       weak_ptr_factory_.GetWeakPtr()));
+    lorgnette::CloseScannerRequest request;
+    request.mutable_scanner()->set_token(scanner_handle_);
+    ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+        ->CloseScanner(request,
+                       base::BindOnce(&SimpleScanRunner::OnCloseScannerResponse,
+                                      weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -263,13 +265,16 @@ void SimpleScanRunner::OnReadScanDataResponse(
     scan_result_ = crosapi::mojom::ScanFailureMode::kNoFailure;
   }
 
-  document_scan_->CloseScanner(
-      scanner_handle_, base::BindOnce(&SimpleScanRunner::OnCloseScannerResponse,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  lorgnette::CloseScannerRequest request;
+  request.mutable_scanner()->set_token(scanner_handle_);
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->CloseScanner(request,
+                     base::BindOnce(&SimpleScanRunner::OnCloseScannerResponse,
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SimpleScanRunner::OnCloseScannerResponse(
-    crosapi::mojom::CloseScannerResponsePtr) {
+    const std::optional<lorgnette::CloseScannerResponse>&) {
   // Intentionally ignore the response.  The result to return to the caller has
   // already been determined at the end of the read loop.
   OnSimpleScanCompleted(scan_result_);

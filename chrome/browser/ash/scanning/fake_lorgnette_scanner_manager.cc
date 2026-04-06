@@ -203,8 +203,22 @@ void FakeLorgnetteScannerManager::OpenScanner(
 void FakeLorgnetteScannerManager::CloseScanner(
     const lorgnette::CloseScannerRequest& request,
     CloseScannerCallback callback) {
+  if (close_scanner_callback_) {
+    close_scanner_callback_.Run(
+        request.has_scanner() ? request.scanner().token() : std::string());
+  }
+
+  std::optional<lorgnette::CloseScannerResponse> response;
+  if (close_scanner_result_.has_value()) {
+    response.emplace();
+    response->set_result(*close_scanner_result_);
+    if (request.has_scanner()) {
+      *response->mutable_scanner() = request.scanner();
+    }
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), close_scanner_response_));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
 
 void FakeLorgnetteScannerManager::SetOptions(
@@ -343,9 +357,9 @@ void FakeLorgnetteScannerManager::SetOpenScannerResponse(
   open_scanner_response_ = response;
 }
 
-void FakeLorgnetteScannerManager::SetCloseScannerResponse(
-    const std::optional<lorgnette::CloseScannerResponse>& response) {
-  close_scanner_response_ = response;
+void FakeLorgnetteScannerManager::SetCloseScannerResult(
+    std::optional<lorgnette::OperationResult> result) {
+  close_scanner_result_ = std::move(result);
 }
 
 void FakeLorgnetteScannerManager::SetSetOptionsResponse(
@@ -378,6 +392,11 @@ void FakeLorgnetteScannerManager::SetScanResponse(
 void FakeLorgnetteScannerManager::SetCancelScanResult(
     std::optional<lorgnette::OperationResult> result) {
   cancel_scan_result_ = std::move(result);
+}
+
+void FakeLorgnetteScannerManager::SetCloseScannerCallback(
+    base::RepeatingCallback<void(const std::string& scanner_handle)> callback) {
+  close_scanner_callback_ = std::move(callback);
 }
 
 void FakeLorgnetteScannerManager::SetCancelScanCallback(

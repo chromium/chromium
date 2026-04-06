@@ -347,15 +347,6 @@ struct OpenScannerResponse {
   map<string, ScannerOption>? options@3;
 };
 
-// The response from calling `CloseScanner()`.
-struct CloseScannerResponse {
-  // Same scanner_handle value passed to `CloseScanner()`.
-  string scanner_handle@0;
-
-  // Backend result of closing the scanner handle.
-  ScannerOperationResult result@1;
-};
-
 // Options for `StartPreparedScan()` that are not already specified via a
 // `ScannerOption`.  These tend to cover how the scanning framework itself works
 // as opposed to how a scanner works.
@@ -465,15 +456,12 @@ interface DocumentScan {
   // GetScannerList@2 was removed.
   // CancelScan@9 was removed.
   // GetOptionGroups@8 was removed.
+  // CloseScanner@4 was removed.
 
   // Open an exclusive handle to a scanner returned from `GetScannerList()`.
   [MinVersion=2]
   OpenScanner@3(string client_id, string scanner_id)
       => (OpenScannerResponse response);
-
-  // Close a scanner handle opened by `OpenScanner()`.
-  [MinVersion=2]
-  CloseScanner@4(string scanner_handle) => (CloseScannerResponse response);
 
   // Starts a scan on a scanner opened by `OpenScanner()`.  The scanner's
   // current options, set via `SetOptions()`, are used along with the `options`

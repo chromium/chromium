@@ -35,13 +35,6 @@ struct TypeConverter<crosapi::mojom::OpenScannerResponsePtr,
 };
 
 template <>
-struct TypeConverter<crosapi::mojom::CloseScannerResponsePtr,
-                     lorgnette::CloseScannerResponse> {
-  static crosapi::mojom::CloseScannerResponsePtr Convert(
-      const lorgnette::CloseScannerResponse& input);
-};
-
-template <>
 struct TypeConverter<crosapi::mojom::StartPreparedScanResponsePtr,
                      lorgnette::StartPreparedScanResponse> {
   static crosapi::mojom::StartPreparedScanResponsePtr Convert(

@@ -490,23 +490,6 @@ TEST(DocumentScanTypeConvertersTest, OpenScannerResponse_NonEmpty) {
   EXPECT_TRUE(output.options->additional_properties.contains("name2"));
 }
 
-TEST(DocumentScanTypeConvertersTest, CloseScannerResponse_Empty) {
-  auto input = mojom::CloseScannerResponse::New();
-  auto output = input.To<document_scan::CloseScannerResponse>();
-  EXPECT_EQ(output.scanner_handle, "");
-  EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
-}
-
-TEST(DocumentScanTypeConvertersTest, CloseScannerResponse_NonEmpty) {
-  auto input = mojom::CloseScannerResponse::New();
-  input->scanner_handle = "scanner_handle";
-  input->result = mojom::ScannerOperationResult::kSuccess;
-
-  auto output = input.To<document_scan::CloseScannerResponse>();
-  EXPECT_EQ(output.scanner_handle, "scanner_handle");
-  EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
-}
-
 TEST(DocumentScanTypeConvertersTest, OptionSetting_Empty) {
   document_scan::OptionSetting input;
   auto output = mojom::OptionSetting::From(input);
@@ -778,6 +761,16 @@ TEST(DocumentScanTypeConvertersTest, ConvertLorgnetteCancelScanResponse) {
   auto output = document_scan::ConvertLorgnetteCancelScanResponse(input);
   EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
   EXPECT_EQ(output.job, "job-handle");
+}
+
+TEST(DocumentScanTypeConvertersTest, ConvertLorgnetteCloseScannerResponse) {
+  lorgnette::CloseScannerResponse input;
+  input.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  input.mutable_scanner()->set_token("scanner-handle");
+
+  auto output = document_scan::ConvertLorgnetteCloseScannerResponse(input);
+  EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(output.scanner_handle, "scanner-handle");
 }
 
 TEST(DocumentScanTypeConvertersTest, ConvertLorgnetteGetCurrentConfigResponse) {

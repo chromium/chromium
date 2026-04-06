@@ -64,17 +64,8 @@ void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
   std::move(callback).Run(std::move(response));
 }
 
-void FakeDocumentScanAsh::CloseScanner(const std::string& scanner_handle,
-                                       CloseScannerCallback callback) {
-  auto response = crosapi::mojom::CloseScannerResponse::New();
-  response->scanner_handle = scanner_handle;
-  if (open_scanners_.contains(scanner_handle)) {
-    response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
-  } else {
-    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-  }
+void FakeDocumentScanAsh::CloseScanner(const std::string& scanner_handle) {
   open_scanners_.erase(scanner_handle);
-  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::StartPreparedScan(

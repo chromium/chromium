@@ -73,13 +73,6 @@ class DocumentScanAshTest : public testing::Test {
     return future.Take();
   }
 
-  mojom::CloseScannerResponsePtr CloseScanner(
-      const std::string& scanner_handle) {
-    base::test::TestFuture<mojom::CloseScannerResponsePtr> future;
-    document_scan_ash().CloseScanner(scanner_handle, future.GetCallback());
-    return future.Take();
-  }
-
   mojom::StartPreparedScanResponsePtr StartPreparedScan(
       const std::string& scanner_handle,
       mojom::StartScanOptionsPtr options) {
@@ -149,28 +142,6 @@ TEST_F(DocumentScanAshTest, OpenScanner_GoodResponse) {
   ASSERT_TRUE(response->options.has_value());
   EXPECT_TRUE(response->options.value().contains("option1-name"));
   EXPECT_TRUE(response->options.value().contains("option2-name"));
-}
-
-TEST_F(DocumentScanAshTest, CloseScanner_BadResponse) {
-  GetLorgnetteScannerManager()->SetCloseScannerResponse(std::nullopt);
-  const mojom::CloseScannerResponsePtr response =
-      CloseScanner("scanner-handle");
-
-  EXPECT_EQ(response->scanner_handle, "scanner-handle");
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
-}
-
-TEST_F(DocumentScanAshTest, CloseScanner_GoodResponse) {
-  lorgnette::CloseScannerResponse fake_response;
-  fake_response.mutable_scanner()->set_token("scanner-handle");
-  fake_response.set_result(lorgnette::OPERATION_RESULT_MISSING);
-  GetLorgnetteScannerManager()->SetCloseScannerResponse(
-      std::move(fake_response));
-  const mojom::CloseScannerResponsePtr response =
-      CloseScanner("scanner-handle");
-
-  EXPECT_EQ(response->scanner_handle, "scanner-handle");
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kDeviceMissing);
 }
 
 TEST_F(DocumentScanAshTest, StartPreparedScan_BadResponse) {

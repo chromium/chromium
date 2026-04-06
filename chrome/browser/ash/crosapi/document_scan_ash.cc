@@ -62,21 +62,6 @@ void OpenScannerAdapter(
       mojom::OpenScannerResponse::From(response_in.value()));
 }
 
-void CloseScannerAdapter(
-    const std::string& scanner_handle,
-    DocumentScanAsh::CloseScannerCallback callback,
-    const std::optional<lorgnette::CloseScannerResponse>& response_in) {
-  if (!response_in) {
-    auto response_out = mojom::CloseScannerResponse::New();
-    response_out->scanner_handle = scanner_handle;
-    response_out->result = mojom::ScannerOperationResult::kInternalError;
-    std::move(callback).Run(std::move(response_out));
-    return;
-  }
-  std::move(callback).Run(
-      mojom::CloseScannerResponse::From(response_in.value()));
-}
-
 void StartPreparedScanAdapter(
     const std::string& scanner_handle,
     DocumentScanAsh::StartPreparedScanCallback callback,
@@ -154,16 +139,6 @@ void DocumentScanAsh::OpenScanner(const std::string& client_id,
       ->OpenScanner(
           std::move(request),
           base::BindOnce(&OpenScannerAdapter, scanner_id, std::move(callback)));
-}
-
-void DocumentScanAsh::CloseScanner(const std::string& scanner_handle,
-                                   CloseScannerCallback callback) {
-  lorgnette::CloseScannerRequest request;
-  request.mutable_scanner()->set_token(scanner_handle);
-  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
-      ->CloseScanner(std::move(request),
-                     base::BindOnce(&CloseScannerAdapter, scanner_handle,
-                                    std::move(callback)));
 }
 
 void DocumentScanAsh::StartPreparedScan(const std::string& scanner_handle,

@@ -72,9 +72,10 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetOpenScannerResponse(
       const std::optional<lorgnette::OpenScannerResponse>& response);
 
-  // Sets the response returned by CloseScanner().
-  void SetCloseScannerResponse(
-      const std::optional<lorgnette::CloseScannerResponse>& response);
+  // Sets the result field of the response returned by CloseScanner(). If this
+  // is std::nullopt, the callback is passed std::nullopt. The default is
+  // OPERATION_RESULT_ADF_JAMMED.
+  void SetCloseScannerResult(std::optional<lorgnette::OperationResult> result);
 
   // Sets the response returned by SetOptions().
   void SetSetOptionsResponse(
@@ -105,6 +106,12 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   // std::nullopt. The default is OPERATION_RESULT_ADF_JAMMED.
   void SetCancelScanResult(std::optional<lorgnette::OperationResult> result);
 
+  // Sets a callback that is invoked by CloseScanner().
+  // TODO(crbug.com/479031241): Remove once FakeDocumentAsh is gone.
+  void SetCloseScannerCallback(
+      base::RepeatingCallback<void(const std::string& scanner_handle)>
+          callback);
+
   // Sets a callback that is invoked by the two-parameter version of
   // CancelScan().
   // TODO(crbug.com/479031241): Remove once FakeDocumentAsh is gone.
@@ -119,7 +126,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   std::optional<lorgnette::ListScannersResponse> list_scanners_response_;
   std::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
   std::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
-  std::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
+  std::optional<lorgnette::OperationResult> close_scanner_result_ =
+      lorgnette::OPERATION_RESULT_ADF_JAMMED;
   std::optional<lorgnette::SetOptionsResponse> set_options_response_;
   std::optional<lorgnette::OperationResult> get_current_config_result_;
   std::optional<lorgnette::ScannerConfig> get_current_config_config_;
@@ -128,6 +136,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   std::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;
   std::optional<lorgnette::OperationResult> cancel_scan_result_ =
       lorgnette::OPERATION_RESULT_ADF_JAMMED;
+  base::RepeatingCallback<void(const std::string& scanner_handle)>
+      close_scanner_callback_;
   base::RepeatingCallback<void(const std::string& job_handle)>
       cancel_scan_callback_;
   std::optional<std::vector<std::string>> scan_data_;

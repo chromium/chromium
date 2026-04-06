@@ -545,23 +545,6 @@ TEST(DocumentScanAshTypeConvertersTest,
   EXPECT_TRUE(output->options.value().contains("option2-name"));
 }
 
-TEST(DocumentScanAshTypeConvertersTest,
-     CloseScannerResponse_EmptyObjectSucceeds) {
-  lorgnette::CloseScannerResponse input;
-  auto output = crosapi::mojom::CloseScannerResponse::From(input);
-  EXPECT_TRUE(output->scanner_handle.empty());
-  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kUnknown);
-}
-
-TEST(DocumentScanAshTypeConvertersTest, CloseScannerResponse_NonEmptyResponse) {
-  lorgnette::CloseScannerResponse input;
-  input.mutable_scanner()->set_token("55555");
-  input.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-  auto output = crosapi::mojom::CloseScannerResponse::From(input);
-  EXPECT_EQ(output->scanner_handle, "55555");
-  EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kSuccess);
-}
-
 TEST(DocumentScanAshTypeConvertersTest, StartPreparedScanResponse_EmptyObject) {
   lorgnette::StartPreparedScanResponse input;
   auto output = crosapi::mojom::StartPreparedScanResponse::From(input);

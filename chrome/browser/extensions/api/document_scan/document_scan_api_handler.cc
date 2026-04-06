@@ -128,9 +128,10 @@ void DocumentScanAPIHandler::ExtensionCleanup(const ExtensionId& id) {
   for (const auto& [scanner_handle, scanner_id] : state.scanner_handles) {
     // No need to monitor the responses from the CloseScanner call since there
     // is no client waiting for these responses.
-    document_scan_->CloseScanner(
-        scanner_handle,
-        base::DoNothingAs<void(crosapi::mojom::CloseScannerResponsePtr)>());
+    lorgnette::CloseScannerRequest request;
+    request.mutable_scanner()->set_token(scanner_handle);
+    ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+        ->CloseScanner(request, base::DoNothing());
   }
   extension_state_.erase(id);
 }
@@ -323,38 +324,46 @@ void DocumentScanAPIHandler::CloseScanner(
   // Ensure this scanner is allocated to this extension.
   ExtensionState& state = extension_state_[extension->id()];
   if (!state.scanner_handles.contains(scanner_handle)) {
-    auto response = crosapi::mojom::CloseScannerResponse::New();
-    response->scanner_handle = scanner_handle;
-    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    OnCloseScannerResponse(extension->id(), std::move(callback),
-                           std::move(response));
+    api::document_scan::CloseScannerResponse response;
+    response.scanner_handle = scanner_handle;
+    response.result = api::document_scan::OperationResult::kInvalid;
+    std::move(callback).Run(std::move(response));
     return;
   }
 
-  document_scan_->CloseScanner(
-      scanner_handle,
-      base::BindOnce(&DocumentScanAPIHandler::OnCloseScannerResponse,
-                     weak_ptr_factory_.GetWeakPtr(), extension->id(),
-                     std::move(callback)));
+  lorgnette::CloseScannerRequest request;
+  request.mutable_scanner()->set_token(scanner_handle);
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->CloseScanner(
+          request,
+          base::BindOnce(&DocumentScanAPIHandler::OnCloseScannerResponse,
+                         weak_ptr_factory_.GetWeakPtr(), extension->id(),
+                         scanner_handle, std::move(callback)));
 }
 
 void DocumentScanAPIHandler::OnCloseScannerResponse(
     const ExtensionId& extension_id,
+    const std::string& scanner_handle,
     CloseScannerCallback callback,
-    crosapi::mojom::CloseScannerResponsePtr response) {
-  ExtensionState& state = extension_state_[extension_id];
-
+    const std::optional<lorgnette::CloseScannerResponse>& response) {
   // Stop tracking the handle and remove any job handles pointing to the same
   // scanner handle.
-  const auto& scanner_handle = response->scanner_handle;
+  ExtensionState& state = extension_state_[extension_id];
   std::erase_if(state.active_job_handles, [&scanner_handle](const auto& item) {
     return item.second == scanner_handle;
   });
   state.scanner_handles.erase(scanner_handle);
   state.approved_scanner_handles.erase(scanner_handle);
 
-  std::move(callback).Run(
-      response.To<api::document_scan::CloseScannerResponse>());
+  api::document_scan::CloseScannerResponse api_response;
+  if (response.has_value()) {
+    api_response =
+        api::document_scan::ConvertLorgnetteCloseScannerResponse(*response);
+  } else {
+    api_response.scanner_handle = scanner_handle;
+    api_response.result = api::document_scan::OperationResult::kInternalError;
+  }
+  std::move(callback).Run(std::move(api_response));
 }
 
 void DocumentScanAPIHandler::SetOptions(

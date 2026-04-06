@@ -11,6 +11,7 @@
 
 namespace lorgnette {
 class CancelScanResponse;
+class CloseScannerResponse;
 class GetCurrentConfigResponse;
 enum OperationResult : int;
 }  // namespace lorgnette
@@ -22,6 +23,9 @@ OperationResult ConvertLorgnetteOperationResult(
 
 CancelScanResponse ConvertLorgnetteCancelScanResponse(
     const lorgnette::CancelScanResponse& response);
+
+CloseScannerResponse ConvertLorgnetteCloseScannerResponse(
+    const lorgnette::CloseScannerResponse& response);
 
 GetOptionGroupsResponse ConvertLorgnetteGetCurrentConfigResponse(
     const lorgnette::GetCurrentConfigResponse& response);
@@ -63,13 +67,6 @@ struct TypeConverter<extensions::api::document_scan::GetOptionGroupsResponse,
                      crosapi::mojom::GetOptionGroupsResponsePtr> {
   static extensions::api::document_scan::GetOptionGroupsResponse Convert(
       const crosapi::mojom::GetOptionGroupsResponsePtr& input);
-};
-
-template <>
-struct TypeConverter<extensions::api::document_scan::CloseScannerResponse,
-                     crosapi::mojom::CloseScannerResponsePtr> {
-  static extensions::api::document_scan::CloseScannerResponse Convert(
-      const crosapi::mojom::CloseScannerResponsePtr& input);
 };
 
 template <>

@@ -25,8 +25,6 @@ class DocumentScanAsh : public mojom::DocumentScan {
   void OpenScanner(const std::string& client_id,
                    const std::string& scanner_id,
                    OpenScannerCallback callback) override;
-  void CloseScanner(const std::string& scanner_handle,
-                    CloseScannerCallback callback) override;
   void StartPreparedScan(const std::string& scanner_handle,
                          mojom::StartScanOptionsPtr options,
                          StartPreparedScanCallback callback) override;
