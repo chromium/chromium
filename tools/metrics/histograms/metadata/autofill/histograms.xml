@@ -4221,7 +4221,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab"
-    enum="PayLaterFormEvent" expires_after="2026-08-02">
+    enum="PayLaterTabsFormEvent" expires_after="2026-08-02">
   <owner>yishuil@google.com</owner>
   <owner>wilsonlow@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4231,7 +4231,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     selected, filled, and submitted from a suggestion dropdown with a tabbed
     pane. Additionally, suggestion tab switch events are also tracked. Each
     event log is emitted when the action occurs (suggestion shown, selected,
-    etc.). Each PayLaterFormEvent metric can be recorded once per page load.
+    etc.). Each PayLaterTabsFormEvent metric can be recorded once per page load.
   </summary>
 </histogram>
 

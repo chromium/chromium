@@ -5353,14 +5353,24 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Not Phishing"/>
 </enum>
 
-<!-- LINT.IfChange(PayLaterFormEvent) -->
+<!-- LINT.IfChange(PayLaterTabsFormEvent) -->
 
-<enum name="PayLaterFormEvent">
-  <int value="0" label="Suggestions shown (once)"/>
+<enum name="PayLaterTabsFormEvent">
+  <int value="0"
+      label="Suggestions shown on a BNPL-eligible page, regardless of whether
+             a pay later tab suggestion was shown (once)"/>
   <int value="1" label="Suggestions shown with Pay Now Pay Later tabs (once)"/>
+  <int value="8" label="Form filled with Affirm VCN (once)"/>
+  <int value="9" label="Form filled with Zip VCN (once)"/>
+  <int value="10" label="Form filled with Klarna VCN (once)"/>
+  <int value="11" label="Form filled with Afterpay VCN (once)"/>
+  <int value="12" label="Form submitted with Affirm VCN (once)"/>
+  <int value="13" label="Form submitted with Zip VCN (once)"/>
+  <int value="14" label="Form submitted with Klarna VCN (once)"/>
+  <int value="15" label="Form submitted with Afterpay VCN (once)"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:PayLaterFormEvent) -->
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:PayLaterTabsFormEvent) -->
 
 <enum name="PaymentsWindowUserConsentDialogResult">
   <int value="0" label="The tab or browser was closed"/>
