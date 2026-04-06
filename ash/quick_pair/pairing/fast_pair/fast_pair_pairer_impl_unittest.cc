@@ -233,7 +233,7 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient, DanglingUntriaged>
+  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient>
       fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
@@ -271,8 +271,11 @@ class FastPairPairerImplTest : public AshTestBase {
   }
 
   void TearDown() override {
-    fast_pair_repository_.reset();
-    pairer_.reset();
+    // smart pointer managed by itself
+    fake_fast_pair_handshake_ = nullptr;
+    data_encryptor_ = nullptr;
+    gatt_service_client_ = nullptr;
+    fake_bluetooth_device_ptr_ = nullptr;
     ClearLogin();
     AshTestBase::TearDown();
   }
@@ -308,6 +311,8 @@ class FastPairPairerImplTest : public AshTestBase {
   }
 
   void EraseHandshake() {
+    CHECK(data_encryptor_);
+    data_encryptor_ = nullptr;
     FastPairHandshakeLookup::GetInstance()->Erase(device_);
   }
 
@@ -484,8 +489,7 @@ class FastPairPairerImplTest : public AshTestBase {
   bool on_ble_rotation_callback_called_ = false;
   std::optional<PairFailure> failure_ = std::nullopt;
   std::unique_ptr<FakeBluetoothDevice> fake_bluetooth_device_;
-  raw_ptr<FakeBluetoothDevice, DanglingUntriaged> fake_bluetooth_device_ptr_ =
-      nullptr;
+  raw_ptr<FakeBluetoothDevice> fake_bluetooth_device_ptr_ = nullptr;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
@@ -504,10 +508,8 @@ class FastPairPairerImplTest : public AshTestBase {
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
   std::unique_ptr<FakeFastPairDataEncryptor> data_encryptor_unique_;
-  raw_ptr<FakeFastPairDataEncryptor, DanglingUntriaged> data_encryptor_ =
-      nullptr;
-  raw_ptr<FakeFastPairHandshake, DanglingUntriaged> fake_fast_pair_handshake_ =
-      nullptr;
+  raw_ptr<FakeFastPairDataEncryptor> data_encryptor_ = nullptr;
+  raw_ptr<FakeFastPairHandshake> fake_fast_pair_handshake_ = nullptr;
   std::unique_ptr<FastPairPairer> pairer_;
   base::WeakPtrFactory<FastPairPairerImplTest> weak_ptr_factory_{this};
 };
