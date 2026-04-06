@@ -4,9 +4,9 @@
 
 #include "{{module.path}}-shared.h"
 
-// Used to support stream output operator for enums.
-// TODO(dcheng): Consider omitting this somehow if not needed.
+{%- if enums %}
 #include <ostream>
+{%- endif %}
 #include <utility>
 
 {%- if all_enums %}

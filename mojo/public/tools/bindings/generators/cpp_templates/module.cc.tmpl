@@ -13,9 +13,14 @@
 
 #include "{{variant_path(module.path, variant)}}.h"
 
-#include <math.h>
 #include <stdint.h>
 #include <utility>
+
+{%- if interfaces or unions %}
+#include "base/notreached.h"
+{%- endif %}
+{%- if interfaces %}
+#include <math.h>
 
 #include "base/debug/alias.h"
 #include "base/run_loop.h"
@@ -23,19 +28,25 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+{%- endif %}
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
+{%- if interfaces %}
 #include "mojo/public/cpp/bindings/lib/generated_code_util.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
 #include "mojo/public/cpp/bindings/lib/proxy_to_responder.h"
 #include "mojo/public/cpp/bindings/lib/send_message_helper.h"
+{%- endif %}
 #include "mojo/public/cpp/bindings/lib/serialization.h"
-#include "mojo/public/cpp/bindings/lib/serialization_util.h"
+{%- if interfaces %}
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
+{%- endif %}
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
+{%- if interfaces %}
 #include "mojo/public/cpp/bindings/urgent_message_scope.h"
 #include "mojo/public/interfaces/bindings/interface_control_messages.mojom.h"
+{%- endif %}
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 #include "{{module.path}}-params-data.h"
