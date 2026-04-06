@@ -93,11 +93,12 @@ bitflags::bitflags! {
 
 declare_mojo_options!(MojoReadDataOptions, flags: raw_ffi::MojoReadDataFlags);
 
-// FOR_RELEASE: We should probably replace this with separate `read`, `discard`,
-// `query`, and `peek` functions. The various caveats in the description are
-// silly, and I see no downside to doing it here.
-// FOR_RELEASE: We should also have fully-safe equivalents that take in an array
-// of known-initialized bytes, or allocate the memory themselves.
+// TODO(crbug.com/498966831): We should probably replace this with separate
+// `read`, `discard`, `query`, and `peek` functions. The various caveats in the
+// description are silly, and I see no downside to doing it here.
+// TODO(crbug.com/498966845): We should also have fully-safe equivalents that
+// take in an array of known-initialized bytes, or allocate the memory
+// themselves.
 
 /// Read as much data as possible from given data pipe into `elements`. On
 /// success, returns the number of bytes read. Flags may be passed to make this

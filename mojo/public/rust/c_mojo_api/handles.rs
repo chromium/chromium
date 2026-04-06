@@ -44,6 +44,15 @@ use crate::result::*;
 static_assertions::assert_type_eq_all!(raw_ffi::MojoHandle, usize);
 static_assertions::assert_type_eq_all!(raw_ffi::MojoMessageHandle, usize);
 
+// TODO(crbug.com/498966599): Expose and use base::win::IsPseudoHandle
+// instead of reimplementing it here. See the documentation for that
+// function for more information.
+fn is_pseudohandle(raw_value: raw_ffi::MojoHandle) -> bool {
+    // Truncate to 32 bits, and treat as signed
+    let val = raw_value as i32;
+    return (-12..0).contains(&val);
+}
+
 /// A wrapper for the MojoHandle C type which is guaranteed to be live.
 /// This type can represent any handle except for a message object.
 #[repr(transparent)]
@@ -59,12 +68,12 @@ impl UntypedHandle {
     /// Create a new UntypedHandle from a raw value.
     ///
     /// # Safety
-    /// The value must represent a live, unonwned handle.
+    /// The value must represent a live, unowned handle.
     /// Passing a value of 0 will panic, but will not cause undefined behavior.
     pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
-        // FOR_RELEASE: There are apparently other types of handle ("Pseudohandles")
-        // that should not be representable by this type. Look into these and check for
-        // them here.
+        if is_pseudohandle(raw_value) {
+            panic!("Cannot wrap a pseudohandle (value between 0 and -12)!")
+        }
         Self { handle_value: raw_value.try_into().unwrap(), _private: () }
     }
 
@@ -138,8 +147,12 @@ impl MessageHandle {
     /// Create a new MessageHandle from a raw value.
     ///
     /// # Safety
-    /// The value must represent a live, unonwned handle.
+    /// The value must represent a live, unowned handle.
+    /// Passing a value of 0 will panic, but will not cause undefined behavior.
     pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
+        if is_pseudohandle(raw_value) {
+            panic!("Cannot wrap a handle value between 0 and -12!")
+        }
         Self {
             handle_value: raw_value.try_into().unwrap(),
             _phantom_unsync: std::marker::PhantomData,

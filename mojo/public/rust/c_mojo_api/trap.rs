@@ -61,7 +61,7 @@ pub mod types {
     /// `context`.
     pub type EventHandler = extern "C" fn(&TrapEvent);
 
-    // FOR_RELEASE(https://crbug.com/458796903): Don't hardcode these
+    // TODO(https://crbug.com/458796903): Don't hardcode these
     /// An enum describing the two possible conditions for a trigger to fire:
     /// either when a signal becomes satisfied, or when it become unsatisfied.
     #[derive(Clone, Copy, Debug)]

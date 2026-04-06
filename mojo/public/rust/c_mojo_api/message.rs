@@ -163,8 +163,13 @@ bitflags::bitflags! {
 }
 declare_mojo_options!(MojoGetMessageDataOptions, flags: raw_ffi::MojoGetMessageDataFlags);
 
-pub enum GetMessageDataStatus<'a> {
-    Success { bytes: &'a [u8], num_handles_written: usize },
+/// This type represents the result of calling GetMessageData; see the
+/// documentation there for details.
+///
+/// The `BytesRef` parameter should be either &[u8] or &mut [u8].
+//  Internally, it may also be a "raw" slice (pointer + length)
+pub enum GetMessageDataStatus<BytesRef> {
+    Success { bytes: BytesRef, num_handles_written: usize },
     NotEnoughCapacity { num_handles_attached: u32 },
     Error(MojoError),
 }
@@ -199,14 +204,72 @@ pub enum GetMessageDataStatus<'a> {
 /// - `NotFound`: if the message's handles have already been extracted and
 ///   `handles` was not `None`
 /// - `Aborted`: if the message is in an unrecoverable state.
-// FOR_RELEASE: Add a fully-safe equivalent that allocates memory for the
-// handles instead of taking a buffer as an out-parameter, and/or one that takes
-// in an initialized slice to start with.
-// FOR_RELEASE: Add a mutable equivalent (takes &mut, returns &mut)
+// TODO(crbug.com/498966845): Add a fully-safe equivalent that allocates memory
+// for the handles instead of taking a buffer as an out-parameter, and/or one
+// that takes in an initialized slice to start with.
 pub fn MojoGetMessageData<'a>(
     message: &'a MessageHandle,
     handles: Option<&mut [std::mem::MaybeUninit<UntypedHandle>]>,
-) -> GetMessageDataStatus<'a> {
+) -> GetMessageDataStatus<&'a [u8]> {
+    // Call the internal function to get a raw slice, then create a shared
+    // reference to it here.
+    match MojoGetMessageDataInternal(message, handles) {
+        GetMessageDataStatus::Success { bytes: (buffer, buffer_size), num_handles_written } => {
+            GetMessageDataStatus::Success {
+                // SAFETY: `MojoGetMessageDataInternal` promises this call is safe
+                bytes: unsafe { std::slice::from_raw_parts(buffer, buffer_size) },
+                num_handles_written,
+            }
+        }
+        // Other return values are just passed through unchanged
+        GetMessageDataStatus::NotEnoughCapacity { num_handles_attached } => {
+            GetMessageDataStatus::NotEnoughCapacity { num_handles_attached }
+        }
+        GetMessageDataStatus::Error(err) => GetMessageDataStatus::Error(err),
+    }
+}
+
+/// This function is identical to `MojoGetMessageData`, but takes and returns a
+/// mutable reference.
+pub fn MojoGetMessageDataMut<'a>(
+    message: &'a mut MessageHandle,
+    handles: Option<&mut [std::mem::MaybeUninit<UntypedHandle>]>,
+) -> GetMessageDataStatus<&'a mut [u8]> {
+    // Call the internal function to get a raw slice, then create a mutable
+    // reference to it here.
+    match MojoGetMessageDataInternal(message, handles) {
+        // SAFETY: `MojoGetMessageDataInternal` promises this call is safe,
+        // and we have a mutable reference to `message`.
+        GetMessageDataStatus::Success { bytes: (buffer, buffer_size), num_handles_written } => {
+            GetMessageDataStatus::Success {
+                bytes: unsafe { std::slice::from_raw_parts_mut(buffer, buffer_size) },
+                num_handles_written,
+            }
+        }
+        // Other return values are just passed through unchanged
+        GetMessageDataStatus::NotEnoughCapacity { num_handles_attached } => {
+            GetMessageDataStatus::NotEnoughCapacity { num_handles_attached }
+        }
+        GetMessageDataStatus::Error(err) => GetMessageDataStatus::Error(err),
+    }
+}
+
+/// This function defines the core functionality used by the various
+/// MojoGetMessageData functions. See the documentation for MojoGetMessageData
+/// for an explanation of its behavior and requirements.
+///
+/// Safety considerations:
+///
+/// If this function returns `Success`, then it is safe to call
+/// `slice::from_raw_parts` on the contained pointer + size. If the caller has
+/// a mutable reference to `message`, then it is also safe to call
+/// `slice::from_raw_parts_mut`.
+///
+/// In both cases, the lifetime of the slice is the same as that of `message`.
+fn MojoGetMessageDataInternal(
+    message: &MessageHandle,
+    handles: Option<&mut [std::mem::MaybeUninit<UntypedHandle>]>,
+) -> GetMessageDataStatus<(*mut u8, usize)> {
     let flags = if handles.is_none() {
         GetMessageDataFlags::IGNORE_HANDLES
     } else {
@@ -244,15 +307,16 @@ pub fn MojoGetMessageData<'a>(
             // Will not panic if usize has at least 32 bits, which is true for Chromium
             // targets
             let buffer_size: usize = num_bytes.try_into().unwrap();
-            // SAFETY: `buffer` and `buffer_size` were obtained by calling
-            // `MojoGetMessageData`, so we trust that they are valid, aligned,
-            // readable, etc.
+            // SAFETY: We must show that it is valid to call `std::slice::from_raw_parts` on
+            // the `bytes` field of the return value. `buffer` and `buffer_size`
+            // were obtained by calling `MojoGetMessageData`, so we trust that
+            // they are valid, aligned, readable, etc.
             // The buffer is readable as long as the message is alive, and the type
             // of this function ensures that the lifetime of the resulting reference
-            // is the same as that of `message`.
-            let buffer_slice = unsafe { std::slice::from_raw_parts(buffer.cast(), buffer_size) };
+            // is the same as that of `message`. If `message` is writable, then
+            // the buffer is also writable.
             return GetMessageDataStatus::Success {
-                bytes: buffer_slice,
+                bytes: (buffer.cast(), buffer_size),
                 num_handles_written: num_handles.try_into().unwrap(),
             };
         }
