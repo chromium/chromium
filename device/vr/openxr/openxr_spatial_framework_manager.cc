@@ -42,11 +42,14 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
   absl::flat_hash_map<XrSpatialCapabilityEXT,
                       absl::flat_hash_set<XrSpatialComponentTypeEXT>>
       capability_configuration;
+  bool mesh_detection_enabled = supported_features.contains(
+      device::mojom::XRSessionFeature::MESH_DETECTION);
   if (supported_features.contains(
-          device::mojom::XRSessionFeature::PLANE_DETECTION)) {
+          device::mojom::XRSessionFeature::PLANE_DETECTION) ||
+      mesh_detection_enabled) {
     plane_manager_ = std::make_unique<OpenXrSpatialPlaneManager>(
         base_space_, extension_helper_.get(), *this, openxr_->instance(),
-        openxr_->system());
+        openxr_->system(), mesh_detection_enabled);
     plane_manager_->PopulateCapabilityConfiguration(capability_configuration);
   }
 
@@ -120,6 +123,13 @@ OpenXrSceneUnderstandingManagerType OpenXrSpatialFrameworkManager::GetType()
 
 OpenXrPlaneManager* OpenXrSpatialFrameworkManager::GetPlaneManager() {
   return plane_manager_.get();
+}
+
+OpenXrMeshManager* OpenXrSpatialFrameworkManager::GetMeshManager() {
+  if (plane_manager_ && plane_manager_->mesh_detection_enabled()) {
+    return plane_manager_.get();
+  }
+  return nullptr;
 }
 
 OpenXrHitTestManager* OpenXrSpatialFrameworkManager::GetHitTestManager() {
@@ -288,11 +298,15 @@ void OpenXrSpatialFrameworkManagerFactory::CheckAndUpdateEnabledState(
 
   std::vector<XrSpatialCapabilityEXT> capabilities =
       GetCapabilities(xrEnumerateSpatialCapabilitiesEXT, instance, system_id);
+  // Mesh detection is also supported when plane tracking is available, since
+  // meshes are synthesized from plane bounding box data.
   if (extension_enum->ExtensionSupported(
           XR_EXT_SPATIAL_PLANE_TRACKING_EXTENSION_NAME) &&
       OpenXrSpatialPlaneManager::IsSupported(capabilities)) {
     supported_features_.insert(
         device::mojom::XRSessionFeature::PLANE_DETECTION);
+    supported_features_.insert(
+        device::mojom::XRSessionFeature::MESH_DETECTION);
   }
 
   if (extension_enum->ExtensionSupported(

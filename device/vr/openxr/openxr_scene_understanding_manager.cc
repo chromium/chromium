@@ -16,4 +16,8 @@ OpenXRSceneUnderstandingManager::~OpenXRSceneUnderstandingManager() = default;
 void OpenXRSceneUnderstandingManager::OnDiscoveryRecommended(
     const XrEventDataSpatialDiscoveryRecommendedEXT* event_data) {}
 
+OpenXrMeshManager* OpenXRSceneUnderstandingManager::GetMeshManager() {
+  return nullptr;
+}
+
 }  // namespace device

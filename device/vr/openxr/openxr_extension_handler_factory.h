@@ -85,8 +85,7 @@ class OpenXrExtensionHandlerFactory {
   virtual std::unique_ptr<OpenXrMeshManager> CreateMeshManager(
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,
-      XrSpace mojo_space,
-      XrSpace view_space) const;
+      XrSpace mojo_space) const;
 
   virtual std::unique_ptr<OpenXrDepthSensor> CreateDepthSensor(
       const OpenXrExtensionHelper& extension_helper,

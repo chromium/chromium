@@ -66,6 +66,13 @@ bool IsSceneUnderstandingFeature(mojom::XRSessionFeature feature) {
 }
 }  // namespace
 
+bool OpenXrExtensionHelper::HasSceneUnderstandingFeatures(
+    const std::vector<mojom::XRSessionFeature>& required_features,
+    const std::vector<mojom::XRSessionFeature>& optional_features) const {
+  return std::ranges::any_of(required_features, &IsSceneUnderstandingFeature) ||
+         std::ranges::any_of(optional_features, &IsSceneUnderstandingFeature);
+}
+
 OpenXrExtensionMethods::OpenXrExtensionMethods() = default;
 OpenXrExtensionMethods::~OpenXrExtensionMethods() = default;
 
@@ -256,13 +263,11 @@ std::unique_ptr<OpenXrDepthSensor> OpenXrExtensionHelper::CreateDepthSensor(
 
 std::unique_ptr<OpenXrMeshManager> OpenXrExtensionHelper::CreateMeshManager(
     XrSession session,
-    XrSpace mojo_space,
-    XrSpace view_space) const {
+    XrSpace mojo_space) const {
   return CreateExtensionHandler<OpenXrMeshManager>(
-      [this, session, mojo_space,
-       view_space](const OpenXrExtensionHandlerFactory& factory) {
-        return factory.CreateMeshManager(*this, session, mojo_space,
-                                         view_space);
+      [this, session,
+       mojo_space](const OpenXrExtensionHandlerFactory& factory) {
+        return factory.CreateMeshManager(*this, session, mojo_space);
       });
 }
 

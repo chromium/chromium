@@ -39,7 +39,8 @@ class OpenXrMeshManagerAndroid : public OpenXrMeshManager {
   ~OpenXrMeshManagerAndroid() override;
 
   mojom::XRMeshDetectionDataPtr GetDetectedMeshesData(
-      XrTime frame_time) override;
+      XrTime frame_time,
+      XrSpace view_space) override;
 
   std::optional<XrLocation> GetXrLocationFromMesh(
       MeshId mesh_id,

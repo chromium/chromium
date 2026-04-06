@@ -31,6 +31,7 @@ class OpenXRSceneUnderstandingManagerAndroid
   OpenXrPlaneManager* GetPlaneManager() override;
   OpenXrAnchorManager* GetAnchorManager() override;
   OpenXrHitTestManager* GetHitTestManager() override;
+
  private:
   XrSpace mojo_space_;
 
@@ -59,6 +60,11 @@ class OpenXrSceneUnderstandingManagerAndroidFactory
   CreateSceneUnderstandingManager(const OpenXrExtensionHelper& extension_helper,
                                   OpenXrApiWrapper* openxr,
                                   XrSpace mojo_space) const override;
+
+  std::unique_ptr<OpenXrMeshManager> CreateMeshManager(
+       const OpenXrExtensionHelper& extension_helper,
+       XrSession session,
+       XrSpace mojo_space) const override;
 
  private:
   std::set<device::mojom::XRSessionFeature> supported_features_;

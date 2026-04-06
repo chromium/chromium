@@ -73,8 +73,7 @@ std::unique_ptr<OpenXrMeshManager>
 OpenXrExtensionHandlerFactory::CreateMeshManager(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
-    XrSpace mojo_space,
-    XrSpace view_space) const {
+    XrSpace mojo_space) const {
   return nullptr;
 }
 

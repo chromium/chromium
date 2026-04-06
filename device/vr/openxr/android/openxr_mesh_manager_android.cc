@@ -203,7 +203,8 @@ bool OpenXrMeshManagerAndroid::FetchAndConvertSubmeshes(
 }
 
 mojom::XRMeshDetectionDataPtr OpenXrMeshManagerAndroid::GetDetectedMeshesData(
-    XrTime frame_time) {
+    XrTime frame_time,
+    XrSpace view_space) {
   if (mesh_tracker_ == XR_NULL_HANDLE) {
     return nullptr;
   }

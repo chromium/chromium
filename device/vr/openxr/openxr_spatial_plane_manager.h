@@ -10,7 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
+#include "device/vr/openxr/openxr_mesh_manager.h"
 #include "device/vr/openxr/openxr_plane_manager.h"
+#include "device/vr/public/mojom/mesh_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -21,9 +23,10 @@ class OpenXrExtensionHelper;
 class OpenXrSpatialFrameworkManager;
 
 // Delegate class for OpenXrSpatialFrameworkManager responsible for integration
-// with the XR_EXT_SPATIAL_PLANE_TRACKING extension (aka the "Plane detection"
-// feature).
-class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
+// with the XR_EXT_SPATIAL_PLANE_TRACKING extension. Also synthesizes mesh data
+// from plane tracking entities to support the mesh detection feature.
+class OpenXrSpatialPlaneManager : public OpenXrPlaneManager,
+                                  public OpenXrMeshManager {
  public:
   // Queries the supported spatial capabilities and spatial components on the
   // current system instance and returns whether or not this manager can be
@@ -36,7 +39,8 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
       const OpenXrExtensionHelper& extension_helper,
       const OpenXrSpatialFrameworkManager& framework_manager,
       XrInstance instance,
-      XrSystemId system);
+      XrSystemId system,
+      bool mesh_detection_enabled);
   ~OpenXrSpatialPlaneManager() override;
 
   // Mutates the provided map to fill in the necessary capabilities and
@@ -60,12 +64,25 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
       PlaneId plane_id,
       const gfx::Transform& plane_id_from_object) const override;
 
+  // OpenXrMeshManager implementation.
+  mojom::XRMeshDetectionDataPtr GetDetectedMeshesData(
+      XrTime frame_time,
+      XrSpace view_space) override;
+  std::optional<XrLocation> GetXrLocationFromMesh(
+      MeshId mesh_id,
+      const gfx::Transform& mesh_id_from_object) const override;
+  void OnReferenceSpaceChanged() override;
+
+  std::optional<device::Pose> TryGetMojoFromMesh(MeshId mesh_id) const;
+  MeshId GetMeshId(XrSpatialEntityIdEXT entity_id) const;
+
   // Return the `XrSpatialEntityIdEXT` of the corresponding |plane_id|. Will
   // return XR_NULL_SPATIAL_ENTITY_ID_EXT if the |plane_id| is not currently
   // tracked or otherwise invalid.
   XrSpatialEntityIdEXT GetEntityId(PlaneId plane_id) const;
 
   bool can_parent_anchors() const { return can_parent_anchors_; }
+  bool mesh_detection_enabled() const { return mesh_detection_enabled_; }
 
  private:
   bool GetPolygonFromBuffer(XrSpatialSnapshotEXT snapshot,
@@ -75,17 +92,25 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
   void GetPolygonFromExtent(const XrSpatialBounded2DDataEXT& bounded_2d_data,
                             mojom::XRPlaneDataPtr& plane_data) const;
 
+  XrSpatialEntityIdEXT GetMeshEntityId(MeshId mesh_id) const;
+
   XrSpace mojo_space_;
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   const raw_ref<const OpenXrSpatialFrameworkManager> framework_manager_;
 
+  // Plane data.
   absl::flat_hash_map<XrSpatialEntityIdEXT, mojom::XRPlaneDataPtr>
       entity_id_to_data_;
   absl::flat_hash_set<XrSpatialEntityIdEXT> updated_entity_ids_;
 
+  // Mesh data synthesized from plane tracking entities.
+  bool mesh_detection_enabled_ = false;
+  absl::flat_hash_map<XrSpatialEntityIdEXT, mojom::XRMeshDataPtr>
+      mesh_entity_id_to_data_;
+  absl::flat_hash_set<XrSpatialEntityIdEXT> mesh_updated_entity_ids_;
+
   bool can_parent_anchors_ = false;
 
-  // Both of these components are guaranteed to be supported for the
   absl::flat_hash_set<XrSpatialComponentTypeEXT> enabled_components_;
   bool polygon_enabled_ = false;
   bool semantic_label_enabled_ = false;

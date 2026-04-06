@@ -17,7 +17,8 @@ class OpenXrMeshManager {
  public:
   virtual ~OpenXrMeshManager() = default;
   virtual mojom::XRMeshDetectionDataPtr GetDetectedMeshesData(
-      XrTime frame_time) = 0;
+      XrTime frame_time,
+      XrSpace view_space) = 0;
   virtual std::optional<XrLocation> GetXrLocationFromMesh(
       MeshId mesh_id,
       const gfx::Transform& mesh_id_from_object) const = 0;

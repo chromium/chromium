@@ -158,6 +158,13 @@ class OpenXrExtensionHelper {
   // supported.
   bool IsFeatureSupported(device::mojom::XRSessionFeature feature) const;
 
+  // Returns whether the given required/optional features contain any scene
+  // understanding features (anchors, hit-test, plane detection). Used to
+  // decide when CreateSceneUnderstandingManager should be invoked.
+  bool HasSceneUnderstandingFeatures(
+      const std::vector<mojom::XRSessionFeature>& required_features,
+      const std::vector<mojom::XRSessionFeature>& optional_features) const;
+
   // Feature Implementation Helpers ---------------------------------------
   //
   // There may be multiple extensions that can support a given WebXR feature,
@@ -188,8 +195,7 @@ class OpenXrExtensionHelper {
 
   std::unique_ptr<OpenXrMeshManager> CreateMeshManager(
       XrSession session,
-      XrSpace mojo_space,
-      XrSpace view_space) const;
+      XrSpace mojo_space) const;
 
   std::unique_ptr<OpenXrStageBoundsProvider> CreateStageBoundsProvider(
       XrSession session) const;

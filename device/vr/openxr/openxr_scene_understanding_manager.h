@@ -7,6 +7,7 @@
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "device/vr/openxr/openxr_hit_test_manager.h"
+#include "device/vr/openxr/openxr_mesh_manager.h"
 #include "device/vr/openxr/openxr_plane_manager.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -45,6 +46,7 @@ class OpenXRSceneUnderstandingManager {
       const XrEventDataSpatialDiscoveryRecommendedEXT* event_data);
 
   virtual OpenXrSceneUnderstandingManagerType GetType() const = 0;
+  virtual OpenXrMeshManager* GetMeshManager();
   virtual OpenXrPlaneManager* GetPlaneManager() = 0;
   virtual OpenXrAnchorManager* GetAnchorManager() = 0;
   virtual OpenXrHitTestManager* GetHitTestManager() = 0;

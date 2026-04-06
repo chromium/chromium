@@ -16,6 +16,7 @@
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/cpp/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -97,6 +98,11 @@ OpenXrDevice::OpenXrDevice(
   if (base::FeatureList::IsEnabled(features::kWebXRPlaneDetection)) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::PLANE_DETECTION);
+  }
+  // Only support Mesh Detection if the feature flag is enabled.
+  if (base::FeatureList::IsEnabled(blink::features::kWebXRMeshDetection)) {
+    device_data.supported_features.emplace_back(
+        mojom::XRSessionFeature::MESH_DETECTION);
   }
 
   SetDeviceData(std::move(device_data));

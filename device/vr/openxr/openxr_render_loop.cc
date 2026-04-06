@@ -750,6 +750,14 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
     if (plane_manager) {
       frame_data->detected_planes_data = plane_manager->GetDetectedPlanesData();
     }
+
+    OpenXrMeshManager* mesh_manager = openxr_->GetMeshManager();
+    if (mesh_manager) {
+      XrSpace view_space = openxr_->GetReferenceSpace(
+          mojom::XRReferenceSpaceType::kViewer);
+      frame_data->detected_meshes_data =
+          mesh_manager->GetDetectedMeshesData(frame_time, view_space);
+    }
   }
 
   // Get results for hit test subscriptions.

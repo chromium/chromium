@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "device/vr/openxr/android/openxr_mesh_manager_android.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -75,6 +76,7 @@ OpenXrSceneUnderstandingManagerAndroidFactory::GetRequestedExtensions() const {
   static base::NoDestructor<base::flat_set<std::string_view>> kExtensions({
       XR_ANDROID_TRACKABLES_EXTENSION_NAME,
       XR_ANDROID_RAYCAST_EXTENSION_NAME,
+      XR_ANDROID_SCENE_MESHING_EXTENSION_NAME,
   });
 
   return *kExtensions;
@@ -99,6 +101,10 @@ void OpenXrSceneUnderstandingManagerAndroidFactory::CheckAndUpdateEnabledState(
       supported_features_.insert(device::mojom::XRSessionFeature::HIT_TEST);
     }
   }
+  if (extension_enum->ExtensionSupported(
+          XR_ANDROID_SCENE_MESHING_EXTENSION_NAME)) {
+    supported_features_.insert(device::mojom::XRSessionFeature::MESH_DETECTION);
+  }
 
   SetEnabled(!supported_features_.empty());
 }
@@ -115,6 +121,20 @@ OpenXrSceneUnderstandingManagerAndroidFactory::CreateSceneUnderstandingManager(
         extension_helper, openxr->session(), mojo_space);
   }
 
+  return nullptr;
+}
+
+std::unique_ptr<OpenXrMeshManager>
+OpenXrSceneUnderstandingManagerAndroidFactory::CreateMeshManager(
+    const OpenXrExtensionHelper& extension_helper,
+    XrSession session,
+    XrSpace mojo_space) const {
+  const auto* extension_enum = extension_helper.ExtensionEnumeration();
+  if (extension_enum->ExtensionSupported(
+          XR_ANDROID_SCENE_MESHING_EXTENSION_NAME)) {
+    return std::make_unique<OpenXrMeshManagerAndroid>(
+        extension_helper, session, mojo_space);
+  }
   return nullptr;
 }
 }  // namespace device

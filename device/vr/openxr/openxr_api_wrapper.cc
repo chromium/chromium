@@ -430,7 +430,7 @@ OpenXrPlaneManager* OpenXrApiWrapper::GetPlaneManager() {
 }
 
 OpenXrMeshManager* OpenXrApiWrapper::GetMeshManager() {
-  return nullptr;
+  return mesh_manager_.get();
 }
 
 OpenXrAnchorManager* OpenXrApiWrapper::GetAnchorManager() {
@@ -531,10 +531,6 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         is_enabled = unbounded_space_ != XR_NULL_HANDLE;
         break;
 
-      case mojom::XRSessionFeature::MESH_DETECTION:
-        is_enabled = false;
-        break;
-
       case mojom::XRSessionFeature::PLANE_DETECTION:
         if (scene_understanding_manager_ == nullptr) {
           scene_understanding_manager_ =
@@ -606,6 +602,14 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         // Enabled if the extension check is good and the graphics binding
         // also supports it.
         is_enabled = graphics_binding_->SupportsLayers();
+        break;
+
+      case mojom::XRSessionFeature::MESH_DETECTION:
+        if (!mesh_manager_) {
+          mesh_manager_ = extension_helper.CreateMeshManager(
+              session_, local_space_);
+        }
+        is_enabled = mesh_manager_ != nullptr;
         break;
 
       case mojom::XRSessionFeature::FRONT_FACING:
@@ -862,6 +866,10 @@ OpenXrApiWrapper::GetXrLocationFromNativeOriginInformation(
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       NOTREACHED();
     case mojom::XRNativeOriginInformation::Tag::kMeshId:
+      if (auto* mesh_manager = GetMeshManager(); mesh_manager) {
+        return mesh_manager->GetXrLocationFromMesh(native_origin.get_mesh_id(),
+                                                   native_origin_from_object);
+      }
       return std::nullopt;
   }
 }

@@ -24,6 +24,12 @@ static constexpr gfx::Transform kZNormalToYNormalTransform =
                             0,  0, -1, 0,
                             0,  1,  0, 0,
                             0,  0,  0, 1);
+
+float Cross2D(const mojom::XRPlanePointDataPtr& a,
+              const mojom::XRPlanePointDataPtr& b,
+              const mojom::XRPlanePointDataPtr& c) {
+  return (b->x - a->x) * (c->z - a->z) - (b->z - a->z) * (c->x - a->x);
+}
 // clang-format on
 }  // namespace
 
@@ -174,6 +180,108 @@ mojom::XRSemanticLabel ToMojomSemanticLabel(
     default:
       return mojom::XRSemanticLabel::kOther;
   }
+}
+
+bool IsConvexPolygon(
+    const std::vector<mojom::XRPlanePointDataPtr>& polygon) {
+  const size_t n = polygon.size();
+  if (n < 3) {
+    return false;
+  }
+  bool has_positive = false;
+  bool has_negative = false;
+  for (size_t i = 0; i < n; ++i) {
+    float cross =
+        Cross2D(polygon[i], polygon[(i + 1) % n], polygon[(i + 2) % n]);
+    if (cross > 0) {
+      has_positive = true;
+    } else if (cross < 0) {
+      has_negative = true;
+    }
+    if (has_positive && has_negative) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::vector<uint32_t> EarClipTriangulate(
+    const std::vector<mojom::XRPlanePointDataPtr>& polygon) {
+  std::vector<uint32_t> indices;
+  const size_t n = polygon.size();
+  if (n < 3) {
+    return indices;
+  }
+
+  std::vector<uint32_t> remaining;
+  remaining.reserve(n);
+  for (uint32_t i = 0; i < n; ++i) {
+    remaining.push_back(i);
+  }
+
+  // Determine winding: if total signed area is negative, polygon is clockwise.
+  float area = 0;
+  for (size_t i = 0; i < n; ++i) {
+    const auto& cur = polygon[i];
+    const auto& next = polygon[(i + 1) % n];
+    area += cur->x * next->z - next->x * cur->z;
+  }
+  const bool ccw = area > 0;
+
+  size_t iterations = 0;
+  const size_t max_iterations = remaining.size() * remaining.size();
+  while (remaining.size() > 2 && iterations < max_iterations) {
+    bool ear_found = false;
+    const size_t m = remaining.size();
+    for (size_t i = 0; i < m; ++i) {
+      uint32_t prev_idx = remaining[(i + m - 1) % m];
+      uint32_t cur_idx = remaining[i];
+      uint32_t next_idx = remaining[(i + 1) % m];
+
+      float cross =
+          Cross2D(polygon[prev_idx], polygon[cur_idx], polygon[next_idx]);
+      bool is_convex_vertex = ccw ? (cross > 0) : (cross < 0);
+      if (!is_convex_vertex) {
+        continue;
+      }
+
+      // Check that no other remaining vertex lies inside this triangle.
+      bool contains_point = false;
+      for (size_t j = 0; j < m; ++j) {
+        uint32_t test_idx = remaining[j];
+        if (test_idx == prev_idx || test_idx == cur_idx ||
+            test_idx == next_idx) {
+          continue;
+        }
+        float d1 =
+            Cross2D(polygon[prev_idx], polygon[cur_idx], polygon[test_idx]);
+        float d2 =
+            Cross2D(polygon[cur_idx], polygon[next_idx], polygon[test_idx]);
+        float d3 =
+            Cross2D(polygon[next_idx], polygon[prev_idx], polygon[test_idx]);
+        bool all_same_sign = ccw ? (d1 > 0 && d2 > 0 && d3 > 0)
+                                 : (d1 < 0 && d2 < 0 && d3 < 0);
+        if (all_same_sign) {
+          contains_point = true;
+          break;
+        }
+      }
+
+      if (!contains_point) {
+        indices.push_back(prev_idx);
+        indices.push_back(cur_idx);
+        indices.push_back(next_idx);
+        remaining.erase(remaining.begin() + i);
+        ear_found = true;
+        break;
+      }
+    }
+    ++iterations;
+    if (!ear_found) {
+      break;
+    }
+  }
+  return indices;
 }
 
 }  // namespace device
