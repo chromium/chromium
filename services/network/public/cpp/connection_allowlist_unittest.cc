@@ -44,7 +44,7 @@ TEST_F(ConnectionAllowlistParserTest, NoHeaders) {
   auto headers = GetHeaders(nullptr, nullptr);
   ConnectionAllowlists result =
       ParseConnectionAllowlistsFromHeaders(*headers, url());
-  EXPECT_EQ(url(), result.response_url);
+  EXPECT_TRUE(result.response_url.is_empty());
   EXPECT_FALSE(result.enforced);
   EXPECT_FALSE(result.report_only);
 }

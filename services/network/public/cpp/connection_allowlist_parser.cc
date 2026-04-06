@@ -122,7 +122,6 @@ ConnectionAllowlists ParseConnectionAllowlistsFromHeaders(
     const net::HttpResponseHeaders& headers,
     const GURL& response_url) {
   ConnectionAllowlists result;
-  result.response_url = response_url;
 
   auto enforced_header = headers.GetNormalizedHeader("Connection-Allowlist");
   if (enforced_header) {
@@ -133,6 +132,10 @@ ConnectionAllowlists ParseConnectionAllowlistsFromHeaders(
       headers.GetNormalizedHeader("Connection-Allowlist-Report-Only");
   if (report_only_header) {
     result.report_only = ParseHeader(*report_only_header, response_url);
+  }
+
+  if (enforced_header || report_only_header) {
+    result.response_url = response_url;
   }
 
   return result;

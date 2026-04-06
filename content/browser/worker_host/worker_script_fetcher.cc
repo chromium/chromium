@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/browser/connection_allowlist_gating.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -49,6 +50,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
@@ -173,14 +175,25 @@ void DidCreateScriptLoader(
     // be built from the
     // `main_script_load_params.response_head->parsed_headers`.
     PolicyContainerPolicies policies;
-    if (final_response_url.SchemeIsLocal() && creator_policies) {
-      policies.connection_allowlists =
-          std::move(creator_policies->connection_allowlists);
-    } else if (main_script_load_params->response_head &&
-               main_script_load_params->response_head->parsed_headers) {
-      policies.connection_allowlists =
-          main_script_load_params->response_head->parsed_headers
-              ->connection_allowlists;
+    if (base::FeatureList::IsEnabled(
+            network::features::kConnectionAllowlists)) {
+      if (final_response_url.SchemeIsLocal() && creator_policies) {
+        policies.connection_allowlists =
+            std::move(creator_policies->connection_allowlists);
+      } else if (ResponseContainsConnectionAllowlist(
+                     main_script_load_params->response_head.get()) &&
+                 ResponseEnablesConnectionAllowlistsOriginTrial(
+                     final_response_url,
+                     main_script_load_params->response_head->headers.get())) {
+        // Connection allowlist needs to be enforced for workers once the
+        // allowlist response header is received. The origin trial token for
+        // this feature is received within the same response. The token is
+        // parsed here to query the trial status. See
+        // https://wicg.github.io/connection-allowlists/.
+        policies.connection_allowlists =
+            main_script_load_params->response_head->parsed_headers
+                ->connection_allowlists;
+      }
     }
 
     std::move(callback).Run(std::make_optional<WorkerScriptFetcherResult>(

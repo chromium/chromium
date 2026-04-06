@@ -53,6 +53,7 @@
 #include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/client_hints/client_hints.h"
+#include "content/browser/connection_allowlist_gating.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/download/download_manager_impl.h"
@@ -1222,18 +1223,6 @@ net::StorageAccessApiStatus ShouldLoadWithStorageAccess(
                  ? begin_params.storage_access_api_status
                  : net::StorageAccessApiStatus::kNone;
   }
-}
-
-// Returns true if the parsed response headers contains a valid
-// "Connection-Allowlist" or "Connection-Allowlist-Report-Only" header.
-bool ResponseContainsConnectionAllowlist(
-    const network::mojom::URLResponseHead* response_head) {
-  return response_head && response_head->headers &&
-         response_head->parsed_headers &&
-         (response_head->parsed_headers->connection_allowlists.enforced
-              .has_value() ||
-          response_head->parsed_headers->connection_allowlists.report_only
-              .has_value());
 }
 
 const char* BeforeUnloadExecutionModeToString(
@@ -10816,26 +10805,20 @@ void NavigationRequest::ComputePoliciesToCommit() {
   }
 
   if (ResponseContainsConnectionAllowlist(response_head_.get()) &&
-      base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+      base::FeatureList::IsEnabled(network::features::kConnectionAllowlists) &&
+      ResponseEnablesConnectionAllowlistsOriginTrial(
+          common_params_->url, response_head_->headers.get())) {
     // Connection allowlist needs to be enforced once the allowlist response
     // header is received. The origin trial token for this feature is received
     // within the same response. The token is parsed here to query the trial
     // status, instead of waiting for the response sent to renderer process,
     // where the trial status is first available for most other web platform
     // features. See https://wicg.github.io/connection-allowlists/.
-    bool connection_allowlist_origin_trial_enabled =
-        base::FeatureList::IsEnabled(
-            blink::features::kOverrideConnectionAllowlistOriginTrial) ||
-        blink::TrialTokenValidator().RequestEnablesFeature(
-            common_params_->url, response_head_->headers.get(),
-            "ConnectionAllowlist", base::Time::Now());
-
+    //
     // The allowlist is stored in the policy container only if both origin trial
     // and base::Feature are enabled.
-    if (connection_allowlist_origin_trial_enabled) {
-      policy_container_builder_->SetConnectionAllowlists(
-          std::move(response_head_->parsed_headers->connection_allowlists));
-    }
+    policy_container_builder_->SetConnectionAllowlists(
+        std::move(response_head_->parsed_headers->connection_allowlists));
   }
 
   if (!devtools_instrumentation::ShouldBypassCSP(*this)) {
