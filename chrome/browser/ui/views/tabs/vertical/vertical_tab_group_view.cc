@@ -51,7 +51,7 @@
 namespace {
 constexpr int kTabVerticalPadding = 2;
 constexpr int kGroupLineWidth = 2;
-constexpr int kGroupLineCollapsedLeadingPadding = 2;
+constexpr int kGroupLineCollapsedLeadingPadding = 6;
 constexpr int kGroupLineCornerRadius = 4;
 constexpr int kGroupHeaderHeight = 26;
 constexpr int kGroupHeaderVerticalMargin = 4;
