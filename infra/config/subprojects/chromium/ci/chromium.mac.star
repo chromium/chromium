@@ -635,6 +635,8 @@ ci.thin_tester(
                 mixins = "mac_15_arm64",
                 remove_mixins = "mac_15_vm_optional",
             ),
+            # TODO(crbug.com/436628295): tests fails on VM when host OS
+            # is 26.4 while VM OS is 15.6.1
             "interactive_ui_tests": targets.per_test_modification(
                 mixins = [
                     targets.mixin(
@@ -642,7 +644,9 @@ ci.thin_tester(
                             shards = 8,
                         ),
                     ),
+                    "mac_15_arm64",
                 ],
+                remove_mixins = "mac_15_vm_optional",
             ),
             "sync_integration_tests": targets.mixin(
                 ci_only = True,
