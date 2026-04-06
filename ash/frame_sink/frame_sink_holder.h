@@ -71,6 +71,8 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
 
   ~FrameSinkHolder() override;
 
+  cc::LayerTreeFrameSink* layer_tree_frame_sink_for_test();
+
   // Delete `frame_sink_holder` after having reclaimed all exported resources.
   // Returns true if the holder will be deleted immediately.
   // TODO(reveman): Find a better way to handle deletion of in-flight resources.

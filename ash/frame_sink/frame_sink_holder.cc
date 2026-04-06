@@ -46,6 +46,10 @@ FrameSinkHolder::~FrameSinkHolder() {
   }
 }
 
+cc::LayerTreeFrameSink* FrameSinkHolder::layer_tree_frame_sink_for_test() {
+  return frame_sink_.get();
+}
+
 // static.
 bool FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
     std::unique_ptr<FrameSinkHolder> frame_sink_holder,
