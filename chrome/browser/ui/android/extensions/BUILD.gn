@@ -214,6 +214,7 @@ android_resources("java_resources") {
     "java/res/layout/extensions_menu_header.xml",
     "java/res/layout/extensions_menu_item.xml",
     "java/res/layout/extensions_menu_site_permissions_page.xml",
+    "java/res/layout/extensions_menu_site_permissions_page_header.xml",
     "java/res/layout/extensions_request_access_item.xml",
     "java/res/layout/extensions_toolbar_container.xml",
     "java/res/values-night/colors.xml",

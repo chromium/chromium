@@ -80,6 +80,9 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         mSitePermissionsPageModel = sitePermissionsPropertyModel;
         mSitePermissionsPageModel.set(
                 SitePermissionsPageProperties.BACK_CLICK_LISTENER, (view) -> onBackButtonClicked());
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.CLOSE_CLICK_LISTENER,
+                mMainPageModel.get(ExtensionsMenuProperties.CLOSE_CLICK_LISTENER));
 
         if (mMenuBridge.isReady()) {
             onReady();
@@ -184,6 +187,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     @Override
     public void onActionIconUpdated(int actionIndex) {
         if (getCurrentPage() == ExtensionsMenuProperties.Page.MAIN) {
+            // Update the icon for the extension entry in the main page.
             PropertyModel model = mActionModels.get(actionIndex).model;
             if (model == null) {
                 return;
@@ -194,13 +198,22 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             return;
         }
 
-        // TODO(crbug.com/473213114): Update site permissions page if it belongs to the extension
-        // updated.
+        // Do nothing when the site permissions page is opened for a different
+        // extension.
+        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
+        if (!isSitePermissionsPageOpenedFor(entry)) {
+            return;
+        }
+
+        // Update the icon for the extension's site permission page
+        Bitmap icon = mMenuBridge.getActionIcon(actionIndex);
+        mSitePermissionsPageModel.set(SitePermissionsPageProperties.EXTENSION_ICON, icon);
     }
 
     @Override
     public void onActionRemoved(int actionIndex) {
         if (getCurrentPage() == ExtensionsMenuProperties.Page.MAIN) {
+            // Remove the menu entry for the extension when main page is opened.
             assert actionIndex >= 0 && actionIndex < mActionModels.size();
             mActionModels.removeAt(actionIndex);
 
@@ -208,9 +221,17 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             return;
         }
 
-        // TODO(crbug.com/473213114):  Navigate back to the main page if the site permissions page
-        // belongs to the extension removed. Otherwise, do nothing.
+        // Do nothing when the site permissions page is opened for a different
+        // extension.
+        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
+        if (!isSitePermissionsPageOpenedFor(entry)) {
+            return;
+        }
 
+        // Return to the main page when extension is removed and had the site permissions page
+        // opened.
+        mMainPageModel.set(
+                ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
     }
 
     @Override
@@ -246,8 +267,19 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             return;
         }
 
-        // TODO(crbug.com/473213114): Update site permissions page if it belongs to the extension
-        // updated.
+        // Do nothing when the site permissions page is opened for a different
+        // extension.
+        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(newIndex);
+        if (!isSitePermissionsPageOpenedFor(entry)) {
+            return;
+        }
+
+        // Update the site permissions page for the extension.
+        // TODO(crbug.com/473213114): If the extension no longer has site access, which can happen
+        // during an update, the site permissions page should no longer be visible and we should
+        // go back to the main page.
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.EXTENSION_NAME, entry.actionButton.text);
     }
 
     /** Called when a host access request has been added. */
@@ -323,12 +355,40 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     }
 
     /**
+     * Returns whether the site permissions page is currently opened for the given extension entry.
+     */
+    private boolean isSitePermissionsPageOpenedFor(ExtensionsMenuTypes.MenuEntryState entry) {
+        if (getCurrentPage() != ExtensionsMenuProperties.Page.SITE_PERMISSIONS) {
+            return false;
+        }
+
+        String extensionId =
+                mSitePermissionsPageModel.get(SitePermissionsPageProperties.EXTENSION_ID);
+        return entry.id.equals(extensionId);
+    }
+
+    /**
      * Navigates to the site permissions page for the given extension.
      *
      * @param extensionId The ID of the extension to show permissions for.
      */
     private void onSitePermissionsButtonClicked(String extensionId) {
         mSitePermissionsPageModel.set(SitePermissionsPageProperties.EXTENSION_ID, extensionId);
+
+        // Find extension name and icon.
+        for (int i = 0; i < mActionModels.size(); i++) {
+            PropertyModel model = mActionModels.get(i).model;
+            if (extensionId.equals(model.get(ExtensionsMenuItemProperties.EXTENSION_ID))) {
+                mSitePermissionsPageModel.set(
+                        SitePermissionsPageProperties.EXTENSION_NAME,
+                        model.get(ExtensionsMenuItemProperties.TITLE));
+                mSitePermissionsPageModel.set(
+                        SitePermissionsPageProperties.EXTENSION_ICON,
+                        model.get(ExtensionsMenuItemProperties.ICON));
+                break;
+            }
+        }
+
         mMainPageModel.set(
                 ExtensionsMenuProperties.CURRENT_PAGE,
                 ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
@@ -338,6 +398,9 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private void onBackButtonClicked() {
         mMainPageModel.set(
                 ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
+        // Refresh the main page, since there may have been changes while the site permissions page
+        // was opened.
+        onModelChanged();
     }
 
     /**

@@ -14,23 +14,11 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:visibility="gone">
 
-    <LinearLayout
+    <include
+        android:id="@+id/extensions_menu_site_permissions_page_header"
+        layout="@layout/extensions_menu_site_permissions_page_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="@dimen/extensions_menu_horizontal_padding"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp">
-
-        <ImageButton
-            android:id="@+id/extensions_menu_back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back_24dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/back"/>
-    </LinearLayout>
+        android:layout_height="wrap_content" />
 
     <!-- Content area (empty for now) -->
     <FrameLayout

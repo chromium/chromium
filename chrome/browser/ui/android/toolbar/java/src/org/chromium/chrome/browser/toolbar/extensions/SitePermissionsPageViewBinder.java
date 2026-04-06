@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.extensions.R;
@@ -19,6 +21,16 @@ public class SitePermissionsPageViewBinder {
             view.findViewById(R.id.extensions_menu_back_button)
                     .setOnClickListener(
                             model.get(SitePermissionsPageProperties.BACK_CLICK_LISTENER));
+        } else if (key == SitePermissionsPageProperties.CLOSE_CLICK_LISTENER) {
+            view.findViewById(R.id.extensions_menu_site_permissions_close_button)
+                    .setOnClickListener(
+                            model.get(SitePermissionsPageProperties.CLOSE_CLICK_LISTENER));
+        } else if (key == SitePermissionsPageProperties.EXTENSION_NAME) {
+            TextView nameView = view.findViewById(R.id.extensions_menu_extension_name);
+            nameView.setText(model.get(SitePermissionsPageProperties.EXTENSION_NAME));
+        } else if (key == SitePermissionsPageProperties.EXTENSION_ICON) {
+            ImageView iconView = view.findViewById(R.id.extensions_menu_extension_icon);
+            iconView.setImageBitmap(model.get(SitePermissionsPageProperties.EXTENSION_ICON));
         } else if (key == SitePermissionsPageProperties.EXTENSION_ID) {
             // TODO(cburg.com/432392216): Implement data pull for site permissions page.
         }

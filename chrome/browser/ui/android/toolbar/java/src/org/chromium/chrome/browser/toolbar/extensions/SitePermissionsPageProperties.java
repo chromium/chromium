@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.graphics.Bitmap;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -17,10 +18,28 @@ public class SitePermissionsPageProperties {
     public static final WritableObjectPropertyKey<String> EXTENSION_ID =
             new WritableObjectPropertyKey<>();
 
+    /** The name of the extension whose permissions are being displayed. */
+    public static final WritableObjectPropertyKey<String> EXTENSION_NAME =
+            new WritableObjectPropertyKey<>();
+
+    /** The icon of the extension whose permissions are being displayed. */
+    public static final WritableObjectPropertyKey<Bitmap> EXTENSION_ICON =
+            new WritableObjectPropertyKey<>();
+
     /** Click listener for the back button to return to the main menu page. */
     public static final WritableObjectPropertyKey<View.OnClickListener> BACK_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** Click listener for the close button to dismiss the menu. */
+    public static final WritableObjectPropertyKey<View.OnClickListener> CLOSE_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {EXTENSION_ID, BACK_CLICK_LISTENER};
+            new PropertyKey[] {
+                EXTENSION_ID,
+                EXTENSION_NAME,
+                EXTENSION_ICON,
+                BACK_CLICK_LISTENER,
+                CLOSE_CLICK_LISTENER
+            };
 }

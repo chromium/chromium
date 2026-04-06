@@ -200,6 +200,42 @@ public class ExtensionTestUtils {
                 sitePermissionsButton);
     }
 
+    /**
+     * Helper to create a {@link ExtensionsMenuTypes.MenuEntryState} for an extension with host
+     * permissions. The entry will have enabled site permissions button and site access toggle,
+     * defaulted to granted access information.
+     */
+    public static ExtensionsMenuTypes.MenuEntryState createMenuEntryWithHostPermissions(
+            String extensionId,
+            String extensionName,
+            @Nullable Bitmap extensionIcon,
+            boolean isPinned) {
+        ExtensionsMenuTypes.ControlState siteAccessToggle =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "Allowed on this site",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.ControlState sitePermissionsButton =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "Always on all sites",
+                        /* accessibleName= */ "Always on all sites. Select to change site"
+                                + " permissions",
+                        /* tooltipText= */ "Change site permissions",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        return createMenuEntry(
+                extensionId,
+                extensionName,
+                extensionIcon,
+                isPinned,
+                siteAccessToggle,
+                sitePermissionsButton);
+    }
+
     /** Helper to create a {@link ExtensionsMenuTypes.MenuEntryState}. */
     public static ExtensionsMenuTypes.MenuEntryState createMenuEntry(
             String extensionId,
