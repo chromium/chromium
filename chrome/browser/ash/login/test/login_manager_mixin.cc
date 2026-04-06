@@ -285,15 +285,18 @@ bool LoginManagerMixin::LoginAndWaitForActiveSession(
          active_user->GetAccountId() == user_context.GetAccountId();
 }
 
-void LoginManagerMixin::LoginWithDefaultContext(const TestUserInfo& user_info) {
-  UserContext user_context = CreateDefaultUserContext(user_info);
-  test::ProfilePreparedWaiter profile_prepared(user_info.account_id);
+void LoginManagerMixin::LogIn(const UserContext& user_context) {
+  test::ProfilePreparedWaiter profile_prepared(user_context.GetAccountId());
   AttemptLoginUsingAuthenticator(
       user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
 
   if (wait_for_profile_) {
     profile_prepared.Wait();
   }
+}
+
+void LoginManagerMixin::LoginWithDefaultContext(const TestUserInfo& user_info) {
+  LogIn(CreateDefaultUserContext(user_info));
 }
 
 void LoginManagerMixin::LoginAsNewRegularUser(

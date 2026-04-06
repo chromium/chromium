@@ -40,5 +40,8 @@ specific_include_rules = {
   ],
   "arc_auth_service_browsertest\\.cc": [
     "+chrome/browser/global_features.h",
+    "+chrome/browser/ash/login/test/device_state_mixin.h",
+    "+chrome/browser/ash/login/test/login_manager_mixin.h",
+    "+chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h",
   ]
 }

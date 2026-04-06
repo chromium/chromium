@@ -175,6 +175,13 @@ class LoginManagerMixin : public InProcessBrowserTestMixin {
   // Returns whether the newly logged in user is active when the method exits.
   bool LoginAndWaitForActiveSession(const UserContext& user_context);
 
+  // Logs in with the given user.
+  // Similar to LoginWithDefaultContext, this uses
+  // AttemptLoginUsingAuthenticator with a default stub authenticator. In
+  // addition, it waits for profile creation if this mixin instance is
+  // configured so. See `set_should_wait_for_profile()` for details.
+  void LogIn(const UserContext& user_context);
+
   // Logs in a user using with CreateDefaultUserContext(user_info) context.
   // When |wait_for_profile_prepared| is true, it waits until user profile is
   // fully initialized. This is used for regular user login.
