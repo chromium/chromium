@@ -445,6 +445,56 @@ public class WebContentsAccessibilityTest {
         return true;
     }
 
+    private void setAndAssertExtendedSelection(
+            int rootVvid, int startNodeId, int startOffset, int endNodeId, int endOffset)
+            throws ExecutionException {
+        setAndAssertExtendedSelection(
+                rootVvid,
+                startNodeId,
+                startOffset,
+                endNodeId,
+                endOffset,
+                startNodeId,
+                startOffset,
+                endNodeId,
+                endOffset);
+    }
+
+    private void setAndAssertExtendedSelection(
+            int rootVvid,
+            int setStartNodeId,
+            int setStartOffset,
+            int setEndNodeId,
+            int setEndOffset,
+            int expectedStartNodeId,
+            int expectedStartOffset,
+            int expectedEndNodeId,
+            int expectedEndOffset)
+            throws ExecutionException {
+        Assert.assertEquals(
+                true,
+                selectTextOnUiThreadAndWaitForSelectionEvent(
+                        rootVvid, setStartNodeId, setStartOffset, setEndNodeId, setEndOffset));
+        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
+
+        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
+        int startOffset = (int) selection[1];
+        AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
+        int endOffset = (int) selection[3];
+
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, startNode);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(expectedStartNodeId), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, expectedStartOffset, startOffset);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, endNode);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(expectedEndNodeId), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, expectedEndOffset, endOffset);
+    }
+
     private void printAccessibilityNodeInfoTree() {
         Log.d(TAG, "AccessibilityNodeInfo tree:");
         String tree = mActivityTestRule.generateAccessibilityNodeInfoTree();
@@ -2896,113 +2946,29 @@ public class WebContentsAccessibilityTest {
         int imageIndex = 2;
 
         // Select all.
-        Assert.assertEquals(
-                true,
-                selectTextOnUiThreadAndWaitForSelectionEvent(
-                        rootVvid, paragraph1Vvid, 0, paragraph3Vvid, 5));
-        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-
-        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
-
-        AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
-        int startOffset = (int) selection[1];
-        AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
-        int endOffset = (int) selection[3];
-
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraph1Vvid), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, startOffset);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraph3Vvid), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, endOffset);
+        setAndAssertExtendedSelection(rootVvid, paragraph1Vvid, 0, paragraph3Vvid, 5);
 
         // Some of the first two paragraphs.
-        Assert.assertEquals(
-                true,
-                selectTextOnUiThreadAndWaitForSelectionEvent(
-                        rootVvid, paragraph1Vvid, 1, paragraph2Vvid, 3));
-        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
-
-        startNode = (AccessibilityNodeInfoCompat) selection[0];
-        startOffset = (int) selection[1];
-        endNode = (AccessibilityNodeInfoCompat) selection[2];
-        endOffset = (int) selection[3];
-
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraph1Vvid), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 1, startOffset);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraph2Vvid), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 3, endOffset);
+        setAndAssertExtendedSelection(rootVvid, paragraph1Vvid, 1, paragraph2Vvid, 3);
 
         // Reverse selection.
-        Assert.assertEquals(
-                true,
-                selectTextOnUiThreadAndWaitForSelectionEvent(
-                        rootVvid, paragraph3Vvid, 0, paragraph1Vvid, 10));
-        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
-
-        startNode = (AccessibilityNodeInfoCompat) selection[0];
-        startOffset = (int) selection[1];
-        endNode = (AccessibilityNodeInfoCompat) selection[2];
-        endOffset = (int) selection[3];
-
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraph3Vvid), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, startOffset);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraph1Vvid), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 10, endOffset);
+        setAndAssertExtendedSelection(rootVvid, paragraph3Vvid, 0, paragraph1Vvid, 10);
 
         // Image, using child offset.
-        Assert.assertEquals(
-                true,
-                selectTextOnUiThreadAndWaitForSelectionEvent(
-                        rootVvid, rootVvid, imageIndex, rootVvid, imageIndex + 1));
-        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
-
-        startNode = (AccessibilityNodeInfoCompat) selection[0];
-        startOffset = (int) selection[1];
-        endNode = (AccessibilityNodeInfoCompat) selection[2];
-        endOffset = (int) selection[3];
-
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(rootVvid), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, imageIndex, startOffset);
-        // Note that since selection API does not have affinity and offset type yet, we cannot
-        // distinguish between after the image and the beginning of button.
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(buttonVvid), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, endOffset);
+        setAndAssertExtendedSelection(
+                rootVvid,
+                rootVvid,
+                imageIndex,
+                rootVvid,
+                imageIndex + 1,
+                rootVvid,
+                imageIndex,
+                buttonVvid,
+                0);
 
         // Button, although it is a non-text node, selecting by text offset as it
         // is a leaf.
-        Assert.assertEquals(
-                true,
-                selectTextOnUiThreadAndWaitForSelectionEvent(
-                        rootVvid, buttonVvid, 1, buttonVvid, 3));
-        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
-
-        startNode = (AccessibilityNodeInfoCompat) selection[0];
-        startOffset = (int) selection[1];
-        endNode = (AccessibilityNodeInfoCompat) selection[2];
-        endOffset = (int) selection[3];
-
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(buttonVvid), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 1, startOffset);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(buttonVvid), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 3, endOffset);
+        setAndAssertExtendedSelection(rootVvid, buttonVvid, 1, buttonVvid, 3);
 
         // Invalid id, root.
         Assert.assertEquals(
@@ -3031,23 +2997,7 @@ public class WebContentsAccessibilityTest {
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
         int inputVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "input");
 
-        Assert.assertEquals(
-                true,
-                selectTextOnUiThreadAndWaitForSelectionEvent(rootVvid, inputVvid, 1, inputVvid, 5));
-        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
-
-        AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
-        int startOffset = (int) selection[1];
-        AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
-        int endOffset = (int) selection[3];
-
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(inputVvid), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 1, startOffset);
-        Assert.assertEquals(PERFORM_ACTION_ERROR, String.valueOf(inputVvid), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, endOffset);
+        setAndAssertExtendedSelection(rootVvid, inputVvid, 1, inputVvid, 5);
     }
 
     /** Test extended selection on content editable. */
@@ -3067,27 +3017,7 @@ public class WebContentsAccessibilityTest {
         int contenteditableVvid =
                 waitForNodeMatching(sViewIdResourceNameMatcher, "contenteditable");
 
-        Assert.assertEquals(
-                true,
-                selectTextOnUiThreadAndWaitForSelectionEvent(
-                        rootVvid, contenteditableVvid, 0, contenteditableVvid, 5));
-
-        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
-
-        AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
-        int startOffset = (int) selection[1];
-        AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
-        int endOffset = (int) selection[3];
-
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, startNode);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(contenteditableVvid), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, startOffset);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, endNode);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(contenteditableVvid), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, endOffset);
+        setAndAssertExtendedSelection(rootVvid, contenteditableVvid, 0, contenteditableVvid, 5);
     }
 
     /** Test extended selection on a multiline paragraph. */
@@ -3109,49 +3039,9 @@ public class WebContentsAccessibilityTest {
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
         int paragraphVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph");
 
-        Assert.assertEquals(
-                true,
-                selectTextOnUiThreadAndWaitForSelectionEvent(
-                        rootVvid, paragraphVvid, 0, paragraphVvid, 4));
+        setAndAssertExtendedSelection(rootVvid, paragraphVvid, 0, paragraphVvid, 4);
 
-        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
-
-        AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
-        int startOffset = (int) selection[1];
-        AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
-        int endOffset = (int) selection[3];
-
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, startNode);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraphVvid), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, startOffset);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, endNode);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraphVvid), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 4, endOffset);
-
-        Assert.assertEquals(
-                true,
-                selectTextOnUiThreadAndWaitForSelectionEvent(
-                        rootVvid, paragraphVvid, 4, paragraphVvid, 14));
-
-        selection = getExtendedSelectionOnUiThread(rootVvid);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
-
-        startNode = (AccessibilityNodeInfoCompat) selection[0];
-        startOffset = (int) selection[1];
-        endNode = (AccessibilityNodeInfoCompat) selection[2];
-        endOffset = (int) selection[3];
-
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, startNode);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraphVvid), startNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 4, startOffset);
-        Assert.assertNotNull(PERFORM_ACTION_ERROR, endNode);
-        Assert.assertEquals(
-                PERFORM_ACTION_ERROR, String.valueOf(paragraphVvid), endNode.getUniqueId());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 14, endOffset);
+        setAndAssertExtendedSelection(rootVvid, paragraphVvid, 4, paragraphVvid, 14);
     }
 
     /** Test that the performAction for ACTION_CUT works properly with accessibility. */
