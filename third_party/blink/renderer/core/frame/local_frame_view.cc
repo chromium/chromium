@@ -1062,14 +1062,15 @@ void LocalFrameView::RunCanvasOnpaintSteps() {
     if (frame_view.canvas_elements_needing_onpaint_.empty()) {
       return;
     }
-    HeapHashMap<Member<HTMLCanvasElement>, HeapLinkedHashSet<Member<Element>>>
+    HeapHashMap<Member<HTMLCanvasElement>,
+                Member<GCedHeapLinkedHashSet<Member<Element>>>>
         canvas_elements_needing_onpaint;
     canvas_elements_needing_onpaint.swap(
         frame_view.canvas_elements_needing_onpaint_);
 
     for (const auto& entry : canvas_elements_needing_onpaint) {
       HTMLCanvasElement* canvas = entry.key;
-      const HeapVector<Member<Element>> children(entry.value);
+      const HeapVector<Member<Element>> children(*entry.value);
       CanvasPaintEventInit* init = CanvasPaintEventInit::Create();
       init->setChangedElements(std::move(children));
       canvas->DispatchEvent(
@@ -5085,20 +5086,22 @@ void LocalFrameView::DidPaintCanvasChild(HTMLCanvasElement& canvas,
                                          Element& child) {
   DCHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
   if (IsUpdatingLifecycle()) {
-    // HeapHashMap::insert does nothing if key is already present, so this
-    // won't overwrite an existing set if one exists.
-    canvas_elements_needing_onpaint_
-        .insert(&canvas, HeapLinkedHashSet<Member<Element>>())
-        .stored_value->value.insert(&child);
+    auto add_result = canvas_elements_needing_onpaint_.insert(&canvas, nullptr);
+    if (add_result.is_new_entry) {
+      add_result.stored_value->value =
+          MakeGarbageCollected<GCedHeapLinkedHashSet<Member<Element>>>();
+    }
+    add_result.stored_value->value->insert(&child);
   }
 }
 
 void LocalFrameView::RequestCanvasOnpaint(HTMLCanvasElement& canvas) {
   DCHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
-  // HeapHashMap::insert does nothing if key is already present, so this
-  // won't overwrite an existing set if one exists.
-  canvas_elements_needing_onpaint_.insert(&canvas,
-                                          HeapLinkedHashSet<Member<Element>>());
+  auto add_result = canvas_elements_needing_onpaint_.insert(&canvas, nullptr);
+  if (add_result.is_new_entry) {
+    add_result.stored_value->value =
+        MakeGarbageCollected<GCedHeapLinkedHashSet<Member<Element>>>();
+  }
   ScheduleAnimation();
 }
 

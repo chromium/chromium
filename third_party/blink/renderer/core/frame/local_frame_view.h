@@ -1327,7 +1327,8 @@ class CORE_EXPORT LocalFrameView final
   // The set of children may be empty if the onpaint event has been requested
   // with `requestPaint`. This map is cleared at the end of the lifecycle
   // update.
-  HeapHashMap<Member<HTMLCanvasElement>, HeapLinkedHashSet<Member<Element>>>
+  HeapHashMap<Member<HTMLCanvasElement>,
+              Member<GCedHeapLinkedHashSet<Member<Element>>>>
       canvas_elements_needing_onpaint_;
   // True if we have canvas work, performed in the post-lifecycle steps, that
   // needs to happen prior to the impl commit. Cleared in DidBeginMainFrame.
