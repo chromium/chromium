@@ -78,6 +78,11 @@ class SecurityTokenRequestControllerTest : public LoginTestBase {
     }
   }
 
+  void ClosePinUi() {
+    view_ = nullptr;
+    controller_->ClosePinUi();
+  }
+
   std::unique_ptr<SecurityTokenRequestController> controller_;
 
   // Number of times a PIN was entered
@@ -86,7 +91,7 @@ class SecurityTokenRequestControllerTest : public LoginTestBase {
   // Number of times the UI was closed.
   int ui_closed_by_user_calls_ = 0;
 
-  raw_ptr<PinRequestView, DanglingUntriaged> view_ =
+  raw_ptr<PinRequestView> view_ =
       nullptr;  // Owned by test widget view hierarchy.
 
  private:
@@ -99,7 +104,7 @@ TEST_F(SecurityTokenRequestControllerTest, SecurityTokenSuccessfulValidation) {
   StartRequest();
   SimulateValidation();
   EXPECT_EQ(1, pin_entered_calls_);
-  controller_->ClosePinUi();
+  ClosePinUi();
   EXPECT_FALSE(PinRequestWidget::Get());
 }
 
@@ -124,8 +129,11 @@ TEST_F(SecurityTokenRequestControllerTest,
   EXPECT_EQ(2, pin_entered_calls_);
   EXPECT_TRUE(PinRequestWidget::Get());
 
+  // release pointer for closing view
+  PinRequestView::TestApi test_api(view_);
+  view_ = nullptr;
   // User should still be able to close the PIN widget.
-  SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
+  SimulateButtonPress(test_api.back_button());
   EXPECT_EQ(1, ui_closed_by_user_calls_);
   EXPECT_FALSE(PinRequestWidget::Get());
 }
