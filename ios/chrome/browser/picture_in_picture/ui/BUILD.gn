@@ -5,6 +5,8 @@
 source_set("ui") {
   sources = [
     "picture_in_picture_mutator.h",
+    "picture_in_picture_player_view.h",
+    "picture_in_picture_player_view.mm",
     "picture_in_picture_view_controller.h",
     "picture_in_picture_view_controller.mm",
   ]
