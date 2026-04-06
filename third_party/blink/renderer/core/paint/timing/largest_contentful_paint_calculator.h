@@ -115,8 +115,6 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   void SetDelegateForTest(Delegate* delegate) { delegate_ = delegate; }
 
  private:
-  friend class LargestContentfulPaintCalculatorTest;
-
   bool UpdateMetricsIfLargestImagePaintChanged();
   bool UpdateMetricsIfLargestTextPaintChanged();
 
@@ -150,7 +148,6 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   Member<WindowPerformance> window_performance_;
 
   uint64_t largest_reported_size_ = 0u;
-  double largest_image_bpp_ = 0.0;
   unsigned web_exposed_candidate_count_ = 0;
   unsigned ukm_largest_image_candidate_count_ = 0;
   unsigned ukm_largest_text_candidate_count_ = 0;

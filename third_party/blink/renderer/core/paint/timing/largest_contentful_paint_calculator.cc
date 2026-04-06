@@ -130,7 +130,6 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
     return;
   }
 
-  largest_image_bpp_ = largest_image.EntropyForLCP();
   largest_reported_size_ = largest_image.RecordedSize();
   const KURL& url = media_timing->Url();
   const String& image_string = url.GetString();

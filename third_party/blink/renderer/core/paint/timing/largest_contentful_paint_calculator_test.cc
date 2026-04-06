@@ -110,7 +110,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   }
 
   uint64_t LargestReportedSize() {
-    return GetLargestContentfulPaintCalculator()->largest_reported_size_;
+    return test_delegate_->LargestReportedSize();
   }
 
   uint64_t LargestImagePaintSize() {
@@ -126,7 +126,9 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   }
 
   double LargestContentfulPaintCandidateImageBPP() {
-    return GetLargestContentfulPaintCalculator()->largest_image_bpp_;
+    return GetLargestContentfulPaintCalculator()
+        ->LatestLcpDetails()
+        .largest_contentful_paint_image_bpp;
   }
 
   uint64_t CandidateCount() { return test_delegate_->CandidateCount(); }
@@ -151,6 +153,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
                                  Element* element) override {
       ++candidate_count_;
       current_candidate_ = element;
+      largest_reported_size_ = paint_size;
     }
 
     void OnLcpMetricsForReportingChanged() override {}
@@ -163,10 +166,12 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
 
     Element* CurrentCandidate() { return current_candidate_; }
     wtf_size_t CandidateCount() { return candidate_count_; }
+    uint64_t LargestReportedSize() { return largest_reported_size_; }
 
    private:
     Member<Element> current_candidate_;
-    wtf_size_t candidate_count_;
+    wtf_size_t candidate_count_ = 0;
+    uint64_t largest_reported_size_ = 0;
   };
 
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator() {
@@ -237,7 +242,9 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageLargerText) {
   EXPECT_GT(LargestReportedSize(), 9u);
   EXPECT_EQ(CandidateCount(), 1u);
   EXPECT_EQ(CurrentLcpCandidate()->GetIdAttribute(), "text");
-  EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.0f);
+  // The image is still reported to metrics even though it wasn't a web-exposed
+  // candidate.
+  EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 800.0f / 9.0f);
   trace_analyzer::Stop();
 }
 
