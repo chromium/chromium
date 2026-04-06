@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_BROWSER_CAST_WEB_CONTENTS_BROWSERTEST_H_
-#define CHROMECAST_BROWSER_CAST_WEB_CONTENTS_BROWSERTEST_H_
-
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -1171,5 +1168,3 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, InterfaceBinding) {
 }
 
 }  // namespace chromecast
-
-#endif  // CHROMECAST_BROWSER_CAST_WEB_CONTENTS_BROWSERTEST_H_

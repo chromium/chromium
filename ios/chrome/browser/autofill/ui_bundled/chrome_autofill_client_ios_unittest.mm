@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CHROME_AUTOFILL_CLIENT_IOS_UNITTEST_H_
-#define IOS_CHROME_BROWSER_UI_AUTOFILL_CHROME_AUTOFILL_CLIENT_IOS_UNITTEST_H_
-
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 
 #import <memory>
@@ -265,5 +262,3 @@ TEST_F(ChromeAutofillClientIOSTest, CallToAgentUndoSnackbar) {
 }
 
 }  // namespace autofill
-
-#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_CHROME_AUTOFILL_CLIENT_IOS_UNITTEST_H_

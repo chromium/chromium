@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PRINTING_PRINT_PREVIEW_PRINT_PREVIEW_DIALOG_CONTROLLER_CROS_UNITTEST_H_
-#define CHROME_BROWSER_ASH_PRINTING_PRINT_PREVIEW_PRINT_PREVIEW_DIALOG_CONTROLLER_CROS_UNITTEST_H_
-
 #include "chrome/browser/ash/printing/print_preview/print_preview_dialog_controller_cros.h"
 
 #include <memory>
@@ -155,5 +152,3 @@ TEST_F(PrintPreviewDialogControllerCrosTest, OpenPrintPreview) {
 }
 
 }  //  namespace ash
-
-#endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_PREVIEW_PRINT_PREVIEW_DIALOG_CONTROLLER_CROS_UNITTEST_H_

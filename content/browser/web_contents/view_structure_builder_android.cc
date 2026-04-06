@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEB_CONTENTS_VIEW_STRUCTURE_BUILDER_ANDROID_H_
-#define CONTENT_BROWSER_WEB_CONTENTS_VIEW_STRUCTURE_BUILDER_ANDROID_H_
-
 #include "content/browser/web_contents/view_structure_builder_android.h"
 #include "content/public/android/content_jni_headers/ViewStructureBuilder_jni.h"
 
@@ -94,7 +91,5 @@ ViewStructureBuilder_addViewStructureNodeChild(
 }
 
 }  // namespace content
-
-#endif  // CONTENT_BROWSER_WEB_CONTENTS_VIEW_STRUCTURE_BUILDER_ANDROID_H_
 
 DEFINE_JNI(ViewStructureBuilder)

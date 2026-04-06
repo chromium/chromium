@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_HIT_TESTING_WIN_BROWSERTEST_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_HIT_TESTING_WIN_BROWSERTEST_H_
-
 #include <objbase.h>
 
 #include <wrl/client.h>
@@ -265,5 +262,3 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingWinBrowserTest,
 }
 
 }  // namespace content
-
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_HIT_TESTING_WIN_BROWSERTEST_H_

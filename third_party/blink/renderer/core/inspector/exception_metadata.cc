@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_EXCEPTION_METADATA_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_EXCEPTION_METADATA_H_
-
 #include "third_party/blink/renderer/core/inspector/exception_metadata.h"
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -35,5 +32,3 @@ void MaybeAssociateExceptionMetaData(v8::Local<v8::Value> exception,
 }
 
 }  // namespace blink
-
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_EXCEPTION_METADATA_H_

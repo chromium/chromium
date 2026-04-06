@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_INTERNAL_MEDIA_AUDIO_EXTERNAL_AUDIO_PIPELINE_DUMMY_H_
-#define CHROMECAST_INTERNAL_MEDIA_AUDIO_EXTERNAL_AUDIO_PIPELINE_DUMMY_H_
-
 #include "chromecast/public/media/external_audio_pipeline_shlib.h"
 
 // We redefine what is already available in chromium's base/logging.h because
@@ -65,5 +62,3 @@ ExternalAudioPipelineShlib::CreateMixerOutputStream() {
 
 }  // namespace media
 }  // namespace chromecast
-
-#endif  // CHROMECAST_INTERNAL_MEDIA_AUDIO_EXTERNAL_AUDIO_PIPELINE_DUMMY_H_

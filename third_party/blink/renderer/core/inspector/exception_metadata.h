@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_EXCEPTION_METADATA_H_
 
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "v8/include/v8-local-handle.h"
 
 namespace blink {
 

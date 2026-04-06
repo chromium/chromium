@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_BINDINGS_BINDINGS_MANAGER_CAST_BROWSERTEST_H_
-#define CHROMECAST_BINDINGS_BINDINGS_MANAGER_CAST_BROWSERTEST_H_
-
 #include "chromecast/bindings/bindings_manager_cast.h"
 
 #include <string>
@@ -275,5 +272,3 @@ IN_PROC_BROWSER_TEST_F(BindingsManagerCastBrowserTest, OrderedBindings) {
   EXPECT_EQ("world", received_bindings[1]);
 }
 }  // namespace chromecast
-
-#endif  // CHROMECAST_BINDINGS_BINDINGS_MANAGER_CAST_BROWSERTEST_H_

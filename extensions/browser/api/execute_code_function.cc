@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_IMPL_H_
-#define EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_IMPL_H_
-
 #include "extensions/browser/api/execute_code_function.h"
 
 #include <algorithm>
@@ -276,5 +273,3 @@ void ExecuteCodeFunction::OnExecuteCodeFinished(
 }
 
 }  // namespace extensions
-
-#endif  // EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_IMPL_H_

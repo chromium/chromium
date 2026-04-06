@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_AV1_DELEGATE_UNITTEST_H_
-#define MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_AV1_DELEGATE_UNITTEST_H_
-
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 
 #include "base/rand_util.h"
@@ -463,5 +460,3 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, UpdateFrameHeaderPostEncode) {
 }
 
 }  // namespace media
-
-#endif  // MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_AV1_DELEGATE_UNITTEST_H_

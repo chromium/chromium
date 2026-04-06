@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_TAB_ANDROID_CONVERSIONS_H_
-#define CHROME_BROWSER_ANDROID_TAB_ANDROID_CONVERSIONS_H_
-
 #include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/android/tab_android.h"
@@ -43,5 +40,3 @@ const TabAndroid* ToTabAndroidChecked(const TabInterface* tab_interface) {
 }
 
 }  // namespace tabs
-
-#endif  // CHROME_BROWSER_ANDROID_TAB_ANDROID_CONVERSIONS_H_

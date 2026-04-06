@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_RENDERER_METRICS_H_
-#define COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_RENDERER_METRICS_H_
-
 #include "components/spellcheck/renderer/spellcheck_renderer_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
@@ -78,5 +75,3 @@ void RecordSpellcheckDuration(base::TimeDelta duration,
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 }  // namespace spellcheck_renderer_metrics
-
-#endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_RENDERER_METRICS_H_

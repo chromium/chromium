@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_BUBBLE_VIEW_BROWSERTEST_CC_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_BUBBLE_VIEW_BROWSERTEST_CC_H_
-
 #include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h"
 
 #include <tuple>
@@ -330,5 +327,3 @@ INSTANTIATE_TEST_SUITE_P(
 
 }  // namespace
 }  // namespace autofill
-
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_BUBBLE_VIEW_BROWSERTEST_CC_H_

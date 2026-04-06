@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_MEDIA_CONTROLS_BRIDGE_BROWSERTEST_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_MEDIA_CONTROLS_BRIDGE_BROWSERTEST_H_
-
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -417,5 +414,3 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
 
 }  // namespace testing
 }  // namespace system_media_controls
-
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_MEDIA_CONTROLS_BRIDGE_MAC_BROWSERTEST_H_
