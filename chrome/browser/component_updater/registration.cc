@@ -110,7 +110,6 @@ namespace {
 // Runs in the thread pool, may block.
 void DeleteOldComponents(const base::FilePath& user_data_dir) {
   for (const base::FilePath::StringType& dir : {
-           FILE_PATH_LITERAL("MaskedDomainListPreloaded"),  // Remove in M146+
            FILE_PATH_LITERAL("DesktopSharingHub"),          // Remove in M146+
            FILE_PATH_LITERAL("CookieReadinessList"),        // Remove in M146+
            FILE_PATH_LITERAL("OpenCookieDatabase"),         // Remove in M146+
