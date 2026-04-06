@@ -54,7 +54,6 @@ class ExtensionApiTabTest : public extensions::ExtensionApiTest {
   }
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionApiTabBackForwardCacheTest : public ExtensionApiTabTest {
  public:
   ExtensionApiTabBackForwardCacheTest() {
@@ -68,7 +67,6 @@ class ExtensionApiTabBackForwardCacheTest : public ExtensionApiTabTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-#endif
 
 class ExtensionApiNewTabTest : public ExtensionApiTabTest {
  public:
@@ -406,17 +404,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureNullWindow) {
       << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
+// NOTE: Creating active tab tests are skipped in JavaScript on Android.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnCreated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_created")) << message_;
 }
 
+// NOTE: Creating active tab tests are skipped in JavaScript on Android.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, LazyBackgroundTabsOnCreated) {
   ASSERT_TRUE(RunExtensionTest("tabs/lazy_background_on_created")) << message_;
 }
 
+// NOTE: Favicon and title tests are skipped in JavaScript on Android.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_updated")) << message_;
 }
@@ -424,8 +422,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnUpdated) {
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabBackForwardCacheTest, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/backForwardCache/on_updated")) << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, NoPermissions) {
   ASSERT_TRUE(RunExtensionTest("tabs/no_permissions")) << message_;

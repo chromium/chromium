@@ -111,7 +111,12 @@ chrome.test.runTests([
     chrome.tabs.create({ url: getURL('internalAnchorNavigated/a.html') });
   },
 
-  function faviconLoaded() {
+  async function faviconLoaded() {
+    // TODO(https://crbug.com/371432155): Enable this on desktop Android.
+    if ((await chrome.runtime.getPlatformInfo()).os == 'android') {
+      chrome.test.succeed('skipped');
+      return;
+    }
     expect([
       { status: 'loading', url: getURL('favicon/a.html') },
       { status: 'complete' },
@@ -121,7 +126,12 @@ chrome.test.runTests([
     chrome.tabs.create({ url: getURL('favicon/a.html') });
   },
 
-  function titleUpdated() {
+  async function titleUpdated() {
+    // TODO(https://crbug.com/371432155): Enable this on desktop Android.
+    if ((await chrome.runtime.getPlatformInfo()).os == 'android') {
+      chrome.test.succeed('skipped');
+      return;
+    }
     expect([
       { status: 'loading', url: getURL('title/test.html') },
       { status: 'complete' },

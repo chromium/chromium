@@ -3,13 +3,20 @@
 // found in the LICENSE file.
 
 chrome.test.runTests([
-  function testCreateWithActiveTrue() {
+  async function testCreateWithActiveTrue() {
+    // TODO(https://crbug.com/430344931): `NavigateParams::tabstrip_add_types`
+    // isn't supported on android builds yet, so we can't create active tabs.
+    if ((await chrome.runtime.getPlatformInfo()).os == 'android') {
+      chrome.test.succeed('skipped');
+      return;
+    }
     chrome.test.listenOnce(chrome.tabs.onCreated,
       function(tab) {
         chrome.test.assertEq(tab.active, true);
       });
     chrome.tabs.create({url: 'chrome://newtab/', active: true});
   },
+
   function testCreateWithActiveFalse() {
     chrome.test.listenOnce(chrome.tabs.onCreated,
       function(tab) {
