@@ -368,6 +368,7 @@ class TabsUpdateFunction : public ExtensionFunction {
   // nothing to do. Returns false on failure with an error message.
   bool UpdateActiveTab(const api::tabs::Update::Params& params,
                        Profile& profile,
+                       BrowserWindowInterface& browser,
                        TabListInterface& tab_list,
                        int tab_index,
                        std::string& error);

@@ -2208,6 +2208,17 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
     return RespondNow(Error(tabs_constants::kCannotDuplicateTab,
                             base::NumberToString(tab_id)));
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/496733610): Supporting CCT/PWA/TWA is currently not possible
+  // in C++ browser tests on Android. Add tests once that's supported.
+  if (browser->GetType() == BrowserWindowInterface::TYPE_CUSTOM_TAB ||
+      browser->GetType() == BrowserWindowInterface::TYPE_APP) {
+    return RespondNow(Error(
+        tabs_constants::kAndroidCannotDuplicateTabInCctOrWebAppWindowError));
+  }
+#endif
+
   ::tabs::TabInterface* tab_interface =
       ::tabs::TabInterface::MaybeGetFromContents(web_contents);
   // We found the tab above, so we should always, always have a TabInterface
@@ -2319,6 +2330,20 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   CHECK(active_tab_index >= 0 && active_tab_index <= tab_list->GetTabCount());
   ::tabs::TabInterface* active_tab = tab_list->GetTab(active_tab_index);
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/496733610): Supporting CCT/PWA/TWA is currently not possible
+  // in C++ browser tests on Android. Add tests once that's supported.
+  BrowserWindowInterface* browser =
+      window_controller->GetBrowserWindowInterface();
+  auto browser_type = browser->GetType();
+  if ((browser_type == BrowserWindowInterface::TYPE_CUSTOM_TAB ||
+       browser_type == BrowserWindowInterface::TYPE_APP) &&
+      active_tab_index != tab_list->GetActiveIndex()) {
+    return RespondNow(Error(
+        tabs_constants::kAndroidCannotHighlightTabInCctOrWebAppWindowError));
+  }
+#endif
+
   tab_list->HighlightTabs(active_tab->GetHandle(), tabs);
 
   return RespondNow(
@@ -2371,8 +2396,9 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   TabListInterface* tab_list =
       TabListInterface::From(window->GetBrowserWindowInterface());
   CHECK(tab_list);
-  if (!UpdateActiveTab(*params, *window->profile(), *tab_list, tab_index,
-                       error)) {
+  if (!UpdateActiveTab(*params, *window->profile(),
+                       *window->GetBrowserWindowInterface(), *tab_list,
+                       tab_index, error)) {
     return RespondNow(Error(std::move(error)));
   }
 
@@ -2504,6 +2530,7 @@ bool TabsUpdateFunction::ComputeDefaultTabId(int& tab_id,
 bool TabsUpdateFunction::UpdateActiveTab(
     const api::tabs::Update::Params& params,
     Profile& profile,
+    BrowserWindowInterface& browser,
     TabListInterface& tab_list,
     int tab_index,
     std::string& error) {
@@ -2523,6 +2550,18 @@ bool TabsUpdateFunction::UpdateActiveTab(
     // Nothing to activate.
     return true;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/496733610): Supporting CCT/PWA/TWA is currently not possible
+  // in C++ browser tests on Android. Add tests once that's supported.
+  auto browser_type = browser.GetType();
+  if ((browser_type == BrowserWindowInterface::TYPE_CUSTOM_TAB ||
+       browser_type == BrowserWindowInterface::TYPE_APP) &&
+      tab_index != tab_list.GetActiveIndex()) {
+    error = tabs_constants::kAndroidCannotActivateTabInCctOrWebAppWindowError;
+    return false;
+  }
+#endif
 
   // Bug fix for crbug.com/1197888. Don't let the extension update the tab
   // if the user is dragging tabs.

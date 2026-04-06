@@ -76,6 +76,12 @@ inline constexpr char
 inline constexpr char kAndroidCanOnlyMoveCctOrWebAppTabsToNormalWindowError[] =
     "Tabs in an Android web app or custom tab window can only be moved to a "
     "normal browser window.";
+inline constexpr char kAndroidCannotActivateTabInCctOrWebAppWindowError[] =
+    "Cannot activate a tab in an Android web app or custom tab window.";
+inline constexpr char kAndroidCannotDuplicateTabInCctOrWebAppWindowError[] =
+    "Cannot duplicate a tab in an Android web app or custom tab window.";
+inline constexpr char kAndroidCannotHighlightTabInCctOrWebAppWindowError[] =
+    "Cannot highlight a tab in an Android web app or custom tab window.";
 inline constexpr char kUnableToResizeErrorAndroidSdkTooLow[] =
     "Unable to resize: unsupported Android API level";
 inline constexpr char kUnableToResizeErrorAndroidBrowserRoleNotHeld[] =
