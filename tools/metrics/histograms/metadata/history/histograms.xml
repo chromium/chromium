@@ -2717,12 +2717,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.QueryHistory" units="ms" expires_after="M124">
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>Time used by the HistoryBackend::QueryHistory() call.</summary>
-</histogram>
-
 <histogram name="History.QueryMostRepeatedQueriesTimeV2" units="ms"
     expires_after="2023-12-20">
   <owner>mahmadi@chromium.org</owner>

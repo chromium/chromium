@@ -2683,7 +2683,6 @@ void HistoryBackend::RemoveDownloads(const std::set<uint32_t>& ids) {
 QueryResults HistoryBackend::QueryHistory(const std::u16string& text_query,
                                           const QueryOptions& options) {
   QueryResults query_results;
-  base::TimeTicks beginning_time = base::TimeTicks::Now();
   if (db_) {
     if (text_query.empty()) {
       // Basic history query for the main database.
@@ -2693,8 +2692,6 @@ QueryResults HistoryBackend::QueryHistory(const std::u16string& text_query,
       QueryHistoryText(text_query, options, &query_results);
     }
   }
-  UMA_HISTOGRAM_TIMES("History.QueryHistory",
-                      TimeTicks::Now() - beginning_time);
   return query_results;
 }
 
