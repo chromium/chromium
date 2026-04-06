@@ -859,8 +859,7 @@ class TabResumptionMediatorProxy {
     return;
   }
 
-  if (lastSyncedTabSyncedTime > mostRecentTabOpenedTime &&
-      !base::FeatureList::IsEnabled(kIOSRemoteTabResumptionKillSwitch)) {
+  if (lastSyncedTabSyncedTime > mostRecentTabOpenedTime) {
     [self fetchLastSyncedTabItemFromLastActiveDistantTab:tab session:session];
     _sessionTag = session->tag;
     _tabId = tab->tab_id;
