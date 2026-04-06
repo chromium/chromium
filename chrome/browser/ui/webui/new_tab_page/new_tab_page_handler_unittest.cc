@@ -941,17 +941,26 @@ TEST_F(NewTabPageHandlerTest, UpdatePromoData) {
   EXPECT_EQ("blub", text->text);
 }
 
-TEST_F(NewTabPageHandlerTest, OnDoodleImageClicked) {
+TEST_F(NewTabPageHandlerTest, OnStaticDoodleImageClicked) {
   handler_->OnDoodleImageClicked(
-      /*type=*/new_tab_page::mojom::DoodleImageType::kCta,
+      /*type=*/new_tab_page::mojom::DoodleImageType::kStatic,
+      /*log_url=*/std::nullopt);
+
+  histogram_tester_.ExpectBucketCount("NewTabPage.LogoClick", 0, 1);
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
+TEST_F(NewTabPageHandlerTest, OnAnimatedDoodleImageClicked) {
+  handler_->OnDoodleImageClicked(
+      /*type=*/new_tab_page::mojom::DoodleImageType::kAnimation,
       /*log_url=*/GURL("https://doodle.com/log"));
 
-  histogram_tester_.ExpectTotalCount("NewTabPage.LogoClick", 1);
+  histogram_tester_.ExpectBucketCount("NewTabPage.LogoClick", 2, 1);
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       "https://doodle.com/log", ""));
 }
 
-TEST_F(NewTabPageHandlerTest, OnDoodleImageRendered) {
+TEST_F(NewTabPageHandlerTest, OnStaticDoodleImageRendered) {
   base::MockCallback<NewTabPageHandler::OnDoodleImageRenderedCallback> callback;
   std::optional<std::string> image_click_params;
   std::optional<GURL> interaction_log_url;
@@ -980,8 +989,42 @@ TEST_F(NewTabPageHandlerTest, OnDoodleImageRendered) {
   EXPECT_THAT(interaction_log_url,
               Optional(GURL("https://www.google.com/bar_log")));
   EXPECT_THAT(shared_id, Optional(std::string("baz ei")));
-  histogram_tester_.ExpectTotalCount("NewTabPage.LogoShown", 1);
-  histogram_tester_.ExpectTotalCount("NewTabPage.LogoShown.FromCache", 1);
+  histogram_tester_.ExpectBucketCount("NewTabPage.LogoShown", 0, 1);
+  histogram_tester_.ExpectBucketCount("NewTabPage.LogoShown.FromCache", 0, 1);
+  histogram_tester_.ExpectTotalCount("NewTabPage.LogoShownTime2", 1);
+}
+
+TEST_F(NewTabPageHandlerTest, OnAnimatedDoodleImageRendered) {
+  base::MockCallback<NewTabPageHandler::OnDoodleImageRenderedCallback> callback;
+  std::optional<std::string> image_click_params;
+  std::optional<GURL> interaction_log_url;
+  std::optional<std::string> shared_id;
+  EXPECT_CALL(callback, Run(_, _, _))
+      .Times(1)
+      .WillOnce(DoAll(SaveArg<0>(&image_click_params),
+                      SaveArg<1>(&interaction_log_url),
+                      SaveArg<2>(&shared_id)));
+
+  handler_->OnDoodleImageRendered(
+      /*type=*/new_tab_page::mojom::DoodleImageType::kAnimation,
+      /*time=*/0,
+      /*log_url=*/GURL("https://doodle.com/log"), callback.Get());
+
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://doodle.com/log", R"()]}'
+  {
+    "ddllog": {
+      "target_url_params": "foo params",
+      "interaction_log_url": "/bar_log",
+      "encoded_ei": "baz ei"
+    }
+  })"));
+  EXPECT_THAT(image_click_params, Optional(std::string("foo params")));
+  EXPECT_THAT(interaction_log_url,
+              Optional(GURL("https://www.google.com/bar_log")));
+  EXPECT_THAT(shared_id, Optional(std::string("baz ei")));
+  histogram_tester_.ExpectBucketCount("NewTabPage.LogoShown", 2, 1);
+  histogram_tester_.ExpectBucketCount("NewTabPage.LogoShown.FromCache", 2, 1);
   histogram_tester_.ExpectTotalCount("NewTabPage.LogoShownTime2", 1);
 }
 

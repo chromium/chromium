@@ -193,11 +193,15 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Network error"/>
 </enum>
 
+<!-- LINT.IfChange(NewTabPageLogoClick) -->
+
 <enum name="NewTabPageLogoClick">
   <int value="0" label="Static logo clicked"/>
-  <int value="1" label="CTA image clicked"/>
+  <int value="1" label="(Deprecated) CTA image clicked"/>
   <int value="2" label="Animated logo clicked"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/search/ntp_user_data_logger.h:LogoClickType) -->
 
 <enum name="NewTabPageLogoDownloadOutcome">
   <summary>
@@ -213,10 +217,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Missing image"/>
 </enum>
 
+<!-- LINT.IfChange(NewTabPageLogoShown) -->
+
 <enum name="NewTabPageLogoShown">
   <int value="0" label="Static logo shown"/>
-  <int value="1" label="CTA image shown"/>
+  <int value="1" label="(Deprecated) CTA image shown"/>
+  <int value="2" label="Animated logo shown"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/search/ntp_user_data_logger.h:LogoImpressionType) -->
 
 <!-- LINT.IfChange(NewTabPageLogoShowniOSGoogleDSEEnum) -->
 

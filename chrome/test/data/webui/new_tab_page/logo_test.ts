@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import type {IframeElement, LogoElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {LogoElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {Doodle, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {DoodleImageType, DoodleShareChannel, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -232,9 +232,8 @@ suite('NewTabPageLogoTest', () => {
     // Assert.
     assertNotStyle($$(logo, '#doodle')!, 'display', 'none');
     assertEquals($$(logo, '#logo'), null);
-    assertEquals($$<IframeElement>(logo, '#image')!.src, 'data:foo');
+    assertEquals($$<HTMLImageElement>(logo, '#image')!.src, 'data:foo');
     assertNotStyle($$(logo, '#image')!, 'display', 'none');
-    assertStyle($$(logo, '#animation')!, 'display', 'none');
   });
 
   test('before doodle loaded shows nothing', () => {
@@ -340,56 +339,19 @@ suite('NewTabPageLogoTest', () => {
       });
     });
 
-    test(`animated doodle starts and stops ${withOut} URL`, async () => {
+    test(`animated doodle opens ${withOut} URL`, async () => {
       // Arrange.
       const doodle = createImageDoodle();
       assertTrue(!!doodle.image);
       doodle.image.light.animationUrl = 'https://foo.com';
       doodle.image.onClickUrl = hasUrl ? 'https://bar.com' : null;
       const logo = await createLogo(doodle, createTheme({isDark: false}));
-      assertEquals(0, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
-
-      // Act (start animation).
-      $$<HTMLElement>(logo, '#image')!.click();
-      await microtasksFinished();
-
-      // Assert (animation started).
-      assertEquals(windowProxy.getCallCount('open'), 0);
-      assertNotStyle($$(logo, '#image')!, 'display', 'none');
-      assertNotStyle($$(logo, '#animation')!, 'display', 'none');
-      assertEquals(
-          $$<IframeElement>(logo, '#animation')!.src,
-          'chrome-untrusted://new-tab-page/image?https://foo.com');
-      assertDeepEquals(
-          $$(logo, '#image')!.getBoundingClientRect(),
-          $$(logo, '#animation')!.getBoundingClientRect());
       assertEquals(
           hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
 
-      // Act (switch mode).
-      logo.theme = createTheme({isDark: true});
-      await microtasksFinished();
-
-      // Assert (animation stopped).
-      assertNotStyle($$(logo, '#image')!, 'display', 'none');
-      assertStyle($$(logo, '#animation')!, 'display', 'none');
-      assertEquals(
-          hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
-    });
-
-    test(`clicking animation of animated doodle ${withOut} URL`, async () => {
-      // Arrange.
-      const doodle = createImageDoodle();
-      assertTrue(!!doodle.image);
-      assertTrue(!!doodle.image.light);
-      doodle.image.light.animationUrl = 'https://foo.com';
-      doodle.image.onClickUrl = hasUrl ? 'https://bar.com' : null;
-      const logo = await createLogo(doodle, createTheme({isDark: false}));
+      // Act (click).
       $$<HTMLElement>(logo, '#image')!.click();
       await microtasksFinished();
-
-      // Act.
-      $$<HTMLElement>(logo, '#animation')!.click();
 
       // Assert.
       assertEquals(hasUrl ? 1 : 0, windowProxy.getCallCount('open'));
@@ -507,9 +469,9 @@ suite('NewTabPageLogoTest', () => {
       document.body.appendChild(logo);
       logo.theme = createTheme({isDark: dark});
       handler.setPromiseResolveFor('onDoodleImageRendered', {
-        imageClickParams: '',
+        imageClickParams: 'foo=bar&hello=world',
         interactionLogUrl: 'https://interaction.com',
-        shareId: '',
+        shareId: '123',
       });
       const doodle = createImageDoodle();
       assertTrue(!!doodle.image);
@@ -524,60 +486,43 @@ suite('NewTabPageLogoTest', () => {
           'https://dark_animation_log.com';
       const imageDoodle = dark ? doodle.image.dark : doodle.image.light;
 
-      // Act (CTA load).
+      // Act (load).
       doodleResolver.resolve({doodle});
       await microtasksFinished();
 
-      // Assert (CTA load).
+      // Assert (load).
       const [type, _, logUrl] =
           await handler.whenCalled('onDoodleImageRendered');
-      assertEquals(DoodleImageType.kCta, type);
+      assertEquals(DoodleImageType.kAnimation, type);
       assertEquals(imageDoodle.imageImpressionLogUrl, logUrl);
 
-      // Act (CTA click).
+      // Act (click).
       handler.resetResolver('onDoodleImageRendered');
       handler.setPromiseResolveFor('onDoodleImageRendered', {
         imageClickParams: 'foo=bar&hello=world',
-        interactionLogUrl: null,
+        interactionLogUrl: 'https://interaction.com',
         shareId: '123',
       });
       $$<HTMLElement>(logo, '#image')!.click();
 
-      // Assert (CTA click).
+      // Assert (click).
       const [type2, interactionLogUrl] =
           await handler.whenCalled('onDoodleImageClicked');
-      assertEquals(DoodleImageType.kCta, type2);
+      assertEquals(DoodleImageType.kAnimation, type2);
       assertEquals('https://interaction.com', interactionLogUrl);
-
-      // Assert (animation load). Also triggered by clicking #image.
-      const [type3, __, logUrl2] =
-          await handler.whenCalled('onDoodleImageRendered');
-      assertEquals(DoodleImageType.kAnimation, type3);
-      assertEquals(imageDoodle.animationImpressionLogUrl!, logUrl2);
-
-      // Act (animation click).
-      handler.resetResolver('onDoodleImageClicked');
-      $$<HTMLElement>(logo, '#animation')!.click();
-
-      // Assert (animation click).
-      const [type4, ___] = await handler.whenCalled('onDoodleImageClicked');
-      const onClickUrl = await windowProxy.whenCalled('open');
-      assertEquals(DoodleImageType.kAnimation, type4);
-      assertEquals(
-          'https://click.com/?ct=supi&foo=bar&hello=world', onClickUrl);
 
       // Act (share).
       $$<HTMLElement>(logo, '#shareButton')!.click();
       await microtasksFinished();
       ($$(logo, 'ntp-doodle-share-dialog')!
        ).dispatchEvent(new CustomEvent('share', {
-        detail: DoodleShareChannel.kTwitter,
+        detail: DoodleShareChannel.kFacebook,
       }));
 
       // Assert (share).
       const [channel, doodleId, shareId] =
           await handler.whenCalled('onDoodleShared');
-      assertEquals(DoodleShareChannel.kTwitter, channel);
+      assertEquals(DoodleShareChannel.kFacebook, channel);
       assertEquals('supi', doodleId);
       assertEquals('123', shareId);
     });

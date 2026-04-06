@@ -41,21 +41,17 @@ enum NTPLoggingEventType {
   // Deleted: NTP_VOICE_ERROR_LANGUAGE_NOT_SUPPORTED = 27,
   // Deleted: NTP_VOICE_ERROR_NO_MATCH = 28,
   // Deleted: NTP_VOICE_ERROR_OTHER = 29,
+  // Deleted: NTP_STATIC_LOGO_SHOWN_FRESH = 31,
+  // Deleted: NTP_CTA_LOGO_SHOWN_FROM_CACHE = 32,
+  // Deleted: NTP_CTA_LOGO_SHOWN_FRESH = 33,
+  // Deleted: NTP_CTA_LOGO_CLICKED = 35,
   // Deleted: NTP_MODULES_SHOWN = 83,
 
   // A static Doodle was shown, coming from cache.
   NTP_STATIC_LOGO_SHOWN_FROM_CACHE = 30,
-  // A static Doodle was shown, coming from the network.
-  NTP_STATIC_LOGO_SHOWN_FRESH = 31,
-  // A call-to-action Doodle image was shown, coming from cache.
-  NTP_CTA_LOGO_SHOWN_FROM_CACHE = 32,
-  // A call-to-action Doodle image was shown, coming from the network.
-  NTP_CTA_LOGO_SHOWN_FRESH = 33,
 
   // A static Doodle was clicked.
   NTP_STATIC_LOGO_CLICKED = 34,
-  // A call-to-action Doodle was clicked.
-  NTP_CTA_LOGO_CLICKED = 35,
   // An animated Doodle was clicked.
   NTP_ANIMATED_LOGO_CLICKED = 36,
 
@@ -176,7 +172,10 @@ enum NTPLoggingEventType {
   // Auto-removal of shortcuts was undone.
   NTP_SHORTCUTS_AUTO_REMOVE_UNDO = 92,
 
-  NTP_EVENT_TYPE_LAST = NTP_SHORTCUTS_AUTO_REMOVE_UNDO
+  // An animated Doodle was shown, coming from cache.
+  NTP_ANIMATED_LOGO_SHOWN_FROM_CACHE = 93,
+
+  NTP_EVENT_TYPE_LAST = NTP_ANIMATED_LOGO_SHOWN_FROM_CACHE
 };
 
 #endif  // CHROME_COMMON_SEARCH_NTP_LOGGING_EVENTS_H_

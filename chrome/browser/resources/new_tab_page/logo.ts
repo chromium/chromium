@@ -63,7 +63,6 @@ export class LogoElement extends CrLitElement {
 
       imageUrl_: {type: String},
       showAnimation_: {type: Boolean},
-      animationUrl_: {type: String},
       showShareDialog_: {type: Boolean},
       imageDoodleTabIndex_: {type: Number},
     };
@@ -79,7 +78,6 @@ export class LogoElement extends CrLitElement {
   private accessor doodleBoxed_: boolean = false;
   protected accessor imageUrl_: string = '';
   protected accessor showAnimation_: boolean = false;
-  protected accessor animationUrl_: string = '';
   protected accessor showShareDialog_: boolean = false;
   protected accessor imageDoodleTabIndex_: number = -1;
 
@@ -112,7 +110,7 @@ export class LogoElement extends CrLitElement {
 
     this.imageDoodle_ = this.computeImageDoodle_();
     this.imageUrl_ = this.computeImageUrl_();
-    this.animationUrl_ = this.computeAnimationUrl_();
+    this.showAnimation_ = this.computeShowAnimation_();
     this.showDoodle_ = this.computeShowDoodle_();
     this.showLogo_ = this.computeShowLogo_();
     this.doodleBoxed_ = this.computeDoodleBoxed_();
@@ -142,9 +140,9 @@ export class LogoElement extends CrLitElement {
     } else {
       this.style.removeProperty('--ntp-logo-box-color');
     }
-    // Stop the animation (if it is running) and reset logging params since
-    // mode change constitutes a new doodle session.
-    this.showAnimation_ = false;
+    // Users can enable/disable animated Doodles through accessibility settings,
+    // therefore we need to keep the showAnimation_ property in sync.
+    this.showAnimation_ = this.computeShowAnimation_();
     this.imageClickParams_ = null;
     this.interactionLogUrl_ = null;
     this.shareId_ = null;
@@ -193,31 +191,12 @@ export class LogoElement extends CrLitElement {
     if ($$<HTMLElement>(this, '#imageDoodle')!.tabIndex < 0) {
       return;
     }
-    if (this.isCtaImageShown_()) {
-      this.showAnimation_ = true;
-      this.pageHandler_.onDoodleImageClicked(
-          DoodleImageType.kCta, this.interactionLogUrl_);
 
-      // TODO(tiborg): This is technically not correct since we don't know if
-      // the animation has loaded yet. However, since the animation is loaded
-      // inside an iframe retrieving the proper load signal is not trivial. In
-      // practice this should be good enough but we could improve that in the
-      // future.
-      this.logImageRendered_(
-          DoodleImageType.kAnimation,
-          this.imageDoodle_!.animationImpressionLogUrl!);
-
-      if (!this.doodle_!.image!.onClickUrl) {
-        $$<HTMLElement>(this, '#imageDoodle')!.blur();
-      }
-
-      return;
-    }
     assert(this.doodle_!.image!.onClickUrl);
     this.pageHandler_.onDoodleImageClicked(
         this.showAnimation_ ? DoodleImageType.kAnimation :
                               DoodleImageType.kStatic,
-        null);
+        this.interactionLogUrl_);
     const onClickUrl = new URL(this.doodle_!.image!.onClickUrl);
     if (this.imageClickParams_) {
       for (const param of new URLSearchParams(this.imageClickParams_)) {
@@ -229,8 +208,8 @@ export class LogoElement extends CrLitElement {
 
   protected onImageLoad_() {
     this.logImageRendered_(
-        this.isCtaImageShown_() ? DoodleImageType.kCta :
-                                  DoodleImageType.kStatic,
+        this.showAnimation_ ? DoodleImageType.kAnimation :
+                              DoodleImageType.kStatic,
         this.imageDoodle_!.imageImpressionLogUrl);
   }
 
@@ -258,20 +237,12 @@ export class LogoElement extends CrLitElement {
     this.pageHandler_.onDoodleShared(e.detail, doodleId, this.shareId_);
   }
 
-  private isCtaImageShown_(): boolean {
-    return !this.showAnimation_ && !!this.imageDoodle_ &&
-        !!this.imageDoodle_.animationUrl;
-  }
-
   private computeImageUrl_(): string {
     return this.imageDoodle_ ? this.imageDoodle_.imageUrl : '';
   }
 
-  private computeAnimationUrl_(): string {
-    return this.imageDoodle_ && this.imageDoodle_.animationUrl ?
-        `chrome-untrusted://new-tab-page/image?${
-            this.imageDoodle_.animationUrl}` :
-        '';
+  private computeShowAnimation_(): boolean {
+    return !!this.imageDoodle_?.animationUrl;
   }
 
   protected onShareButtonClick_(e: Event) {
@@ -284,10 +255,7 @@ export class LogoElement extends CrLitElement {
   }
 
   private computeImageDoodleTabIndex_(): number {
-    return (this.doodle_ && this.doodle_.image &&
-            (this.isCtaImageShown_() || this.doodle_.image.onClickUrl)) ?
-        0 :
-        -1;
+    return (this.doodle_?.image?.onClickUrl) ? 0 : -1;
   }
 }
 

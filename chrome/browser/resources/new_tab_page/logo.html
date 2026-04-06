@@ -7,13 +7,7 @@ ${this.showDoodle_ ? html`
         tabindex="${this.imageDoodleTabIndex_}" @click="${this.onImageClick_}"
         @keydown="${this.onImageKeydown_}">
       <div id="imageContainer">
-        <!-- The static image is always visible and the animated image is
-             stacked on top of the static image so that there is no flicker
-             when starting the animation. -->
         <img id="image" src="${this.imageUrl_}" @load="${this.onImageLoad_}">
-        <ntp-iframe id="animation" src="${this.animationUrl_}"
-            ?hidden="${!this.showAnimation_}">
-        </ntp-iframe>
       </div>
       <cr-button id="shareButton" title="$i18n{shareDoodle}"
           @click="${this.onShareButtonClick_}">

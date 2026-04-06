@@ -76,8 +76,6 @@ struct Theme {
 enum DoodleImageType {
   // Animation of an animated doodle.
   kAnimation,
-  // Static preview image of an animated doodle.
-  kCta,
   // Image of a static doodle.
   kStatic,
 };
