@@ -1838,5 +1838,87 @@ class TextureLayerNoResourceTest : public LayerTreeTest, TextureLayerClient {
 
 SINGLE_AND_MULTI_THREAD_TEST_F(TextureLayerNoResourceTest);
 
+class TextureLayerUpdateAfterPaintEventTest : public LayerTreeTest,
+                                              TextureLayerClient {
+ public:
+  bool PrepareTransferableResource(
+      viz::TransferableResource* resource,
+      viz::ReleaseCallback* release_callback) override {
+    ++num_transferred_resources_;
+    *resource = viz::TransferableResource();
+    return true;
+  }
+
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(100, 100));
+    LayerTreeTest::SetupTree();
+    texture_layer_ = TextureLayer::Create(
+        this, TextureLayer::PrepareResourceBehavior::kAfterPaintEvent);
+    texture_layer_->SetIsDrawable(true);
+    texture_layer_->SetContentsOpaque(true);
+    texture_layer_->SetBounds(gfx::Size(100, 100));
+    texture_layer_->SetBackgroundColor(SkColors::kRed);
+    layer_tree_host()->root_layer()->AddChild(texture_layer_);
+    texture_layer_id_ = static_cast<uint32_t>(texture_layer_->id());
+    if (layer_tree_host()->IsUsingLayerLists()) {
+      CopyProperties(layer_tree_host()->root_layer(), texture_layer_.get());
+    }
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void WillBeginMainFrame() override {
+    texture_layer_->SetNeedsDisplayRect({0, 0, 7, 11});
+  }
+
+  void WillCommit(const CommitState& cs) override {
+    // Raster invalidation should have been applied, but the resource should
+    // not be created until after paint event dispatch.
+    EXPECT_TRUE(
+        cs.layer_ids_that_should_push_properties.contains(texture_layer_id_));
+    EXPECT_TRUE(cs.layer_update_rects.contains(texture_layer_id_));
+    EXPECT_EQ(cs.layer_update_rects.find(texture_layer_id_)->second,
+              gfx::Rect(0, 0, 7, 11));
+    EXPECT_EQ(texture_layer_->update_rect(), gfx::Rect(0, 0, 0, 0));
+    EXPECT_EQ(num_transferred_resources_.load(), 0u);
+    // Simulate an invalidation happening during paint event callback
+    texture_layer_->SetNeedsDisplayRect({0, 0, 13, 5});
+  }
+
+  void DidCommit() override {
+    // Invalidation from paint event callback should have been cleared and
+    // resource should have been generated.
+    EXPECT_EQ(texture_layer_->update_rect(), gfx::Rect(0, 0, 0, 0));
+    EXPECT_FALSE(layer_tree_host()
+                     ->pending_commit_state()
+                     ->layer_ids_that_should_push_properties.contains(
+                         texture_layer_id_));
+    EXPECT_FALSE(
+        layer_tree_host()->pending_commit_state()->layer_update_rects.contains(
+            texture_layer_id_));
+    EXPECT_EQ(num_transferred_resources_.load(), 1u);
+    texture_layer_.reset();
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_TRUE(std::ranges::contains(
+        host_impl->sync_tree()->LayersThatShouldPushProperties(),
+        host_impl->sync_tree()->LayerById(texture_layer_id_)));
+    EXPECT_TRUE(static_cast<TextureLayerImpl*>(
+                    host_impl->sync_tree()->LayerById(texture_layer_id_))
+                    ->needs_set_resource_push());
+    EXPECT_EQ(
+        host_impl->sync_tree()->LayerById(texture_layer_id_)->update_rect(),
+        gfx::Rect(0, 0, 13, 11));
+    EndTest();
+  }
+
+ private:
+  uint32_t texture_layer_id_;
+  scoped_refptr<TextureLayer> texture_layer_;
+  std::atomic<uint32_t> num_transferred_resources_ = 0u;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(TextureLayerUpdateAfterPaintEventTest);
 }  // namespace
 }  // namespace cc

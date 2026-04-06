@@ -1670,15 +1670,6 @@ AnimationFrameTimingInfo* WebFrameWidgetImpl::RecordRenderingUpdateEndTime(
       *local_root_frame->DomWindow(), rendering_update_time);
 }
 
-void WebFrameWidgetImpl::WillBeginImplCommit() {
-  LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
-  CHECK(local_root_frame);
-
-  if (LocalFrameView* frame_view = local_root_frame->View()) {
-    frame_view->WillBeginImplCommit();
-  }
-}
-
 void WebFrameWidgetImpl::DidBeginMainFrame() {
   LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
   CHECK(local_root_frame);
@@ -2703,6 +2694,12 @@ void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
       SCOPED_CRASH_KEY_STRING32("Crbug1139104", "NullFrameReason", reason);
       base::debug::DumpWithoutCrashing();
     }
+  }
+
+  LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
+  CHECK(local_root_frame);
+  if (LocalFrameView* frame_view = local_root_frame->View()) {
+    frame_view->WillCommit();
   }
 }
 

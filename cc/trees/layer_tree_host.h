@@ -719,6 +719,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return in_paint_layer_contents_;
   }
 
+  bool in_will_commit() const { return inside_will_commit_; }
+
   bool in_commit() const {
     return commit_completion_event_ && !commit_completion_event_->IsSignaled();
   }
@@ -786,7 +788,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // LayerTreeHost interface to Proxy.
   void WillBeginMainFrame();
-  void WillBeginImplCommit();
   void DidBeginMainFrame();
   void BeginMainFrame(const viz::BeginFrameArgs& args);
   void BeginMainFrameNotExpectedSoon();
@@ -798,7 +799,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   std::unique_ptr<CommitState> WillCommit(
       std::unique_ptr<CompletionEvent> completion,
       bool has_updates);
-  std::unique_ptr<CommitState> ActivateCommitState();
   void CommitComplete(int source_frame_number, const CommitTimestamps&);
   void RequestNewLayerTreeFrameSink();
   void DidInitializeLayerTreeFrameSink();
@@ -1051,7 +1051,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void InitializeProxy(std::unique_ptr<Proxy> proxy);
 
   bool DoUpdateLayers();
-
+  std::unique_ptr<CommitState> ActivateCommitState();
   void WaitForCommitCompletion(bool for_protected_sequence) const;
 
   void UpdateDeferMainFrameUpdateInternal();
@@ -1107,9 +1107,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // destroyed midway which causes a crash. crbug.com/654672
   bool inside_main_frame_ = false;
 
-  // Track when we're inside `WillBeginImplCommit` to ensure commit state is
-  // not modified.
-  bool inside_will_begin_impl_commit_ = false;
+  // Track when we're inside `WillCommit` to ensure commit state is not
+  // modified.
+  bool inside_will_commit_ = false;
 
   // Set to force a commit during BeginMainFrame even if there are no actual
   // rendering changes, to ensure the bits in CommitState are propagated.

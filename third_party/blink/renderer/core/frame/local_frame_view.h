@@ -461,7 +461,7 @@ class CORE_EXPORT LocalFrameView final
   // Called just before the impl commit. This runs post-lifecycle steps
   // immediately if they are required to happen before the commit (e.g.
   // canvas.onpaint).
-  void WillBeginImplCommit();
+  void WillCommit();
   // Called after the main frame is complete. If post-lifecycle steps have not
   // run yet, they will execute here.
   void DidBeginMainFrame();
@@ -1330,10 +1330,7 @@ class CORE_EXPORT LocalFrameView final
   HeapHashMap<Member<HTMLCanvasElement>,
               Member<GCedHeapLinkedHashSet<Member<Element>>>>
       canvas_elements_needing_onpaint_;
-  // True if we have canvas work, performed in the post-lifecycle steps, that
-  // needs to happen prior to the impl commit. Cleared in DidBeginMainFrame.
-  bool needs_post_lifecycle_steps_before_impl_commit_ = false;
-  bool did_run_post_lifecycle_steps_before_impl_commit_ = false;
+  bool did_run_post_lifecycle_steps_before_commit_ = false;
 
   HeapHashSet<WeakMember<HTMLVideoElement>> fullscreen_video_elements_;
 

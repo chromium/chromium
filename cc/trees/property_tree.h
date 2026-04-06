@@ -915,6 +915,7 @@ class CC_EXPORT PropertyTrees final {
                          const std::vector<int>& transform_nodes);
   // Note that GetChangeState mutates the state of effect_tree_.
   void GetChangeState(PropertyTreesChangeState& change_state);
+  void ApplyChangeState(PropertyTreesChangeState& change_state);
   void ResetAllChangeTracking();
 
   gfx::Vector2dF inner_viewport_container_bounds_delta() const {

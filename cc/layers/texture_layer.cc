@@ -22,15 +22,20 @@
 
 namespace cc {
 
-scoped_refptr<TextureLayer> TextureLayer::Create(TextureLayerClient* client) {
-  return scoped_refptr<TextureLayer>(new TextureLayer(client));
+scoped_refptr<TextureLayer> TextureLayer::Create(
+    TextureLayerClient* client,
+    PrepareResourceBehavior prepare_resource_behavior) {
+  return scoped_refptr<TextureLayer>(
+      new TextureLayer(client, prepare_resource_behavior));
 }
 
-TextureLayer::TextureLayer(TextureLayerClient* client)
+TextureLayer::TextureLayer(TextureLayerClient* client,
+                           PrepareResourceBehavior prepare_resource_behavior)
     : client_(client),
       uv_bottom_right_(1.f, 1.f),
       blend_background_color_(false),
       force_texture_to_opaque_(false),
+      prepare_resource_behavior_(prepare_resource_behavior),
       needs_set_resource_(false) {}
 
 TextureLayer::~TextureLayer() = default;
@@ -157,6 +162,10 @@ bool TextureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
 bool TextureLayer::Update() {
   bool updated = Layer::Update();
   if (client_.Read(*this)) {
+    if (prepare_resource_behavior_ ==
+        PrepareResourceBehavior::kAfterPaintEvent) {
+      return false;
+    }
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
     if (client_.Write(*this)->PrepareTransferableResource(&resource,
@@ -173,6 +182,28 @@ bool TextureLayer::Update() {
   // used for different textures.  Such callers notify this layer that the
   // texture has changed by calling SetNeedsDisplay, so check for that here.
   return updated || !update_rect().IsEmpty();
+}
+
+bool TextureLayer::MayUpdateAfterPaintEvent() const {
+  return prepare_resource_behavior_ ==
+         PrepareResourceBehavior::kAfterPaintEvent;
+}
+
+bool TextureLayer::UpdateAfterPaintEvent() {
+  if (prepare_resource_behavior_ == PrepareResourceBehavior::kAfterPaintEvent &&
+      client_.Read(*this)) {
+    viz::TransferableResource resource;
+    viz::ReleaseCallback release_callback;
+    if (client_.Write(*this)->PrepareTransferableResource(&resource,
+                                                          &release_callback)) {
+      // Already within a commit, no need to do another one immediately.
+      bool requires_commit = false;
+      SetTransferableResourceInternal(resource, std::move(release_callback),
+                                      requires_commit);
+      return true;
+    }
+  }
+  return false;
 }
 
 bool TextureLayer::IsSnappedToPixelGridInTarget() const {

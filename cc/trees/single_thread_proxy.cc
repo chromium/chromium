@@ -240,8 +240,6 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
 
-  layer_tree_host_->WillBeginImplCommit();
-
   // Commit immediately.
   DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
   DebugScopedSetImplThread impl(task_runner_provider_);

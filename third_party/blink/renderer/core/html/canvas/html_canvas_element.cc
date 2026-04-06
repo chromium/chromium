@@ -366,6 +366,8 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     reason = FlushReason::kCanvasPushFrameWhilePrinting;
   }
 
+  DoDeferredPaintInvalidation();
+
   scoped_refptr<CanvasResource> frame =
       RenderingContext()->PaintRenderingResultsToResource(kBackBuffer, reason);
   if (!frame || !frame->IsValid()) {
@@ -802,20 +804,23 @@ void HTMLCanvasElement::SetNeedsCompositingUpdate() {
   Element::SetNeedsCompositingUpdate();
 }
 
-void HTMLCanvasElement::DoDeferredPaintInvalidation() {
-  DCHECK(!dirty_rect_.IsEmpty());
+bool HTMLCanvasElement::DoDeferredPaintInvalidation() {
+  if (dirty_rect_.IsEmpty()) {
+    return false;
+  }
   if (LowLatencyEnabled()) {
     // Low latency canvas handles dirty propagation in FinalizeFrame();
-    return;
+    return false;
   }
-  LayoutBox* layout_box = GetLayoutBox();
+  const LayoutBox* layout_box = GetLayoutBox();
 
   gfx::RectF content_rect;
   if (layout_box) {
-    if (auto* replaced = DynamicTo<LayoutReplaced>(layout_box))
+    if (const auto* replaced = DynamicTo<LayoutReplaced>(layout_box)) {
       content_rect = gfx::RectF(replaced->ReplacedContentRect());
-    else
+    } else {
       content_rect = gfx::RectF(layout_box->PhysicalContentBoxRect());
+    }
   }
 
   if (IsRenderingContext2D()) {
@@ -837,7 +842,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
     }
 
     if (dirty_rect_.IsEmpty())
-      return;
+      return false;
 
     if (cc_layer_ && context_->IsComposited()) {
       cc_layer_->SetNeedsDisplayRect(gfx::ToEnclosingRect(invalidation_rect));
@@ -851,13 +856,8 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
   NotifyListenersCanvasChanged();
   did_notify_listeners_for_current_frame_ = true;
 
-  if (layout_box && !ShouldBeDirectComposited()) {
-    // If the canvas is not composited, propagate the paint invalidation to
-    // |layout_box| as the painted result will change.
-    layout_box->SetShouldDoFullPaintInvalidation();
-  }
-
   dirty_rect_ = gfx::Rect();
+  return true;
 }
 
 void HTMLCanvasElement::OnWidthOrHeightAssigned() {
@@ -1632,7 +1632,11 @@ cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerForCanvas2DIfNeeded() {
   CHECK(context_->IsComposited());
 
   if (!cc_layer_) [[unlikely]] {
-    cc_layer_ = cc::TextureLayer::Create(this);
+    cc_layer_ = cc::TextureLayer::Create(
+        this,
+        RuntimeEnabledFeatures::CanvasDrawElementEnabled()
+            ? cc::TextureLayer::PrepareResourceBehavior::kAfterPaintEvent
+            : cc::TextureLayer::PrepareResourceBehavior::kDuringLayerUpdate);
     InitializeLayerWithCSSProperties(cc_layer_.get());
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);

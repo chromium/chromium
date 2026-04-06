@@ -764,6 +764,15 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // if there is anything new to commit. If all layers return false, the commit
   // may be aborted.
   virtual bool Update();
+  // Returns true if this layer participates in the secondary update phase that
+  // occurs after script-driven paint events (e.g., HTML canvas 'paint' events)
+  // are dispatched during the commit process.
+  virtual bool MayUpdateAfterPaintEvent() const;
+  // Called during the commit process after paint events have been dispatched,
+  // but only if MayUpdateAfterPaintEvent() returns true. Returns true if the
+  // layer's properties or resources were actually modified and require pushing
+  // to the compositor thread.
+  virtual bool UpdateAfterPaintEvent();
 
   // Internal to property tree construction. This allows a layer to request that
   // its transform should be snapped such that the layer aligns with the pixel

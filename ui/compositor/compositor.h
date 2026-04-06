@@ -398,7 +398,6 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   // LayerTreeHostClient implementation.
   void WillBeginMainFrame() override {}
-  void WillBeginImplCommit() override {}
   void DidBeginMainFrame() override;
   void OnDeferMainFrameUpdatesChanged(bool) override {}
   void OnDeferCommitsChanged(

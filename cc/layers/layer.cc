@@ -1467,6 +1467,12 @@ void Layer::SetNeedsDisplayRect(const gfx::Rect& dirty_rect) {
 
   update_rect_.Union(dirty_rect);
 
+  if (IsAttached() && layer_tree_host()->in_will_commit() &&
+      MayUpdateAfterPaintEvent()) {
+    // This invalidation will be handled during the in-progress commit.
+    return;
+  }
+
   if (draws_content() && IsAttached() && !ignore_set_needs_commit_for_test_) {
     layer_tree_host()->SetNeedsUpdateLayers();
   }
@@ -1611,6 +1617,15 @@ int Layer::NumDescendantsThatDrawContent() const {
 }
 
 bool Layer::Update() {
+  DCHECK(IsAttached());
+  return false;
+}
+
+bool Layer::MayUpdateAfterPaintEvent() const {
+  return false;
+}
+
+bool Layer::UpdateAfterPaintEvent() {
   DCHECK(IsAttached());
   return false;
 }
