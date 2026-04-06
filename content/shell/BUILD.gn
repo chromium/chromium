@@ -9,6 +9,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
 import("//build/config/win/manifest.gni")
+import("//build/rust/rust_static_library.gni")
 import("//components/surface_embed/buildflags/buildflags.gni")
 import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -326,6 +327,9 @@ static_library("content_shell_lib") {
     ":content_browsertests_mojom",
     ":protocol_sources",
     ":resources",
+    ":rust_test_mojom",
+    ":rust_test_mojom_js",
+    ":rust_test_service_ffi",
     ":shell_controller_mojom",
     "//base",
     "//base:base_static",
@@ -1142,4 +1146,35 @@ mojom("shell_controller_mojom") {
   testonly = true
   sources = [ "common/shell_controller.test-mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+mojom("rust_test_mojom") {
+  testonly = true
+  sources = [ "common/rust_test.test-mojom" ]
+  generate_rust = true
+}
+
+rust_static_library("rust_test_service") {
+  testonly = true
+  crate_root = "browser/rust_test_service.rs"
+  sources = [ "browser/rust_test_service.rs" ]
+  deps = [
+    ":rust_test_mojom_rust",
+    "//mojo/public/rust/bindings",
+  ]
+}
+
+rust_static_library("rust_test_service_ffi") {
+  testonly = true
+  allow_unsafe = true
+  crate_root = "browser/rust_test_service_ffi.rs"
+  sources = [ "browser/rust_test_service_ffi.rs" ]
+  cxx_bindings = [ "browser/rust_test_service_ffi.rs" ]
+  deps = [
+    ":rust_test_mojom_rust",
+    ":rust_test_service",
+    "//base",
+    "//mojo/public/rust/bindings",
+    "//mojo/public/rust/system",
+  ]
 }

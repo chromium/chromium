@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+This script gives a minimal example of mojo usage by sending messages to a
+receiver that lives in the browser process. To execute it, build the
+`content_shell` target in some out directory (e.g. out/default), then run:
+
+  out/default/content_shell --enable-blink-features=MojoJS \
+    "file://$(pwd)/content/test/data/rust_mojo_test.html?out=../../../out/default"
+-->
+
+<head>
+  <title>Rust Mojo Test</title>
+</head>
+
+<body>
+  <h1>Chromium Rust Mojo Service Test</h1>
+  <div>
+    <label for="indexInput">Message Index:</label>
+    <input type="number" id="indexInput" value="0" min="0" max="99" style="width: 50px;">
+    <button id="rustButton">What does the Rust say?</button>
+  </div>
+  <p id="responseField" style="font-family: monospace; margin-top: 20px; color: #333;"></p>
+
+  <script>
+    const out = new URLSearchParams(window.location.search).get('out') || '../../../out/default';
+    const prefix = (window.location.protocol === 'file:') ? `${out}/gen/` : '/gen/';
+    [
+      'mojo/public/js/mojo_bindings_lite.js',
+      'content/shell/common/rust_test.test-mojom-lite.js'
+    ].forEach(src => {
+      document.write(`<script src="${prefix}${src}"></scr` + 'ipt>');
+    });
+  </script>
+
+  <script>
+    async function getRustMessage(index) {
+      if (typeof content === 'undefined' || !content.rustTest || !content.rustTest.mojom || !content.rustTest.mojom.RustTestService) {
+        throw new Error("'content.rustTest.mojom.RustTestService' is not defined. Ensure MojoJS is enabled.");
+      }
+      const remote = content.rustTest.mojom.RustTestService.getRemote();
+      const { message } = await remote.getStringFromRust(index);
+      return message;
+    }
+
+    document.getElementById('rustButton').addEventListener('click', async () => {
+      const responseField = document.getElementById('responseField');
+      const index = parseInt(document.getElementById('indexInput').value, 10);
+      responseField.innerText = `Asking Rust for message ${index}...`;
+      try {
+        const message = await getRustMessage(index);
+        responseField.innerText = `"${message}"`;
+      } catch (e) {
+        responseField.innerText = "Error: " + e.message;
+      }
+    });
+  </script>
+</body>
+
+</html>

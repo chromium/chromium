@@ -1855,6 +1855,7 @@ test("content_browsertests") {
     "../renderer/render_widget_browsertest.cc",
     "../renderer/visual_state_browsertest.cc",
     "../renderer/webclipboard_impl_browsertest.cc",
+    "../shell/browser/rust_mojo_test_browsertest.cc",
     "../test/browser_test_utils_browsertest.cc",
     "../test/content_browser_test_test.cc",
     "../test/top_frame_population_browsertest.cc",
@@ -2090,6 +2091,8 @@ test("content_browsertests") {
     "//media/test/data/",
     "//mojo/public/interfaces/bindings/tests/data/validation/",
     "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
+    "$root_gen_dir/mojo/public/js/mojo_bindings_lite.js",
+    "$root_gen_dir/content/shell/common/rust_test.test-mojom-lite.js",
   ]
 
   if (!is_ios && !is_android) {

@@ -8596,6 +8596,7 @@ data/result_queue.js
 data/rgb.svg
 data/rgb.svg.mock-http-headers
 data/run_async_code_on_worker.html
+data/rust_mojo_test.html
 data/rwh_simple.html
 data/rwhv_compositing_animation.html
 data/sandbox_main_frame_csp.html

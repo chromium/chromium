@@ -60,11 +60,13 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/setup_field_trials.h"
+#include "content/shell/browser/rust_test_service_ffi.rs.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
+#include "content/shell/common/rust_test.test-mojom.h"
 #include "content/shell/common/shell_controller.test-mojom.h"
 #include "content/shell/common/shell_paths.h"
 #include "content/shell/common/shell_switches.h"
@@ -190,6 +192,15 @@ class ShellControllerImpl : public mojom::ShellController {
 
   void ShutDown() override { Shell::Shutdown(); }
 };
+
+void BindRustTestServiceReceiver(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<content::rust_test::mojom::RustTestService>
+        receiver) {
+  auto pipe = std::make_unique<mojo::rust::ScopedMessagePipeHandleWrapper>(
+      receiver.PassPipe());
+  content::rust_test::BindRustTestService(std::move(pipe));
+}
 
 void BindNetworkHintsHandler(
     content::RenderFrameHost* frame_host,
@@ -605,6 +616,8 @@ void ShellContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       ->GetBinders()
       .ExposeInterfacesToRenderFrame(map);
   map->Add<network_hints::mojom::NetworkHintsHandler>(&BindNetworkHintsHandler);
+  map->Add<content::rust_test::mojom::RustTestService>(
+      base::BindRepeating(&BindRustTestServiceReceiver));
 #if BUILDFLAG(IS_WIN)
   map->Add<media::mojom::MediaFoundationPreferences>(
       &BindMediaFoundationPreferences);
