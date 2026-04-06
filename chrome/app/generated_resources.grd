@@ -9678,6 +9678,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Reading mode
         </message>
       </if>
+      <message name="IDS_IMMERSIVE_READING_MODE_OPENED_ANNOUNCEMENT" desc="Accessibility announcement read by screen readers when reading mode is opened." is_accessibility_with_no_ui="true">
+        Reading mode opened, full page view
+      </message>
       <message name="IDS_READING_MODE_NOT_SELECTABLE_HEADER" desc="Header for reading mode when the current webpage cannot be opened in reading mode, even when selecting text.">
         Reading mode isn’t available on this page
       </message>

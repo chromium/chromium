@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
@@ -129,6 +131,9 @@ void ReadAnythingImmersiveOverlayView::OnShowUI() {
   // so that it won't receive screen reader focus or be navigable by keyboard.
   scoped_accessibility_disconnecter_ =
       contents_web_view_->DisconnectWebContentsAccessibility();
+
+  GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
+      IDS_IMMERSIVE_READING_MODE_OPENED_ANNOUNCEMENT));
 
   DUMP_WILL_BE_CHECK(immersive_web_view_);
   if (immersive_web_view_) {
