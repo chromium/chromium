@@ -67,7 +67,6 @@ ChromeVoxE2ETest = class extends E2ETestBase {
     return {
       disabled: [
         'features::kAccessibilityManifestV3ChromeVox',
-        'tabs::kHorizontalTabStripComboButton',
       ],
     };
   }

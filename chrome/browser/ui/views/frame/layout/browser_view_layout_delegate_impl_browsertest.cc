@@ -8,7 +8,6 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
@@ -83,10 +82,7 @@ class BrowserViewLayoutDelegateImplBrowsertest
     : public InteractiveBrowserTest,
       public testing::WithParamInterface<WindowState> {
  public:
-  BrowserViewLayoutDelegateImplBrowsertest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        tabs::kHorizontalTabStripComboButton);
-  }
+  BrowserViewLayoutDelegateImplBrowsertest() = default;
   ~BrowserViewLayoutDelegateImplBrowsertest() override = default;
 
   void ApplyWindowState(Browser* browser) {
@@ -128,7 +124,6 @@ class BrowserViewLayoutDelegateImplBrowsertest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   std::unique_ptr<ImmersiveRevealedLock> immersive_mode_lock_;
 };

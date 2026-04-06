@@ -268,9 +268,8 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
   PinnedSidePanelInteractiveTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHSidePanelGenericPinnableFeature})) {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kImmersiveReadAnything,
-             tabs::kHorizontalTabStripComboButton});
+    scoped_feature_list_.InitWithFeatures({},
+                                          {features::kImmersiveReadAnything});
   }
   ~PinnedSidePanelInteractiveTest() override = default;
 
@@ -284,10 +283,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
-    if (tabs::GetTabSearchPosition(browser()) ==
-        tabs::TabSearchPosition::kToolbarButton) {
-      actions_model->UpdatePinnedState(kActionTabSearch, false);
-    }
+    actions_model->UpdatePinnedState(kActionTabSearch, false);
     views::test::WaitForAnimatingLayoutManager(
         GetPinnedToolbarActionsContainer());
   }

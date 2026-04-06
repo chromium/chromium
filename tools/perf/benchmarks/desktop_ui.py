@@ -46,10 +46,6 @@ class DesktopUI(perf_benchmark.PerfBenchmark):
     options.AppendExtraBrowserArgs('--enable-ui-devtools=0')
     options.AppendExtraBrowserArgs(
         '--enable-features=ui-debug-tools-enable-synthetic-events')
-    # TODO(crbug.com/495511377): Tab Search button element ID is duplicated when
-    # this is enabled.
-    options.AppendExtraBrowserArgs(
-        '--disable-features=HorizontalTabStripComboButton')
 
   @classmethod
   def Name(cls):

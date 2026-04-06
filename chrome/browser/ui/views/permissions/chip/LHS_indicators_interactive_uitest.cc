@@ -92,8 +92,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
 
   LHSIndicatorsInteractiveUITest() {
     scoped_features_.InitWithFeatures(
-        {content_settings::features::kLeftHandSideActivityIndicators},
-        {tabs::kHorizontalTabStripComboButton});
+        {content_settings::features::kLeftHandSideActivityIndicators}, {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }

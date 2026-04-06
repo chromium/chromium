@@ -5,7 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -16,10 +16,12 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,8 +53,6 @@ class WebContentsInteractionTestUtilInteractiveUiTest
     : public InProcessBrowserTest {
  public:
   WebContentsInteractionTestUtilInteractiveUiTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        tabs::kHorizontalTabStripComboButton);
     InteractionTestUtilBrowser::PopulateSimulators(test_util_);
     test_util_.AddSimulator(
         std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
@@ -67,16 +67,19 @@ class WebContentsInteractionTestUtilInteractiveUiTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTabSearchPinnedToTabstrip, true);
     embedded_test_server()->StartAcceptingConnections();
   }
 
   void TearDownOnMainThread() override {
+    browser()->profile()->GetPrefs()->ClearPref(
+        prefs::kTabSearchPinnedToTabstrip);
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::test::InteractionTestUtil test_util_;
 };
 

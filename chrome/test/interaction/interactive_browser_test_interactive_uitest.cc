@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,9 +23,11 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -67,10 +68,7 @@ constexpr char kDocumentWithTextField[] = "/form_interaction.html";
 
 class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
  public:
-  InteractiveBrowserTestUiTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        tabs::kHorizontalTabStripComboButton);
-  }
+  InteractiveBrowserTestUiTest() = default;
   ~InteractiveBrowserTestUiTest() override = default;
 
   void SetUp() override {
@@ -81,16 +79,17 @@ class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTabSearchPinnedToTabstrip, true);
     embedded_test_server()->StartAcceptingConnections();
   }
 
   void TearDownOnMainThread() override {
+    browser()->profile()->GetPrefs()->ClearPref(
+        prefs::kTabSearchPinnedToTabstrip);
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
