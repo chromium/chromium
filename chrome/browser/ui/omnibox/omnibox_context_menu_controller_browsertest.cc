@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
@@ -36,6 +37,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -329,6 +331,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   TestOmniboxPopupFileSelector file_selector(owning_window);
   OmniboxContextMenuController controller(&file_selector, GetWebContents());
 
+  base::HistogramTester histogram_tester;
+
   auto* web_ui = GetWebContents()->GetWebUI();
   ASSERT_TRUE(web_ui) << "WebContents must have a WebUI";
 
@@ -348,12 +352,139 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH, 0);
   EXPECT_EQ(omnibox::TOOL_MODE_DEEP_SEARCH,
             input_state_model->GetInputState().active_tool);
+  histogram_tester.ExpectBucketCount("ContextualSearch.Tools.Omnibox",
+                                     omnibox::TOOL_MODE_DEEP_SEARCH, 1);
 
   controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES, 0);
   EXPECT_EQ(omnibox::TOOL_MODE_IMAGE_GEN,
             input_state_model->GetInputState().active_tool);
+  histogram_tester.ExpectBucketCount("ContextualSearch.Tools.Omnibox",
+                                     omnibox::TOOL_MODE_IMAGE_GEN, 1);
 
   controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_CANVAS, 0);
   EXPECT_EQ(omnibox::TOOL_MODE_CANVAS,
             input_state_model->GetInputState().active_tool);
+  histogram_tester.ExpectBucketCount("ContextualSearch.Tools.Omnibox",
+                                     omnibox::TOOL_MODE_CANVAS, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
+                       ExecuteCommandRecordsModelMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to the AIM page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+
+  auto* web_contents = GetWebContents();
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
+
+  // Manually inject InputState to ensure models appear in the menu.
+  auto* web_ui = web_contents->GetWebUI();
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  auto* handler = popup_ui->composebox_handler();
+
+  omnibox::InputState test_state;
+  // Explicitly allow Gemini Pro and Auto models.
+  test_state.allowed_models.push_back(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  test_state.allowed_models.push_back(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+  handler->input_state_model()->set_state_for_testing(test_state);
+
+  // Create the controller after the state has been injected.
+  OmniboxContextMenuController controller(&file_selector, web_contents);
+  ui::SimpleMenuModel* menu_model = controller.menu_model();
+
+  // Get the localized labels for the models.
+  std::u16string thinking_label =
+      l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_THINKING_3_PRO);
+  std::u16string auto_label =
+      l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_AUTO_MODEL);
+
+  int thinking_model_cmd_id = -1;
+  int auto_model_cmd_id = -1;
+
+  // Iterate through the menu to find the dynamic command IDs for the models.
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    std::u16string label = menu_model->GetLabelAt(i);
+    if (label == thinking_label) {
+      thinking_model_cmd_id = menu_model->GetCommandIdAt(i);
+    } else if (label == auto_label) {
+      auto_model_cmd_id = menu_model->GetCommandIdAt(i);
+    }
+  }
+
+  // Verify and execute the "Thinking" model click.
+  ASSERT_NE(thinking_model_cmd_id, -1) << "Thinking model not found in menu";
+  controller.ExecuteCommand(thinking_model_cmd_id, 0);
+  histogram_tester.ExpectBucketCount("ContextualSearch.Models.Omnibox",
+                                     omnibox::ModelMode::MODEL_MODE_GEMINI_PRO,
+                                     1);
+
+  // Verify and execute the "Auto" model click.
+  ASSERT_NE(auto_model_cmd_id, -1) << "Auto model not found in menu";
+  controller.ExecuteCommand(auto_model_cmd_id, 0);
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.Models.Omnibox",
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
+                       ExecuteCommandRecordsToolMetricsPec) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to the AIM page to initialize the environment.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+
+  auto* web_contents = GetWebContents();
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
+
+  // Manually inject InputState to ensure tools are populated in the menu.
+  auto* web_ui = web_contents->GetWebUI();
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  auto* handler = popup_ui->composebox_handler();
+
+  omnibox::InputState test_state;
+  test_state.allowed_tools.push_back(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  test_state.allowed_tools.push_back(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  handler->input_state_model()->set_state_for_testing(test_state);
+
+  // Create the controller after the state is injected.
+  OmniboxContextMenuController controller(&file_selector, web_contents);
+  ui::SimpleMenuModel* menu_model = controller.menu_model();
+
+  // Define the tools and their corresponding localized label IDs to verify.
+  struct {
+    int string_id;
+    omnibox::ToolMode expected_mode;
+  } tool_cases[] = {
+      {IDS_NTP_COMPOSE_DEEP_SEARCH, omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH},
+      {IDS_NTP_COMPOSE_CREATE_IMAGES, omnibox::ToolMode::TOOL_MODE_IMAGE_GEN}};
+
+  // Iterate through and verify each tool.
+  for (const auto& test : tool_cases) {
+    std::u16string target_label = l10n_util::GetStringUTF16(test.string_id);
+    int command_id = -1;
+
+    // Find the tool's command ID from the dynamically generated menu.
+    for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+      if (menu_model->GetLabelAt(i) == target_label) {
+        command_id = menu_model->GetCommandIdAt(i);
+        break;
+      }
+    }
+
+    // Execute the command and verify the metrics.
+    ASSERT_NE(command_id, -1) << "Tool not found in menu: " << target_label;
+
+    controller.ExecuteCommand(command_id, 0);
+
+    // Verify the 'ContextualSearch.Tools.Omnibox' histogram.
+    histogram_tester.ExpectBucketCount("ContextualSearch.Tools.Omnibox",
+                                       test.expected_mode, 1);
+  }
 }
