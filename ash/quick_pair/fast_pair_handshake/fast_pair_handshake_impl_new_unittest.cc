@@ -46,7 +46,7 @@ using PairFailure = ash::quick_pair::PairFailure;
 class FakeFastPairGattServiceClientImplFactory
     : public FastPairGattServiceClientImpl::Factory {
  public:
-  ~FakeFastPairGattServiceClientImplFactory() override = default;
+  void Reset() { fake_fast_pair_gatt_service_client_ = nullptr; }
 
   FakeFastPairGattServiceClient* fake_fast_pair_gatt_service_client() {
     return fake_fast_pair_gatt_service_client_;
@@ -66,8 +66,8 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  raw_ptr<FakeFastPairGattServiceClient, DanglingUntriaged>
-      fake_fast_pair_gatt_service_client_ = nullptr;
+  raw_ptr<FakeFastPairGattServiceClient> fake_fast_pair_gatt_service_client_ =
+      nullptr;
 };
 
 class FastPairFakeDataEncryptorImplFactory
@@ -89,13 +89,12 @@ class FastPairFakeDataEncryptorImplFactory
 
   FakeFastPairDataEncryptor* data_encryptor() { return data_encryptor_; }
 
-  ~FastPairFakeDataEncryptorImplFactory() override = default;
+  void Reset() { data_encryptor_ = nullptr; }
 
   void SetFailedRetrieval() { successful_retrieval_ = false; }
 
  private:
-  raw_ptr<FakeFastPairDataEncryptor, DanglingUntriaged> data_encryptor_ =
-      nullptr;
+  raw_ptr<FakeFastPairDataEncryptor> data_encryptor_ = nullptr;
   bool successful_retrieval_ = true;
 };
 
@@ -154,6 +153,12 @@ class FastPairHandshakeImplNewTest : public testing::Test {
         base::BindLambdaForTesting([this](scoped_refptr<Device> device) {
           EXPECT_EQ(device_, device);
         }));
+  }
+
+  void TearDown() override {
+    gatt_service_client_factory_.Reset();
+    data_encryptor_factory_.Reset();
+    testing::Test::TearDown();
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
