@@ -74,6 +74,9 @@ class GlanceablesTasksViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    view_ = nullptr;
+    widget_.reset();
+    fake_glanceables_tasks_client_.reset();
     // Destroy `widget_` first, before destroying `LayoutProvider` (needed in
     // the `views::Combobox`'s destruction chain).
     CloseWidget();
@@ -93,6 +96,8 @@ class GlanceablesTasksViewTest : public AshTestBase {
     fake_glanceables_tasks_client_->OnGlanceablesBubbleClosed(
         base::DoNothing());
 
+    // reset pointer due to SetContentsView deleting referencing view
+    view_ = nullptr;
     // Recreate the tasks view to update the task views.
     view_ = widget_->SetContentsView(std::make_unique<GlanceablesTasksView>(
         fake_glanceables_tasks_client_->task_lists()));
@@ -174,7 +179,7 @@ class GlanceablesTasksViewTest : public AshTestBase {
  private:
   AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
-  raw_ptr<GlanceablesTasksView, DanglingUntriaged> view_;
+  raw_ptr<GlanceablesTasksView> view_;
   std::unique_ptr<views::Widget> widget_;
 
   const GlanceablesTestNewWindowDelegate new_window_delegate_;
