@@ -13,6 +13,8 @@ build_webui("build") {
   static_files = [
     "browser_controls_icons/home_20.svg",
     "browser_controls_icons/home_24.svg",
+    "rhs_icons/location_on_chrome_refresh.svg",
+    "rhs_icons/password_manager.svg",
     "webui_toolbar.html",
     "webui_toolbar.css",
   ]
@@ -30,6 +32,7 @@ build_webui("build") {
     "metrics_recorder.ts",
     "pinned_toolbar_action.html.ts",
     "pinned_toolbar_action.ts",
+    "pinned_toolbar_action_icons.html.ts",
     "pinned_toolbar_actions.html.ts",
     "pinned_toolbar_actions.ts",
     "readonly_omnibox.ts",

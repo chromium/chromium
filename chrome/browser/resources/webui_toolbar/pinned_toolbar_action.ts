@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './pinned_toolbar_action_icons.html.js';
 
-import {assertNotReached} from '//resources/js/assert.js';
+import {assertNotReached, assertNotReachedCase} from '//resources/js/assert.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -72,7 +73,7 @@ export class PinnedToolbarActionElement extends CrLitElement {
     }
   }
 
-  protected getIcon_(): string {
+  protected getIcon_(): {ironIcon?: string, className?: string} {
     const type = this.state.action;
 
     // TODO(crbug.com/474061420): Fill this in.
@@ -81,9 +82,39 @@ export class PinnedToolbarActionElement extends CrLitElement {
       case PinnedToolbarAction.kDivider:
         assertNotReached();
       case PinnedToolbarAction.kShowPasswordsBubbleOrPage:
-        return 'cr20:password';
+        return {className: 'icon-password-manager'};
+      case PinnedToolbarAction.kShowAddressesBubbleOrPage:
+        return {className: 'icon-location-on-chrome-refresh'};
+      case PinnedToolbarAction.kNewIncognitoWindow:
+      case PinnedToolbarAction.kShowPaymentsBubbleOrPage:
+      case PinnedToolbarAction.kSidePanelShowBookmarks:
+      case PinnedToolbarAction.kSidePanelShowReadingList:
+      case PinnedToolbarAction.kSidePanelShowHistoryCluster:
+      case PinnedToolbarAction.kShowDownloads:
+      case PinnedToolbarAction.kClearBrowsingData:
+      case PinnedToolbarAction.kPrint:
+      case PinnedToolbarAction.kSidePanelShowLensOverlayResults:
+      case PinnedToolbarAction.kShowTranslate:
+      case PinnedToolbarAction.kQrCodeGenerator:
+      case PinnedToolbarAction.kRouteMedia:
+      case PinnedToolbarAction.kSidePanelShowReadAnything:
+      case PinnedToolbarAction.kCopyUrl:
+      case PinnedToolbarAction.kSendTabToSelf:
+      case PinnedToolbarAction.kTaskManager:
+      case PinnedToolbarAction.kDevTools:
+      case PinnedToolbarAction.kTabSearch:
+      case PinnedToolbarAction.kSidePanelShowContextualTasks:
+      case PinnedToolbarAction.kSidePanelShowLens:
+      case PinnedToolbarAction.kSidePanelShowAboutThisSite:
+      case PinnedToolbarAction.kSidePanelShowCustomizeChrome:
+      case PinnedToolbarAction.kSidePanelShowShoppingInsights:
+      case PinnedToolbarAction.kSidePanelShowMerchantTrust:
+      case PinnedToolbarAction.kSendSharedTabGroupFeedback:
+      case PinnedToolbarAction.kSidePanelShowComments:
+        const iconName = PinnedToolbarAction[type].slice(1);
+        return {ironIcon: `pinned-toolbar-action:${iconName}`};
       default:
-        return 'cr:info';
+        assertNotReachedCase(type);
     }
   }
 
