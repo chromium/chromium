@@ -35,14 +35,14 @@ class LocaleDetailedViewTest : public AshTestBase {
   }
 
   void CloseDetailedView() {
-    widget_.reset();
     detailed_view_ = nullptr;
+    widget_.reset();
     delegate_.reset();
   }
 
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  raw_ptr<LocaleDetailedView, DanglingUntriaged> detailed_view_ = nullptr;
+  raw_ptr<LocaleDetailedView> detailed_view_ = nullptr;
 };
 
 TEST_F(LocaleDetailedViewTest, CreatesRoundedContainer) {
