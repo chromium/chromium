@@ -230,7 +230,7 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
       const ToolbarActionsModel::ActionId& action_id,
       ExtensionsContainer* extensinos_container) override;
   void HideActivePopup() override;
-  bool CloseOverflowMenuIfOpen() override;
+  void CloseExtensionsMenuIfOpen() override;
   bool CanShowToolbarActionPopupForAPICall(
       const ToolbarActionsModel::ActionId&) override;
   void ToggleExtensionsMenu() override;

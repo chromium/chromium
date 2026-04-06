@@ -44,7 +44,7 @@ class ExtensionActionDelegateAndroid : public ExtensionActionDelegate {
                     bool by_user,
                     ShowPopupCallback callback) override;
   void ShowContextMenuAsFallback() override;
-  bool CloseOverflowMenuIfOpen() override;
+  void CloseExtensionsMenuIfOpen() override;
 
   // The corresponding browser window.
   const raw_ptr<BrowserWindowInterface> browser_;

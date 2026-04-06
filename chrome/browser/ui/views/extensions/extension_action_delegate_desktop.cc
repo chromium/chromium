@@ -62,7 +62,7 @@ void ExtensionActionDelegateDesktop::DoTriggerPopup(
   // Only one popup should be visible at a time.
   extensions_container_->HideActivePopup();
 
-  extensions_container_->CloseOverflowMenuIfOpen();
+  extensions_container_->CloseExtensionsMenuIfOpen();
 
   popup_host_ = host.get();
   popup_host_observation_.Observe(popup_host_.get());
@@ -203,8 +203,8 @@ void ExtensionActionDelegateDesktop::ShowContextMenuAsFallback() {
   extensions_container_views_->ShowContextMenuAsFallback(model_->GetId());
 }
 
-bool ExtensionActionDelegateDesktop::CloseOverflowMenuIfOpen() {
-  return extensions_container_->CloseOverflowMenuIfOpen();
+void ExtensionActionDelegateDesktop::CloseExtensionsMenuIfOpen() {
+  extensions_container_->CloseExtensionsMenuIfOpen();
 }
 
 bool ExtensionActionDelegateDesktop::AcceleratorPressed(

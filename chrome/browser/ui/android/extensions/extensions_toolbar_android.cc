@@ -112,10 +112,9 @@ void ExtensionsToolbarAndroid::HideActivePopup() {
                                                       java_object_);
 }
 
-bool ExtensionsToolbarAndroid::CloseOverflowMenuIfOpen() {
+void ExtensionsToolbarAndroid::CloseExtensionsMenuIfOpen() {
   // TODO(crbug.com/461981075)
   NOTIMPLEMENTED();
-  return false;
 }
 
 bool ExtensionsToolbarAndroid::CanShowToolbarActionPopupForAPICall(

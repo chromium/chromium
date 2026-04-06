@@ -81,7 +81,7 @@ class ExtensionActionDelegateDesktop
                     bool by_user,
                     ShowPopupCallback callback) override;
   void ShowContextMenuAsFallback() override;
-  bool CloseOverflowMenuIfOpen() override;
+  void CloseExtensionsMenuIfOpen() override;
 
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

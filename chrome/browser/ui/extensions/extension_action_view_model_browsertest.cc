@@ -1251,7 +1251,7 @@ class FakeExtensionActionDelegate : public ExtensionActionDelegate {
                     bool by_user,
                     ShowPopupCallback callback) override {}
   void ShowContextMenuAsFallback() override {}
-  bool CloseOverflowMenuIfOpen() override { return false; }
+  void CloseExtensionsMenuIfOpen() override {}
 };
 
 // Ensures that calling methods for stale extensions does not cause crashes.

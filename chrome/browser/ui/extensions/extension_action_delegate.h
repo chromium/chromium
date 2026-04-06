@@ -65,9 +65,8 @@ class ExtensionActionDelegate {
   // action.
   virtual void ShowContextMenuAsFallback() = 0;
 
-  // Closes the overflow menu, if it was open. Returns whether or not the
-  // overflow menu was closed.
-  virtual bool CloseOverflowMenuIfOpen() = 0;
+  // Closes the extensions menu if it was open.
+  virtual void CloseExtensionsMenuIfOpen() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_DELEGATE_H_

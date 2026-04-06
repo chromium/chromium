@@ -792,12 +792,10 @@ void ExtensionsToolbarDesktop::OnToolbarControlStateUpdated() {
   UpdateControlsVisibility();
 }
 
-bool ExtensionsToolbarDesktop::CloseOverflowMenuIfOpen() {
+void ExtensionsToolbarDesktop::CloseExtensionsMenuIfOpen() {
   if (IsExtensionsMenuShowing()) {
     HideExtensionsMenu();
-    return true;
   }
-  return false;
 }
 
 bool ExtensionsToolbarDesktop::CanShowToolbarActionPopupForAPICall(

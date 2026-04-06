@@ -234,8 +234,8 @@ void ExtensionsToolbarViewModel::HideActivePopup() {
   delegate_->HideActivePopup();
 }
 
-bool ExtensionsToolbarViewModel::CloseOverflowMenuIfOpen() {
-  return delegate_->CloseOverflowMenuIfOpen();
+void ExtensionsToolbarViewModel::CloseExtensionsMenuIfOpen() {
+  delegate_->CloseExtensionsMenuIfOpen();
 }
 
 bool ExtensionsToolbarViewModel::ShowToolbarActionPopupForAPICall(

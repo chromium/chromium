@@ -41,9 +41,8 @@ class ExtensionsToolbarViewModel
     // Hides any actively showing popups.
     virtual void HideActivePopup() = 0;
 
-    // Closes the overflow menu, if it was open. Returns whether or not the
-    // overflow menu was closed.
-    virtual bool CloseOverflowMenuIfOpen() = 0;
+    // Closes the extensions menu, if it was open.
+    virtual void CloseExtensionsMenuIfOpen() = 0;
 
     // Returns whether a popup can be shown.
     virtual bool CanShowToolbarActionPopupForAPICall(
@@ -166,7 +165,7 @@ class ExtensionsToolbarViewModel
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;
   void HideActivePopup() override;
-  bool CloseOverflowMenuIfOpen() override;
+  void CloseExtensionsMenuIfOpen() override;
   bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                         ShowPopupCallback callback) override;
   void ToggleExtensionsMenu() override;

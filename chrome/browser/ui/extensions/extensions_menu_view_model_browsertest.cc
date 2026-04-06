@@ -59,7 +59,7 @@ class FakeExtensionActionDelegate : public ExtensionActionDelegate {
                     bool by_user,
                     ShowPopupCallback callback) override {}
   void ShowContextMenuAsFallback() override {}
-  bool CloseOverflowMenuIfOpen() override { return false; }
+  void CloseExtensionsMenuIfOpen() override {}
 };
 
 // The test delegate that acts as the factory for Action ViewModels.

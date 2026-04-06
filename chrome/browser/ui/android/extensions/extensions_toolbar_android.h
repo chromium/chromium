@@ -43,7 +43,7 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
       const ToolbarActionsModel::ActionId& action_id,
       ExtensionsContainer* extensions_container) override;
   void HideActivePopup() override;
-  bool CloseOverflowMenuIfOpen() override;
+  void CloseExtensionsMenuIfOpen() override;
   bool CanShowToolbarActionPopupForAPICall(
       const ToolbarActionsModel::ActionId& action_id) override;
   void ToggleExtensionsMenu() override;

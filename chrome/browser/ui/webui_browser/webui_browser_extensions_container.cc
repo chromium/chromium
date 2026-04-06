@@ -192,12 +192,10 @@ void WebUIBrowserExtensionsContainer::HideActivePopup() {
   DCHECK(!popup_owner_);
 }
 
-bool WebUIBrowserExtensionsContainer::CloseOverflowMenuIfOpen() {
+void WebUIBrowserExtensionsContainer::CloseExtensionsMenuIfOpen() {
   if (extensions_menu_coordinator_->IsShowing()) {
     extensions_menu_coordinator_->Hide();
-    return true;
   }
-  return false;
 }
 
 bool WebUIBrowserExtensionsContainer::ShowToolbarActionPopupForAPICall(

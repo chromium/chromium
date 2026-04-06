@@ -399,7 +399,7 @@ void ExtensionActionViewModel::ExecuteUserAction(InvocationSource source) {
 
   RecordInvocationSource(source);
 
-  delegate_->CloseOverflowMenuIfOpen();
+  delegate_->CloseExtensionsMenuIfOpen();
 
   // This method is only called to execute an action by the user, so we can
   // always grant tab permissions.

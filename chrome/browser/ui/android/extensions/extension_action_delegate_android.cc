@@ -101,7 +101,6 @@ void ExtensionActionDelegateAndroid::ShowContextMenuAsFallback() {
   toolbar_android_->ShowContextMenu(action_id_);
 }
 
-bool ExtensionActionDelegateAndroid::CloseOverflowMenuIfOpen() {
+void ExtensionActionDelegateAndroid::CloseExtensionsMenuIfOpen() {
   // TODO(crbug.com/461981075)
-  return false;
 }
