@@ -959,7 +959,21 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     ENABLE_ANDROID_SIDE_PANEL,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    // In http://crrev.com/c/7689838, "defaultValueInTests" was set to
+                    // true for testing purposes. Detailed reasons are in that CL's commit message.
+                    //
+                    // However, it caused the flag to be also enabled in non-official or
+                    // non-Chrome-branded browser app APKs on _mobile_ Android where there should be
+                    // no side panel (see CachedFlag.java for details).
+                    //
+                    // To avoid affecting non-official or non-Chrome-branded _mobile_ Android in
+                    // non-testing environments, we use BuildConfig.IS_FOR_TEST to truly limit the
+                    // "true" value in tests.
+                    //
+                    // In the long-term, this flag will be enabled for all form factors, and the
+                    // code behind it should decide whether the side panel UI should appear, based
+                    // on factors like window size.
+                    /* defaultValueInTests= */ BuildConfig.IS_FOR_TEST);
     public static final CachedFlag sEnableAndroidSidePanelDevFeature =
             newCachedFlag(ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE, false);
     public static final CachedFlag sEnableBrowserWindowInterfaceForCustomTabActivity =
