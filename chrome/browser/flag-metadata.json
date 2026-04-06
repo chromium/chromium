@@ -8295,6 +8295,11 @@
     "expiry_milestone": 158
   },
   {
+    "name": "searchbox-embedded-permission",
+    "owners": [ "jamesleung@google.com", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "send-tab-to-self-enhanced-handoff",
     "owners": ["mastiz@chromium.org", "treib@chromium.org"],
     "expiry_milestone": 160

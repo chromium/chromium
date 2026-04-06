@@ -773,6 +773,10 @@ ComposeboxSuggestionLimit::ComposeboxSuggestionLimit() {
           .Get();
 }
 
+BASE_FEATURE(kEmbeddedPermissionEnabled,
+             "EmbeddedPermissionEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ComposeboxSuggestionLimit::ComposeboxSuggestionLimit(
     const ComposeboxSuggestionLimit&) = default;
 ComposeboxSuggestionLimit::ComposeboxSuggestionLimit(

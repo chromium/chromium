@@ -3354,6 +3354,12 @@ inline constexpr char kOmniboxContextualSuggestionsName[] =
 inline constexpr char kOmniboxContextualSuggestionsDescription[] =
     "Enables omnibox contextual suggestions.";
 
+inline constexpr char kEmbeddedPermissionEnabledName[] =
+    "Searchbox embedded permission dialogue";
+inline constexpr char kEmbeddedPermissionEnabledDescription[] =
+    "Enables embedded permission dialogues for New Tab Page, omnibox popup, and contextual "
+    "tasks' permission requests.";
+
 inline constexpr char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[] =
     "Omnibox on-focus suggestions on web and SRP";
 inline constexpr char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[] =

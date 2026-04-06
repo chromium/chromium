@@ -6461,6 +6461,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
                             kOmniboxContextualSuggestions)},
 
+    {"searchbox-embedded-permission",
+     flag_descriptions::kEmbeddedPermissionEnabledName,
+     flag_descriptions::kEmbeddedPermissionEnabledDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         omnibox_feature_configs::kEmbeddedPermissionEnabled)},
+
     {"lens-overlay-omnibox-entry-point",
      flag_descriptions::kLensOverlayOmniboxEntryPointName,
      flag_descriptions::kLensOverlayOmniboxEntryPointDescription, kOsDesktop,

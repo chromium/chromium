@@ -13565,6 +13565,7 @@ from previous Chrome versions.
       label="AuthenticateUsingUserConsentVerifierApi:disabled"/>
   <int value="-161284423" label="DesktopSharePreview:enabled"/>
   <int value="-160571071" label="InterestFeedV2:enabled"/>
+  <int value="-160177063" label="EmbeddedPermissionEnabled:enabled"/>
   <int value="-159877930" label="MaterialDesignUserManager:disabled"/>
   <int value="-159018555" label="ReadAloudAutoVoiceSwitching:enabled"/>
   <int value="-158938746" label="NtpRealboxPedals:enabled"/>
@@ -17320,6 +17321,7 @@ from previous Chrome versions.
   <int value="1105058168" label="CrosSafetyService:enabled"/>
   <int value="1105182444"
       label="ChromeCleanupScanCompletedNotification:disabled"/>
+  <int value="1105222851" label="EmbeddedPermissionEnabled:disabled"/>
   <int value="1105439588" label="enable-swipe-selection"/>
   <int value="1106307305" label="AutofillPrimaryInfoStyleExperiment:enabled"/>
   <int value="1106579567" label="ProfilesUIRevamp:enabled"/>

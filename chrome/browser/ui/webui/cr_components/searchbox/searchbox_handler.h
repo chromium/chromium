@@ -156,8 +156,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   DECLARE_FEATURE(kVoiceSearchCoherence);
   static const base::FeatureParam<bool> kVoiceSearchRecordingAnimation;
 
-  DECLARE_FEATURE(kVoiceSearchPermissions);
-
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);

@@ -312,13 +312,6 @@ const base::FeatureParam<bool> SearchboxHandler::kVoiceSearchRecordingAnimation{
     &SearchboxHandler::kVoiceSearchCoherence, "VoiceSearchRecordingAnimation",
     false};
 
-// Transitions the voice permission dialogue popup to PEPC (Page-Embedded
-// Permission Controls) to have a dynamically placed permission dialogue pop up
-// for every time it is needed.
-BASE_FEATURE(SearchboxHandler::kVoiceSearchPermissions,
-             "VoiceSearchPermissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // static
 base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
     Profile* profile,

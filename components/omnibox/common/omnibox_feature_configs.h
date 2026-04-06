@@ -327,6 +327,8 @@ struct MiaZPS : Config<MiaZPS> {
   bool suppress_psuggest_backfill_with_mia;
 };
 
+BASE_DECLARE_FEATURE(kEmbeddedPermissionEnabled);
+
 // A config struct for the omnibox toolbelt.
 struct Toolbelt : Config<Toolbelt> {
   DECLARE_FEATURE(kOmniboxToolbelt);
