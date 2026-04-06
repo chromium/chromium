@@ -1027,6 +1027,11 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // CSS property.
   bool supports_draggable_regions_ = false;
 
+  // True if the most recent navigation was a bfcache restoration. This is used
+  // to skip Blink-side scroll restoration to avoid conflicts with the cache's
+  // native restoration. Reset on each lifecycle update.
+  bool last_page_lifecycle_state_update_restored_from_bfcache_ = false;
+
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

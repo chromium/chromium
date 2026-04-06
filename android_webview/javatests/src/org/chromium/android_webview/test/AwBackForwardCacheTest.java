@@ -795,4 +795,71 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         navigateForwardAndBack();
         Assert.assertTrue(isPageShowPersisted());
     }
+
+    /**
+     * Regression test for https://crbug.com/390075233. Tests that the scroll position is preserved
+     * when the page is restored from back-forward cache.
+     */
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testBfcacheScrollPreservation() throws Exception, Throwable {
+        mAwContents.getSettings().setBackForwardCacheEnabled(true);
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                mAwContents, mContentsClient, "document.body.style.height = '2000px';");
+
+        // Scroll to a position in the middle of the page.
+        final double targetScrollY = 500.0;
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                mAwContents, mContentsClient, "window.scrollTo(0, " + targetScrollY + ");");
+
+        // Verify that the scroll position is set to the target scroll position.
+        double initialScroll =
+                Double.parseDouble(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                mAwContents, mContentsClient, "window.scrollY"));
+        // Use a delta of 1.0 to handle subpixel precision in scroll offsets.
+        Assert.assertEquals(targetScrollY, initialScroll, 1.0);
+
+        // Navigate forward and back to restore the page from back-forward cache.
+        navigateForwardAndBack();
+
+        // Verify that the page is restored from back-forward cache.
+        Assert.assertEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertTrue(isPageShowPersisted());
+
+        // Verify that the scroll position is preserved.
+        double restoredScroll =
+                Double.parseDouble(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                mAwContents, mContentsClient, "window.scrollY"));
+        // Use a delta of 1.0 to handle subpixel precision in scroll offsets.
+        Assert.assertEquals(
+                "Scroll position should be preserved", targetScrollY, restoredScroll, 1.0);
+
+        // Verify that the scroll position is preserved even after a frame.
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                mAwContents,
+                mContentsClient,
+                "window.afterFrameScroll = -1;"
+                        + "requestAnimationFrame(() => {"
+                        + "  window.afterFrameScroll = window.scrollY;"
+                        + "});");
+        org.chromium.base.test.util.CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    String val =
+                            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                    mAwContents, mContentsClient, "window.afterFrameScroll");
+                    return !val.equals("-1");
+                });
+        double restoredScrollAfterFrame =
+                Double.parseDouble(
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                mAwContents, mContentsClient, "window.afterFrameScroll"));
+        // Use a delta of 1.0 to handle subpixel precision in scroll offsets.
+        Assert.assertEquals(targetScrollY, restoredScrollAfterFrame, 1.0);
+    }
 }

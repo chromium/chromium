@@ -2500,8 +2500,10 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       (new_state->pagehide_dispatch !=
        mojom::blink::PagehideDispatch::kNotDispatched) &&
       !GetPage()->DispatchedPagehideAndStillHidden();
-  bool dispatching_pageshow =
+  last_page_lifecycle_state_update_restored_from_bfcache_ =
       IsRestoredFromBackForwardCache(old_state, new_state);
+  bool dispatching_pageshow =
+      last_page_lifecycle_state_update_restored_from_bfcache_;
   bool eviction_changed =
       new_state->eviction_enabled != old_state->eviction_enabled;
 
@@ -3385,6 +3387,10 @@ void WebViewImpl::ResetScaleStateImmediately() {
 }
 
 void WebViewImpl::ResetScrollAndScaleState() {
+  // Skip scroll restoration when restoring from back-forward cache.
+  if (last_page_lifecycle_state_update_restored_from_bfcache_) {
+    return;
+  }
   GetPage()->GetVisualViewport().Reset();
 
   auto* main_local_frame = DynamicTo<LocalFrame>(GetPage()->MainFrame());
@@ -3896,6 +3902,7 @@ void WebViewImpl::DidCommitLoad(bool is_new_navigation,
       GetPageScaleConstraintsSet().SetNeedsReset(true);
   }
 
+  last_page_lifecycle_state_update_restored_from_bfcache_ = false;
   // Give the visual viewport's scroll layer its initial size.
   GetPage()->GetVisualViewport().MainFrameDidChangeSize();
 }
