@@ -10,12 +10,10 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
@@ -34,11 +32,13 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** Implements {@link MultiInstanceOrchestrator} as a singleton. */
 @NullMarked
@@ -360,27 +360,91 @@ import java.util.Map;
             int parentTabId,
             boolean preferNew,
             boolean isIncognito) {
+        var targetActivityClass =
+                MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(sourceActivity);
+        if (targetActivityClass == null) return false;
+
+        Intent intent =
+                getBasicUrlLaunchIntent(
+                        sourceActivity,
+                        loadUrlParams,
+                        parentTabId,
+                        isIncognito,
+                        targetActivityClass);
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            Activity destActivity = MultiWindowUtils.getForegroundWindowActivity(sourceActivity);
-            return launchUrlInOtherWindow(
-                    sourceActivity,
-                    /* isIncognitoWindow= */ false,
-                    loadUrlParams,
-                    parentTabId,
-                    destActivity,
-                    /* preferNew= */ false);
+            addOpenUrlInNewWindowIntentExtras(
+                    sourceActivity, intent, /* isIncognitoWindow= */ false);
+            MultiInstanceManager.onMultiInstanceModeStarted();
+            sourceActivity.startActivity(intent);
+            return true;
         }
 
-        @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
+        @PersistedInstanceType int targetInstanceType = PersistedInstanceType.ACTIVE;
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            instanceType |=
+            targetInstanceType |=
                     (isIncognito
                             ? PersistedInstanceType.OFF_THE_RECORD
                             : PersistedInstanceType.REGULAR);
         }
+        int instanceCount = MultiWindowUtils.getInstanceCount(targetInstanceType);
+        boolean isTargetIncognitoWindow =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        && ((targetInstanceType & PersistedInstanceType.OFF_THE_RECORD) != 0);
 
-        return openUrlInWindowApi31(
-                sourceActivity, loadUrlParams, parentTabId, preferNew, instanceType);
+        if (sourceActivity instanceof ChromeTabbedActivity cta) {
+            // Exclude the current activity from instance count if it is of the same instance type
+            // as the target window, because we will not open the URL in this window even though it
+            // is eligible.
+            if ((cta.isIncognitoWindow() && isTargetIncognitoWindow)
+                    || (!cta.isIncognitoWindow() && !isTargetIncognitoWindow)) {
+                instanceCount -= 1;
+            }
+        }
+
+        var multiInstanceManager =
+                (MultiInstanceManagerApi31) getMultiInstanceManager(sourceActivity);
+        if (instanceCount == 0 || preferNew) {
+            if (!MultiWindowUtils.isWithinInstanceLimit()) {
+                if (multiInstanceManager != null) {
+                    multiInstanceManager.showInstanceCreationLimitMessage();
+                }
+                return false;
+            }
+            openUrlInOtherWindowApi31(
+                    sourceActivity,
+                    intent,
+                    /* windowId= */ INVALID_WINDOW_ID,
+                    isTargetIncognitoWindow);
+            return true;
+        }
+
+        // Open implicitly in the last accessed window in relevant scenarios as described above.
+        if (isTargetIncognitoWindow || instanceCount == 1 || multiInstanceManager == null) {
+            int currentInstanceId =
+                    sourceActivity instanceof ChromeTabbedActivity cta
+                            ? cta.getWindowId()
+                            : INVALID_WINDOW_ID;
+            int lastAccessedWindowId =
+                    MultiWindowUtils.getLastAccessedWindowIdExcludingSelf(
+                            currentInstanceId, targetInstanceType);
+            assert lastAccessedWindowId != INVALID_WINDOW_ID
+                    : "Last accessed window id for the target instance type should be valid.";
+            openUrlInOtherWindowApi31(
+                    sourceActivity, intent, lastAccessedWindowId, isTargetIncognitoWindow);
+            return true;
+        }
+
+        @StringRes int title = R.string.contextmenu_open_in_other_window;
+        multiInstanceManager.showTargetSelectorDialog(
+                (instanceInfo) ->
+                        openUrlInOtherWindowApi31(
+                                sourceActivity,
+                                intent,
+                                instanceInfo.instanceId,
+                                /* isIncognitoWindow= */ false),
+                targetInstanceType,
+                title);
+        return true;
     }
 
     private void moveTabsToOtherWindowPreApi31(List<Tab> tabs) {
@@ -405,154 +469,68 @@ import java.util.Map;
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
-    private boolean openUrlInWindowApi31(
-            Activity sourceActivity,
-            LoadUrlParams loadUrlParams,
-            int parentId,
-            boolean preferNew,
-            @PersistedInstanceType int targetInstanceType) {
-        var multiInstanceManager =
-                (MultiInstanceManagerApi31) getMultiInstanceManager(sourceActivity);
-        int instanceCount = MultiWindowUtils.getInstanceCount(targetInstanceType);
-        boolean isTargetIncognitoWindow =
-                IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        && ((targetInstanceType & PersistedInstanceType.OFF_THE_RECORD) != 0);
-
-        if (sourceActivity instanceof ChromeTabbedActivity cta) {
-            // Exclude the current activity from instance count if it is of the same instance type
-            // as the target window, because we will not open the URL in this window even though it
-            // is eligible.
-            if ((cta.isIncognitoWindow() && isTargetIncognitoWindow)
-                    || (!cta.isIncognitoWindow() && !isTargetIncognitoWindow)) {
-                instanceCount -= 1;
-            }
-        }
-
-        if (instanceCount == 0 || preferNew) {
-            if (!MultiWindowUtils.isWithinInstanceLimit()) {
-                if (multiInstanceManager != null) {
-                    multiInstanceManager.showInstanceCreationLimitMessage();
-                }
-                return false;
-            }
-
-            return launchUrlInOtherWindow(
-                    sourceActivity,
-                    isTargetIncognitoWindow,
-                    loadUrlParams,
-                    parentId,
-                    /* destActivity= */ null,
-                    /* preferNew= */ true);
-        }
-
-        // At this point, we have established that there is at least one other active window of the
-        // target profile type.
-        // We want to present the instance picker dialog for the user to select a target window but
-        // this is not supported in the following scenarios:
-        // 1. The target window is an incognito window.
-        // 2. The source activity does not have an associated MultiInstanceManager instance, likely
-        // because it is finishing or is not a ChromeTabbedActivity.
-        // 3. There is exactly one eligible target window.
-        // In these scenarios, implicitly open the url in the last accessed window of the target
-        // profile type.
-        if (isTargetIncognitoWindow || instanceCount == 1 || multiInstanceManager == null) {
-            int currentInstanceId =
-                    sourceActivity instanceof ChromeTabbedActivity cta
-                            ? cta.getWindowId()
-                            : INVALID_WINDOW_ID;
-            int lastAccessedWindowId =
-                    MultiWindowUtils.getLastAccessedWindowIdExcludingSelf(
-                            currentInstanceId, targetInstanceType);
-            assert lastAccessedWindowId != INVALID_WINDOW_ID
-                    : "Last accessed window id for the target instance type should be valid.";
-            Activity destActivity = MultiWindowUtils.getActivityById(lastAccessedWindowId);
-            if (destActivity == null) {
-                // This means that although the last accessed window is active with a live task, the
-                // activity for it is destroyed.
-                // TODO (crbug.com/495856301): Handle URL launches for windows with destroyed
-                // activities.
-                return false;
-            }
-            return launchUrlInOtherWindow(
-                    sourceActivity,
-                    isTargetIncognitoWindow,
-                    loadUrlParams,
-                    parentId,
-                    destActivity,
-                    /* preferNew= */ false);
-        }
-
-        @StringRes int title = R.string.contextmenu_open_in_other_window;
-        multiInstanceManager.showTargetSelectorDialog(
-                onWindowSelectedForUrlLaunch(
-                        sourceActivity, parentId, loadUrlParams, /* isIncognitoWindow= */ false),
-                targetInstanceType,
-                title);
-        return true;
-    }
-
-    @VisibleForTesting
-    static Callback<InstanceInfo> onWindowSelectedForUrlLaunch(
-            Activity sourceActivity,
-            int parentTabId,
-            LoadUrlParams loadUrlParams,
-            boolean isIncognitoWindow) {
-        return (instanceInfo) -> {
-            Activity selectedActivity = MultiWindowUtils.getActivityById(instanceInfo.instanceId);
-            if (selectedActivity != null) {
-                launchUrlInOtherWindow(
-                        sourceActivity,
-                        isIncognitoWindow,
-                        loadUrlParams,
-                        parentTabId,
-                        selectedActivity,
-                        /* preferNew= */ false);
-            }
-            // TODO (crbug.com/495856301): Handle URL launches for active instances with
-            // destroyed activities.
-        };
-    }
-
-    private static boolean launchUrlInOtherWindow(
-            Activity sourceActivity,
-            boolean isIncognitoWindow,
-            LoadUrlParams loadUrlParams,
-            int parentId,
-            @Nullable Activity destActivity,
-            boolean preferNew) {
-        Intent intent =
-                IntentHandler.createAsyncNewTabIntent(
-                        new AsyncTabCreationParams(loadUrlParams),
-                        parentId,
-                        TabLaunchType.FROM_CHROME_UI,
-                        isIncognitoWindow);
-
-        Class<? extends Activity> targetActivity =
-                MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(sourceActivity);
-        if (targetActivity == null) return false;
-
-        MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, sourceActivity, targetActivity);
-        IntentUtils.addTrustedIntentExtras(intent);
-
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+    private static void openUrlInOtherWindowApi31(
+            Activity sourceActivity, Intent intent, int windowId, boolean isIncognitoWindow) {
+        boolean preferNew = windowId == INVALID_WINDOW_ID;
+        // Launch the url in an existing window if a valid window id is specified.
+        if (!preferNew) {
+            Activity destActivity = MultiWindowUtils.getActivityById(windowId);
             if (destActivity != null) {
                 assert destActivity instanceof ChromeTabbedActivity;
                 ((ChromeTabbedActivity) destActivity).onNewIntent(intent);
                 ApiCompatibilityUtils.moveTaskToFront(sourceActivity, destActivity.getTaskId(), 0);
-                return true;
+                return;
             }
-            if (preferNew) intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognitoWindow);
+            // Kill the task for the specified window id if it is alive with its activity destroyed,
+            // so that we can subsequently start a new activity in a new task for this window. This
+            // adequately handles the scenario without leaving orphaned tasks.
+            Set<Integer> activeTaskIds = MultiWindowUtils.getAllAppTaskIds(sourceActivity);
+            int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(windowId);
+            if (activeTaskIds.contains(persistedTaskId)) {
+                var appTask = AndroidTaskUtils.getAppTaskFromId(sourceActivity, persistedTaskId);
+                if (appTask != null) {
+                    appTask.finishAndRemoveTask();
+                }
+            }
         }
+
+        addOpenUrlInNewWindowIntentExtras(sourceActivity, intent, isIncognitoWindow);
+        if (preferNew) intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
+        else intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
         MultiInstanceManager.onMultiInstanceModeStarted();
+        sourceActivity.startActivity(intent);
+    }
+
+    private static Intent getBasicUrlLaunchIntent(
+            Activity sourceActivity,
+            LoadUrlParams loadUrlParams,
+            int parentTabId,
+            boolean isIncognito,
+            Class<? extends Activity> targetActivity) {
+        Intent intent =
+                IntentHandler.createAsyncNewTabIntent(
+                        new AsyncTabCreationParams(loadUrlParams),
+                        parentTabId,
+                        TabLaunchType.FROM_CHROME_UI,
+                        isIncognito);
+
+        MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, sourceActivity, targetActivity);
+        IntentUtils.addTrustedIntentExtras(intent);
+        return intent;
+    }
+
+    private static void addOpenUrlInNewWindowIntentExtras(
+            Activity sourceActivity, Intent intent, boolean isIncognitoWindow) {
         if (!MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity)) {
             intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
         intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.URL_LAUNCH);
-        sourceActivity.startActivity(intent);
-        return true;
+
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognitoWindow);
+        }
     }
 
     private void onActivityStateChange(Activity activity, @ActivityState int newState) {
