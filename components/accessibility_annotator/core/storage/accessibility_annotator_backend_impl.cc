@@ -116,6 +116,20 @@ void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
   content_annotations_cache_.Put(url, std::move(data));
 }
 
+void AccessibilityAnnotatorBackendImpl::RemoveContentAnnotationsCacheData(
+    base::span<const GURL> urls) {
+  for (const GURL& url : urls) {
+    auto it = content_annotations_cache_.Peek(url);
+    if (it != content_annotations_cache_.end()) {
+      content_annotations_cache_.Erase(it);
+    }
+  }
+}
+
+void AccessibilityAnnotatorBackendImpl::ClearContentAnnotationsCache() {
+  content_annotations_cache_.Clear();
+}
+
 base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
   base::ListValue result;
   for (const std::pair<GURL, ContentAnnotationsData>& item :

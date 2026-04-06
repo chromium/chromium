@@ -145,5 +145,55 @@ TEST_F(AccessibilityAnnotatorBackendTest,
             "order_123");
 }
 
+TEST_F(AccessibilityAnnotatorBackendTest, RemoveContentAnnotationsCacheData) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+  GURL url3("https://example.com/3");
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1;
+  data1.page_title = "Page 1";
+  backend_->SetContentAnnotationsCacheData(url1, std::move(data1));
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2;
+  data2.page_title = "Page 2";
+  backend_->SetContentAnnotationsCacheData(url2, std::move(data2));
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data3;
+  data3.page_title = "Page 3";
+  backend_->SetContentAnnotationsCacheData(url3, std::move(data3));
+
+  ASSERT_TRUE(backend_->GetContentAnnotationsCacheData(url1).has_value());
+  ASSERT_TRUE(backend_->GetContentAnnotationsCacheData(url2).has_value());
+  ASSERT_TRUE(backend_->GetContentAnnotationsCacheData(url3).has_value());
+
+  backend_->RemoveContentAnnotationsCacheData({url1, url2});
+  EXPECT_FALSE(backend_->GetContentAnnotationsCacheData(url1).has_value());
+  EXPECT_FALSE(backend_->GetContentAnnotationsCacheData(url2).has_value());
+  EXPECT_TRUE(backend_->GetContentAnnotationsCacheData(url3).has_value());
+
+  backend_->RemoveContentAnnotationsCacheData({url3});
+  EXPECT_FALSE(backend_->GetContentAnnotationsCacheData(url3).has_value());
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, ClearContentAnnotationsCache) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1;
+  data1.page_title = "Page 1";
+  backend_->SetContentAnnotationsCacheData(url1, std::move(data1));
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2;
+  data2.page_title = "Page 2";
+  backend_->SetContentAnnotationsCacheData(url2, std::move(data2));
+
+  ASSERT_TRUE(backend_->GetContentAnnotationsCacheData(url1).has_value());
+  ASSERT_TRUE(backend_->GetContentAnnotationsCacheData(url2).has_value());
+
+  backend_->ClearContentAnnotationsCache();
+  EXPECT_FALSE(backend_->GetContentAnnotationsCacheData(url1).has_value());
+  EXPECT_FALSE(backend_->GetContentAnnotationsCacheData(url2).has_value());
+}
+
 }  // namespace
 }  // namespace accessibility_annotator

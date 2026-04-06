@@ -66,6 +66,8 @@ class AccessibilityAnnotatorBackendImpl
   GetContentAnnotationsCacheData(const GURL& url) const override;
   void SetContentAnnotationsCacheData(const GURL& url,
                                       ContentAnnotationsData data) override;
+  void RemoveContentAnnotationsCacheData(base::span<const GURL> urls) override;
+  void ClearContentAnnotationsCache() override;
   base::Value GetDebugUICacheData() const override;
   void GetSyncAnnotationsByTypes(
       EntityTypeEnumSet types,

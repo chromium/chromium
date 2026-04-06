@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
@@ -67,6 +68,13 @@ class AccessibilityAnnotatorBackend : public KeyedService {
   // Writes to Content Annotations cache.
   virtual void SetContentAnnotationsCacheData(const GURL& url,
                                               ContentAnnotationsData data) = 0;
+
+  // Removes the entries with the given URLs from Content Annotations cache.
+  virtual void RemoveContentAnnotationsCacheData(
+      base::span<const GURL> urls) = 0;
+
+  // Clears the Content Annotations cache.
+  virtual void ClearContentAnnotationsCache() = 0;
 
   // Pulls cache data into a base::Value for use in the debug UI.
   virtual base::Value GetDebugUICacheData() const = 0;
