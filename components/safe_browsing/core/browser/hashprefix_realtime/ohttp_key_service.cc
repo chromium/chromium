@@ -154,6 +154,15 @@ GURL GetKeyFetchingUrl() {
   return url;
 }
 
+void RecordNetworkTime(std::string_view old_name,
+                       std::string_view new_name,
+                       base::TimeDelta duration) {
+  // For now we log both histograms to avoid disruptions in the data.
+  base::UmaHistogramTimes(old_name, duration);
+  base::UmaHistogramCustomTimes(new_name, duration, base::Milliseconds(1),
+                                base::Seconds(30), 50);
+}
+
 }  // namespace
 
 namespace safe_browsing {
@@ -379,8 +388,10 @@ void OhttpKeyService::OnURLLoaderComplete(
 
   base::TimeDelta request_duration =
       base::TimeTicks::Now() - request_start_time;
-  base::UmaHistogramTimes("SafeBrowsing.HPRT.OhttpKeyService.Network.Time",
-                          request_duration);
+  RecordNetworkTime("SafeBrowsing.HPRT.OhttpKeyService.Network.Time",
+                    "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2",
+                    request_duration);
+
   RecordHttpResponseOrErrorCode(
       "SafeBrowsing.HPRT.OhttpKeyService.Network.Result", net_error,
       response_code);
@@ -404,9 +415,11 @@ void OhttpKeyService::OnURLLoaderComplete(
           base::UmaHistogramCounts1000(
               "SafeBrowsing.HPRT.OhttpKeyService.ResponseSize.Valid",
               response_body->size());
-          base::UmaHistogramTimes(
+          RecordNetworkTime(
               "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Success",
+              "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2.Success",
               request_duration);
+
           ohttp_key_ = {*response_body,
                         base::Time::Now() + kKeyExpirationDuration};
           StoreKeyToPref();
@@ -416,9 +429,11 @@ void OhttpKeyService::OnURLLoaderComplete(
           base::UmaHistogramEnumeration(
               "SafeBrowsing.HPRT.OhttpKeyService.Outcome",
               FetchOutcome::kNoKeys);
-          base::UmaHistogramTimes(
+          RecordNetworkTime(
               "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.NoKeys",
+              "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2.NoKeys",
               request_duration);
+
           base::UmaHistogramCounts1000(
               "SafeBrowsing.HPRT.OhttpKeyService.ResponseSize.NoKeys",
               response_body->size());
@@ -427,9 +442,11 @@ void OhttpKeyService::OnURLLoaderComplete(
         base::UmaHistogramEnumeration(
             "SafeBrowsing.HPRT.OhttpKeyService.Outcome",
             FetchOutcome::kInvalidResponse);
-        base::UmaHistogramTimes(
+        RecordNetworkTime(
             "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Invalid",
+            "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2.Invalid",
             request_duration);
+
         base::UmaHistogramCounts1000(
             "SafeBrowsing.HPRT.OhttpKeyService.ResponseSize.Invalid",
             response_body->size());
@@ -437,16 +454,16 @@ void OhttpKeyService::OnURLLoaderComplete(
     } else {
       base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OhttpKeyService.Outcome",
                                     FetchOutcome::kEmptyResponse);
-      base::UmaHistogramTimes(
-          "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Empty",
-          request_duration);
+      RecordNetworkTime("SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Empty",
+                        "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2.Empty",
+                        request_duration);
     }
   } else {
     base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OhttpKeyService.Outcome",
                                   FetchOutcome::kNetworkError);
-    base::UmaHistogramTimes(
-        "SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Failure",
-        request_duration);
+    RecordNetworkTime("SafeBrowsing.HPRT.OhttpKeyService.Network.Time.Failure",
+                      "SafeBrowsing.HPRT.OhttpKeyService.Network.Time2.Failure",
+                      request_duration);
   }
   if (is_key_fetch_successful) {
     backoff_operator_->ReportSuccess();

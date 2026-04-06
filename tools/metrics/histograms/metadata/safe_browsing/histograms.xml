@@ -2131,14 +2131,22 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.OhttpKeyService.Network.Time{Suffix}"
+<histogram
+    name="SafeBrowsing.HPRT.OhttpKeyService.Network.Time{Version}{Suffix}"
     units="ms" expires_after="2027-02-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the roundtrip time it took to fetch a new OHTTP key. Logged on each key
-    fetch request that {Suffix}.
+    fetch request that {Suffix}. {Version}
   </summary>
+  <token key="Version">
+    <variant name="" summary=""/>
+    <variant name="2"
+        summary="This version of the histogram logs a larger set of buckets
+                 since the request timeout length is longer than the default
+                 max bucket of 10 seconds."/>
+  </token>
   <token key="Suffix">
     <variant name="" summary="is sent to the server"/>
     <variant name=".Empty" summary="is empty"/>
