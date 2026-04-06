@@ -511,6 +511,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetPurposeHeader(const String& value) { purpose_header_ = value; }
   const String& GetPurposeHeader() const { return purpose_header_; }
 
+  void SetEventSourceLastEventId(const String& value) {
+    event_source_last_event_id_ = value;
+  }
+  const String& GetEventSourceLastEventId() const {
+    return event_source_last_event_id_;
+  }
+
   // A V8 stack id string describing where the request was initiated. DevTools
   // can use this to display the initiator call stack when debugging a process
   // that later intercepts the request, e.g., in a service worker fetch event
@@ -796,6 +803,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   String requested_with_header_;
   String client_data_header_;
   String purpose_header_;
+  String event_source_last_event_id_;
 
   std::optional<String> devtools_stack_id_;
 

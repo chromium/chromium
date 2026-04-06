@@ -430,7 +430,7 @@ int WebURLRequest::GetLoadFlagsForWebUrlRequest() const {
 
   switch (resource_request_->GetCacheMode()) {
     case FetchCacheMode::kNoStore:
-      load_flags |= net::LOAD_DISABLE_CACHE;
+      load_flags |= net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
       break;
     case FetchCacheMode::kValidateCache:
       load_flags |= net::LOAD_VALIDATE_CACHE;

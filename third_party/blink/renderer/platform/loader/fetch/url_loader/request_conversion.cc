@@ -312,6 +312,15 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
     dest->cors_exempt_headers.SetHeader(kPurposeHeaderName,
                                         src.GetPurposeHeader().Utf8());
   }
+  // Set Last-Event-ID header to cors_exempt_headers for EventSource.
+  // HTTP headers are Latin-1 byte strings, but the Last-Event-ID header is
+  // encoded as UTF-8.
+  // TODO(davidben): This should be captured in the type of
+  // setHTTPHeaderField's arguments.
+  if (!src.GetEventSourceLastEventId().empty()) {
+    dest->cors_exempt_headers.SetHeader("Last-Event-ID",
+                                        src.GetEventSourceLastEventId().Utf8());
+  }
 
   // TODO(yhirano): Remove this WrappedResourceRequest.
   dest->load_flags = WrappedResourceRequest(ResourceRequest(src))
