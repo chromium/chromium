@@ -103,6 +103,10 @@ component("ash") {
     "accessibility/accessibility_notification_controller.cc",
     "accessibility/accessibility_notification_controller.h",
     "accessibility/accessibility_observer.h",
+    "accessibility/accessibility_prefs_custom_associator.cc",
+    "accessibility/accessibility_prefs_custom_associator.h",
+    "accessibility/accessibility_sync_prefs_utils.cc",
+    "accessibility/accessibility_sync_prefs_utils.h",
     "accessibility/autoclick/autoclick_controller.cc",
     "accessibility/autoclick/autoclick_controller.h",
     "accessibility/autoclick/autoclick_ring_handler.cc",
@@ -3315,7 +3319,6 @@ component("ash") {
     "//ui/wm",
   ]
   deps = [
-    ":accessibility_prefs_custom_associator",
     "//ash/app_list",
     "//ash/app_menu",
     "//ash/birch:removed_items_proto",
@@ -3484,6 +3487,7 @@ component("ash") {
     "//components/soda:constants",
     "//components/strings",
     "//components/sync",
+    "//components/sync_preferences",
     "//components/url_formatter",
     "//components/url_matcher",
     "//components/user_education/common",
@@ -3628,27 +3632,6 @@ component("ash") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-}
-
-source_set("accessibility_prefs_custom_associator") {
-  sources = [
-    "accessibility/accessibility_prefs_custom_associator.cc",
-    "accessibility/accessibility_prefs_custom_associator.h",
-    "accessibility/accessibility_sync_prefs_utils.cc",
-    "accessibility/accessibility_sync_prefs_utils.h",
-  ]
-
-  public_deps = [
-    ":ash_export",
-    "//base",
-  ]
-
-  deps = [
-    "//ash/constants",
-    "//components/live_caption:constants",
-    "//components/pref_registry",
-    "//ui/base/cursor",
-  ]
 }
 
 action("dbus_service_files") {
@@ -4569,7 +4552,6 @@ test("ash_unittests") {
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
-    ":accessibility_prefs_custom_associator",
     ":ash",
     ":run_ash_unittests",
     ":test_support",
