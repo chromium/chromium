@@ -35,6 +35,7 @@
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/user_script.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -159,7 +160,13 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     if (!util::AllowFileAccess(extension->id(), browser_context)) {
       valid_schemes &= ~URLPattern::SCHEME_FILE;
     }
-    new_hosts.AddOrigin(valid_schemes, url);
+    // Skip host permission grants for invalid or opaque URLs (e.g., Android's
+    // chrome-native:// NTP). Because opaque origins lack a meaningful host,
+    // granting them host permissions causes a crash during origin creation.
+    // This allows events to fire safely without elevating undefined origins.
+    if (url.is_valid() && !url::Origin::Create(url).opaque()) {
+      new_hosts.AddOrigin(valid_schemes, url);
+    }
     new_apis.insert(mojom::APIPermissionID::kTab);
 
     if (permissions_data->HasAPIPermission(

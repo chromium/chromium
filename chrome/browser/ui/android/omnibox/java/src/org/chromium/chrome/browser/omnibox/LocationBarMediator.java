@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
+import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -96,6 +97,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordin
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -784,6 +786,17 @@ class LocationBarMediator
             }
 
             String url = omniboxLoadUrlParams.url;
+            if (url != null && url.startsWith(UrlConstants.CHROME_EXTENSION_SCHEME + "://")) {
+                if (currentTab != null && currentTab.getWebContents() != null) {
+                    ExtensionUi.onOmniboxExtensionInputEntered(
+                            currentTab.getWebContents(),
+                            url,
+                            omniboxLoadUrlParams.openInNewTab,
+                            omniboxLoadUrlParams.openInNewWindow);
+                }
+                return;
+            }
+
             if (currentTab != null) {
                 boolean isCurrentTabNtpUrl = UrlUtilities.isNtpUrl(currentTab.getUrl());
                 if (currentTab.isNativePage() || isCurrentTabNtpUrl) {

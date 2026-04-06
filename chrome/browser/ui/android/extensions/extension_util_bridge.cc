@@ -9,12 +9,17 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/files/file_util.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/url_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionUtilBridge_jni.h"
@@ -74,6 +79,29 @@ JNI_ExtensionUtilBridge_GetExtensionOmniboxIcon(
     return gfx::ConvertToJavaBitmap(image.AsBitmap());
   }
   return nullptr;
+}
+
+// static
+void JNI_ExtensionUtilBridge_OnOmniboxExtensionInputEntered(
+    JNIEnv* env,
+    content::WebContents* web_contents,
+    const std::string& url_str,
+    bool open_in_new_tab,
+    bool open_in_new_window) {
+  GURL url(url_str);
+  std::string extension_id(url.host());
+  std::string input_text;
+  net::GetValueForKeyInQuery(url, "q", &input_text);
+
+  WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
+  if (open_in_new_window) {
+    disposition = WindowOpenDisposition::NEW_WINDOW;
+  } else if (open_in_new_tab) {
+    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
+  extensions::ExtensionOmniboxEventRouter::OnInputEntered(
+      web_contents, extension_id, input_text, disposition);
 }
 
 DEFINE_JNI(ExtensionUtilBridge)

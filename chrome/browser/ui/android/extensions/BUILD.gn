@@ -26,6 +26,7 @@ android_library("java") {
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//components/browser_ui/widget/android:java",
+    "//content/public/android:content_java",
     "//third_party/android_deps:material_design_java",
     "//ui/android:ui_full_java",
   ]
@@ -107,6 +108,7 @@ android_library("test_support_java") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/profiles/android:java",
+    "//content/public/android:content_java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",
   ]

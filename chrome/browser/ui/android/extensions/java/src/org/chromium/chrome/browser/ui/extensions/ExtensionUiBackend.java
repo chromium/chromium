@@ -10,6 +10,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.WebContents;
 
 /**
  * An interface providing general access to the extension UI backend in C++.
@@ -43,4 +44,15 @@ public interface ExtensionUiBackend {
      * @return The extension's icon as a Bitmap, or null if not found.
      */
     @Nullable Bitmap getExtensionOmniboxIcon(Profile profile, String extensionId);
+
+    /**
+     * Executes the extension match action.
+     *
+     * @param webContents The web contents.
+     * @param url The extension URL.
+     * @param openInNewTab Whether to open in a new tab.
+     * @param openInNewWindow Whether to open in a new window.
+     */
+    void onOmniboxExtensionInputEntered(
+            WebContents webContents, String url, boolean openInNewTab, boolean openInNewWindow);
 }

@@ -24,6 +24,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,9 +158,21 @@ public class ExtensionUtilBridge {
         return ExtensionUtilBridgeJni.get().getExtensionOmniboxIcon(profile, extensionId);
     }
 
+    public static void onOmniboxExtensionInputEntered(
+            WebContents webContents, String url, boolean openInNewTab, boolean openInNewWindow) {
+        ExtensionUtilBridgeJni.get()
+                .onOmniboxExtensionInputEntered(webContents, url, openInNewTab, openInNewWindow);
+    }
+
     @NativeMethods
     interface Natives {
         @Nullable Bitmap getExtensionOmniboxIcon(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
+
+        void onOmniboxExtensionInputEntered(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("std::string") String url,
+                boolean openInNewTab,
+                boolean openInNewWindow);
     }
 }
