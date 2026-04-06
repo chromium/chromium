@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="top">
+
+        <!-- IPH text bubble -->
+        <LinearLayout
+            android:id="@+id/iph_bubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/iph_bubble_margin_top"
+            android:layout_marginStart="@dimen/iph_bubble_margin_start"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/gesture_user_education_iph_triangle_background"
+                android:importantForAccessibility="no"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/iph_bubble_text_padding"
+                android:text="@string/iph_gesture_user_education_text_bubble"
+                android:textAppearance="@style/TextAppearance.TextMediumThick"
+                android:drawableStart="@drawable/gesture_user_education_iph_triangle_background"
+                android:background="@drawable/gesture_user_education_iph_bubble_background" />
+        </LinearLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/back_gesture_arrow_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gesture_user_education_arrow_margin_bottom"
+            android:layout_gravity="start" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tap_to_dismiss_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/tap_to_dismiss_text_margin_bottom"
+        android:text="@string/iph_gesture_user_education_tap_to_dismiss"
+        android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+</FrameLayout>

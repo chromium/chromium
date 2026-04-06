@@ -4,11 +4,17 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.view.Window;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -20,30 +26,39 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Controls showing IPH for Gesture User Education. */
 @NullMarked
 public class GestureUserEducationIphController {
-    public static final int PAGE_HISTORY_MIN_OFFSET = -2;
+    public static final int PAGE_HISTORY_MIN_OFFSET = -3;
+    // TODO(crbug.com/493307156): Confirm animation durations.
+    private static final int SLIDE_ANIMATION_DURATION_MS = 750;
+    private static final int ANIMATION_DELAY_MS = 750;
+    private static final float ANIMATION_X_TRANSLATION = 24;
 
-    private final View mAnchorView;
+    private final ViewGroup mAnchorView;
     private final BackPressManager mBackPressManager;
     private final ScrimManager mScrimManager;
+    private @Nullable PropertyModel mScrimPropertyModel;
     private @Nullable ActivityTabTabObserver mTabObserver;
+    private @Nullable View mGestureUserEducationIphLayout;
+    private @Nullable LottieAnimationView mBackArrowAnimation;
+    private @Nullable ViewPropertyAnimator mTextBubbleAnimation;
     private boolean mIsGestureNavModeForTesting;
 
     /**
      * Constructor for the controller
      *
-     * @param anchorView The {@link View} that the scrim anchors too.
+     * @param anchorView The {@link ViewGroup} that inflates the iph layout.
      * @param activityTabProvider The {@link ActivityTabProvider} for this Activity.
      * @param backPressManager The {@link BackPressManager} responsible for handling back presses.
      * @param scrimManager The {@link ScrimManager} responsible for displaying the scrim.
      */
     public GestureUserEducationIphController(
-            View anchorView,
+            ViewGroup anchorView,
             ActivityTabProvider activityTabProvider,
             BackPressManager backPressManager,
             ScrimManager scrimManager) {
@@ -54,6 +69,13 @@ public class GestureUserEducationIphController {
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
                         maybeShowIph(tab);
+                    }
+
+                    @Override
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
+                        // Hide IPH if tab is switched.
+                        hideIph();
+                        super.onObservingDifferentTab(tab);
                     }
                 };
         mScrimManager = scrimManager;
@@ -69,15 +91,71 @@ public class GestureUserEducationIphController {
     private void maybeShowIph(Tab tab) {
         if (shouldShowIph(tab)) {
             unregisterTabObserver();
-            // TODO(crbug.com/493307156): Display IPH with scrim and animation.
-            PropertyModel scrimModel =
+
+            // Inflate layout
+            mGestureUserEducationIphLayout =
+                    LayoutInflater.from(tab.getContext())
+                            .inflate(
+                                    R.layout.gesture_user_education_iph_layout, mAnchorView, false);
+            mAnchorView.addView(mGestureUserEducationIphLayout);
+
+            // Display scrim
+            mScrimPropertyModel =
                     new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                             .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
                             .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, false)
-                            .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                            .with(ScrimProperties.ANCHOR_VIEW, mGestureUserEducationIphLayout)
+                            .with(ScrimProperties.CUSTOM_PARENT, mAnchorView)
+                            .with(ScrimProperties.CLICK_DELEGATE, this::hideIph)
                             .build();
-            mScrimManager.showScrim(scrimModel);
+
+            mScrimManager.showScrim(mScrimPropertyModel);
+
+            // Set and display animations
+            mBackArrowAnimation =
+                    mGestureUserEducationIphLayout.findViewById(R.id.back_gesture_arrow_animation);
+            mBackArrowAnimation.setAnimation(R.raw.back_gesture_arrow_animation);
+
+            View iphBubble = mGestureUserEducationIphLayout.findViewById(R.id.iph_bubble);
+            float density = iphBubble.getResources().getDisplayMetrics().density;
+            mTextBubbleAnimation =
+                    iphBubble
+                            .animate()
+                            .translationX(ANIMATION_X_TRANSLATION * density)
+                            .setInterpolator(Interpolators.STANDARD_INTERPOLATOR)
+                            .setDuration(SLIDE_ANIMATION_DURATION_MS)
+                            .withEndAction(
+                                    () -> {
+                                        iphBubble
+                                                .animate()
+                                                .setStartDelay(ANIMATION_DELAY_MS)
+                                                .translationX(0)
+                                                .setDuration(SLIDE_ANIMATION_DURATION_MS)
+                                                .setInterpolator(
+                                                        Interpolators.STANDARD_INTERPOLATOR)
+                                                .start();
+                                    });
+
+            mTextBubbleAnimation.start();
+            mBackArrowAnimation.playAnimation();
         }
+    }
+
+    private void hideIph() {
+        if (mScrimPropertyModel != null) {
+            mScrimManager.hideScrim(mScrimPropertyModel, false);
+        }
+
+        if (mTextBubbleAnimation != null) {
+            mTextBubbleAnimation.setListener(null);
+            mTextBubbleAnimation.cancel();
+        }
+
+        if (mBackArrowAnimation != null) {
+            mBackArrowAnimation.cancelAnimation();
+        }
+
+        mAnchorView.removeView(mGestureUserEducationIphLayout);
     }
 
     private boolean shouldShowIph(Tab tab) {
