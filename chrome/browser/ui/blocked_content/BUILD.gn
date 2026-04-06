@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/args.gni")
 import("//build/config/ozone.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
@@ -65,7 +66,6 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/guest_view/browser",
-      "//extensions/common:common_constants",
     ]
   } else {  # !is_android
     deps += [
@@ -73,6 +73,10 @@ source_set("impl") {
       "//components/messages/android",
       "//components/messages/android:feature_flags",
     ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common:common_constants" ]
   }
 }
 

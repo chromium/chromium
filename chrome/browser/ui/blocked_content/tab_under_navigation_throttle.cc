@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
 #endif
 
@@ -119,7 +119,7 @@ bool TabUnderNavigationThrottle::IsSuspiciousClientRedirect() const {
     return false;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Exempt navigating to or from extension URLs, as they will redirect pages in
   // the background. By exempting in both directions, extensions can always
   // round-trip a page through an extension URL in order to perform arbitrary
