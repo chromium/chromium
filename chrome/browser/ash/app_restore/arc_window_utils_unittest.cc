@@ -6,11 +6,11 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/app_restore/features.h"
 #include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"
@@ -26,8 +26,12 @@ namespace ash::full_restore {
 
 class ArcWindowUtilsTest : public testing::Test {
  protected:
-  ArcWindowUtilsTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
+  ArcWindowUtilsTest() = default;
+  ArcWindowUtilsTest(const ArcWindowUtilsTest&) = delete;
+  ArcWindowUtilsTest& operator=(const ArcWindowUtilsTest&) = delete;
+  ~ArcWindowUtilsTest() override = default;
+
+  void SetUp() override {
     const display::Display test_display = test_screen_.GetPrimaryDisplay();
     display::Display display(test_display);
     display.set_id(TEST_DISPLAY_ID);
@@ -40,23 +44,23 @@ class ArcWindowUtilsTest : public testing::Test {
     display::Screen::SetScreenInstance(&test_screen_);
     base::CommandLine::ForCurrentProcess()->InitFromArgv(
         {"", "--enable-arcvm"});
+    wm_helper_ = std::make_unique<exo::WMHelper>();
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
   }
-  ArcWindowUtilsTest(const ArcWindowUtilsTest&) = delete;
-  ArcWindowUtilsTest& operator=(const ArcWindowUtilsTest&) = delete;
-  ~ArcWindowUtilsTest() override {
+
+  void TearDown() override {
+    test_user_session_manager_.reset();
+    wm_helper_.reset();
     display::Screen::SetScreenInstance(nullptr);
   }
-
-  void SetUp() override { wm_helper_ = std::make_unique<exo::WMHelper>(); }
-
-  void TearDown() override { wm_helper_.reset(); }
 
  private:
   display::test::TestScreen test_screen_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
 };
 
 TEST_F(ArcWindowUtilsTest, ArcWindowInfoInvalidDisplayValidBoundsTest) {

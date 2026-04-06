@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/constants/pref_names.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
@@ -42,6 +43,9 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
@@ -52,7 +56,7 @@
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -64,6 +68,12 @@ namespace ash::full_restore {
 namespace {
 
 constexpr int32_t kWindowId = 100;
+constexpr auto kAccountId1 =
+    AccountId::Literal::FromUserEmailGaiaId("usertest1@gmail.com",
+                                            GaiaId::Literal("1234567890"));
+constexpr auto kAccountId2 =
+    AccountId::Literal::FromUserEmailGaiaId("usertest2@gmail.com",
+                                            GaiaId::Literal("0987654321"));
 
 void SetPrefValue(const std::string& name,
                   const base::Value& value,
@@ -128,19 +138,12 @@ class MockFullRestoreServiceDelegate : public FullRestoreService::Delegate {
 class FullRestoreTestHelper {
  public:
   FullRestoreTestHelper(
-      const std::string& email,
-      const GaiaId& gaia_id,
-      FakeChromeUserManager* fake_user_manager,
-      TestingProfileManager* profile_manager,
-      sync_preferences::TestingPrefServiceSyncable* pref_service) {
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-    account_id_ = AccountId::FromUserEmailGaiaId(email, gaia_id);
-    profile_ = profile_manager->CreateTestingProfile(
-        email, TestingProfile::TestingFactories());
-    fake_user_manager->AddUser(account_id_);
-    fake_user_manager->LoginUser(account_id_);
-    fake_user_manager->OnUserProfileCreated(account_id_, pref_service);
+      const AccountId& account_id,
+      ash::test::TestUserSessionManager& test_user_session_manager,
+      TestingProfileManager& profile_manager)
+      : account_id_(account_id) {
+    test_user_session_manager.LogIn(account_id);
+    profile_ = profile_manager.CreateTestingProfile(account_id_.GetUserEmail());
 
     ::app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id_,
                                                                  false);
@@ -178,33 +181,47 @@ class FullRestoreTestHelper {
   }
 
  private:
+  const AccountId account_id_;
   raw_ptr<TestingProfile> profile_ = nullptr;
-  base::ScopedTempDir temp_dir_;
-  AccountId account_id_;
 };
 
 class FullRestoreServiceTest : public testing::Test {
  public:
-  FullRestoreServiceTest()
-      : profile_manager_(std::make_unique<TestingProfileManager>(
-            TestingBrowserProcess::GetGlobal())),
-        testing_pref_service_(
-            std::make_unique<sync_preferences::TestingPrefServiceSyncable>()) {
-    CHECK(profile_manager_->SetUp());
-    RegisterUserProfilePrefs(testing_pref_service_->registry());
-    test_helper_ = std::make_unique<FullRestoreTestHelper>(
-        "usertest@gmail.com", GaiaId("1234567890"), fake_user_manager_.Get(),
-        profile_manager_.get(), testing_pref_service_.get());
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kNoFirstRun);
-  }
+  FullRestoreServiceTest() = default;
   FullRestoreServiceTest(const FullRestoreServiceTest&) = delete;
   FullRestoreServiceTest& operator=(const FullRestoreServiceTest&) = delete;
   ~FullRestoreServiceTest() override = default;
 
-  FakeChromeUserManager* fake_user_manager() {
-    return fake_user_manager_.Get();
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kNoFirstRun);
+
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_->profile_manager(),
+            user_manager::UserManager::Get());
+
+    // Register two accounts. The second account may be needed by a subclass.
+    CHECK(test_user_session_manager_->AddRegularUser(kAccountId1));
+    CHECK(test_user_session_manager_->AddRegularUser(kAccountId2));
+
+    test_helper_ = std::make_unique<FullRestoreTestHelper>(
+        kAccountId1, *test_user_session_manager_, *profile_manager_);
+  }
+
+  void TearDown() override {
+    test_helper_.reset();
+    profile_manager_.reset();
+    profile_user_manager_controller_.reset();
+    test_user_session_manager_.reset();
   }
 
   TestingProfile* profile() { return test_helper_->profile(); }
@@ -297,19 +314,13 @@ class FullRestoreServiceTest : public testing::Test {
     os_sync_service->ProcessSyncChanges(FROM_HERE, os_change_list);
   }
 
-  void TearDown() override {
-    fake_user_manager_->OnUserProfileWillBeDestroyed(account_id());
-    test_helper_.reset();
-  }
-
  protected:
   content::BrowserTaskEnvironment task_environment_;
   ash::SessionTerminationManager session_termination_manager_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
-      testing_pref_service_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   std::unique_ptr<FullRestoreTestHelper> test_helper_;
   base::HistogramTester histogram_tester_;
 };
@@ -371,7 +382,7 @@ TEST_F(FullRestoreServiceTest, NotRestore) {
 // For a brand new user, if sync off, set 'Ask Every Time' as the default value,
 // and don't show the informed restore dialog.
 TEST_F(FullRestoreServiceTest, NewUserSyncOff) {
-  fake_user_manager()->SetIsCurrentUserNew(true);
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
               MaybeStartInformedRestoreOverviewSession(testing::_))
@@ -387,7 +398,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncOff) {
 // you left off', after sync, set 'Always' as the default value, and don't show
 // the informed restore dialog and don't restore.
 TEST_F(FullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
-  fake_user_manager()->SetIsCurrentUserNew(true);
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
               MaybeStartInformedRestoreOverviewSession(testing::_))
@@ -412,7 +423,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
 // sync, set 'Ask every time' as the default value, and don't show the informed
 // restore dialog and don't restore.
 TEST_F(FullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
-  fake_user_manager()->SetIsCurrentUserNew(true);
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
               MaybeStartInformedRestoreOverviewSession(testing::_))
@@ -436,7 +447,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
 // For a new ChromeOS user, keep the ChromeOS restore setting from sync, and
 // don't show the informed restore dialog, and don't restore.
 TEST_F(FullRestoreServiceTest, ReImage) {
-  fake_user_manager()->SetIsCurrentUserNew(true);
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
               MaybeStartInformedRestoreOverviewSession(testing::_))
@@ -499,15 +510,21 @@ TEST_F(FullRestoreServiceTest, NoServiceWithFloatingWorkspace) {
 class FullRestoreServiceTestHavingFullRestoreFile
     : public FullRestoreServiceTest {
  public:
-  FullRestoreServiceTestHavingFullRestoreFile() {
-    CreateRestoreData(profile());
-  }
+  FullRestoreServiceTestHavingFullRestoreFile() = default;
   FullRestoreServiceTestHavingFullRestoreFile(
       const FullRestoreServiceTestHavingFullRestoreFile&) = delete;
   FullRestoreServiceTestHavingFullRestoreFile& operator=(
       const FullRestoreServiceTestHavingFullRestoreFile&) = delete;
-  ~FullRestoreServiceTestHavingFullRestoreFile() override {
+  ~FullRestoreServiceTestHavingFullRestoreFile() override = default;
+
+  void SetUp() override {
+    FullRestoreServiceTest::SetUp();
+    CreateRestoreData(profile());
+  }
+
+  void TearDown() override {
     ::full_restore::FullRestoreSaveHandler::GetInstance()->ClearForTesting();
+    FullRestoreServiceTest::TearDown();
   }
 
   bool allow_save() const {
@@ -516,6 +533,10 @@ class FullRestoreServiceTestHavingFullRestoreFile
 
  protected:
   void CreateRestoreData(Profile* profile) {
+    // FullRestoreSaveHandler actually save the content to files only for
+    // active user sessions, so set the profile to be saved as active here.
+    ::full_restore::SetActiveProfilePath(profile->GetPath());
+
     // Add app launch infos.
     ::full_restore::SaveAppLaunchInfo(
         profile->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
@@ -542,6 +563,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, Crash) {
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  auto* mock_delegate_ptr = mock_delegate.get();
   EXPECT_CALL(*mock_delegate,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .WillOnce([](std::unique_ptr<InformedRestoreContentsData> data) {
@@ -550,6 +572,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, Crash) {
                   data->dialog_type);
       });
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_ptr);
 
   EXPECT_TRUE(CanPerformRestore(account_id()));
   EXPECT_TRUE(allow_save());
@@ -574,10 +597,12 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  auto* mock_delegate_ptr = mock_delegate.get();
   EXPECT_CALL(*mock_delegate,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_ptr);
 
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -612,17 +637,25 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExistingUserReImage) {
 class FullRestoreServiceMultipleUsersTest
     : public FullRestoreServiceTestHavingFullRestoreFile {
  protected:
-  FullRestoreServiceMultipleUsersTest() {
-    test_helper2_ = std::make_unique<FullRestoreTestHelper>(
-        "user2@gmail.com", GaiaId("111111"), fake_user_manager(),
-        profile_manager_.get(), testing_pref_service_.get());
-    CreateRestoreData(profile2());
-  }
+  FullRestoreServiceMultipleUsersTest() = default;
   FullRestoreServiceMultipleUsersTest(
       const FullRestoreServiceMultipleUsersTest&) = delete;
   FullRestoreServiceMultipleUsersTest& operator=(
       const FullRestoreServiceMultipleUsersTest&) = delete;
   ~FullRestoreServiceMultipleUsersTest() override = default;
+
+  void SetUp() override {
+    FullRestoreServiceTestHavingFullRestoreFile::SetUp();
+
+    test_helper2_ = std::make_unique<FullRestoreTestHelper>(
+        kAccountId2, *test_user_session_manager_, *profile_manager_);
+    CreateRestoreData(profile2());
+  }
+
+  void TearDown() override {
+    test_helper2_.reset();
+    FullRestoreServiceTestHavingFullRestoreFile::TearDown();
+  }
 
   TestingProfile* profile2() { return test_helper2_->profile(); }
   const AccountId& account_id2() const { return test_helper2_->account_id(); }
@@ -645,13 +678,6 @@ class FullRestoreServiceMultipleUsersTest
     test_helper2_->SetRestoreOption(restore_option);
   }
 
-  void TearDown() override {
-    fake_user_manager()->OnUserProfileWillBeDestroyed(account_id2());
-    test_helper2_.reset();
-
-    FullRestoreServiceTestHavingFullRestoreFile::TearDown();
-  }
-
  private:
   std::unique_ptr<FullRestoreTestHelper> test_helper2_;
 };
@@ -659,27 +685,37 @@ class FullRestoreServiceMultipleUsersTest
 class ForestFullRestoreServiceMultipleUsersTest
     : public FullRestoreServiceMultipleUsersTest {
  protected:
-  ForestFullRestoreServiceMultipleUsersTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kNoFirstRun);
-  }
+  ForestFullRestoreServiceMultipleUsersTest() = default;
   ForestFullRestoreServiceMultipleUsersTest(
       const ForestFullRestoreServiceMultipleUsersTest&) = delete;
   ForestFullRestoreServiceMultipleUsersTest& operator=(
       const ForestFullRestoreServiceMultipleUsersTest&) = delete;
   ~ForestFullRestoreServiceMultipleUsersTest() override = default;
+
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kNoFirstRun);
+    FullRestoreServiceMultipleUsersTest::SetUp();
+  }
+};
+
+class ForestFullRestoreServiceMultipleUsersPrimaryUserTest
+    : public ForestFullRestoreServiceMultipleUsersTest {
+  void SetUp() override {
+    // Add `switches::kLoginUser` to the command line to simulate the system
+    // restart.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kLoginUser, kAccountId1.GetUserEmail());
+    TestingBrowserProcess::GetGlobal()->local_state()->SetString(
+        user_manager::prefs::kLastActiveUser, kAccountId1.GetUserEmail());
+    ForestFullRestoreServiceMultipleUsersTest::SetUp();
+  }
 };
 
 // Verify the full restore init process when 2 users login at the same time,
 // e.g. after the system restart or upgrading.
-TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
-  // Add `switches::kLoginUser` to the command line to simulate the system
-  // restart.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kLoginUser, account_id().GetUserEmail());
-  // Set the first user as the last session active user.
-  fake_user_manager()->set_last_session_active_account_id(account_id());
-
+TEST_F(ForestFullRestoreServiceMultipleUsersPrimaryUserTest,
+       TwoUsersLoginAtTheSameTime) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   SetRestoreOptionForProfile2(RestoreOption::kAskEveryTime);
 
@@ -696,6 +732,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreService2ForTesting(std::move(mock_delegate_2));
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_2_ptr);
 
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -710,6 +747,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_2_ptr);
 
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOptionForProfile2());
@@ -738,6 +776,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreService2ForTesting(std::move(mock_delegate_2));
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_2_ptr);
 
   // Simulate switch to the second user. The informed restore dialog should be
   // shown for them.
@@ -747,6 +786,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_2_ptr);
 
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOptionForProfile2());
@@ -754,16 +794,23 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
   EXPECT_TRUE(allow_save());
 }
 
-// Verify the full restore init process when the system restarts.
-TEST_F(ForestFullRestoreServiceMultipleUsersTest,
-       TwoUsersLoginWithActiveUserLogin) {
-  // Add `switches::kLoginUser` to the command line to simulate the system
-  // restart.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kLoginUser, account_id().GetUserEmail());
-  // Set the second user as the last session active user.
-  fake_user_manager()->set_last_session_active_account_id(account_id2());
+class ForestFullRestoreServiceMultipleUsersSecondaryUserTest
+    : public ForestFullRestoreServiceMultipleUsersTest {
+ public:
+  void SetUp() override {
+    // Add `switches::kLoginUser` to the command line to simulate the system
+    // restart.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kLoginUser, kAccountId1.GetUserEmail());
+    TestingBrowserProcess::GetGlobal()->local_state()->SetString(
+        user_manager::prefs::kLastActiveUser, kAccountId2.GetUserEmail());
+    ForestFullRestoreServiceMultipleUsersTest::SetUp();
+  }
+};
 
+// Verify the full restore init process when the system restarts.
+TEST_F(ForestFullRestoreServiceMultipleUsersSecondaryUserTest,
+       TwoUsersLoginWithActiveUserLogin) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   SetRestoreOptionForProfile2(RestoreOption::kAskEveryTime);
 
@@ -774,6 +821,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_ptr);
 
   auto mock_delegate_2 = std::make_unique<MockFullRestoreServiceDelegate>();
   auto* mock_delegate_2_ptr = mock_delegate_2.get();
@@ -781,7 +829,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreService2ForTesting(std::move(mock_delegate_2));
-
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_2_ptr);
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 0);
 
   // Simulate switch to the second user. The informed restore dialog should be
@@ -792,6 +840,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_2_ptr);
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
   EXPECT_TRUE(CanPerformRestore(account_id2()));
 
@@ -803,6 +852,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   full_restore_service->OnTransitionedToNewActiveUser(profile());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_ptr);
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
@@ -811,6 +861,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_2_ptr);
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
 
   // Simulate switch to the first user, and verify no more init processes.
@@ -818,6 +869,7 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   full_restore_service->OnTransitionedToNewActiveUser(profile());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate_ptr);
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
 }
 
