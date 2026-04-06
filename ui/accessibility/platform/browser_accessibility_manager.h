@@ -620,7 +620,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   static bool never_suppress_or_delay_events_for_testing_;
 
   // For debug only: True when handling OnAccessibilityEvents.
-#if DCHECK_IS_ON()
+#if BUILDFLAG(IS_WIN) || DCHECK_IS_ON()
   bool in_on_accessibility_events_ = false;
 #endif  // DCHECK_IS_ON()
 
