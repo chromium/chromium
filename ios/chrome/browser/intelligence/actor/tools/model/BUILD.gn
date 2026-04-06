@@ -252,6 +252,7 @@ source_set("unit_tests") {
     ":actor_interface",
     ":actor_tool_error",
     ":actor_tool_factory",
+    ":actor_tool_java_script_feature_test_base",
     ":click_tool",
     ":click_tool_ts",
     ":history_tool",
