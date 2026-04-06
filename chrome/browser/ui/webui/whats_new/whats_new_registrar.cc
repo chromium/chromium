@@ -10,6 +10,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/lens/lens_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/search/ntp_features.h"
 #include "components/sync/base/features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "pdf/buildflags.h"
@@ -53,6 +54,9 @@ void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
       std::vector<BrowserCommand>{BrowserCommand::kOpenGlic,
                                   BrowserCommand::kOpenGlicSettings,
                                   BrowserCommand::kPrewarmGlicFre}));
+  registry->RegisterEdition(
+      WhatsNewEdition(ntp_features::kLightningTakeoverEdition,
+                      "rtatum@google.com", std::vector<BrowserCommand>{}));
 }
 
 std::unique_ptr<WhatsNewRegistry> CreateWhatsNewRegistry() {

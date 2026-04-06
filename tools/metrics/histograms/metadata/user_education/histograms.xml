@@ -108,6 +108,7 @@ chromium-metrics-reviews@google.com.
 <variants name="WhatsNewModule">
   <variant name="archive"
       summary="the permanent module for What's New archive"/>
+  <variant name="ContextualTasks" summary="the module for contextual tasks"/>
   <variant name="FamilyLink" summary="the module for Family Link"/>
   <variant name="GANslate" summary="the module for GANslate"/>
   <variant name="GeminiShortcut" summary="the module for Gemini Shortcut"/>
@@ -132,6 +133,7 @@ chromium-metrics-reviews@google.com.
       summary="the module for iOS Lens Search What You See"/>
   <variant name="LensOverlayTranslateButton"
       summary="the module for Lens Overlay Full Page Translate"/>
+  <variant name="LightningVideo" summary="the module for the Lightning Video"/>
   <variant name="Mobilepasswords"
       summary="the module for getting passwords on mobile"/>
   <variant name="PdfInk2" summary="the module for PDF Ink Signatures"/>
@@ -159,6 +161,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ToolbarPinning" summary="the module for toolbar pinning"/>
   <variant name="TranslationSettings"
       summary="the module for Translation Settings"/>
+  <variant name="WebUIOmniboxAimPopup"
+      summary="the module for WebUI Aim Omnibox"/>
 </variants>
 
 <histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"

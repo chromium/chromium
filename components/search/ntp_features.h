@@ -84,6 +84,7 @@ BASE_DECLARE_FEATURE(kNtpTabGroupsModuleZeroState);
 BASE_DECLARE_FEATURE(kNtpFeatureOptimizationModuleRemoval);
 BASE_DECLARE_FEATURE(kNtpFeatureOptimizationShortcutsRemoval);
 BASE_DECLARE_FEATURE(kNtpFeatureOptimizationDismissModulesRemoval);
+BASE_DECLARE_FEATURE(kLightningTakeoverEdition);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
