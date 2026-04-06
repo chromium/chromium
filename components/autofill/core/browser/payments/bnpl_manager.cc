@@ -330,9 +330,12 @@ void BnplManager::OnUserDecisionToUseSavedCards() {
     return;
   }
 
-  if (HasSeenAmountExtractionAiTerms()) {
-    // If the user has seen the AI terms before, and there is no checkout
-    // amount, make sure the loading throbber is showing.
+  if (HasSeenAmountExtractionAiTerms() && is_card_number_field_empty_) {
+    // Make sure the loading throbber is showing when all below conditions are
+    // met:
+    // 1. The user has seen the AI terms before.
+    // 2. There is no checkout amount retrieved.
+    // 3. The card number field is empty.
     ReplaceIssuerSuggestionsWithLoadingThrobber();
   } else {
     // For first time users, if there is no checkout amount, make sure the
