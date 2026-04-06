@@ -41,7 +41,6 @@ suite('NodeStore', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     readingMode = new FakeReadingMode();
-    readingMode.isTsTextSegmentationEnabled = true;
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     now = 0;
     Date.now = () => now;

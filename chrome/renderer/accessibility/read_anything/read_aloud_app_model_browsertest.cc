@@ -363,11 +363,10 @@ class ReadAnythingReadAloudAppModelV8SegmentationTest
     : public ReadAnythingReadAloudAppModelTest {
  public:
   void SetUp() override {
-    // Phrase highlighting currently doesn't work with the TS text segmentation
-    // implementation, so we need to disable it to test phrase highlighting.
+    // V8 based text segmentation is currently only used when phrase
+    // highlighting is enabled.
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloudPhraseHighlighting},
-        {features::kReadAnythingReadAloudTSTextSegmentation});
+        {features::kReadAnythingReadAloudPhraseHighlighting}, {});
     ReadAnythingReadAloudAppModelTest::SetUp();
   }
 };

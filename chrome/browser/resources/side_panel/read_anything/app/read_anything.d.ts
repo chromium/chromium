@@ -115,9 +115,6 @@ declare namespace chrome {
     // Whether Read Anything is pinned to the toolbar.
     let isReadAnythingPinned: boolean;
 
-    // Whether the TS text segmentation feature flag is enabled.
-    let isTsTextSegmentationEnabled: boolean;
-
     // Whether Readability.js is used as the primary distillation method.
     let isReadabilityEnabled: boolean;
 

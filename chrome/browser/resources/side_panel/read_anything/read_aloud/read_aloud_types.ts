@@ -25,12 +25,12 @@ export abstract class ReadAloudNode {
 
   // TODO: crbug.com/440400392: This method is a convenience method for working
   // with AxReadAloudNodes during the refactor and should be deleted once
-  // the TSTextSegmentation flag is fully enabled.
+  // the Phrase Highlighting flag is fully enabled.
   static createFromAxNode(
       axNodeId: number, nodeStore = NodeStore.getInstance()): ReadAloudNode
       |undefined {
     const domNode: Node|undefined = nodeStore.getDomNode(axNodeId);
-    if (!domNode && !chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (!domNode && chrome.readingMode.isPhraseHighlightingEnabled) {
       // If there's no DOM node yet, it might not have gotten added to the
       // node store yet, so create an AxReadAloudNode instead.
       // TODO: crbug.com/440400392- This shouldn't be necessary but is a
@@ -46,7 +46,7 @@ export abstract class ReadAloudNode {
 
   static create(node: Node, nodeStore = NodeStore.getInstance()): ReadAloudNode
       |undefined {
-    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (!chrome.readingMode.isPhraseHighlightingEnabled) {
       return new DomReadAloudNodeImpl(node);
     }
 
@@ -82,7 +82,7 @@ export class AxReadAloudNode extends ReadAloudNode {
 // TODO: crbug.com/440400392: The Impl classes are a tool for working
 // with ReadAloudNodes during the refactor in order to enforce more strict
 // ReadAloudNode creation. These classes should be deleted once
-// the TSTextSegmentation flag is fully enabled and sooner, if possible.
+// the Phrase Highlighting flag is fully enabled and sooner, if possible.
 
 // Impl class to help enforce that AxReadAloudNode should only be constructed
 // by one of the #create methods in ReadAloudNode.

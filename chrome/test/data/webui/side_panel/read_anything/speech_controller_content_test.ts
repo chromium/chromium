@@ -143,8 +143,7 @@ suite('SpeechController', () => {
       assertEquals(1, readAloudModel.getCallCount('init'));
     });
 
-    test('updateContent resets the read aloud model with ts flag', () => {
-      chrome.readingMode.isTsTextSegmentationEnabled = true;
+    test('updateContent resets the read aloud model', () => {
       const initialResetCallCount = readAloudModel.getCallCount('resetModel');
 
       setContent('hello', readAloudModel);
@@ -158,8 +157,8 @@ suite('SpeechController', () => {
           initialResetCallCount + 2, readAloudModel.getCallCount('resetModel'));
     });
 
-    test('updateContent does not reset the model without ts flag', () => {
-      chrome.readingMode.isTsTextSegmentationEnabled = false;
+    test('updateContent does not reset the model with phrase highlighting flag', () => {
+      chrome.readingMode.isPhraseHighlightingEnabled = true;
       const initialResetCallCount = readAloudModel.getCallCount('resetModel');
 
       setContent('hello', readAloudModel);
@@ -173,16 +172,15 @@ suite('SpeechController', () => {
           initialResetCallCount, readAloudModel.getCallCount('resetModel'));
     });
 
-    test('showLoading resets the read aloud model with ts flag', () => {
-      chrome.readingMode.isTsTextSegmentationEnabled = true;
+    test('showLoading resets the read aloud model', () => {
       const initialResetCallCount = readAloudModel.getCallCount('resetModel');
       app.showLoading();
       assertEquals(
           initialResetCallCount + 1, readAloudModel.getCallCount('resetModel'));
     });
 
-    test('showLoading does not reset the model without ts flag', () => {
-      chrome.readingMode.isTsTextSegmentationEnabled = false;
+    test('showLoading does not reset the model with phrase highlighting flag', () => {
+      chrome.readingMode.isPhraseHighlightingEnabled = true;
       const initialResetCallCount = readAloudModel.getCallCount('resetModel');
       app.showLoading();
       assertEquals(

@@ -137,8 +137,7 @@ export class ReadAloudHighlighter {
 
     const currentSpeechRate: number = getCurrentSpeechRate();
 
-    if (!chrome.readingMode.isPhraseHighlightingEnabled ||
-        chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (!chrome.readingMode.isPhraseHighlightingEnabled) {
       // Choose sentence highlighting for fast voices.
       if (currentSpeechRate > 1.2 &&
           highlight === chrome.readingMode.autoHighlighting) {

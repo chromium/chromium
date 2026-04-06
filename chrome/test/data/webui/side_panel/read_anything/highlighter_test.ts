@@ -423,7 +423,6 @@ suite('Highlighter', () => {
   });
 
   test('phrase highlight', () => {
-    chrome.readingMode.isTsTextSegmentationEnabled = false;
     chrome.readingMode.isPhraseHighlightingEnabled = true;
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.autoHighlighting);
@@ -451,7 +450,6 @@ suite('Highlighter', () => {
   });
 
   test('phrase highlight with engine length, ignores engine length', () => {
-    chrome.readingMode.isTsTextSegmentationEnabled = false;
     chrome.readingMode.isPhraseHighlightingEnabled = true;
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.autoHighlighting);
@@ -482,7 +480,6 @@ suite('Highlighter', () => {
       'onWillMoveToNextGranularity with phrase highlighting highlights the ' +
           'rest of the sentence',
       () => {
-        chrome.readingMode.isTsTextSegmentationEnabled = false;
         chrome.readingMode.isPhraseHighlightingEnabled = true;
         chrome.readingMode.onHighlightGranularityChanged(
             chrome.readingMode.autoHighlighting);
@@ -519,7 +516,6 @@ suite('Highlighter', () => {
       });
 
   test('phrase highlight across multiple nodes', () => {
-    chrome.readingMode.isTsTextSegmentationEnabled = false;
     chrome.readingMode.isPhraseHighlightingEnabled = true;
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.autoHighlighting);

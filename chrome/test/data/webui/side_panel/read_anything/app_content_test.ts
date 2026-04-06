@@ -233,7 +233,6 @@ suite('AppContent', () => {
       async () => {
         chrome.readingMode.activeDistillationMethod =
             chrome.readingMode.distillationTypeReadability;
-        chrome.readingMode.isTsTextSegmentationEnabled = true;
 
         let resetCallCount = 0;
         speechController.resetForNewContent = () => {

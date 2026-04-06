@@ -23,7 +23,6 @@ suite('ReadAloudNodeStore', () => {
   setup(() => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    chrome.readingMode.isTsTextSegmentationEnabled = true;
     nodeStore = new ReadAloudNodeStore();
     ReadAloudNodeStore.setInstance(nodeStore);
   });

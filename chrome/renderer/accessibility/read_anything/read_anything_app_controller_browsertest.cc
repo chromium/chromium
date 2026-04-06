@@ -3482,7 +3482,7 @@ class ReadAnythingAppControllerV8SegmentationTest
     ReadAnythingAppControllerTest::SetUp();
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kReadAnythingReadAloudTSTextSegmentation});
+        {features::kReadAnythingReadAloudPhraseHighlighting}, {});
   }
 };
 

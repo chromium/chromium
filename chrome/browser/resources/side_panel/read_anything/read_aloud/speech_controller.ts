@@ -70,7 +70,7 @@ export class SpeechController {
   }
 
   resetForNewContent() {
-    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (!chrome.readingMode.isPhraseHighlightingEnabled) {
       // Reset the read aloud model because there's new content.
       this.readAloudModel_.resetModel?.();
     }
@@ -364,14 +364,14 @@ export class SpeechController {
     // to introduce for the non-TS segmentation flag case, the original
     // order is maintained when the flag is disabled to reduce the risk of
     // introducing unexpected bugs to the V8 segmentation method.
-    if (!chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (chrome.readingMode.isPhraseHighlightingEnabled) {
       const playedFromSelection = this.playFromSelection_();
       if (playedFromSelection) {
         return;
       }
     }
 
-    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (!chrome.readingMode.isPhraseHighlightingEnabled) {
       // TODO: crbug.com/440400392- The speech tree should also be initialized
       // before the play button is pressed.
       this.initializeSpeechTree(context);
@@ -379,7 +379,7 @@ export class SpeechController {
       this.initializeSpeechTree();
     }
 
-    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (!chrome.readingMode.isPhraseHighlightingEnabled) {
       const playedFromSelection = this.playFromSelection_();
       if (playedFromSelection) {
         return;
@@ -918,11 +918,11 @@ export class SpeechController {
   private findSegment_(
       segments: Segment[], node: ReadAloudNode, offset: number): Segment
       |undefined {
-    // When the TsTextSegmentation flag is enabled, findSegment_ should count a
+    // When the PhraseHighlighting flag is disabled, findSegment_ should count a
     // match if the selection node contains the read aloud node (i.e. the read
     // aloud node is a child of the selection node) - otherwise there
     // won't be a match on the first run of playFromSelection()
-    if (!chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (chrome.readingMode.isPhraseHighlightingEnabled) {
       return segments.find(
           segment => segment.node.equals(node) &&
               (segment.start + segment.length > offset));

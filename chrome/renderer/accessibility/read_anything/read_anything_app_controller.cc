@@ -1298,8 +1298,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isImmersiveEnabled",
                    &ReadAnythingAppController::IsImmersiveEnabled)
-      .SetProperty("isTsTextSegmentationEnabled",
-                   &ReadAnythingAppController::IsTsTextSegmentationEnabled)
       .SetProperty("isReadabilityEnabled",
                    &ReadAnythingAppController::IsReadabilityEnabled)
       .SetProperty("activeDistillationMethod",
@@ -1930,10 +1928,6 @@ bool ReadAnythingAppController::IsLeafNode(ui::AXNodeID ax_node_id) const {
 
 bool ReadAnythingAppController::IsImmersiveEnabled() const {
   return features::IsImmersiveReadAnythingEnabled();
-}
-
-bool ReadAnythingAppController::IsTsTextSegmentationEnabled() const {
-  return features::IsReadAnythingReadAloudTSTextSegmentationEnabled();
 }
 
 // Returns true if the experimental flag allowing testing with alternative

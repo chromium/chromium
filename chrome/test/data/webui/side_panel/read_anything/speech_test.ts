@@ -82,9 +82,8 @@ suite('Speech', () => {
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
-    if (chrome.readingMode.isTsTextSegmentationEnabled) {
-      stubAnimationFrame();
-    }
+    stubAnimationFrame();
+
     // Ensure the ReadAloudModel is not shared between tests.
     setInstance(null);
     speech = new TestSpeechBrowserProxy();

@@ -47,7 +47,7 @@ export interface ReadAloudModelBrowserProxy {
 
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {
   return instance ||
-      (chrome.readingMode.isTsTextSegmentationEnabled ?
+      (!chrome.readingMode.isPhraseHighlightingEnabled ?
            instance = new TsReadModelImpl() :
            instance = new V8ModelImpl());
 }

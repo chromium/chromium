@@ -320,10 +320,6 @@ AX_BASE_EXPORT bool IsReadAnythingMenuShuffleExperimentEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudPhraseHighlighting);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudPhraseHighlightingEnabled();
 
-// Enable TypeScript-based text segmentation in Read Anything Read Aloud.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudTSTextSegmentation);
-AX_BASE_EXPORT bool IsReadAnythingReadAloudTSTextSegmentationEnabled();
-
 // Enable the omnibox entrypoint for Read Anything.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingOmniboxChip);
 AX_BASE_EXPORT bool IsReadAnythingOmniboxChipEnabled();

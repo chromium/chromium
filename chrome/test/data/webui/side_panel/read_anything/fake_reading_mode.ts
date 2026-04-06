@@ -100,9 +100,6 @@ export class FakeReadingMode {
   // Whether the line focus feature flag is enabled.
   isLineFocusEnabled: boolean = false;
 
-  // Whether the text segmentation  feature flag is enabled.
-  isTsTextSegmentationEnabled: boolean = true;
-
   // Whether the readability feature flag is enabled.
   isReadabilityEnabled: boolean = false;
 

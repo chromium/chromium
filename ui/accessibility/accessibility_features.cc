@@ -398,13 +398,6 @@ bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
       ::features::kReadAnythingReadAloudPhraseHighlighting);
 }
 
-BASE_FEATURE(kReadAnythingReadAloudTSTextSegmentation,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAnythingReadAloudTSTextSegmentationEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kReadAnythingReadAloudTSTextSegmentation);
-}
-
 BASE_FEATURE(kReadAnythingOmniboxChip, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingOmniboxChipEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingOmniboxChip);
@@ -437,10 +430,7 @@ bool IsReadAnythingDocsLoadMoreButtonEnabled() {
 
 BASE_FEATURE(kReadAnythingWithReadability, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingWithReadabilityEnabled() {
-  return base::FeatureList::IsEnabled(
-             ::features::kReadAnythingReadAloudTSTextSegmentation) &&
-         base::FeatureList::IsEnabled(::features::kReadAnythingWithReadability);
-  ;
+  return base::FeatureList::IsEnabled(::features::kReadAnythingWithReadability);
 }
 
 BASE_FEATURE(kReadAnythingWithReadabilityAllowLinks,

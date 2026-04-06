@@ -221,7 +221,7 @@ export class NodeStore {
     // highlighting to work with Readability and with the TS text segmentation
     // model.
     if (!isDistilledByReadability() &&
-        !chrome.readingMode.isTsTextSegmentationEnabled) {
+        chrome.readingMode.isPhraseHighlightingEnabled) {
       assert(
           nodeId !== undefined,
           'trying to replace an element that doesn\'t exist');

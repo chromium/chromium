@@ -2047,8 +2047,7 @@ class ReadAnythingUntrustedPageHandlerDistillerTest
  public:
   ReadAnythingUntrustedPageHandlerDistillerTest()
       : ReadAnythingUntrustedPageHandlerTest(
-            {features::kReadAnythingWithReadability,
-             features::kReadAnythingReadAloudTSTextSegmentation},
+            {features::kReadAnythingWithReadability},
             {features::kReadAnythingReadAloudPhraseHighlighting}) {}
 };
 

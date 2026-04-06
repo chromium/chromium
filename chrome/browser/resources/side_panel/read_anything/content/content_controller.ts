@@ -198,7 +198,7 @@ export class ContentController {
 
     // When a node is deleted, the read aloud model can get out of sync with the
     // DOM. To be safe, delete the node from the model.
-    if (deletedNode && chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (deletedNode && !chrome.readingMode.isPhraseHighlightingEnabled) {
       getReadAloudModel().onNodeWillBeDeleted?.(deletedNode);
     }
 
@@ -388,7 +388,7 @@ export class ContentController {
       }
       this.nodeStore_.estimateWordsSeenWithDelay();
       // Initialize the speech tree with the new content.
-      if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      if (!chrome.readingMode.isPhraseHighlightingEnabled) {
         const contextNode = ReadAloudNode.create(rootNode);
         if (contextNode) {
           // Don't initialize until after drawing otherwise, the DOM nodes might
@@ -491,7 +491,7 @@ export class ContentController {
     // which can be computationally expensive.
     // This needs to be done after the text node is created and added to the
     // node store.
-    if (!chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (chrome.readingMode.isPhraseHighlightingEnabled) {
       this.speechController_.initializeSpeechTree(textNode);
     }
 
