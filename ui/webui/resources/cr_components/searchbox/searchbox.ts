@@ -34,7 +34,6 @@ import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxInputElement} from './searchbox_input.js';
 import type {SearchboxMixinInterface} from './searchbox_mixin.js';
 import {SearchboxMixin} from './searchbox_mixin.js';
-import {waitForLazyRender} from './utils.js';
 
 // LINT.IfChange(GhostLoaderTagName)
 const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
@@ -48,7 +47,6 @@ CSS.registerProperty({
   inherits: true,
 });
 
-import {PlaceholderTextCycler} from './placeholder_text_cycler.js';
 
 export interface SearchboxElement {
   $: {
@@ -138,10 +136,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
-      cyclingPlaceholders: {
-        type: Boolean,
-      },
-
       placeholderText: {
         type: String,
         reflect: true,
@@ -214,7 +208,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor searchboxLayoutMode: string = '';
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
-  accessor cyclingPlaceholders: boolean = false;
   accessor showThumbnail: boolean = false;
   accessor placeholderText: string = '';
   accessor isDraggingFile: boolean = false;
@@ -242,7 +235,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   private autocompleteResultChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;
   private onTabStripChangedListenerId_: number|null = null;
-  private placeholderCycler_: PlaceholderTextCycler|null = null;
   private contextMenuOpened_: boolean = false;
 
   constructor() {
@@ -280,8 +272,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
     assert(this.onTabStripChangedListenerId_);
     this.callbackRouter_.removeListener(this.onTabStripChangedListenerId_);
-
-    this.placeholderCycler_?.stop();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -309,23 +299,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   override firstUpdated() {
     performance.measure('realbox-creation', 'realbox-creation-start');
     this.initialInputScrollHeight = this.$.input.scrollHeight;
-
-    if (this.cyclingPlaceholders) {
-      waitForLazyRender().then(async () => {
-        const {config} = await this.pageHandler_.getPlaceholderConfig();
-        const texts = config.texts;
-        if (texts.length === 0) {
-          // PEC API returned no placeholders; feature is disabled.
-          return;
-        }
-        this.placeholderText = texts[0]!;
-        this.placeholderCycler_ = new PlaceholderTextCycler(
-            this.$.input.inputElement, texts,
-            Number(config.changeTextAnimationInterval.microseconds / 1000n),
-            Number(config.fadeTextAnimationDuration.microseconds / 1000n));
-        this.placeholderCycler_.start();
-      });
-    }
   }
 
   override getInputElement(): SearchboxInputElement {
@@ -411,7 +384,6 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected onInputFocus_() {
     this.pageHandler_.onFocusChanged(true);
-    this.placeholderCycler_?.stop();
   }
 
   protected onSearchboxInputTextUpdated_(
@@ -437,7 +409,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     }
 
     super.onInputWrapperFocusout(e);
-    this.placeholderCycler_?.start();
   }
 
   override handleKeyNavigation(e: KeyboardEvent) {

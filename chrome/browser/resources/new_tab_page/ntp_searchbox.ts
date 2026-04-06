@@ -10,8 +10,10 @@ import type {ContextualUpload} from '//resources/cr_components/composebox/common
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
+import {PlaceholderTextCycler} from '//resources/cr_components/searchbox/placeholder_text_cycler.js';
 import {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
+import {waitForLazyRender} from '//resources/cr_components/searchbox/utils.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -60,12 +62,16 @@ export class NtpSearchboxElement extends SearchboxElement implements
       composeboxEnabled: {type: Boolean},
 
       composeButtonEnabled: {type: Boolean},
+
+      cyclingPlaceholders: {type: Boolean},
     };
   }
 
   accessor ntpRealboxNextEnabled: boolean = false;
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
+  accessor cyclingPlaceholders: boolean = false;
+  private accessor placeholderCycler_: PlaceholderTextCycler | null = null;
   private dragAndDropEnabled_: boolean =
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
 
@@ -77,6 +83,32 @@ export class NtpSearchboxElement extends SearchboxElement implements
           new DragAndDropHandler(this, this.dragAndDropEnabled_);
     }
     await Promise.resolve();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.placeholderCycler_?.stop();
+  }
+
+  override firstUpdated() {
+    super.firstUpdated();
+
+    if (this.cyclingPlaceholders) {
+      waitForLazyRender().then(async () => {
+        const {config} = await this.pageHandler().getPlaceholderConfig();
+        const texts = config.texts;
+        if (texts.length === 0) {
+          // PEC API returned no placeholders; feature is disabled.
+          return;
+        }
+        this.placeholderText = texts[0]!;
+        this.placeholderCycler_ = new PlaceholderTextCycler(
+            this.$.input.inputElement, texts,
+            Number(config.changeTextAnimationInterval.microseconds / 1000n),
+            Number(config.fadeTextAnimationDuration.microseconds / 1000n));
+        this.placeholderCycler_.start();
+      });
+    }
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -117,6 +149,16 @@ export class NtpSearchboxElement extends SearchboxElement implements
     }
 
     super.handleKeyNavigation(e);
+  }
+
+  protected override onInputFocus_() {
+    super.onInputFocus_();
+    this.placeholderCycler_?.stop();
+  }
+
+  override onInputWrapperFocusout(e: FocusEvent) {
+    super.onInputWrapperFocusout(e);
+    this.placeholderCycler_?.start();
   }
 
   //============================================================================
