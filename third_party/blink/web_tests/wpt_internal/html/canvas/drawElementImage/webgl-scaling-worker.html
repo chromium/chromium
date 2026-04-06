@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+  <head>
+    <title>texElementImage2D scaling</title>
+    <link rel="help" href="https://github.com/WICG/html-in-canvas">
+    <link rel="match" href="scale-ref.html">
+    <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
+    <script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
+    <script src="/common/reftest-wait.js"></script>
+    <meta name="assert" value="Scaling content via destRect">
+    <meta name="fuzzy" content="maxDifference=0-100; totalPixels=0-2000"/>
+    <style>
+     body {
+       display: grid;
+       grid: 256px / 1fr 1fr 1fr;
+       align-items: start;
+     }
+     canvas {
+       width: 256px;
+       height: 256px;
+     }
+     color-grid {
+       width: 100px;
+       height: 100px;
+     }
+    </style>
+  </head>
+  <body>
+    <canvas layoutsubtree>
+      <div class="draw-element-wrapper">
+        <div class="css-is-awesome"></div>
+      </div>
+    </canvas>
+
+    <canvas layoutsubtree>
+      <div class="draw-element-wrapper" xscale="1" yscale="1">
+        <color-grid></color-grid>
+      </div>
+    </canvas>
+
+    <canvas layoutsubtree>
+      <div class="draw-element-wrapper" xscale="0.5" yscale="0.5">
+        <color-grid></color-grid>
+      </div>
+    </canvas>
+
+    <canvas layoutsubtree>
+      <div class="draw-element-wrapper" xscale="2" yscale="2">
+        <color-grid></color-grid>
+      </div>
+    </canvas>
+
+    <canvas layoutsubtree>
+      <div class="draw-element-wrapper" xscale="2" yscale="0.5">
+        <color-grid></color-grid>
+      </div>
+    </canvas>
+
+    <script type="module">
+import { resizeToPixelGrid, computeScaledDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
+
+Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
+  await resizeToPixelGrid(cvs);
+  await new Promise(setTimeout);
+  const target = cvs.firstElementChild;
+
+  let args = [];
+  if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
+    const scaleX = Number.parseFloat(target.getAttribute("xscale"));
+    const scaleY = Number.parseFloat(target.getAttribute("yscale"));
+    const [destWidth, destHeight] = computeScaledDestinationSize(cvs, target, scaleX, scaleY);
+    args = [destWidth, destHeight, true];
+  } else {
+    const [destWidth, destHeight] = computeScaledDestinationSize(cvs, target, 1, 1);
+    args = [destWidth, destHeight, false];
+  }
+
+  const worker = new Worker('webgl-worker.js', { type: 'module' });
+  const offscreen = cvs.transferControlToOffscreen();
+  worker.postMessage({ canvas: offscreen }, [offscreen]);
+
+  return new Promise((resolve, reject) => {
+    worker.onmessage = (e) => {
+      if (e.data !== 'done') {
+        console.error(e.data);
+        reject(new Error(e.data));
+      } else {
+        resolve();
+      }
+    };
+    const elementImage = cvs.captureElementImage(target);
+    worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
+  });
+})).catch(e => {
+  console.error("Test failed:", e);
+}).finally(() => {
+  // Wait for the worker thread to update before taking a screenshot.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(takeScreenshot);
+  });
+});
+    </script>
+  </body>
+</html>

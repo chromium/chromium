@@ -46,11 +46,13 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
@@ -123,8 +125,58 @@ void OffscreenCanvas::DeregisterFromAnimationFrameProvider() {
   }
 }
 
+namespace {
+class OffscreenCanvasRegistry
+    : public GarbageCollected<OffscreenCanvasRegistry>,
+      public Supplement<ExecutionContext> {
+ public:
+  static const char kSupplementName[];
+  static OffscreenCanvasRegistry& From(ExecutionContext* context) {
+    auto* supplement =
+        Supplement<ExecutionContext>::From<OffscreenCanvasRegistry>(context);
+    if (!supplement) {
+      supplement = MakeGarbageCollected<OffscreenCanvasRegistry>(context);
+      Supplement<ExecutionContext>::ProvideTo(*context, supplement);
+    }
+    return *supplement;
+  }
+  explicit OffscreenCanvasRegistry(ExecutionContext* context)
+      : Supplement<ExecutionContext>(*context) {}
+  void Register(DOMNodeId id, OffscreenCanvas* canvas) {
+    if (id != kInvalidDOMNodeId) {
+      map_.Set(id, canvas);
+    }
+  }
+  OffscreenCanvas* Get(DOMNodeId id) {
+    auto it = map_.find(id);
+    return it != map_.end() ? it->value.Get() : nullptr;
+  }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(map_);
+    Supplement<ExecutionContext>::Trace(visitor);
+  }
+
+ private:
+  HeapHashMap<DOMNodeId, WeakMember<OffscreenCanvas>> map_;
+};
+const char OffscreenCanvasRegistry::kSupplementName[] =
+    "OffscreenCanvasRegistry";
+}  // namespace
+
+OffscreenCanvas* OffscreenCanvas::FromPlaceholderId(ExecutionContext* context,
+                                                    DOMNodeId canvas_id) {
+  if (!context || canvas_id == kInvalidDOMNodeId) {
+    return nullptr;
+  }
+  return OffscreenCanvasRegistry::From(context).Get(canvas_id);
+}
+
 void OffscreenCanvas::SetPlaceholderCanvasId(DOMNodeId canvas_id) {
   placeholder_canvas_id_ = canvas_id;
+  if (GetExecutionContext()) {
+    OffscreenCanvasRegistry::From(GetExecutionContext())
+        .Register(canvas_id, this);
+  }
   if (GetTopExecutionContext() &&
       GetTopExecutionContext()->IsDedicatedWorkerGlobalScope()) {
     WorkerAnimationFrameProvider* animation_frame_provider =

@@ -59,6 +59,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -6726,68 +6727,13 @@ void WebGLRenderingContextBase::texParameteri(GLenum target,
   TexParameter(target, pname, 0, param, false);
 }
 
-void WebGLRenderingContextBase::texElement2D(GLenum target,
-                                             GLint level,
-                                             GLint internalformat,
-                                             GLenum format,
-                                             GLenum type,
-                                             Element* element,
-                                             ExceptionState& exception_state) {
-  texElementImage2D(target, level, internalformat, format, type, element,
-                    exception_state);
-}
-
-void WebGLRenderingContextBase::texElement2D(GLenum target,
-                                             GLint level,
-                                             GLint internalformat,
-                                             GLsizei width,
-                                             GLsizei height,
-                                             GLenum format,
-                                             GLenum type,
-                                             Element* element,
-                                             ExceptionState& exception_state) {
-  texElementImage2D(target, level, internalformat, width, height, format, type,
-                    element, exception_state);
-}
-
-void WebGLRenderingContextBase::texElement2D(GLenum target,
-                                             GLint level,
-                                             GLint internalformat,
-                                             GLfloat sx,
-                                             GLfloat sy,
-                                             GLfloat swidth,
-                                             GLfloat sheight,
-                                             GLenum format,
-                                             GLenum type,
-                                             Element* element,
-                                             ExceptionState& exception_state) {
-  texElementImage2D(target, level, internalformat, sx, sy, swidth, sheight,
-                    format, type, element, exception_state);
-}
-
-void WebGLRenderingContextBase::texElement2D(GLenum target,
-                                             GLint level,
-                                             GLint internalformat,
-                                             GLfloat sx,
-                                             GLfloat sy,
-                                             GLfloat swidth,
-                                             GLfloat sheight,
-                                             GLsizei width,
-                                             GLsizei height,
-                                             GLenum format,
-                                             GLenum type,
-                                             Element* element,
-                                             ExceptionState& exception_state) {
-  texElementImage2D(target, level, internalformat, sx, sy, swidth, sheight,
-                    width, height, format, type, element, exception_state);
-}
 void WebGLRenderingContextBase::texElementImage2D(
     GLenum target,
     GLint level,
     GLint internalformat,
     GLenum format,
     GLenum type,
-    Element* element,
+    const V8UnionElementOrElementImage* element,
     ExceptionState& exception_state) {
   TexElementImage2DInternal(target, level, internalformat,
                             /*sx*/ std::nullopt, /*sy*/ std::nullopt,
@@ -6804,7 +6750,7 @@ void WebGLRenderingContextBase::texElementImage2D(
     GLsizei height,
     GLenum format,
     GLenum type,
-    Element* element,
+    const V8UnionElementOrElementImage* element,
     ExceptionState& exception_state) {
   TexElementImage2DInternal(target, level, internalformat,
                             /*sx*/ std::nullopt, /*sy*/ std::nullopt,
@@ -6823,7 +6769,7 @@ void WebGLRenderingContextBase::texElementImage2D(
     GLfloat sheight,
     GLenum format,
     GLenum type,
-    Element* element,
+    const V8UnionElementOrElementImage* element,
     ExceptionState& exception_state) {
   TexElementImage2DInternal(target, level, internalformat, sx, sy, swidth,
                             sheight,
@@ -6843,7 +6789,7 @@ void WebGLRenderingContextBase::texElementImage2D(
     GLsizei height,
     GLenum format,
     GLenum type,
-    Element* element,
+    const V8UnionElementOrElementImage* element,
     ExceptionState& exception_state) {
   TexElementImage2DInternal(target, level, internalformat, sx, sy, swidth,
                             sheight, width, height, format, type, element,
@@ -6862,7 +6808,7 @@ void WebGLRenderingContextBase::TexElementImage2DInternal(
     std::optional<GLsizei> height,
     GLenum format,
     GLenum type,
-    Element* element,
+    const V8UnionElementOrElementImage* element,
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
 

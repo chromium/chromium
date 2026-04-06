@@ -30,10 +30,12 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/core/animation_frame/worker_animation_frame_provider.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
+#include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -147,7 +149,7 @@ CanvasRenderingContext::GetChildPaintRecord(Element* element) {
 }
 
 scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
-    Element* element,
+    const V8UnionElementOrElementImage* element,
     std::optional<float> sx,
     std::optional<float> sy,
     std::optional<float> swidth,
@@ -157,15 +159,27 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
     gpu::SharedImageUsageSet usage,
     const String& func_name,
     ExceptionState& exception_state) {
-  if (!IsDrawElementImageEligible(element, func_name, exception_state)) {
-    return nullptr;
+  std::optional<CanvasChildPaintRecord> child_paint_record;
+  if (element->IsElement()) {
+    Element* dom_element = element->GetAsElement();
+    if (!IsDrawElementImageEligible(dom_element, func_name, exception_state)) {
+      return nullptr;
+    }
+    child_paint_record = GetChildPaintRecord(dom_element);
+  } else {
+    if (const auto& record = element->GetAsElementImage()->PaintRecord()) {
+      child_paint_record = *record;
+    }
   }
 
-  std::optional<CanvasChildPaintRecord> child_paint_record =
-      GetChildPaintRecord(element);
   if (!child_paint_record) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "No cached paint record for element.");
+    if (element->IsElementImage()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "The ElementImage has been closed.");
+    } else {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "No cached paint record for element.");
+    }
     return nullptr;
   }
 

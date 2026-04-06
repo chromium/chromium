@@ -34,6 +34,7 @@ class ImageData;
 class ProxyDawnInstanceForANGLE;
 class ScriptState;
 class V8PredefinedColorSpace;
+class V8UnionElementOrElementImage;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 class VideoFrame;
 class WebGLActiveInfo;
@@ -606,7 +607,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                          GLint internalformat,
                          GLenum format,
                          GLenum type,
-                         Element* element,
+                         const V8UnionElementOrElementImage* element,
                          ExceptionState& exception_state);
 
   void texElementImage2D(GLenum target,
@@ -616,7 +617,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                          GLsizei height,
                          GLenum format,
                          GLenum type,
-                         Element* element,
+                         const V8UnionElementOrElementImage* element,
                          ExceptionState& exception_state);
 
   void texElementImage2D(GLenum target,
@@ -628,7 +629,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                          GLfloat sheight,
                          GLenum format,
                          GLenum type,
-                         Element* element,
+                         const V8UnionElementOrElementImage* element,
                          ExceptionState& exception_state);
 
   void texElementImage2D(GLenum target,
@@ -642,52 +643,8 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                          GLsizei height,
                          GLenum format,
                          GLenum type,
-                         Element* element,
+                         const V8UnionElementOrElementImage* element,
                          ExceptionState& exception_state);
-
-  void texElement2D(GLenum target,
-                    GLint level,
-                    GLint internalformat,
-                    GLenum format,
-                    GLenum type,
-                    Element* element,
-                    ExceptionState& exception_state);
-
-  void texElement2D(GLenum target,
-                    GLint level,
-                    GLint internalformat,
-                    GLsizei width,
-                    GLsizei height,
-                    GLenum format,
-                    GLenum type,
-                    Element* element,
-                    ExceptionState& exception_state);
-
-  void texElement2D(GLenum target,
-                    GLint level,
-                    GLint internalformat,
-                    GLfloat sx,
-                    GLfloat sy,
-                    GLfloat swidth,
-                    GLfloat sheight,
-                    GLenum format,
-                    GLenum type,
-                    Element* element,
-                    ExceptionState& exception_state);
-
-  void texElement2D(GLenum target,
-                    GLint level,
-                    GLint internalformat,
-                    GLfloat sx,
-                    GLfloat sy,
-                    GLfloat swidth,
-                    GLfloat sheight,
-                    GLsizei width,
-                    GLsizei height,
-                    GLenum format,
-                    GLenum type,
-                    Element* element,
-                    ExceptionState& exception_state);
 
   void texSubImage2D(GLenum target,
                      GLint level,

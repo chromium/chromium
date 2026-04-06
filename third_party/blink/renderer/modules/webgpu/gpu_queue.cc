@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_external_image.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
+#include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
@@ -793,44 +795,47 @@ bool GPUQueue::IsValidDestinationTexture(
   return true;
 }
 
-void GPUQueue::copyElementImageToTexture(Element* element,
-                                         GPUImageCopyTextureTagged* destination,
-                                         ExceptionState& exception_state) {
+void GPUQueue::copyElementImageToTexture(
+    const V8UnionElementOrElementImage* source,
+    GPUImageCopyTextureTagged* destination,
+    ExceptionState& exception_state) {
   CopyElementImageToTextureInternal(
-      element,
+      source,
       /*sx*/ std::nullopt, /*sy*/ std::nullopt,
       /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
       /*width*/ std::nullopt, /*height*/ std::nullopt, destination,
       exception_state);
 }
 
-void GPUQueue::copyElementImageToTexture(Element* element,
-                                         uint32_t width,
-                                         uint32_t height,
-                                         GPUImageCopyTextureTagged* destination,
-                                         ExceptionState& exception_state) {
-  CopyElementImageToTextureInternal(element,
+void GPUQueue::copyElementImageToTexture(
+    const V8UnionElementOrElementImage* source,
+    uint32_t width,
+    uint32_t height,
+    GPUImageCopyTextureTagged* destination,
+    ExceptionState& exception_state) {
+  CopyElementImageToTextureInternal(source,
                                     /*sx*/ std::nullopt, /*sy*/ std::nullopt,
                                     /*swidth*/ std::nullopt,
                                     /*sheight*/ std::nullopt, width, height,
                                     destination, exception_state);
 }
 
-void GPUQueue::copyElementImageToTexture(Element* element,
-                                         float sx,
-                                         float sy,
-                                         float swidth,
-                                         float sheight,
-                                         GPUImageCopyTextureTagged* destination,
-                                         ExceptionState& exception_state) {
-  CopyElementImageToTextureInternal(element, sx, sy, swidth, sheight,
+void GPUQueue::copyElementImageToTexture(
+    const V8UnionElementOrElementImage* source,
+    float sx,
+    float sy,
+    float swidth,
+    float sheight,
+    GPUImageCopyTextureTagged* destination,
+    ExceptionState& exception_state) {
+  CopyElementImageToTextureInternal(source, sx, sy, swidth, sheight,
                                     /*width*/ std::nullopt,
                                     /*height*/ std::nullopt, destination,
                                     exception_state);
 }
 
 void GPUQueue::CopyElementImageToTextureInternal(
-    Element* element,
+    const V8UnionElementOrElementImage* source,
     std::optional<float> sx,
     std::optional<float> sy,
     std::optional<float> swidth,
@@ -843,10 +848,42 @@ void GPUQueue::CopyElementImageToTextureInternal(
   CHECK(!swidth.has_value() || !width.has_value());
   CHECK(!sheight.has_value() || !height.has_value());
 
-  CanvasRenderingContext* context =
-      CanvasRenderingContext::GetEnclosingContextForDrawElement(
-          element, "copyElementImageToTexture()", exception_state);
+  CanvasRenderingContext* context = nullptr;
+  if (source->IsElement()) {
+    context = CanvasRenderingContext::GetEnclosingContextForDrawElement(
+        source->GetAsElement(), "copyElementImageToTexture()", exception_state);
+  } else {
+    const std::unique_ptr<CanvasChildPaintRecord>& record =
+        source->GetAsElementImage()->PaintRecord();
+    if (record) {
+      DOMNodeId canvas_node_id = record->paint_state.canvas_node_id;
+      if (canvas_node_id != kInvalidDOMNodeId) {
+        if (device_->GetExecutionContext()->IsWindow()) {
+          if (auto* html_canvas = DynamicTo<HTMLCanvasElement>(
+                  DOMNodeIds::NodeForId(canvas_node_id))) {
+            context = html_canvas->RenderingContext();
+          }
+        }
+        if (!context) {
+          if (auto* offscreen_canvas = OffscreenCanvas::FromPlaceholderId(
+                  device_->GetExecutionContext(), canvas_node_id)) {
+            context = offscreen_canvas->RenderingContext();
+          }
+        }
+      }
+    }
+  }
+
   if (!context) {
+    if (source->IsElementImage()) {
+      if (!source->GetAsElementImage()->PaintRecord()) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                          "The ElementImage has been closed.");
+      } else {
+        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                          "No context found for ElementImage.");
+      }
+    }
     return;
   }
 
@@ -863,7 +900,7 @@ void GPUQueue::CopyElementImageToTextureInternal(
   }
 
   scoped_refptr<StaticBitmapImage> image =
-      context->GetElementImage(element, sx, sy, swidth, sheight, width, height,
+      context->GetElementImage(source, sx, sy, swidth, sheight, width, height,
                                gpu::SHARED_IMAGE_USAGE_WEBGPU_READ,
                                "copyElementImageToTexture()", exception_state);
   if (!image) {

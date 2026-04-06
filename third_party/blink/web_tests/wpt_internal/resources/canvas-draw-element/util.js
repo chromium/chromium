@@ -96,6 +96,75 @@ void main(){
     this.texLoc = gl.getUniformLocation(this.program, 'u_tex');
   }
 
+  renderWithSize(target, destWidth, destHeight, explicitScale, sx, sy, swidth, sheight) {
+    const gl = this.gl;
+    gl.useProgram(this.program);
+    const cvs = gl.canvas;
+
+    const explicitSourceRect = (sx !== undefined && sy !== undefined
+                                && swidth !== undefined && sheight !== undefined);
+
+    // Destination rect in GL clip space, placed at top left
+    const xMin = -1;
+    const xMax = (2 * destWidth / cvs.width) - 1.0;
+    const yMin = 1.0 - (2 * destHeight / cvs.height);
+    const yMax = 1;
+
+    gl.bindVertexArray(this.vertArray);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      xMin, yMin, 0, 0,
+      xMax, yMin, 1, 0,
+      xMin, yMax, 0, 1,
+      xMin, yMax, 0, 1,
+      xMax, yMin, 1, 0,
+      xMax, yMax, 1, 1
+    ]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(this.positionLoc);
+    gl.vertexAttribPointer(this.positionLoc, 2, gl.FLOAT, false, 16, 0);
+    gl.enableVertexAttribArray(this.texOffsetLoc);
+    gl.vertexAttribPointer(this.texOffsetLoc, 2, gl.FLOAT, false, 16, 8);
+
+    gl.bindTexture(gl.TEXTURE_2D, this.tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    const level = 0;
+    const internalformat = gl.RGBA;
+    const format = gl.RGBA;
+    const type = gl.UNSIGNED_BYTE;
+
+    if (explicitSourceRect) {
+      if (explicitScale) {
+        gl.texElementImage2D(
+          gl.TEXTURE_2D, level, internalformat,
+          sx, sy, swidth, sheight,
+          destWidth, destHeight,
+          format, type, target);
+      } else {
+        gl.texElementImage2D(
+          gl.TEXTURE_2D, level, internalformat,
+          sx, sy, swidth, sheight,
+          format, type, target);
+      }
+    } else {
+      if (explicitScale) {
+        gl.texElementImage2D(
+          gl.TEXTURE_2D, level, internalformat,
+          destWidth, destHeight,
+          format, type, target);
+      } else {
+        gl.texElementImage2D(
+          gl.TEXTURE_2D, level, internalformat,
+          format, type, target);
+      }
+    }
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.uniform1i(this.texLoc, 0);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
+
   render(target, scaleX, scaleY, sx, sy, swidth, sheight) {
     const gl = this.gl;
     gl.useProgram(this.program);
@@ -204,5 +273,6 @@ function copyElementImageToWebGPUCanvas(queue, ctx, target, scaleX, scaleY,
 
 export { resizeToPixelGrid,
          computeScaledDestinationSize,
+         computeExplicitDestinationSize,
          SimpleGLProgram,
          copyElementImageToWebGPUCanvas };

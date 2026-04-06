@@ -78,7 +78,7 @@ class CanvasNon2DResourceProviderSharedImage;
 class CanvasSnapshotProvider;
 class EXTDisjointTimerQuery;
 class EXTDisjointTimerQueryWebGL2;
-class Element;
+class V8UnionElementOrElementImage;
 class ExceptionState;
 class HTMLCanvasElement;
 class HTMLImageElement;
@@ -420,56 +420,12 @@ class MODULES_EXPORT WebGLRenderingContextBase
                   ImageBitmap*,
                   ExceptionState&);
 
-  void texElement2D(GLenum target,
-                    GLint level,
-                    GLint internalformat,
-                    GLenum format,
-                    GLenum type,
-                    Element* element,
-                    ExceptionState& exception_state);
-
-  void texElement2D(GLenum target,
-                    GLint level,
-                    GLint internalformat,
-                    GLsizei width,
-                    GLsizei height,
-                    GLenum format,
-                    GLenum type,
-                    Element* element,
-                    ExceptionState& exception_state);
-
-  void texElement2D(GLenum target,
-                    GLint level,
-                    GLint internalformat,
-                    GLfloat sx,
-                    GLfloat sy,
-                    GLfloat swidth,
-                    GLfloat sheight,
-                    GLenum format,
-                    GLenum type,
-                    Element* element,
-                    ExceptionState& exception_state);
-
-  void texElement2D(GLenum target,
-                    GLint level,
-                    GLint internalformat,
-                    GLfloat sx,
-                    GLfloat sy,
-                    GLfloat swidth,
-                    GLfloat sheight,
-                    GLsizei width,
-                    GLsizei height,
-                    GLenum format,
-                    GLenum type,
-                    Element* element,
-                    ExceptionState& exception_state);
-
   void texElementImage2D(GLenum target,
                          GLint level,
                          GLint internalformat,
                          GLenum format,
                          GLenum type,
-                         Element* element,
+                         const V8UnionElementOrElementImage* element,
                          ExceptionState& exception_state);
 
   void texElementImage2D(GLenum target,
@@ -479,7 +435,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                          GLsizei height,
                          GLenum format,
                          GLenum type,
-                         Element* element,
+                         const V8UnionElementOrElementImage* element,
                          ExceptionState& exception_state);
 
   void texElementImage2D(GLenum target,
@@ -491,7 +447,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                          GLfloat sheight,
                          GLenum format,
                          GLenum type,
-                         Element* element,
+                         const V8UnionElementOrElementImage* element,
                          ExceptionState& exception_state);
 
   void texElementImage2D(GLenum target,
@@ -505,7 +461,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                          GLsizei height,
                          GLenum format,
                          GLenum type,
-                         Element* element,
+                         const V8UnionElementOrElementImage* element,
                          ExceptionState& exception_state);
 
   void texParameterf(GLenum target, GLenum pname, GLfloat param);
@@ -2074,7 +2030,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                  std::optional<GLsizei> height,
                                  GLenum format,
                                  GLenum type,
-                                 Element* element,
+                                 const V8UnionElementOrElementImage* element,
                                  ExceptionState& exception_state);
 
   // Used to provide accelerated snapshots and CanvasResources holding the

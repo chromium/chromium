@@ -76,6 +76,9 @@ class CORE_EXPORT OffscreenCanvas final
   void SetSize(gfx::Size);
   void RecordTransfer();
 
+  static OffscreenCanvas* FromPlaceholderId(ExecutionContext* context,
+                                            DOMNodeId canvas_id);
+
   void SetPlaceholderCanvasId(DOMNodeId canvas_id);
   void DeregisterFromAnimationFrameProvider();
   DOMNodeId PlaceholderCanvasId() const { return placeholder_canvas_id_; }

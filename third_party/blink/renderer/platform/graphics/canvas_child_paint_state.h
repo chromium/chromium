@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_CHILD_PAINT_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_CHILD_PAINT_STATE_H_
 
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -28,6 +29,7 @@ struct PLATFORM_EXPORT CanvasChildPaintState {
   // Canvas state.
   gfx::SizeF canvas_content_size;
   gfx::Size canvas_device_pixel_content_box;
+  DOMNodeId canvas_node_id = kInvalidDOMNodeId;
 };
 
 PLATFORM_EXPORT gfx::Transform GetElementTransform(

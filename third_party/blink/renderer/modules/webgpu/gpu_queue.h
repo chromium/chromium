@@ -28,6 +28,7 @@ class GPUTexelCopyTextureInfo;
 class ScriptState;
 class StaticBitmapImage;
 struct ExternalTextureSource;
+class V8UnionElementOrElementImage;
 
 class GPUQueue : public DawnObject<wgpu::Queue> {
   DEFINE_WRAPPERTYPEINFO();
@@ -84,15 +85,15 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
                                   GPUImageCopyTextureTagged* destination,
                                   const V8GPUExtent3D* copySize,
                                   ExceptionState& exception_state);
-  void copyElementImageToTexture(Element* element,
+  void copyElementImageToTexture(const V8UnionElementOrElementImage* source,
                                  GPUImageCopyTextureTagged* destination,
                                  ExceptionState& exception_state);
-  void copyElementImageToTexture(Element* element,
+  void copyElementImageToTexture(const V8UnionElementOrElementImage* source,
                                  uint32_t width,
                                  uint32_t height,
                                  GPUImageCopyTextureTagged* destination,
                                  ExceptionState& exception_state);
-  void copyElementImageToTexture(Element* element,
+  void copyElementImageToTexture(const V8UnionElementOrElementImage* source,
                                  float sx,
                                  float sy,
                                  float swidth,
@@ -120,15 +121,16 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
                                  bool dst_premultiplied_alpha,
                                  PredefinedColorSpace dst_color_space,
                                  bool flipY);
-  void CopyElementImageToTextureInternal(Element* element,
-                                         std::optional<float> sx,
-                                         std::optional<float> sy,
-                                         std::optional<float> swidth,
-                                         std::optional<float> sheight,
-                                         std::optional<uint32_t> width,
-                                         std::optional<uint32_t> height,
-                                         GPUImageCopyTextureTagged* destination,
-                                         ExceptionState& exception_state);
+  void CopyElementImageToTextureInternal(
+      const V8UnionElementOrElementImage* source,
+      std::optional<float> sx,
+      std::optional<float> sy,
+      std::optional<float> swidth,
+      std::optional<float> sheight,
+      std::optional<uint32_t> width,
+      std::optional<uint32_t> height,
+      GPUImageCopyTextureTagged* destination,
+      ExceptionState& exception_state);
   void WriteBufferImpl(ScriptState* script_state,
                        GPUBuffer* buffer,
                        uint64_t buffer_offset,
