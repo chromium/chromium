@@ -3790,7 +3790,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.MultiWindowMode.NewWindow.AppSource3"
+<histogram name="Android.MultiWindowMode.NewWindow.AppSource4"
     enum="NewWindowAppSource" expires_after="2026-09-01">
   <owner>aishwaryarj@google.com</owner>
   <owner>rathomas@google.com</owner>

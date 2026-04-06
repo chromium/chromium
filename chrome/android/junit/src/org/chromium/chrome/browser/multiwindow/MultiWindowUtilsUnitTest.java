@@ -1342,7 +1342,7 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testGetForegroundWindowActivityWithProfileType() {
+    public void testGetForegroundWindowActivity() {
         // Create running tabbed activities. A larger instance id is for an instance with a more
         // recent lastAccessedTime.
         ChromeTabbedActivity activity0 = addRunningTabbedActivity(INSTANCE_ID_0);
@@ -1358,8 +1358,7 @@ public class MultiWindowUtilsUnitTest {
         assertEquals(
                 "Expected activity with more recent lastAccessedTime.",
                 activity2,
-                MultiWindowUtils.getForegroundWindowActivityWithProfileType(
-                        activity0, /* incognito= */ false));
+                MultiWindowUtils.getForegroundWindowActivity(activity0));
     }
 
     private void testRecordTabCountForRelaunchWhenActivityPausedImpl(int windowId) {

@@ -125,21 +125,20 @@ public interface MultiInstanceOrchestrator {
             TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source);
 
     /**
-     * Opens a URL in an existing window or a new window of the same profile type as {@code
-     * sourceTab}.
+     * Opens a URL in an existing window or a new window with profile type determined by {@code
+     * isIncognito}.
      *
-     * @param sourceTab The tab containing the URL.
-     * @param loadUrlParams The url to open.
+     * @param sourceActivity The activity initiating the url launch request.
+     * @param loadUrlParams The {@link LoadUrlParams} describing the url to open.
+     * @param parentTabId The ID of the parent tab, or {@link Tab#INVALID_TAB_ID}.
      * @param preferNew Whether we should prioritize launching the tab in a new window.
+     * @param isIncognito Whether the target window should be an incognito window when supported.
      * @return {@code true} if the url launch request was successful, {@code false} otherwise.
      */
-    boolean openUrlInOtherWindow(Tab sourceTab, LoadUrlParams loadUrlParams, boolean preferNew);
-
-    /**
-     * Opens a URL in an incognito window.
-     *
-     * @param sourceTab The tab containing the URL.
-     * @param loadUrlParams The url to open.
-     */
-    void openUrlInIncognitoWindow(Tab sourceTab, LoadUrlParams loadUrlParams);
+    boolean openUrlInOtherWindow(
+            Activity sourceActivity,
+            LoadUrlParams loadUrlParams,
+            int parentTabId,
+            boolean preferNew,
+            boolean isIncognito);
 }

@@ -1477,12 +1477,11 @@ chromium-metrics-reviews@google.com.
       label="URL launch that may be triggered from a menu (eg. link context
              menu) or keyboard shortcut (eg. load omnibox search result via
              Shift + Enter)"/>
-  <int value="8" label="New tab launch for different profile type"/>
-  <int value="9" label="External navigation"/>
-  <int value="10" label="Dev tools"/>
-  <int value="11"
+  <int value="8" label="External navigation"/>
+  <int value="9" label="Dev tools"/>
+  <int value="10"
       label="Browser window creation from native feature (eg. extensions)"/>
-  <int value="12" label="Upgrade to Android S multi-instance support"/>
+  <int value="11" label="Upgrade to Android S multi-instance support"/>
 </enum>
 
 <enum name="NightMode">

@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -787,13 +788,21 @@ public class LocationBarMediatorTest {
         mProfileSupplier.set(mProfile);
 
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        Activity sourceActivity = mock(Activity.class);
+        doReturn(sourceActivity).when(mTab).getContext();
+        doReturn(1).when(mTab).getParentId();
         mMediator.loadUrl(
                 new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
                         .setOpenInNewWindow(true)
                         .build());
 
         verify(mMultiInstanceOrchestrator)
-                .openUrlInOtherWindow(eq(mTab), mLoadUrlParamsCaptor.capture(), eq(true));
+                .openUrlInOtherWindow(
+                        eq(sourceActivity),
+                        mLoadUrlParamsCaptor.capture(),
+                        eq(1),
+                        eq(true),
+                        eq(false));
         assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
         assertEquals(
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,

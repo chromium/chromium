@@ -13,8 +13,10 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.BuildConfig;
@@ -27,10 +29,11 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabList;
-import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.HashMap;
@@ -332,62 +335,52 @@ import java.util.Map;
      * will be opened will depend on the following criteria, checked in order of priority:
      *
      * <ul>
-     *   <li>If there is no other window of a matching profile type, a new window will be created.
-     *   <li>If {@code preferNew} is true, a new window will be attempted to be created. Note that
-     *       this will ensure that the URL is opened in a brand-new window vs in a new activity
-     *       created for a restored inactive instance. However, an instance creation limit warning
-     *       message will be shown on a compatible source activity if instance limit is reached, and
-     *       the URL will not be opened.
+     *   <li>If there is no other window of a matching profile type, or if {@code preferNew} is
+     *       true, a brand-new window will be attempted to be created. An instance creation limit
+     *       warning message will be shown on a compatible source activity if instance limit is
+     *       reached, and the URL will not be opened.
      *   <li>The target selector dialog will be presented to the user on a compatible source
      *       activity to pick a target window to open the URL in. If the source activity is not
-     *       available or compatible for dialog display, the URL will be opened in the most recently
-     *       accessed window of the same profile type.
+     *       available or compatible for dialog display, or if there is exactly one window of the
+     *       target profile type, or if the target window is incognito, the URL will be opened in
+     *       the most recently accessed window of the target profile type.
      * </ul>
      *
-     * @param sourceTab The tab that is initiating the URL launch.
-     * @param loadUrlParams The url to open.
+     * @param sourceActivity The activity initiating the url launch request.
+     * @param loadUrlParams The {@link LoadUrlParams} describing the url to open.
+     * @param parentTabId The ID of the parent tab, or {@link Tab#INVALID_TAB_ID}.
      * @param preferNew Whether we should prioritize launching the tab in a new window.
+     * @param isIncognito Whether the target window should be an incognito window when supported.
+     * @return {@code true} if the url launch request was successful, {@code false} otherwise.
      */
     @Override
     public boolean openUrlInOtherWindow(
-            Tab sourceTab, LoadUrlParams loadUrlParams, boolean preferNew) {
-        int parentTabId = sourceTab.getParentId();
-        boolean isIncognitoTab = sourceTab.isIncognitoBranded();
-        Activity sourceActivity = TabUtils.getActivity(sourceTab);
-        if (sourceActivity == null) return false;
-
+            Activity sourceActivity,
+            LoadUrlParams loadUrlParams,
+            int parentTabId,
+            boolean preferNew,
+            boolean isIncognito) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            Activity otherActivity = MultiWindowUtils.getForegroundWindowActivity(sourceActivity);
+            Activity destActivity = MultiWindowUtils.getForegroundWindowActivity(sourceActivity);
             return launchUrlInOtherWindow(
                     sourceActivity,
                     /* isIncognitoWindow= */ false,
                     loadUrlParams,
                     parentTabId,
-                    otherActivity,
+                    destActivity,
                     /* preferNew= */ false);
         }
 
         @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             instanceType |=
-                    (isIncognitoTab
+                    (isIncognito
                             ? PersistedInstanceType.OFF_THE_RECORD
                             : PersistedInstanceType.REGULAR);
         }
 
-        return openUrlInWindowApi31(sourceTab, loadUrlParams, preferNew, instanceType);
-    }
-
-    @Override
-    public void openUrlInIncognitoWindow(Tab sourceTab, LoadUrlParams loadUrlParams) {
-        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            // This also means that Android S+ multi-instance support is disabled.
-            return;
-        }
-
-        @PersistedInstanceType
-        int instanceType = PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD;
-        openUrlInWindowApi31(sourceTab, loadUrlParams, /* preferNew= */ false, instanceType);
+        return openUrlInWindowApi31(
+                sourceActivity, loadUrlParams, parentTabId, preferNew, instanceType);
     }
 
     private void moveTabsToOtherWindowPreApi31(List<Tab> tabs) {
@@ -413,14 +406,11 @@ import java.util.Map;
     }
 
     private boolean openUrlInWindowApi31(
-            Tab sourceTab,
+            Activity sourceActivity,
             LoadUrlParams loadUrlParams,
+            int parentId,
             boolean preferNew,
             @PersistedInstanceType int targetInstanceType) {
-        int parentTabId = sourceTab.getParentId();
-        Activity sourceActivity = TabUtils.getActivity(sourceTab);
-        if (sourceActivity == null) return false;
-
         var multiInstanceManager =
                 (MultiInstanceManagerApi31) getMultiInstanceManager(sourceActivity);
         int instanceCount = MultiWindowUtils.getInstanceCount(targetInstanceType);
@@ -448,10 +438,10 @@ import java.util.Map;
 
             return launchUrlInOtherWindow(
                     sourceActivity,
-                    sourceTab.isIncognitoBranded() || isTargetIncognitoWindow,
+                    isTargetIncognitoWindow,
                     loadUrlParams,
-                    parentTabId,
-                    /* otherActivity= */ null,
+                    parentId,
+                    /* destActivity= */ null,
                     /* preferNew= */ true);
         }
 
@@ -487,7 +477,7 @@ import java.util.Map;
                     sourceActivity,
                     isTargetIncognitoWindow,
                     loadUrlParams,
-                    parentTabId,
+                    parentId,
                     destActivity,
                     /* preferNew= */ false);
         }
@@ -495,7 +485,7 @@ import java.util.Map;
         @StringRes int title = R.string.contextmenu_open_in_other_window;
         multiInstanceManager.showTargetSelectorDialog(
                 onWindowSelectedForUrlLaunch(
-                        sourceActivity, parentTabId, loadUrlParams, /* isIncognitoWindow= */ false),
+                        sourceActivity, parentId, loadUrlParams, /* isIncognitoWindow= */ false),
                 targetInstanceType,
                 title);
         return true;
@@ -528,17 +518,40 @@ import java.util.Map;
             boolean isIncognitoWindow,
             LoadUrlParams loadUrlParams,
             int parentId,
-            @Nullable Activity otherActivity,
+            @Nullable Activity destActivity,
             boolean preferNew) {
-        ChromeAsyncTabLauncher chromeAsyncTabLauncher =
-                new ChromeAsyncTabLauncher(isIncognitoWindow);
-        chromeAsyncTabLauncher.launchTabInOtherWindow(
-                loadUrlParams,
-                sourceActivity,
-                parentId,
-                otherActivity,
-                NewWindowAppSource.URL_LAUNCH,
-                preferNew);
+        Intent intent =
+                IntentHandler.createAsyncNewTabIntent(
+                        new AsyncTabCreationParams(loadUrlParams),
+                        parentId,
+                        TabLaunchType.FROM_CHROME_UI,
+                        isIncognitoWindow);
+
+        Class<? extends Activity> targetActivity =
+                MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(sourceActivity);
+        if (targetActivity == null) return false;
+
+        MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, sourceActivity, targetActivity);
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            if (destActivity != null) {
+                assert destActivity instanceof ChromeTabbedActivity;
+                ((ChromeTabbedActivity) destActivity).onNewIntent(intent);
+                ApiCompatibilityUtils.moveTaskToFront(sourceActivity, destActivity.getTaskId(), 0);
+                return true;
+            }
+            if (preferNew) intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognitoWindow);
+        }
+        MultiInstanceManager.onMultiInstanceModeStarted();
+        if (!MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity)) {
+            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+        }
+        intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.URL_LAUNCH);
+        sourceActivity.startActivity(intent);
         return true;
     }
 

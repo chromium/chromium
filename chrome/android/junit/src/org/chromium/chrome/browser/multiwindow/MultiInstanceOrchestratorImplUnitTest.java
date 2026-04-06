@@ -749,12 +749,16 @@ public class MultiInstanceOrchestratorImplUnitTest {
             testOpenUrlInOtherWindow_regularTab_sourceNotTabbedActivity_opensLastAccessedWindow() {
         // Setup.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        setupActivityForTab(mTab1, mActivity);
         // Setup: Simulate mTabbedActivity1 to be the last accessed window.
         MultiWindowUtils.setLastAccessedWindowIdForTesting(SOURCE_WINDOW_ID);
 
         // Act.
-        mMultiInstanceOrchestrator.openUrlInOtherWindow(mTab1, mUrlParams, /* preferNew= */ false);
+        mMultiInstanceOrchestrator.openUrlInOtherWindow(
+                mActivity,
+                mUrlParams,
+                PARENT_TAB_ID_1,
+                /* preferNew= */ false,
+                /* isIncognito= */ false);
 
         // Verify.
         var intentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -771,7 +775,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
 
         // Act.
-        mMultiInstanceOrchestrator.openUrlInOtherWindow(mTab1, mUrlParams, /* preferNew= */ false);
+        mMultiInstanceOrchestrator.openUrlInOtherWindow(
+                mTabbedActivity1,
+                mUrlParams,
+                PARENT_TAB_ID_1,
+                /* preferNew= */ false,
+                /* isIncognito= */ false);
 
         // Verify.
         var intentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -855,12 +864,12 @@ public class MultiInstanceOrchestratorImplUnitTest {
         boolean eligibleOtherWindowExists = numOtherEligibleWindows != 0;
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        when(mTab1.isIncognitoBranded()).thenReturn(isIncognito);
         configureInstancesForOtherWindowTests(
                 isIncognito, atInstanceLimit, numOtherEligibleWindows);
 
         // Act.
-        mMultiInstanceOrchestrator.openUrlInOtherWindow(mTab1, mUrlParams, preferNew);
+        mMultiInstanceOrchestrator.openUrlInOtherWindow(
+                mTabbedActivity1, mUrlParams, PARENT_TAB_ID_1, preferNew, isIncognito);
 
         // Verify.
         if (preferNew && atInstanceLimit) {
@@ -902,16 +911,16 @@ public class MultiInstanceOrchestratorImplUnitTest {
                         ? SupportedProfileType.OFF_THE_RECORD
                         : SupportedProfileType.REGULAR;
         createActiveInstances(/* count= */ 1, otherWindowType, /* startId= */ DEST_WINDOW_ID);
-        if (otherIncognitoWindowExists) {
-            // Ensure that MultiWindowUtils#getForegroundWindowActivityWithProfileType() returns
-            // mTabbedActivity2.
-            MultiWindowUtils.setActivitySupplierForTesting(() -> mTabbedActivity2);
-        }
 
         if (atInstanceLimit) MultiWindowUtils.setMaxInstancesForTesting(2);
 
         // Act.
-        mMultiInstanceOrchestrator.openUrlInIncognitoWindow(mTab1, mUrlParams);
+        mMultiInstanceOrchestrator.openUrlInOtherWindow(
+                mTabbedActivity1,
+                mUrlParams,
+                PARENT_TAB_ID_1,
+                /* preferNew= */ false,
+                /* isIncognito= */ true);
 
         // Verify.
         if (!otherIncognitoWindowExists && atInstanceLimit) {
@@ -1057,10 +1066,6 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* count= */ numInstances,
                 isIncognito ? SupportedProfileType.OFF_THE_RECORD : SupportedProfileType.REGULAR,
                 /* startId= */ SOURCE_WINDOW_ID);
-
-        // Setup to ensure that MultiWindowUtils#getForegroundWindowActivity*() returns
-        // mTabbedActivity2 as and when required.
-        MultiWindowUtils.setActivitySupplierForTesting(() -> mTabbedActivity2);
     }
 
     private InstanceInfo getTestInstanceInfo(int windowId, boolean isIncognito) {

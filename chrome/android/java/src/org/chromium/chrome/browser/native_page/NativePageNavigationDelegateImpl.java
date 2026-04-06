@@ -74,22 +74,16 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                 loadingTab = openUrlInNewTab(loadUrlParams, windowOpenDisposition);
                 break;
             case WindowOpenDisposition.OFF_THE_RECORD:
-                if (!mTab.isIncognitoBranded() && IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-                    // If the request is for opening an incognito tab from a regular window when
-                    // incognito windowing is enabled, delegate the request to the
-                    // MultiInstanceOrchestrator to handle this cross-profile navigation.
-                    MultiInstanceOrchestratorFactory.getInstance()
-                            .openUrlInIncognitoWindow(mTab, loadUrlParams);
-                } else {
-                    mHost.loadUrl(loadUrlParams, true);
-                }
+                mHost.loadUrl(loadUrlParams, true);
                 break;
             case WindowOpenDisposition.NEW_WINDOW:
                 MultiInstanceOrchestratorFactory.getInstance()
                         .openUrlInOtherWindow(
-                                mTab,
+                                mActivity,
                                 loadUrlParams,
-                                /* preferNew= */ !isOpenInOtherWindowEnabled());
+                                mTab.getParentId(),
+                                /* preferNew= */ !isOpenInOtherWindowEnabled(),
+                                mTab.isIncognitoBranded());
                 break;
             case WindowOpenDisposition.SAVE_TO_DISK:
                 saveUrlForOffline(loadUrlParams.getUrl());

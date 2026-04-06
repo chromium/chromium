@@ -283,7 +283,12 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             loadUrlParams.setReferrer(referrer);
         }
         MultiInstanceOrchestratorFactory.getInstance()
-                .openUrlInOtherWindow(mTab, loadUrlParams, preferNew);
+                .openUrlInOtherWindow(
+                        mActivity,
+                        loadUrlParams,
+                        mTab.getParentId(),
+                        preferNew,
+                        mTab.isIncognitoBranded());
     }
 
     /**
@@ -294,7 +299,12 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public void openInIncognitoWindow(GURL url) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         MultiInstanceOrchestratorFactory.getInstance()
-                .openUrlInIncognitoWindow(mTab, loadUrlParams);
+                .openUrlInOtherWindow(
+                        mActivity,
+                        loadUrlParams,
+                        mTab.getParentId(),
+                        /* preferNew= */ false,
+                        /* isIncognito= */ true);
     }
 
     /**

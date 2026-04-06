@@ -12,6 +12,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -869,10 +870,17 @@ class LocationBarMediator
                 TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
                 boolean processed = false;
                 if (omniboxLoadUrlParams.openInNewWindow) {
-                    processed =
-                            MultiInstanceOrchestratorFactory.getInstance()
-                                    .openUrlInOtherWindow(
-                                            currentTab, loadUrlParams, /* preferNew= */ true);
+                    Context tabContext = currentTab.getContext();
+                    if (tabContext instanceof Activity sourceActivity) {
+                        processed =
+                                MultiInstanceOrchestratorFactory.getInstance()
+                                        .openUrlInOtherWindow(
+                                                sourceActivity,
+                                                loadUrlParams,
+                                                currentTab.getParentId(),
+                                                /* preferNew= */ true,
+                                                currentTab.isIncognitoBranded());
+                    }
                 } else if (omniboxLoadUrlParams.openInNewTab && tabModelSelector != null) {
                     tabModelSelector.openNewTab(
                             loadUrlParams,

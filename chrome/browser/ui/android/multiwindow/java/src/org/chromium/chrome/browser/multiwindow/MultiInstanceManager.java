@@ -35,7 +35,7 @@ public abstract class MultiInstanceManager {
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
     public static final int INVALID_WINDOW_ID = -1;
     public static final String NEW_WINDOW_APP_SOURCE_HISTOGRAM =
-            "Android.MultiWindowMode.NewWindow.AppSource3";
+            "Android.MultiWindowMode.NewWindow.AppSource4";
 
     @VisibleForTesting
     static final String CLOSE_WINDOW_APP_SOURCE_HISTOGRAM =
@@ -54,7 +54,6 @@ public abstract class MultiInstanceManager {
         NewWindowAppSource.DRAG_DROP_LAUNCHER,
         NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY,
         NewWindowAppSource.URL_LAUNCH,
-        NewWindowAppSource.NEW_TAB_FOR_DIFFERENT_PROFILE_TYPE,
         NewWindowAppSource.EXTERNAL_NAVIGATION,
         NewWindowAppSource.DEV_TOOLS,
         NewWindowAppSource.BROWSER_WINDOW_CREATOR,
@@ -69,12 +68,11 @@ public abstract class MultiInstanceManager {
         int DRAG_DROP_LAUNCHER = 5;
         int TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY = 6;
         int URL_LAUNCH = 7;
-        int NEW_TAB_FOR_DIFFERENT_PROFILE_TYPE = 8;
-        int EXTERNAL_NAVIGATION = 9;
-        int DEV_TOOLS = 10;
-        int BROWSER_WINDOW_CREATOR = 11;
-        int ANDROID_S_UPDATE = 12;
-        int NUM_ENTRIES = 13;
+        int EXTERNAL_NAVIGATION = 8;
+        int DEV_TOOLS = 9;
+        int BROWSER_WINDOW_CREATOR = 10;
+        int ANDROID_S_UPDATE = 11;
+        int NUM_ENTRIES = 12;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)

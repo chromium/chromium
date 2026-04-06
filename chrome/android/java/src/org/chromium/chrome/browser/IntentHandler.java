@@ -41,6 +41,7 @@ import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -59,7 +60,9 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -1552,6 +1555,85 @@ public class IntentHandler {
 
     public static int getDestTabId(Intent intent) {
         return IntentUtils.safeGetIntExtra(intent, EXTRA_DEST_TAB_ID, Tab.INVALID_TAB_ID);
+    }
+
+    /**
+     * Creates a trusted {@link Intent} that holds relevant information for async tab creation.
+     *
+     * @param asyncParams The {@link AsyncTabCreationParams} used for tab creation.
+     * @param parentId The ID of the parent tab, or {@link Tab#INVALID_TAB_ID}.
+     * @param launchType The {@link TabLaunchType} used to decorate the new tab intent.
+     * @param isIncognito Whether the tab will be created as an incognito tab.
+     * @return The {@link Intent} holding relevant information for tab creation.
+     */
+    public static Intent createAsyncNewTabIntent(
+            AsyncTabCreationParams asyncParams,
+            int parentId,
+            @TabLaunchType int launchType,
+            boolean isIncognito) {
+        int assignedTabId = TabIdManager.getInstance().generateValidId(Tab.INVALID_TAB_ID);
+        AsyncTabParamsManagerSingleton.getInstance().add(assignedTabId, asyncParams);
+        Intent intent =
+                new Intent(Intent.ACTION_VIEW, Uri.parse(asyncParams.getLoadUrlParams().getUrl()));
+        addAsyncTabExtras(asyncParams, parentId, launchType, assignedTabId, intent, isIncognito);
+        return intent;
+    }
+
+    private static void addAsyncTabExtras(
+            AsyncTabCreationParams asyncParams,
+            int parentId,
+            @TabLaunchType int launchType,
+            int assignedTabId,
+            Intent intent,
+            boolean isIncognito) {
+        ComponentName componentName = asyncParams.getComponentName();
+        if (componentName == null) {
+            intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
+        } else {
+            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, componentName);
+        }
+        IntentHandler.setIntentExtraHeaders(
+                asyncParams.getLoadUrlParams().getExtraHeaders(), intent);
+
+        IntentHandler.setTabId(intent, assignedTabId);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, isIncognito);
+        intent.putExtra(IntentHandler.EXTRA_PARENT_TAB_ID, parentId);
+        IntentHandler.setTabLaunchType(intent, launchType);
+
+        boolean isChromeUi = (launchType == TabLaunchType.FROM_CHROME_UI);
+        if (isIncognito || isChromeUi) {
+            intent.putExtra(
+                    Browser.EXTRA_APPLICATION_ID,
+                    ContextUtils.getApplicationContext().getPackageName());
+        }
+
+        if (isChromeUi) intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+
+        Activity parentActivity = getActivityForTabId(parentId);
+        if (parentActivity != null && parentActivity.getIntent() != null) {
+            intent.putExtra(IntentHandler.EXTRA_PARENT_INTENT, parentActivity.getIntent());
+        }
+
+        if (asyncParams.getRequestId() != null) {
+            intent.putExtra(
+                    ServiceTabLauncher.LAUNCH_REQUEST_ID_EXTRA,
+                    asyncParams.getRequestId().intValue());
+        }
+
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+    /**
+     * Returns the running Activity that owns the given Tab, null if the Activity couldn't be found.
+     */
+    private static @Nullable Activity getActivityForTabId(int id) {
+        if (id == Tab.INVALID_TAB_ID) return null;
+
+        Tab tab = TabWindowManagerSingleton.getInstance().getTabById(id);
+        if (tab == null) return null;
+
+        Context tabContext = tab.getContext();
+        return (tabContext instanceof Activity) ? (Activity) tabContext : null;
     }
 
     /**

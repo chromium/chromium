@@ -12,13 +12,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
@@ -68,16 +66,13 @@ public class RedirectTabCreator extends ChromeTabCreator {
         loadUrlParams.setTransitionType(
                 getTransitionType(type, intent, loadUrlParams.getTransitionType()));
 
-        ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(mIncognito);
-        Activity otherActivity =
-                MultiWindowUtils.getForegroundWindowActivityWithProfileType(mActivity, mIncognito);
-        chromeAsyncTabLauncher.launchTabInOtherWindow(
-                loadUrlParams,
-                mActivity,
-                Tab.INVALID_TAB_ID,
-                otherActivity,
-                NewWindowAppSource.NEW_TAB_FOR_DIFFERENT_PROFILE_TYPE,
-                /* preferNew= */ false);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .openUrlInOtherWindow(
+                        mActivity,
+                        loadUrlParams,
+                        Tab.INVALID_TAB_ID,
+                        /* preferNew= */ false,
+                        mIncognito);
         return null;
     }
 }
