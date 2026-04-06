@@ -24,6 +24,11 @@ base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr> Translator::ToMojoTab(
   return std::move(mojo_tab);
 }
 
+base::expected<mojom::DataPtr, mojo_base::mojom::ErrorPtr>
+Translator::ToMojoData(tabs::TabCollectionHandle handle) {
+  return tabs_api::converters::BuildMojoTabCollectionData(handle);
+}
+
 TabStripModelInjector::TabStripModelInjector(
     BrowserWindowInterface* browser_window_interface,
     TabStripModel* tab_strip_model)

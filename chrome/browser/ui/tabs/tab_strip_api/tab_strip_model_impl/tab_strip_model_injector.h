@@ -25,6 +25,8 @@ class Translator : public TranslationAdapter {
   // TranslationAdapter;
   base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr> ToMojoTab(
       tabs::TabHandle handle) override;
+  base::expected<mojom::DataPtr, mojo_base::mojom::ErrorPtr> ToMojoData(
+      tabs::TabCollectionHandle handle) override;
 
  private:
   raw_ref<TabStripModelAdapterImpl> tab_strip_model_adapter_;

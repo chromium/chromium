@@ -7,6 +7,7 @@
 
 #include "base/types/expected.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 
@@ -17,6 +18,9 @@ class TranslationAdapter {
  public:
   virtual base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr> ToMojoTab(
       tabs::TabHandle handle) = 0;
+
+  virtual base::expected<mojom::DataPtr, mojo_base::mojom::ErrorPtr> ToMojoData(
+      tabs::TabCollectionHandle handle) = 0;
 
   virtual ~TranslationAdapter() = default;
 };

@@ -70,4 +70,10 @@ AndroidTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
   return result;
 }
 
+base::expected<mojom::DataPtr, mojo_base::mojom::ErrorPtr>
+AndroidTranslationAdapter::ToMojoData(tabs::TabCollectionHandle handle) {
+  // TODO(crbug.com/445765534): Implement ToMojoData for Android.
+  NOTREACHED() << "not implemented";
+}
+
 }  // namespace tabs_api

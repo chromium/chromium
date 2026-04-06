@@ -26,6 +26,8 @@ class AndroidTranslationAdapter : public TranslationAdapter {
   // TranslationAdapter:
   base::expected<mojom::TabPtr, mojo_base::mojom::ErrorPtr> ToMojoTab(
       tabs::TabHandle handle) override;
+  base::expected<mojom::DataPtr, mojo_base::mojom::ErrorPtr> ToMojoData(
+      tabs::TabCollectionHandle handle) override;
 
  private:
   raw_ref<TabModel> model_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_translation_adapter.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "components/browser_apis/tab_strip/types/node_id.h"
 
 namespace tabs_api::testing {
 
@@ -24,9 +25,22 @@ ToyTabStripTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
   }
 
   auto mojo_tab = mojom::Tab::New();
-  mojo_tab->id = tabs_api::NodeId(tabs_api::NodeId::Type::kContent,
-                                  base::NumberToString(handle.raw_value()));
+  mojo_tab->id = NodeId::FromTabHandle(handle);
   return mojo_tab;
+}
+
+base::expected<mojom::DataPtr, mojo_base::mojom::ErrorPtr>
+ToyTabStripTranslationAdapter::ToMojoData(tabs::TabCollectionHandle handle) {
+  auto* visual_data = tab_strip_->GetGroupVisualData(handle);
+  if (visual_data) {
+    auto mojo_group = mojom::TabGroup::New();
+    mojo_group->id = NodeId::FromTabCollectionHandle(handle);
+    mojo_group->data = *visual_data;
+    return mojom::Data::NewTabGroup(std::move(mojo_group));
+  }
+
+  return base::unexpected(mojo_base::mojom::Error::New(
+      mojo_base::mojom::Code::kNotFound, "Not found"));
 }
 
 }  // namespace tabs_api::testing
