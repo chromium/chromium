@@ -5094,6 +5094,15 @@
       status: "stable",
     },
     {
+      // Fixes selection focus affinity at soft wrap boundaries. When the focus
+      // of a range selection is at a soft wrap boundary (a DOM offset shared by
+      // two visual lines), this ensures the correct affinity is used based on
+      // the selection direction.
+      // See https://crbug.com/40980028
+      name: "SelectionFocusAffinity",
+      status: "stable",
+    },
+    {
       // Killswitch M141.
       name: "SelectionHandleWithBottomClipped",
       status: "stable",

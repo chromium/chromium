@@ -469,6 +469,69 @@ TEST_F(SelectionModifierTest, OptgroupAndTable) {
   EXPECT_EQ(Position(shadow_root, 1), selection.Focus());
 }
 
+// See https://crbug.com/40980028 — verify consecutive
+// Shift+Up operations each make progress through soft-wrapped text.
+TEST_F(SelectionModifierTest, ExtendBackwardByLineThreeLinesSoftWrap) {
+  LoadAhem();
+  InsertStyleElement(
+      "p {"
+      "font: 10px/10px Ahem;"
+      "width: 100px;"
+      "word-wrap: break-word;"
+      "}");
+  // 30 chars with 10 chars per line = 3 visual lines.
+  const SelectionInDOMTree selection = SetSelectionTextToBody(
+      "<p contenteditable>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|</p>");
+  SelectionModifier modifier(GetFrame(), selection);
+  modifier.SetSelectionIsDirectional(true);
+
+  // First Shift+Up: focus moves from offset 30 to offset 20 (end of line 2).
+  modifier.Modify(SelectionModifyAlteration::kExtend,
+                  SelectionModifyDirection::kBackward, TextGranularity::kLine);
+  EXPECT_EQ("<p contenteditable>aaaaaaaaaaaaaaaaaaaa|aaaaaaaaaa^</p>",
+            GetSelectionTextFromBody(modifier.Selection().AsSelection()))
+      << "First Shift+Up should move focus to end of line 2.";
+
+  // Second Shift+Up: focus moves from offset 20 to offset 10 (end of line 1).
+  modifier.Modify(SelectionModifyAlteration::kExtend,
+                  SelectionModifyDirection::kBackward, TextGranularity::kLine);
+  EXPECT_EQ("<p contenteditable>aaaaaaaaaa|aaaaaaaaaaaaaaaaaaaa^</p>",
+            GetSelectionTextFromBody(modifier.Selection().AsSelection()))
+      << "Second Shift+Up should move focus to end of line 1.";
+}
+
+// See https://crbug.com/40980028 — forward (Shift+Down)
+// direction through soft-wrapped lines.
+TEST_F(SelectionModifierTest, ExtendForwardByLineThroughSoftWrap) {
+  LoadAhem();
+  InsertStyleElement(
+      "p {"
+      "font: 10px/10px Ahem;"
+      "width: 100px;"
+      "word-wrap: break-word;"
+      "}");
+  // 30 chars with 10 chars per line = 3 visual lines.
+  const SelectionInDOMTree selection = SetSelectionTextToBody(
+      "<p contenteditable>|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>");
+  SelectionModifier modifier(GetFrame(), selection);
+  modifier.SetSelectionIsDirectional(true);
+
+  // First Shift+Down: focus moves from offset 0 to offset 10 (start of line 2).
+  modifier.Modify(SelectionModifyAlteration::kExtend,
+                  SelectionModifyDirection::kForward, TextGranularity::kLine);
+  EXPECT_EQ("<p contenteditable>^aaaaaaaaaa|aaaaaaaaaaaaaaaaaaaa</p>",
+            GetSelectionTextFromBody(modifier.Selection().AsSelection()))
+      << "First Shift+Down should move focus to start of line 2.";
+
+  // Second Shift+Down: focus moves from offset 10 to offset 20 (start of line
+  // 3).
+  modifier.Modify(SelectionModifyAlteration::kExtend,
+                  SelectionModifyDirection::kForward, TextGranularity::kLine);
+  EXPECT_EQ("<p contenteditable>^aaaaaaaaaaaaaaaaaaaa|aaaaaaaaaa</p>",
+            GetSelectionTextFromBody(modifier.Selection().AsSelection()))
+      << "Second Shift+Down should move focus to start of line 3.";
+}
+
 TEST_F(SelectionModifierTest, EditableVideo) {
   const SelectionInDOMTree selection =
       SetSelectionTextToBody("a^<video contenteditable> </video>|");

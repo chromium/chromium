@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+#target {
+  width: 200px;
+  font-family: Ahem;
+  font-size: 16px;
+  line-height: 20px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+</style>
+</head>
+<body>
+<!--  Test for https://crbug.com/40980028 -->
+<!-- Use a long string without spaces to force mid-word soft wraps -->
+<div id="target" contenteditable>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</div>
+<script>
+test(function() {
+  const target = document.getElementById('target');
+  const textNode = target.firstChild;
+  const textLength = textNode.length;
+
+  // Place caret at the end of the text.
+  const sel = window.getSelection();
+  sel.collapse(textNode, textLength);
+
+  // Extend backward by line repeatedly. Each call should move the focus
+  // to the previous visual line. We should never get stuck.
+  const positions = [sel.focusOffset];
+  // 10 iterations is well above the expected ~4 visual lines.
+  for (let i = 0; i < 10; i++) {
+    sel.modify('extend', 'backward', 'line');
+    const newOffset = sel.focusOffset;
+    positions.push(newOffset);
+    if (newOffset === 0) break;
+  }
+
+  // Verify we actually reached the beginning (offset 0).
+  assert_equals(positions[positions.length - 1], 0,
+    'Selection should reach the beginning of the text. ' +
+    'Offsets visited: ' + positions.join(', '));
+
+  // Verify no two consecutive offsets are the same (no stuck state).
+  for (let i = 1; i < positions.length; i++) {
+    assert_not_equals(positions[i], positions[i - 1],
+      'Selection got stuck at offset ' + positions[i] +
+      ' after step ' + i + '. Offsets: ' + positions.join(', '));
+  }
+}, 'selection.modify(extend, backward, line) should not get stuck at soft wrap boundaries');
+
+test(function() {
+  const target = document.getElementById('target');
+  const textNode = target.firstChild;
+  const textLength = textNode.length;
+
+  // Place caret at the beginning of the text.
+  const sel = window.getSelection();
+  sel.collapse(textNode, 0);
+
+  // Extend forward by line repeatedly.
+  const positions = [sel.focusOffset];
+  // 10 iterations is well above the expected ~4 visual lines.
+  for (let i = 0; i < 10; i++) {
+    sel.modify('extend', 'forward', 'line');
+    const newOffset = sel.focusOffset;
+    positions.push(newOffset);
+    if (newOffset === textLength) break;
+  }
+
+  // Verify we actually reached the end.
+  assert_equals(positions[positions.length - 1], textLength,
+    'Selection should reach the end of the text. ' +
+    'Offsets visited: ' + positions.join(', '));
+
+  // Verify no two consecutive offsets are the same.
+  for (let i = 1; i < positions.length; i++) {
+    assert_not_equals(positions[i], positions[i - 1],
+      'Selection got stuck at offset ' + positions[i] +
+      ' after step ' + i + '. Offsets: ' + positions.join(', '));
+  }
+}, 'selection.modify(extend, forward, line) should not get stuck at soft wrap boundaries');
+
+</script>
+</body>
+</html>

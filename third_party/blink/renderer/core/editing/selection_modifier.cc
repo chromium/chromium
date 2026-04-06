@@ -153,8 +153,25 @@ VisibleSelection SelectionModifier::Selection() const {
 
 static VisiblePositionInFlatTree ComputeVisibleFocus(
     const VisibleSelectionInFlatTree& visible_selection) {
-  return CreateVisiblePosition(visible_selection.Focus(),
-                               visible_selection.Affinity());
+  TextAffinity affinity = visible_selection.Affinity();
+
+  // At soft wrap boundaries, adjust focus affinity based on
+  // selection direction so the focus stays on the correct visual line.
+  if (RuntimeEnabledFeatures::SelectionFocusAffinityEnabled() &&
+      visible_selection.IsRange()) {
+    const PositionInFlatTree& focus = visible_selection.Focus();
+    if (focus.IsNotNull() && focus.AnchorNode()->GetLayoutObject()) {
+      PositionInFlatTreeWithAffinity downstream(focus,
+                                                TextAffinity::kDownstream);
+      PositionInFlatTreeWithAffinity upstream(focus, TextAffinity::kUpstream);
+      if (!InSameLine(downstream, upstream)) {
+        affinity = visible_selection.IsAnchorFirst() ? TextAffinity::kDownstream
+                                                     : TextAffinity::kUpstream;
+      }
+    }
+  }
+
+  return CreateVisiblePosition(visible_selection.Focus(), affinity);
 }
 
 TextDirection SelectionModifier::DirectionOfEnclosingBlock() const {
