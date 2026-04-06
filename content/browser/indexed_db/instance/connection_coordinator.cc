@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/callback_tags.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -64,11 +65,15 @@ enum class RequestState {
 // This represents what script calls an 'IDBOpenDBRequest' - either a database
 // open or delete call. These may be blocked on other connections. After every
 // callback, the request must call
-// ConnectionCoordinator::RequestComplete() or be expecting a further
+// connection_coordinator_->RequestComplete() or be expecting a further
 // callback.
 class ConnectionCoordinator::ConnectionRequest {
+  // TODO(crbug.com/498738402): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   ConnectionRequest(
+
       BucketContext& bucket_context,
       Database* db,
       ConnectionCoordinator* connection_coordinator,
@@ -172,6 +177,9 @@ class ConnectionCoordinator::ConnectionRequest {
 
 class ConnectionCoordinator::OpenRequest
     : public ConnectionCoordinator::ConnectionRequest {
+  // TODO(crbug.com/498738402): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   OpenRequest(BucketContext& bucket_context,
               Database* db,
@@ -487,6 +495,9 @@ class ConnectionCoordinator::OpenRequest
 
 class ConnectionCoordinator::DeleteRequest
     : public ConnectionCoordinator::ConnectionRequest {
+  // TODO(crbug.com/498738402): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   DeleteRequest(
       BucketContext& bucket_context,

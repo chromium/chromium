@@ -9,6 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -23,6 +24,9 @@ class Database;
 struct PendingConnection;
 
 class CONTENT_EXPORT ConnectionCoordinator {
+  // TODO(crbug.com/498738402): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   ConnectionCoordinator(Database* db, BucketContext& bucket_context);
 
