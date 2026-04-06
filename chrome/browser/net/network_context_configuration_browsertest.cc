@@ -868,8 +868,9 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   if (IsRestartStateWithInProcessNetworkService())
     return;
 
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/494643383): The test is flaky in incognito on Android.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/494643383): The test is flaky in incognito on Android
+  // and Linux CFI.
   if (GetParam().network_context_type ==
       NetworkContextType::kIncognitoProfile) {
     return;
@@ -1029,8 +1030,15 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Cache) {
   }
 }
 
+// TODO(crbug.com/494643383): Flaky on desktop Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CacheIsolation DISABLED_CacheIsolation
+#else
+#define MAYBE_CacheIsolation CacheIsolation
+#endif
 // Make sure that NetworkContexts can't access each other's disk caches.
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, CacheIsolation) {
+IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
+                       MAYBE_CacheIsolation) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
   // Make a request whose response should be cached.
