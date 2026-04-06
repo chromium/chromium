@@ -39,6 +39,9 @@ BASE_DECLARE_FEATURE(kAccessibilityAnnotatorFirstRun);
 BASE_DECLARE_FEATURE(kAccessibilityAnnotatorGetEntities);
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotatorLiveTabContext);
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kAccessibilityAnnotatorLiveTabContextMaxSearchResults);
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
 BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorOnePServiceUrl);

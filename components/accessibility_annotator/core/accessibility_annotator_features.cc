@@ -88,6 +88,11 @@ BASE_FEATURE(kAccessibilityAnnotatorGetEntities,
 
 BASE_FEATURE(kAccessibilityAnnotatorLiveTabContext,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kAccessibilityAnnotatorLiveTabContextMaxSearchResults,
+                   &kAccessibilityAnnotatorLiveTabContext,
+                   "live_tab_context_max_search_results",
+                   3);
 
 BASE_FEATURE(kAccessibilityAnnotationReducerOnePResolver,
              base::FEATURE_DISABLED_BY_DEFAULT);

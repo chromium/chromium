@@ -777,7 +777,10 @@ test("components_unittests") {
   }
 
   if (!is_android && !is_ios && !is_fuchsia && !is_castos) {
-    deps += [ "//components/accessibility_annotator/content/content_annotator:unit_tests" ]
+    deps += [
+      "//components/accessibility_annotator/content/content_annotator:unit_tests",
+      "//components/accessibility_annotator/core/live_tab_context:unit_tests",
+    ]
   }
 
   if (enable_guest_contents) {

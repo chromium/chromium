@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("live_tab_context") {
+  sources = [
+    "search.cc",
+    "search.h",
+  ]
+
+  public_deps = [
+    "//components/page_content_annotations/core",
+    "//components/passage_embeddings/core:passage_embeddings_types",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/accessibility_annotator/core:features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "search_unittest.cc" ]
+
+  deps = [
+    ":live_tab_context",
+    "//base",
+    "//base/test:test_support",
+    "//components/accessibility_annotator/core:features",
+    "//components/page_content_annotations/core",
+    "//components/passage_embeddings/core",
+    "//components/passage_embeddings/core:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
