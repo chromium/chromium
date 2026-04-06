@@ -186,24 +186,18 @@ class SourceSetUnittest(unittest.TestCase):
         b_stanza.index('current_cpu == "x64"')
         b_stanza.index('use_linux_config')
 
-        # arm should just be arm.
-        c = SourceSet(set(['a', 'b']),
-                      set([SourceListCondition('arm', 'Chromium', 'linux')]))
-        c_stanza = c.GenerateGnStanza()
-        c_stanza.index('current_cpu == "arm"')
-
-        # arm-neon should be arm and flip the arm_neon switch.
+        # arm-neon is the only supported 32-bit arm config.
         d = SourceSet(
             set(['a', 'b']),
             set([SourceListCondition('arm-neon', 'Chromium', 'linux')]))
         d_stanza = d.GenerateGnStanza()
-        d_stanza.index('current_cpu == "arm" && arm_use_neon')
+        d_stanza.index('current_cpu == "arm"')
 
         # Multiple conditions
         e = SourceSet(
             set(['a', 'b']),
             set([
-                SourceListCondition('arm', 'Chrome', 'win'),
+                SourceListCondition('arm-neon', 'Chrome', 'win'),
                 SourceListCondition('x64', 'Chromium', 'linux')
             ]))
         e_stanza = e.GenerateGnStanza()
@@ -295,8 +289,8 @@ class SourceSetUnittest(unittest.TestCase):
                       set([SourceListCondition('ia32', 'Chromium', 'win')]))
         b = SourceSet(set(['common', 'intel', 'chrome']),
                       set([SourceListCondition('x64', 'Chrome', 'win')]))
-        c = SourceSet(set(['common', 'arm']),
-                      set([SourceListCondition('arm', 'Chromium', 'win')]))
+        c = SourceSet(set(['common', 'arm-neon']),
+                      set([SourceListCondition('arm-neon', 'Chromium', 'win')]))
 
         expected = set()
         expected.add(
@@ -305,7 +299,7 @@ class SourceSetUnittest(unittest.TestCase):
                 set([
                     SourceListCondition('ia32', 'Chromium', 'win'),
                     SourceListCondition('x64', 'Chrome', 'win'),
-                    SourceListCondition('arm', 'Chromium', 'win')
+                    SourceListCondition('arm-neon', 'Chromium', 'win')
                 ])))
         expected.add(
             SourceSet(
@@ -318,8 +312,8 @@ class SourceSetUnittest(unittest.TestCase):
             SourceSet(set(['chrome']),
                       set([SourceListCondition('x64', 'Chrome', 'win')])))
         expected.add(
-            SourceSet(set(['arm']),
-                      set([SourceListCondition('arm', 'Chromium', 'win')])))
+            SourceSet(set(['arm-neon']),
+                      set([SourceListCondition('arm-neon', 'Chromium', 'win')])))
 
         source_sets = gg.CreatePairwiseDisjointSets([a, b, c])
         self.assertEqualSourceSets(expected, set(source_sets))
@@ -333,9 +327,7 @@ class SourceSetUnittest(unittest.TestCase):
                       set([SourceListCondition('x64', 'Chromium', 'linux')]))
         d = SourceSet(set(['common', 'intel', 'chrome']),
                       set([SourceListCondition('x64', 'Chrome', 'linux')]))
-        e = SourceSet(set(['common', 'arm']),
-                      set([SourceListCondition('arm', 'Chromium', 'linux')]))
-        f = SourceSet(
+        e = SourceSet(
             set(['common', 'arm-neon', 'chrome']),
             set([SourceListCondition('arm-neon', 'Chrome', 'linux')]))
 
@@ -348,7 +340,6 @@ class SourceSetUnittest(unittest.TestCase):
                     SourceListCondition('ia32', 'Chrome', 'linux'),
                     SourceListCondition('x64', 'Chromium', 'linux'),
                     SourceListCondition('x64', 'Chrome', 'linux'),
-                    SourceListCondition('arm', 'Chromium', 'linux'),
                     SourceListCondition('arm-neon', 'Chrome', 'linux')
                 ])))
         expected.add(
@@ -361,9 +352,6 @@ class SourceSetUnittest(unittest.TestCase):
                     SourceListCondition('x64', 'Chrome', 'linux')
                 ])))
         expected.add(
-            SourceSet(set(['arm']),
-                      set([SourceListCondition('arm', 'Chromium', 'linux')])))
-        expected.add(
             SourceSet(
                 set(['chrome']),
                 set([
@@ -375,7 +363,7 @@ class SourceSetUnittest(unittest.TestCase):
             SourceSet(
                 set(['arm-neon']),
                 set([SourceListCondition('arm-neon', 'Chrome', 'linux')])))
-        source_sets = gg.CreatePairwiseDisjointSets([a, b, c, d, e, f])
+        source_sets = gg.CreatePairwiseDisjointSets([a, b, c, d, e])
         self.assertEqualSourceSets(expected, set(source_sets))
 
     def testReduceConditions(self):
@@ -385,7 +373,6 @@ class SourceSetUnittest(unittest.TestCase):
             set([
                 SourceListCondition('ia32', 'Chromium', 'linux'),
                 SourceListCondition('x64', 'Chromium', 'linux'),
-                SourceListCondition('arm', 'Chromium', 'linux'),
                 SourceListCondition('arm64', 'Chromium', 'linux'),
                 SourceListCondition('arm-neon', 'Chromium', 'linux'),
                 SourceListCondition('riscv64', 'Chromium', 'linux'),
