@@ -555,7 +555,8 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
           features::kGlicDefaultToLastActiveConversation) &&
       last_active_instance_ &&
       last_active_instance_->GetTimeSinceLastActive() <
-          features::kGlicDefaultToLastActiveConversationMaxRecency.Get()) {
+          features::kGlicDefaultToLastActiveConversationMaxRecency.Get() &&
+      !last_active_instance_->IsActuating()) {
     return last_active_instance_;
   }
 
