@@ -87,6 +87,8 @@ inline constexpr char kUnableToResizeErrorAndroidNullAppTask[] =
     "window";
 inline constexpr char kUnableToResizeErrorAndroidUnsupportedOperation[] =
     "Unable to resize: operation not supported on this Android configuration";
+inline constexpr char kUnableToEnterFullScreenAndroid[] =
+    "Unable to enter full-screen mode: unsupported on Android";
 #endif
 
 }  // namespace tabs_constants

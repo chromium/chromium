@@ -1070,6 +1070,27 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
       base::StringPrintf("[%u, {\"drawAttention\": true}]", window_id),
       profile(), api_test_utils::FunctionMode::kNone));
 }
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       UpdateWindowStateFullscreenFailsOnAndroid) {
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+  std::vector<BrowserWindowInterface*> windows =
+      GetAllBrowserWindowInterfaces();
+  ASSERT_FALSE(windows.empty());
+  int window_id = ExtensionTabUtil::GetWindowId(windows[0]);
+
+  auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+  function->set_extension(extension.get());
+
+  // Attempting to enter fullscreen on Android should explicitly fail with
+  // the kUnableToEnterFullScreenAndroid error message.
+  std::string error = utils::RunFunctionAndReturnError(
+      function.get(),
+      base::StringPrintf("[%u, {\"state\": \"fullscreen\"}]", window_id),
+      profile());
+
+  EXPECT_EQ(tabs_constants::kUnableToEnterFullScreenAndroid, error);
+}
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

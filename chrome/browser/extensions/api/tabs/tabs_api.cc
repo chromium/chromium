@@ -1442,6 +1442,10 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
           WindowResizePrecheckResultToErrorMessage(resize_precheck_result)));
     }
   }
+
+  if (show_state == ui::mojom::WindowShowState::kFullscreen) {
+    return RespondNow(Error(tabs_constants::kUnableToEnterFullScreenAndroid));
+  }
 #endif
 
   // Parameters are valid. Now to perform the actual updates.
