@@ -1,5 +1,5 @@
 Name: dpkg-shlibdeps
-URL: http://anonscm.debian.org/cgit/dpkg/dpkg.git
+URL: https://salsa.debian.org/dpkg-team/dpkg.git
 Version: a0828e04289639f875cb924f8d1a65a634683b19
 Update Mechanism: Manual
 License: GPL-2.0
