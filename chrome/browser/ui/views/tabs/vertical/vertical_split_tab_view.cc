@@ -48,11 +48,11 @@ VerticalSplitTabView::VerticalSplitTabView(TabCollectionNode* collection_node)
   auto* state_controller =
       collection_node_->GetController()->GetStateController();
   CHECK(state_controller);
+  OnCollapseStateChanged(state_controller->GetCollapseState());
   collapsed_state_changed_subscription_ =
       state_controller->RegisterOnCollapseChanged(
-          base::BindRepeating(&VerticalSplitTabView::OnCollapsedStateChanged,
+          base::BindRepeating(&VerticalSplitTabView::OnCollapseStateChanged,
                               base::Unretained(this)));
-  collapsed_ = state_controller->IsCollapsed();
 
   // Ensures this view gets mouse events as well its children.
   SetNotifyEnterExitOnChild(true);
@@ -279,8 +279,9 @@ void VerticalSplitTabView::UpdateHovered(bool hovered) {
   SchedulePaint();
 }
 
-void VerticalSplitTabView::OnCollapsedStateChanged(bool collapsed) {
-  collapsed_ = collapsed;
+void VerticalSplitTabView::OnCollapseStateChanged(
+    tabs::VerticalTabStripCollapseState state) {
+  collapsed_ = state == tabs::VerticalTabStripCollapseState::kCollapsed;
 }
 
 std::unique_ptr<views::View>

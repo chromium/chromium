@@ -28,11 +28,6 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
   SetProperty(views::kElementIdentifierKey,
               kVerticalTabStripBottomContainerElementId);
 
-  collapsed_state_will_change_subscription_ =
-      state_controller->RegisterOnCollapseWillChange(base::BindRepeating(
-          &VerticalTabStripBottomContainer::OnCollapsedStateWillChange,
-          base::Unretained(this)));
-
   new_tab_button_ = AddChildButtonFor(kActionNewTab);
   new_tab_button_->set_context_menu_controller(this);
   new_tab_button_->SetProperty(views::kElementIdentifierKey,
@@ -41,7 +36,11 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
       new_tab_button_->RegisterWillInvokeActionCallback(
           record_new_tab_button_pressed);
 
-  UpdateButtonStyles(state_controller);
+  OnCollapseStateChanged(state_controller->GetCollapseState());
+  collapsed_state_change_subscription_ =
+      state_controller->RegisterOnCollapseChanged(base::BindRepeating(
+          &VerticalTabStripBottomContainer::OnCollapseStateChanged,
+          base::Unretained(this)));
 }
 
 VerticalTabStripBottomContainer::~VerticalTabStripBottomContainer() = default;
@@ -108,9 +107,11 @@ void VerticalTabStripBottomContainer::ShowContextMenuForViewImpl(
   }
 }
 
-void VerticalTabStripBottomContainer::OnCollapsedStateWillChange(
-    bool collapsed) {
-  UpdateButtonStyles(collapsed);
+void VerticalTabStripBottomContainer::OnCollapseStateChanged(
+    tabs::VerticalTabStripCollapseState state) {
+  // Updating the styles immediately at start of the animation by including
+  // collapsing state.
+  UpdateButtonStyles(state != tabs::VerticalTabStripCollapseState::kExpanded);
 }
 
 void VerticalTabStripBottomContainer::UpdateButtonStyles(bool collapsed) {

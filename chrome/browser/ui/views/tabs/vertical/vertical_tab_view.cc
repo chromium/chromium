@@ -227,10 +227,10 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   auto* state_controller =
       collection_node_->GetController()->GetStateController();
   CHECK(state_controller);
+  OnCollapseStateChanged(state_controller->GetCollapseState());
   collapsed_state_changed_subscription_ =
       state_controller->RegisterOnCollapseChanged(base::BindRepeating(
-          &VerticalTabView::OnCollapsedStateChanged, base::Unretained(this)));
-  collapsed_ = state_controller->IsCollapsed();
+          &VerticalTabView::OnCollapseStateChanged, base::Unretained(this)));
 
   set_context_menu_controller(this);
 }
@@ -926,8 +926,9 @@ void VerticalTabView::OnAXNameChanged(ax::mojom::StringAttribute attribute,
   }
 }
 
-void VerticalTabView::OnCollapsedStateChanged(bool collapsed) {
-  collapsed_ = collapsed;
+void VerticalTabView::OnCollapseStateChanged(
+    tabs::VerticalTabStripCollapseState state) {
+  collapsed_ = state == tabs::VerticalTabStripCollapseState::kCollapsed;
 }
 
 void VerticalTabView::OnDataChanged() {

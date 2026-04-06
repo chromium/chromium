@@ -12,6 +12,7 @@
 
 namespace tabs {
 class VerticalTabStripStateController;
+enum class VerticalTabStripCollapseState;
 }
 
 // The scrollbar used for the pinned and unpinned tab containers in the vertical
@@ -34,7 +35,7 @@ class VerticalTabStripScrollBar : public tabs::RoundedScrollBar {
   bool ShouldHaveRightMargin() const override;
 
  private:
-  void OnCollapsedStateChanged(bool collapsed);
+  void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
 
   bool tab_strip_collapsed_ = false;
   base::CallbackListSubscription collapsed_state_changed_subscription_;

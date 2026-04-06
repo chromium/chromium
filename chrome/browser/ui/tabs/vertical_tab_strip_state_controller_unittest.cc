@@ -145,30 +145,22 @@ TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabledFirstTime) {
 }
 
 TEST_F(VerticalTabStripStateControllerTest, Collapsed) {
-  int will_change_call_count = 0;
-  auto will_change_subscription =
-      controller()->RegisterOnCollapseWillChange(base::BindRepeating(
-          [](int* call_count, bool collapsed) {
-            (*call_count)++;
-            EXPECT_TRUE(collapsed);
-          },
-          &will_change_call_count));
   int changed_call_count = 0;
   auto changed_subscription =
       controller()->RegisterOnCollapseChanged(base::BindRepeating(
-          [](int* call_count, bool collapsed) {
-            (*call_count)++;
-            EXPECT_TRUE(collapsed);
+          [](int* changed_call_count,
+             tabs::VerticalTabStripCollapseState state) {
+            (*changed_call_count)++;
+            EXPECT_TRUE(state !=
+                        tabs::VerticalTabStripCollapseState::kExpanded);
           },
           &changed_call_count));
 
   controller()->RequestCollapse(true);
   EXPECT_TRUE(controller()->IsCollapsed());
-  EXPECT_EQ(1, will_change_call_count);
   EXPECT_EQ(1, changed_call_count);
 
   controller()->RequestCollapse(true);
-  EXPECT_EQ(2, will_change_call_count);
   // Setting to same value should not trigger a notification.
   EXPECT_EQ(1, changed_call_count);
 }
@@ -178,7 +170,7 @@ TEST_F(VerticalTabStripStateControllerTest, UncollapsedWidth) {
   auto subscription =
       controller()->RegisterOnCollapseChanged(base::BindRepeating(
           [](int* call_count, VerticalTabStripStateController* controller,
-             bool collapsed) {
+             tabs::VerticalTabStripCollapseState state) {
             (*call_count)++;
             EXPECT_EQ(kUncollapsedWidth1, controller->GetUncollapsedWidth());
           },

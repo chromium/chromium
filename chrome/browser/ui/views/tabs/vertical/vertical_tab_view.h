@@ -165,7 +165,7 @@ class VerticalTabView : public views::View,
   void UpdateAccessibleName();
   void OnAXNameChanged(ax::mojom::StringAttribute attribute,
                        const std::optional<std::string>& name);
-  void OnCollapsedStateChanged(bool collapsed);
+  void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
   void OnDataChanged();
   void SetSelection(bool selected);
   void UpdateTabData(tabs::TabInterface* tab);

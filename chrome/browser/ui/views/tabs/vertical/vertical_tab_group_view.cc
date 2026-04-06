@@ -130,7 +130,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   views::ProposedLayout layouts;
   int width = 0;
   int height = kGroupHeaderVerticalMargin;
-  bool is_tab_strip_collapsed_or_collapsing = IsTabStripCollapsedOrCollapsing();
+  auto tab_strip_collapse_state = GetTabStripCollapseState();
 
   gfx::Rect header_bounds;
   gfx::Rect group_line_bounds;
@@ -138,7 +138,8 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
 
   // If the tab strip is collapsed then the group line should appear on the
   // leading side of all grouped tabs and the header.
-  if (is_tab_strip_collapsed_or_collapsing) {
+  if (tab_strip_collapse_state !=
+      tabs::VerticalTabStripCollapseState::kExpanded) {
     group_line_bounds.set_x(kGroupLineCollapsedLeadingPadding);
     group_line_bounds.set_y(height);
     header_bounds.set_x(
@@ -160,7 +161,8 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
 
   // If the tab strip is not collapsed then the group line is below and left
   // aligned with the header.
-  if (!is_tab_strip_collapsed_or_collapsing) {
+  if (tab_strip_collapse_state ==
+      tabs::VerticalTabStripCollapseState::kExpanded) {
     group_line_bounds.set_x((kTabLeadingPadding - kGroupLineWidth) / 2);
     group_line_bounds.set_y(height);
   }
@@ -179,7 +181,8 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
     bounds.set_y(drag_data ? drag_data->offset.y() : height);
 
     // If the tab strip is not collapsed then the groups tabs should be inset.
-    bounds.set_x(is_tab_strip_collapsed_or_collapsing
+    bounds.set_x(tab_strip_collapse_state !=
+                         tabs::VerticalTabStripCollapseState::kExpanded
                      ? GetLayoutConstant(
                            LayoutConstant::kVerticalTabStripCollapsedPadding)
                      : kTabLeadingPadding);
@@ -202,13 +205,13 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
       group_line_.get(), group_line_->GetVisible(), group_line_bounds);
 
   // Add extra padding below the group if not collapsed.
-  const bool is_collapsed = IsCollapsed();
-  if (!is_collapsed) {
+  const bool is_group_collapsed = IsCollapsed();
+  if (!is_group_collapsed) {
     height += kTabVerticalPadding;
   }
 
   layouts.host_size = gfx::Size(
-      width, is_collapsed
+      width, is_group_collapsed
                  ? header_bounds.height() + (2 * kGroupHeaderVerticalMargin)
                  : height);
   return layouts;
@@ -245,11 +248,11 @@ views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
     return nullptr;
   }
 
-  bool is_tab_strip_collapsed_or_collapsing = IsTabStripCollapsedOrCollapsing();
   // When the tab strip is collapsed, anchor to the group header, otherwise
   // anchor to the editor bubble button.
   views::View* anchor_view =
-      is_tab_strip_collapsed_or_collapsing
+      GetTabStripCollapseState() !=
+              tabs::VerticalTabStripCollapseState::kExpanded
           ? views::AsViewClass<views::View>(group_header_)
           : views::AsViewClass<views::View>(
                 group_header_->editor_bubble_button());
@@ -378,13 +381,6 @@ void VerticalTabGroupView::UpdateChildVisibilityForCollapseState(
 
 bool VerticalTabGroupView::IsCollapsed() const {
   return tab_group_visual_data_.is_collapsed();
-}
-
-bool VerticalTabGroupView::IsTabStripCollapsedOrCollapsing() const {
-  const auto* controller =
-      collection_node_ ? collection_node_->GetController() : nullptr;
-  return controller &&
-         controller->GetStateController()->IsCollapsedOrCollapsing();
 }
 
 views::ScrollView* VerticalTabGroupView::GetScrollViewForContainer() const {

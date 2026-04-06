@@ -77,7 +77,6 @@ void VerticalTabStripTopContainer::Layout(PassKey) {
 views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
-  const bool is_collapsed = state_controller_->IsCollapsed();
   gfx::Size host_size =
       gfx::Size(size_bounds.width().is_bounded() ? size_bounds.width().value()
                                                  : parent()->width(),
@@ -90,10 +89,15 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
           ? host_size.width()
           : parent()->GetAvailableSize(this).width().value_or(0);
 
+  const bool is_collapsed = state_controller_->IsCollapsed();
+
+  // Once the available width is below the collapse snap width, we update the
+  // orientation in order to have smooth transition during animation.
   if (combo_button_
               ->GetPreferredSizeForOrientation(
                   views::LayoutOrientation::kHorizontal)
               .width() >= available_width ||
+      available_width < VerticalTabStripRegionView::kCollapseSnapWidth ||
       is_collapsed) {
     combo_button_orientation_ = views::LayoutOrientation::kVertical;
     int current_y = 0;
@@ -147,7 +151,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                                 combo_button_->end_button()->GetVisible();
       if (start_button_visible || end_button_visible) {
         current_y += GetLayoutConstant(
-            LayoutConstant::kVerticalTabStripCollapsedPadding);
+            LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
 
         const gfx::Size pref_size =
             combo_button_->GetPreferredSizeForOrientation(
@@ -215,7 +219,8 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                                         unfocus_button_->GetVisible(), bounds);
       current_y =
           bounds.bottom() +
-          GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding);
+          GetLayoutConstant(
+              LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
     }
 
     if (collapse_button_ && collapse_button_->GetVisible()) {
@@ -229,7 +234,8 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                                         collapse_button_->GetVisible(), bounds);
       current_y =
           bounds.bottom() +
-          GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding);
+          GetLayoutConstant(
+              LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
     }
 
     int right_alignment = host_size.width();

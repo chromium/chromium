@@ -20,6 +20,10 @@
 class TabCollectionNode;
 class VerticalTabDragHandler;
 
+namespace tabs {
+enum class VerticalTabStripCollapseState;
+}  // namespace tabs
+
 namespace views {
 class View;
 struct ProposedLayout;
@@ -115,8 +119,7 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   VerticalTabDragHandler& GetDragHandler();
   const VerticalTabDragHandler& GetDragHandler() const;
 
-  // Whether the tab strip is collapsed.
-  bool IsTabStripCollapsed() const;
+  tabs::VerticalTabStripCollapseState GetTabStripCollapseState() const;
 
  private:
   // Returns the scroll view for the container.

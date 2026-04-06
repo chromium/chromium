@@ -165,15 +165,10 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   state_controller_->SetDelegate(this);
   target_collapse_state_ = state_controller_->GetState();
-  OnCollapsedStateWillChange(target_collapse_state_.collapsed);
-  collapsed_state_will_change_subscription_ =
-      state_controller_->RegisterOnCollapseWillChange(base::BindRepeating(
-          &VerticalTabStripRegionView::OnCollapsedStateWillChange,
-          base::Unretained(this)));
-  OnCollapsedStateChanged(target_collapse_state_.collapsed);
+  OnCollapseStateChanged(state_controller_->GetCollapseState());
   collapsed_state_changed_subscription_ =
       state_controller_->RegisterOnCollapseChanged(base::BindRepeating(
-          &VerticalTabStripRegionView::OnCollapsedStateChanged,
+          &VerticalTabStripRegionView::OnCollapseStateChanged,
           base::Unretained(this)));
 
   SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
@@ -873,9 +868,9 @@ void VerticalTabStripRegionView::RegionViewFocusListener::OnDidChangeFocus(
 views::View* VerticalTabStripRegionView::SetTabStripView(
     std::unique_ptr<views::View> view) {
   CHECK(views::IsViewClass<VerticalTabStripView>(view.get()));
+
   tab_strip_view_ =
       static_cast<VerticalTabStripView*>(AddChildView(std::move(view)));
-  OnCollapsedStateChanged(state_controller_->IsCollapsed());
   tab_strip_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -883,7 +878,8 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
   tab_strip_view_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(
-          GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding),
+          GetLayoutConstant(
+              LayoutConstant::kVerticalTabStripCollapsedVerticalPadding),
           0));
 
   on_active_tab_changed_subscription_ =
@@ -901,6 +897,9 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
   std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
   CHECK(separator_index.has_value());
   ReorderChildView(tab_strip_view_, separator_index.value() + 1);
+
+  OnCollapseStateChanged(state_controller_->GetCollapseState());
+
   return tab_strip_view_;
 }
 
@@ -913,23 +912,20 @@ void VerticalTabStripRegionView::ClearTabStripView(views::View* view) {
   RemoveChildViewT(std::exchange(tab_strip_view_, nullptr));
 }
 
-void VerticalTabStripRegionView::OnCollapsedStateWillChange(bool collapsed) {
-  if (tab_strip_view_) {
-    tab_strip_view_->SetCollapsedState(collapsed);
-  }
-}
+void VerticalTabStripRegionView::OnCollapseStateChanged(
+    tabs::VerticalTabStripCollapseState state) {
+  // Apply padding immediately at the start of the animation by including
+  // the collapsing state.
+  bool collapsed = state != tabs::VerticalTabStripCollapseState::kExpanded;
 
-void VerticalTabStripRegionView::OnCollapsedStateChanged(bool collapsed) {
-  if (!collapsed) {
-    UpdateExpandOnHoverState();
-  }
-
+  // Immediately apply the padding at the start of the collapsing animation.
   const int padding = GetLayoutConstant(
       collapsed ? LayoutConstant::kVerticalTabStripCollapsedPadding
                 : LayoutConstant::kVerticalTabStripUncollapsedPadding);
+
   // The TopContainer handles the padding distance to the separator so that we
   // can control how far it is in the various states.
-  int separator_padding =
+  const int separator_padding =
       collapsed
           ? GetLayoutConstant(
                 LayoutConstant::kVerticalTabStripCollapsedSeparatorPadding)
@@ -943,7 +939,8 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(bool collapsed) {
   bottom_button_container_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(
-          GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding),
+          GetLayoutConstant(
+              LayoutConstant::kVerticalTabStripCollapsedVerticalPadding),
           padding, 0, padding));
 
   resize_area_width_ = collapsed ? kCollapsedResizeAreaWidth : kResizeAreaWidth;
@@ -952,6 +949,14 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(bool collapsed) {
       0, 0,
       GetLayoutConstant(LayoutConstant::kVerticalTabStripUncollapsedPadding),
       0));
+
+  if (tab_strip_view_) {
+    tab_strip_view_->SetCollapsedState(collapsed);
+  }
+
+  if (state == tabs::VerticalTabStripCollapseState::kExpanded) {
+    UpdateExpandOnHoverState();
+  }
 }
 
 void VerticalTabStripRegionView::UpdateColors() {

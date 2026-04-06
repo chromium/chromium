@@ -94,8 +94,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       // Verify not collapsed
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()
-                ->IsCollapsedOrCollapsing();
+            return vertical_tab_strip_state_controller()->GetCollapseState() !=
+                   tabs::VerticalTabStripCollapseState::kExpanded;
           },
           false),
       WaitForShow(kVerticalTabStripTopContainerElementId),
@@ -105,8 +105,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       // Verify collapsed
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()
-                ->IsCollapsedOrCollapsing();
+            return vertical_tab_strip_state_controller()->GetCollapseState() !=
+                   tabs::VerticalTabStripCollapseState::kExpanded;
           },
           true));
 }
@@ -118,8 +118,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
   RunTestSequence(
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()
-                ->IsCollapsedOrCollapsing();
+            return vertical_tab_strip_state_controller()->GetCollapseState() !=
+                   tabs::VerticalTabStripCollapseState::kExpanded;
           },
           false),
       Do([&]() {
@@ -133,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       PressButton(kVerticalTabStripCollapseButtonElementId),
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()
-                ->IsCollapsedOrCollapsing();
+            return vertical_tab_strip_state_controller()->GetCollapseState() !=
+                   tabs::VerticalTabStripCollapseState::kExpanded;
           },
           true),
       Do([&]() {
@@ -146,8 +146,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       PressButton(kVerticalTabStripCollapseButtonElementId),
       CheckResult(
           [this]() {
-            return vertical_tab_strip_state_controller()
-                ->IsCollapsedOrCollapsing();
+            return vertical_tab_strip_state_controller()->GetCollapseState() !=
+                   tabs::VerticalTabStripCollapseState::kExpanded;
           },
           false),
       Do([&]() {

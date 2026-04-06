@@ -190,7 +190,8 @@ void VerticalDraggedTabsContainer::InitializeDragState(
           base::Unretained(this)));
 
   tab_strip_padding_ = GetLayoutConstant(
-      IsTabStripCollapsed()
+      GetTabStripCollapseState() !=
+              tabs::VerticalTabStripCollapseState::kExpanded
           ? LayoutConstant::kVerticalTabStripCollapsedPadding
           : LayoutConstant::kVerticalTabStripUncollapsedPadding);
 
@@ -495,7 +496,9 @@ VerticalDraggedTabsContainer::GetVisualDataForDraggedView(
 }
 
 bool VerticalDraggedTabsContainer::IsHorizontalDragSupported() const {
-  return drag_axes_ != DragAxes::kVerticalOnly && !IsTabStripCollapsed();
+  return drag_axes_ != DragAxes::kVerticalOnly &&
+         GetTabStripCollapseState() ==
+             tabs::VerticalTabStripCollapseState::kExpanded;
 }
 
 bool VerticalDraggedTabsContainer::HasMinimumOverlap(
@@ -540,10 +543,14 @@ const VerticalTabDragHandler& VerticalDraggedTabsContainer::GetDragHandler()
   return collection_node_->GetController()->GetDragHandler();
 }
 
-bool VerticalDraggedTabsContainer::IsTabStripCollapsed() const {
+tabs::VerticalTabStripCollapseState
+VerticalDraggedTabsContainer::GetTabStripCollapseState() const {
   const auto* controller =
       collection_node_ ? collection_node_->GetController() : nullptr;
-  return controller && controller->GetStateController()->IsCollapsed();
+  if (!controller) {
+    return tabs::VerticalTabStripCollapseState::kExpanded;
+  }
+  return controller->GetStateController()->GetCollapseState();
 }
 
 void VerticalDraggedTabsContainer::ResetCollectionNode() {

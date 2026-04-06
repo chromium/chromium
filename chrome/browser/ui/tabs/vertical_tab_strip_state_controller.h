@@ -26,6 +26,17 @@ class ActionItem;
 
 namespace tabs {
 
+// The collapse state for the vertical tab strip.
+enum class VerticalTabStripCollapseState {
+  kCollapsed,
+  kCollapsing,
+  kExpanded,
+};
+
+// The state controller for the vertical tab strip for the browser window. It
+// manages the state for the vertical tab strip including display mode, collapse
+// state, uncollapsed width and expand to hover setting. It is also responsible
+// for serializing the state to the session service.
 class VerticalTabStripStateController : public SessionServiceBaseObserver,
                                         public BrowserCollectionObserver {
  public:
@@ -79,7 +90,7 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   std::unique_ptr<ScopedEnableStateLock> GetEnableStateLock();
 
   bool IsCollapsed() const;
-  bool IsCollapsedOrCollapsing() const;
+  VerticalTabStripCollapseState GetCollapseState() const;
 
   // Request that the Delegate begin transitioning its collapse state.
   // The Delegate is then responsible for updating this class's collapse
@@ -94,9 +105,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
   const VerticalTabStripState& GetState() const { return state_; }
 
-  using CollapseChangeCallback = base::RepeatingCallback<void(bool)>;
-  base::CallbackListSubscription RegisterOnCollapseWillChange(
-      CollapseChangeCallback callback);
+  using CollapseChangeCallback =
+      base::RepeatingCallback<void(VerticalTabStripCollapseState)>;
   base::CallbackListSubscription RegisterOnCollapseChanged(
       CollapseChangeCallback callback);
 
@@ -112,7 +122,6 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
       "vertical_tab_strip_uncollapsed_width";
 
  private:
-  void NotifyCollapseWillChange(bool collapsed);
   void NotifyCollapseChanged();
   void NotifyModeWillChange();
   void NotifyModeChanged();
@@ -157,9 +166,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   // The uncollapsed width is only updated at the end of a resize operation.
   VerticalTabStripState state_;
 
-  base::RepeatingCallbackList<void(bool)>
-      on_collapse_will_change_callback_list_;
-  base::RepeatingCallbackList<void(bool)> on_collapse_changed_callback_list_;
+  base::RepeatingCallbackList<void(VerticalTabStripCollapseState)>
+      on_collapse_changed_callback_list_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
       on_mode_will_change_callback_list_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>

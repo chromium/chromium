@@ -140,8 +140,8 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
       is_collapsed_ ? LayoutConstant::kVerticalTabStripCollapsedPadding
                     : LayoutConstant::kVerticalTabStripUncollapsedPadding);
 
-  const int region_vertical_padding =
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding);
+  const int region_vertical_padding = GetLayoutConstant(
+      LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
 
   int y = 0;
 

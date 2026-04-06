@@ -217,8 +217,8 @@ class VerticalTabStripRegionView final
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
   void ClearTabStripView(views::View* view);
 
-  void OnCollapsedStateWillChange(bool collapsed);
-  void OnCollapsedStateChanged(bool collapsed);
+  void OnCollapseStateChanged(
+      tabs::VerticalTabStripCollapseState collapse_state);
 
   void UpdateColors();
 

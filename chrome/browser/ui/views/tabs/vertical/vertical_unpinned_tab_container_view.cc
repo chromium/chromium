@@ -111,11 +111,14 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   int width = 0;
   int height = 0;
   int dragged_view_bottom = 0;
-  bool is_collapsed = IsTabStripCollapsed();
+  auto collapse_state = GetTabStripCollapseState();
 
+  // Apply horizontal padding immediately at start of collapse animation by
+  // including collapsing state.
   const int horizontal_padding = GetLayoutConstant(
-      is_collapsed ? LayoutConstant::kVerticalTabStripCollapsedPadding
-                   : LayoutConstant::kVerticalTabStripUncollapsedPadding);
+      collapse_state != tabs::VerticalTabStripCollapseState::kExpanded
+          ? LayoutConstant::kVerticalTabStripCollapsedPadding
+          : LayoutConstant::kVerticalTabStripUncollapsedPadding);
   const std::vector<views::View*> children =
       collection_node_ ? collection_node_->GetDirectChildren()
                        : std::vector<views::View*>();
@@ -125,9 +128,11 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   for (auto* child : children) {
     // The leading inset should not be applied for tab groups when the tab strip
     // is collapsed since the group color line is drawn in that space.
-    int x = views::AsViewClass<VerticalTabGroupView>(child) && is_collapsed
-                ? 0
-                : horizontal_padding;
+    int x =
+        views::AsViewClass<VerticalTabGroupView>(child) &&
+                collapse_state != tabs::VerticalTabStripCollapseState::kExpanded
+            ? 0
+            : horizontal_padding;
     views::SizeBounds child_size_bounds =
         views::SizeBounds(size_bounds.width().is_bounded()
                               ? (size_bounds.width() - (x + horizontal_padding))

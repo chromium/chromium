@@ -103,7 +103,6 @@ class VerticalTabGroupView
   void OnDataChanged();
   void UpdateChildVisibilityForCollapseState(bool collapsed);
   bool GetIsShared();
-  bool IsTabStripCollapsedOrCollapsing() const;
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
