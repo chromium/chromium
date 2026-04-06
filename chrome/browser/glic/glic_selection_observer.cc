@@ -74,9 +74,7 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
   if (base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
     web_contents->ForEachRenderFrameHost(
         [this](content::RenderFrameHost* render_frame_host) {
-          if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
-            rwh->AddInputEventObserver(this);
-          }
+          RenderFrameCreated(render_frame_host);
         });
   }
 }
@@ -86,14 +84,12 @@ GlicSelectionObserver::~GlicSelectionObserver() {
     selection_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   }
 
-  if (web_contents()) {
-    web_contents()->ForEachRenderFrameHost(
-        [this](content::RenderFrameHost* render_frame_host) {
-          if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
-            rwh->RemoveInputEventObserver(this);
-          }
-        });
+  for (const auto& [frame_id, rwh] : rwh_by_frame_) {
+    if (rwh) {
+      rwh->RemoveInputEventObserver(this);
+    }
   }
+  rwh_by_frame_.clear();
 }
 
 void GlicSelectionObserver::RenderFrameCreated(
@@ -102,14 +98,20 @@ void GlicSelectionObserver::RenderFrameCreated(
     return;
   }
   if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
-    rwh->AddInputEventObserver(this);
+    if (rwh_by_frame_.insert({render_frame_host->GetGlobalId(), rwh}).second) {
+      rwh->AddInputEventObserver(this);
+    }
   }
 }
 
 void GlicSelectionObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
-    rwh->RemoveInputEventObserver(this);
+  auto it = rwh_by_frame_.find(render_frame_host->GetGlobalId());
+  if (it != rwh_by_frame_.end()) {
+    if (it->second) {
+      it->second->RemoveInputEventObserver(this);
+    }
+    rwh_by_frame_.erase(it);
   }
 }
 

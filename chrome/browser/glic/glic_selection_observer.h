@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -85,6 +86,10 @@ class GlicSelectionObserver
   std::optional<std::u16string> pending_selection_text_;
 
   content::GlobalRenderFrameHostId last_selection_frame_id_;
+
+  base::flat_map<content::GlobalRenderFrameHostId,
+                 raw_ptr<content::RenderWidgetHost>>
+      rwh_by_frame_;
 
   bool is_key_selection_ = false;
   int bounds_retry_count_ = 0;
