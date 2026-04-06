@@ -114,7 +114,7 @@ if (enable_extensions) {
       "enterprise_device_attributes.webidl",
       "enterprise_kiosk_input.webidl",
       "enterprise_login.webidl",
-      "enterprise_networking_attributes.idl",
+      "enterprise_networking_attributes.webidl",
       "enterprise_platform_keys.idl",
       "enterprise_platform_keys_internal.idl",
       "enterprise_platform_keys_private.json",
