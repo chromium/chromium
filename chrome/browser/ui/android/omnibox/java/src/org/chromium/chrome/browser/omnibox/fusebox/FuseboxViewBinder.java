@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -490,11 +491,7 @@ class FuseboxViewBinder {
         boolean showDedicatedModeButton = model.get(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON);
         @AutocompleteRequestType
         int requestType = model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE);
-        boolean aiToolSelected =
-                requestType == AutocompleteRequestType.AI_MODE
-                        || requestType == AutocompleteRequestType.IMAGE_GENERATION
-                        || requestType == AutocompleteRequestType.DEEP_SEARCH
-                        || requestType == AutocompleteRequestType.CANVAS;
+        boolean aiToolSelected = ToolModeUtils.isAimRequest(requestType);
 
         if (fuseboxDisabled || !(aiToolSelected || showDedicatedModeButton)) {
             view.requestType.setVisibility(View.GONE);
