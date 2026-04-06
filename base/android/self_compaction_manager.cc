@@ -66,7 +66,7 @@ bool IsMadvisePageoutSupported() {
     // with a zero length.
     int res =
         madvise(reinterpret_cast<void*>(base::GetPageSize()), 0, MADV_PAGEOUT);
-    if (res < 0 && errno == -EINVAL)
+    if (res < 0 && errno == EINVAL)
       return false;
     PLOG_IF(ERROR, res < 0) << "Unexpected return from madvise";
     if (res == 0)
