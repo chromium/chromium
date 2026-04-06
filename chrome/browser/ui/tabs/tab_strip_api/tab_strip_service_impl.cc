@@ -325,6 +325,34 @@ mojom::TabStripService::MoveNodeResult TabStripServiceImpl::MoveNode(
   return std::monostate();
 }
 
+mojom::TabStripService::UpdateResult TabStripServiceImpl::Update(
+    mojom::DataPtr data) {
+  auto session = session_controller_->CreateSession();
+
+  if (data->is_tab_group()) {
+    const auto& tab_group = data->get_tab_group();
+    ASSIGN_OR_RETURN(auto collection_id,
+                     utils::GetCollectionNativeId(tab_group->id));
+    tabs::TabCollectionHandle collection_handle(collection_id);
+
+    const std::optional<const tab_groups::TabGroupId> group_id =
+        tab_strip_model_adapter().FindGroupIdFor(collection_handle);
+    if (!group_id.has_value()) {
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kNotFound,
+          "group with the specified ID not found."));
+    }
+
+    tab_strip_model_adapter().UpdateTabGroupVisuals(group_id.value(),
+                                                    tab_group->data);
+    return translation_adapter().ToMojoData(collection_handle);
+  }
+
+  return base::unexpected(mojo_base::mojom::Error::New(
+      mojo_base::mojom::Code::kUnimplemented,
+      "Update not implemented for this resource type"));
+}
+
 // tabs_api::mojom::TabStripExperimentalService overrides
 //
 // TabStripExperimentalService is intended for quick prototyping for

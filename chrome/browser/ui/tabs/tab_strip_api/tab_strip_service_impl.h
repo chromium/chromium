@@ -53,6 +53,7 @@ class TabStripServiceImpl : public TabStripService {
   mojom::TabStripService::MoveNodeResult MoveNode(
       const tabs_api::NodeId& id,
       const tabs_api::Position& position) override;
+  mojom::TabStripService::UpdateResult Update(mojom::DataPtr data) override;
 
   // tabs_api::mojom::TabStripExperimentalService overrides
   //

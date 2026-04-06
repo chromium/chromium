@@ -82,6 +82,11 @@ void TabStripServiceMojoHandler::MoveNode(const tabs_api::NodeId& id,
   std::move(callback).Run(tab_strip_service_->MoveNode(id, position));
 }
 
+void TabStripServiceMojoHandler::Update(tabs_api::mojom::DataPtr data,
+                                        UpdateCallback callback) {
+  std::move(callback).Run(tab_strip_service_->Update(std::move(data)));
+}
+
 void TabStripServiceMojoHandler::UpdateTabGroupVisual(
     const tabs_api::NodeId& id,
     const tab_groups::TabGroupVisualData& visual_data,

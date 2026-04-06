@@ -52,6 +52,7 @@ class TabStripService {
   virtual mojom::TabStripService::MoveNodeResult MoveNode(
       const tabs_api::NodeId& id,
       const tabs_api::Position& position) = 0;
+  virtual mojom::TabStripService::UpdateResult Update(mojom::DataPtr data) = 0;
 
   // tabs_api::mojom::TabStripExperimentalService = 0s
   //

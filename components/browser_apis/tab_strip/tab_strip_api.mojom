@@ -80,6 +80,12 @@ interface TabStripService {
   // collection.
   MoveNode(NodeId id, Position position)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Updates an existing resource in the tab strip (e.g., a TabGroup's visual
+  // data).
+  // The return value 'Data' union should be the corresponding resource type
+  // being updated.
+  Update(Data data) => result<Data, mojo_base.mojom.Error>;
 };
 
 union TabsEvent {

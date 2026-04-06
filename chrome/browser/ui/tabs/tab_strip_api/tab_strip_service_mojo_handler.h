@@ -71,6 +71,7 @@ class TabStripServiceMojoHandler
   void MoveNode(const tabs_api::NodeId& id,
                 const tabs_api::Position& position,
                 MoveNodeCallback callback) override;
+  void Update(tabs_api::mojom::DataPtr data, UpdateCallback callback) override;
 
   // tabs_api::mojom::TabStripExperimentalService overrides
   //
