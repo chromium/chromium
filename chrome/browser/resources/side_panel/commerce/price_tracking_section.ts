@@ -10,8 +10,6 @@ import {PriceTrackingBrowserProxyImpl} from '//resources/cr_components/commerce/
 import type {BookmarkProductInfo, ProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
 import type {PriceInsightsInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {PriceInsightsInfo_PriceBucket} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
-import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
-import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -51,18 +49,38 @@ export class PriceTrackingSectionElement extends CrLitElement {
     };
   }
 
-  accessor productInfo: ProductInfo;
+  accessor productInfo: ProductInfo = {
+    title: '',
+    clusterTitle: '',
+    domain: '',
+    imageUrl: '',
+    productUrl: '',
+    currentPrice: '',
+    previousPrice: '',
+    clusterId: BigInt(0),
+    categoryLabels: [],
+    priceSummary: '',
+  };
   accessor isProductTracked: boolean = false;
   protected accessor folderName_: string = '';
   protected accessor saveLocationStartText_: string = '';
   protected accessor saveLocationEndText_: string = '';
   protected accessor showSaveLocationText_: boolean = false;
   protected accessor toggleAnnotationText_: string = '';
+  priceInsightsInfo: PriceInsightsInfo = {
+    clusterId: BigInt(0),
+    typicalLowPrice: '',
+    typicalHighPrice: '',
+    catalogAttributes: '',
+    jackpot: '',
+    bucket: PriceInsightsInfo_PriceBucket.MIN_VALUE,
+    hasMultipleCatalogs: false,
+    history: [],
+    locale: '',
+    currencyCode: '',
+  };
 
-  priceInsightsInfo: PriceInsightsInfo;
   private listenerIds_: number[] = [];
-  private shoppingApi_: ShoppingServiceBrowserProxy =
-      ShoppingServiceBrowserProxyImpl.getInstance();
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
       PriceTrackingBrowserProxyImpl.getInstance();
 

@@ -34,7 +34,18 @@ export class CatalogAttributesRowElement extends CrLitElement {
     };
   }
 
-  accessor priceInsightsInfo: PriceInsightsInfo;
+  accessor priceInsightsInfo: PriceInsightsInfo = {
+    clusterId: BigInt(0),
+    typicalLowPrice: '',
+    typicalHighPrice: '',
+    catalogAttributes: '',
+    jackpot: '',
+    bucket: PriceInsightsInfo_PriceBucket.MIN_VALUE,
+    hasMultipleCatalogs: false,
+    history: [],
+    locale: '',
+    currencyCode: '',
+  };
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
 

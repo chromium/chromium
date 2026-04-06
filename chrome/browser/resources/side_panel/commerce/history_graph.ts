@@ -63,12 +63,13 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
   accessor data: PricePoint[] = [];
   accessor locale: string = '';
   accessor currency: string = '';
-  private points: Array<{date: Date, price: number}>;
+  private points: Array<{date: Date, price: number}> = [];
   private isGraphInteracted_: boolean = false;
   private currentPricePointIndex_?: number;
-  private resizeObserver_: ResizeObserver;
+  private resizeObserver_: ResizeObserver|null = null;
   private currentWidth_: number = 0;
-  private graphSvg_: any;
+  private graphSvg_: d3.Selection<SVGSVGElement, unknown, null, undefined>|
+      null = null;
   private dateTopMarginPx_ = 12;
   private priceRightMarginPx_ = 8;
   private bubbleHorizontalPaddingPx_ = 6;
@@ -93,13 +94,20 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.resizeObserver_.disconnect();
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
+    }
   }
 
   private stringToDate_(s: string): Date {
     // When compiled, new Date('yyyy-mm-dd') does not return a valid Date
     // object. Using Date(year, monthIndex, day) protects against that.
-    const [yearStr, monthStr, dayStr] = s.split('-');
+    const parts = s.split('-');
+    assert(parts.length === 3);
+    const yearStr = parts[0]!;
+    const monthStr = parts[1]!;
+    const dayStr = parts[2]!;
     const year: number = parseInt(yearStr, 10);
     const month: number = parseInt(monthStr, 10);
     const day: number = parseInt(dayStr, 10);
@@ -109,33 +117,41 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
   private onResize_() {
     if (this.$.historyGraph.offsetWidth !== this.currentWidth_) {
       this.currentWidth_ = this.$.historyGraph.offsetWidth;
-      this.graphSvg_.remove();
+      if (this.graphSvg_) {
+        this.graphSvg_.remove();
+      }
       this.drawHistoryGraph_();
     }
   }
 
   private getTooltipText_(i: number): string {
-    let formattedDate = d3.timeFormat('%b %-d')(this.points[i].date);
+    assert(this.points.length > i);
+    assert(this.data.length > i);
+    let formattedDate = d3.timeFormat('%b %-d')(this.points[i]!.date);
 
     const previousDay = new Date();
     previousDay.setDate(previousDay.getDate() - 1);
     if (i === this.points.length - 1 &&
-        this.points[i].date.getDate() === previousDay.getDate() &&
-        this.points[i].date.getMonth() === previousDay.getMonth()) {
+        this.points[i]!.date.getDate() === previousDay.getDate() &&
+        this.points[i]!.date.getMonth() === previousDay.getMonth()) {
       formattedDate = loadTimeData.getString('yesterday');
     }
 
-    const formattedPrice = this.data[i].formattedPrice;
+    const formattedPrice = this.data[i]!.formattedPrice;
     return `${formattedPrice}\n ${formattedDate}`;
   }
 
   private drawHistoryGraph_() {
+    if (this.points.length === 0) {
+      return;
+    }
+
     // Calculate graph size.
     const tooltipHeight = this.getTooltipHeight_();
 
     const [ticks, formattedTicks] = this.getAxisTicksY_();
     const [maxLabelWidth, labelHeight] =
-        this.getLabelSize_(formattedTicks[formattedTicks.length - 1]);
+        this.getLabelSize_(formattedTicks[formattedTicks.length - 1]!);
 
     const graphMarginTopPx = GRAPH_BUBBLE_BOTTOM_MARGIN_PX +
         this.bubbleTopPaddingPx_ + this.bubbleBottomPaddingPx_ + tooltipHeight;
@@ -160,8 +176,9 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
     const yRange = [graphHeightPx - graphMarginBottomPx, graphMarginTopPx];
 
     const xDomain =
-        [this.points[0].date, this.points[this.points.length - 1].date];
-    const yDomain = [ticks[0], ticks[ticks.length - 1]];
+        [this.points[0]!.date, this.points[this.points.length - 1]!.date];
+    // getAxisTicksY_ always returns arrays of length TICK_COUNT_Y.
+    const yDomain = [ticks[0]!, ticks[ticks.length - 1]!];
 
     const xScale = d3.scaleTime(xDomain, xRange);
     const yScale = d3.scaleLinear(yDomain, yRange);
@@ -173,7 +190,7 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
                       .tickPadding(this.dateTopMarginPx_);
     const yAxis = d3.axisLeft(yScale)
                       .tickValues(ticks)
-                      .tickFormat((_, i) => formattedTicks[i])
+                      .tickFormat((_, i) => formattedTicks[i]!)
                       .tickSize(0)
                       .tickPadding(this.priceRightMarginPx_);
 
@@ -257,16 +274,18 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
     const initialIndex = this.currentPricePointIndex_ == null ?
         this.points.length - 1 :
         this.currentPricePointIndex_;
+    // points.length is always > 0.
     this.showTooltip_(
         verticalLine, circle, bubble, tooltip, initialIndex,
-        xScale(this.points[initialIndex].date),
-        yScale(this.points[initialIndex].price), graphWidthPx);
+        xScale(this.points[initialIndex]!.date),
+        yScale(this.points[initialIndex]!.price), graphWidthPx);
 
     this.$.historyGraph.addEventListener('pointermove', (e: PointerEvent) => {
       const mouseX = e.offsetX;
       const mouseY = e.offsetY;
-      if (mouseX < xRange[0] || mouseX > xRange[1] || mouseY < yRange[1] ||
-          mouseY > yRange[0]) {
+      // xRange, yRange are consts with length 2 defined above.
+      if (mouseX < xRange[0]! || mouseX > xRange[1]! || mouseY < yRange[1]! ||
+          mouseY > yRange[0]!) {
         return;
       }
       if (!this.isGraphInteracted_) {
@@ -276,15 +295,15 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
       }
       const nearestIndex =
           this.points.reduce((minIndex, _, currentIndex, array) => {
-            return Math.abs(mouseX - xScale(array[currentIndex].date)) <
-                    Math.abs(mouseX - xScale(array[minIndex].date)) ?
+            return Math.abs(mouseX - xScale(array[currentIndex]!.date)) <
+                    Math.abs(mouseX - xScale(array[minIndex]!.date)) ?
                 currentIndex :
                 minIndex;
           }, 0);
       this.showTooltip_(
           verticalLine, circle, bubble, tooltip, nearestIndex,
-          xScale(this.points[nearestIndex].date),
-          yScale(this.points[nearestIndex].price), graphWidthPx);
+          xScale(this.points[nearestIndex]!.date),
+          yScale(this.points[nearestIndex]!.price), graphWidthPx);
     });
 
     this.$.historyGraph.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -300,8 +319,8 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
         if (nextIndex >= 0 && nextIndex <= this.points.length - 1) {
           this.showTooltip_(
               verticalLine, circle, bubble, tooltip, nextIndex,
-              xScale(this.points[nextIndex].date),
-              yScale(this.points[nextIndex].price), graphWidthPx);
+              xScale(this.points[nextIndex]!.date),
+              yScale(this.points[nextIndex]!.price), graphWidthPx);
         }
       }
     });
@@ -321,19 +340,20 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
     const ticks: number[] = [];
     const formattedTicks: string[] = [];
 
+    assert(this.points.length > 0);
     let minPrice = this.points.reduce((min, value) => {
       return Math.min(min, value.price);
-    }, this.points[0].price);
+    }, this.points[0]!.price);
     let maxPrice = this.points.reduce((max, value) => {
       return Math.max(max, value.price);
-    }, this.points[0].price);
+    }, this.points[0]!.price);
 
     // To ensure that the Y-axis doesn't reflect trivial changes and that the
     // line is in the middle of the graph, apply a padding max(median price /
     // 10, $1) to the minPrice and maxPrice.
     const medianPrice = ([...this.points].sort(
-        (a, b) => a.price - b.price))[Math.floor(this.points.length / 2)]
-                            .price;
+        (a, b) =>
+            a.price - b.price))[Math.floor(this.points.length / 2)]!.price;
     const padding = Math.max(medianPrice / 10, 1);
     minPrice = Math.max(minPrice - padding, 0);
     maxPrice = maxPrice + padding;
@@ -384,18 +404,20 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
     const ticks: Date[] = [];
     const indicesByMonth: number[][] = Array.from({length: 12}, () => []);
     for (let i = 0; i < this.points.length; i++) {
-      const month = this.points[i].date.getMonth();
-      indicesByMonth[month].push(i);
+      const month = this.points[i]!.date.getMonth();
+      indicesByMonth[month]!.push(i);
     }
     for (const indices of indicesByMonth) {
-      if (indices.length) {
-        const x1 = xScale(this.points[indices[0]].date);
-        const x2 = xScale(this.points[indices[indices.length - 1]].date);
+      if (indices.length > 0) {
+        // indices is set above, and only contains values between 0 and
+        // `this.points.length`.
+        const x1 = xScale(this.points[indices[0]!]!.date);
+        const x2 = xScale(this.points[indices[indices.length - 1]!]!.date);
         const width = x2 - x1;
         if (width < MIN_MONTH_LABEL_WIDTH_PX) {
           continue;
         }
-        ticks.push(this.points[indices[Math.floor(indices.length / 2)]].date);
+        ticks.push(this.points[indices[Math.floor(indices.length / 2)]!]!.date);
       }
     }
     return ticks;
@@ -420,7 +442,8 @@ export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
   private getTooltipHeight_(): number {
     const textElement = document.createElement('span');
     textElement.style.opacity = '0';
-    textElement.textContent = this.data[0].formattedPrice;
+    assert(this.data.length > 0);
+    textElement.textContent = this.data[0]!.formattedPrice;
     textElement.classList.add(CssClass.TOOLTIP_TEXT);
 
     this.$.historyGraph.appendChild(textElement);

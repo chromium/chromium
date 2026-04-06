@@ -48,8 +48,8 @@ export class ShoppingInsightsAppElement extends CrLitElement {
     };
   }
 
-  accessor productInfo: ProductInfo;
-  accessor priceInsightsInfo: PriceInsightsInfo;
+  accessor productInfo: ProductInfo|undefined = undefined;
+  accessor priceInsightsInfo: PriceInsightsInfo|undefined = undefined;
   protected accessor isProductTrackable_: boolean = false;
   protected accessor isProductTracked_: boolean = false;
   private shoppingApi_: ShoppingServiceBrowserProxy =
