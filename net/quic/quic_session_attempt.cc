@@ -61,6 +61,7 @@ QuicSessionAttempt::QuicSessionAttempt(
     int cert_verify_flags,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
+    std::optional<ResolutionDetails> resolution_details,
     bool retry_on_alternate_network_before_handshake,
     bool use_dns_aliases,
     std::set<std::string> dns_aliases,
@@ -75,6 +76,7 @@ QuicSessionAttempt::QuicSessionAttempt(
       cert_verify_flags_(cert_verify_flags),
       dns_resolution_start_time_(dns_resolution_start_time),
       dns_resolution_end_time_(dns_resolution_end_time),
+      resolution_details_(std::move(resolution_details)),
       was_alternative_service_recently_broken_(
           pool()->WasQuicRecentlyBroken(key().session_key())),
       retry_on_alternate_network_before_handshake_(
@@ -201,14 +203,14 @@ int QuicSessionAttempt::DoCreateSession() {
                          weak_ptr_factory_.GetWeakPtr()),
           key(), quic_version_, cert_verify_flags_, require_confirmation,
           ip_endpoint_, metadata_, dns_resolution_start_time_,
-          dns_resolution_end_time_, net_log(), network_,
+          dns_resolution_end_time_, resolution_details_, net_log(), network_,
           session_creation_initiator_, connection_management_config_);
     }
     rv = pool()->CreateSessionSync(
         key(), quic_version_, cert_verify_flags_, require_confirmation,
         ip_endpoint_, metadata_, dns_resolution_start_time_,
-        dns_resolution_end_time_, net_log(), &session_, &network_,
-        session_creation_initiator_, connection_management_config_);
+        dns_resolution_end_time_, resolution_details_, net_log(), &session_,
+        &network_, session_creation_initiator_, connection_management_config_);
 
     DVLOG(1) << "Created session on network: " << network_;
   }

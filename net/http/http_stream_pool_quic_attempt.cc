@@ -102,7 +102,9 @@ void HttpStreamPool::QuicAttempt::Start() {
       manager_->service_endpoint_request()->GetDnsAliasResults();
   int rv = request_->RequestSession(
       quic_endpoint_, cert_verify_flags, dns_resolution_start_time,
-      dns_resolution_end_time, /*use_dns_aliases=*/true, std::move(dns_aliases),
+      dns_resolution_end_time,
+      manager_->service_endpoint_request()->GetResolutionDetails(),
+      /*use_dns_aliases=*/true, std::move(dns_aliases),
       manager_->CalculateMultiplexedSessionCreationInitiator(),
       /*connection_management_config=*/std::nullopt, net_log_,
       base::BindOnce(&QuicAttempt::OnSessionAttemptComplete,

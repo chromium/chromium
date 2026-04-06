@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/dns/resolution_details.h"
 #include "net/http/alternate_protocol_usage.h"
 
 namespace net {
@@ -67,6 +68,11 @@ struct NET_EXPORT LoadTimingInternalInfo {
 
   // Whether QUIC is enabled.
   bool http_network_session_quic_enabled = false;
+
+  // The details of the DNS resolution that established the connection used by
+  // this request. Can be nullopt when no resolution was performed, or
+  // resolution failed.
+  std::optional<ResolutionDetails> resolution_details;
 };
 
 }  // namespace net

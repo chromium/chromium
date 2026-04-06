@@ -35,6 +35,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
+#include "net/dns/resolution_details.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
 #include "net/quic/quic_chromium_client_stream.h"
@@ -278,6 +279,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
     // Returns the connection timing for the handshake of this session.
     const LoadTimingInfo::ConnectTiming& GetConnectTiming();
+
+    // Returns the resolution details for the DNS resolution that established
+    // this session. Returns nullopt when no resolution was performed.
+    std::optional<ResolutionDetails> GetResolutionDetails() const;
 
     // Returns true if |other| is a handle to the same session as this handle.
     bool SharesSameSession(const Handle& other) const;
@@ -664,6 +669,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       const char* const connection_description,
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
+      std::optional<ResolutionDetails> resolution_details,
       const base::TickClock* tick_clock,
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -965,6 +971,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   const LoadTimingInfo::ConnectTiming& GetConnectTiming();
 
+  std::optional<ResolutionDetails> GetResolutionDetails() const;
+
   quic::ParsedQuicVersion GetQuicVersion() const;
 
   // Send a ping frame to the peer to check the liveness of the connection.
@@ -1211,6 +1219,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   raw_ptr<base::SequencedTaskRunner> task_runner_;
   NetLogWithSource net_log_;
   LoadTimingInfo::ConnectTiming connect_timing_;
+
+  std::optional<ResolutionDetails> resolution_details_;
   std::unique_ptr<QuicConnectionLogger> logger_;
   std::unique_ptr<QuicHttp3Logger> http3_logger_;
   // True when the session is going away, and streams may no longer be created

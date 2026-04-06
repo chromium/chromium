@@ -69,6 +69,7 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
       int cert_verify_flags,
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
+      std::optional<ResolutionDetails> dns_resolution_details,
       bool use_dns_aliases,
       std::set<std::string> dns_aliases,
       MultiplexedSessionCreationInitiator session_creation_initiator,
@@ -82,7 +83,8 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
     std::unique_ptr<QuicSessionAttempt> attempt =
         manager_->pool_->CreateSessionAttempt(
             this, key_.session_key(), endpoint, cert_verify_flags,
-            dns_resolution_start_time, dns_resolution_end_time, use_dns_aliases,
+            dns_resolution_start_time, dns_resolution_end_time,
+            std::move(dns_resolution_details), use_dns_aliases,
             std::move(dns_aliases), session_creation_initiator,
             std::move(connection_management_config));
     QuicSessionAttempt* raw_attempt = attempt.get();
@@ -219,6 +221,7 @@ int QuicSessionAttemptManager::RequestSession(
     int cert_verify_flags,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
+    std::optional<ResolutionDetails> dns_resolution_details,
     bool use_dns_aliases,
     std::set<std::string> dns_aliases,
     MultiplexedSessionCreationInitiator session_creation_initiator,
@@ -234,8 +237,9 @@ int QuicSessionAttemptManager::RequestSession(
 
   return it->second->MaybeAttemptEndpoint(
       request, endpoint, cert_verify_flags, dns_resolution_start_time,
-      dns_resolution_end_time, use_dns_aliases, std::move(dns_aliases),
-      session_creation_initiator, std::move(connection_management_config));
+      dns_resolution_end_time, std::move(dns_resolution_details),
+      use_dns_aliases, std::move(dns_aliases), session_creation_initiator,
+      std::move(connection_management_config));
 }
 
 void QuicSessionAttemptManager::RemoveRequest(

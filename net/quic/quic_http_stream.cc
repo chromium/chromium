@@ -753,6 +753,8 @@ void QuicHttpStream::PopulateLoadTimingInternalInfo(
     load_timing_internal_info->max_stream_limit_pending_delay =
         stream_->max_stream_limit_pending_delay();
   }
+  load_timing_internal_info->resolution_details =
+      quic_session()->GetResolutionDetails();
 }
 
 }  // namespace net

@@ -16,6 +16,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
+#include "net/dns/resolution_details.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
@@ -75,6 +76,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
       int cert_verify_flags,
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
+      std::optional<ResolutionDetails> resolution_details,
       bool retry_on_alternate_network_before_handshake,
       bool use_dns_aliases,
       std::set<std::string> dns_aliases,
@@ -148,6 +150,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   const int cert_verify_flags_;
   const base::TimeTicks dns_resolution_start_time_;
   const base::TimeTicks dns_resolution_end_time_;
+  const std::optional<ResolutionDetails> resolution_details_;
   const bool was_alternative_service_recently_broken_;
   const bool retry_on_alternate_network_before_handshake_;
   const bool use_dns_aliases_;

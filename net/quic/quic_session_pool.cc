@@ -965,6 +965,7 @@ std::unique_ptr<QuicSessionAttempt> QuicSessionPool::CreateSessionAttempt(
     int cert_verify_flags,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
+    std::optional<ResolutionDetails> dns_resolution_details,
     bool use_dns_aliases,
     std::set<std::string> dns_aliases,
     MultiplexedSessionCreationInitiator session_creation_initiator,
@@ -975,7 +976,7 @@ std::unique_ptr<QuicSessionAttempt> QuicSessionPool::CreateSessionAttempt(
   return std::make_unique<QuicSessionAttempt>(
       delegate, quic_endpoint.ip_endpoint, std::move(quic_endpoint.metadata),
       quic_endpoint.quic_version, cert_verify_flags, dns_resolution_start_time,
-      dns_resolution_end_time,
+      dns_resolution_end_time, std::move(dns_resolution_details),
       params_.retry_on_alternate_network_before_handshake, use_dns_aliases,
       std::move(dns_aliases),
       CreateCryptoConfigHandle(QuicCryptoClientConfigKey(session_key)),
@@ -1791,6 +1792,7 @@ int QuicSessionPool::CreateSessionSync(
     ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
+    std::optional<ResolutionDetails> resolution_details,
     const NetLogWithSource& net_log,
     raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network,
@@ -1814,6 +1816,7 @@ int QuicSessionPool::CreateSessionSync(
           std::move(key), quic_version, cert_verify_flags, require_confirmation,
           std::move(peer_address), std::move(metadata),
           dns_resolution_start_time, dns_resolution_end_time,
+          std::move(resolution_details),
           /*session_max_packet_length=*/0, net_log, *network, std::move(socket),
           session_creation_initiator, connection_management_config);
   if (!result.has_value()) {
@@ -1835,6 +1838,7 @@ int QuicSessionPool::CreateSessionAsync(
     ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
+    std::optional<ResolutionDetails> resolution_details,
     const NetLogWithSource& net_log,
     handles::NetworkHandle network,
     MultiplexedSessionCreationInitiator session_creation_initiator,
@@ -1849,6 +1853,7 @@ int QuicSessionPool::CreateSessionAsync(
       std::move(callback), std::move(key), quic_version, cert_verify_flags,
       require_confirmation, peer_address, std::move(metadata),
       dns_resolution_start_time, dns_resolution_end_time,
+      std::move(resolution_details),
       /*session_max_packet_length=*/0, net_log, network, std::move(socket),
       session_creation_initiator, connection_management_config);
 
@@ -1920,8 +1925,8 @@ int QuicSessionPool::CreateSessionOnProxyStream(
           &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
           std::move(callback), std::move(key), quic_version, cert_verify_flags,
           require_confirmation, proxy_peer_address, std::move(metadata),
-          dns_resolution_time, dns_resolution_time, session_max_packet_length,
-          net_log, network, std::move(socket),
+          dns_resolution_time, dns_resolution_time, std::nullopt,
+          session_max_packet_length, net_log, network, std::move(socket),
           MultiplexedSessionCreationInitiator::kUnknown,
           /*connection_management_config=*/std::nullopt));
 
@@ -1948,6 +1953,7 @@ void QuicSessionPool::FinishCreateSession(
     ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
+    std::optional<ResolutionDetails> resolution_details,
     quic::QuicPacketLength session_max_packet_length,
     const NetLogWithSource& net_log,
     handles::NetworkHandle network,
@@ -1965,8 +1971,9 @@ void QuicSessionPool::FinishCreateSession(
           std::move(key), quic_version, cert_verify_flags, require_confirmation,
           std::move(peer_address), std::move(metadata),
           dns_resolution_start_time, dns_resolution_end_time,
-          session_max_packet_length, net_log, network, std::move(socket),
-          session_creation_initiator, connection_management_config);
+          std::move(resolution_details), session_max_packet_length, net_log,
+          network, std::move(socket), session_creation_initiator,
+          connection_management_config);
   std::move(callback).Run(std::move(result));
 }
 
@@ -1980,6 +1987,7 @@ QuicSessionPool::CreateSessionHelper(
     ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
+    std::optional<ResolutionDetails> resolution_details,
     quic::QuicPacketLength session_max_packet_length,
     const NetLogWithSource& net_log,
     handles::NetworkHandle network,
@@ -2120,8 +2128,8 @@ QuicSessionPool::CreateSessionHelper(
       yield_after_packets_, yield_after_duration_, cert_verify_flags, config,
       std::move(crypto_config_handle),
       network_connection_.connection_description(), dns_resolution_start_time,
-      dns_resolution_end_time, tick_clock_, task_runner_.get(),
-      std::move(socket_performance_watcher), metadata,
+      dns_resolution_end_time, std::move(resolution_details), tick_clock_,
+      task_runner_.get(), std::move(socket_performance_watcher), metadata,
       params_.enable_origin_frame, params_.allow_server_migration,
       session_creation_initiator, net_log);
   QuicChromiumClientSession* session = new_session.get();

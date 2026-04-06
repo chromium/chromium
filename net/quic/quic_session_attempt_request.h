@@ -14,6 +14,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
+#include "net/dns/resolution_details.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_pool.h"
 
@@ -41,6 +42,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttemptRequest {
       int cert_verify_flags,
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
+      std::optional<ResolutionDetails> dns_resolution_details,
       bool use_dns_aliases,
       std::set<std::string> dns_aliases,
       MultiplexedSessionCreationInitiator session_creation_initiator,

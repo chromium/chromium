@@ -33,6 +33,7 @@ int QuicSessionAttemptRequest::RequestSession(
     int cert_verify_flags,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
+    std::optional<ResolutionDetails> dns_resolution_details,
     bool use_dns_aliases,
     std::set<std::string> dns_aliases,
     MultiplexedSessionCreationInitiator session_creation_initiator,
@@ -41,9 +42,9 @@ int QuicSessionAttemptRequest::RequestSession(
     CompletionOnceCallback callback) {
   int rv = manager_->RequestSession(
       this, std::move(endpoint), cert_verify_flags, dns_resolution_start_time,
-      dns_resolution_end_time, use_dns_aliases, std::move(dns_aliases),
-      session_creation_initiator, std::move(connection_management_config),
-      net_log);
+      dns_resolution_end_time, std::move(dns_resolution_details),
+      use_dns_aliases, std::move(dns_aliases), session_creation_initiator,
+      std::move(connection_management_config), net_log);
   if (rv == ERR_IO_PENDING) {
     CHECK(!completed_);
     callback_ = std::move(callback);

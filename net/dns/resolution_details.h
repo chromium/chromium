@@ -35,6 +35,8 @@ enum class ResolutionSource {
 // for logging and recording histograms.
 struct NET_EXPORT ResolutionDetails {
   ResolutionSource source = ResolutionSource::kUnknown;
+
+  bool operator==(const ResolutionDetails& other) const = default;
 };
 
 }  // namespace net

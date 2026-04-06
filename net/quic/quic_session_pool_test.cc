@@ -196,7 +196,8 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
         this, quic_session_alias_key_.session_key(), quic_endpoint,
         /*cert_verify_flags=*/0,
         /*dns_resolution_start_time=*/base::TimeTicks(),
-        /*dns_resolution_end_time=*/base::TimeTicks(), /*use_dns_aliases=*/true,
+        /*dns_resolution_end_time=*/base::TimeTicks(),
+        /*dns_resolution_details=*/std::nullopt, /*use_dns_aliases=*/true,
         /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown,
         /*connection_management_config=*/std::nullopt);
   }

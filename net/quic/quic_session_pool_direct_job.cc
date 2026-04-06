@@ -216,6 +216,7 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
       this, endpoint_result.ip_endpoints.front(), endpoint_result.metadata,
       std::move(quic_version_used), cert_verify_flags_,
       dns_resolution_start_time_, dns_resolution_end_time_,
+      resolve_host_request_->GetResolutionDetails(),
       retry_on_alternate_network_before_handshake_, use_dns_aliases_,
       std::move(dns_aliases), /*crypto_client_config_handle=*/nullptr,
       session_creation_initiator_, connection_management_config_);

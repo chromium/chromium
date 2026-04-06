@@ -537,6 +537,15 @@ QuicChromiumClientSession::Handle::GetConnectTiming() {
   return session_->GetConnectTiming();
 }
 
+std::optional<ResolutionDetails>
+QuicChromiumClientSession::Handle::GetResolutionDetails() const {
+  if (!session_) {
+    return std::nullopt;
+  }
+
+  return session_->GetResolutionDetails();
+}
+
 void QuicChromiumClientSession::Handle::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
   if (session_) {
@@ -1021,6 +1030,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     const char* const connection_description,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
+    std::optional<ResolutionDetails> resolution_details,
     const base::TickClock* tick_clock,
     base::SequencedTaskRunner* task_runner,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -1064,6 +1074,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       task_runner_(task_runner),
       net_log_(NetLogWithSource::Make(net_log.net_log(),
                                       NetLogSourceType::QUIC_SESSION)),
+      resolution_details_(std::move(resolution_details)),
       logger_(std::make_unique<QuicConnectionLogger>(
           this,
           connection_description,
@@ -4343,6 +4354,11 @@ QuicChromiumClientSession::GetConnectTiming() {
   connect_timing_.ssl_start = connect_timing_.connect_start;
   connect_timing_.ssl_end = connect_timing_.connect_end;
   return connect_timing_;
+}
+
+std::optional<ResolutionDetails>
+QuicChromiumClientSession::GetResolutionDetails() const {
+  return resolution_details_;
 }
 
 quic::ParsedQuicVersion QuicChromiumClientSession::GetQuicVersion() const {

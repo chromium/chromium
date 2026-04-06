@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -38,6 +39,7 @@
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/dns/resolution_details.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
@@ -428,7 +430,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
             kQuicYieldAfterDurationMilliseconds),
         /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
-        "CONNECTION_UNKNOWN", dns_start, dns_end,
+        "CONNECTION_UNKNOWN", dns_start, dns_end, resolution_details_,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
@@ -458,6 +460,10 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   void SetResponse(const string& status, const string& body) {
     response_headers_ = server_maker_.GetResponseHeaders(status);
     response_data_ = body;
+  }
+
+  void SetResolutionDetails(ResolutionDetails resolution_details) {
+    resolution_details_ = resolution_details;
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructClientDataPacket(
@@ -673,6 +679,8 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   std::vector<PacketToWrite> writes_;
   quic::test::MockConnectionIdGenerator connection_id_generator_;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
+
+  std::optional<ResolutionDetails> resolution_details_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -876,6 +884,55 @@ TEST_P(QuicHttpStreamTest, LoadTimingTwoRequests) {
   LoadTimingInfo load_timing_info2;
   EXPECT_TRUE(stream2.GetLoadTimingInfo(&load_timing_info2));
   ExpectLoadTimingValid(load_timing_info2, /*session_reused=*/true);
+}
+
+TEST_P(QuicHttpStreamTest, PopulateLoadTimingInternalInfo_ResolutionDetails) {
+  SetResolutionDetails(ResolutionDetails{ResolutionSource::kSecure});
+  Initialize();
+
+  request_.method = "GET";
+  request_.url = GURL("https://www.example.org/");
+  stream_->RegisterRequest(&request_);
+  EXPECT_EQ(OK, stream_->InitializeStream(
+                    /*can_send_early=*/true, DEFAULT_PRIORITY,
+                    net_log_with_source_, callback_.callback()));
+
+  LoadTimingInternalInfo load_timing_internal_info;
+  stream_->PopulateLoadTimingInternalInfo(&load_timing_internal_info);
+
+  EXPECT_TRUE(load_timing_internal_info.resolution_details.has_value());
+  EXPECT_EQ(ResolutionSource::kSecure,
+            load_timing_internal_info.resolution_details->source);
+}
+
+TEST_P(QuicHttpStreamTest, PopulateLoadTimingInternalInfo_ExistingSession) {
+  SetResolutionDetails(ResolutionDetails{ResolutionSource::kSecure});
+  Initialize();
+
+  request_.method = "GET";
+  request_.url = GURL("https://www.example.org/");
+  stream_->RegisterRequest(&request_);
+  EXPECT_EQ(OK, stream_->InitializeStream(
+                    /*can_send_early=*/true, DEFAULT_PRIORITY,
+                    net_log_with_source_, callback_.callback()));
+
+  // Create a second stream on the same session.
+  QuicHttpStream stream2(session_->CreateHandle(url::SchemeHostPort(
+                             url::kHttpsScheme, "www.example.org", 443)),
+                         /*dns_aliases=*/{});
+  stream2.RegisterRequest(&request_);
+  EXPECT_EQ(
+      OK, stream2.InitializeStream(/*can_send_early=*/true, DEFAULT_PRIORITY,
+                                   net_log_with_source_, base::NullCallback()));
+
+  LoadTimingInternalInfo load_timing_internal_info;
+  stream2.PopulateLoadTimingInternalInfo(&load_timing_internal_info);
+
+  EXPECT_TRUE(load_timing_internal_info.resolution_details.has_value());
+  // Since the stream uses the existing session, it doesn't perform DNS
+  // resolution again and inherits the resolution details of the session.
+  EXPECT_EQ(ResolutionSource::kSecure,
+            load_timing_internal_info.resolution_details->source);
 }
 
 // QuicHttpStream does not currently support trailers. It should ignore
