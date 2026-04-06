@@ -364,7 +364,7 @@ TEST_F(ScopedAlsaMixerEventTest, RealCallback) {
       .WillOnce(
           [this](snd_mixer_t* mixer_, struct pollfd* pfds, unsigned int space) {
             for (unsigned int i = 0; i < space; ++i) {
-              UNSAFE_TODO(pfds[i]).fd = pipe_fds_[0];
+              UNSAFE_TODO(pfds[i].fd) = pipe_fds_[0];
             }
             return space;
           });

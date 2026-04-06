@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CHROMECAST_MEDIA_BASE_ALIGNED_BUFFER_H_
 #define CHROMECAST_MEDIA_BASE_ALIGNED_BUFFER_H_
 
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/aligned_memory.h"
 
 namespace {
@@ -42,7 +38,7 @@ class AlignedBuffer {
       : size_(other.size()),
         data_(static_cast<T*>(
             base::AlignedAlloc(size_ * sizeof(T), kAlignment))) {
-    std::memcpy(data_.get(), other.data(), size_ * sizeof(T));
+    UNSAFE_TODO(std::memcpy(data_.get(), other.data(), size_ * sizeof(T)));
   }
 
   ~AlignedBuffer() = default;
@@ -52,7 +48,7 @@ class AlignedBuffer {
     size_ = other.size();
     data_.reset(
         static_cast<T*>(base::AlignedAlloc(size_ * sizeof(T), kAlignment)));
-    std::memcpy(data_.get(), other.data(), size_ * sizeof(T));
+    UNSAFE_TODO(std::memcpy(data_.get(), other.data(), size_ * sizeof(T)));
   }
 
   // Move operator
@@ -66,7 +62,8 @@ class AlignedBuffer {
     std::unique_ptr<T, base::AlignedFreeDeleter> new_data(
         static_cast<T*>(base::AlignedAlloc(new_size * sizeof(T), kAlignment)));
     size_t size_to_copy = std::min(new_size, size_);
-    std::memcpy(new_data.get(), data_.get(), size_to_copy * sizeof(T));
+    UNSAFE_TODO(
+        std::memcpy(new_data.get(), data_.get(), size_to_copy * sizeof(T)));
     size_ = new_size;
     data_ = std::move(new_data);
   }
@@ -82,9 +79,9 @@ class AlignedBuffer {
   T* data() { return data_.get(); }
   const T* data() const { return data_.get(); }
 
-  T& operator[](size_t i) { return data()[i]; }
+  T& operator[](size_t i) { return UNSAFE_TODO(data()[i]); }
 
-  const T& operator[](size_t i) const { return data()[i]; }
+  const T& operator[](size_t i) const { return UNSAFE_TODO(data()[i]); }
 
   // Returns number of elements.
   size_t size() const { return size_; }

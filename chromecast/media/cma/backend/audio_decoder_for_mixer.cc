@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/audio_decoder_for_mixer.h"
 
 #include <algorithm>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -568,8 +565,8 @@ void AudioDecoderForMixer::WritePcm(scoped_refptr<DecoderBufferBase> buffer) {
   }
 
   auto io_buffer = buffer_pool_->GetBuffer();
-  memcpy(io_buffer->data() + kAudioMessageHeaderSize, buffer->data(),
-         buffer->data_size());
+  memcpy(UNSAFE_TODO(io_buffer->data() + kAudioMessageHeaderSize),
+         buffer->data(), buffer->data_size());
 
   pending_buffer_complete_ = true;
   mixer_input_->SendAudioBuffer(std::move(io_buffer), frame_count,

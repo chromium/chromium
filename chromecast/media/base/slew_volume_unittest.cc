@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chromecast/media/base/slew_volume.h"
 
 #include <cmath>
 #include <cstdint>
@@ -14,7 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "chromecast/media/base/slew_volume.h"
+#include "base/compiler_specific.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/vector_math.h"
@@ -61,7 +58,7 @@ std::vector<float*> GetDataChannels(::media::AudioBus* audio,
 void ScaleData(const std::vector<float*>& data, int frames, float scale) {
   for (size_t ch = 0; ch < data.size(); ++ch) {
     for (int f = 0; f < frames; ++f) {
-      data[ch][f] *= scale;
+      UNSAFE_TODO(data[ch][f]) *= scale;
     }
   }
 }
@@ -76,7 +73,7 @@ void CompareDataPartial(const std::vector<float*>& expected,
 
   for (size_t ch = 0; ch < expected.size(); ++ch) {
     for (int f = start; f < end; ++f) {
-      EXPECT_FLOAT_EQ(expected[ch][f], actual[ch][f])
+      EXPECT_FLOAT_EQ(UNSAFE_TODO(expected[ch][f]), UNSAFE_TODO(actual[ch][f]))
           << "ch: " << ch << " f: " << f;
     }
   }
@@ -236,7 +233,8 @@ TEST_F(SlewVolumeSteadyStateTest, FMULZero) {
 
   for (size_t ch = 0; ch < data_.size(); ++ch) {
     for (int f = 0; f < num_frames_; ++f) {
-      EXPECT_EQ(0.0f, data_[ch][f]) << "at ch " << ch << "frame " << f;
+      EXPECT_EQ(0.0f, UNSAFE_TODO(data_[ch][f]))
+          << "at ch " << ch << "frame " << f;
     }
   }
 }
@@ -336,14 +334,16 @@ class SlewVolumeDynamicTest
   }
 
   // Data accessors. Override to change access method of CheckSlewM[AC/UL].
-  virtual float Data(int channel, int frame) { return data_[channel][frame]; }
+  virtual float Data(int channel, int frame) {
+    return UNSAFE_TODO(data_[channel][frame]);
+  }
 
   virtual float Data2(int channel, int frame) {
-    return data_2_[channel][frame];
+    return UNSAFE_TODO(data_2_[channel][frame]);
   }
 
   virtual float Expected(int channel, int frame) {
-    return expected_[channel][frame];
+    return UNSAFE_TODO(expected_[channel][frame]);
   }
 
   int sample_rate_;
@@ -392,10 +392,10 @@ TEST_P(SlewVolumeDynamicTest, FMULRampDownByParts) {
     if (num_frames_ - f < frame_step * 2) {
       frame_step = num_frames_ - f;
     }
-    slew_volume_->ProcessFMUL(false, expected_[0] + f, frame_step, 1,
-                              data_[0] + f);
-    slew_volume_->ProcessFMUL(true, expected_[1] + f, frame_step, 1,
-                              data_[1] + f);
+    slew_volume_->ProcessFMUL(false, UNSAFE_TODO(expected_[0] + f), frame_step,
+                              1, UNSAFE_TODO(data_[0] + f));
+    slew_volume_->ProcessFMUL(true, UNSAFE_TODO(expected_[1] + f), frame_step,
+                              1, UNSAFE_TODO(data_[1] + f));
   }
   ASSERT_EQ(num_frames_, f);
   CheckSlewMUL(start, end);
@@ -440,10 +440,10 @@ TEST_P(SlewVolumeDynamicTest, FMACRampUpByParts) {
     if (num_frames_ - f < frame_step * 2) {
       frame_step = num_frames_ - f;
     }
-    slew_volume_->ProcessFMAC(false, data_2_[0] + f, frame_step, 1,
-                              data_[0] + f);
-    slew_volume_->ProcessFMAC(true, data_2_[1] + f, frame_step, 1,
-                              data_[1] + f);
+    slew_volume_->ProcessFMAC(false, UNSAFE_TODO(data_2_[0] + f), frame_step, 1,
+                              UNSAFE_TODO(data_[0] + f));
+    slew_volume_->ProcessFMAC(true, UNSAFE_TODO(data_2_[1] + f), frame_step, 1,
+                              UNSAFE_TODO(data_[1] + f));
   }
   ASSERT_EQ(num_frames_, f);
   CheckSlewMAC(start, end);
@@ -480,15 +480,15 @@ class SlewVolumeInterleavedTest : public SlewVolumeDynamicTest {
   }
 
   float Data(int channel, int frame) override {
-    return data_[0][channels_ * frame + channel];
+    return UNSAFE_TODO(data_[0][channels_ * frame + channel]);
   }
 
   float Data2(int channel, int frame) override {
-    return data_2_[0][channels_ * frame + channel];
+    return UNSAFE_TODO(data_2_[0][channels_ * frame + channel]);
   }
 
   float Expected(int channel, int frame) override {
-    return expected_[0][channels_ * frame + channel];
+    return UNSAFE_TODO(expected_[0][channels_ * frame + channel]);
   }
 };
 
