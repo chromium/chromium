@@ -217,14 +217,6 @@ class ServiceWorkerSubresourceLoader::StreamWaiter
   mojo::Receiver<blink::mojom::ServiceWorkerStreamCallback> receiver_;
 };
 
-bool ServiceWorkerSubresourceLoader::MaybeStartAutoPreload() {
-  if (controller_connector_->fetch_handler_bypass_option() !=
-      blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload) {
-    return false;
-  }
-  return ServiceWorkerSubresourceLoader::StartRaceNetworkRequest();
-}
-
 bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   // If the fetch event is restarted for some reason, stop dispatching
   // RaceNetworkRequest to avoid making the race condition complex.
@@ -514,10 +506,6 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
       }
       break;
     case kDefault:
-      if (MaybeStartAutoPreload()) {
-        SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
-        SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
-      }
       break;
     case kSkipped:
       // Don't start race network request.
@@ -705,30 +693,15 @@ void ServiceWorkerSubresourceLoader::OnFallback(
     }
   }
 
-  if (dispatched_preload_type() == DispatchedPreloadType::kAutoPreload &&
-      commit_responsibility() == FetchResponseFrom::kServiceWorker &&
-      !is_race_network_request_aborted) {
-    // When AutoPreload is dispatched, set the fetch handler end time and record
-    // loading metrics.
-    race_network_request_loader_client_
-        ->MaybeRecordResponseReceivedToFetchHandlerEndTiming(
-            base::TimeTicks::Now(), /*is_fallback=*/true);
-    // Update the commit responsibility to the intermediate state
-    // |kAutoPreloadHandlingFallback| for the fallback. This is a special
-    // treatment for AutoPreload.
-    SetCommitResponsibility(FetchResponseFrom::kAutoPreloadHandlingFallback);
-  }
-
   switch (commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
-      // If the RaceNetworkRequest or AutoPreload is successfully processed but
-      // the response is not handled yet, ask its URLLoaderClient to handle the
-      // response regardless of the response status not to dispatch additional
-      // network request for fallback.
+      // If the RaceNetworkRequest is successfully processed but the response is
+      // not handled yet, ask its URLLoaderClient to handle the response
+      // regardless of the response status not to dispatch additional network
+      // request for fallback.
       switch (dispatched_preload_type()) {
         case DispatchedPreloadType::kRaceNetworkRequest:
-        case DispatchedPreloadType::kAutoPreload:
           if (!is_race_network_request_aborted) {
             SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
             return;
@@ -737,6 +710,7 @@ void ServiceWorkerSubresourceLoader::OnFallback(
         case DispatchedPreloadType::kNone:
           SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
           break;
+        case DispatchedPreloadType::kAutoPreload:
         case DispatchedPreloadType::kNavigationPreload:
           NOTREACHED();
       }
@@ -764,19 +738,7 @@ void ServiceWorkerSubresourceLoader::OnFallback(
       // the code path for the non-fallback case.
       return;
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
-      // |kAutoPreloadHandlingFallback| is the intermediate state to transfer
-      // the commit responsibility from the fetch handler to the network
-      // request (kServiceWorker). If the fetch handler result is fallback,
-      // manually set the network request (kWithoutServiceWorker).
-      SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
-      // If the network request is faster than the fetch handler, the response
-      // from the network is processed but not committed. We have to explicitly
-      // commit and complete the response. Otherwise
-      // |ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse()| will
-      // be called.
-      race_network_request_loader_client_
-          ->CommitAndCompleteResponseIfDataTransferFinished();
-      return;
+      NOTREACHED();
   }
 
   // Hand over to the network loader.
@@ -852,13 +814,6 @@ void ServiceWorkerSubresourceLoader::UpdateResponseTiming(
 void ServiceWorkerSubresourceLoader::StartResponse(
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream) {
-  // When AutoPreload is dispatched, set the fetch handler end time and record
-  // loading metrics.
-  if (dispatched_preload_type() == DispatchedPreloadType::kAutoPreload) {
-    race_network_request_loader_client_
-        ->MaybeRecordResponseReceivedToFetchHandlerEndTiming(
-            base::TimeTicks::Now(), /*is_fallback=*/false);
-  }
   switch (commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:

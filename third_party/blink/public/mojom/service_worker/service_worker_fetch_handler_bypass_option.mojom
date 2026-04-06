@@ -12,10 +12,8 @@ module blink.mojom;
 // skippable.
 enum ServiceWorkerFetchHandlerBypassOption {
   kDefault,
-  kBypassOnlyIfServiceWorkerNotStarted,
   kRaceNetworkRequest,
   kRaceNetworkRequestHoldback,
-  kAutoPreload,
   // This is set in `ServiceWorkerMainResourceLoader` when
   // `ServiceWorkerSyntheticResponse` is involved.
   // `ServiceWorkerSyntheticResponse` is effective only for the main resource.

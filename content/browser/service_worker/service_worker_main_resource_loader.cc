@@ -528,16 +528,6 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
   }
 
-  // If |enable_subresource_preload| feature param is true, preload requests
-  // are dispatched on any subresources, otherwise preload requests won't be
-  // dispatched for subresources.
-  service_worker_client_->set_fetch_handler_bypass_option(
-      base::GetFieldTrialParamByFeatureAsBool(
-          features::kServiceWorkerAutoPreload, "enable_subresource_preload",
-          /*default_value=*/false)
-          ? blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload
-          : blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault);
-
   return result;
 }
 
