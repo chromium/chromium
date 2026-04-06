@@ -36,7 +36,6 @@ class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
     return child_bubble_;
   }
 
- private:
   // HoldingSpaceAshTestBase:
   void SetUp() override {
     HoldingSpaceAshTestBase::SetUp();
@@ -66,6 +65,7 @@ class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
     AshTestBase::TearDown();
   }
 
+ private:
   // Invoked from `SetUp()` to create the `child_bubble()`.
   virtual std::unique_ptr<HoldingSpaceTrayChildBubble> CreateChildBubble(
       HoldingSpaceViewDelegate* view_delegate) {
@@ -110,6 +110,12 @@ class HoldingSpaceTrayChildBubblePlaceholderTest
     : public HoldingSpaceTrayChildBubbleTestBase,
       public testing::WithParamInterface</*has_placeholder=*/bool> {
  protected:
+  void TearDown() override {
+    placeholder_ = nullptr;
+    section_ = nullptr;
+    HoldingSpaceTrayChildBubbleTestBase::TearDown();
+  }
+
   void ExpectPlaceholderOrGone() {
     if (has_placeholder()) {
       EXPECT_TRUE(child_bubble()->GetVisible());
@@ -170,8 +176,8 @@ class HoldingSpaceTrayChildBubblePlaceholderTest
   }
 
   // Owned by view hierarchy.
-  raw_ptr<views::View, DanglingUntriaged> placeholder_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged> section_ = nullptr;
+  raw_ptr<views::View> placeholder_ = nullptr;
+  raw_ptr<views::View> section_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
