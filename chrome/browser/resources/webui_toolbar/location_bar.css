@@ -41,31 +41,49 @@
   background-color: var(--color-location-bar-background-hovered);
 }
 
-/* The location bar acts focused when the omnibox within it is
-   (but not if, say, the page icon is), hence the :has() use here and below */
-:host:has(> readonly-omnibox:focus-within) {
-  background-color: var(--color-omnibox-results-background);
+@media not (prefers-contrast: more) {
+  :host(.input-in-progress) {
+    background-color: var(--color-omnibox-results-background);
+    border: 1px solid var(--color-location-bar-border-on-mismatch);
+  }
+  :host(.input-in-progress:hover) {
+    background-color: var(--color-omnibox-results-background-hovered);
+  }
 
-  /* TODO: Focus ring should go away when popup is open */
-  box-shadow: inset 0 0 0 2px var(--cr-icon-button-focus-outline-color,
-      var(--cr-focus-outline-color));
-
-  transition-property: none;
+  /* The border override for input-in-progress is only visible if
+   * the location bar isn't visibly focused */
+  :host(#location-bar):has(
+      > readonly-omnibox:focus-within, > readonly-omnibox.render-focused) {
+    border: none;
+  }
 }
-
-/* TODO: input_in_progress and not high-contrast gets different colors*/
 
 @media (prefers-contrast: more) {
   :host {
     border: 1px solid var(--color-location-bar-border);
   }
 
-  :host:has(> readonly-omnibox:focus-within) {
+  :host:has(
+      > readonly-omnibox:focus-within, > readonly-omnibox.render-focused) {
     border: 1px solid var(--color-omnibox-results-background);
   }
 }
 
-/* TODO: non-high-contrast !is_caret_visible and input_in_progress border */
+/*The location bar acts focused when the omnibox within it is
+   (but not if, say, the page icon is), hence the :has() use here and below.
+
+  This should take precedence over :hover rules, so it throws in an ID
+  selector for its specificity.
+*/
+:host(#location-bar):has(
+    > readonly-omnibox:focus-within, > readonly-omnibox.render-focused) {
+  background-color: var(--color-omnibox-results-background);
+
+  box-shadow: inset 0 0 0 2px var(--cr-icon-button-focus-outline-color,
+      var(--cr-focus-outline-color));
+
+  transition-property: none;
+}
 
 /* Below are sketches of what the various LHS chips might look like,
  * to have the layout have roughly sensible for the middle portions.

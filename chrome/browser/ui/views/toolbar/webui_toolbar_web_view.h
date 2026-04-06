@@ -173,6 +173,8 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::HomeControlStatePtr state);
   void OnOmniboxViewStateChanged(
       toolbar_ui_api::mojom::OmniboxViewStatePtr state);
+  void OnLocationBarFlagsChanged(
+      toolbar_ui_api::mojom::LocationBarFlagsPtr state);
   void OnPinnedToolbarActionsStateChanged(
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> state);
 

@@ -4,11 +4,19 @@
 
 import './readonly_omnibox.js';
 
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './location_bar.css.js';
 import {getHtml} from './location_bar.html.js';
 import type {LocationBarState} from './toolbar_ui_api_data_model.mojom-webui.js';
+
+export interface LocationBarElement {
+  $: {
+    omnibox: HTMLElement,
+  };
+}
 
 export class LocationBarElement extends CrLitElement {
   static get is() {
@@ -29,14 +37,49 @@ export class LocationBarElement extends CrLitElement {
     };
   }
 
-  protected accessor locationBarState: LocationBarState = {
+  accessor locationBarState: LocationBarState = {
     omniboxViewState: {
       textPieces: [],
       selection: null,
       textIsUrl: false,
     },
+    locationBarFlags: {
+      userInputInProgress: false,
+      renderFocused: false,
+    },
     contentSettingImageStates: [],
-  };
+  }
+
+  private trackedElementManager_: TrackedElementManager;
+
+  constructor() {
+    super();
+    this.trackedElementManager_ = TrackedElementManager.getInstance();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.trackedElementManager_.startTracking(
+        this.$.omnibox, 'kOmniboxElementId');
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.trackedElementManager_.stopTracking(this.$.omnibox);
+  }
+
+
+  override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    if (changedProperties.has('locationBarState')) {
+      this.$.omnibox.classList.toggle(
+          'render-focused',
+          this.locationBarState.locationBarFlags.renderFocused);
+      this.classList.toggle(
+          'input-in-progress',
+          this.locationBarState.locationBarFlags.userInputInProgress);
+    }
+  }
 }
 
 declare global {

@@ -177,7 +177,17 @@ struct OmniboxViewState {
 
   // This is set if the omnibox view contains a URL and must therefore force
   // LTR rendering even in RTL languages.
-  bool text_is_url;
+  bool text_is_url = false;
+};
+
+struct LocationBarFlags {
+  // Whether the user has edited the text. Note that this includes them entering
+  // something and tabbing out; it's not just set when they're actively making
+  // changes.
+  bool user_input_in_progress = false;
+
+  // Whether to render as if we have focus, due to omnibox popup taking it over.
+  bool render_focused = false;
 };
 
 // Enum of all supported pinned toolbar actions.
@@ -237,6 +247,7 @@ struct PinnedToolbarActionState {
 
 struct LocationBarState {
   OmniboxViewState omnibox_view_state;
+  LocationBarFlags location_bar_flags;
   // The set of content setting icon state for each visible LHS icon.
   array<ContentSettingImageState> content_setting_image_states;
 };

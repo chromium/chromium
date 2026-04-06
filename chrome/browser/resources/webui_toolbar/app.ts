@@ -26,9 +26,19 @@ import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js
 // This should probably be a separate file, but rollup support only
 // handles 2 at most now.
 import {OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
+import type {LocationBarState} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
+import {LocationBarElement} from './location_bar.js';
 
-export {OmniboxTextColor, ReadonlyOmniboxElement, TrackedElementManager};
+export {
+  LocationBarElement,
+  OmniboxTextColor,
+  ReadonlyOmniboxElement,
+  TrackedElementManager,
+};
+export type {
+    LocationBarState,
+};
 // clang-format on
 
 const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
@@ -105,6 +115,10 @@ export class ToolbarAppElement extends CrLitElement {
         textPieces: [],
         selection: null,
         textIsUrl: false,
+      },
+      locationBarFlags: {
+        userInputInProgress: false,
+        renderFocused: false,
       },
       contentSettingImageStates: [],
     },

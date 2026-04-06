@@ -169,6 +169,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       toolbar_ui_api::mojom::LocationBarState::New();
   last_queued_state_.location_bar_state->omnibox_view_state =
       toolbar_ui_api::mojom::OmniboxViewState::New();
+  last_queued_state_.location_bar_state->location_bar_flags =
+      toolbar_ui_api::mojom::LocationBarFlags::New();
   last_queued_state_.layout_constants_version = 0;
   last_queued_state_.back_forward_control_state = GetBackForwardState();
 
@@ -557,6 +559,15 @@ void WebUIToolbarWebView::OnOmniboxViewStateChanged(
     toolbar_ui_api::mojom::OmniboxViewStatePtr state) {
   if (*state != *last_queued_state_.location_bar_state->omnibox_view_state) {
     last_queued_state_.location_bar_state->omnibox_view_state =
+        std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnLocationBarFlagsChanged(
+    toolbar_ui_api::mojom::LocationBarFlagsPtr state) {
+  if (*state != *last_queued_state_.location_bar_state->location_bar_flags) {
+    last_queued_state_.location_bar_state->location_bar_flags =
         std::move(state);
     PostPushNavigationState();
   }
