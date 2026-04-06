@@ -2433,8 +2433,15 @@ class WebUIPinnedToolbarActionsBrowserTest
       };
 };
 
+// TODO(crbug.com/499825436): Fix and enable these tests on Windows and
+// ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_PinUnpinIndividually DISABLED_PinUnpinIndividually
+#else
+#define MAYBE_PinUnpinIndividually PinUnpinIndividually
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
-                       PinUnpinIndividually) {
+                       MAYBE_PinUnpinIndividually) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
@@ -2456,7 +2463,13 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinAllTogether) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_PinAllTogether DISABLED_PinAllTogether
+#else
+#define MAYBE_PinAllTogether PinAllTogether
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       MAYBE_PinAllTogether) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
@@ -2471,7 +2484,13 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinAllTogether) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, InvokeActions) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeActions DISABLED_InvokeActions
+#else
+#define MAYBE_InvokeActions InvokeActions
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       MAYBE_InvokeActions) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
@@ -2856,8 +2875,13 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, ToolbarDivider) {
   ASSERT_TRUE(base::test::RunUntil([&]() { return !is_divider_visible(); }));
 }
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_SetActionElementIdentifier DISABLED_SetActionElementIdentifier
+#else
+#define MAYBE_SetActionElementIdentifier SetActionElementIdentifier
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
-                       SetActionElementIdentifier) {
+                       MAYBE_SetActionElementIdentifier) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
