@@ -156,7 +156,7 @@ class GlicKeyedService : public KeyedService,
   virtual GlicFreController& fre_controller();
   virtual GlicWindowController& window_controller() const;
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
-  GlicWindowControllerInterface& GetSingleInstanceWindowController() const;
+
 #endif
   GlicSharingManager& sharing_manager() override;
 

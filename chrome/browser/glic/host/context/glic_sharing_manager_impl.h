@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 
 namespace glic {
@@ -24,11 +25,6 @@ class GlicStablePinningDelegatingSharingManager;
 // functionality.
 class GlicSharingManagerImpl : public GlicSharingManager {
  public:
-#if !BUILDFLAG(IS_ANDROID)
-  GlicSharingManagerImpl(Profile* profile,
-                         GlicWindowControllerInterface* window_controller,
-                         GlicMetrics* metrics);
-#endif
   GlicSharingManagerImpl(
       std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager,
       std::unique_ptr<GlicFocusedBrowserManager> focused_browser_manager,

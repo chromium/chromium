@@ -98,26 +98,7 @@ class BaseDelegate : public GlicMetrics::Delegate {
   raw_ptr<PrefService> pref_service_;
 };
 
-class DelegateImpl : public BaseDelegate {
- public:
-  explicit DelegateImpl(GlicWindowControllerInterface* window_controller,
-                        GlicSharingManager* sharing_manager,
-                        PrefService* pref_service)
-      : BaseDelegate(sharing_manager, pref_service),
-        window_controller_(window_controller) {}
-  gfx::Size GetWindowSize() const override {
-    return window_controller_->GetPanelSize();
-  }
-  bool IsWindowShowing() const override {
-    return window_controller_->IsShowing();
-  }
-  bool IsWindowAttached() const override {
-    return window_controller_->IsAttached();
-  }
 
- private:
-  raw_ptr<GlicWindowControllerInterface> window_controller_;
-};
 
 class DelegateMultiInstanceImpl : public BaseDelegate {
  public:
@@ -832,13 +813,6 @@ void GlicMetrics::OnActivateTabFromInstance(tabs::TabInterface* tab) {
         base::UserMetricsAction("Glic.Instance.TaskTabForegrounded"));
   }
 #endif
-}
-
-void GlicMetrics::SetControllers(
-    GlicWindowControllerInterface* window_controller,
-    GlicSharingManager* sharing_manager) {
-  delegate_ = std::make_unique<DelegateImpl>(window_controller, sharing_manager,
-                                             profile_->GetPrefs());
 }
 
 void GlicMetrics::SetControllersWithInstance(

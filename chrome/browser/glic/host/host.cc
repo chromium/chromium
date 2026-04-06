@@ -924,12 +924,7 @@ Host* HostManager::GetOrCreateHostForTab(content::WebContents* web_contents) {
   // In multi-instance mode, no instance is used for now. We should consider
   // just creating new instances for these hosts.
   GlicInstance* glic_instance = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
-  if (!GlicEnabling::IsMultiInstanceEnabled()) {
-    glic_instance =
-        static_cast<GlicWindowControllerInterface*>(window_controller_.get());
-  }
-#endif
+
   tab_hosts_.push_back(std::make_unique<Host>(profile_, nullptr, glic_instance,
                                               instance_delegate_stub_.get()));
   Host* new_host = tab_hosts_.back().get();

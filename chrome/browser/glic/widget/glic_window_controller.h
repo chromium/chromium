@@ -44,8 +44,6 @@ namespace glic {
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 class GlicWidget;
-class GlicKeyedService;
-enum class AttachChangeReason;
 
 // MIGRATION IN PROGRESS - WARNING
 //
@@ -168,31 +166,6 @@ class GlicWindowController {
     return base::FeatureList::IsEnabled(features::kGlicDetached) &&
            !GlicEnabling::IsMultiInstanceEnabled();
   }
-};
-
-// This class owns and manages the glic window. This class has the same lifetime
-// as the GlicKeyedService, so it exists if and only if the profile exists.
-//
-// See the |State| enum below for the lifecycle of the window. When the glic
-// window is open |attached_browser_| indicates if the window is attached or
-// standalone. See |IsAttached|
-class GlicWindowControllerInterface : public GlicWindowController,
-                                      public GlicInstance {
- public:
-  // Returns a WeakPtr to this instance. It can be destroyed at any time if the
-  // profile is deleted or if the browser shuts down.
-  virtual base::WeakPtr<GlicWindowControllerInterface> GetWeakPtr() = 0;
-
-  // Returns whether or not the glic web contents are loaded (this can also be
-  // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
-  virtual bool IsWarmed() const = 0;
-
-  virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
-
-  // Update the resize state of the widget if it is needed and safe to do so.
-  // On Windows make sure that the client area size remains the same even if
-  // the widget size changes because the widget is resizable.
-  virtual void MaybeSetWidgetCanResize() = 0;
 };
 
 }  // namespace glic

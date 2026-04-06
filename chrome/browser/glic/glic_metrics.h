@@ -176,7 +176,6 @@ enum class GlicTabPinnedForSharingResult {
 
 class GlicEnabling;
 class GlicSharingManager;
-class GlicWindowControllerInterface;
 
 namespace internal {
 class BrowserActivityObserver;
@@ -288,10 +287,8 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // arbitrary tab.
   void LogGetContextForActorFromTabError(GlicGetContextFromTabError error);
 
-  // One of these three must be called immediately after constructor before any
+  // One of these must be called immediately after constructor before any
   // calls from glic.mojom.
-  void SetControllers(GlicWindowControllerInterface* window_controller,
-                      GlicSharingManager* sharing_manager);
   void SetControllersWithInstance(GlicInstance* glic_instance,
                                   GlicSharingManager* sharing_manager);
   void ClearControllers();

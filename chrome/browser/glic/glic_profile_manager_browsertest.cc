@@ -420,12 +420,7 @@ class GlicProfileManagerPreloadingTest
   bool IsWarmed() {
     auto* service =
         GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-      return service->web_contents_warming_pool()
-          .HasWarmedContainerForTesting();
-    } else {
-      return service->GetSingleInstanceWindowController().IsWarmed();
-    }
+    return service->web_contents_warming_pool().HasWarmedContainerForTesting();
   }
 
  private:

@@ -263,7 +263,7 @@ void GlicKeyedService::InitializeAfterConstruction() {
 }
 
 GlicKeyedService::~GlicKeyedService() {
-  metrics_->SetControllers(nullptr, nullptr);
+  metrics_->ClearControllers();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -425,13 +425,6 @@ GlicWindowController& GlicKeyedService::window_controller() const {
   CHECK(window_controller_);
   return *window_controller_.get();
 }
-
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-GlicWindowControllerInterface&
-GlicKeyedService::GetSingleInstanceWindowController() const {
-  NOTREACHED();  // deprecated
-}
-#endif
 
 GlicFreController& GlicKeyedService::fre_controller() {
   CHECK(fre_controller_);
