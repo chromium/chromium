@@ -22,7 +22,7 @@ import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_c
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {assert, assertNotReachedCase} from '//resources/js/assert.js';
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
@@ -241,19 +241,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   protected get shouldShowSubmitButton_(): boolean {
     return this.searchboxNextEnabled && this.submitEnabled;
-  }
-
-  // TODO(crbug.com/486705724): Clean up methods used by the legacy composebox
-  // submit button template.
-  protected submitButtonIconClass_(): string {
-    switch (this.submitButtonIconType) {
-      case SubmitButtonIconType.FORWARD:
-        return 'icon-arrow-forward';
-      case SubmitButtonIconType.UPWARD:
-        return 'icon-arrow-upward';
-      default:
-        assertNotReachedCase(this.submitButtonIconType);
-    }
   }
 
   override getDropdownElement(): ComposeboxDropdownElement {
@@ -936,12 +923,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  // TODO(crbug.com/486705724): Clean up methods used by the legacy composebox
-  // submit button template.
-  protected onSubmitContainerClick_(e: MouseEvent) {
-    this.submitQuery_(e);
-  }
-
   protected onSubmitClick_(e: MouseEvent) {
     this.submitQuery_(e);
   }
@@ -1285,15 +1266,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.expanding_ = this.isCollapsible ? this.submitEnabled : true;
     this.pageHandler_.focusChanged(false);
     this.fire('composebox-focus-out');
-  }
-
-  // TODO(crbug.com/486705724): Clean up methods used by the legacy composebox
-  // submit button template.
-  protected onSubmitContainerFocusin_() {
-    // Matches should always be greater than 0 due to verbatim match.
-    if (this.input && !this.selectedMatch) {
-      this.selectFirstMatch();
-    }
   }
 
   protected onSubmitFocusin_() {
