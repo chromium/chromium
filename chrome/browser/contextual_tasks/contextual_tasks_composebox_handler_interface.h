@@ -48,6 +48,9 @@ class ContextualTasksComposeboxHandlerInterface {
   // Initializes the input state model.
   virtual void InitializeInputStateModel() = 0;
 
+  // Updates the active model mode based on the given URL parameters.
+  virtual void UpdateModelFromUrl(const GURL& url) = 0;
+
   // Returns true if there is a suggested tab context chip in the compose box.
   virtual bool has_suggested_tab_context() const = 0;
 };

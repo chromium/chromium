@@ -47,8 +47,8 @@ class ContextualTasksComposeboxHandler
       public contextual_tasks::ContextualTasksComposeboxHandlerInterface {
  public:
   friend class ContextualTasksComposeboxHandlerTest;
-  using TakeInputStateModelCallback =
-      base::OnceCallback<std::unique_ptr<contextual_search::InputStateModel>()>;
+  using TakeInputStateModelCallback = base::RepeatingCallback<
+      std::unique_ptr<contextual_search::InputStateModel>()>;
 
   ContextualTasksComposeboxHandler(
       contextual_tasks::ContextualTasksUIInterface* web_ui_interface,
@@ -100,6 +100,7 @@ class ContextualTasksComposeboxHandler
   void CreateAndSendQueryMessage(const std::string& query);
 
   void ResetInputStateModel() override;
+  void UpdateModelFromUrl(const GURL& url) override;
   void UpdateSuggestedTabContext(
       std::unique_ptr<contextual_tasks::SuggestedTabInfo> suggested_tab)
       override;

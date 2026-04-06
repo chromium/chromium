@@ -645,6 +645,12 @@ void ComposeboxQueryControllerBridge::InitializeInputStateModel() {
   }
 }
 
+void ComposeboxQueryControllerBridge::UpdateModelFromUrl(const GURL& url) {
+  if (input_state_model_) {
+    input_state_model_->UpdateModelFromUrl(url);
+  }
+}
+
 bool ComposeboxQueryControllerBridge::has_suggested_tab_context() const {
   return false;
 }

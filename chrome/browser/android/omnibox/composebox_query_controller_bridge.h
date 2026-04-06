@@ -102,6 +102,7 @@ class ComposeboxQueryControllerBridge
       override;
   void OnTaskChanged() override;
   void InitializeInputStateModel() override;
+  void UpdateModelFromUrl(const GURL& url) override;
   bool has_suggested_tab_context() const override;
 
   // contextual_tasks::QueryContextualizer::Delegate:
