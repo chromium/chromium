@@ -83,6 +83,7 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
     protected boolean shouldShowButton(@Nullable Tab tab) {
         if (tab == null) return false;
         if (!super.shouldShowButton(tab)) return false;
+        if (!AdaptiveToolbarFeatures.isTranslateEnabled(tab.getProfile())) return false;
         if (tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf()) return false;
         return UrlUtilities.isHttpOrHttps(tab.getUrl());
     }

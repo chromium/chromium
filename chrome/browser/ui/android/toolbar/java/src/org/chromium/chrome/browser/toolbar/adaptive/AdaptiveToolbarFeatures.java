@@ -13,8 +13,10 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashMap;
@@ -190,6 +192,13 @@ public class AdaptiveToolbarFeatures {
 
     public static boolean isAdaptiveToolbarReadAloudEnabled(Profile profile) {
         return ReadAloudFeatures.isAllowed(profile);
+    }
+
+    /**
+     * @return Whether the translate button is enabled by policy/preference.
+     */
+    public static boolean isTranslateEnabled(Profile profile) {
+        return UserPrefs.get(profile).getBoolean(Pref.OFFER_TRANSLATE_ENABLED);
     }
 
     public static boolean isTabGroupingPageActionEnabled() {

@@ -161,7 +161,9 @@ public class AdaptiveToolbarStatePredictor {
             return filteredResults;
         }
 
-        if (mBehavior.canShowManualOverride(manualOverride) && isValidSegment(manualOverride)) {
+        if (mBehavior.canShowManualOverride(manualOverride)
+                && isValidSegment(manualOverride)
+                && isVariantEnabled(manualOverride)) {
             filteredResults.add(manualOverride);
             return filteredResults;
         }
@@ -177,7 +179,9 @@ public class AdaptiveToolbarStatePredictor {
 
     private @AdaptiveToolbarButtonVariant int getToolbarPreferenceSelection(
             @AdaptiveToolbarButtonVariant int manualOverride) {
-        if (isValidSegment(manualOverride)) return manualOverride;
+        if (isValidSegment(manualOverride) && isVariantEnabled(manualOverride)) {
+            return manualOverride;
+        }
         return AdaptiveToolbarButtonVariant.AUTO;
     }
 
@@ -266,6 +270,8 @@ public class AdaptiveToolbarStatePredictor {
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(mProfile);
             case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarPageSummaryEnabled();
+            case AdaptiveToolbarButtonVariant.TRANSLATE:
+                return AdaptiveToolbarFeatures.isTranslateEnabled(mProfile);
             case AdaptiveToolbarButtonVariant.GLIC:
                 return AdaptiveToolbarFeatures.isGlicActionEnabled();
             default:

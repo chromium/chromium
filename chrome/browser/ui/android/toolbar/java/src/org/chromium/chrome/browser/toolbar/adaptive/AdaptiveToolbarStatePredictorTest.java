@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 
 import androidx.test.filters.SmallTest;
@@ -26,9 +28,12 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor.UiState;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.ArrayList;
@@ -44,17 +49,69 @@ public class AdaptiveToolbarStatePredictorTest {
     private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private AndroidPermissionDelegate mAndroidPermissionDelegate;
+    @Mock private PrefService mPrefService;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
+        UserPrefs.setPrefServiceForTesting(mPrefService);
+        when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(true);
     }
 
     @After
     public void tearDown() {
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
+    }
+
+    @Test
+    @SmallTest
+    public void testExpectTranslateFilteredWhenDisabled() {
+        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
+
+        // Disable translate.
+        when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
+
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        List.of(AdaptiveToolbarButtonVariant.TRANSLATE));
+
+        // Translate should be filtered out, falling back to default (SHARE).
+        UiState expected =
+                new UiState(
+                        true,
+                        new ArrayList<Integer>(List.of(AdaptiveToolbarButtonVariant.SHARE)),
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.SHARE);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
+    }
+
+    @Test
+    @SmallTest
+    public void testExpectTranslateFilteredWhenDisabled_ManualOverride() {
+        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
+
+        // Disable translate.
+        when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
+
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.TRANSLATE,
+                        List.of(AdaptiveToolbarButtonVariant.SHARE));
+
+        // Manual override for Translate should be filtered out, falling back to default (SHARE).
+        // Preference selection should also fall back to AUTO.
+        UiState expected =
+                new UiState(
+                        true,
+                        new ArrayList<Integer>(List.of(AdaptiveToolbarButtonVariant.SHARE)),
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.SHARE);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
     @Test

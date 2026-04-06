@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
@@ -37,6 +36,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
@@ -296,6 +296,28 @@ public class AdaptiveToolbarSettingsFragmentTest {
                 });
     }
 
+    @Test
+    @SmallTest
+    public void testTranslateOption_Disabled() {
+        // Disable translate.
+        doReturn(false).when(mPrefService).getBoolean(Pref.OFFER_TRANSLATE_ENABLED);
+
+        FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
+        scenario.onFragment(
+                fragment -> {
+                    mRadioPreference =
+                            (RadioButtonGroupAdaptiveToolbarPreference)
+                                    fragment.findPreference(
+                                            AdaptiveToolbarSettingsFragment
+                                                    .PREF_ADAPTIVE_RADIO_GROUP);
+
+                    // Translate button should be gone.
+                    Assert.assertEquals(
+                            View.GONE,
+                            getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getVisibility());
+                });
+    }
+
     private RadioButtonWithDescription getButton(@AdaptiveToolbarButtonVariant int type) {
         return (RadioButtonWithDescription) mRadioPreference.getButton(type);
     }
@@ -331,8 +353,7 @@ public class AdaptiveToolbarSettingsFragmentTest {
                 R.style.Theme_Chromium_Settings,
                 new FragmentFactory() {
                     @Override
-                    public Fragment instantiate(
-                            @NonNull ClassLoader classLoader, @NonNull String className) {
+                    public Fragment instantiate(ClassLoader classLoader, String className) {
                         Fragment fragment = super.instantiate(classLoader, className);
                         if (fragment instanceof ProfileDependentSetting) {
                             ((ProfileDependentSetting) fragment).setProfile(mProfile);

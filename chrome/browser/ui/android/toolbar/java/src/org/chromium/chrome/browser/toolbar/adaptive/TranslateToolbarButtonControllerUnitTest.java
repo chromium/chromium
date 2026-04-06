@@ -22,6 +22,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -29,6 +31,8 @@ import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -42,7 +46,9 @@ public class TranslateToolbarButtonControllerUnitTest {
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private Tracker mTracker;
+    @Mock private Profile mProfile;
     @Mock TranslateBridge.Natives mMockTranslateBridge;
+    @Mock private PrefService mPrefService;
     @Mock private NativePage mNativePage;
 
     private UserActionTester mActionTester;
@@ -52,6 +58,9 @@ public class TranslateToolbarButtonControllerUnitTest {
         TranslateBridgeJni.setInstanceForTesting(mMockTranslateBridge);
         mActionTester = new UserActionTester();
 
+        UserPrefs.setPrefServiceForTesting(mPrefService);
+        when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(true);
+        when(mTab.getProfile()).thenReturn(mProfile);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
     }
@@ -113,5 +122,16 @@ public class TranslateToolbarButtonControllerUnitTest {
         Assert.assertFalse(buttonData.canShow());
         Assert.assertTrue(buttonData.isEnabled());
         Assert.assertNotNull(buttonData.getButtonSpec());
+    }
+
+    @Test
+    public void testShouldNotShowUpWhenDisabled() {
+        when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
+        TranslateToolbarButtonController translateToolbarButtonController =
+                new TranslateToolbarButtonController(
+                        () -> mTab, mDrawable, "Translate button description", () -> mTracker);
+        ButtonData buttonData = translateToolbarButtonController.get(mTab);
+
+        Assert.assertFalse(buttonData.canShow());
     }
 }

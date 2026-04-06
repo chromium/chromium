@@ -50,6 +50,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     private boolean mCanUseVoiceSearch = true;
     private boolean mCanUseReadAloud;
     private boolean mCanUsePageSummary;
+    private boolean mCanUseTranslate = true;
     private boolean mCanUseGlic;
     private @Nullable Runnable mOnComponentUpdated;
     private Runnable mInitRadioButtonRunnable = this::initializeRadioButtonSelection;
@@ -182,6 +183,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         updateVoiceButtonVisibility();
         updateReadAloudButtonVisibility();
         updatePageSummaryButtonVisibility();
+        updateTranslateButtonVisibility();
         updateGlicButtonVisibility();
 
         if (mOnComponentUpdated != null) mOnComponentUpdated.run();
@@ -306,6 +308,11 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         updatePageSummaryButtonVisibility();
     }
 
+    void setCanUseTranslate(boolean canUseTranslate) {
+        mCanUseTranslate = canUseTranslate;
+        updateTranslateButtonVisibility();
+    }
+
     void setCanUseGlic(boolean canUseGlic) {
         mCanUseGlic = canUseGlic;
         updateGlicButtonVisibility();
@@ -321,6 +328,10 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
 
     private void updatePageSummaryButtonVisibility() {
         updateButtonVisibility(mPageSummaryButton, mCanUsePageSummary);
+    }
+
+    private void updateTranslateButtonVisibility() {
+        updateButtonVisibility(mTranslateButton, mCanUseTranslate);
     }
 
     private void updateGlicButtonVisibility() {
