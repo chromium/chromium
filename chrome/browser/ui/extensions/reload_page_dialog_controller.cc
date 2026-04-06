@@ -181,6 +181,7 @@ void ReloadPageDialogController::Show() {
                   .Rasterize(&web_contents_->GetColorProvider()))
               .AsBitmap());
     }
+    message_->DisableIconTint();
   }
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
