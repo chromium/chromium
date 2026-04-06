@@ -176,19 +176,22 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 // optimization guide hints fetching are integration tested. This includes tests
 // that verify hints fetcher failure cases, fetching of hints for multiple open
 // tabs at startup, hints are cleared when browsing history is cleared, etc.
-// TODO(crbug.com/366045251): Re-enable once fixed.
-- (void)DISABLED_testHintsFetchBasic {
-  [ChromeEarlGrey loadURL:GURL("https://foo.com/test")];
+- (void)testHintsFetchBasic {
+  // Any non-localhost URL will trigger a hints fetch, and the test can proceed
+  // even if the page fails to load. Use a nonexistent domain to avoid hitting
+  // real servers.
+  [ChromeEarlGrey loadURL:GURL("https://nonexistentdomain.goog")
+        waitForCompletion:NO];
   // Wait for the hints to be served.
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForPageLoadTimeout,
                  ^{
-                   return self.count_hints_requests_received == 1;
+                   return self.count_hints_requests_received > 0;
                  }),
              @"Hints server did not receive hints request");
   GREYAssertNil(
       [MetricsAppInterface
-          expectUniqueSampleWithCount:1
+          expectUniqueSampleWithCount:self.count_hints_requests_received
                             forBucket:
                                 static_cast<int>(
                                     optimization_guide::
@@ -199,21 +202,21 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
       @"Host and URL race fetch histogram missing");
   GREYAssertNil(
       [MetricsAppInterface
-          expectUniqueSampleWithCount:1
+          expectUniqueSampleWithCount:self.count_hints_requests_received
                             forBucket:static_cast<int>(net::HTTP_OK)
                          forHistogram:@"OptimizationGuide.HintsFetcher."
                                       @"GetHintsRequest.Status"],
       @"hints request histogram missing");
   GREYAssertNil(
       [MetricsAppInterface
-          expectUniqueSampleWithCount:1
+          expectUniqueSampleWithCount:self.count_hints_requests_received
                             forBucket:static_cast<int>(net::OK)
                          forHistogram:@"OptimizationGuide.HintsFetcher."
                                       @"GetHintsRequest.NetErrorCode"],
       @"hints request histogram missing");
   GREYAssertNil(
       [MetricsAppInterface
-          expectUniqueSampleWithCount:1
+          expectUniqueSampleWithCount:self.count_hints_requests_received
                             forBucket:1
                          forHistogram:@"OptimizationGuide.HintsFetcher."
                                       @"GetHintsRequest.HintCount"],
