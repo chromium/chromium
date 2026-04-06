@@ -578,6 +578,9 @@ export class SettingsAppearancePageElement extends
   }
 
   private showVerticalTabsExpandOnHoverSetting_(): boolean {
+    if (this.prefs === undefined) {
+      return false;
+    }
     return this.showVerticalTabsExpandOnHoverEnabled_ &&
         this.getPref<boolean>('vertical_tabs.enabled').value;
   }

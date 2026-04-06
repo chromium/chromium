@@ -25,11 +25,11 @@
         border-top: var(--cr-separator-line);
       }
 
-      .hover-card-toggles {
+      .indented-toggles {
         padding-inline-end: 0;
       }
 
-      .hover-card-toggles settings-toggle-button {
+      .indented-toggles settings-toggle-button {
         padding-inline-start: 0;
       }
 
@@ -181,17 +181,39 @@
                 on-settings-control-change="onTabStripPositionChanged_">
             </settings-dropdown-menu>
           </div>
-        </template>
+          <div class="list-frame indented-toggles"
+               hidden="[[!prefs.vertical_tabs.enabled.value]]">
+            <template is="dom-if"
+                if="[[showVerticalTabsExpandOnHoverSetting_(
+                  showVerticalTabsExpandOnHoverEnabled_,
+                  prefs.vertical_tabs.enabled.value)]]">
+              <settings-toggle-button
+                  id="showVerticalTabsExpandOnHover"
+                  pref="{{prefs.vertical_tabs.expand_on_hover}}"
+                  label="$i18n{showVerticalTabsExpandOnHover}">
+              </settings-toggle-button>
+            </template>
 
-        <template is="dom-if"
-            if="[[showVerticalTabsExpandOnHoverSetting_(
-              showVerticalTabsExpandOnHoverEnabled_,
-              prefs.vertical_tabs.enabled.value)]]">
-          <settings-toggle-button
-              id="showVerticalTabsExpandOnHover"
-              pref="{{prefs.vertical_tabs.expand_on_hover}}"
-              label="$i18n{showVerticalTabsExpandOnHover}">
-          </settings-toggle-button>
+            <template is="dom-if" if="[[showTabSearchEnabled_]]">
+              <template is="dom-if" if="[[showProjectsPanelEnabled_]]">
+                <settings-toggle-button id="showProjectsPanelButton"
+                  pref="{{prefs.projects_panel.pinned_to_tabstrip}}"
+                  label="$i18n{showProjectsPanelButton}"
+                  on-change="onShowProjectsPanelButtonChange_">
+                </settings-toggle-button>
+              </template>
+
+              <template is="dom-if"
+                if="[[showEverythingMenuToggle_(
+                    showProjectsPanelEnabled_, showEverythingMenuEnabled_)]]">
+                <settings-toggle-button id="showEverythingMenuButton"
+                    pref="{{prefs.everything_menu.pinned_to_tabstrip}}"
+                    label="$i18n{showEverythingMenuButton}"
+                    on-change="onShowEverythingMenuButtonChange_">
+                </settings-toggle-button>
+              </template>
+            </template>
+          </div>
         </template>
 
         <template is="dom-if" if="[[showTabSearchEnabled_]]">
@@ -200,22 +222,6 @@
               label="$i18n{showTabSearchButton}"
               on-change="onShowTabSearchButtonChange_">
           </settings-toggle-button>
-          <template is="dom-if" if="[[showProjectsPanelEnabled_]]">
-            <settings-toggle-button id="showProjectsPanelButton" class="hr"
-                pref="{{prefs.projects_panel.pinned_to_tabstrip}}"
-                label="$i18n{showProjectsPanelButton}"
-                on-change="onShowProjectsPanelButtonChange_">
-            </settings-toggle-button>
-          </template>
-          <template is="dom-if"
-              if="[[showEverythingMenuToggle_(
-                  showProjectsPanelEnabled_, showEverythingMenuEnabled_)]]">
-            <settings-toggle-button id="showEverythingMenuButton" class="hr"
-                pref="{{prefs.everything_menu.pinned_to_tabstrip}}"
-                label="$i18n{showEverythingMenuButton}"
-                on-change="onShowEverythingMenuButtonChange_">
-            </settings-toggle-button>
-          </template>
         </template>
 
         <settings-toggle-button class="hr" id="showSavedTabGroups"
@@ -252,7 +258,7 @@
           <div class="cr-row" hidden="[[!pageVisibility.hoverCard]]">
             $i18n{hoverCardTitle}
           </div>
-          <div class="list-frame hover-card-toggles">
+          <div class="list-frame indented-toggles">
             <settings-toggle-button id="hoverCardImagesToggle"
                 hidden="[[!pageVisibility.hoverCard]]"
                 on-settings-boolean-control-change="onHoverCardImagesToggleChange_"
