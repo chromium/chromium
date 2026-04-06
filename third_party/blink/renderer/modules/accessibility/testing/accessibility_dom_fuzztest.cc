@@ -161,7 +161,10 @@ class ProblematicMarkup : public DomScenarioDomainSpecification {
             AnyValueForHtmlAttribute(html_names::kInertAttr)),
         AttributeNameValuePairDomain(
             html_names::kHiddenAttr,
-            AnyValueForHtmlAttribute(html_names::kHiddenAttr)));
+            AnyValueForHtmlAttribute(html_names::kHiddenAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kTabindexAttr,
+            AnyValueForHtmlAttribute(html_names::kTabindexAttr)));
   }
 
   fuzztest::Domain<std::string> AnyStyles() override {
@@ -292,6 +295,17 @@ class AccessibilityDomScenarioRunner : public DomScenarioRunner {
       const HeapVector<Member<Element>>& created_elements) override {
     std::string ax_tree = AccessibilityTest::PrintAXTree(GetDocument());
     LogIfEnabled(base::StrCat({"\n\nMODIFIED ACCESSIBILITY TREE\n", ax_tree}));
+  }
+  void ObserveElementAction(Element* element) override {
+    std::string ax_tree = AccessibilityTest::PrintAXTree(GetDocument());
+    LogIfEnabled(
+        base::StrCat({"\n\nACCESSIBILITY TREE AFTER ELEMENT ACTION: ",
+                      element->GetIdAttribute().Utf8(), "\n", ax_tree}));
+  }
+  void ObserveAnimationsAdvanced() override {
+    std::string ax_tree = AccessibilityTest::PrintAXTree(GetDocument());
+    LogIfEnabled(base::StrCat(
+        {"\n\nACCESSIBILITY TREE AFTER ANIMATIONS ADVANCED\n", ax_tree}));
   }
 };
 
