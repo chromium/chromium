@@ -17,7 +17,9 @@
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/debug/stack_trace.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -34,6 +36,7 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_data_pipe_getter.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -1045,6 +1048,90 @@ TEST_F(ServiceWorkerSubresourceLoaderTest,
   EXPECT_EQ(2, fake_container_host_.get_controller_service_worker_count());
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
+}
+
+TEST_F(ServiceWorkerSubresourceLoaderTest,
+       DropController_RestartFetchEvent_RaceNetworkRequest_FallbackStall) {
+  base::HistogramTester histogram_tester;
+
+  // Set up the router to race network and fetch event.
+  blink::ServiceWorkerRouterRules rules;
+  {
+    blink::ServiceWorkerRouterRule rule;
+    blink::ServiceWorkerRouterRequestCondition request_condition;
+    request_condition.method = "GET";
+    rule.condition = blink::ServiceWorkerRouterCondition::WithRequest(
+        request_condition);
+    blink::ServiceWorkerRouterSource source;
+    source.type = network::mojom::ServiceWorkerRouterSourceType::
+        kRaceNetworkAndFetchEvent;
+    source.race_network_and_fetch_event_source.emplace();
+    rule.sources.push_back(source);
+    rules.rules.push_back(rule);
+  }
+
+  mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
+      remote_container_host;
+  fake_container_host_.CloneContainerHost(
+      remote_container_host.InitWithNewPipeAndPassReceiver());
+  connector_ = base::MakeRefCounted<ControllerServiceWorkerConnector>(
+      std::move(remote_container_host),
+      mojo::NullRemote() /*remote_controller*/,
+      mojo::NullRemote() /*remote_cache_storage*/, "" /*client_id*/,
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
+      rules, blink::EmbeddedWorkerStatus::kStopped,
+      mojo::NullReceiver() /*running_status_receiver*/);
+
+  // Initialize by calling CreateSubresourceLoaderFactory() once.
+  CreateSubresourceLoaderFactory();
+
+  network::TestURLLoaderFactory test_loader_factory;
+  mojo::Remote<network::mojom::URLLoaderFactory> factory;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_test_factory;
+  test_loader_factory.Clone(
+      pending_test_factory.InitWithNewPipeAndPassReceiver());
+
+  ServiceWorkerSubresourceLoaderFactory::Create(
+      connector_,
+      base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+          std::move(pending_test_factory)),
+      factory.BindNewPipeAndPassReceiver(),
+      blink::scheduler::GetSequencedTaskRunnerForTesting());
+
+  fake_controller_.DontRespond();
+  network::ResourceRequest request =
+      CreateRequest(GURL("https://www.example.com/foo.png"));
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+
+  // Set an interceptor to wait for the race network request.
+  base::RunLoop race_network_loop;
+  test_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        race_network_loop.Quit();
+      }));
+
+  // Start the request and drop the connection to the ControllerServiceWorker,
+  // which should cause the fetch event to be restarted.
+  StartRequest(factory, request, &loader, &client);
+  fake_controller_.RunUntilFetchEvent();
+  race_network_loop.Run();
+
+  fake_controller_.ClearReceivers();
+
+  // Respond with fallback on the restarted fetch event.
+  fake_controller_.RespondWithFallback();
+
+  // Wait for the fallback request to be dispatched to the network.
+  base::RunLoop fallback_loop;
+  test_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        fallback_loop.Quit();
+      }));
+  fallback_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.SubresourceLoader.FetchRequestRestarted", true, 1);
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse) {

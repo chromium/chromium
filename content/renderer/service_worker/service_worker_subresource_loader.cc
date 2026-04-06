@@ -613,6 +613,16 @@ void ServiceWorkerSubresourceLoader::OnConnectionClosed() {
     // previous fetch event dispatch.
     weak_factory_.InvalidateWeakPtrs();
   }
+
+  // Reset race network request related member variables and the dispatched
+  // preload type to none so that the restarted fetch event won't be affected by
+  // the previous preload state.
+  race_network_request_loader_client_.reset();
+  race_network_request_url_loader_factory_.reset();
+  forwarded_race_network_request_url_loader_factory_.reset();
+  remote_forwarded_race_network_request_url_loader_factory_.reset();
+  SetDispatchedPreloadType(DispatchedPreloadType::kNone);
+
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ServiceWorkerSubresourceLoader::DispatchFetchEvent,
@@ -702,6 +712,8 @@ void ServiceWorkerSubresourceLoader::OnFallback(
       // request for fallback.
       switch (dispatched_preload_type()) {
         case DispatchedPreloadType::kRaceNetworkRequest:
+          // Restarted fetch event should not use RaceNetworkRequest.
+          CHECK(!fetch_request_restarted_);
           if (!is_race_network_request_aborted) {
             SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
             return;

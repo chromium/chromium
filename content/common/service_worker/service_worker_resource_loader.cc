@@ -141,9 +141,9 @@ void ServiceWorkerResourceLoader::RecordFetchResponseFrom() {
 
 void ServiceWorkerResourceLoader::SetDispatchedPreloadType(
     DispatchedPreloadType type) {
-  CHECK_NE(type, DispatchedPreloadType::kNone);
   if (!IsMainResourceLoader()) {
     CHECK_NE(type, DispatchedPreloadType::kNavigationPreload);
+    CHECK_NE(type, DispatchedPreloadType::kAutoPreload);
   }
   dispatched_preload_type_ = type;
 }
