@@ -7,6 +7,7 @@
 // and debug. When waiting is required, `base::test::RunUntil` is usually
 // sufficient and simpler than a full `RunTestSequence`.
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -1289,6 +1290,47 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // The error should be either kInstanceDestroyed or kTabClosed, depending on
   // the order of destruction. The user expects it to cause instance deletion.
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kInstanceDestroyed);
+}
+
+class GlicInstanceCoordinatorNonConnectingBrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorNonConnectingBrowserTest() {
+    SetGlicPagePath("/non_existent.html");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorNonConnectingBrowserTest,
+                       InvokeWithTabClosedSurvivingInstance) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+
+  // Go back to tab1 to invoke on it.
+  ActivateTab(tab1);
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(tab1, std::move(options));
+
+  GlicInstanceImpl* instance = GetInstanceForTab(tab1);
+  ASSERT_TRUE(instance);
+
+  // Associate tab2 with the same instance to keep it alive when tab1 closes.
+  coordinator().ShowInstanceForTabs({tab2}, instance->id());
+
+  // Close tab1 while Invoke is in progress.
+  tab1->Close();
+
+  // The error should be kTabClosed because the instance survives (due to tab2).
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kTabClosed);
+
+  // Flush the message loop to ensure cleanup tasks complete.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, InvokeSuccess) {
