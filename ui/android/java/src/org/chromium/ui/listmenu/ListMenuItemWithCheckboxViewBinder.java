@@ -8,12 +8,15 @@ import static org.chromium.ui.listmenu.ListMenuCheckItemProperties.CHECKED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import androidx.annotation.ColorRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
@@ -44,6 +47,9 @@ class ListMenuItemWithCheckboxViewBinder {
             view.setOnHoverListener(model.get(HOVER_LISTENER));
         } else if (propertyKey == IS_HIGHLIGHTED) {
             view.setHovered(model.get(IS_HIGHLIGHTED));
+        } else if (propertyKey == ICON_TINT_COLOR_STATE_LIST_ID) {
+            @ColorRes int iconTintColorId = model.get(ICON_TINT_COLOR_STATE_LIST_ID);
+            ListMenuUtils.applyTintToAllIcons(view, iconTintColorId);
         }
     }
 }

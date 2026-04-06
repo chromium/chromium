@@ -14,14 +14,12 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TEXT_APPEARANCE_ID
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.StyleRes;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
@@ -53,18 +51,12 @@ class ListMenuSubmenuHeaderViewBinder {
             @StyleRes int textAppearanceId = model.get(TEXT_APPEARANCE_ID);
             if (textAppearanceId != Resources.ID_NULL) {
                 textView.setTextAppearance(textAppearanceId);
+                // Force the typeface to be bold if it isn't already.
+                textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
             }
         } else if (propertyKey == ICON_TINT_COLOR_STATE_LIST_ID) {
             @ColorRes int iconTintColorId = model.get(ICON_TINT_COLOR_STATE_LIST_ID);
-            ImageView icon = view.findViewById(R.id.menu_item_icon);
-            if (icon == null) return;
-            if (iconTintColorId != Resources.ID_NULL) {
-                ImageViewCompat.setImageTintList(
-                        icon,
-                        AppCompatResources.getColorStateList(view.getContext(), iconTintColorId));
-            } else {
-                ImageViewCompat.setImageTintList(icon, null);
-            }
+            ListMenuUtils.applyTintToAllIcons(view, iconTintColorId);
         }
     }
 }
