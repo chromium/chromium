@@ -62,7 +62,7 @@ class SodaInstallerImpl : public SodaInstaller,
   void OnSodaLanguagePackInstalled(speech::LanguageCode language_code);
 
  private:
-  void DeleteSodaFiles();
+  static void DeleteSodaFiles();
 
   void UpdateAndNotifyOnSodaProgress(speech::LanguageCode language_code);
 

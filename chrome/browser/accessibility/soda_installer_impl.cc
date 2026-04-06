@@ -124,11 +124,11 @@ std::vector<std::string> SodaInstallerImpl::GetAvailableLanguages() const {
 }
 
 void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
-  base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-                             base::BindOnce(&SodaInstallerImpl::DeleteSodaFiles,
-                                            weak_factory_.GetWeakPtr()));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&SodaInstallerImpl::DeleteSodaFiles));
 
   SodaInstaller::UnregisterLanguages(global_prefs);
 
@@ -233,6 +233,7 @@ void SodaInstallerImpl::OnSodaLanguagePackInstalled(
       GetInstallationResultMetricForLanguagePack(language_code), true);
 }
 
+// static
 void SodaInstallerImpl::DeleteSodaFiles() {
   base::DeletePathRecursively(speech::GetSodaDirectory());
   base::DeletePathRecursively(speech::GetSodaLanguagePacksDirectory());
