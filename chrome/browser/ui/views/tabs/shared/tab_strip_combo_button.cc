@@ -217,7 +217,6 @@ TabStripComboButton::CreateFlatEdgeButtonFor(actions::ActionId action_id,
                                              ui::ElementIdentifier element_id) {
   auto button = std::make_unique<TabStripFlatEdgeButton>();
   button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-  button->SetShouldShowLabel(context_ == Context::kVerticalTabStrip);
   button->set_context_menu_controller(this);
   if (!browser_ || !browser_->GetActions()) {
     return button;
