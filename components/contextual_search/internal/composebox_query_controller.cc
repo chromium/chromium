@@ -390,6 +390,13 @@ ComposeboxQueryController::MimeTypeStringFromFileInfo(
     case lens::MimeType::kAnnotatedPageContent:
       return "application/x-protobuf";
     case lens::MimeType::kUnknown:
+      if (lens::features::IsLensSendRawFileMediaTypesEnabled() &&
+          file_info.mime_type_string.has_value()) {
+        // For raw-file (arbitrary) uploads, the Lens mime type
+        // is set to kUnknown to go through generic processing, but the
+        // actual mime type string is in mime_type_string.
+        return file_info.mime_type_string.value();
+      }
       // The mime type may be unknown for image-only LensOverlay flows, as the
       // LensOverlay does not set the primary content type unless it is a pdf or
       // webpage contextual query. In this case, return the mime type for an

@@ -6025,6 +6025,14 @@ TEST_F(ComposeboxQueryControllerTest, UploadRawFileRequestSuccess) {
   EXPECT_EQ(request_id->media_type(),
             lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
   EXPECT_EQ(request_id->mime_type(), "application/pdf");
+
+  // Act: Create AddedInputs and verify mime type.
+  auto added_inputs = controller().CreateAddedInputs(
+      {file_token}, /*include_files_without_lens_usage_intent=*/true);
+  ASSERT_EQ(added_inputs.added_inputs_size(), 1);
+  EXPECT_TRUE(added_inputs.added_inputs(0).has_lens_file());
+  EXPECT_EQ(added_inputs.added_inputs(0).lens_file().mime_type(),
+            "application/pdf");
 }
 
 #if !BUILDFLAG(IS_IOS)
