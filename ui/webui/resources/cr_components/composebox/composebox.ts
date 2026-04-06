@@ -306,7 +306,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.searchboxCallbackRouter_.updateAutoSuggestedTabContext.addListener(
           this.updateAutoSuggestedTabContext_.bind(this)),
       this.searchboxCallbackRouter_.onInputStateChanged.addListener(
-          this.onInputStateChanged.bind(this)),
+          this.onInputStateChanged_.bind(this)),
     ];
 
     this.eventTracker_.add(this.getInputElement().inputElement, 'input', () => {
@@ -418,7 +418,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         changedPrivateProperties.has('enableFileHint') ||
         changedPrivateProperties.has('inputState') ||
         changedPrivateProperties.has('inputState.activeTool')) {
-      this.updateInputPlaceholder();
+      this.updateInputPlaceholder_();
     }
   }
   override updated(changedProperties: PropertyValues<this>) {
@@ -506,6 +506,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
+  resetModes() {
+    const previousTool = this.inputState?.activeTool;
+    this.uploadButtonDisabled = false;
+
+    if (previousTool !== ToolMode.kUnspecified) {
+      this.showContextMenuDescription = this.contextMenuDescriptionEnabled;
+      this.handleToolModeUpdate_(ToolMode.kUnspecified);
+    }
+  }
+
   getHasAutomaticActiveTabChipToken() {
     return this.automaticActiveTab_ !== null;
   }
@@ -570,7 +580,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.processFiles(dataTransfer.files);
     }
     if (mode !== ToolMode.kUnspecified) {
-      this.handleToolClick(mode);
+      this.handleToolClick_(mode);
     }
 
     if (!!this.inputState && model === ModelMode.kUnspecified &&
@@ -578,7 +588,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       model = this.inputState.allowedModels[0]!;
     }
     this.searchboxHandler_.setActiveModelMode(model);
-    this.updateInputPlaceholder();
+    this.updateInputPlaceholder_();
 
     await this.updateComplete;
   }
@@ -701,10 +711,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return !this.disableVoiceSearchAnimation && this.shouldShowVoiceSearch_();
   }
 
-  // TODO(crbug.com/486706573): Refactor this function and move the common logic
-  // to the mixin class. Move embedder specific logic to the embedder class.
-  override deleteFile(
-      uuidToDelete: UnguessableToken, fromUserAction?: boolean) {
+  deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean) {
     if (!uuidToDelete || !this.files.has(uuidToDelete)) {
       return;
     }
@@ -839,6 +846,17 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // adding a new chip.
       this.clearAutocompleteMatches();
     }
+  }
+
+  private onInputStateChanged_(inputState: InputState) {
+    this.inputState = inputState;
+
+    const allowedTypes = this.inputState.allowedInputTypes;
+    this.files.forEach((file, uuid) => {
+      if (!allowedTypes.includes(file.inputType)) {
+        this.deleteFile(uuid);
+      }
+    });
   }
 
   protected onDeleteFile_(
@@ -1071,9 +1089,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     e.preventDefault();
   }
 
-  // TODO(crbug.com/486706573): Refactor this function and move the common logic
-  // to the mixin class. Move embedder specific logic to the embedder class.
-  override updateInputPlaceholder() {
+  private updateInputPlaceholder_() {
     if (this.inputPlaceholderOverride) {
       this.inputPlaceholder = this.inputPlaceholderOverride;
       return;
@@ -1138,6 +1154,44 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.inputPlaceholder =
           loadTimeData.getString('searchboxComposePlaceholder');
     }
+  }
+
+  protected onToolClick_(e: CustomEvent<{toolMode: ToolMode}>) {
+    this.handleToolClick_(e.detail.toolMode);
+  }
+
+  protected handleToolClick_(tool: ToolMode) {
+    const isTogglingOff = this.inputState?.activeTool === tool;
+
+    const newToolMode = isTogglingOff ? ToolMode.kUnspecified : tool;
+
+    if (isTogglingOff) {
+      const metricName = `ContextualSearch.UserAction.InputStateDeletion.${
+          this.composeboxSource}`;
+      recordEnumerationValue(
+          metricName, ContextualSearchInputStateDeletionType.TOOL,
+          ContextualSearchInputStateDeletionType.MAX_VALUE + 1);
+
+      const userActionName =
+          `ContextualSearch.UserAction.InputStateDeletion.Tool.${
+              this.composeboxSource}`;
+      recordUserAction(userActionName);
+    } else {
+      this.searchboxHandler_.recordToolSelectionAction(newToolMode);
+    }
+    this.handleToolModeUpdate_(newToolMode);
+  }
+
+  private handleToolModeUpdate_(newTool: ToolMode) {
+    this.searchboxHandler_.setActiveToolMode(newTool);
+    this.queryAutocomplete(/* clearMatches= */ true);
+    this.updateInputPlaceholder_();
+  }
+
+  protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
+    this.searchboxHandler_.recordModelSelectionAction(e.detail.model);
+    this.searchboxHandler_.setActiveModelMode(e.detail.model);
+    this.updateInputPlaceholder_();
   }
 
   private isFocusInInput_(): boolean {

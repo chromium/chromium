@@ -1014,7 +1014,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Click on the same tool mode to deselect/delete it.
-    testProxy.element.handleToolClick(ToolMode.kDeepSearch);
+    testProxy.element['handleToolClick_'](ToolMode.kDeepSearch);
     await microtasksFinished();
 
     // Assert tool mode is reset.

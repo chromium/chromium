@@ -12,7 +12,7 @@ import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as Searchb
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordEnumerationValue, recordUserAction} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordEnumerationValue} from './common.js';
 import type {ComposeboxState} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -178,10 +178,6 @@ export const ComposeboxEmbedderMixin =
         // Embedder-provided methods for DOM and Mojo access
         // =====================================================================
 
-        deleteFile(_uuidToDelete: UnguessableToken, _fromUserAction?: boolean) {
-          assertNotReached();
-        }
-
         closeMenu() {
           assertNotReached();
         }
@@ -248,17 +244,6 @@ export const ComposeboxEmbedderMixin =
           this.getDropdownElement().selectIndex(e.detail.index);
         }
 
-        onInputStateChanged(inputState: InputState) {
-          this.inputState = inputState;
-
-          const allowedTypes = this.inputState.allowedInputTypes;
-          this.files.forEach((file, uuid) => {
-            if (!allowedTypes.includes(file.inputType)) {
-              this.deleteFile(uuid);
-            }
-          });
-        }
-
         onInputInput(_e: CustomEvent<Event>) {
           this.input = this.getInputElement().input;
 
@@ -286,49 +271,6 @@ export const ComposeboxEmbedderMixin =
           if (this.lastQueriedInput) {
             this.selectFirstMatch();
           }
-        }
-
-        updateInputPlaceholder() {
-          assertNotReached();
-        }
-
-        onToolClick(e: CustomEvent<{toolMode: ToolMode}>) {
-          this.handleToolClick(e.detail.toolMode);
-        }
-
-        handleToolClick(tool: ToolMode) {
-          const isTogglingOff = this.inputState?.activeTool === tool;
-
-          const newToolMode = isTogglingOff ? ToolMode.kUnspecified : tool;
-
-          if (isTogglingOff) {
-            const metricName =
-                `ContextualSearch.UserAction.InputStateDeletion.${
-                    this.composeboxSource}`;
-            recordEnumerationValue(
-                metricName, ContextualSearchInputStateDeletionType.TOOL,
-                ContextualSearchInputStateDeletionType.MAX_VALUE + 1);
-
-            const userActionName =
-                `ContextualSearch.UserAction.InputStateDeletion.Tool.${
-                    this.composeboxSource}`;
-            recordUserAction(userActionName);
-          } else {
-            this.getSearchboxHandler().recordToolSelectionAction(newToolMode);
-          }
-          this.handleToolModeUpdate(newToolMode);
-        }
-
-        handleToolModeUpdate(newTool: ToolMode) {
-          this.getSearchboxHandler().setActiveToolMode(newTool);
-          this.queryAutocomplete(/* clearMatches= */ true);
-          this.updateInputPlaceholder();
-        }
-
-        onModelClick(e: CustomEvent<{model: ModelMode}>) {
-          this.getSearchboxHandler().recordModelSelectionAction(e.detail.model);
-          this.getSearchboxHandler().setActiveModelMode(e.detail.model);
-          this.updateInputPlaceholder();
         }
 
         // =====================================================================
@@ -441,17 +383,6 @@ export const ComposeboxEmbedderMixin =
 
           // Arbitrary file types are treated as Lens files.
           return InputType.kLensFile;
-        }
-
-        resetModes() {
-          const previousTool = this.inputState?.activeTool;
-          this.uploadButtonDisabled = false;
-
-          if (previousTool !== ToolMode.kUnspecified) {
-            this.showContextMenuDescription =
-                this.contextMenuDescriptionEnabled;
-            this.handleToolModeUpdate(ToolMode.kUnspecified);
-          }
         }
 
         setDefaultModel() {
@@ -861,8 +792,6 @@ export interface ComposeboxEmbedderMixinInterface extends
   lensSendRawFileMediaTypesEnabled: boolean;
 
   // Embedder-provided methods for DOM and Mojo access
-  updateInputPlaceholder(): void;
-  deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean): void;
   closeMenu(): void;
   getInputElement(): ComposeboxInputElement;
   getDropdownElement(): ComposeboxDropdownElement;
@@ -877,13 +806,8 @@ export interface ComposeboxEmbedderMixinInterface extends
   onDismissErrorScrim(): void;
   onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
   onMatchFocusin(e: CustomEvent<{index: number}>): void;
-  onInputStateChanged(inputState: InputState): void;
   onInputInput(e: CustomEvent<Event>): void;
   onInputFocusin(): void;
-  onToolClick(e: CustomEvent<{toolMode: ToolMode}>): void;
-  handleToolClick(tool: ToolMode): void;
-  handleToolModeUpdate(newTool: ToolMode): void;
-  onModelClick(e: CustomEvent<{model: ModelMode}>): void;
 
   // Common helper methods
   addToPendingUploads(token: UnguessableToken): void;
@@ -894,7 +818,6 @@ export interface ComposeboxEmbedderMixinInterface extends
   isFileAllowed(fileType: string): boolean;
   isMimeTypeAllowed(mimeType: string, allowedTypes: string[]): boolean;
   getInputType(type: string): InputType;
-  resetModes(): void;
   setDefaultModel(): void;
   resetToolsAndModels(): void;
   closeDropdown(): void;

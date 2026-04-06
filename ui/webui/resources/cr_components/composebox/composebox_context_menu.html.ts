@@ -22,8 +22,8 @@ export function getHtml(this: ComposeboxElement) {
         class="upload-button no-overlap"
         @add-tab-context="${this.onAddTabContext_}"
         @delete-tab-context="${this.onDeleteTabContext_}"
-        @tool-click="${this.onToolClick}"
-        @model-click="${this.onModelClick}"
+        @tool-click="${this.onToolClick_}"
+        @model-click="${this.onModelClick_}"
         @get-tab-preview="${this.onGetTabPreview}"
         @context-menu-closed="${this.onContextMenuClosed_ }"
         @context-menu-opened="${this.onContextMenuOpened_}"
@@ -60,7 +60,7 @@ export function getHtml(this: ComposeboxElement) {
         exportparts="tool-chip-label"
         .inputState="${this.inputState}"
         .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
-        @tool-click="${this.onToolClick}">
+        @tool-click="${this.onToolClick_}">
       </cr-composebox-tool-chip>
     ` : ''}
   ` : ''}
