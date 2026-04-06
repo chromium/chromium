@@ -71,6 +71,8 @@ class PipWindowResizerTest : public AshTestBase,
   }
 
   void TearDown() override {
+    window_ = nullptr;
+    test_state_ = nullptr;
     widget_.reset();
     scoped_display_.reset();
     SetVirtualKeyboardEnabled(false);
@@ -154,6 +156,8 @@ class PipWindowResizerTest : public AshTestBase,
   }
 
   void PreparePipWindow(const gfx::Rect& bounds) {
+    test_state_ = nullptr;
+    window_ = nullptr;
     widget_ = CreateWidgetForTest(bounds);
     window_ = widget_->GetNativeWindow();
 
@@ -174,8 +178,8 @@ class PipWindowResizerTest : public AshTestBase,
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<aura::Window, DanglingUntriaged> window_;
-  raw_ptr<FakeWindowState, DanglingUntriaged> test_state_;
+  raw_ptr<aura::Window> window_;
+  raw_ptr<FakeWindowState> test_state_;
   base::HistogramTester histograms_;
   std::unique_ptr<display::ScopedDisplayForNewWindows> scoped_display_;
 
