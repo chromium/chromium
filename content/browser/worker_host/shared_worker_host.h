@@ -236,7 +236,7 @@ class CONTENT_EXPORT SharedWorkerHost
 
   net::NetworkAnonymizationKey GetNetworkAnonymizationKey() const;
 
-  const blink::StorageKey& GetStorageKey() const;
+  const blink::StorageKey& GetWorkerStorageKey() const;
 
   const base::UnguessableToken& GetReportingSource() const {
     return reporting_source_;

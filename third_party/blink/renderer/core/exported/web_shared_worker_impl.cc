@@ -37,6 +37,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
@@ -238,7 +239,10 @@ void WebSharedWorkerImpl::StartWorkerContext(
     bool is_cross_origin_isolated) {
   DCHECK(IsMainThread());
   DCHECK(web_worker_fetch_context);
-  CHECK(constructor_origin.Get()->CanAccessSharedWorkers());
+  CHECK(constructor_origin.Get()->CanAccessSharedWorkers() ||
+        (script_request_url.ProtocolIs("data") &&
+         base::FeatureList::IsEnabled(
+             blink::features::kDataUrlWorkerOpaqueOrigin)));
 
   // Creates 'outside settings' used in the "Processing model" algorithm in the
   // HTML spec:

@@ -24,6 +24,7 @@
 #include "content/browser/worker_host/shared_worker_connector_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
+#include "content/browser/worker_host/worker_util.h"
 #include "content/public/browser/shared_worker_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -84,10 +85,16 @@ class SharedWorkerHostTest : public testing::Test {
 
   base::WeakPtr<SharedWorkerHost> CreateHostWithExtendedLifetime(
       bool extended_lifetime) {
+    blink::StorageKey creator_storage_key =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl));
+    blink::StorageKey worker_storage_key =
+        CalculateWorkerStorageKey(kWorkerUrl, creator_storage_key);
+    url::Origin renderer_origin =
+        CalculateWorkerRendererOrigin(kWorkerUrl, worker_storage_key);
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl)),
+        creator_storage_key, worker_storage_key, renderer_origin,
         blink::mojom::SharedWorkerCreationContextType::kSecure,
         blink::mojom::SharedWorkerSameSiteCookies::kAll, extended_lifetime);
     auto host = std::make_unique<SharedWorkerHost>(
@@ -391,7 +398,7 @@ TEST_F(SharedWorkerHostTest, CreateNetworkFactoryParamsForSubresources) {
 
   network::mojom::URLLoaderFactoryParamsPtr params =
       host->CreateNetworkFactoryParamsForSubresources();
-  EXPECT_EQ(host->GetStorageKey().origin(),
+  EXPECT_EQ(host->GetWorkerStorageKey().origin(),
             params->isolation_info.frame_origin());
   EXPECT_FALSE(params->isolation_info.nonce().has_value());
 }
@@ -399,11 +406,17 @@ TEST_F(SharedWorkerHostTest, CreateNetworkFactoryParamsForSubresources) {
 TEST_F(SharedWorkerHostTest,
        CreateNetworkFactoryParamsForSubresourcesWithNonce) {
   base::UnguessableToken nonce = base::UnguessableToken::Create();
+  blink::StorageKey creator_storage_key = blink::StorageKey::CreateWithNonce(
+      url::Origin::Create(kWorkerUrl), nonce);
+  blink::StorageKey worker_storage_key =
+      CalculateWorkerStorageKey(kWorkerUrl, creator_storage_key);
+  url::Origin renderer_origin =
+      CalculateWorkerRendererOrigin(kWorkerUrl, worker_storage_key);
+
   SharedWorkerInstance instance(
       kWorkerUrl, blink::mojom::ScriptType::kClassic,
-      network::mojom::CredentialsMode::kSameOrigin, "name",
-      blink::StorageKey::CreateWithNonce(url::Origin::Create(kWorkerUrl),
-                                         nonce),
+      network::mojom::CredentialsMode::kSameOrigin, "name", creator_storage_key,
+      worker_storage_key, renderer_origin,
       blink::mojom::SharedWorkerCreationContextType::kSecure,
       blink::mojom::SharedWorkerSameSiteCookies::kNone,
       /*extended_lifetime=*/false);
@@ -443,10 +456,17 @@ class SharedWorkerHostTestWithLNAEnabled : public SharedWorkerHostTest {
 
 TEST_F(SharedWorkerHostTestWithLNAEnabled,
        CreateNetworkFactoryParamsForSubresources) {
+  blink::StorageKey creator_storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl));
+  blink::StorageKey worker_storage_key =
+      CalculateWorkerStorageKey(kWorkerUrl, creator_storage_key);
+  url::Origin renderer_origin =
+      CalculateWorkerRendererOrigin(kWorkerUrl, worker_storage_key);
+
   SharedWorkerInstance instance(
       kWorkerUrl, blink::mojom::ScriptType::kClassic,
-      network::mojom::CredentialsMode::kSameOrigin, "name",
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl)),
+      network::mojom::CredentialsMode::kSameOrigin, "name", creator_storage_key,
+      worker_storage_key, renderer_origin,
       blink::mojom::SharedWorkerCreationContextType::kSecure,
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
       /*extended_lifetime=*/false);

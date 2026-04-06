@@ -26,6 +26,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
+#include "content/browser/worker_host/worker_util.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -81,7 +82,7 @@ void SharedWorkerServiceImpl::RemoveObserver(Observer* observer) {
 void SharedWorkerServiceImpl::EnumerateSharedWorkers(Observer* observer) {
   for (const auto& host : worker_hosts_) {
     observer->OnWorkerCreated(host->token(), host->GetProcessHost()->GetID(),
-                              host->instance().storage_key().origin(),
+                              host->instance().worker_storage_key().origin(),
                               host->GetDevToolsToken());
     if (host->started()) {
       observer->OnFinalResponseURLDetermined(host->token(),
@@ -266,10 +267,15 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
   auto partition_domain = site_instance->GetPartitionDomain(storage_partition_);
+  blink::StorageKey worker_storage_key =
+      CalculateWorkerStorageKey(info->url, storage_key);
+  url::Origin renderer_origin =
+      CalculateWorkerRendererOrigin(info->url, worker_storage_key);
+
   SharedWorkerInstance instance(
       info->url, info->options->type, info->options->credentials,
-      info->options->name, storage_key, creation_context_type,
-      info->same_site_cookies, info->extended_lifetime);
+      info->options->name, storage_key, worker_storage_key, renderer_origin,
+      creation_context_type, info->same_site_cookies, info->extended_lifetime);
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,
@@ -457,13 +463,14 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // TODO(mmenke): The site-for-cookies and NetworkAnonymizationKey arguments
   // leak data across NetworkIsolationKeys and allow same-site cookies to be
   // sent in cross-site contexts. Fix this. Also, we should probably use
-  // `host->instance().storage_key().origin()` instead of `worker_origin`, see
-  // following DCHECK.
+  // `host->instance().creator_storage_key().origin()` instead of
+  // `worker_origin`, see following DCHECK.
   DCHECK(host->instance().url().SchemeIs(url::kDataScheme) ||
          GetContentClient()->browser()->DoesSchemeAllowCrossOriginSharedWorker(
-             host->instance().storage_key().origin().scheme()) ||
-         worker_origin == host->instance().storage_key().origin())
-      << worker_origin << " and " << host->instance().storage_key().origin()
+             host->instance().creator_storage_key().origin().scheme()) ||
+         worker_origin == host->instance().creator_storage_key().origin())
+      << worker_origin << " and "
+      << host->instance().creator_storage_key().origin()
       << " should be the same.";
 
   WorkerScriptFetcher::CreateAndStart(
@@ -471,9 +478,10 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       host->instance().url(), creator, &creator,
       host->instance().DoesRequireCrossSiteRequestForCookies()
           ? net::SiteForCookies()
-          : host->instance().storage_key().ToNetSiteForCookies(),
-      host->instance().storage_key().origin(), host->instance().storage_key(),
-      host->instance().storage_key().ToPartialNetIsolationInfo(),
+          : host->instance().creator_storage_key().ToNetSiteForCookies(),
+      host->instance().creator_storage_key().origin(),
+      host->instance().worker_storage_key(),
+      host->instance().worker_storage_key().ToPartialNetIsolationInfo(),
       creator.BuildClientSecurityStateForWorkers(), credentials_mode,
       std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker,

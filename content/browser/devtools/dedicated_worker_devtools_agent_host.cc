@@ -50,7 +50,7 @@ DedicatedWorkerDevToolsAgentHost::~DedicatedWorkerDevToolsAgentHost() = default;
 std::optional<blink::StorageKey>
 DedicatedWorkerDevToolsAgentHost::GetStorageKey() {
   DedicatedWorkerHost* const host = GetDedicatedWorkerHost();
-  return host ? std::make_optional(host->GetStorageKey()) : std::nullopt;
+  return host ? std::make_optional(host->GetWorkerStorageKey()) : std::nullopt;
 }
 
 std::string DedicatedWorkerDevToolsAgentHost::GetType() {

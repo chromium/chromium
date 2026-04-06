@@ -294,7 +294,10 @@ void RequestPrivateNetworkAccess(
                   /*access_allowed=*/shared_worker &&
                   ArePermissionTypesAllowedForWorker(
                       shared_worker->GetProcessHost(),
-                      shared_worker->instance().storage_key().origin(),
+                      // Use the worker's own origin for permission checks. This
+                      // ensures that data: URL workers, which have opaque
+                      // origins, are denied sensitive permissions.
+                      shared_worker->instance().worker_storage_key().origin(),
                       std::move(required_permissions)));
             } else {
               std::move(callback)

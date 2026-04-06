@@ -8,9 +8,12 @@
 #include <string>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/browser/worker_host/worker_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -25,9 +28,14 @@ class SharedWorkerInstanceTest : public testing::Test {
   SharedWorkerInstance CreateInstance(const GURL& script_url,
                                       const std::string& name,
                                       const blink::StorageKey& storage_key) {
+    blink::StorageKey worker_storage_key =
+        CalculateWorkerStorageKey(script_url, storage_key);
+    url::Origin renderer_origin =
+        CalculateWorkerRendererOrigin(script_url, worker_storage_key);
     return SharedWorkerInstance(
         script_url, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, name, storage_key,
+        worker_storage_key, renderer_origin,
         blink::mojom::SharedWorkerCreationContextType::kNonsecure,
         storage_key.IsFirstPartyContext()
             ? blink::mojom::SharedWorkerSameSiteCookies::kAll

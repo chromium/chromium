@@ -34,7 +34,9 @@ class CONTENT_EXPORT SharedWorkerInstance {
       blink::mojom::ScriptType script_type,
       network::mojom::CredentialsMode credentials_mode,
       const std::string& name,
-      const blink::StorageKey& storage_key,
+      const blink::StorageKey& creator_storage_key,
+      const blink::StorageKey& worker_storage_key,
+      const url::Origin& renderer_origin,
       blink::mojom::SharedWorkerCreationContextType creation_context_type,
       blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
       bool extended_lifetime);
@@ -54,7 +56,7 @@ class CONTENT_EXPORT SharedWorkerInstance {
   bool Matches(
       const GURL& url,
       const std::string& name,
-      const blink::StorageKey& storage_key,
+      const blink::StorageKey& creator_storage_key,
       const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) const;
 
   // Accessors.
@@ -64,7 +66,12 @@ class CONTENT_EXPORT SharedWorkerInstance {
   network::mojom::CredentialsMode credentials_mode() const {
     return credentials_mode_;
   }
-  const blink::StorageKey& storage_key() const { return storage_key_; }
+  const blink::StorageKey& creator_storage_key() const {
+    return creator_storage_key_;
+  }
+  const blink::StorageKey& worker_storage_key() const {
+    return worker_storage_key_;
+  }
   const url::Origin& renderer_origin() const { return renderer_origin_; }
   blink::mojom::SharedWorkerCreationContextType creation_context_type() const {
     return creation_context_type_;
@@ -74,8 +81,8 @@ class CONTENT_EXPORT SharedWorkerInstance {
     return same_site_cookies_;
   }
   bool DoesRequireCrossSiteRequestForCookies() const {
-    return storage_key_.IsThirdPartyContext() ||
-           same_site_cookies_ ==
+    return creator_storage_key_.IsThirdPartyContext() ||
+           same_site_cookies() ==
                blink::mojom::SharedWorkerSameSiteCookies::kNone;
   }
   bool extended_lifetime() const { return extended_lifetime_; }
@@ -93,12 +100,19 @@ class CONTENT_EXPORT SharedWorkerInstance {
   // this shared worker instance. Used for security checks. See Matches() for
   // details.
   // https://html.spec.whatwg.org/multipage/workers.html#concept-sharedworkerglobalscope-constructor-origin
-  const blink::StorageKey storage_key_;
+  const blink::StorageKey creator_storage_key_;
+
+  // The storage key of this shared worker. This will be the same as the
+  // creator's creator's storage key, except in the case of data: URL workers
+  // when the kDataUrlWorkerOpaqueOrigin feature is enabled, in which case it is
+  // an opaque storage key derived from the creator's.
+  const blink::StorageKey worker_storage_key_;
 
   // The origin used by this shared worker on the renderer side. This will
-  // be the same as the storage key's origin, except in the case of data: URL
-  // workers, as described in the linked bug.
-  // TODO(crbug.com/40051700): Make the storage key's origin always match this.
+  // almost always be the same as `worker_storage_key_`'s origin, except in the
+  // case of data: URL workers when the feature is disabled.
+  // TODO(crbug.com/40051700): Remove this when the feature is enabled by
+  // default.
   const url::Origin renderer_origin_;
 
   const blink::mojom::SharedWorkerCreationContextType creation_context_type_;

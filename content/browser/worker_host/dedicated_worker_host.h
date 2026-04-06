@@ -114,6 +114,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       DedicatedWorkerCreator creator,
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const blink::StorageKey& creator_storage_key,
+      const blink::StorageKey& worker_storage_key,
       const url::Origin& renderer_origin,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr creator_client_security_state,
@@ -134,7 +135,9 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   const blink::DedicatedWorkerToken& GetToken() const { return token_; }
   RenderProcessHost* GetProcessHost() const { return worker_process_host_; }
-  const blink::StorageKey& GetStorageKey() const { return storage_key_; }
+  const blink::StorageKey& GetWorkerStorageKey() const {
+    return worker_storage_key_;
+  }
   const GlobalRenderFrameHostId& GetAncestorRenderFrameHostId() const {
     return ancestor_render_frame_host_id_;
   }
@@ -365,16 +368,16 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   const url::Origin creator_origin_;
 
   // The origin used by this dedicated worker on the renderer side. This will
-  // almost always be the same as `storage_key_`'s origin, except in the case of
-  // data: URL workers, as described in the linked bug.
-  // TODO(crbug.com/40051700): Make the storage key's origin always match this,
-  // so that we can stop tracking this separately.
+  // almost always be the same as `worker_storage_key_`'s origin, except in the
+  // case of data: URL workers when the feature is disabled.
+  // TODO(crbug.com/40051700): Remove this when the feature is enabled by
+  // default.
   const url::Origin renderer_origin_;
 
   // The storage key of this worker. This is used for storage partitioning and
   // for retrieving the origin of this worker
   // (https://html.spec.whatwg.org/C/#concept-settings-object-origin).
-  const blink::StorageKey storage_key_;
+  const blink::StorageKey worker_storage_key_;
 
   // The IsolationInfo associated with this worker. Same as that of the
   // frame or the worker that created this worker.

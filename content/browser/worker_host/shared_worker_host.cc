@@ -191,7 +191,7 @@ SharedWorkerHost::SharedWorkerHost(
   worker_receiver_ = worker_.BindNewPipeAndPassReceiver();
 
   service_->NotifyWorkerCreated(token_, GetProcessHost()->GetID(),
-                                instance_.storage_key().origin(),
+                                instance_.worker_storage_key().origin(),
                                 devtools_handle_->dev_tools_token());
 }
 
@@ -313,11 +313,11 @@ void SharedWorkerHost::Start(
         policies, LocalNetworkAccessRequestContext::kWorker);
 
     // Check for policy overrides on LNA. For shared workers, we apply
-    // policy overrides based on the renderer_origin() when the shared worker
-    // was started.
+    // policy overrides based on the worker_storage_key().origin() when the
+    // shared worker was started.
     // TODO(crbug.com/452389539): Centralize these policy overrides.
     BrowserContext* context = GetProcessHost()->GetBrowserContext();
-    url::Origin origin = instance_.renderer_origin();
+    url::Origin origin = instance_.worker_storage_key().origin();
     ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
         policy_override = client->ShouldOverrideLocalNetworkAccessRequestPolicy(
             context, origin);
@@ -460,8 +460,8 @@ void SharedWorkerHost::Start(
   // Send the CreateSharedWorker message.
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(
-      std::move(info), token_, instance_.storage_key(),
-      instance_.renderer_origin(),
+      std::move(info), token_, instance_.creator_storage_key(),
+      instance_.worker_storage_key().origin(),
       creator_policy_container_host_ &&
           creator_policy_container_host_->policies().is_web_secure_context,
       GetContentClient()->browser()->GetUserAgent(),
@@ -510,7 +510,7 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
       url_loader_factory::ContentClientParams(
           GetProcessHost()->GetBrowserContext(),
           /*frame=*/nullptr, GetProcessHost()->GetDeprecatedID(), origin,
-          GetStorageKey().ToPartialNetIsolationInfo(),
+          GetWorkerStorageKey().ToPartialNetIsolationInfo(),
           ukm::SourceIdObj::FromInt64(ukm_source_id_), bypass_redirect_checks),
       devtools_instrumentation::WillCreateURLLoaderFactoryParams::
           ForSharedWorker(this));
@@ -518,7 +518,10 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
 
 network::mojom::URLLoaderFactoryParamsPtr
 SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
-  url::Origin origin = GetStorageKey().origin();
+  // Use the creator's origin as the lock to permit outside settings fetches
+  // (e.g., static imports in module workers) that use the creator's origin as
+  // the initiator.
+  url::Origin origin_lock = instance().creator_storage_key().origin();
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
   if (coep_reporter_) {
@@ -532,11 +535,13 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
 
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
-          GetProcessHost(), origin, GetStorageKey().ToPartialNetIsolationInfo(),
+          GetProcessHost(), origin_lock,
+          GetWorkerStorageKey().ToPartialNetIsolationInfo(),
           std::move(coep_reporter), std::move(dip_reporter),
           GetStoragePartitionImpl()
               ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-                  ToOriginatingProcessId(GetProcessHost()->GetID()), origin),
+                  ToOriginatingProcessId(GetProcessHost()->GetID()),
+                  origin_lock),
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_), network_restrictions_id_,
           /*debug_tag=*/
@@ -547,7 +552,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
 }
 
 blink::StorageKey SharedWorkerHost::GetBucketStorageKey() {
-  return GetStorageKey();
+  return GetWorkerStorageKey();
 }
 
 blink::mojom::PermissionStatus SharedWorkerHost::GetPermissionStatus(
@@ -558,7 +563,7 @@ blink::mojom::PermissionStatus SharedWorkerHost::GetPermissionStatus(
       ->GetPermissionStatusForWorker(
           content::PermissionDescriptorUtil::
               CreatePermissionDescriptorForPermissionType(permission_type),
-          GetProcessHost(), GetStorageKey().origin());
+          GetProcessHost(), GetWorkerStorageKey().origin());
 }
 
 void SharedWorkerHost::BindCacheStorageForBucket(
@@ -591,8 +596,8 @@ void SharedWorkerHost::BindCacheStorageInternal(
 
 void SharedWorkerHost::CreateLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
-  GetStoragePartitionImpl()->BindLockManager(GetStorageKey(), token().value(),
-                                          std::move(receiver));
+  GetStoragePartitionImpl()->BindLockManager(
+      GetWorkerStorageKey(), token().value(), std::move(receiver));
   GetStoragePartitionImpl()->GetLockManager()->AddLockObserver(token().value(),
                                                             this);
 }
@@ -639,14 +644,14 @@ void SharedWorkerHost::AllowFileSystem(
     base::OnceCallback<void(bool)> callback) {
   GetContentClient()->browser()->AllowWorkerFileSystem(
       url, GetProcessHost()->GetBrowserContext(), GetRenderFrameIDsForWorker(),
-      GetStorageKey(), std::move(callback));
+      GetWorkerStorageKey(), std::move(callback));
 }
 
 void SharedWorkerHost::AllowIndexedDB(const GURL& url,
                                       base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(GetContentClient()->browser()->AllowWorkerIndexedDB(
       url, GetProcessHost()->GetBrowserContext(), GetRenderFrameIDsForWorker(),
-      GetStorageKey()));
+      GetWorkerStorageKey()));
 }
 
 void SharedWorkerHost::AllowCacheStorage(
@@ -655,20 +660,20 @@ void SharedWorkerHost::AllowCacheStorage(
   std::move(callback).Run(
       GetContentClient()->browser()->AllowWorkerCacheStorage(
           url, GetProcessHost()->GetBrowserContext(),
-          GetRenderFrameIDsForWorker(), GetStorageKey()));
+          GetRenderFrameIDsForWorker(), GetWorkerStorageKey()));
 }
 
 void SharedWorkerHost::AllowWebLocks(const GURL& url,
                                      base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(GetContentClient()->browser()->AllowWorkerWebLocks(
       url, GetProcessHost()->GetBrowserContext(), GetRenderFrameIDsForWorker(),
-      GetStorageKey()));
+      GetWorkerStorageKey()));
 }
 
 void SharedWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const url::Origin origin = url::Origin::Create(instance().url());
+  const url::Origin origin = GetWorkerStorageKey().origin();
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           GetProcessHost()->GetDeprecatedID(), /*frame=*/nullptr, origin,
@@ -679,7 +684,7 @@ void SharedWorkerHost::CreateWebTransportConnector(
 void SharedWorkerHost::CreateWebSocketConnector(
     mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const blink::StorageKey& storage_key = instance_.storage_key();
+  const blink::StorageKey& storage_key = GetWorkerStorageKey();
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
@@ -699,7 +704,7 @@ void SharedWorkerHost::BindCacheStorage(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BindCacheStorageInternal(
       std::move(receiver),
-      storage::BucketLocator::ForDefaultBucket(GetStorageKey()));
+      storage::BucketLocator::ForDefaultBucket(GetWorkerStorageKey()));
 }
 
 void SharedWorkerHost::CreateBroadcastChannelProvider(
@@ -712,7 +717,7 @@ void SharedWorkerHost::CreateBroadcastChannelProvider(
       storage_partition_impl->GetBroadcastChannelService();
   broadcast_channel_service->AddReceiver(
       std::make_unique<BroadcastChannelProvider>(broadcast_channel_service,
-                                                 GetStorageKey()),
+                                                 GetWorkerStorageKey()),
       std::move(receiver));
 }
 
@@ -723,7 +728,7 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
   auto* storage_partition_impl = GetStoragePartitionImpl();
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      GetStorageKey(), instance().renderer_origin(),
+      GetWorkerStorageKey(), instance().worker_storage_key().origin(),
       GetProcessHost()->GetDeprecatedID(), std::move(receiver),
       /*context_type_for_debugging=*/"Shared Worker",
       base::BindRepeating(
@@ -731,7 +736,7 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
             if (!host) {
               return "destroyed SharedWorkerHost";
             }
-            return host->GetStorageKey().GetDebugString();
+            return host->GetWorkerStorageKey().GetDebugString();
           },
           weak_factory_.GetWeakPtr()),
       // Storage access can only be granted to dedicated workers.
@@ -752,7 +757,8 @@ void SharedWorkerHost::BindPressureService(
     mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!network::IsOriginPotentiallyTrustworthy(GetStorageKey().origin())) {
+  if (!network::IsOriginPotentiallyTrustworthy(
+          GetWorkerStorageKey().origin())) {
     return;
   }
 
@@ -802,8 +808,8 @@ void SharedWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   code_cache_host_receivers_.Add(GetProcessHost()->GetID(),
-                                 GetNetworkIsolationKey(), GetStorageKey(),
-                                 std::move(receiver));
+                                 GetNetworkIsolationKey(),
+                                 GetWorkerStorageKey(), std::move(receiver));
 }
 
 void SharedWorkerHost::Destruct() {
@@ -934,18 +940,20 @@ net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
   // different top-level sites will be able to share the same shared worker, so
   // it doesn't make sense to incorporate the top-level site into the NIK in
   // that case either.
-  return GetStorageKey().ToPartialNetIsolationInfo().network_isolation_key();
+  return GetWorkerStorageKey()
+      .ToPartialNetIsolationInfo()
+      .network_isolation_key();
 }
 
 net::NetworkAnonymizationKey SharedWorkerHost::GetNetworkAnonymizationKey()
     const {
-  return GetStorageKey()
+  return GetWorkerStorageKey()
       .ToPartialNetIsolationInfo()
       .network_anonymization_key();
 }
 
-const blink::StorageKey& SharedWorkerHost::GetStorageKey() const {
-  return instance().storage_key();
+const blink::StorageKey& SharedWorkerHost::GetWorkerStorageKey() const {
+  return instance().worker_storage_key();
 }
 
 void SharedWorkerHost::ReportNoBinderForInterface(const std::string& error) {

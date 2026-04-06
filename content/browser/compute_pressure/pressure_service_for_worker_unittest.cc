@@ -18,6 +18,7 @@
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
+#include "content/browser/worker_host/worker_util.h"
 #include "content/public/browser/shared_worker_instance.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
@@ -146,8 +147,8 @@ class PressureServiceForDedicatedWorkerTest
     worker_host_ = std::make_unique<DedicatedWorkerHost>(
         &worker_service_, blink::DedicatedWorkerToken(), rfh->GetProcess(),
         rfh->GetGlobalId(), rfh->GetGlobalId(), rfh->GetStorageKey(),
-        rfh->GetStorageKey().origin(), rfh->GetIsolationInfoForSubresources(),
-        rfh->BuildClientSecurityState(),
+        rfh->GetStorageKey(), rfh->GetStorageKey().origin(),
+        rfh->GetIsolationInfoForSubresources(), rfh->BuildClientSecurityState(),
         rfh->policy_container_host()->policies(),
         /*creator_coep_reporter=*/nullptr,
         /*network_restrictions_id=*/std::nullopt,
@@ -270,10 +271,15 @@ class PressureServiceForSharedWorkerTest
     pressure_manager_.reset();
 
     auto* rfh = contents()->GetPrimaryMainFrame();
+    blink::StorageKey worker_storage_key =
+        CalculateWorkerStorageKey(kWorkerUrl, rfh->GetStorageKey());
+    url::Origin renderer_origin =
+        CalculateWorkerRendererOrigin(kWorkerUrl, worker_storage_key);
+
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        rfh->GetStorageKey(),
+        rfh->GetStorageKey(), worker_storage_key, renderer_origin,
         blink::mojom::SharedWorkerCreationContextType::kSecure,
         rfh->GetStorageKey().IsFirstPartyContext()
             ? blink::mojom::SharedWorkerSameSiteCookies::kAll

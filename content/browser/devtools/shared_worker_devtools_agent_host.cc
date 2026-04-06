@@ -81,7 +81,7 @@ GURL SharedWorkerDevToolsAgentHost::GetURL() {
 }
 
 blink::StorageKey SharedWorkerDevToolsAgentHost::GetStorageKey() const {
-  return instance_.storage_key();
+  return instance_.worker_storage_key();
 }
 
 bool SharedWorkerDevToolsAgentHost::Activate() {
@@ -125,7 +125,7 @@ void SharedWorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
 bool SharedWorkerDevToolsAgentHost::Matches(SharedWorkerHost* worker_host) {
   return instance_.Matches(worker_host->instance().url(),
                            worker_host->instance().name(),
-                           worker_host->instance().storage_key(),
+                           worker_host->instance().creator_storage_key(),
                            worker_host->instance().same_site_cookies());
 }
 

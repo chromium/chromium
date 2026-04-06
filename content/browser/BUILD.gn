@@ -2569,6 +2569,8 @@ source_set("browser") {
     "worker_host/worker_script_loader.h",
     "worker_host/worker_script_loader_factory.cc",
     "worker_host/worker_script_loader_factory.h",
+    "worker_host/worker_util.cc",
+    "worker_host/worker_util.h",
   ]
 
   if (is_android) {

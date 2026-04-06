@@ -16,6 +16,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
+#include "content/browser/worker_host/worker_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/storage_access_api/status.h"
@@ -120,19 +121,22 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
 
   mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> pending_remote_host;
 
+  blink::StorageKey worker_storage_key =
+      CalculateWorkerStorageKey(script_url, creator_storage_key_);
+
   // The origin used by this dedicated worker on the renderer side. This will
   // be the same as the storage key's origin, except in the case of data: URL
   // workers, as described in the linked bug.
   // TODO(crbug.com/40051700): Make the storage key's origin always match this.
-  url::Origin renderer_origin = script_url.SchemeIs(url::kDataScheme)
-                                    ? url::Origin()
-                                    : creator_storage_key_.origin();
+  url::Origin renderer_origin =
+      CalculateWorkerRendererOrigin(script_url, worker_storage_key);
+
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_,
-      ancestor_render_frame_host_id_, creator_storage_key_, renderer_origin,
-      isolation_info_, std::move(creator_client_security_state_),
-      creator_policies_, std::move(creator_coep_reporter_),
-      creator_network_restrictions_id_,
+      ancestor_render_frame_host_id_, creator_storage_key_, worker_storage_key,
+      renderer_origin, isolation_info_,
+      std::move(creator_client_security_state_), creator_policies_,
+      std::move(creator_coep_reporter_), creator_network_restrictions_id_,
       pending_remote_host.InitWithNewPipeAndPassReceiver(),
       storage_access_api_status);
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;
@@ -140,8 +144,9 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       broker.InitWithNewPipeAndPassReceiver());
   mojo::Remote<blink::mojom::DedicatedWorkerHostFactoryClient> remote_client(
       std::move(client));
-  remote_client->OnWorkerHostCreated(
-      std::move(broker), std::move(pending_remote_host), renderer_origin);
+  remote_client->OnWorkerHostCreated(std::move(broker),
+                                     std::move(pending_remote_host),
+                                     worker_storage_key.origin());
   base::UmaHistogramTimes("Worker.BrowserProcess.WorkerHostCreateTime",
                           base::TimeTicks::Now() - start_time);
 
