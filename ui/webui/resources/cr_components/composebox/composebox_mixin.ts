@@ -790,6 +790,9 @@ export const ComposeboxEmbedderMixin =
         }
 
         async refreshTabSuggestions() {
+          if (!this.contextMenuOpened) {
+            return;
+          }
           const {tabs} = await this.getSearchboxHandler().getRecentTabs();
           this.tabSuggestions = [...tabs];
         }
