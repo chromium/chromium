@@ -65,6 +65,11 @@ class VpnDetailedViewPixelTest : public AshTestBase {
     vpn_detailed_view_ = static_cast<VpnDetailedView*>(detailed_view);
   }
 
+  void TearDown() override {
+    vpn_detailed_view_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
@@ -112,7 +117,7 @@ class VpnDetailedViewPixelTest : public AshTestBase {
     vpn_detailed_view_->OnGetNetworkStateList(std::move(networks));
   }
 
-  raw_ptr<VpnDetailedView, DanglingUntriaged> vpn_detailed_view_ = nullptr;
+  raw_ptr<VpnDetailedView> vpn_detailed_view_ = nullptr;
 };
 
 TEST_F(VpnDetailedViewPixelTest, OnlyBuiltInVpn) {
