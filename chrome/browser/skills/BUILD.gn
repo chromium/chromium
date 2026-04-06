@@ -145,7 +145,11 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = []
   if (!is_android) {
-    sources += [ "skills_interactive_uitest.cc" ]
+    sources += [
+      "skills_interactive_uitest.cc",
+      "skills_interactive_uitest_base.cc",
+      "skills_interactive_uitest_base.h",
+    ]
   }
   deps = [
     ":browser_tests",
