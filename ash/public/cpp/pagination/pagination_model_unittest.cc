@@ -104,7 +104,8 @@ class TestPaginationModelObserver : public PaginationModelObserver {
 
   void TransitionEnded() override { ++transition_ended_call_count_; }
 
-  raw_ptr<PaginationModel, DanglingUntriaged> model_ = nullptr;
+  // set in PaginationModelTest
+  raw_ptr<PaginationModel> model_ = nullptr;
 
   int expected_page_selection_ = 0;
   int expected_transition_start_ = 0;
@@ -122,7 +123,7 @@ class TestPaginationModelObserver : public PaginationModelObserver {
 
   int transition_start_call_count_ = 0;
   int transition_ended_call_count_ = 0;
-  raw_ptr<base::RunLoop, DanglingUntriaged> wait_loop_ = nullptr;
+  raw_ptr<base::RunLoop> wait_loop_ = nullptr;
 };
 
 class PaginationModelTest : public views::test::WidgetTest {
@@ -148,6 +149,7 @@ class PaginationModelTest : public views::test::WidgetTest {
   void TearDown() override {
     pagination_->RemoveObserver(&observer_);
     observer_.set_model(NULL);
+    observer_.Reset();
     widget_.reset();
     views::test::WidgetTest::TearDown();
   }
