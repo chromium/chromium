@@ -139,6 +139,7 @@ source_set("unit_tests") {
   sources = [
     "app_source_url_recorder_test.cc",
     "bitset_unittest.cc",
+    "gmock_matchers_unittest.cc",
     "observers/ukm_consent_state_observer_unittest.cc",
     "singular_ukm_entry_unittest.cc",
     "ukm_recorder_impl_unittest.cc",

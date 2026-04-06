@@ -48,12 +48,16 @@ class UkmMetricValueMatcher {
     auto* metric_value =
         ukm::TestUkmRecorder::GetEntryMetric(entry, metric_name_);
     if (!metric_value) {
-      *os << "metric " << metric_name_ << " not found";
+      if (os) {
+        *os << "metric " << metric_name_ << " not found";
+      }
       return false;
     }
     if (value_ != *metric_value) {
-      *os << "metric " << metric_name_ << " with incorrect value"
-          << " - got: " << *metric_value << " - expected: " << value_;
+      if (os) {
+        *os << "metric " << metric_name_ << " with incorrect value"
+            << " - got: " << *metric_value << " - expected: " << value_;
+      }
       return false;
     }
     return true;
