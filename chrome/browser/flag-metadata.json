@@ -2212,11 +2212,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "detached-tabs",
-    "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "device-posture",
     "owners": [ "alexis.menard@intel.com" ],
     "expiry_milestone": 140

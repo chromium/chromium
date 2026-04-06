@@ -542,10 +542,6 @@ inline constexpr char kTabStripDeclutterName[] = "Tab Strip Declutter";
 inline constexpr char kTabStripDeclutterDescription[] =
     "Enables the Tab Strip Declutter feature on Desktop.";
 
-inline constexpr char kDetachedTabsName[] = "Detached Tabs";
-inline constexpr char kDetachedTabsDescription[] =
-    "Enables the Detached Tabs feature on Desktop.";
-
 inline constexpr char kDevToolsProjectSettingsName[] =
     "DevTools Project Settings";
 inline constexpr char kDevToolsProjectSettingsDescription[] =

@@ -6,12 +6,10 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/shadow_frame_view.h"
@@ -51,9 +49,7 @@ class ShadowOverlayView::CornerView : public views::View {
 
   CornerView(Corner corner, BrowserView& browser_view) : corner_(corner) {
     SetBackground(std::make_unique<ThemedBackground>(
-        &browser_view, base::FeatureList::IsEnabled(features::kDetachedTabs)
-                           ? ThemedBackground::ThemeChoice::kFrameTheme
-                           : ThemedBackground::ThemeChoice::kToolbarTheme));
+        &browser_view, ThemedBackground::ThemeChoice::kToolbarTheme));
   }
   ~CornerView() override = default;
 
@@ -199,8 +195,7 @@ ShadowOverlayView::~ShadowOverlayView() = default;
 
 void ShadowOverlayView::VisibilityChanged(View* starting_from, bool visible) {
   if (starting_from == this) {
-    shadow_box_->SetShadowVisible(
-        visible && !base::FeatureList::IsEnabled(features::kDetachedTabs));
+    shadow_box_->SetShadowVisible(visible);
 
     // Ensure the opacity matches the current animation value in cases where the
     // panel should not animate but is open such as swapping between tabs.
@@ -282,9 +277,6 @@ double ShadowOverlayView::GetShadowValue() const {
 void ShadowOverlayView::OnAnimationProgressed(
     const BrowserAnimationController* controller,
     BrowserAnimationUpdate status) {
-  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
-    return;
-  }
   shadow_box_->SetShadowOpacity(GetShadowValue());
 }
 

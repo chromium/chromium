@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -54,7 +53,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -82,8 +80,6 @@ namespace {
 
 // The amount of padding between the label and the sync icon.
 constexpr int kSyncIconPaddingFromLabel = 2;
-
-constexpr base::TimeDelta kChipAnimationDuration = base::Milliseconds(125);
 
 bool SupportsDataSharing() {
   return data_sharing::features::IsDataSharingFunctionalityEnabled();
@@ -149,11 +145,6 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
     attention_indicator_observation_.Observe(
         tab_group->GetTabGroupFeatures()->attention_indicator());
   }
-
-  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
-    chip_transition_animation_ = std::make_unique<gfx::SlideAnimation>(this);
-    chip_transition_animation_->SetSlideDuration(kChipAnimationDuration);
-  }
 }
 
 TabGroupHeader::~TabGroupHeader() {
@@ -176,11 +167,6 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetElideBehavior(gfx::FADE_TAIL);
   title_->SetLineHeight(20);
-
-  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
-    title_->SetFontList(
-        title_->font_list().DeriveWithWeight(gfx::Font::Weight::SEMIBOLD));
-  }
 
   // Enable keyboard focus.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -210,27 +196,10 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
           &TabGroupHeader::UpdateTooltipText, base::Unretained(this)));
 
   UpdateTooltipText();
-
-  if (!tab_slot_controller_->GetGroupTitle(group).empty() &&
-      chip_transition_animation_) {
-    chip_transition_animation_->Reset(1.0);
-  }
 }
 
 void TabGroupHeader::OnAttentionStateChanged() {
   VisualsChanged();
-}
-
-void TabGroupHeader::AnimationProgressed(const gfx::Animation* animation) {
-  if (!chip_transition_animation_ ||
-      animation != chip_transition_animation_.get()) {
-    return;
-  }
-  if (group_title_.empty()) {
-    CreateHeaderWithoutTitle();
-  } else {
-    CreateHeaderWithTitle();
-  }
 }
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
@@ -496,17 +465,7 @@ void TabGroupHeader::VisualsChanged() {
   // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
   // changes to cut down on the number of times we recalculate the view.
   const tab_groups::TabGroupId tab_group_id = group().value();
-  const std::u16string old_title = group_title_;
   group_title_ = tab_slot_controller_->GetGroupTitle(tab_group_id);
-
-  if (chip_transition_animation_ &&
-      (old_title.empty() != group_title_.empty())) {
-    if (group_title_.empty()) {
-      chip_transition_animation_->Hide();
-    } else {
-      chip_transition_animation_->Show();
-    }
-  }
 
   color_ = tab_slot_controller_->GetPaintedGroupColor(
       tab_slot_controller_->GetGroupColorId(tab_group_id));
@@ -558,40 +517,12 @@ int TabGroupHeader::GetDesiredWidth() const {
   return overlap_margin + title_chip_->width();
 }
 
-int TabGroupHeader::GetNamedChipHeight() const {
-  return base::FeatureList::IsEnabled(features::kDetachedTabs)
-             ? group_style_->GetDetachedChipHeight()
-             : title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
-                   .height();
-}
-
 int TabGroupHeader::GetChipHeight() const {
-  if (!chip_transition_animation_) {
-    return group_style_->GetEmptyChipSize();
-  }
-
-  const float animation_value = chip_transition_animation_->GetCurrentValue();
-  const int empty_height = group_style_->GetEmptyChipSize();
-  const int named_height = GetNamedChipHeight();
-
-  return gfx::Tween::IntValueBetween(animation_value, empty_height,
-                                     named_height);
+  return group_style_->GetEmptyChipSize();
 }
 
 int TabGroupHeader::GetChipY() const {
-  if (!chip_transition_animation_) {
-    return group_style_->GetTitleChipOffset(std::nullopt).y();
-  }
-
-  const float animation_value = chip_transition_animation_->GetCurrentValue();
-  const int named_height = GetNamedChipHeight();
-
-  const gfx::Point empty_origin =
-      group_style_->GetTitleChipOffset(std::nullopt);
-  const gfx::Point named_origin =
-      group_style_->GetTitleChipOffset(named_height);
-  return gfx::Tween::IntValueBetween(animation_value, empty_origin.y(),
-                                     named_origin.y());
+  return group_style_->GetTitleChipOffset(std::nullopt).y();
 }
 
 bool TabGroupHeader::ShouldShowHeaderIcon() const {
@@ -769,7 +700,7 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   const int chip_height = GetChipHeight();
   const int chip_y = GetChipY();
   const gfx::Point named_origin =
-      group_style_->GetTitleChipOffset(GetNamedChipHeight());
+      group_style_->GetTitleChipOffset(std::nullopt);
 
   const int corner_radius = group_style_->GetChipCornerRadius();
   title_chip_->SetBounds(named_origin.x(), chip_y, title_chip_width,

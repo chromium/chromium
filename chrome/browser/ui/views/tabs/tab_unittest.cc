@@ -278,35 +278,6 @@ class TabTest : public ChromeViewsTestBase {
   base::SimpleTestTickClock fake_clock_;
 };
 
-TEST_F(TabTest, DetachedGroupedTabLayout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDetachedTabs);
-
-  FakeTabSlotController tab_slot_controller;
-  Tab tab(tabs::TabHandle(1), &tab_slot_controller);
-  tab.SetGroup(tab_groups::TabGroupId::GenerateNew());
-
-  // Height should be kTabStripHeight (41).
-  const int height = GetLayoutConstant(LayoutConstant::kTabStripHeight);
-  tab.SetBounds(0, 0, 200, height);
-
-  // Check visual path in TabStyleViews at 1x scale.
-  const float scale = 1.0f;
-  SkPath path = GetTabPath(&tab, TabStyle::PathType::kFill, scale);
-  SkRect path_bounds = path.getBounds();
-
-  // With kDetachedTabs and grouped, top should be 7 (6 + 1).
-  // Height should be 26 (28 - 2).
-  EXPECT_EQ(7.0f, path_bounds.fTop);
-  EXPECT_EQ(26.0f, path_bounds.height());
-
-  // Check contents insets.
-  // Normal top inset is 12. Grouped detached should be 13.
-  gfx::Insets insets = tab.tab_style_views()->GetContentsInsets();
-  EXPECT_EQ(13, insets.top());
-  EXPECT_EQ(14, insets.bottom());
-}
-
 class TabContentsTest : public ChromeViewsTestBase {
  public:
   TabContentsTest() = default;

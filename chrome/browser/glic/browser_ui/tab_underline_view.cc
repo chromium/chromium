@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/debug/crash_logging.h"
-#include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_controller.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -16,9 +15,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -41,9 +38,6 @@ constexpr static int kMinUnderlineWidth = kSmallUnderlineWidth - 4;
 
 // The threshold for tab width at which `kMinUnderlineWidth` should be used.
 constexpr static int kMinimumTabWidthThreshold = 42;
-
-// The threshold for tab width above which a glow effect may be used.
-constexpr static int kMinimumTabWidthGlowThreshold = 68;
 
 }  // namespace
 
@@ -179,23 +173,19 @@ std::vector<SkColor> TabUnderlineView::GetEffectColors() {
   std::vector<SkColor> colors;
 
   if (color_provider && tab_handle_.Get()) {
-    if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
-      colors = std::vector<SkColor>(
-          3, color_provider->GetColor(kColorGlicActiveTabUnderlineGradient2));
-    } else {
-      // Different sets of colors are used for underlines on active vs inactive
-      // tabs if a custom theme is being used.
-      bool is_tab_active = tab_handle_.Get()->IsActivated();
-      colors = {color_provider->GetColor(
-                    is_tab_active ? kColorGlicActiveTabUnderlineGradient1
-                                  : kColorGlicInactiveTabUnderlineGradient1),
-                color_provider->GetColor(
-                    is_tab_active ? kColorGlicActiveTabUnderlineGradient2
-                                  : kColorGlicInactiveTabUnderlineGradient2),
-                color_provider->GetColor(
-                    is_tab_active ? kColorGlicActiveTabUnderlineGradient3
-                                  : kColorGlicInactiveTabUnderlineGradient3)};
-    }
+    // Different sets of colors are used for underlines on active vs inactive
+    // tabs if a custom theme is being used.
+    bool is_tab_active = tab_handle_.Get()->IsActivated();
+    colors = {
+        color_provider->GetColor(is_tab_active
+                                     ? kColorGlicActiveTabUnderlineGradient1
+                                     : kColorGlicInactiveTabUnderlineGradient1),
+        color_provider->GetColor(is_tab_active
+                                     ? kColorGlicActiveTabUnderlineGradient2
+                                     : kColorGlicInactiveTabUnderlineGradient2),
+        color_provider->GetColor(
+            is_tab_active ? kColorGlicActiveTabUnderlineGradient3
+                          : kColorGlicInactiveTabUnderlineGradient3)};
   } else {
     // If there is no ColorProvider available, fall back to
     // -gem-sys-color--brand-blue.
@@ -235,25 +225,8 @@ void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,
                                   const cc::PaintFlags& flags) {
   int dimension = ComputeDimension();
 
-  const bool is_tab_active =
-      tab_handle_.Get() && tab_handle_.Get()->IsActivated();
-
   gfx::Rect effect_bounds;
-  const bool use_glow_effect =
-      base::FeatureList::IsEnabled(features::kDetachedTabs) &&
-      orientation_ == Orientation::kHorizontal &&
-      size().width() > kMinimumTabWidthGlowThreshold;
-
-  if (use_glow_effect) {
-    // The detached tab body is inset by the bottom corner radius from
-    // the edges of the tab view.
-    int inset = TabStyle::Get()->GetBottomCornerRadius();
-    if (!is_tab_active) {
-      inset += 8;
-    }
-    effect_bounds =
-        gfx::Rect(inset, 0, size().width() - 2 * inset, size().height());
-  } else if (orientation_ == Orientation::kHorizontal) {
+  if (orientation_ == Orientation::kHorizontal) {
     int underline_x = (size().width() - dimension + 1) / 2;
     effect_bounds = gfx::Rect(underline_x, size().height() - kEffectThickness,
                               dimension, kEffectThickness);
@@ -265,93 +238,20 @@ void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,
 
   cc::PaintFlags new_flags(flags);
 
-  if (use_glow_effect) {
-    SkColor color = colors_[0];
-
-    // Follow the bottom curve of the tab. For detached tabs, the bottom
-    // corner radius is the same as the top corner radius.
-    const float bottom_radius =
-        is_tab_active ? TabStyle::Get()->GetTopCornerRadius() : 0.0f;
-    const float glow_height = effect_bounds.height();
-    const float target_middle_height = 8.0f;
-    const float target_side_height = 4.0f;
-    const float top_padding = glow_height - target_middle_height;
-    const float top_inset = target_middle_height - target_side_height;
-
-    // Use a linear gradient from top to bottom.
-    SkPoint points[2];
-    points[0] = SkPoint::Make(0, effect_bounds.y() + top_padding);
-    points[1] = SkPoint::Make(0, effect_bounds.bottom());
-
-    SkColor4f gradient_colors[5];
-    SkScalar pos[5] = {0.0f, 0.37f, 0.65f, 0.84f, 1.0f};
-    gradient_colors[0] =
-        SkColor4f::FromColor(SkColorSetA(color, 32));  // 12.5% opacity
-    gradient_colors[1] =
-        SkColor4f::FromColor(SkColorSetA(color, 54));  // 21% opacity
-    gradient_colors[2] =
-        SkColor4f::FromColor(SkColorSetA(color, 108));  // 42% opacity
-    gradient_colors[3] =
-        SkColor4f::FromColor(SkColorSetA(color, 175));  // 69% opacity
-    gradient_colors[4] =
-        SkColor4f::FromColor(SkColorSetA(color, 223));  // 87.5% opacity
-
-    new_flags.setShader(cc::PaintShader::MakeLinearGradient(
-        points, gradient_colors, pos, 5, SkTileMode::kClamp));
-
-    // Apply a blur filter to the glow to soften the transition at the curved
-    // top edge and sides.
-    const float blur_sigma_x = is_tab_active ? 1.0f : 4.0f;
-    const float blur_sigma_y = 2.0f;
-    new_flags.setImageFilter(sk_make_sp<cc::BlurPaintFilter>(
-        blur_sigma_x, blur_sigma_y, SkTileMode::kDecal, nullptr));
-
-    // Inset the path from the sides to allow the blur filter to create a
-    // fade-out effect within the clipping bounds.
-    const float side_inset = 2 * blur_sigma_x;
-    SkPathBuilder top_curve_builder;
-    top_curve_builder.moveTo(effect_bounds.x() + side_inset,
-                             effect_bounds.y() + top_padding + top_inset);
-    top_curve_builder.quadTo(effect_bounds.CenterPoint().x(),
-                             effect_bounds.y() + top_padding,
-                             effect_bounds.right() - side_inset,
-                             effect_bounds.y() + top_padding + top_inset);
-    // Extend the path downwards so that the blur filter doesn't soften the
-    // bottom edge once clipped.
-    const float blur_bleed = 6.0f;
-    top_curve_builder.lineTo(effect_bounds.right() - side_inset,
-                             effect_bounds.bottom() + blur_bleed);
-    top_curve_builder.lineTo(effect_bounds.x() + side_inset,
-                             effect_bounds.bottom() + blur_bleed);
-    top_curve_builder.close();
-
-    SkRRect rrect;
-    SkVector radii[4] = {{0, 0},
-                         {0, 0},
-                         {bottom_radius, bottom_radius},
-                         {bottom_radius, bottom_radius}};
-    rrect.setRectRadii(gfx::RectToSkRect(effect_bounds), radii);
-
-    canvas->Save();
-    canvas->ClipPath(SkPath::RRect(rrect), true);
-    canvas->DrawPath(top_curve_builder.detach(), new_flags);
-    canvas->Restore();
-  } else {
-    const int kNumDefaultColors = 3;
-    // At small sizes, paint the underline as a solid color instead of a
-    // gradient. We also draw a solid color if we've got no shader and fewer
-    // than 3 colors.
-    if (dimension < gfx::kFaviconSize * 2 ||
-        (!new_flags.getShader() && colors_.size() < kNumDefaultColors)) {
-      new_flags.setShader(nullptr);
-      CHECK(!colors_.empty());
-      new_flags.setColor(colors_[0]);
-    } else if (!new_flags.getShader()) {
-      SetDefaultColors(new_flags, gfx::RectF(effect_bounds));
-    }
-
-    canvas->DrawRoundRect(gfx::RectF(effect_bounds), kCornerRadius, new_flags);
+  const int kNumDefaultColors = 3;
+  // At small sizes, paint the underline as a solid color instead of a
+  // gradient. We also draw a solid color if we've got no shader and fewer
+  // than 3 colors.
+  if (dimension < gfx::kFaviconSize * 2 ||
+      (!new_flags.getShader() && colors_.size() < kNumDefaultColors)) {
+    new_flags.setShader(nullptr);
+    CHECK(!colors_.empty());
+    new_flags.setColor(colors_[0]);
+  } else if (!new_flags.getShader()) {
+    SetDefaultColors(new_flags, gfx::RectF(effect_bounds));
   }
+
+  canvas->DrawRoundRect(gfx::RectF(effect_bounds), kCornerRadius, new_flags);
 }
 
 void TabUnderlineView::OnActiveTabChanged(

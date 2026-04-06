@@ -8,7 +8,6 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -221,16 +220,10 @@ SkColor TabStyle::GetTabBackgroundColor(
 
   switch (state) {
     case TabStyle::TabSelectionState::kActive: {
-      constexpr std::array<ui::ColorId, 2> kActiveDetachedColorIds = {
-          kColorTabBackgroundActiveFrameInactive,
-          kColorDetachedTabBackgroundActiveFrameActive};
       constexpr std::array<ui::ColorId, 2> kActiveColorIds = {
           kColorTabBackgroundActiveFrameInactive,
           kColorTabBackgroundActiveFrameActive};
-      return color_provider->GetColor(
-          base::FeatureList::IsEnabled(features::kDetachedTabs)
-              ? kActiveDetachedColorIds[frame_active]
-              : kActiveColorIds[frame_active]);
+      return color_provider->GetColor(kActiveColorIds[frame_active]);
     }
     case TabStyle::TabSelectionState::kSelected: {
       constexpr std::array<std::array<ui::ColorId, 2>, 2> kSelectedColorIds = {
