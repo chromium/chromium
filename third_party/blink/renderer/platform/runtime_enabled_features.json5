@@ -1676,7 +1676,7 @@
     },
     {
       name: "CSSPseudoElementInterface",
-      status: "stable",
+      status: "experimental",
     },
     {
       // Enables the :has-slotted pseudo-selector.
@@ -2369,7 +2369,7 @@
     {
       // `event.pseudoTarget` property to represent pseudo-elements in events. Returns `CSSPseudoElement` or null.
       name: "EventPseudoTargetProperty",
-      status: "stable",
+      status: "experimental",
       depends_on: ["CSSPseudoElementInterface"],
     },
     {
@@ -4451,7 +4451,7 @@
       // Support hit-testing for ::after, ::before, ::marker
       // (e.g. for CSSPseudoElement).
       name: "PseudoElementsHitTestable",
-      status: "stable",
+      status: "experimental",
     },
     {
       // Support :hover on ::after, ::before, ::marker.
