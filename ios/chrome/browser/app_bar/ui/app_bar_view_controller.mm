@@ -81,6 +81,13 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
                                        AppBarSymbolConfiguration());
 }
 
+// Returns the font size for the assistant button.
+UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
+  return PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleCaption2, traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryExtraExtraExtraLarge);
+}
+
 }  // namespace
 
 @interface AppBarViewController ()
@@ -277,13 +284,69 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 #pragma mark - Private
 
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  [self updateAssistantButtonTitleIfNeeded];
+}
+
+// Returns `fullTitle` if it fits within the available width for the assistant
+// button, or `truncatedTitle` otherwise.
+- (NSString*)assistantButtonTitleWithFullTitle:(NSString*)fullTitle
+                                truncatedTitle:(NSString*)truncatedTitle {
+  if (self.view.bounds.size.width == 0) {
+    return fullTitle;
+  }
+  CGSize size = [fullTitle sizeWithAttributes:@{
+    NSFontAttributeName : AssistantButtonFontSize(self.traitCollection)
+  }];
+
+  CGFloat availableWidthForButton =
+      (self.view.bounds.size.width - 2 * kStackViewHorizontalMargin -
+       2 * kStackViewSpacing) /
+      3.0;
+  CGFloat availableWidthForTitle =
+      availableWidthForButton - 2 * kButtonHorizontalPadding;
+
+  return (size.width > availableWidthForTitle) ? truncatedTitle : fullTitle;
+}
+
+// Returns the title for the assistant button based on current state and size.
+- (NSString*)assistantButtonTitleForCurrentState {
+  switch (_assistantButtonState) {
+    case AppBarAssistantButtonState::kAsk:
+      return [self
+          assistantButtonTitleWithFullTitle:l10n_util::GetNSString(
+                                                IDS_IOS_APP_BAR_ASK_GEMINI)
+                             truncatedTitle:l10n_util::GetNSString(
+                                                IDS_IOS_APP_BAR_ASK)];
+    case AppBarAssistantButtonState::kAIM:
+      return l10n_util::GetNSString(IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT);
+    default:
+      return @"TODO(crbug.com/484000888): To be removed when lens is "
+             @"implemented";
+  }
+}
+
+// Updates the assistant button title if it has changed.
+- (void)updateAssistantButtonTitleIfNeeded {
+  if (!_assistantButton) {
+    return;
+  }
+  NSString* title = [self assistantButtonTitleForCurrentState];
+  if (![_assistantButton.configuration.title isEqualToString:title]) {
+    UIButtonConfiguration* configuration = _assistantButton.configuration;
+    configuration.title = title;
+    _assistantButton.configuration = configuration;
+  }
+}
+
 // Updates the assistant button configuration based on the current state.
 - (void)updateAssistantButton {
   if (!_assistantButton) {
     return;
   }
 
-  NSString* title;
+  NSString* title = [self assistantButtonTitleForCurrentState];
   UIImage* image;
   switch (_assistantButtonState) {
     case AppBarAssistantButtonState::kSignedOut:
@@ -296,7 +359,6 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
       image = _assistantButtonAvatar;
       break;
     case AppBarAssistantButtonState::kAsk:
-      title = l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI);
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
       image = CustomAppBarSymbol(kGeminiBrandedLogoSymbol);
 #else
@@ -304,8 +366,6 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 #endif
       break;
     case AppBarAssistantButtonState::kAIM:
-      title =
-          l10n_util::GetNSString(IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT);
       image = CustomAppBarSymbol(kMagnifyingglassSparkSymbol);
       break;
   }
@@ -426,10 +486,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
       [UIButtonConfiguration plainButtonConfiguration];
   UIButton* button = [UIButton buttonWithConfiguration:configuration
                                          primaryAction:nil];
-  __weak UIButton* weakButton = button;
-
   configuration = button.configuration;
-
   configuration.imagePlacement = NSDirectionalRectEdgeTop;
   configuration.imagePadding = kButtonImagePadding;
   configuration.image = image;
@@ -444,17 +501,12 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
 
   __weak __typeof(self) weakSelf = self;
-
   configuration.titleTextAttributesTransformer =
       ^NSDictionary<NSAttributedStringKey, id>*(
           NSDictionary<NSAttributedStringKey, id>* textAttributes) {
     NSMutableDictionary* mutableAttributes = [textAttributes mutableCopy];
-
     mutableAttributes[NSFontAttributeName] =
-        PreferredFontForTextStyleWithMaxCategory(
-            UIFontTextStyleCaption2,
-            weakButton.traitCollection.preferredContentSizeCategory,
-            UIContentSizeCategoryExtraExtraExtraLarge);
+        AssistantButtonFontSize(weakSelf.traitCollection);
     mutableAttributes[NSForegroundColorAttributeName] =
         [ButtonsForegroundColor()
             colorWithAlphaComponent:weakSelf.buttonsTitleAlpha];
