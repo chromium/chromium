@@ -29,7 +29,7 @@ struct BASE_EXPORT MappedMemoryRegion {
   MappedMemoryRegion();
   MappedMemoryRegion(const MappedMemoryRegion&);
   MappedMemoryRegion(MappedMemoryRegion&&) noexcept;
-  MappedMemoryRegion& operator=(MappedMemoryRegion&);
+  MappedMemoryRegion& operator=(const MappedMemoryRegion&);
   MappedMemoryRegion& operator=(MappedMemoryRegion&&) noexcept;
 
   // The address range [start,end) of mapped memory.

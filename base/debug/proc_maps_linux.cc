@@ -29,7 +29,7 @@ namespace base::debug {
 MappedMemoryRegion::MappedMemoryRegion() = default;
 MappedMemoryRegion::MappedMemoryRegion(const MappedMemoryRegion&) = default;
 MappedMemoryRegion::MappedMemoryRegion(MappedMemoryRegion&&) noexcept = default;
-MappedMemoryRegion& MappedMemoryRegion::operator=(MappedMemoryRegion&) =
+MappedMemoryRegion& MappedMemoryRegion::operator=(const MappedMemoryRegion&) =
     default;
 MappedMemoryRegion& MappedMemoryRegion::operator=(
     MappedMemoryRegion&&) noexcept = default;
