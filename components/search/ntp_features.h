@@ -49,11 +49,6 @@ BASE_DECLARE_FEATURE(kNtpModulesDragAndDrop);
 BASE_DECLARE_FEATURE(kNtpModulesLoad);
 BASE_DECLARE_FEATURE(kNtpModuleSignInRequirement);
 BASE_DECLARE_FEATURE(kNtpOutlookCalendarModule);
-BASE_DECLARE_FEATURE(kNtpPhotosModule);
-BASE_DECLARE_FEATURE(kNtpPhotosModuleSoftOptOut);
-BASE_DECLARE_FEATURE(kNtpPhotosModuleCustomizedOptInTitle);
-BASE_DECLARE_FEATURE(kNtpPhotosModuleCustomizedOptInArtWork);
-BASE_DECLARE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpFeedModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
 BASE_DECLARE_FEATURE(kNtpSharepointModule);
@@ -137,12 +132,7 @@ extern const char kNtpModulesEligibleForHappinessTrackingSurveyParam[];
 // Parameter determining module trigger ids for HaTS for eligible module ids for
 // a given module interaction type.
 extern const char kNtpModulesInteractionBasedSurveyEligibleIdsParam[];
-// Parameter determining the type of Photos data to render.
-extern const char kNtpPhotosModuleDataParam[];
-// Parameter determining the art work in opt-in card.
-extern const char kNtpPhotosModuleOptInArtWorkParam[];
-// Parameter determining the title for the opt-in card.
-extern const char kNtpPhotosModuleOptInTitleParam[];
+
 // Parameter determining the variation of the omnibox theme matching.
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
 extern const char kNtpMostRelevantTabResumptionModuleDataParam[];

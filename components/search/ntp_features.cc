@@ -137,25 +137,6 @@ BASE_FEATURE(kNtpOneGoogleBar, base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, outlook calendar module will be shown.
 BASE_FEATURE(kNtpOutlookCalendarModule, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, Google Photos module will be shown.
-BASE_FEATURE(kNtpPhotosModule, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, a customized title will be shown on the opt-in card.
-BASE_FEATURE(kNtpPhotosModuleCustomizedOptInTitle,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, a customized art work will be shown on the opt-in card.
-BASE_FEATURE(kNtpPhotosModuleCustomizedOptInArtWork,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, Google Photos opt-in card will show a button to soft opt-out.
-BASE_FEATURE(kNtpPhotosModuleSoftOptOut, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the single svg image show in Photos opt-in screen will be
-// replaced by constituent images to support i18n.
-BASE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, Following Feed module will be shown.
 BASE_FEATURE(kNtpFeedModule, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -287,10 +268,6 @@ const char kNtpOutlookCalendarModuleDataParam[] =
     "NtpOutlookCalendarModuleDataParam";
 const char kNtpMiddleSlotPromoDismissalParam[] =
     "NtpMiddleSlotPromoDismissalParam";
-const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";
-const char kNtpPhotosModuleOptInTitleParam[] = "NtpPhotosModuleOptInTitleParam";
-const char kNtpPhotosModuleOptInArtWorkParam[] =
-    "NtpPhotosModuleOptInArtWorkParam";
 const char kNtpMostRelevantTabResumptionModuleDataParam[] =
     "NtpMostRelevantTabResumptionModuleDataParam";
 const char kNtpMostRelevantTabResumptionModuleMaxVisitsParam[] =

@@ -7988,33 +7988,6 @@
             ]
         }
     ],
-    "DesktopNtpModules": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "RecipeTasksRuleBasedDiscountDriveManagedUsersCartOptimizeRecipeTasksSAPIV2Fre_Enabled",
-                    "params": {
-                        "NtpModulesLoadTimeoutMillisecondsParam": "3000",
-                        "use_sapi_v2": "true"
-                    },
-                    "enable_features": [
-                        "NtpModulesLoadTimeoutMilliseconds",
-                        "NtpPhotosModule"
-                    ],
-                    "disable_features": [
-                        "NtpShoppingTasksModule"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpModulesTabGroups": [
         {
             "platforms": [

@@ -1349,8 +1349,6 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   ASSERT_TRUE(handler().context_input_data().has_value());
 }
 
-
-
 TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
   // Add a tab.
   tabs::TabInterface* tab = AddTab(GURL("https://example.com"));
@@ -1617,7 +1615,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
   }
 
-  auto* contextual_tasks_tab = AddTab(GURL(chrome::kChromeUIContextualTasksURL));
+  auto* contextual_tasks_tab =
+      AddTab(GURL(chrome::kChromeUIContextualTasksURL));
   ON_CALL(*tab_list(), GetActiveTab())
       .WillByDefault(testing::Return(contextual_tasks_tab));
 
@@ -1724,7 +1723,6 @@ TEST_F(ContextualSearchboxHandlerSignedInTestTabsTest,
                                     ntp_features::kNtpCalendarModule,
                                     ntp_features::kNtpOutlookCalendarModule,
                                     ntp_features::kNtpDriveModule,
-                                    ntp_features::kNtpPhotosModule,
                                 });
   // Add a regular tab, a google search tab, and another regular tab.
   auto* example_tab = AddTab(GURL("https://www.example.com"));
