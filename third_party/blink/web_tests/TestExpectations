@@ -4640,6 +4640,7 @@ crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_i
 ### external/wpt/speculation-rules/prerender
 crbug.com/1126305 external/wpt/speculation-rules/prerender/restrictions.https.html [ Skip Timeout ]
 # Failures for other reasons.
+crbug.com/343754418 external/wpt/speculation-rules/prerender/no-vary-search-hint-target-blank.https.html?17-17 [ Failure ]
 crbug.com/343754418 external/wpt/speculation-rules/prerender/no-vary-search-hint.https.html?17-17 [ Failure ]
 crbug.com/383653154 external/wpt/speculation-rules/prerender/restriction-speech-synthesis.https.html [ Skip Timeout ]
 

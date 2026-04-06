@@ -141,7 +141,8 @@ PrerenderNewTabHandle::TakeWebContentsIfAvailable(
     // alive.
     return nullptr;
   }
-  if (host->GetInitialUrl() != create_new_window_params.target_url) {
+  if (!host->IsUrlMatch(create_new_window_params.target_url) &&
+      !host->IsNoVarySearchHintUrlMatch(create_new_window_params.target_url)) {
     // The host is not eligible for the target URL.
     return nullptr;
   }
