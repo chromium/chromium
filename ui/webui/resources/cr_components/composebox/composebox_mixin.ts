@@ -719,20 +719,6 @@ export const ComposeboxEmbedderMixin =
           }
           return {file, errorMessage};
         }
-
-        async refreshTabSuggestions() {
-          const {tabs} = await this.getSearchboxHandler().getRecentTabs();
-          this.tabSuggestions = [...tabs];
-        }
-
-        async onGetTabPreview(e: CustomEvent<{
-          tabId: number,
-          onPreviewFetched: (previewDataUrl: string) => void,
-        }>) {
-          const {previewDataUrl} =
-              await this.getSearchboxHandler().getTabPreview(e.detail.tabId);
-          e.detail.onPreviewFetched(previewDataUrl || '');
-        }
       }
 
       return ComposeboxEmbedderMixin;
@@ -838,9 +824,4 @@ export interface ComposeboxEmbedderMixinInterface extends
       token: UnguessableToken, status: ContextUploadStatus,
       errorType: ContextUploadErrorType|
       null): {file: ComposeboxFile|null, errorMessage: string|null};
-  refreshTabSuggestions(): Promise<void>;
-  onGetTabPreview(e: CustomEvent<{
-    tabId: number,
-    onPreviewFetched: (previewDataUrl: string) => void,
-  }>): Promise<void>;
 }
