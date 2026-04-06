@@ -4276,6 +4276,9 @@ std::unique_ptr<GetPropertyReply> detail::ReadReply<GetPropertyReply>(
   Pad(&buf, 12);
 
   // value
+  if (format != 0 && format != 8 && format != 16 && format != 32) {
+    return nullptr;
+  }
   value = buffer->ReadAndAdvance((value_len) * ((format) / (8)));
 
   Align(&buf, 4);

@@ -372,11 +372,14 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
                 .long_length = static_cast<uint32_t>(
                     amount ? length : std::numeric_limits<lentype>::max())})
             .Sync();
-    if (!response || response->format / 8u != sizeof(T)) {
+    if (!response ||
+        (response->format != 8 && response->format != 16 &&
+         response->format != 32) ||
+        response->format / 8u != sizeof(T)) {
       return false;
     }
 
-    size_t byte_len = response->value_len * response->format / 8u;
+    size_t byte_len = response->value_len * sizeof(T);
     value->resize(response->value_len);
     if (byte_len > 0u) {
       UNSAFE_TODO(memcpy(value->data(), response->value->bytes(), byte_len));

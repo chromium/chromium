@@ -613,6 +613,13 @@ class GenXproto(FileWriter):
 
         if t.is_ref_counted_memory:
             if self.is_read:
+                if name == 'value' and field.parent and field.parent[1] == (
+                        'xcb', 'GetProperty'):
+                    with Indent(
+                            self,
+                            'if (format != 0 && format != 8 && format != 16 && format != 32) {',
+                            '}'):
+                        self.write('return nullptr;')
                 self.write('%s = buffer->ReadAndAdvance(%s);' % (name, size))
             elif t.is_sized:
                 self.write('buf.AppendSizedBuffer(%s);' % (name))

@@ -123,4 +123,36 @@ TEST(X11ConnectionTest, LargeQueryTree) {
   connection.QueryTree(root).Sync();
 }
 
+TEST(X11ConnectionTest, GetPropertyReplyValidation) {
+  // Simulate a malicious response with format 39.
+  // The reply length is in 4-byte units, starting from after the first 32
+  // bytes. A GetProperty reply has a fixed size of 32 bytes followed by the
+  // value.
+  std::vector<uint8_t> data(32, 0);
+  data[0] = 1;   // response_type: Reply
+  data[1] = 39;  // format: 39 (Invalid, should be 8, 16, or 32)
+  data[10] = 0;  // length: 0
+  data[11] = 0;
+
+  ReadBuffer buf(x11::ThrowAwaySizeRefCountedMemory::From(std::move(data)));
+  auto reply = detail::ReadReply<GetPropertyReply>(&buf);
+  EXPECT_FALSE(reply);
+}
+
+TEST(X11ConnectionTest, GetPropertyReplyValid) {
+  // Simulate a valid response with format 32.
+  std::vector<uint8_t> data(32, 0);
+  data[0] = 1;   // response_type: Reply
+  data[1] = 32;  // format: 32
+  data[10] = 0;  // length: 0
+  data[11] = 0;
+  data[16] = 0;  // type: None
+  data[24] = 0;  // value_len: 0
+
+  ReadBuffer buf(x11::ThrowAwaySizeRefCountedMemory::From(std::move(data)));
+  auto reply = detail::ReadReply<GetPropertyReply>(&buf);
+  ASSERT_TRUE(reply);
+  EXPECT_EQ(reply->format, 32);
+}
+
 }  // namespace x11
