@@ -9,6 +9,8 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -111,6 +113,20 @@ void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
            << getRoutineTypeString(type) << kSeparator
            << getRoutineResultString(result) << kNewline;
   Append(type, log_line.str());
+}
+
+void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
+                                     mojom::StandardRoutineResult result,
+                                     const std::string& details) {
+  LogRoutineCompleted(type, result);
+  if (!details.empty()) {
+    std::string detail_block = "  Details:\n";
+    for (const auto& line : base::SplitStringPiece(
+             details, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL)) {
+      base::StrAppend(&detail_block, {"    ", line, "\n"});
+    }
+    Append(type, detail_block);
+  }
 }
 
 void RoutineLog::LogRoutineCancelled(mojom::RoutineType type) {

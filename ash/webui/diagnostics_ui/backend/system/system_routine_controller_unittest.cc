@@ -44,6 +44,8 @@ namespace healthd = cros_healthd::mojom;
 constexpr char kChargePercentKey[] = "chargePercent";
 constexpr char kDischargePercentKey[] = "dischargePercent";
 constexpr char kResultDetailsKey[] = "resultDetails";
+constexpr char kTestHostname[] = "clients1.google.com";
+constexpr char kTestErrorMessage[] = "Connection refused";
 
 void SetCrosHealthdRunRoutineResponse(
     healthd::RunRoutineResponsePtr& response) {
@@ -165,6 +167,39 @@ MakeGoogleServicesConnectivityResult(
   result->source =
       chromeos::network_diagnostics::mojom::RoutineCallSource::kUnknown;
   return result;
+}
+
+// Builds a single-element problems vector with a connection failure for the
+// given `hostname` and `error_message`.
+std::vector<
+    chromeos::network_diagnostics::mojom::GoogleServicesConnectivityProblemPtr>
+MakeSingleConnectionProblem(const std::string& hostname,
+                            const std::string& error_message) {
+  using Problem =
+      chromeos::network_diagnostics::mojom::GoogleServicesConnectivityProblem;
+  using ConnectionError = chromeos::network_diagnostics::mojom::
+      GoogleServicesConnectivityConnectionError;
+  using ConnectionInfo = chromeos::network_diagnostics::mojom::
+      GoogleServicesConnectivityConnectionErrorInfo;
+  using ErrorDetails = chromeos::network_diagnostics::mojom::
+      GoogleServicesConnectivityErrorDetails;
+
+  auto error_details = ErrorDetails::New(/*error_message=*/error_message,
+                                         /*resolution_message=*/std::nullopt);
+  auto connection_info =
+      ConnectionInfo::New(/*hostname=*/hostname, std::move(error_details),
+                          /*timestamp_start=*/std::nullopt,
+                          /*timestamp_end=*/std::nullopt);
+  auto connection_error = ConnectionError::New(
+      chromeos::network_diagnostics::mojom::
+          GoogleServicesConnectivityProblemType::kConnectionFailure,
+      /*proxy=*/std::nullopt, std::move(connection_info));
+
+  std::vector<chromeos::network_diagnostics::mojom::
+                  GoogleServicesConnectivityProblemPtr>
+      problems;
+  problems.push_back(Problem::NewConnectionError(std::move(connection_error)));
+  return problems;
 }
 
 }  // namespace
@@ -1327,6 +1362,36 @@ TEST_F(SystemRoutineControllerTest,
   run_loop.Run();
 }
 
+TEST_F(SystemRoutineControllerTest,
+       GoogleServicesConnectivity_ProblemsPopulateDetails) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
+
+  fake_delegate_->SetGoogleServicesConnectivityResult(
+      MakeGoogleServicesConnectivityResult(
+          chromeos::network_diagnostics::mojom::RoutineVerdict::kProblem,
+          MakeSingleConnectionProblem(kTestHostname, kTestErrorMessage)));
+
+  FakeRoutineRunner runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kGoogleServicesConnectivity,
+      runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(runner.result.is_null());
+  ASSERT_TRUE(runner.result->result->is_simple_result());
+  EXPECT_EQ(mojom::StandardRoutineResult::kTestFailed,
+            runner.result->result->get_simple_result());
+
+  // The details field should contain the formatted problem text.
+  ASSERT_TRUE(runner.result->details.has_value());
+  const std::string& details = runner.result->details.value();
+  EXPECT_NE(std::string::npos, details.find(kTestHostname));
+  EXPECT_NE(std::string::npos, details.find("ConnectionFailure"));
+  EXPECT_NE(std::string::npos, details.find(kTestErrorMessage));
+}
+
 // Verifies that LogRoutineStarted is called before
 // OnDirectNetworkRoutineResult even on sync error paths
 // (feature-disabled completes the routine synchronously).
@@ -1361,6 +1426,43 @@ TEST_F(SystemRoutineControllerTest,
   EXPECT_EQ("GoogleServicesConnectivity", second[1]);
   // kNotRun maps to kUnableToRun which logs "Unable to run".
   EXPECT_EQ("Unable to run", second[2]);
+}
+
+// Verifies that routine detail text reaches the session log when problems
+// are present in the GoogleServicesConnectivity result.
+TEST_F(SystemRoutineControllerTest,
+       GoogleServicesConnectivity_DetailsReachSessionLog) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath log_path = temp_dir.GetPath().AppendASCII("routine_log");
+  DiagnosticsLogController::Get()->SetRoutineLogForTesting(
+      std::make_unique<RoutineLog>(log_path));
+
+  fake_delegate_->SetGoogleServicesConnectivityResult(
+      MakeGoogleServicesConnectivityResult(
+          chromeos::network_diagnostics::mojom::RoutineVerdict::kProblem,
+          MakeSingleConnectionProblem(kTestHostname, kTestErrorMessage)));
+
+  FakeRoutineRunner runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kGoogleServicesConnectivity,
+      runner.receiver.BindNewPipeAndPassRemote());
+  task_environment()->RunUntilIdle();
+
+  ASSERT_FALSE(runner.result.is_null());
+
+  const std::string log =
+      DiagnosticsLogController::Get()->GetRoutineLog().GetContentsForCategory(
+          RoutineLog::RoutineCategory::kNetwork);
+
+  // The log should contain the detail text with the hostname and error.
+  EXPECT_NE(std::string::npos, log.find("Details:"));
+  EXPECT_NE(std::string::npos, log.find(kTestHostname));
+  EXPECT_NE(std::string::npos, log.find(kTestErrorMessage));
 }
 
 }  // namespace ash::diagnostics

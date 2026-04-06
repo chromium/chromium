@@ -5,12 +5,15 @@
 #include "ash/webui/diagnostics_ui/backend/system/system_routine_controller.h"
 
 #include <optional>
+#include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/routine_log.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/common/routine_properties.h"
+#include "ash/webui/diagnostics_ui/backend/system/connectivity_problem_formatter.h"
 #include "ash/webui/diagnostics_ui/backend/system/cros_healthd_helpers.h"
 #include "ash/webui/diagnostics_ui/backend/system/system_routine_controller_delegate.h"
 #include "base/compiler_specific.h"
@@ -825,24 +828,18 @@ void SystemRoutineController::ExecuteNetworkRoutineDirect(
 void SystemRoutineController::OnDirectNetworkRoutineResult(
     mojom::RoutineType type,
     chromeos::network_diagnostics::mojom::RoutineResultPtr result) {
-  mojom::StandardRoutineResult standard_result;
-  switch (type) {
-    case mojom::RoutineType::kGoogleServicesConnectivity:
-      standard_result =
-          OnGoogleServicesConnectivityRoutineResult(type, std::move(result));
-      break;
-    default:
-      NOTREACHED();
-  }
+  CHECK_EQ(type, mojom::RoutineType::kGoogleServicesConnectivity);
+  auto [standard_result, details] =
+      OnGoogleServicesConnectivityRoutineResult(type, std::move(result));
 
   metrics::EmitRoutineResult(type, standard_result);
   if (IsLoggingEnabled()) {
     DiagnosticsLogController::Get()->GetRoutineLog().LogRoutineCompleted(
-        type, standard_result);
+        type, standard_result, details);
   }
 }
 
-mojom::StandardRoutineResult
+std::pair<mojom::StandardRoutineResult, std::string>
 SystemRoutineController::OnGoogleServicesConnectivityRoutineResult(
     mojom::RoutineType type,
     chromeos::network_diagnostics::mojom::RoutineResultPtr result) {
@@ -850,11 +847,14 @@ SystemRoutineController::OnGoogleServicesConnectivityRoutineResult(
   // before the delegate responded. The disconnect handler already
   // cleaned up; emit metrics only and return.
   if (!IsRoutineRunning()) {
-    return mojom::StandardRoutineResult::kExecutionError;
+    return {mojom::StandardRoutineResult::kExecutionError, std::string()};
   }
 
   mojom::StandardRoutineResult standard_result =
       mojom::StandardRoutineResult::kExecutionError;
+  std::vector<chromeos::network_diagnostics::mojom::
+                  GoogleServicesConnectivityProblemPtr>
+      problems;
 
   if (result) {
     switch (result->verdict) {
@@ -868,11 +868,22 @@ SystemRoutineController::OnGoogleServicesConnectivityRoutineResult(
         standard_result = mojom::StandardRoutineResult::kUnableToRun;
         break;
     }
+    if (result->problems &&
+        result->problems->is_google_services_connectivity_problems()) {
+      problems = std::move(
+          result->problems->get_google_services_connectivity_problems());
+    }
   }
 
-  SendRoutineResult(
-      ConstructStandardRoutineResultInfoPtr(type, standard_result));
-  return standard_result;
+  std::string details;
+  if (!problems.empty()) {
+    details = FormatConnectivityProblems(problems);
+  }
+
+  SendRoutineResult(ConstructStandardRoutineResultInfoPtr(
+      type, standard_result,
+      details.empty() ? std::nullopt : std::make_optional(details)));
+  return {standard_result, std::move(details)};
 }
 
 }  // namespace ash::diagnostics

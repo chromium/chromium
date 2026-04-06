@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <utility>
 
 #include "ash/webui/diagnostics_ui/backend/system/system_routine_controller_delegate.h"
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
@@ -113,10 +115,12 @@ class SystemRoutineController : public mojom::SystemRoutineController {
                             uint32_t seconds_elapsed);
 
   // Handles the result from a GoogleServicesConnectivity routine: maps the
-  // network diagnostics verdict to `StandardRoutineResult` and delivers it
-  // via `SendRoutineResult`.
-  // Returns the mapped `StandardRoutineResult` for metrics and logging.
-  mojom::StandardRoutineResult OnGoogleServicesConnectivityRoutineResult(
+  // network diagnostics verdict to `StandardRoutineResult`, extracts problems,
+  // builds the mojom response, and delivers it via `SendRoutineResult`.
+  // Returns the mapped `StandardRoutineResult` and a human-readable details
+  // string (empty when no problems) for metrics and logging.
+  std::pair<mojom::StandardRoutineResult, std::string>
+  OnGoogleServicesConnectivityRoutineResult(
       mojom::RoutineType type,
       chromeos::network_diagnostics::mojom::RoutineResultPtr result);
 

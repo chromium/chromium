@@ -131,5 +131,57 @@ TEST_F(RoutineLogTest, Cancelled) {
   EXPECT_EQ("Inflight Routine Cancelled", second_line_contents[1]);
 }
 
+TEST_F(RoutineLogTest, CompletedWithDetails) {
+  RoutineLog log(log_path_);
+
+  log.LogRoutineStarted(mojom::RoutineType::kGoogleServicesConnectivity);
+  log.LogRoutineCompleted(mojom::RoutineType::kGoogleServicesConnectivity,
+                          mojom::StandardRoutineResult::kTestFailed,
+                          "clients1.google.com:\n"
+                          "  Status: FAIL\n"
+                          "  Error: Connection refused\n"
+                          "clients2.google.com:\n"
+                          "  Status: FAIL\n"
+                          "  Error: DNS failed");
+
+  task_environment_.RunUntilIdle();
+
+  const std::string contents =
+      log.GetContentsForCategory(RoutineLog::RoutineCategory::kNetwork);
+  const std::vector<std::string> log_lines = GetLogLines(contents);
+
+  // GetLogLines splits on \n, trims whitespace, drops empty.
+  // Expect: Started, Failed, "Details:", 6 detail lines.
+  ASSERT_EQ(9u, log_lines.size());
+
+  const std::vector<std::string> completed_parts =
+      GetLogLineContents(log_lines[1]);
+  ASSERT_EQ(3u, completed_parts.size());
+  EXPECT_EQ("GoogleServicesConnectivity", completed_parts[1]);
+  EXPECT_EQ("Failed", completed_parts[2]);
+
+  EXPECT_NE(std::string::npos, contents.find("clients1.google.com:"));
+  EXPECT_NE(std::string::npos, contents.find("clients2.google.com:"));
+  EXPECT_NE(std::string::npos, contents.find("Error: Connection refused"));
+  EXPECT_NE(std::string::npos, contents.find("Error: DNS failed"));
+}
+
+TEST_F(RoutineLogTest, CompletedWithEmptyDetails) {
+  RoutineLog log(log_path_);
+
+  log.LogRoutineStarted(mojom::RoutineType::kGoogleServicesConnectivity);
+  log.LogRoutineCompleted(mojom::RoutineType::kGoogleServicesConnectivity,
+                          mojom::StandardRoutineResult::kTestPassed,
+                          /*details=*/"");
+
+  task_environment_.RunUntilIdle();
+
+  const std::string contents =
+      log.GetContentsForCategory(RoutineLog::RoutineCategory::kNetwork);
+  const std::vector<std::string> log_lines = GetLogLines(contents);
+
+  ASSERT_EQ(2u, log_lines.size());
+}
+
 }  // namespace diagnostics
 }  // namespace ash
