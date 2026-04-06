@@ -705,15 +705,20 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
   }
 
   void TearDown() override {
-    observer_.reset();
-    controller_.reset();
+    // owned by InputDeviceSettingsControllerImpl, requires pointer release
+    // before controller_
     keyboard_pref_handler_ = nullptr;
+    controller_.reset();
+    delegate_.reset();
+    observer_.reset();
 
     // Scoped Resetter must be deleted before the test base is teared down.
     scoped_resetter_.reset();
+    fake_device_manager_.reset();
     NoSessionAshTestBase::TearDown();
     image_downloader_.reset();
     task_runner_.reset();
+    mock_adapter_.reset();
   }
 
   std::unique_ptr<device::MockBluetoothDevice> SetupMockBluetoothDevice(
@@ -760,8 +765,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
       scoped_resetter_;
-  raw_ptr<FakeKeyboardPrefHandler, DanglingUntriaged> keyboard_pref_handler_ =
-      nullptr;
+  raw_ptr<FakeKeyboardPrefHandler> keyboard_pref_handler_ = nullptr;
 
   // Used by other instances of the InputDeviceSettingsControllerTest to control
   // whether or not to sign in within the SetUp() function. Configured to sign
