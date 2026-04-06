@@ -935,9 +935,12 @@ bool V4L2MjpegDecodeAccelerator::ConvertOutputImage(
   // video frame's visible size.
   const int dst_width = dst_frame->visible_rect().width();
   const int dst_height = dst_frame->visible_rect().height();
-  DCHECK_GE(output_buffer_coded_size_.width(), dst_width);
-  DCHECK_GE(output_buffer_coded_size_.height(), dst_height);
 
+  if (output_buffer_coded_size_.width() < dst_width ||
+      output_buffer_coded_size_.height() < dst_height) {
+    VLOGF(1) << "Output buffer is smaller than destination frame.";
+    return false;
+  }
   // Dmabuf-backed frame needs to be mapped for SW access.
   if (dst_frame->HasDmaBufs()) {
     std::unique_ptr<VideoFrameMapper> frame_mapper =
