@@ -109,13 +109,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
-#include "extensions/browser/extension_pref_store.h"
-#include "extensions/browser/extension_pref_value_map_factory.h"
-#include "extensions/common/extension.h"
 #endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -215,11 +209,9 @@ void OffTheRecordProfileImpl::Init() {
   // Make the chrome//extension-icon/ resource available.
   content::URLDataSource::Add(
       this, std::make_unique<extensions::ExtensionIconSource>(profile_));
-#endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::WebRequestEventRouter::OnOTRBrowserContextCreated(profile_, this);
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // The DomDistillerViewerSource is not a normal WebUI so it must be registered
   // as a URLDataSource early.
@@ -276,7 +268,7 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
 
   SimpleKeyMap::GetInstance()->Dissociate(this);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::WebRequestEventRouter::OnOTRBrowserContextDestroyed(profile_,
                                                                   this);
 #endif
@@ -446,7 +438,7 @@ OffTheRecordProfileImpl::GetURLLoaderFactory() {
 }
 
 content::BrowserPluginGuestManager* OffTheRecordProfileImpl::GetGuestManager() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   return guest_view::GuestViewManager::FromBrowserContext(this);
 #else
   return NULL;
