@@ -81,7 +81,8 @@ ModelClient::ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
       model_versions_(
           *config->model_versions.As<proto::OnDeviceModelVersions>()),
       capabilities_(config->model_capabilities),
-      feature_(*ToOnDeviceFeature(feature_adapter_->config().feature())) {
+      feature_(ToOnDeviceFeature(feature_adapter_->config().feature())
+                   .value_or(mojom::OnDeviceFeature::kTest)) {
   // Tool use is assumed supported since it is gated by RuntimeEnabledFeatures
   // in Blink. TODO(crbug.com/422803232): Expose actual model tool use
   // capability from model metadata instead of assuming support.

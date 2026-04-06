@@ -300,7 +300,7 @@ void ManifestSolutionFactory::UpdateSolutions() {
   // TODO(holte): Provide non-feature use case solutions.
   for (auto feature : OnDeviceFeatureSet::All()) {
     broker_impl_->GetSolutionProvider(feature).Update(
-        CreateSolutionForUseCase(std::string(GetVariantName(feature))));
+        CreateSolutionForUseCase(ToUseCaseName(feature)));
   }
 }
 

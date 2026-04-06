@@ -100,11 +100,14 @@ class DummyManifest {
                           {}, 100)));
       builder.Add(asset.asset_id + "_solution",
                   SolutionRecipe(asset.asset_id + "_base_model", "",
-                                 FileReference(asset.asset_id, "config.pb")));
+                                 FileReference("manifest", "config.pb")));
       builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, asset.use_case},
                   asset.asset_id + "_solution");
     }
-    return std::make_unique<ManifestComponentDirectory>(builder.Build());
+    auto component =
+        std::make_unique<ManifestComponentDirectory>(builder.Build());
+    component->Add("config.pb", proto::SolutionConfig());
+    return component;
   }
 
   const std::vector<DummyAsset>& assets() const { return assets_; }
@@ -285,10 +288,9 @@ TEST_F(ManifestAssetManagerTest, SimulatesAssetReady) {
 
   MakeAssetInstallable(asset);
 
-  CanCreateSessionFuture future2;
-  subscriber.CanCreateSession({}, future2.GetCallback());
-  // TODO(holte): Doesn't pass yet.
-  // EXPECT_EQ(future2.Get<UnavailableReason>(), std::nullopt);
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  subscriber.WaitForClient(client_future.GetCallback());
+  EXPECT_TRUE(client_future.Get());
 }
 
 TEST_F(ManifestAssetManagerTest, ResumesInstallationOnStartup) {

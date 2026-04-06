@@ -111,7 +111,7 @@ class ManifestComponentDirectory {
   ~ManifestComponentDirectory();
 
   ManifestComponentDirectory& Add(const std::string& filename,
-                                  proto::SolutionConfig& config);
+                                  const proto::SolutionConfig& config);
 
   base::FilePath path() const { return temp_dir_.GetPath(); }
 
