@@ -83,7 +83,11 @@ class LoginAuthUserViewTestBase
   ~LoginAuthUserViewTestBase() override = default;
 
   // LoginTestBase:
-  void SetUp() override { LoginTestBase::SetUp(); }
+  void TearDown() override {
+    view_ = nullptr;
+    container_ = nullptr;
+    LoginTestBase::TearDown();
+  }
 
   void SetAuthMethods(uint32_t auth_methods,
                       bool show_pinpad_for_pw = false,
@@ -155,9 +159,9 @@ class LoginAuthUserViewTestBase
   }
 
   LoginUserInfo user_;
-  raw_ptr<views::View, DanglingUntriaged> container_ =
+  raw_ptr<views::View> container_ =
       nullptr;  // Owned by test widget view hierarchy.
-  raw_ptr<LoginAuthUserView, DanglingUntriaged> view_ =
+  raw_ptr<LoginAuthUserView> view_ =
       nullptr;  // Owned by test widget view hierarchy.
 };
 
