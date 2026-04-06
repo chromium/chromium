@@ -12,6 +12,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
+#include "build/config/cuttlefish/buildflags.h"  // PLATFORM_CUTTLEFISH
+#include "build/config/squid/buildflags.h"       // PLATFORM_SQUID
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
@@ -97,6 +99,10 @@
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chromeos/ash/components/chromebox_for_meetings/features.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#endif
+
+#if BUILDFLAG(PLATFORM_CUTTLEFISH) || BUILDFLAG(PLATFORM_SQUID)
+#include "chromeos/dbus/dissidia/dissidia_client.h"
 #endif
 
 namespace ash {
@@ -253,6 +259,9 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<CfmHotlineClient>(bus);
   }
 #endif
+#if BUILDFLAG(PLATFORM_CUTTLEFISH) || BUILDFLAG(PLATFORM_SQUID)
+  InitializeDBusClient<chromeos::DissidiaClient>(bus);
+#endif
   if (shimless_rma::IsShimlessRmaAllowed()) {
     InitializeDBusClient<RmadClient>(bus);
   }
@@ -286,6 +295,9 @@ void ShutdownDBus() {
       features::IsQuickDimEnabled()) {
     HumanPresenceDBusClient::Shutdown();
   }
+#if BUILDFLAG(PLATFORM_CUTTLEFISH) || BUILDFLAG(PLATFORM_SQUID)
+  chromeos::DissidiaClient::Shutdown();
+#endif
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(cfm::features::kMojoServices)) {
     CfmHotlineClient::Shutdown();
