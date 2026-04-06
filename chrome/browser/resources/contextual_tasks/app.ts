@@ -126,27 +126,11 @@ function updateWebuiParams(aimUrl: Url) {
   window.history.replaceState({}, '', webuiUrl.href);
 }
 
-// Returns whether the provided URL has the appropriate params to load an
-// existing thread, as opposed to the default zero-state.
-function urlHasThreadParams(url: URL): boolean {
-  return url.searchParams.has('mstk') && url.searchParams.has('mtid') &&
-      url.searchParams.has('q');
-}
-
 // Returns whether the value of the "deb" param contains "nocobrowse1" which
 // should cause the user to be removed from the cobrowse ui.
 function hasExitCobrowseParam(url: URL): boolean {
   const debParam = url.searchParams.get(DEBUG_PARAM_KEY) || '';
   return debParam.indexOf('nocobrowse1') > -1;
-}
-
-function applyWebUiParamsToThreadUrl(threadUrl: URL, webUiUrl: URL) {
-  threadUrl.searchParams.set('mtid', webUiUrl.searchParams.get('thread') || '');
-  threadUrl.searchParams.set('mstk', webUiUrl.searchParams.get('turn') || '');
-  // This value doesn't actually influence the result provided by AI mode
-  // if thread ID and turn ID are provided, but is required to display
-  // anything other than the zero-state.
-  threadUrl.searchParams.set('q', webUiUrl.searchParams.get('title') || '');
 }
 
 export class ContextualTasksAppElement extends CrLitElement {
@@ -568,8 +552,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     // webview) until oauth tokens are received from the WebUI controller. This
     // prevents situations where the user is technically signed out of the
     // embedded frame and unable to save or access existing data.
-    this.pendingUrl_ =
-        this.maybeUpdateThreadUrlForRestore(threadUrlAsUrl, webUiUrlOnLoad);
+    this.pendingUrl_ = threadUrlAsUrl.href;
     this.maybeLoadPendingUrl_();
   }
 
@@ -1024,29 +1007,6 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   getForcedComposeboxBoundsForTesting(): Rect|null {
     return this.forcedComposeboxBounds_;
-  }
-
-  // Conditionally update the provided thread URL so it restores an existing
-  // thread. If the thread URL already contains the params for loading a
-  // specific thread, this will return the same URL that was provided.
-  private maybeUpdateThreadUrlForRestore(threadUrl: URL, webUiUrl: URL):
-      string {
-    // Check if the provided URL is default by checking for thread ID, turn
-    // ID, and title. If those params are not present, but are present on the
-    // WebUI URL, apply them to the thread URL.
-    // TODO(470107169): The ContextualTasksService should provide this URL
-    //                  based on task ID alone.
-    const updatedThreadUrl = new URL(threadUrl.href);
-    const threadUrlHasParams = urlHasThreadParams(updatedThreadUrl);
-    const webUiUrlHasParams = urlHasThreadParams(webUiUrl);
-    if (!threadUrlHasParams && webUiUrlHasParams) {
-      applyWebUiParamsToThreadUrl(updatedThreadUrl, webUiUrl);
-      this.threadTitle_ =
-          webUiUrl.searchParams.get('q') || loadTimeData.getString('title');
-      document.title = this.threadTitle_;
-    }
-
-    return updatedThreadUrl.href;
   }
 
   private postMessageToWebview(message: number[]) {
