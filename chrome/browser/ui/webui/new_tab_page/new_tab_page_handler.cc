@@ -107,6 +107,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -638,7 +639,8 @@ void NewTabPageHandler::GetMostVisitedSettings(
 
 void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
   bool enable_animated_logo =
-      base::FeatureList::IsEnabled(ntp_features::kNtpAnimatedDoodles);
+      base::FeatureList::IsEnabled(ntp_features::kNtpAnimatedDoodles) &&
+      !gfx::Animation::PrefersReducedMotion();
   search_provider_logos::LogoCallbacks callbacks;
   callbacks.on_cached_encoded_logo_available =
       base::BindOnce(&NewTabPageHandler::OnLogoAvailable,

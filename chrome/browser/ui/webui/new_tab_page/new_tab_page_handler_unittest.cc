@@ -90,6 +90,7 @@
 #include "ui/color/color_provider_source.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/color_palette.h"
 #include "url/gurl.h"
 
@@ -815,8 +816,21 @@ TEST_F(NewTabPageHandlerTest, Histograms) {
 TEST_F(NewTabPageHandlerTest, GetDoodleAnimatedDoodlesFlagEnabled) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(ntp_features::kNtpAnimatedDoodles);
+  gfx::Animation::SetPrefersReducedMotionForTesting(false);
 
   EXPECT_CALL(mock_logo_service_, GetLogo(testing::_, testing::_, true))
+      .Times(1);
+  base::MockCallback<NewTabPageHandler::GetDoodleCallback> callback;
+  handler_->GetDoodle(callback.Get());
+}
+
+TEST_F(NewTabPageHandlerTest,
+       GetDoodleAnimatedDoodlesFlagEnabledAndPrefersReducedMotion) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_features::kNtpAnimatedDoodles);
+  gfx::Animation::SetPrefersReducedMotionForTesting(true);
+
+  EXPECT_CALL(mock_logo_service_, GetLogo(testing::_, testing::_, false))
       .Times(1);
   base::MockCallback<NewTabPageHandler::GetDoodleCallback> callback;
   handler_->GetDoodle(callback.Get());
@@ -825,6 +839,19 @@ TEST_F(NewTabPageHandlerTest, GetDoodleAnimatedDoodlesFlagEnabled) {
 TEST_F(NewTabPageHandlerTest, GetDoodleAnimatedDoodlesFlagDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(ntp_features::kNtpAnimatedDoodles);
+  gfx::Animation::SetPrefersReducedMotionForTesting(false);
+
+  EXPECT_CALL(mock_logo_service_, GetLogo(testing::_, testing::_, false))
+      .Times(1);
+  base::MockCallback<NewTabPageHandler::GetDoodleCallback> callback;
+  handler_->GetDoodle(callback.Get());
+}
+
+TEST_F(NewTabPageHandlerTest,
+       GetDoodleAnimatedDoodlesFlagDisabledAndPrefersReducedMotion) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(ntp_features::kNtpAnimatedDoodles);
+  gfx::Animation::SetPrefersReducedMotionForTesting(true);
 
   EXPECT_CALL(mock_logo_service_, GetLogo(testing::_, testing::_, false))
       .Times(1);
