@@ -1119,7 +1119,6 @@ static_library("browser") {
     # c/b/enterprise/util/managed_browser_utils.h
     # c/b/policy/chrome_browser_policy_connector.h
     # c/b/policy/profile_policy_connector.h
-    # c/b/profiles/profile_manager.h
     # c/b/browser_process_platform_part.h
     "//chrome/browser/enterprise/browser_management:management_identity_impl",
     "//chrome/browser/devtools",
@@ -1215,10 +1214,6 @@ static_library("browser") {
     # Circular dependency due to SystemNetworkContextManager.
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiling_host",
-
-    # TODO(crbug.com/417228688): Remove this circular dependency when c/b/profiles/profile_manager.h
-    # gets modularized.
-    "//chrome/browser/ui/serial:impl",
 
     # TODO(crbug.com/40110173): Remove this circular dependency whe the following headers get
     # componentized:
