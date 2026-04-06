@@ -69,6 +69,7 @@ export class TopToolbarElement extends CrLitElement {
       title: {type: String},
       hideMenuButton_: {type: Boolean},
       showReopenTabs_: {type: Boolean},
+      isExpandButtonEnabled: {type: Boolean},
     };
   }
 
@@ -80,7 +81,7 @@ export class TopToolbarElement extends CrLitElement {
   accessor showReopenTabs_: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds_: number[] = [];
-  protected isExpandButtonEnabled: boolean =
+  protected accessor isExpandButtonEnabled: boolean =
       loadTimeData.getBoolean('expandButtonEnabled');
   private hideMenuOnAiPageEnabled_: boolean =
       loadTimeData.getBoolean('hideMenuOnAiPageEnabled');

@@ -28,11 +28,12 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .maxSuggestions="${5}"
           .overrideClampLineNum="${3}"
           .selectedMatchIndex="${this.selectedMatchIndex_}"
-          ?hidden="${!this.showSuggestions_}"
+          ?hidden="${!this.shouldShowSuggestions_()}"
           @match-focusin="${this.onMatchFocusin_}"
           @keydown="${this.onDropdownKeydown_}">
       </cr-composebox-dropdown>
-      ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
+      ${this.showSuggestionsActivityLink_ &&
+          this.shouldShowSuggestions_() ? html`
         <div id="suggestionActivity">
           <localized-link
               .localizedString="${this.i18nAdvanced('suggestionActivityLink')}"
@@ -53,11 +54,11 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           entrypoint-name="ContextualTasks"
           searchbox-layout-mode="TallBottomContext"
           .lensButtonDisabled="${this.lensButtonDisabled_}"
-          .showLensButton="${this.showLensButton_}"
+          .showLensButton="${this.shouldShowLensButton_()}"
           .suggestionActivityEnabled="${false}"
           .disableCaretColorAnimation="${!this.caretAnimationsEnabled_}"
           .inputPlaceholderOverride="${this.getInputPlaceholder_()}"
-          .dropdownNeeded="${this.dropdownNeeded_}"
+          .dropdownNeeded="${this.isDropdownNeeded_()}"
           .lensButtonTriggersOverlay="${true}"
           .enableCarouselScrolling="${true}"
           .isFollowupQuery="${!this.isZeroState}"
@@ -79,11 +80,12 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .maxSuggestions="${5}"
           .overrideClampLineNum="${3}"
           .selectedMatchIndex="${this.selectedMatchIndex_}"
-          ?hidden="${!this.showSuggestions_}"
+          ?hidden="${!this.shouldShowSuggestions_()}"
           @match-focusin="${this.onMatchFocusin_}"
           @keydown="${this.onDropdownKeydown_}">
       </cr-composebox-dropdown>
-      ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
+      ${this.showSuggestionsActivityLink_ &&
+          this.shouldShowSuggestions_() ? html`
         <div id="suggestionActivity">
           <localized-link
               .localizedString="${this.i18nAdvanced('suggestionActivityLink')}"

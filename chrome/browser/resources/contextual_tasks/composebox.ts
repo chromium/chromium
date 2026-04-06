@@ -135,6 +135,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       enableFileHint_: {type: Boolean},
       lensButtonDisabled_: {type: Boolean},
       isCanvasQuerySubmitted: {type: Boolean},
+      caretAnimationsEnabled_: {type: Boolean},
     };
   }
 
@@ -177,7 +178,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   private searchboxListenerIds_: number[] = [];
   // Tracks the resize of the composebox to provide height updates.
   private resizeObserver_: ResizeObserver|null = null;
-  protected caretAnimationsEnabled_: boolean =
+  protected accessor caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
 
   constructor() {
@@ -310,15 +311,15 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.inVoiceSearchMode_ = false;
   }
 
-  protected get showSuggestions_() {
+  protected shouldShowSuggestions_() {
     return this.isZeroState;
   }
 
-  protected get dropdownNeeded_() {
-    return !this.showSuggestions_;
+  protected isDropdownNeeded_() {
+    return !this.shouldShowSuggestions_();
   }
 
-  get showLensButton_() {
+  protected shouldShowLensButton_() {
     return this.isSidePanel;
   }
 

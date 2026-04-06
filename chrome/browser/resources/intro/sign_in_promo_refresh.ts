@@ -175,11 +175,11 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
                                                         'fast-fade-in';
   }
 
-  protected get isDefaultVariation_(): boolean {
+  protected isDefaultVariation_(): boolean {
     return this.variation_ === Variation.DEFAULT;
   }
 
-  protected get isTopRightCornerVariation_(): boolean {
+  protected isTopRightCornerVariation_(): boolean {
     return this.variation_ === Variation.DONT_SIGN_IN_IN_TOP_RIGHT_CORNER;
   }
 

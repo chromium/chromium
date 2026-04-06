@@ -22,7 +22,7 @@ export function getHtml(this: SignInPromoRefreshElement) {
     ?autoplay="${!this.shouldDisableAnimations_}">
 </cr-lottie>
 
-${this.isTopRightCornerVariation_ ? html`
+${this.isTopRightCornerVariation_() ? html`
   <div id="top-right-corner-container">
     <cr-button id="declineSignInButton"
         class="tangible-button ${this.usePrimaryAndTonalButtonsForPromos_ ?
@@ -63,11 +63,11 @@ ${this.isTopRightCornerVariation_ ? html`
 </div>
 
 <div id="buttonRow" class="fade-in">
-  ${this.isTopRightCornerVariation_ ? html`
+  ${this.isTopRightCornerVariation_() ? html`
     <p id="create-account-disclaimer">$i18n{createAccountDisclaimer}</p>
   ` : ''}
   <div id="buttonContainer">
-    ${this.isDefaultVariation_ ? html`
+    ${this.isDefaultVariation_() ? html`
     <cr-button id="declineSignInButton"
         class="tangible-button ${this.usePrimaryAndTonalButtonsForPromos_ ?
             'tonal-button' : ''}"

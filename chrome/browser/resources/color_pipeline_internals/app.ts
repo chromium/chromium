@@ -49,19 +49,26 @@ export class ColorPipelineInternalsAppElement extends CrLitElement {
       currentColor_: {type: String},
       filter_: {type: String},
       narrow_: {type: Boolean},
+      sections_: {type: Array},
+      red_: {type: String},
+      green_: {type: String},
+      blue_: {type: String},
+      alpha_: {type: String},
+      cssName_: {type: String},
+      cppName_: {type: String},
     };
   }
 
   protected accessor currentColor_: string = '';
   protected accessor filter_: string = '';
   protected accessor narrow_: boolean = false;
-  protected readonly sections_: ThemeSection[] = ALL_SECTIONS;
-  protected red_: string = '';
-  protected green_: string = '';
-  protected blue_: string = '';
-  protected alpha_: string = '';
-  protected cssName_: string = '';
-  protected cppName_: string = '';
+  protected accessor sections_: ThemeSection[] = ALL_SECTIONS;
+  protected accessor red_: string = '';
+  protected accessor green_: string = '';
+  protected accessor blue_: string = '';
+  protected accessor alpha_: string = '';
+  protected accessor cssName_: string = '';
+  protected accessor cppName_: string = '';
 
   override firstUpdated() {
     ColorChangeUpdater.forDocument().start();

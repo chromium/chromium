@@ -24,11 +24,12 @@ export class DeprecatedAppsLinkElement extends CrLitElement {
   static override get properties() {
     return {
       deprecationLinkString: {type: String},
+      display: {type: Boolean},
     };
   }
 
   accessor deprecationLinkString: string = '';
-  display: boolean = false;
+  accessor display: boolean = false;
 
   constructor() {
     super();

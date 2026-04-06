@@ -205,6 +205,8 @@ export class ContextualTasksAppElement extends CrLitElement {
       userName_: {type: String},
       friendlyZeroStateTitleBeforeName_: {type: String},
       friendlyZeroStateTitleAfterName_: {type: String},
+      friendlyZeroStateTitle: {type: String},
+      friendlyZeroStateSubtitle: {type: String},
       occluders_: {type: Array},
       showOnboardingTooltip_: {
         type: Boolean,
@@ -260,9 +262,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   // of the composebox are not visible to the user, and therefore not clickable.
   protected accessor occluders_: Rect[]|null = null;
 
-  protected friendlyZeroStateSubtitle: string =
+  protected accessor friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
-  protected friendlyZeroStateTitle: string =
+  protected accessor friendlyZeroStateTitle: string =
       loadTimeData.getString('friendlyZeroStateTitle');
   // Tracks whether the frame is currently loading. Needed to avoid race
   // condition while awaiting isAiPage.

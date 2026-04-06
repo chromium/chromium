@@ -40,7 +40,7 @@ export class LogListElement extends CrLitElement {
   protected accessor hideAutofill_: boolean = false;
   protected accessor hidePasswordManager_: boolean = false;
 
-  protected get filteredLogEntries_(): MlPredictionLog[] {
+  protected getFilteredLogEntries_(): MlPredictionLog[] {
     return this.logEntries.filter(log => {
       switch (log.optimizationTarget) {
         case OptimizationTarget.kAutofill:
@@ -58,7 +58,7 @@ export class LogListElement extends CrLitElement {
 
   protected onLogClick_(e: Event) {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    const log = this.filteredLogEntries_[index];
+    const log = this.getFilteredLogEntries_()[index];
     this.selectedLogEntry = log;
     this.fire('log-selected', log);
   }

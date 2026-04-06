@@ -35,11 +35,11 @@ export class HistoryFilterChipsElement extends CrLitElement {
   private accessor userVisits: boolean = true;
   private accessor actorVisits: boolean = true;
 
-  get isUserSelected(): boolean {
+  protected isUserSelected(): boolean {
     return this.userVisits && !this.actorVisits;
   }
 
-  get isActorSelected(): boolean {
+  protected isActorSelected(): boolean {
     return this.actorVisits && !this.userVisits;
   }
 
