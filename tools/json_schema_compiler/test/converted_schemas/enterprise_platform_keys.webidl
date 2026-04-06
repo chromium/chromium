@@ -1,0 +1,232 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[instanceOf=SubtleCrypto]
+typedef object SubtleCrypto;
+
+dictionary Token {
+  // Uniquely identifies this <code>Token</code>.
+  // <p>Static IDs are <code>"user"</code> and <code>"system"</code>,
+  // referring to the platform's user-specific and the system-wide hardware
+  // token, respectively. Any other tokens (with other identifiers) might be
+  // returned by $(ref:enterprise.platformKeys.getTokens).</p>
+  [nocompile] required DOMString id;
+
+  // Implements the WebCrypto's
+  // <a href="http://www.w3.org/TR/WebCryptoAPI/#subtlecrypto-interface">SubtleCrypto</a>
+  // interface. The cryptographic operations, including key generation, are
+  // hardware-backed.
+  // <p>Only non-extractable keys can be generated. The supported key types
+  // are RSASSA-PKCS1-V1_5 with <code>modulusLength</code> up to 2048 and
+  // ECDSA with <code>namedCurve</code> P-256. Each key can be used for
+  // signing data at most once, unless the extension is allowlisted by the
+  // <a href="https://chromeenterprise.google/policies/#KeyPermissions">KeyPermissions policy</a>,
+  // in which case the key can be used indefinitely.</p>
+  // <p>Keys generated on a specific <code>Token</code> cannot be used with
+  // any other Tokens, nor can they be used with
+  // <code>window.crypto.subtle</code>. Equally, <code>Key</code> objects
+  // created with <code>window.crypto.subtle</code> cannot be used with this
+  // interface.</p>
+  [nocompile] required SubtleCrypto subtleCrypto;
+
+  // Implements the WebCrypto's
+  // <a href="http://www.w3.org/TR/WebCryptoAPI/#subtlecrypto-interface">SubtleCrypto</a>
+  // interface. The cryptographic operations, including key generation, are
+  // software-backed. Protection of the keys, and thus implementation of the
+  // non-extractable property, is done in software, so the keys are less
+  // protected than hardware-backed keys.
+  // <p>Only non-extractable keys can be generated. The only supported key
+  // type is RSASSA-PKCS1-V1_5 with <code>modulusLength</code> up to 2048.
+  // Each key can be used for signing data at most once, unless the extension
+  // is allowlisted through the
+  // <a href="https://chromeenterprise.google/policies/#KeyPermissions">KeyPermissions policy</a>,
+  // in which case the key can be used indefinitely.</p>
+  // <p>Keys generated on a specific <code>Token</code> cannot be used with
+  // any other Tokens, nor can they be used with
+  // <code>window.crypto.subtle</code>. Equally, <code>Key</code> objects
+  // created with <code>window.crypto.subtle</code> cannot be used with this
+  // interface.</p>
+  [nocompile] required SubtleCrypto softwareBackedSubtleCrypto;
+};
+
+// Whether to use the Enterprise User Key or the Enterprise Machine Key.
+enum Scope { "USER", "MACHINE" };
+
+// Type of key to generate.
+enum Algorithm { "RSA", "ECDSA" };
+
+dictionary RegisterKeyOptions {
+  // Which algorithm the registered key should use.
+  required Algorithm algorithm;
+};
+
+dictionary ChallengeKeyOptions {
+  // A challenge as emitted by the Verified Access Web API.
+  required ArrayBuffer challenge;
+  // If present, registers the challenged key with the specified
+  // <code>scope</code>'s token.  The key can then be associated with a
+  // certificate and used like any other signing key.  Subsequent calls to
+  // this function will then generate a new Enterprise Key in the specified
+  // <code>scope</code>.
+  RegisterKeyOptions registerKey;
+  // Which Enterprise Key to challenge.
+  required Scope scope;
+};
+
+// Use the <code>chrome.enterprise.platformKeys</code> API to generate keys and
+// install certificates for these keys. The certificates will be managed by the
+// platform and can be used for TLS authentication, network access or by other
+// extension through $(ref:platformKeys chrome.platformKeys).
+[platforms=("chromeos")]
+interface EnterprisePlatformKeys {
+  // Returns the available Tokens. In a regular user's session the list will
+  // always contain the user's token with <code>id</code> <code>"user"</code>.
+  // If a system-wide TPM token is available, the returned list will also
+  // contain the system-wide token with <code>id</code> <code>"system"</code>.
+  // The system-wide token will be the same for all sessions on this device
+  // (device in the sense of e.g. a Chromebook).
+  // |Returns|: Invoked by <code>getTokens</code> with the list of available
+  // Tokens.
+  // |PromiseValue|: tokens: The list of available tokens.
+  [nocompile, requiredCallback] static Promise<sequence<Token>> getTokens();
+
+  // Returns the list of all client certificates available from the given
+  // token. Can be used to check for the existence and expiration of client
+  // certificates that are usable for a certain authentication.
+  // |tokenId|: The id of a Token returned by <code>getTokens</code>.
+  // |Returns|: Returns a Promise which resolves with the list of the
+  // available certificates.
+  // |PromiseValue|: certificates: The list of certificates, each in DER
+  // encoding of a X.509     certificate.
+  [requiredCallback]
+  static Promise<sequence<ArrayBuffer>> getCertificates(DOMString tokenId);
+
+  // Imports <code>certificate</code> to the given token if the certified key
+  // is already stored in this token.
+  // After a successful certification request, this function should be used to
+  // store the obtained certificate and to make it available to the operating
+  // system and browser for authentication.
+  // |tokenId|: The id of a Token returned by <code>getTokens</code>.
+  // |certificate|: The DER encoding of a X.509 certificate.
+  // |Returns|: Returns a Promise which resolves when this operation is
+  // finished.
+  static Promise<undefined> importCertificate(DOMString tokenId,
+                                              ArrayBuffer certificate);
+
+  // Removes <code>certificate</code> from the given token if present.
+  // Should be used to remove obsolete certificates so that they are not
+  // considered during authentication and do not clutter the certificate
+  // choice. Should be used to free storage in the certificate store.
+  // |tokenId|: The id of a Token returned by <code>getTokens</code>.
+  // |certificate|: The DER encoding of a X.509 certificate.
+  // |Returns|: Returns a Promise which resolves when this operation is
+  // finished.
+  static Promise<undefined> removeCertificate(DOMString tokenId,
+                                              ArrayBuffer certificate);
+
+  // Similar to <code>challengeMachineKey</code> and
+  // <code>challengeUserKey</code>, but allows specifying the algorithm of a
+  // registered key. Challenges a hardware-backed Enterprise Machine Key and
+  // emits the response as part of a remote attestation protocol. Only useful
+  // on ChromeOS and in conjunction with the Verified Access Web API which
+  // both issues challenges and verifies responses.
+  //
+  // A successful verification by the Verified Access Web API is a strong
+  // signal that the current device is a legitimate ChromeOS device, the
+  // current device is managed by the domain specified during verification,
+  // the current signed-in user is managed by the domain specified during
+  // verification, and the current device state complies with enterprise
+  // device policy. For example, a policy may specify that the device must not
+  // be in developer mode. Any device identity emitted by the verification is
+  // tightly bound to the hardware of the current device. If
+  // <code>"user"</code> Scope is specified, the identity is also tightly
+  // bound to the current signed-in user.
+  //
+  // This function is highly restricted and will fail if the current device is
+  // not managed, the current user is not managed, or if this operation has
+  // not explicitly been enabled for the caller by enterprise device policy.
+  // The challenged key does not reside in the <code>"system"</code> or
+  // <code>"user"</code> token and is not accessible by any other API.
+  // |options|: Object containing the fields defined in
+  //            $(ref:ChallengeKeyOptions).
+  // |Returns|: Returns a Promise which resolves with the challenge response.
+  // |PromiseValue|: response: The challenge response.
+  [requiredCallback]
+  static Promise<ArrayBuffer> challengeKey(ChallengeKeyOptions options);
+
+  // Challenges a hardware-backed Enterprise Machine Key and emits the
+  // response as part of a remote attestation protocol. Only useful on
+  // ChromeOS and in conjunction with the Verified Access Web API which both
+  // issues challenges and verifies responses. A successful verification by
+  // the Verified Access Web API is a strong signal of all of the following:
+  // * The current device is a legitimate ChromeOS device.
+  // * The current device is managed by the domain specified during
+  //   verification.
+  // * The current signed-in user is managed by the domain specified during
+  //   verification.
+  // * The current device state complies with enterprise device policy. For
+  //   example, a policy may specify that the device must not be in developer
+  //   mode.
+  // * Any device identity emitted by the verification is tightly bound to the
+  //   hardware of the current device.
+  // This function is highly restricted and will fail if the current device
+  // is not managed, the current user is not managed, or if this operation
+  // has not explicitly been enabled for the caller by enterprise device
+  // policy. The Enterprise Machine Key does not reside in the
+  // <code>"system"</code> token and is not accessible by any other API.
+  // |challenge|: A challenge as emitted by the Verified Access Web API.
+  // |registerKey|: If set, the current Enterprise Machine Key is registered
+  //                with the <code>"system"</code> token and relinquishes the
+  //                Enterprise Machine Key role. The key can then be
+  //                associated with a certificate and used like any other
+  //                signing key. This key is 2048-bit RSA. Subsequent calls
+  //                to this function will then generate a new Enterprise
+  //                Machine Key.
+  // |Returns|: Returns a Promise which resolves with the challenge response.
+  // |PromiseValue|: response: The challenge response.
+  [deprecated="Use $(ref:challengeKey) instead.", requiredCallback]
+  static Promise<ArrayBuffer> challengeMachineKey(ArrayBuffer challenge,
+                                                  optional boolean registerKey);
+
+  // Challenges a hardware-backed Enterprise User Key and emits the response
+  // as part of a remote attestation protocol. Only useful on ChromeOS and in
+  // conjunction with the Verified Access Web API which both issues challenges
+  // and verifies responses. A successful verification by the Verified Access
+  // Web API is a strong signal of all of the following:
+  // * The current device is a legitimate ChromeOS device.
+  // * The current device is managed by the domain specified during
+  //   verification.
+  // * The current signed-in user is managed by the domain specified during
+  //   verification.
+  // * The current device state complies with enterprise user policy. For
+  //   example, a policy may specify that the device must not be in developer
+  //   mode.
+  // * The public key emitted by the verification is tightly bound to the
+  //   hardware of the current device and to the current signed-in user.
+  // This function is highly restricted and will fail if the current device is
+  // not managed, the current user is not managed, or if this operation has
+  // not explicitly been enabled for the caller by enterprise user policy.
+  // The Enterprise User Key does not reside in the <code>"user"</code> token
+  // and is not accessible by any other API.
+  // |challenge|: A challenge as emitted by the Verified Access Web API.
+  // |registerKey|: If set, the current Enterprise User Key is registered with
+  //                the <code>"user"</code> token and relinquishes the
+  //                Enterprise User Key role. The key can then be associated
+  //                with a certificate and used like any other signing key.
+  //                This key is 2048-bit RSA. Subsequent calls to this
+  //                function will then generate a new Enterprise User Key.
+  // |Returns|: Returns a Promise which resolves with the challenge response.
+  // |PromiseValue|: response: The challenge response.
+  [deprecated="Use $(ref:challengeKey) instead.", requiredCallback]
+  static Promise<ArrayBuffer> challengeUserKey(ArrayBuffer challenge,
+                                               boolean registerKey);
+};
+
+partial interface Enterprise {
+  static attribute EnterprisePlatformKeys platformKeys;
+};
+
+partial interface Browser {
+  static attribute Enterprise enterprise;
+};
