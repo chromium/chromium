@@ -12964,7 +12964,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"logo-view-refactor", flag_descriptions::kLogoViewRefactorName,
      flag_descriptions::kLogoViewRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kLogoViewRefactor)},
+
+    {"enforce-incognito-isolation",
+     flag_descriptions::kEnforceIncognitoIsolationName,
+     flag_descriptions::kEnforceIncognitoIsolationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEnforceIncognitoIsolation)},
 #endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

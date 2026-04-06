@@ -194,6 +194,12 @@ inline constexpr char kAndroidOpenIncognitoAsWindowName[] =
 inline constexpr char kAndroidOpenIncognitoAsWindowDescription[] =
     "Open regular and incognito tabs in separate windows.";
 
+inline constexpr char kEnforceIncognitoIsolationName[] =
+    "Enforce Incognito Isolation";
+inline constexpr char kEnforceIncognitoIsolationDescription[] =
+    "Enables window-level profile isolation by stubbing out irrelevant tab "
+    "models.";
+
 inline constexpr char kAndroidProgressBarVisualUpdateName[] =
     "Enable updated progress bar";
 inline constexpr char kAndroidProgressBarVisualUpdateDescription[] =
