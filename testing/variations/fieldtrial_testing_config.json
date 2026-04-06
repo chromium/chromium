@@ -8470,6 +8470,25 @@
             ]
         }
     ],
+    "DisableSplitHostCacheByNetworkAnonymizationKey": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "SplitHostCacheByNetworkAnonymizationKey"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableUrgentPageDiscarding": [
         {
             "platforms": [

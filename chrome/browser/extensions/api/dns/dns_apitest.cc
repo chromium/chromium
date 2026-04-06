@@ -69,6 +69,31 @@ class DnsApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class DnsApiTestWithSplitCacheEnabled : public DnsApiTest {
+ public:
+  DnsApiTestWithSplitCacheEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        {net::features::kPartitionConnectionsByNetworkIsolationKey,
+         net::features::kSplitHostCacheByNetworkAnonymizationKey},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class DnsApiTestWithSplitCacheDisabled : public DnsApiTest {
+ public:
+  DnsApiTestWithSplitCacheDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        {net::features::kPartitionConnectionsByNetworkIsolationKey},
+        {net::features::kSplitHostCacheByNetworkAnonymizationKey});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
   scoped_refptr<DnsResolveFunction> resolve_function(new DnsResolveFunction());
   scoped_refptr<const Extension> empty_extension =
@@ -88,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
   EXPECT_EQ("127.0.0.1", *address);
 }
 
-IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
+IN_PROC_BROWSER_TEST_F(DnsApiTestWithSplitCacheEnabled, DnsResolveHostname) {
   ResultCatcher catcher;
   // Load a simple test extension.
   const Extension* extension =
@@ -131,15 +156,71 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   ASSERT_EQ(1u, result1.resolved_addresses.size());
   EXPECT_EQ(kAddress, result1.resolved_addresses[0].ToStringWithoutPort());
 
-  // Check that the entry isn't present in the cache with the empty
-  // NetworkAnonymizationKey.
   params = network::mojom::ResolveHostParameters::New();
   // Cache only lookup.
   params->source = net::HostResolverSource::LOCAL_ONLY;
   network::DnsLookupResult result2 = network::BlockingDnsLookup(
       network_context, host_port_pair, std::move(params),
       net::NetworkAnonymizationKey());
+
+  // Check that the entry isn't present in the cache with the empty
+  // NetworkAnonymizationKey.
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, result2.error);
+}
+
+IN_PROC_BROWSER_TEST_F(DnsApiTestWithSplitCacheDisabled, DnsResolveHostname) {
+  ResultCatcher catcher;
+  // Load a simple test extension.
+  const Extension* extension =
+      LoadExtension(GetExtensionsDirTestData().AppendASCII("extension"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  auto resolve_function = base::MakeRefCounted<DnsResolveFunction>();
+  resolve_function->set_extension(extension);
+  resolve_function->set_has_callback(true);
+
+  std::string function_arguments = base::StringPrintf(R"(["%s"])", kHostname);
+  std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
+      resolve_function.get(), function_arguments, profile()));
+  const base::DictValue& dict = result->GetDict();
+
+  EXPECT_EQ(net::OK, dict.FindInt("resultCode"));
+
+  const std::string* address = dict.FindString("address");
+  ASSERT_TRUE(address);
+  EXPECT_EQ(kAddress, *address);
+
+  // Make sure the extension's NetworkAnonymizationKey was used. Do a cache only
+  // DNS lookup using the expected NIK, and make sure the IP address is
+  // retrieved.
+  network::mojom::NetworkContext* network_context =
+      profile()->GetDefaultStoragePartition()->GetNetworkContext();
+  net::HostPortPair host_port_pair(kHostname, 0);
+  network::mojom::ResolveHostParametersPtr params =
+      network::mojom::ResolveHostParameters::New();
+  // Cache only lookup.
+  params->source = net::HostResolverSource::LOCAL_ONLY;
+  net::SchemefulSite site = net::SchemefulSite(extension->url());
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
+  network::DnsLookupResult result1 =
+      network::BlockingDnsLookup(network_context, host_port_pair,
+                                 std::move(params), network_anonymization_key);
+  EXPECT_EQ(net::OK, result1.error);
+  ASSERT_EQ(1u, result1.resolved_addresses.size());
+  EXPECT_EQ(kAddress, result1.resolved_addresses[0].ToStringWithoutPort());
+
+  params = network::mojom::ResolveHostParameters::New();
+  // Cache only lookup.
+  params->source = net::HostResolverSource::LOCAL_ONLY;
+  network::DnsLookupResult result2 = network::BlockingDnsLookup(
+      network_context, host_port_pair, std::move(params),
+      net::NetworkAnonymizationKey());
+
+  // Check that the entry is present in the cache with the empty
+  // NetworkAnonymizationKey if HostCache partitioning is disabled.
+  EXPECT_EQ(net::OK, result2.error);
 }
 
 IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsExtension) {
