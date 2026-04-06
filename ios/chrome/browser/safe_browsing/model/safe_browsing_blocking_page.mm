@@ -130,7 +130,10 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
           client->GetApplicationLocale(),
           base::Time::NowFromSystemTime(),
           client,
-          is_main_page_load_blocked_)) {}
+          is_main_page_load_blocked_)) {
+  SafeBrowsingTabHelper::ReportSecurityInterstitialShown(
+      resource.weak_web_state.get(), resource);
+}
 
 SafeBrowsingBlockingPage::~SafeBrowsingBlockingPage() = default;
 

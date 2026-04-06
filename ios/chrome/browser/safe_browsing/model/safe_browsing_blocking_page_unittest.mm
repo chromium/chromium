@@ -13,6 +13,9 @@
 #import "components/security_interstitials/core/metrics_helper.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -48,6 +51,7 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
  public:
   SafeBrowsingBlockingPageTest()
       : profile_(TestProfileIOS::Builder().Build()),
+        client_(std::make_unique<FakeSafeBrowsingClient>(profile_->GetPrefs())),
         url_("http://www.chromium.test"),
         resource_(CreateResource(&web_state_, url_)) {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
@@ -55,6 +59,8 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
     web_state_.SetBrowserState(profile_.get());
+    SafeBrowsingQueryManager::CreateForWebState(&web_state_, client_.get());
+    SafeBrowsingTabHelper::CreateForWebState(&web_state_, client_.get());
     page_ = SafeBrowsingBlockingPage::Create(resource_);
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
     SafeBrowsingUrlAllowList::FromWebState(&web_state_)
@@ -69,6 +75,7 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<ProfileIOS> profile_;
+  std::unique_ptr<FakeSafeBrowsingClient> client_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   GURL url_;
@@ -76,6 +83,11 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
   std::unique_ptr<IOSSecurityInterstitialPage> page_;
   base::HistogramTester histogram_tester_;
 };
+
+// Tests that the blocking page reports to SafeBrowsingClient on creation.
+TEST_F(SafeBrowsingBlockingPageTest, ReportsOnCreation) {
+  EXPECT_TRUE(client_->on_security_interstitial_shown_called());
+}
 
 // Tests that the blocking page generates HTML.
 TEST_F(SafeBrowsingBlockingPageTest, GenerateHTML) {

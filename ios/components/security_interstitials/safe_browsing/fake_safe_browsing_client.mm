@@ -54,3 +54,9 @@ bool FakeSafeBrowsingClient::OnMainFrameUrlQueryCancellationDecided(
 bool FakeSafeBrowsingClient::ShouldForceSyncRealTimeUrlChecks() const {
   return should_force_sync_real_time_url_checks_;
 }
+
+void FakeSafeBrowsingClient::OnSecurityInterstitialShown(
+    web::WebState* web_state,
+    const security_interstitials::UnsafeResource& resource) {
+  on_security_interstitial_shown_called_ = true;
+}

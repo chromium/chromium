@@ -6,12 +6,18 @@
 
 #import "base/check.h"
 #import "base/memory/weak_ptr.h"
+#import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
+#import "components/safe_browsing/core/common/proto/csd.pb.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safe_browsing/core/common/utils.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/web_state.h"
 
 SafeBrowsingClientImpl::SafeBrowsingClientImpl(
@@ -81,4 +87,24 @@ bool SafeBrowsingClientImpl::ShouldForceSyncRealTimeUrlChecks() const {
   return connectors_service_ &&
          enterprise_connectors::IsEnterpriseUrlFilteringEnabled(
              connectors_service_->GetAppliedRealTimeUrlCheck());
+}
+
+void SafeBrowsingClientImpl::OnSecurityInterstitialShown(
+    web::WebState* web_state,
+    const security_interstitials::UnsafeResource& resource) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  enterprise_connectors::ReportingEventRouter* router =
+      enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
+          profile);
+  if (router) {
+    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+        referrer_chain;
+    router->OnSecurityInterstitialShown(
+        resource.url,
+        safe_browsing::GetThreatTypeStringForInterstitial(resource.threat_type),
+        /*net_error_code=*/0,
+        pref_service_->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
+        referrer_chain);
+  }
 }

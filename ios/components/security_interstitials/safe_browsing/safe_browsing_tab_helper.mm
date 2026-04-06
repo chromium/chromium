@@ -159,6 +159,21 @@ void SafeBrowsingTabHelper::ShowEnhancedSafeBrowsingInfobar() {
   }
 }
 
+// static
+void SafeBrowsingTabHelper::ReportSecurityInterstitialShown(
+    web::WebState* web_state,
+    const security_interstitials::UnsafeResource& resource) {
+  if (!web_state) {
+    return;
+  }
+  SafeBrowsingTabHelper* helper =
+      SafeBrowsingTabHelper::FromWebState(web_state);
+  if (helper && helper->policy_decider_.client()) {
+    helper->policy_decider_.client()->OnSecurityInterstitialShown(web_state,
+                                                                  resource);
+  }
+}
+
 #pragma mark - SafeBrowsingTabHelper::PolicyDecider
 
 SafeBrowsingTabHelper::PolicyDecider::PolicyDecider(web::WebState* web_state,

@@ -31,6 +31,9 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   bool OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
                                               const GURL& url) override;
   bool ShouldForceSyncRealTimeUrlChecks() const override;
+  void OnSecurityInterstitialShown(
+      web::WebState* web_state,
+      const security_interstitials::UnsafeResource& resource) override;
 
   // Controls the return value of `ShouldBlockUnsafeResource`.
   void set_should_block_unsafe_resource(bool should_block_unsafe_resource) {
@@ -53,6 +56,11 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   // Whether `OnMainFrameUrlQueryCancellationDecided` was called.
   bool main_frame_cancellation_decided_called() {
     return main_frame_cancellation_decided_called_;
+  }
+
+  // Whether `OnSecurityInterstitialShown` was called.
+  bool on_security_interstitial_shown_called() const {
+    return on_security_interstitial_shown_called_;
   }
 
   // Stores a sync callback in `sync_completion_callbacks_` to be ran at a later
@@ -96,6 +104,7 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   bool should_block_unsafe_resource_ = false;
   bool main_frame_cancellation_decided_called_ = false;
   bool should_force_sync_real_time_url_checks_ = false;
+  bool on_security_interstitial_shown_called_ = false;
 
   // Must be last.
   base::WeakPtrFactory<FakeSafeBrowsingClient> weak_factory_{this};

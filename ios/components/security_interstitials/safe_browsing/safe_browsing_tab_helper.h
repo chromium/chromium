@@ -62,6 +62,12 @@ class SafeBrowsingTabHelper
   // Tells delegate to show enhanced safe browsing promo.
   void ShowEnhancedSafeBrowsingInfobar();
 
+  // Reports a security interstitial shown event to the enterprise reporting
+  // service.
+  static void ReportSecurityInterstitialShown(
+      web::WebState* web_state,
+      const security_interstitials::UnsafeResource& resource);
+
  private:
   friend class web::WebStateUserData<SafeBrowsingTabHelper>;
 
@@ -125,6 +131,8 @@ class SafeBrowsingTabHelper
     // Notifies the policy decider that the most recent main frame query is
     // a server redirect of the previous main frame query.
     void UpdateForMainFrameServerRedirect();
+
+    SafeBrowsingClient* client() const { return client_; }
 
    private:
     // Represents a single Safe Browsing query URL, along with the corresponding

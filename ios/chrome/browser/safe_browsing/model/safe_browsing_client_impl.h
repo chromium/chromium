@@ -40,6 +40,9 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
   bool OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
                                               const GURL& url) override;
   bool ShouldForceSyncRealTimeUrlChecks() const override;
+  void OnSecurityInterstitialShown(
+      web::WebState* web_state,
+      const security_interstitials::UnsafeResource& resource) override;
 
  private:
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;

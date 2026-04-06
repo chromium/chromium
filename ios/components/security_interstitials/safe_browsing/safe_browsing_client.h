@@ -61,6 +61,11 @@ class SafeBrowsingClient : public KeyedService {
   // Returns whether or not real time url checks allow navigation to continue
   // while awaiting for the results.
   virtual bool ShouldForceSyncRealTimeUrlChecks() const = 0;
+  // Reports a security interstitial shown event to the enterprise reporting
+  // service.
+  virtual void OnSecurityInterstitialShown(
+      web::WebState* web_state,
+      const security_interstitials::UnsafeResource& resource) = 0;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_

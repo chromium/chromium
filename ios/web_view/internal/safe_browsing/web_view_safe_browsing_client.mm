@@ -65,3 +65,9 @@ bool WebViewSafeBrowsingClient::ShouldForceSyncRealTimeUrlChecks() const {
   // does not support real time lookups, for now.
   return false;
 }
+
+void WebViewSafeBrowsingClient::OnSecurityInterstitialShown(
+    web::WebState* web_state,
+    const security_interstitials::UnsafeResource& resource) {
+  // ios/web_view does not support enterprise reporting.
+}
