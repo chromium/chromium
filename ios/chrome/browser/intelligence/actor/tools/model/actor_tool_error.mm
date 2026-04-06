@@ -61,6 +61,9 @@ std::string GetActorToolErrorMessage(const ActorToolError& error) {
     case ActorToolErrorCode::kActorTargetMaxDepthExceeded:
       return "The ActorToolTargetJavaScriptFeature reached the maximum "
              "recursion depth.";
+    case ActorToolErrorCode::kActorTargetWebFrameInvalidated:
+      return "The target WebFrame was invalidated before the JavaScript "
+             "function could be called.";
     case ActorToolErrorCode::kNavigationInvalidURL:
       return "Navigation failed due to invalid destination URL.";
     case ActorToolErrorCode::kNavigationTabNotRealized:

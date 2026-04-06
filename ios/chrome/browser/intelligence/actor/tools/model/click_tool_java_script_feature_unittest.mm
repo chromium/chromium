@@ -65,9 +65,9 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsNonDict) {
   base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
 
-  feature()->Click(GetMainFrame(feature()).get(), click_by_coordinate,
+  feature()->Click(GetMainFrame(feature()), click_by_coordinate,
                    coordinate_future.GetCallback());
-  feature()->Click(GetMainFrame(feature()).get(), click_by_node_id,
+  feature()->Click(GetMainFrame(feature()), click_by_node_id,
                    node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
@@ -89,9 +89,9 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
   base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
 
-  feature()->Click(GetMainFrame(feature()).get(), click_by_coordinate,
+  feature()->Click(GetMainFrame(feature()), click_by_coordinate,
                    coordinate_future.GetCallback());
-  feature()->Click(GetMainFrame(feature()).get(), click_by_node_id,
+  feature()->Click(GetMainFrame(feature()), click_by_node_id,
                    node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
@@ -107,6 +107,27 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
   EXPECT_EQ(node_id_result.error().message, "Custom JS Error");
 }
 
+TEST_F(ClickToolJavaScriptFeatureTest, InvalidatedWebFrame) {
+  ClickAction type_by_coordinate = CreateClickActionWithCoordinates();
+  ClickAction type_by_node_id = CreateClickActionWithNodeId();
+  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
+
+  feature()->Click(/*target_frame=*/nullptr, type_by_coordinate,
+                   coordinate_future.GetCallback());
+  feature()->Click(/*target_frame=*/nullptr, type_by_node_id,
+                   node_id_future.GetCallback());
+
+  auto coordinate_result = coordinate_future.Get();
+  EXPECT_FALSE(coordinate_result.has_value());
+  EXPECT_EQ(coordinate_result.error().code,
+            ActorToolErrorCode::kActorTargetWebFrameInvalidated);
+  auto node_id_result = node_id_future.Get();
+  EXPECT_FALSE(node_id_result.has_value());
+  EXPECT_EQ(node_id_result.error().code,
+            ActorToolErrorCode::kActorTargetWebFrameInvalidated);
+}
+
 TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
   MockClickJsFunctions(/*mock_return_value=*/"{success: false}");
   ClickAction click_by_coordinate = CreateClickActionWithCoordinates();
@@ -114,9 +135,9 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
   base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
 
-  feature()->Click(GetMainFrame(feature()).get(), click_by_coordinate,
+  feature()->Click(GetMainFrame(feature()), click_by_coordinate,
                    coordinate_future.GetCallback());
-  feature()->Click(GetMainFrame(feature()).get(), click_by_node_id,
+  feature()->Click(GetMainFrame(feature()), click_by_node_id,
                    node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
@@ -138,7 +159,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_Success) {
   ClickAction action = CreateClickActionWithCoordinates();
   base::test::TestFuture<ActorTool::ToolExecutionResult> future;
 
-  feature()->Click(GetMainFrame(feature()).get(), action, future.GetCallback());
+  feature()->Click(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
   EXPECT_TRUE(result.has_value());
@@ -150,7 +171,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByNodeId_Success) {
   ClickAction action = CreateClickActionWithNodeId();
   base::test::TestFuture<ActorTool::ToolExecutionResult> future;
 
-  feature()->Click(GetMainFrame(feature()).get(), action, future.GetCallback());
+  feature()->Click(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
   EXPECT_TRUE(result.has_value());

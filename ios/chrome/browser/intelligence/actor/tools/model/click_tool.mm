@@ -100,7 +100,8 @@ void ClickTool::OnTargetFrameResolved(
   optimization_guide::proto::ClickAction new_action = action;
   *new_action.mutable_target() = target_frame.target;
 
-  js_feature_->Click(target_web_frame, new_action, std::move(callback));
+  js_feature_->Click(target_web_frame->AsWeakPtr(), new_action,
+                     std::move(callback));
 }
 
 ClickTool::ClickTool(const optimization_guide::proto::ClickAction& action,

@@ -8,6 +8,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/logging.h"
+#import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
@@ -38,15 +39,20 @@ TypeToolJavaScriptFeature::TypeToolJavaScriptFeature()
 TypeToolJavaScriptFeature::~TypeToolJavaScriptFeature() = default;
 
 void TypeToolJavaScriptFeature::Type(
-    web::WebFrame* target_frame,
+    base::WeakPtr<web::WebFrame> target_frame,
     const optimization_guide::proto::TypeAction& action,
     ActorTool::ToolExecutionCallback callback) {
-  CHECK(target_frame);
   CHECK(action.has_target());
   CHECK(action.has_text() && action.has_mode());
   CHECK(action.target().has_coordinate() ||
         (action.target().has_content_node_id() &&
          action.target().has_document_identifier()));
+
+  if (!target_frame) {
+    std::move(callback).Run(base::unexpected(
+        ActorToolError{ActorToolErrorCode::kActorTargetWebFrameInvalidated}));
+    return;
+  }
 
   base::ListValue parameters;
   std::string function_name;
@@ -70,7 +76,7 @@ void TypeToolJavaScriptFeature::Type(
 
   auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallJavaScriptFunction(
-      target_frame, function_name, parameters,
+      target_frame.get(), function_name, parameters,
       base::BindOnce(&ParseJavaScriptResult, std::move(cb_for_js)),
       base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
 

@@ -67,9 +67,9 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsNonDict) {
   base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
 
-  feature()->Type(GetMainFrame(feature()).get(), type_by_coordinate,
+  feature()->Type(GetMainFrame(feature()), type_by_coordinate,
                   coordinate_future.GetCallback());
-  feature()->Type(GetMainFrame(feature()).get(), type_by_node_id,
+  feature()->Type(GetMainFrame(feature()), type_by_node_id,
                   node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
@@ -91,9 +91,9 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsError) {
   base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
   base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
 
-  feature()->Type(GetMainFrame(feature()).get(), type_by_coordinate,
+  feature()->Type(GetMainFrame(feature()), type_by_coordinate,
                   coordinate_future.GetCallback());
-  feature()->Type(GetMainFrame(feature()).get(), type_by_node_id,
+  feature()->Type(GetMainFrame(feature()), type_by_node_id,
                   node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
@@ -109,13 +109,34 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsError) {
   EXPECT_EQ(node_id_result.error().message, "Custom JS Error");
 }
 
+TEST_F(TypeToolJavaScriptFeatureTest, InvalidatedWebFrame) {
+  TypeAction type_by_coordinate = CreateTypeActionWithCoordinates();
+  TypeAction type_by_node_id = CreateTypeActionWithIdentifiers();
+  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
+
+  feature()->Type(/*target_frame=*/nullptr, type_by_coordinate,
+                  coordinate_future.GetCallback());
+  feature()->Type(/*target_frame=*/nullptr, type_by_node_id,
+                  node_id_future.GetCallback());
+
+  auto coordinate_result = coordinate_future.Get();
+  EXPECT_FALSE(coordinate_result.has_value());
+  EXPECT_EQ(coordinate_result.error().code,
+            ActorToolErrorCode::kActorTargetWebFrameInvalidated);
+  auto node_id_result = node_id_future.Get();
+  EXPECT_FALSE(node_id_result.has_value());
+  EXPECT_EQ(node_id_result.error().code,
+            ActorToolErrorCode::kActorTargetWebFrameInvalidated);
+}
+
 TEST_F(TypeToolJavaScriptFeatureTest, TypeByCoordinate_Success) {
   MockTypeJsFunctions(
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   TypeAction action = CreateTypeActionWithCoordinates();
   base::test::TestFuture<ActorTool::ToolExecutionResult> future;
 
-  feature()->Type(GetMainFrame(feature()).get(), action, future.GetCallback());
+  feature()->Type(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
   EXPECT_TRUE(result.has_value());
@@ -127,7 +148,7 @@ TEST_F(TypeToolJavaScriptFeatureTest, TypeByIdentifier_Success) {
   TypeAction action = CreateTypeActionWithIdentifiers();
   base::test::TestFuture<ActorTool::ToolExecutionResult> future;
 
-  feature()->Type(GetMainFrame(feature()).get(), action, future.GetCallback());
+  feature()->Type(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
   EXPECT_TRUE(result.has_value());

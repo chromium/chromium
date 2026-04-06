@@ -110,7 +110,7 @@ void TypeTool::OnTargetFrameResolved(
   // to the target frame.
   *action.mutable_target() = target_frame.target;
 
-  js_feature_->Type(target_web_frame, action, std::move(callback));
+  js_feature_->Type(target_web_frame->AsWeakPtr(), action, std::move(callback));
 }
 
 }  // namespace actor

@@ -71,6 +71,9 @@ enum class ActorToolErrorCode {
   kActorTargetFrameNotFoundById = 206,
   // The ActorToolTargetJavaScriptFeature reached the maximum recursion depth.
   kActorTargetMaxDepthExceeded = 207,
+  // The target WebFrame was invalidated before the JavaScript function could
+  // be called.
+  kActorTargetWebFrameInvalidated = 208,
 
   // Navigation Tool Errors (300-399).
 
