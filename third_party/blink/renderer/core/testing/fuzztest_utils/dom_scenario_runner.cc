@@ -17,8 +17,12 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -68,6 +72,7 @@ void DomScenarioRunner::RunTest(const DomScenario& input) {
   AdvanceAnimations();
   ApplyModifications(root, input.node_specs, created_elements);
   AdvanceAnimations();
+  ExitFullscreen();
   GetDocument().body()->RemoveChildren();
   GetDocument().head()->RemoveChildren();
 }
@@ -129,6 +134,15 @@ void DomScenarioRunner::CreateInitialDOM(
   LogIfEnabled(base::StrCat({"\n\nINITIAL DOM\n", GetDOMTreeAsString()}));
 
   ObserveInitialDOM(created_elements);
+
+  bool needs_update = false;
+  for (size_t i = 0; i < input.node_specs.size(); ++i) {
+    needs_update |= PerformElementActions(created_elements[i],
+                                          input.node_specs[i].initial_state);
+  }
+  if (needs_update) {
+    document.UpdateStyleAndLayoutTree();
+  }
 }
 
 void DomScenarioRunner::ApplyModifications(
@@ -155,6 +169,15 @@ void DomScenarioRunner::ApplyModifications(
   LogIfEnabled(base::StrCat({"\n\nMODIFIED DOM\n", GetDOMTreeAsString()}));
 
   ObserveModifiedDOM(created_elements);
+
+  bool needs_update = false;
+  for (size_t i = 0; i < node_specs.size(); ++i) {
+    needs_update |= PerformElementActions(created_elements[i],
+                                          node_specs[i].modified_state);
+  }
+  if (needs_update) {
+    GetDocument().UpdateStyleAndLayoutTree();
+  }
 }
 
 void DomScenarioRunner::SetElementText(Element* element,
@@ -274,6 +297,67 @@ void DomScenarioRunner::SetParent(
     DummyExceptionStateForTesting root_exception_state;
     root->appendChild(child, root_exception_state);
   }
+}
+
+bool DomScenarioRunner::PerformElementActions(Element* element,
+                                              const NodeState& state) {
+  bool acted = false;
+  if (state.should_focus) {
+    const bool added_tabindex =
+        !element->FastHasAttribute(html_names::kTabindexAttr);
+    if (added_tabindex) {
+      element->setAttribute(html_names::kTabindexAttr, AtomicString("-1"));
+    }
+    element->Focus();
+    if (added_tabindex) {
+      element->removeAttribute(html_names::kTabindexAttr);
+    }
+    acted = true;
+  }
+  if (state.should_scroll_into_view) {
+    element->scrollIntoViewForTesting();
+    acted = true;
+  }
+  if (state.should_enter_fullscreen) {
+    ExitFullscreen();
+    EnterFullscreen(element);
+    acted = true;
+  }
+  if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+    if (select->UsesMenuList()) {
+      select->ShowPopup();
+      acted = true;
+    }
+  }
+  if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
+    if (dialog->IsModal() || dialog->IsOpen()) {
+      dialog->close();
+    } else {
+      DummyExceptionStateForTesting exception_state;
+      dialog->showModal(exception_state);
+    }
+    acted = true;
+  }
+  if (acted) {
+    ObserveElementAction(element);
+  }
+  return acted;
+}
+
+void DomScenarioRunner::EnterFullscreen(Element* element) {
+  Document& document = GetDocument();
+  LocalFrame::NotifyUserActivation(
+      document.GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  Fullscreen::RequestFullscreen(*element);
+  Fullscreen::DidResolveEnterFullscreenRequest(document, /*granted=*/true);
+  UpdateAllLifecyclePhasesForTest();
+}
+
+void DomScenarioRunner::ExitFullscreen() {
+  Document& document = GetDocument();
+  Fullscreen::FullyExitFullscreen(document);
+  Fullscreen::DidExitFullscreen(document);
+  UpdateAllLifecyclePhasesForTest();
 }
 
 void DomScenarioRunner::InjectCustomElementDefinitions() {

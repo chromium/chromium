@@ -31,6 +31,9 @@ struct NodeState {
   std::optional<std::string> text;
   bool in_shadow_dom;
   bool use_slot_projection;  // Only meaningful if in_shadow_dom is true.
+  bool should_focus = false;
+  bool should_scroll_into_view = false;
+  bool should_enter_fullscreen = false;
 };
 
 // Specification for a single DOM node, including its tag, initial state,

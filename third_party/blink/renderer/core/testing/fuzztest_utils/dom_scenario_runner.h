@@ -43,6 +43,10 @@ class DomScenarioRunner
   virtual void ObserveModifiedDOM(
       const HeapVector<Member<Element>>& created_elements) {}
 
+  // Called after a per-element action (focus, scroll, fullscreen, dialog
+  // modal toggle, select popup).
+  virtual void ObserveElementAction(Element* element) {}
+
   // Called after the animation clock is advanced and style/layout is updated.
   virtual void ObserveAnimationsAdvanced() {}
 
@@ -78,6 +82,17 @@ class DomScenarioRunner
       Element* element,
       base::optional_ref<
           const std::vector<std::pair<QualifiedName, std::string>>> attributes);
+
+  // Executes per-element actions (focus, scroll, etc.) based on its NodeState.
+  // Returns true if any action was performed.
+  bool PerformElementActions(Element* element, const NodeState& state);
+
+  // Enters fullscreen on an element, triggering :fullscreen pseudo-class,
+  // top-layer, and inertness changes. Includes a style/layout update.
+  void EnterFullscreen(Element* element);
+
+  void ExitFullscreen();
+
   // Injects predefined custom element definitions via <script>. Enables
   // JavaScript and defines fuzz-plain, fuzz-shadow, and fuzz-attrs elements.
   void InjectCustomElementDefinitions();

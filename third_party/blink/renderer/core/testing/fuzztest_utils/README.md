@@ -18,7 +18,9 @@ functions, as well as support for other specifications, are encouraged.
 
 ### DomScenario Framework
 - **`NodeState`** - Represents the mutable state of a DOM node: parent index,
-  attributes, styles, and text content.
+  attributes, styles, text content, and optional action flags
+  (`should_focus`, `should_scroll_into_view`, `should_enter_fullscreen`) that
+  trigger per-element actions during test execution.
 - **`NodeSpecification`** - Represents a single DOM node with its tag, initial
   state, and modified state. Each node has a 1:1 mapping between initial and
   modified states.
@@ -44,10 +46,13 @@ functions, as well as support for other specifications, are encouraged.
 - **`AnyDomScenarioForSpec()`** - Generates FuzzTest domains from specifications
 - **`DomScenarioRunner`** - Base class that executes `DomScenario` test cases
   by creating initial DOM, applying modifications, and updating style
-  and layout after each phase. The animation clock is advanced 500ms
-  after each phase with a full lifecycle update. Subclasses can override
-  observer hooks to add custom behavior (e.g., dumping accessibility trees).
-  Includes detailed logging (enabled with `--enable-dom-fuzzer-logging`) and
+  and layout after each phase. After each phase's DOM is built,
+  per-element actions (focus, scroll, fullscreen, dialog modal toggle,
+  select popup) are executed based on fuzzed `NodeState` flags and element
+  type. The animation clock is advanced 500ms after each phase with a
+  full lifecycle update. Subclasses can override observer hooks to add
+  custom behavior (e.g., dumping accessibility trees). Includes detailed
+  logging (enabled with `--enable-dom-fuzzer-logging`) and
   `DomScenario::ToString()` for debugging.
 
 ## Usage Example
