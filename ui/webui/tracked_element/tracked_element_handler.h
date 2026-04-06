@@ -49,6 +49,16 @@ class TrackedElementHandler
   // Flushes the C++ -> WebUI mojo pipe.
   void FlushManagerRemoteForTesting();
 
+  // Interaction simulation methods.
+  bool ClickElement(const std::string& identifier_name);
+  bool FocusElement(const std::string& identifier_name);
+  bool SelectTab(const std::string& identifier_name, size_t index);
+  bool SelectDropdownItem(const std::string& identifier_name, size_t index);
+  bool EnterText(const std::string& identifier_name,
+                 const std::u16string& text,
+                 tracked_element::mojom::TextEntryMode mode);
+  bool Confirm(const std::string& identifier_name);
+
   // tracked_element::mojom::TrackedElementHandler:
   void SetManager(
       mojo::PendingRemote<tracked_element::mojom::TrackedElementManager>

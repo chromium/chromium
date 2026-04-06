@@ -4,7 +4,20 @@
 
 module tracked_element.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// How should text be sent to a text input?
+// Mirror of ui::test::InteractionTestUtil::TextEntryMode
+enum TextEntryMode {
+  // Replaces all of the existing text with the new text.
+  kReplaceAll,
+  // Inserts the new text at the current cursor position, replacing any
+  // existing selection.
+  kInsertOrReplace,
+  // Appends the new text to the end of the existing text.
+  kAppend
+};
 
 // Implemented by the browser. The WebUI notifies the browser of changes to
 // tracked elements, such as their visibility and bounds.
@@ -46,4 +59,23 @@ interface TrackedElementManager {
   // Notifies that an element should be highlighted/unhighlighted to
   // help relate it to a bubble popup.
   OnElementHighlightChanged(string native_identifier, bool highlighted);
+
+  // Simulates a click on the element.
+  ClickElement(string native_identifier) => (bool success);
+
+  // Simulates focusing the element.
+  FocusElement(string native_identifier) => (bool success);
+
+  // Simulates selecting the n-th tab in a tab collection element.
+  SelectTab(string native_identifier, uint32 index) => (bool success);
+
+  // Simulates selecting the n-th item in a dropdown/combobox element.
+  SelectDropdownItem(string native_identifier, uint32 index) => (bool success);
+
+  // Simulates entering text into an element.
+  EnterText(string native_identifier, mojo_base.mojom.String16 text,
+            TextEntryMode mode) => (bool success);
+
+  // Simulates a "confirm" action (e.g. Enter key) on the element.
+  Confirm(string native_identifier) => (bool success);
 };

@@ -99,6 +99,7 @@
  */
 
 import type {InsetsF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import {TextEntryMode} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import type {TrackedElementHandlerInterface} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 
 import {assert} from '../assert.js';
@@ -207,6 +208,13 @@ export class TrackedElementManager {
         callbackRouter.$.bindNewPipeAndPassRemote());
     callbackRouter.onElementHighlightChanged.addListener(
         this.onElementHighlightChanged_.bind(this));
+    callbackRouter.clickElement.addListener(this.clickElement_.bind(this));
+    callbackRouter.focusElement.addListener(this.focusElement_.bind(this));
+    callbackRouter.selectTab.addListener(this.selectTab_.bind(this));
+    callbackRouter.selectDropdownItem.addListener(
+        this.selectDropdownItem_.bind(this));
+    callbackRouter.enterText.addListener(this.enterText_.bind(this));
+    callbackRouter.confirm.addListener(this.confirm_.bind(this));
 
     this.debouncedUpdateAllBoundsCallback_ =
         debounceEnd(this.updateAllBounds_.bind(this), 50);
@@ -454,5 +462,209 @@ export class TrackedElementManager {
     if (maybeCallback) {
       maybeCallback(highlighted);
     }
+  }
+
+  private clickElement_(nativeId: string): {success: boolean} {
+    const trackedElement = this.trackedElements_.get(nativeId);
+    if (!trackedElement) {
+      console.error(`TrackedElementManager: Click failed, element not found: ${
+          nativeId}`);
+      return {success: false};
+    }
+
+    let target = trackedElement.element;
+
+    // If the element is a container with a shadow root, try to find the actual
+    // interactive element inside.
+    if (target.shadowRoot &&
+        !['BUTTON', 'INPUT', 'A', 'SELECT'].includes(target.tagName)) {
+      const inner = target.shadowRoot.querySelector(
+          'button, [role="button"], cr-icon-button, cr-button');
+      if (inner) {
+        target = inner as HTMLElement;
+      }
+    }
+
+    // Some components (like the reload button) listen to pointer events
+    // instead of click.
+    target.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true,
+      composed: true,
+      button: 0,
+      pointerId: 1,
+      isPrimary: true,
+    }));
+    target.dispatchEvent(new PointerEvent('pointerup', {
+      bubbles: true,
+      composed: true,
+      button: 0,
+      pointerId: 1,
+      isPrimary: true,
+    }));
+
+    target.click();
+    return {success: true};
+  }
+
+  private focusElement_(nativeId: string): {success: boolean} {
+    const trackedElement = this.trackedElements_.get(nativeId);
+    if (!trackedElement) {
+      console.error(`TrackedElementManager: Focus failed, element not found: ${
+          nativeId}`);
+      return {success: false};
+    }
+    trackedElement.element.focus();
+    return {success: true};
+  }
+
+  private selectTab_(nativeId: string, index: number): {success: boolean} {
+    const trackedElement = this.trackedElements_.get(nativeId);
+    if (!trackedElement) {
+      console.error(
+          `TrackedElementManager: SelectTab failed, element not found: ${
+              nativeId}`);
+      return {success: false};
+    }
+
+    const element = trackedElement.element;
+
+    // Special handling for <cr-tabs>
+    if (element.tagName === 'CR-TABS') {
+      (element as any).selected = index;
+      return {success: true};
+    }
+
+    // Try to find tabs by ARIA role.
+    const tabs = element.querySelectorAll('[role="tab"]');
+    if (tabs.length > index) {
+      (tabs[index] as HTMLElement).click();
+      return {success: true};
+    }
+
+    // Fallback: try to find child elements that look like tabs.
+    const childTabs = element.children;
+    if (childTabs.length > index) {
+      (childTabs[index] as HTMLElement).click();
+      return {success: true};
+    }
+
+    console.error(`TrackedElementManager: SelectTab failed, tab index ${
+        index} not found in ${nativeId}`);
+    return {success: false};
+  }
+
+  private selectDropdownItem_(nativeId: string, index: number):
+      {success: boolean} {
+    const trackedElement = this.trackedElements_.get(nativeId);
+    if (!trackedElement) {
+      console.error(
+          `TrackedElementManager: SelectDropdownItem failed, element not found: ${
+              nativeId}`);
+      return {success: false};
+    }
+
+    const element = trackedElement.element;
+
+    if (element instanceof HTMLSelectElement) {
+      if (index >= element.options.length) {
+        console.error(
+            `TrackedElementManager: SelectDropdownItem failed, index ${
+                index} out of bounds for ${nativeId}`);
+        return {success: false};
+      }
+      element.selectedIndex = index;
+      element.dispatchEvent(new Event('change', {bubbles: true}));
+      return {success: true};
+    }
+
+    // Special handling for <cr-select>
+    if (element.tagName === 'CR-SELECT') {
+      const select = element.shadowRoot?.querySelector('select');
+      if (select && index < select.options.length) {
+        select.selectedIndex = index;
+        select.dispatchEvent(new Event('change', {bubbles: true}));
+        return {success: true};
+      }
+    }
+
+    console.error(`TrackedElementManager: SelectDropdownItem failed for ${
+        nativeId}. Not a supported dropdown type or index ${
+        index} out of bounds.`);
+    return {success: false};
+  }
+
+  private enterText_(nativeId: string, text: string, mode: TextEntryMode):
+      {success: boolean} {
+    const trackedElement = this.trackedElements_.get(nativeId);
+    if (!trackedElement) {
+      console.error(
+          `TrackedElementManager: EnterText failed, element not found: ${
+              nativeId}`);
+      return {success: false};
+    }
+
+    const element = trackedElement.element;
+    if (!(element instanceof HTMLInputElement ||
+          element instanceof HTMLTextAreaElement)) {
+      // Check if it's a custom element wrapping an input (like <cr-input>)
+      const input = element.shadowRoot?.querySelector('input, textarea');
+      if (input instanceof HTMLInputElement ||
+          input instanceof HTMLTextAreaElement) {
+        return this.enterTextIntoInput_(input, text, mode);
+      }
+      console.error(
+          `TrackedElementManager: EnterText failed, element is not an input: ${
+              nativeId}`);
+      return {success: false};
+    }
+
+    return this.enterTextIntoInput_(element, text, mode);
+  }
+
+  private enterTextIntoInput_(
+      input: HTMLInputElement|HTMLTextAreaElement, text: string,
+      mode: TextEntryMode): {success: boolean} {
+    switch (mode) {
+      case TextEntryMode.kReplaceAll:
+        input.value = text;
+        break;
+      case TextEntryMode.kAppend:
+        input.value += text;
+        break;
+      case TextEntryMode.kInsertOrReplace:
+        const start = input.selectionStart || 0;
+        const end = input.selectionEnd || 0;
+        input.value =
+            input.value.substring(0, start) + text + input.value.substring(end);
+        input.selectionStart = input.selectionEnd = start + text.length;
+        break;
+      default:
+        console.error(`TrackedElementManager: Invalid TextEntryMode: ${mode}`);
+        return {success: false};
+    }
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    input.dispatchEvent(new Event('change', {bubbles: true}));
+    return {success: true};
+  }
+
+  private confirm_(nativeId: string): {success: boolean} {
+    const trackedElement = this.trackedElements_.get(nativeId);
+    if (!trackedElement) {
+      console.error(
+          `TrackedElementManager: Confirm failed, element not found: ${
+              nativeId}`);
+      return {success: false};
+    }
+
+    const element = trackedElement.element;
+    element.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Enter',
+      code: 'Enter',
+      keyCode: 13,
+      which: 13,
+      bubbles: true,
+      composed: true,
+    }));
+    return {success: true};
   }
 }
