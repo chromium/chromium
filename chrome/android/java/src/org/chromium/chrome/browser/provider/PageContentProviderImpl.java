@@ -280,6 +280,9 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                 var format = match == URI_MATCH_TEXT_FORMAT ? Format.TEXT : Format.PROTO;
                 var invocationId = uri.getLastPathSegment();
 
+                PageContentProviderMetrics.recordPageProviderEvent(
+                        RequestType.OPEN_FILE, format, PageContentProviderEvent.REQUEST_STARTED);
+
                 var pageContentFuture =
                         getPageContentsBytesAsync(invocationId, RequestType.OPEN_FILE, format);
                 try {

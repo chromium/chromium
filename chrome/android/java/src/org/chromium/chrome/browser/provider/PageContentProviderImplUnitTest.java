@@ -335,6 +335,49 @@ public class PageContentProviderImplUnitTest {
         eventChecker.assertExpected();
     }
 
+    @Test
+    public void testTextOpenFileValidContentUri() throws Exception {
+        setInnerTextExtractionResult("Page contents!", 200);
+
+        var structuredDataJson =
+                PageContentProviderImpl.getAssistContentStructuredDataForUrl(
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider, false);
+        var eventChecker =
+                getWatcherForEvent(
+                        RequestType.OPEN_FILE,
+                        Format.TEXT,
+                        PageContentProviderEvent.REQUEST_STARTED,
+                        PageContentProviderEvent.REQUEST_SUCCEEDED_RETURNED_EXTRACTED);
+
+        var contentUri = getMetadataFieldFromJson(structuredDataJson, "content_uri");
+
+        mProvider.openFile(Uri.parse(contentUri), "r");
+
+        eventChecker.assertExpected();
+    }
+
+    @Test
+    public void testProtoOpenFileValidContentUri() throws Exception {
+        var nodeContents = "Page contents!";
+        var apcProto = getAnnotatedPageContentsProto(nodeContents);
+        setProtoContentExtractionResult(apcProto, 100);
+        var eventChecker =
+                getWatcherForEvent(
+                        RequestType.OPEN_FILE,
+                        Format.PROTO,
+                        PageContentProviderEvent.REQUEST_STARTED,
+                        PageContentProviderEvent.REQUEST_SUCCEEDED_RETURNED_EXTRACTED);
+
+        var structuredDataJson =
+                PageContentProviderImpl.getAssistContentStructuredDataForUrl(
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider, false);
+        var protoContentUri = getMetadataFieldFromJson(structuredDataJson, "proto_content_uri");
+
+        mProvider.openFile(Uri.parse(protoContentUri), "r");
+
+        eventChecker.assertExpected();
+    }
+
     private HistogramWatcher getWatcherForEvent(@PageContentProviderEvent int event) {
         return HistogramWatcher.newSingleRecordWatcher(
                 "Android.AssistContent.WebPageContentProvider.Events", event);
