@@ -180,9 +180,7 @@ void SodaInstaller::NotifySodaInstalledForTesting(LanguageCode language_code) {
 
   // Otherwise, this means a language pack installed.
   installed_languages_.insert(language_code);
-  if (language_pack_progress_.contains(language_code)) {
-    language_pack_progress_.erase(language_code);
-  }
+  language_pack_progress_.erase(language_code);
   if (soda_binary_installed_) {
     NotifyOnSodaInstalled(language_code);
   }
@@ -199,9 +197,7 @@ void SodaInstaller::NotifySodaErrorForTesting(LanguageCode language_code,
     language_pack_progress_.clear();
   } else {
     // Error with the language pack download.
-    if (language_pack_progress_.contains(language_code)) {
-      language_pack_progress_.erase(language_code);
-    }
+    language_pack_progress_.erase(language_code);
   }
   NotifyOnSodaInstallError(language_code, error_code);
 }
@@ -224,11 +220,7 @@ void SodaInstaller::NotifySodaProgressForTesting(int progress,
     is_soda_downloading_ = true;
   } else {
     // Language pack download progress.
-    if (language_pack_progress_.contains(language_code)) {
-      language_pack_progress_.insert({language_code, progress});
-    } else {
-      language_pack_progress_[language_code] = progress;
-    }
+    language_pack_progress_.insert_or_assign(language_code, progress);
   }
   NotifyOnSodaProgress(language_code, progress);
 }
