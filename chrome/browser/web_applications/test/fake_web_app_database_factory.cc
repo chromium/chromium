@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"

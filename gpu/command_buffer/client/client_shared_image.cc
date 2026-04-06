@@ -13,6 +13,7 @@
 #include "base/check_is_test.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"

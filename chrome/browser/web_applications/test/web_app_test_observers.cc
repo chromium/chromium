@@ -6,6 +6,9 @@
 
 #include <sstream>
 
+#include "base/check.h"
+#include "base/dcheck_is_on.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"

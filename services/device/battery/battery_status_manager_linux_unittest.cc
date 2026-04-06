@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"

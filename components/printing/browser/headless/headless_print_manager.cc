@@ -4,6 +4,7 @@
 
 #include "components/printing/browser/headless/headless_print_manager.h"
 
+#include "base/logging.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_utils.h"

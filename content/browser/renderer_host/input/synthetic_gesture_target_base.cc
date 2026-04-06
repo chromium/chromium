@@ -4,6 +4,9 @@
 
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 
+#include "base/check.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "components/input/events_helper.h"
 #include "components/input/render_widget_host_input_event_router.h"

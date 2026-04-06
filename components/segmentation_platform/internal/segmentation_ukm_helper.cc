@@ -6,6 +6,7 @@
 
 #include "base/bit_cast.h"
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"

@@ -4,6 +4,8 @@
 
 #include "components/viz/service/gl/gpu_log_message_manager.h"
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/process/process.h"
 #include "base/synchronization/waitable_event.h"
 

@@ -7,7 +7,9 @@
 #include <utility>
 #include <variant>
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"

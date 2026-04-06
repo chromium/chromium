@@ -5,6 +5,7 @@
 #include "media/capture/video/linux/video_capture_device_factory_webrtc.h"
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "media/capture/capture_switches.h"
 #include "media/capture/video/linux/video_capture_device_webrtc.h"
 #include "third_party/webrtc/modules/video_capture/video_capture_factory.h"

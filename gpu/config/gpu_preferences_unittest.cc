@@ -7,6 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_switches.h"

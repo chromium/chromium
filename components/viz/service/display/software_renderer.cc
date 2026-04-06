@@ -9,7 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/process/memory.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"

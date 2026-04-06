@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/extensions_api_client.h"

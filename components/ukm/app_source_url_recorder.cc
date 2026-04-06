@@ -5,6 +5,7 @@
 #include "components/ukm/app_source_url_recorder.h"
 
 #include "base/atomic_sequence_num.h"
+#include "base/logging.h"
 #include "components/crx_file/id_util.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

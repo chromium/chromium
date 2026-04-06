@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "build/android_buildflags.h"

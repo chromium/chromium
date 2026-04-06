@@ -11,6 +11,7 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"

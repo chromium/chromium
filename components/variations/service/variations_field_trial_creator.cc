@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"

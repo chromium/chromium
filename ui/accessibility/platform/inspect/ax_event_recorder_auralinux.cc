@@ -11,6 +11,7 @@
 #include <array>
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"

@@ -5,10 +5,12 @@
 #include "content/browser/devtools/devtools_stream_file.h"
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"

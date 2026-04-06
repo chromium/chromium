@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/forced_extensions/assessment_assistant_tracker.h"
 
+#include "base/logging.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

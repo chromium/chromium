@@ -5,6 +5,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 

@@ -11,6 +11,8 @@
 #include <memory>
 #include <string_view>
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"

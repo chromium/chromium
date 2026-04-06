@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/debug/crash_logging.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"

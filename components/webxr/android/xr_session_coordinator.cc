@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "components/webxr/android/webxr_utils.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/child_process_id_util.h"

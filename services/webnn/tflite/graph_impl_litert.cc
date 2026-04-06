@@ -9,6 +9,7 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"

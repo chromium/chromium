@@ -11,9 +11,11 @@
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"

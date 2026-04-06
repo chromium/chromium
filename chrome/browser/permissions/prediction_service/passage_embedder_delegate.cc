@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/prediction_service/passage_embedder_delegate.h"
 
+#include "base/logging.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"

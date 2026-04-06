@@ -5,6 +5,7 @@
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "services/metrics/public/cpp/ukm_recorder_client_interface_registry.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

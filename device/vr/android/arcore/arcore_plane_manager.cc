@@ -4,7 +4,10 @@
 
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 
+#include "base/check.h"
 #include "base/containers/heap_array.h"
+#include "base/dcheck_is_on.h"
+#include "base/logging.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/public/mojom/plane_id.h"
 

@@ -5,6 +5,8 @@
 #include "chrome/browser/glic/host/glic_region_capture_controller.h"
 
 #include "base/feature_list.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/chrome_features.h"

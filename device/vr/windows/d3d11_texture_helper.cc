@@ -4,6 +4,8 @@
 
 #include "device/vr/windows/d3d11_texture_helper.h"
 
+#include "base/check_op.h"
+#include "base/logging.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/context_provider.h"

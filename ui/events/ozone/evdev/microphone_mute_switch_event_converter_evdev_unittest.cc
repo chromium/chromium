@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/microphone_mute_switch_monitor.h"
 #include "ui/events/ozone/device/device_manager.h"

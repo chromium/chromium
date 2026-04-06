@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"

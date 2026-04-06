@@ -8,7 +8,11 @@
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "base/android/android_info.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

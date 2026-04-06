@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/containers/span.h"
+#include "base/logging.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace media {

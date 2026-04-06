@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"

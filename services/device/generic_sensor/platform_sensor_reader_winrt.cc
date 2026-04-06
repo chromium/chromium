@@ -6,6 +6,9 @@
 
 #include <cmath>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"

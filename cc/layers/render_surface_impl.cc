@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/layers/append_quads_context.h"

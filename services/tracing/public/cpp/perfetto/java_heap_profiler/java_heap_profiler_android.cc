@@ -5,7 +5,9 @@
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/java_heap_profiler_android.h"
 
 #include "base/android/java_heap_dump_generator.h"
+#include "base/check_op.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_parser_android.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"

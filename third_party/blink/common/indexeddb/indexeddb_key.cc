@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace blink {

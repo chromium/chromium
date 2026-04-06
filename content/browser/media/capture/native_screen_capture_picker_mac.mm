@@ -9,8 +9,11 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/check.h"
 #include "base/features.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/timer/timer.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"

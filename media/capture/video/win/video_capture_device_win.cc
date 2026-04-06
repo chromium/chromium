@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/capture/video/win/video_capture_device_win.h"
 
 #include <objbase.h>
@@ -14,9 +13,12 @@
 #include <list>
 #include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"

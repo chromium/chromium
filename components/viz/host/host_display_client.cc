@@ -4,10 +4,11 @@
 
 #include "components/viz/host/host_display_client.h"
 
+#include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-
 #if BUILDFLAG(IS_APPLE)
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink.h"
 #endif

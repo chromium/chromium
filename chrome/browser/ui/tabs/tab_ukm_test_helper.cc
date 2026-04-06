@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <sstream>
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"

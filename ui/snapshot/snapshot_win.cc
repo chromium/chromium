@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/win/windows_version.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_win.h"

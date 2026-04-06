@@ -4,6 +4,8 @@
 
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 
+#include "base/logging.h"
+
 namespace {
 const int kMaxDisabledTokens = 1024;
 }  // namespace

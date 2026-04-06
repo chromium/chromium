@@ -7,6 +7,9 @@
 #include <iomanip>
 #include <variant>
 
+#include "base/check.h"
+#include "base/logging.h"
+
 namespace autofill::internal {
 
 void FormForestTestApi::ExpandForm(base::stack<FrameForm>& frontier,

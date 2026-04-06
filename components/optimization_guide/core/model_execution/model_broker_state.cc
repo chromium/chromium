@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"

@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"

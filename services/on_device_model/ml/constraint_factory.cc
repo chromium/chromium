@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "services/on_device_model/ml/chrome_ml.h"

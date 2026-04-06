@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/extensions/extension_constants.h"

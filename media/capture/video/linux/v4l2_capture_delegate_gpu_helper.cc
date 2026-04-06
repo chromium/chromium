@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"

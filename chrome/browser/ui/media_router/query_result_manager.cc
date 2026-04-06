@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/media_router/browser/media_router.h"

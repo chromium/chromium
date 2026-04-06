@@ -21,6 +21,9 @@ extern "C" {
 #include <algorithm>
 #include <optional>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/logging.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/gamepad/dualshock4_controller.h"

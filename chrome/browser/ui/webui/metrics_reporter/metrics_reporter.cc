@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 
 MetricsReporter::MetricsReporter() = default;

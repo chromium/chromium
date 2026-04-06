@@ -4,6 +4,7 @@
 
 #include "printing/backend/print_backend.h"
 
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

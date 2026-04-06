@@ -5,6 +5,7 @@
 #include "chromecast/mojo/remote_interfaces.h"
 
 #include "base/check.h"
+#include "base/logging.h"
 
 namespace chromecast {
 

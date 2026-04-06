@@ -7,6 +7,7 @@
 #include <GLES2/gl2.h>
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/process/memory.h"

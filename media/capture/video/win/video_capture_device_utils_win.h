@@ -11,6 +11,7 @@
 #define NO_DSHOW_STRSAFE
 #include <dshow.h>
 
+#include "base/logging.h"
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/image_capture_types.h"
 

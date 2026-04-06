@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 
+#include "base/logging.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"

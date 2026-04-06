@@ -7,8 +7,12 @@
 #include <algorithm>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/extensions/launch.h"

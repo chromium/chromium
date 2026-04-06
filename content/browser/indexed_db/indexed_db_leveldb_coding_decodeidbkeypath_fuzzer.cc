@@ -9,6 +9,8 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"

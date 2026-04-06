@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 
 #define MAKE_SURE_ON_SEQUENCE(callback, ...)                                   \

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
 
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

@@ -12,6 +12,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"

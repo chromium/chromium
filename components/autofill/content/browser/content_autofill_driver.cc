@@ -12,6 +12,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "components/autofill/content/browser/bad_message.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/form_structure.h"

@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"

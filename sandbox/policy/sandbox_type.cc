@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"

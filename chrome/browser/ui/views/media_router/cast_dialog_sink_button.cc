@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/debug/stack_trace.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"

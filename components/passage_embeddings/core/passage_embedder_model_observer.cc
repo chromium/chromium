@@ -4,6 +4,7 @@
 
 #include "components/passage_embeddings/core/passage_embedder_model_observer.h"
 
+#include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"

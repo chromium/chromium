@@ -6,6 +6,7 @@
 
 #include <dlfcn.h>
 
+#include "base/logging.h"
 #include "build/branding_buildflags.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

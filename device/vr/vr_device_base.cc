@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "device/vr/public/cpp/vr_device_provider.h"

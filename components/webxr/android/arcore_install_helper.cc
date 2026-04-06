@@ -7,7 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/resources/android/theme_resources.h"

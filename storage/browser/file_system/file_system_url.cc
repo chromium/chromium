@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/files/safe_base_name.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"

@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_tree.h"
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "ui/accessibility/ax_tree_observer.h"
 
 class EmptyAXTreeObserver : public ui::AXTreeObserver {

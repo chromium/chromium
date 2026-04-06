@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"

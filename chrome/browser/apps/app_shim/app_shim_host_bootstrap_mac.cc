@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/variations/net/variations_command_line.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

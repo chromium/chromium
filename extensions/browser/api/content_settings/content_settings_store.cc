@@ -10,9 +10,11 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"

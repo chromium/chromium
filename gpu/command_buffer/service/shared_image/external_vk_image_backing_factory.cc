@@ -4,7 +4,10 @@
 
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"

@@ -7,8 +7,10 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"

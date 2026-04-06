@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"

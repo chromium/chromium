@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"

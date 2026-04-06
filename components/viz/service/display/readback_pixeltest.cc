@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_MEDIA_PREFS_CAPTURE_DEVICE_RANKING_H_
 #define CHROME_BROWSER_MEDIA_PREFS_CAPTURE_DEVICE_RANKING_H_
 
+#include <string>
+
+#include "base/logging.h"
 #include "chrome/browser/media/prefs/pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -14,8 +17,6 @@
 #include "media/capture/video/video_capture_device_info.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-
-#include <string>
 
 namespace media_prefs::internal {
 

@@ -9,6 +9,7 @@
 #include <ranges>
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"

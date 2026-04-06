@@ -8,7 +8,9 @@
 #include <limits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/format_macros.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"

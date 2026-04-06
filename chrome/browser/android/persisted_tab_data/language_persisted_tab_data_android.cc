@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/persisted_tab_data/language_data.pb.h"
 #include "chrome/browser/android/tab_android.h"

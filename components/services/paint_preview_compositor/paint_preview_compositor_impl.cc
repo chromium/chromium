@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

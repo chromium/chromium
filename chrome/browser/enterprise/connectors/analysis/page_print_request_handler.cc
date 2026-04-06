@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"

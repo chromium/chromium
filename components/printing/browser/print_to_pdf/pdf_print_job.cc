@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"

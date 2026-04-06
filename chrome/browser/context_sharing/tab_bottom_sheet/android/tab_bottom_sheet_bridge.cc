@@ -5,6 +5,7 @@
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "base/logging.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"

@@ -5,13 +5,16 @@
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager_win.h"
 
 #include <windows.h>
+
 #include <winuser.h>
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/win/windows_types.h"
 #include "ui/base/ui_base_features.h"

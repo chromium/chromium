@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "content/child/child_process.h"
 #include "content/child/child_thread_impl.h"

@@ -4,6 +4,7 @@
 
 #include "components/on_device_ai/ai_utils.h"
 
+#include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"

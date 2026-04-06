@@ -6,7 +6,10 @@
 
 #include <optional>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"

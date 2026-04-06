@@ -4,6 +4,10 @@
 
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/anchor_id.h"

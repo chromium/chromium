@@ -8,7 +8,10 @@
 #include <limits>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/environment.h"
+#include "base/logging.h"
 #include "base/nix/xdg_util.h"
 #include "ui/display/display.h"
 #include "ui/display/display_list.h"

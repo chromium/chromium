@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_allowlist.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/extension_allowlist_factory.h"

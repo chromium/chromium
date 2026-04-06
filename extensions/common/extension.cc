@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"

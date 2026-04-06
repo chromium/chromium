@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ANDROID_TAB_ANDROID_CONVERSIONS_H_
 #define CHROME_BROWSER_ANDROID_TAB_ANDROID_CONVERSIONS_H_
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_interface_android.h"
 #include "components/tabs/public/tab_interface.h"

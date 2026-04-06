@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/logging.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {

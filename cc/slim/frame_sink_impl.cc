@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/task/common/task_annotator.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"

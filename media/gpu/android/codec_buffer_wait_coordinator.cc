@@ -5,6 +5,9 @@
 #include "media/gpu/android/codec_buffer_wait_coordinator.h"
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/barrier_callback.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"

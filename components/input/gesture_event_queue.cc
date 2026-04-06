@@ -5,6 +5,7 @@
 #include "components/input/gesture_event_queue.h"
 
 #include "base/auto_reset.h"
+#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "components/input/touchpad_tap_suppression_controller.h"
 #include "components/input/touchscreen_tap_suppression_controller.h"

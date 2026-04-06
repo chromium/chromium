@@ -4,6 +4,7 @@
 
 #include "content/public/browser/media_service.h"
 
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"

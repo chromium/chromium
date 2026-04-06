@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/libyuv/include/libyuv.h"

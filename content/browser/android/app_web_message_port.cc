@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "content/browser/android/app_web_message_port.h"
+
 #include <memory>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/android/message_payload.h"

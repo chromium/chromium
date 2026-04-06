@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/assist_ranker/assist_ranker_service_impl.h"
+
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "components/assist_ranker/binary_classifier_predictor.h"
 #include "components/assist_ranker/ranker_model_loader_impl.h"

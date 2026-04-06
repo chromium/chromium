@@ -7,6 +7,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/tabs/hovercard/filename_elider.h"
 #include "content/public/test/browser_task_environment.h"

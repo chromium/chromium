@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_tree_combiner.h"
 
+#include "base/logging.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/gfx/geometry/rect_f.h"

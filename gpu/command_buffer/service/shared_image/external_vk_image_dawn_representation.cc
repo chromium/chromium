@@ -9,6 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_image.h"

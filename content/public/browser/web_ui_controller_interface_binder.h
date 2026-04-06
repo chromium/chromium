@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "base/logging.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_ui.h"

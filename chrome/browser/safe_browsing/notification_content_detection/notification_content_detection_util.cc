@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_util.h"
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"

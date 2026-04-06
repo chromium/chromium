@@ -4,6 +4,8 @@
 
 #include "services/shape_detection/text_detection_impl.h"
 
+#include "base/logging.h"
+
 namespace shape_detection {
 
 // static

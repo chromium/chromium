@@ -8,7 +8,9 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/api/content_scripts.h"

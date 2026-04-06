@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "media/base/cdm_context.h"
 #include "media/cdm/cdm_helpers.h"

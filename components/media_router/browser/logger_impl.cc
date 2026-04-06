@@ -6,8 +6,10 @@
 
 #include <string_view>
 
+#include "base/check.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "components/media_router/browser/log_util.h"
 #include "components/media_router/common/media_source.h"

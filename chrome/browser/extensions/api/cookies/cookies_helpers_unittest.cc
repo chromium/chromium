@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/logging.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/cookies/canonical_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"

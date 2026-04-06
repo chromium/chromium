@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/ipc/ipc_names.h"
 #include "chrome/updater/ipc/ipc_security.h"

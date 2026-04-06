@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"

@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/json/values_util.h"
+#include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"

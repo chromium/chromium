@@ -4,8 +4,10 @@
 
 #include "remoting/host/chromoting_host_services_client.h"
 
+#include "base/check.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"

@@ -6,6 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/webrtc/webrtc_internals.h"

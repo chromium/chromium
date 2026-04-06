@@ -5,6 +5,7 @@
 #include "media/capture/video/mappable_shared_image_utils.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 
 namespace media {

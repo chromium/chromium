@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"

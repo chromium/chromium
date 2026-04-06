@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/logging.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 
 namespace ash::quick_start {

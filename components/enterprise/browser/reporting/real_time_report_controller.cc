@@ -4,7 +4,9 @@
 
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/logging.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/enterprise/browser/reporting/real_time_uploader.h"

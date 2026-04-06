@@ -4,6 +4,9 @@
 
 #include "device/vr/android/arcore/arcore_anchor_manager.h"
 
+#include "base/check.h"
+#include "base/dcheck_is_on.h"
+#include "base/logging.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/public/mojom/anchor_id.h"
 

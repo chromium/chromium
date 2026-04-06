@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "base/logging.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"

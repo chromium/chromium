@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "components/version_info/version_info.h"
 #include "extensions/buildflags/buildflags.h"

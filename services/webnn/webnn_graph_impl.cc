@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/dcheck_is_on.h"
+#include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"

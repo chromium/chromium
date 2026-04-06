@@ -4,10 +4,13 @@
 
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"

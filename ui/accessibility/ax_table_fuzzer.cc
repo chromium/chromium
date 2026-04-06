@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"

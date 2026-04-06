@@ -4,6 +4,8 @@
 
 #include "chrome/browser/accessibility/ax_main_node_annotator_controller.h"
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"

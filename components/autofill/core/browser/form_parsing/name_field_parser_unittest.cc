@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"

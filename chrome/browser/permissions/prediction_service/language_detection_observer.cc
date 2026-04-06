@@ -4,6 +4,7 @@
 //
 #include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
 
+#include "base/logging.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/translate/core/browser/language_state.h"

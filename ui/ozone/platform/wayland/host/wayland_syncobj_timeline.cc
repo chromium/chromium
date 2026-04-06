@@ -8,6 +8,7 @@
 #include <sys/eventfd.h>
 #include <xf86drm.h>
 
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/current_thread.h"
 #include "ui/ozone/platform/wayland/host/drm_syncobj_ioctl_wrapper.h"

@@ -9,6 +9,8 @@
 #include <memory>
 #include <set>
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 #include "chrome/browser/policy/policy_util.h"

@@ -19,6 +19,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/span.h"
+#include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"

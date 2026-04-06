@@ -5,6 +5,7 @@
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/strings/escape.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"

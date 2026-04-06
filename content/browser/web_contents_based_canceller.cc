@@ -5,6 +5,7 @@
 #include "content/browser/web_contents_based_canceller.h"
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "content/common/features.h"
 #include "content/public/browser/render_frame_host.h"

@@ -5,6 +5,7 @@
 #include "media/capture/video/apple/video_capture_device_apple.h"
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/logging.h"
 #import "base/memory/ref_counted.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "content/public/child/child_thread.h"
 

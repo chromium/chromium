@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/randomized_confidence_utils.h"
 
+#include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"

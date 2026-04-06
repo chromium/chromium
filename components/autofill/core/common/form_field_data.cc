@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "base/i18n/rtl.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"

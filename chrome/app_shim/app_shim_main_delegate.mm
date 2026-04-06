@@ -5,9 +5,11 @@
 #include "chrome/app_shim/app_shim_main_delegate.h"
 
 #include "base/apple/bundle_locations.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"

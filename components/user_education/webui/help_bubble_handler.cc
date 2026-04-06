@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
