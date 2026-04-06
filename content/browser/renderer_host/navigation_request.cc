@@ -7425,6 +7425,12 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
         .max_stream_limit_pending_delay =
             response_head_->load_timing_internal_info
                 ->max_stream_limit_pending_delay,
+        .resolution_source =
+            response_head_->load_timing_internal_info->resolution_details
+                    .has_value()
+                ? std::make_optional(response_head_->load_timing_internal_info
+                                         ->resolution_details->source)
+                : std::nullopt,
     };
   }
 

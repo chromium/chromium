@@ -11,7 +11,7 @@
 
 #include "base/time/time.h"
 #include "net/base/net_export.h"
-#include "net/dns/resolution_details.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/http/alternate_protocol_usage.h"
 
 namespace net {

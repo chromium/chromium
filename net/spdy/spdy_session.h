@@ -34,7 +34,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
-#include "net/dns/resolution_details.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/next_proto.h"

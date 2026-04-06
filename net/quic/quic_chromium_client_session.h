@@ -35,7 +35,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
-#include "net/dns/resolution_details.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
 #include "net/quic/quic_chromium_client_stream.h"

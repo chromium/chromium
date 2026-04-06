@@ -213,6 +213,63 @@ TEST_F(GWSPageLoadMetricsObserverTest, ConnectionEvents) {
       internal::kHistogramGWSAcceptCHFrameReceived, true, 1);
 }
 
+TEST_F(GWSPageLoadMetricsObserverTest, DNSResolutionSegmentation) {
+  content::NavigationHandleTiming timing;
+  timing.session_details = {
+      .session_source = net::SessionSource::kNew,
+      .resolution_source = net::ResolutionSource::kSecure,
+  };
+  timing.first_request_domain_lookup_delay = base::Milliseconds(10);
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  timing.first_request_start_time = now;
+  timing.first_response_start_time = now + base::Milliseconds(10);
+  timing.first_loader_callback_time = now + base::Milliseconds(20);
+  timing.final_request_start_time = now + base::Milliseconds(30);
+  timing.final_response_start_time = now + base::Milliseconds(40);
+  timing.final_loader_callback_time = now + base::Milliseconds(50);
+  timing.navigation_commit_sent_time = now + base::Milliseconds(60);
+
+  content::MockNavigationHandle handle(GURL(kGoogleSearchResultsUrl),
+                                       main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  handle.set_was_response_cached(false);
+
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  page_load_metrics::mojom::PageLoadTiming page_load_timing;
+  page_load_metrics::InitPageLoadTimingForTest(&page_load_timing);
+  page_load_timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  page_load_timing.parse_timing->parse_start = base::Milliseconds(1);
+  page_load_timing.paint_timing->first_contentful_paint =
+      base::Milliseconds(10);
+  page_load_timing.paint_timing->largest_contentful_paint->largest_text_paint =
+      base::Milliseconds(100);
+  page_load_timing.paint_timing->largest_contentful_paint
+      ->largest_text_paint_size = 20u;
+  PopulateRequiredTimingFields(&page_load_timing);
+
+  tester()->SimulateTimingUpdate(page_load_timing);
+
+  observer_->OnCommit(&handle);
+
+  tester()->NavigateToUntrackedUrl();
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.GoogleSearch.WarmUpType", 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSConnectTimingFirstRequestDomainLookupDelay, 10, 1);
+
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::
+          kHistogramGWSConnectTimingFirstRequestDomainLookupDelaySecureDns,
+      10, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kHistogramGWSConnectTimingFirstRequestDomainLookupDelayInsecureDns,
+      0);
+}
+
 TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);

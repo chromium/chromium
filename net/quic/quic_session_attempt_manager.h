@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/reconnect_notifier.h"
-#include "net/dns/resolution_details.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/quic/quic_endpoint.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_pool.h"

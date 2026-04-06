@@ -32,7 +32,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
-#include "net/dns/resolution_details.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/client_socket_pool.h"

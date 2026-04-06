@@ -34,6 +34,7 @@ source_set("public") {
     "host_resolver_source.cc",
     "host_resolver_source.h",
     "mdns_listener_update_type.h",
+    "resolution_details.h",
     "resolve_error_info.cc",
     "resolve_error_info.h",
     "secure_dns_mode.h",

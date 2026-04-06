@@ -11,7 +11,7 @@
 
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
-#include "net/dns/resolution_details.h"
+#include "net/dns/public/resolution_details.h"
 
 namespace net {
 

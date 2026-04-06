@@ -23,6 +23,21 @@ enum AdvertisedAltSvcState {
 };
 // LINT.ThenChange(//net/http/alternate_protocol_usage.h:AdvertisedAltSvcState)
 
+// Mirror of net::ResolutionSource.
+// LINT.IfChange(ResolutionSource)
+enum ResolutionSource {
+  kUnknown,
+  kCache,
+  kLocal,
+  kInsecure,
+  kSecure,
+  kSystem,
+  kPlatform,
+  kMdns,
+  kNat64,
+};
+// LINT.ThenChange(//net/dns/resolution_details.h:ResolutionSource)
+
 // Mirror of net::LoadTimingInternalInfo.
 struct LoadTimingInternalInfo {
   mojo_base.mojom.TimeDelta? max_stream_limit_pending_delay;
@@ -33,4 +48,5 @@ struct LoadTimingInternalInfo {
   SessionSource? session_source;
   AdvertisedAltSvcState advertised_alt_svc_state;
   bool http_network_session_quic_enabled;
+  ResolutionSource? resolution_source;
 };

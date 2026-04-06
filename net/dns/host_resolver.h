@@ -33,9 +33,9 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/mdns_listener_update_type.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "net/dns/resolution_details.h"
 #include "net/log/net_log_with_source.h"
 #include "url/scheme_host_port.h"
 

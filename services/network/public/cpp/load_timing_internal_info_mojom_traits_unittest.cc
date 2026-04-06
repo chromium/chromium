@@ -24,6 +24,8 @@ TEST(LoadTimingInternalInfoMojomTraitsTest, SerializeAndDeserialize) {
   original.advertised_alt_svc_state =
       net::AdvertisedAltSvcState::kQuicNotBroken;
   original.http_network_session_quic_enabled = true;
+  original.resolution_details =
+      net::ResolutionDetails{.source = net::ResolutionSource::kSecure};
 
   net::LoadTimingInternalInfo deserialized;
   ASSERT_NE(deserialized, original);

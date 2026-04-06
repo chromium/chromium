@@ -87,6 +87,12 @@ const char kHistogramGWSOnConnectedCalled[] =
 
 const char kHistogramGWSConnectTimingFirstRequestDomainLookupDelay[] =
     HISTOGRAM_PREFIX "ConnectTiming.FirstRequestDomainLookupDelay";
+const char kHistogramGWSConnectTimingFirstRequestDomainLookupDelaySecureDns[] =
+    HISTOGRAM_PREFIX "ConnectTiming.FirstRequestDomainLookupDelay.SecureDns";
+const char
+    kHistogramGWSConnectTimingFirstRequestDomainLookupDelayInsecureDns[] =
+        HISTOGRAM_PREFIX
+    "ConnectTiming.FirstRequestDomainLookupDelay.InsecureDns";
 const char kHistogramGWSConnectTimingFirstRequestConnectDelay[] =
     HISTOGRAM_PREFIX "ConnectTiming.FirstRequestConnectDelay";
 const char kHistogramGWSConnectTimingFirstRequestSslDelay[] =
@@ -987,6 +993,24 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   record_histogram_with_suffix(
       internal::kHistogramGWSConnectTimingFirstRequestDomainLookupDelay,
       timing.first_request_domain_lookup_delay);
+
+  if (timing.session_details.has_value() &&
+      timing.session_details->session_source == net::SessionSource::kNew) {
+    if (timing.session_details->resolution_source ==
+        net::ResolutionSource::kSecure) {
+      PAGE_LOAD_SHORT_HISTOGRAM(
+          internal::
+              kHistogramGWSConnectTimingFirstRequestDomainLookupDelaySecureDns,
+          timing.first_request_domain_lookup_delay);
+    } else if (timing.session_details->resolution_source ==
+               net::ResolutionSource::kInsecure) {
+      PAGE_LOAD_SHORT_HISTOGRAM(
+          internal::
+              kHistogramGWSConnectTimingFirstRequestDomainLookupDelayInsecureDns,
+          timing.first_request_domain_lookup_delay);
+    }
+  }
+
   record_histogram_with_suffix(
       internal::kHistogramGWSConnectTimingFirstRequestConnectDelay,
       timing.first_request_connect_delay);

@@ -63,6 +63,58 @@ EnumTraits<network::mojom::AdvertisedAltSvcState, net::AdvertisedAltSvcState>::
   NOTREACHED();
 }
 
+network::mojom::ResolutionSource
+EnumTraits<network::mojom::ResolutionSource, net::ResolutionSource>::ToMojom(
+    net::ResolutionSource resolution_source) {
+  switch (resolution_source) {
+    case net::ResolutionSource::kUnknown:
+      return network::mojom::ResolutionSource::kUnknown;
+    case net::ResolutionSource::kCache:
+      return network::mojom::ResolutionSource::kCache;
+    case net::ResolutionSource::kLocal:
+      return network::mojom::ResolutionSource::kLocal;
+    case net::ResolutionSource::kInsecure:
+      return network::mojom::ResolutionSource::kInsecure;
+    case net::ResolutionSource::kSecure:
+      return network::mojom::ResolutionSource::kSecure;
+    case net::ResolutionSource::kSystem:
+      return network::mojom::ResolutionSource::kSystem;
+    case net::ResolutionSource::kPlatform:
+      return network::mojom::ResolutionSource::kPlatform;
+    case net::ResolutionSource::kMdns:
+      return network::mojom::ResolutionSource::kMdns;
+    case net::ResolutionSource::kNat64:
+      return network::mojom::ResolutionSource::kNat64;
+  }
+  NOTREACHED();
+}
+
+net::ResolutionSource
+EnumTraits<network::mojom::ResolutionSource, net::ResolutionSource>::FromMojom(
+    network::mojom::ResolutionSource in) {
+  switch (in) {
+    case network::mojom::ResolutionSource::kUnknown:
+      return net::ResolutionSource::kUnknown;
+    case network::mojom::ResolutionSource::kCache:
+      return net::ResolutionSource::kCache;
+    case network::mojom::ResolutionSource::kLocal:
+      return net::ResolutionSource::kLocal;
+    case network::mojom::ResolutionSource::kInsecure:
+      return net::ResolutionSource::kInsecure;
+    case network::mojom::ResolutionSource::kSecure:
+      return net::ResolutionSource::kSecure;
+    case network::mojom::ResolutionSource::kSystem:
+      return net::ResolutionSource::kSystem;
+    case network::mojom::ResolutionSource::kPlatform:
+      return net::ResolutionSource::kPlatform;
+    case network::mojom::ResolutionSource::kMdns:
+      return net::ResolutionSource::kMdns;
+    case network::mojom::ResolutionSource::kNat64:
+      return net::ResolutionSource::kNat64;
+  }
+  NOTREACHED();
+}
+
 // static
 std::optional<base::TimeDelta>
 StructTraits<network::mojom::LoadTimingInternalInfoDataView,
@@ -117,6 +169,17 @@ bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
 }
 
 // static
+std::optional<net::ResolutionSource>
+StructTraits<network::mojom::LoadTimingInternalInfoDataView,
+             net::LoadTimingInternalInfo>::
+    resolution_source(const net::LoadTimingInternalInfo& info) {
+  if (!info.resolution_details.has_value()) {
+    return std::nullopt;
+  }
+  return info.resolution_details->source;
+}
+
+// static
 bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
                   net::LoadTimingInternalInfo>::
     Read(network::mojom::LoadTimingInternalInfoDataView data,
@@ -143,6 +206,15 @@ bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
   }
   info->http_network_session_quic_enabled =
       data.http_network_session_quic_enabled();
+
+  std::optional<net::ResolutionSource> resolution_source;
+  if (!data.ReadResolutionSource(&resolution_source)) {
+    return false;
+  }
+  if (resolution_source.has_value()) {
+    info->resolution_details =
+        net::ResolutionDetails{.source = *resolution_source};
+  }
   return true;
 }
 

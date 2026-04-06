@@ -16,7 +16,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
-#include "net/dns/resolution_details.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"

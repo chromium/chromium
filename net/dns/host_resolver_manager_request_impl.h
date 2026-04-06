@@ -26,8 +26,8 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_manager_job.h"
 #include "net/dns/public/host_resolver_results.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "net/dns/resolution_details.h"
 #include "net/log/net_log_with_source.h"
 
 namespace net {

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/load_timing_internal_info.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/http/alternate_protocol_usage.h"
 #include "services/network/public/mojom/load_timing_internal_info.mojom-shared.h"
 
@@ -35,6 +36,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    EnumTraits<network::mojom::ResolutionSource, net::ResolutionSource> {
+  static network::mojom::ResolutionSource ToMojom(
+      net::ResolutionSource resolution_source);
+  static net::ResolutionSource FromMojom(network::mojom::ResolutionSource in);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::LoadTimingInternalInfoDataView,
                  net::LoadTimingInternalInfo> {
   static std::optional<base::TimeDelta> max_stream_limit_pending_delay(
@@ -54,6 +63,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static net::AdvertisedAltSvcState advertised_alt_svc_state(
       const net::LoadTimingInternalInfo& info);
   static bool http_network_session_quic_enabled(
+      const net::LoadTimingInternalInfo& info);
+  static std::optional<net::ResolutionSource> resolution_source(
       const net::LoadTimingInternalInfo& info);
   static bool Read(network::mojom::LoadTimingInternalInfoDataView data,
                    net::LoadTimingInternalInfo* info);

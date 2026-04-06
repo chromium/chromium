@@ -1597,6 +1597,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDomainLookupDelay.InsecureDns"
+    units="ms" expires_after="2026-09-06">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The delay caused by domain lookup for the first HTTP request which is sent
+    for the main resource of a main frame navigation, for Google Search page
+    loads, when Insecure DNS was used. Only recorded for Search navigations that
+    happen entirely in the foreground. The metric is emitted when the navigation
+    is completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDomainLookupDelay.SecureDns"
+    units="ms" expires_after="2026-09-06">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The delay caused by domain lookup for the first HTTP request which is sent
+    for the main resource of a main frame navigation, for Google Search page
+    loads, when Secure DNS (DoH) was used. Only recorded for Search navigations
+    that happen entirely in the foreground. The metric is emitted when the
+    navigation is completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FirstRequestDomainLookupDelay{ConnectionProtocolType}"
     units="ms" expires_after="2026-09-06">
   <owner>horo@chromium.org</owner>

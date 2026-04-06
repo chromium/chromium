@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DNS_RESOLUTION_DETAILS_H_
-#define NET_DNS_RESOLUTION_DETAILS_H_
+#ifndef NET_DNS_PUBLIC_RESOLUTION_DETAILS_H_
+#define NET_DNS_PUBLIC_RESOLUTION_DETAILS_H_
 
 #include "net/base/net_export.h"
 
@@ -41,4 +41,4 @@ struct NET_EXPORT ResolutionDetails {
 
 }  // namespace net
 
-#endif  // NET_DNS_RESOLUTION_DETAILS_H_
+#endif  // NET_DNS_PUBLIC_RESOLUTION_DETAILS_H_

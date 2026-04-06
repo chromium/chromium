@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "net/base/load_timing_internal_info.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/http/alternate_protocol_usage.h"
 
 namespace content {
@@ -32,6 +33,8 @@ struct CONTENT_EXPORT NavigationHandleTiming {
     // The time taken for a SPDY/QUIC session to create an active stream due to
     // max stream limits.
     std::optional<base::TimeDelta> max_stream_limit_pending_delay;
+    // The source of the host resolution result.
+    std::optional<net::ResolutionSource> resolution_source;
   };
 
   NavigationHandleTiming();

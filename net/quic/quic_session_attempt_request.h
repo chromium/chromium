@@ -14,7 +14,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
-#include "net/dns/resolution_details.h"
+#include "net/dns/public/resolution_details.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_pool.h"
 
