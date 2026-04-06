@@ -48,6 +48,8 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('protocol_handlers.idl', 'protocol_handlers.webidl'),
         ('shared_module.idl', 'shared_module.webidl'),
         ('web_accessible_resources.idl', 'web_accessible_resources.webidl'),
+        ('enterprise_platform_keys_internal.idl',
+         'enterprise_platform_keys_internal.webidl'),
         ('web_accessible_resources_mv2.idl',
          'web_accessible_resources_mv2.webidl'),
         ('automation_internal.idl', 'automation_internal.webidl'),

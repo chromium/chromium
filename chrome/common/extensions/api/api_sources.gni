@@ -116,7 +116,7 @@ if (enable_extensions) {
       "enterprise_login.webidl",
       "enterprise_networking_attributes.webidl",
       "enterprise_platform_keys.webidl",
-      "enterprise_platform_keys_internal.idl",
+      "enterprise_platform_keys_internal.webidl",
       "enterprise_platform_keys_private.json",
       "file_manager_private.idl",
       "file_manager_private_internal.idl",
