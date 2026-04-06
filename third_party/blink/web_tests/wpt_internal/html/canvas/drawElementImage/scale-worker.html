@@ -77,34 +77,36 @@ const workerCode = `
 `;
 const workerUrl = URL.createObjectURL(new Blob([workerCode], { type: 'application/javascript' }));
 
-Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
-  await resizeToPixelGrid(cvs);
-  await new Promise(setTimeout);
-  const target = cvs.firstElementChild;
-
-  let args = [];
-  if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
-    const scaleX = Number.parseFloat(target.getAttribute("xscale"));
-    const scaleY = Number.parseFloat(target.getAttribute("yscale"));
-    const [destWidth, destHeight] =
-      computeScaledDestinationSize(cvs, target, scaleX, scaleY);
-    args = [0, 0, destWidth, destHeight];
-  } else {
-    args = [0, 0];
-  }
-
+(async () => {
   const worker = new Worker(workerUrl);
-  const offscreen = cvs.transferControlToOffscreen();
-  worker.postMessage({ canvas: offscreen }, [offscreen]);
+  for (const cvs of document.querySelectorAll("canvas")) {
+    await resizeToPixelGrid(cvs);
+    await new Promise(setTimeout);
+    const target = cvs.firstElementChild;
 
-  return new Promise(resolve => {
-    worker.onmessage = () => {
-      resolve();
-    };
-    const elementImage = cvs.captureElementImage(target);
-    worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
-  });
-})).then(() => {
+    let args = [];
+    if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
+      const scaleX = Number.parseFloat(target.getAttribute("xscale"));
+      const scaleY = Number.parseFloat(target.getAttribute("yscale"));
+      const [destWidth, destHeight] =
+        computeScaledDestinationSize(cvs, target, scaleX, scaleY);
+      args = [0, 0, destWidth, destHeight];
+    } else {
+      args = [0, 0];
+    }
+
+    const offscreen = cvs.transferControlToOffscreen();
+    worker.postMessage({ canvas: offscreen }, [offscreen]);
+
+    await new Promise(resolve => {
+      worker.onmessage = () => {
+        resolve();
+      };
+      const elementImage = cvs.captureElementImage(target);
+      worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
+    });
+  }
+})().then(() => {
   // Wait for the worker thread to update before taking a screenshot.
   requestAnimationFrame(() => {
     requestAnimationFrame(takeScreenshot);
