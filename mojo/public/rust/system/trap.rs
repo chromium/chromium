@@ -7,7 +7,7 @@
 //!
 //! This is the preferred trap API unless callers have constraints that make the
 //! overhead of the heap allocations/tracking untenable - in that case the
-//! lower-level `RawTrap` API may be considered.
+//! lower-level `TrapHandle` API may be considered.
 //!
 //! # Implementation details
 //!
@@ -37,14 +37,14 @@
 //!     /         |
 //!    /      trigger_registry: Arc<TriggerRegistry>
 //!   /               |
-//! raw_trap          |
+//!   |               |
 //!   |               |
 //!   |               |
 //!   |               |
 //!   |               |
 //!   v               v
 //! +----------+    +-------------------------------+
-//! | RawTrap  |    | TriggerRegistry               |
+//! | TrapHandle  |    | TriggerRegistry               |
 //! +----------+    +-------------------------------+
 //! | handle   |    | trigger_map:                  |
 //! +----------+    |   HashMap<usize, Arc<Trigger> |
@@ -77,17 +77,13 @@
 //!   allows Trigger objects to reach "up" and manage/cleanup tracking state
 //!   after being triggered.
 //!
-//! * Upon creating a RawTrap (which is done implicitly/"under the hood" when
+//! * Upon creating a TrapHandle (which is done implicitly/"under the hood" when
 //!   creating a Trap), the underlying C API call MojoCreateTrap takes the
 //!   passed-in MojoTrapEventHandler function pointer and stores it in a place
 //!   to be managed by the Mojo system itself. It will be freed when the
 //!   MojoHandle for Trap is released.
 
-// FOR_RELEASE: There are a lot of implementation details even in this file.
-// Find a way to present *just* the API to end users.
-
-pub use crate::raw_trap::TriggerCondition;
-use crate::raw_trap::*;
+pub use mojo_ffi::trap::TriggerCondition;
 
 use std::collections::HashMap;
 use std::mem;
@@ -97,7 +93,18 @@ chromium::import! {
   "//mojo/public/rust/c_mojo_api" as mojo_ffi;
 }
 
+use crate::mojo_types::declare_typed_handle;
+
+use mojo_ffi::trap;
+pub use mojo_ffi::trap::types::TrapEvent as RawTrapEvent;
+pub use mojo_ffi::trap::types::{ArmResult, HandleSignals, SignalsState};
 use mojo_ffi::{MojoError, MojoResult};
+
+declare_typed_handle!(TrapHandle);
+
+pub trait Trappable {
+    fn get_untyped_handle(&self) -> &crate::mojo_types::UntypedHandle;
+}
 
 /// Unique ID for a trigger added to a `Trap`.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -145,7 +152,7 @@ pub enum RearmingPolicy {
     Automatic,
 }
 
-// Represents a trap event, e.g. a trigger firing.
+// Represents a trap event, e.g. a triggter firing.
 #[derive(Clone, Copy, Debug)]
 pub struct TrapEvent {
     signals_state: SignalsState,
@@ -210,7 +217,8 @@ impl Trap {
             shared_data: Arc::new(TrapSharedData {
                 // SAFETY: The requirements of `handle_event_from_callback` are
                 // guaranteed by the C trap API
-                raw_trap: RawTrap::new(Self::handle_event_from_callback)?,
+                trap_handle: trap::MojoCreateTrap(Self::handle_event_from_callback)
+                    .map(Into::into)?,
                 rearming_policy,
             }),
             trigger_registry: Arc::new(Mutex::new(TriggerRegistry {
@@ -224,9 +232,10 @@ impl Trap {
     /// which is invoked by all triggers. This is that function.
     ///
     /// This function's job is to take the provided `context` information from
-    /// the `RawTrapEvent` and use it to invoke the actual user-provided
-    /// handler. It does so by interpreting the `context` as a weak pointer to
-    /// the a specific `Trigger` which contains the rest of the data.
+    /// the `RawTrapEvent` and use it to invoke the actual
+    /// user-provided handler. It does so by interpreting the `context` as a
+    /// weak pointer to the a specific `Trigger` which contains the rest of
+    /// the data.
     ///
     /// # Safety consideration
     ///
@@ -265,14 +274,15 @@ impl Trap {
         // remove the trigger. This will trigger an immediate handler with
         // `Cancelled` that will actually do the cleanup.
         if raw_event.result() == Err(MojoError::FailedPrecondition) {
-            shared_data.raw_trap.remove_trigger(raw_event.trigger_context()).unwrap();
+            trap::MojoRemoveTrigger(&shared_data.trap_handle.handle, raw_event.trigger_context())
+                .unwrap();
         }
 
         // Re-arm the trap if the rearming policy is set to automatic
         if matches!(shared_data.rearming_policy, RearmingPolicy::Automatic) {
             // The only way this can fail is if the trap has no triggers. This
             // is possible if we were the last trigger and just got cancelled.
-            let _ = Self::handle_blocking_events_until_armed(&shared_data.raw_trap);
+            let _ = Self::handle_blocking_events_until_armed(&shared_data.trap_handle);
         }
     }
 
@@ -312,10 +322,14 @@ impl Trap {
         // Note: The mojo API says that it's invalid to add multiple traps on the
         // same handle, but it seems that requirement was silently dropped when
         // we transferred to ipcz.
-        self.shared_data
-            .raw_trap
-            .add_trigger(handle_to_trap, signals, condition, trigger_data_ptr as usize)
-            .expect("The Trap class handles all possible failures when adding a trigger");
+        trap::MojoAddTrigger(
+            &self.shared_data.trap_handle.handle,
+            handle_to_trap.get_untyped_handle(),
+            signals,
+            condition,
+            trigger_data_ptr as usize,
+        )
+        .expect("The Trap class handles all possible failures when adding a trigger");
 
         return id;
     }
@@ -339,7 +353,7 @@ impl Trap {
                 .get(&trigger_id)
                 .ok_or(MojoError::NotFound)?,
         ) as usize;
-        self.shared_data.raw_trap.remove_trigger(context)
+        trap::MojoRemoveTrigger(&self.shared_data.trap_handle.handle, context)
     }
 
     /// Removes *all* triggers from this Trap.
@@ -371,7 +385,7 @@ impl Trap {
     pub fn arm(&self, arming_policy: InitialArmingPolicy) -> MojoResult<()> {
         match arming_policy {
             InitialArmingPolicy::RunTriggersOnBlockingEvents => {
-                Self::handle_blocking_events_until_armed(&self.shared_data.raw_trap)
+                Self::handle_blocking_events_until_armed(&self.shared_data.trap_handle)
             }
             InitialArmingPolicy::ReturnBlockingEvents => {
                 todo!()
@@ -379,18 +393,19 @@ impl Trap {
         }
     }
 
-    fn handle_blocking_events_until_armed(raw_trap: &RawTrap) -> MojoResult<()> {
+    fn handle_blocking_events_until_armed(raw_trap: &TrapHandle) -> MojoResult<()> {
         const MAX_BLOCKING_EVENTS: usize = 16;
         let mut buf = [const { mem::MaybeUninit::uninit() }; MAX_BLOCKING_EVENTS];
 
         loop {
-            let blocking_events: &[RawTrapEvent] = match raw_trap.arm(Some(&mut buf)) {
-                ArmResult::Blocked(events) => events,
-                ArmResult::Armed => return Ok(()),
-                ArmResult::Failed(e) => {
-                    return Err(e);
-                }
-            };
+            let blocking_events: &[RawTrapEvent] =
+                match trap::MojoArmTrap(&raw_trap.handle, Some(&mut buf)) {
+                    ArmResult::Blocked(events) => events,
+                    ArmResult::Armed => return Ok(()),
+                    ArmResult::Failed(e) => {
+                        return Err(e);
+                    }
+                };
             for blocking_event in blocking_events {
                 // SAFETY: Removing a trigger requires `&mut self`, so the trap won't fire a
                 // `Cancelled` event while we're doing this. It won't fire any other event
@@ -404,15 +419,16 @@ impl Trap {
                 (trigger_data.unwrap().callback.lock().unwrap())(&blocking_event.into());
                 if blocking_event.result() == Err(MojoError::FailedPrecondition) {
                     // We know the trigger hasn't been removed yet because it's blocking!
-                    raw_trap.remove_trigger(blocking_event.trigger_context()).unwrap();
+                    trap::MojoRemoveTrigger(&raw_trap.handle, blocking_event.trigger_context())
+                        .unwrap();
                 }
             }
         }
     }
 
-    /// Takes a given RawTrapEvent and determines the associated Trigger. Also
-    /// decrements the trigger's `Weak` count if the trigger will never again
-    /// be called.
+    /// Takes a given RawTrapEvent and determines the
+    /// associated Trigger. Also decrements the trigger's `Weak` count if
+    /// the trigger will never again be called.
     ///
     /// # Safety
     ///
@@ -463,7 +479,7 @@ impl Drop for Trap {
 
 struct TrapSharedData {
     // The actual underlying trap object.
-    raw_trap: RawTrap,
+    trap_handle: TrapHandle,
     // Whether the trap should automatically rearm each time a trigger fires or not
     rearming_policy: RearmingPolicy,
 }
@@ -489,12 +505,12 @@ struct TriggerRegistry {
 
 // Internal state for a single active trigger.
 //
-// While `RawTrap` wraps the C Mojo API functions, this struct
+// While `TrapHandle` wraps the C Mojo API functions, this struct
 // serves as the object *referenced by* the opaque `context` integer
 // passed to that API.
 //
 // Thus this struct is referenced when making the necessary
-// RawTrap calls "under the hood".
+// TrapHandle calls "under the hood".
 struct Trigger {
     // FOR_RELEASE: These Mutexes *may* be imposing an unnecessary overhead
     // on our end users (though "traps can be called back on any thread" is

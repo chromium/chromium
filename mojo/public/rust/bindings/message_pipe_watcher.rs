@@ -15,8 +15,10 @@ use sequenced_task_runner::SequencedTaskRunnerHandle;
 use system::message::RawMojoMessage;
 use system::message_pipe::MessageEndpoint;
 use system::mojo_types::MojoResult;
-use system::raw_trap::{HandleSignals, TriggerCondition};
-use system::trap::{InitialArmingPolicy, RearmingPolicy, Trap, TrapError, TrapEvent};
+use system::trap::{
+    HandleSignals, InitialArmingPolicy, RearmingPolicy, Trap, TrapError, TrapEvent,
+    TriggerCondition,
+};
 
 // TODO(crbug.com/470438844): Replace some/all of the std::sync imports with
 // chromium sequenced equivalents once those are implemented (figure out which,

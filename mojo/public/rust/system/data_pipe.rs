@@ -8,7 +8,7 @@ chromium::import! {
 
 use crate::mojo_types::declare_trappable_typed_handle;
 use mojo_ffi::data_pipe;
-use mojo_ffi::{MojoResult, UntypedHandle};
+use mojo_ffi::MojoResult;
 
 // FOR_RELEASE: Make these arguments to the functions instead of bitfields
 pub use data_pipe::{ReadFlags, WriteFlags};

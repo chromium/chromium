@@ -13,7 +13,6 @@ rust_static_library("system") {
     "message.rs",
     "message_pipe.rs",
     "mojo_types.rs",
-    "raw_trap.rs",
     "scoped_handle_interop.rs",
     "trap.rs",
   ]

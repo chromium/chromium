@@ -9,7 +9,7 @@ chromium::import! {
 use crate::message::RawMojoMessage;
 use crate::mojo_types::declare_trappable_typed_handle;
 use mojo_ffi::message_pipe;
-use mojo_ffi::{MojoResult, UntypedHandle};
+use mojo_ffi::MojoResult;
 
 declare_trappable_typed_handle!(MessageEndpoint);
 

@@ -6,8 +6,5 @@ pub mod data_pipe;
 pub mod message;
 pub mod message_pipe;
 pub mod mojo_types;
-// FOR_RELEASE: Get rid of raw_trap completely and build `trap` directly on the
-// ffi bindings.
-pub mod raw_trap;
 pub mod scoped_handle_interop;
 pub mod trap;
