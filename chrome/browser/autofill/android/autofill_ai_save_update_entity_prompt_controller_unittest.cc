@@ -195,7 +195,7 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE,
-                google_wallet,
+                google_wallet, google_wallet,
                 base::UTF8ToUTF16(TestingProfile::kDefaultProfileUserName)),
             prompt_controller().GetSourceNotice());
 }
