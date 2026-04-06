@@ -341,6 +341,7 @@ class GlicInstanceImpl : public GlicInstance,
           callback,
       std::vector<std::string> returned_suggestions);
   void MaybeDeactivateEmbedder(EmbedderKey key);
+  void MaybeWarmZeroStateSuggestions();
 
   bool IsActiveEmbedder(EmbedderKey key) const;
 

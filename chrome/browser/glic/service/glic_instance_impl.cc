@@ -39,6 +39,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -382,6 +383,8 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
     host_.SetDelegate(embedder_to_show->GetHostEmbedderDelegate());
     SetActiveEmbedderAndNotifyStateChange(new_key);
   }
+
+  MaybeWarmZeroStateSuggestions();
 
   MaybeShowHostUi(embedder_to_show, options.invocation_source,
                   options.prompt_suggestion, options.auto_send,
@@ -1120,6 +1123,19 @@ void GlicInstanceImpl::MaybeDeactivateEmbedder(EmbedderKey key) {
                        weak_ptr_factory_.GetWeakPtr()),
         base::Milliseconds(30));
   }
+}
+
+void GlicInstanceImpl::MaybeWarmZeroStateSuggestions() {
+  if (conversation_id() ||
+      !GlicEnabling::IsEnabledAndConsentForProfile(profile_) ||
+      !IsZeroStateSuggestionsEnabled()) {
+    return;
+  }
+
+  // Warm ZSS to reduce latency. But only do it for new conversations.
+  // Conversations with an ID won't have ZSS.
+  FetchZeroStateSuggestions(/*is_first_run=*/false, std::nullopt,
+                            base::DoNothing());
 }
 
 bool GlicInstanceImpl::ShouldPinOnBind() const {
