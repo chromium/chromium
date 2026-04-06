@@ -125,7 +125,9 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
   handle.planes.reserve(num_planes);
   for (size_t i = 0; i < num_planes; ++i) {
     const auto& plane = layout.planes()[i];
-    handle.planes.emplace_back(plane.stride, plane.offset, plane.size,
+    handle.planes.emplace_back(base::checked_cast<int>(plane.stride),
+                               base::checked_cast<int>(plane.offset),
+                               base::strict_cast<uint64_t>(plane.size),
                                std::move(dmabuf_fds[i]));
   }
   handle.modifier = layout.modifier();
