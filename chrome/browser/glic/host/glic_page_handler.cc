@@ -116,6 +116,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -959,6 +960,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     if (!base::FeatureList::IsEnabled(features::kGlicLiveMode)) {
       state->host_capabilities.push_back(mojom::HostCapability::kNoLiveMode);
+    }
+    if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
+      state->host_capabilities.push_back(
+          mojom::HostCapability::kAutoLoginSignInWithGoogle);
     }
     state->enable_get_page_metadata =
         base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);

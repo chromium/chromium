@@ -2144,6 +2144,9 @@ enum HostCapability {
   kInvoke = 8,
   // Indicates that the host does not support Live Mode.
   kNoLiveMode = 9,
+  // Indicates that the host supports auto browse attempting login using Sign in
+  // with Google.
+  kAutoLoginSignInWithGoogle = 10,
 };
 
 // @generate glic_api

@@ -114,6 +114,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -3647,6 +3648,10 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
   if (!base::FeatureList::IsEnabled(features::kGlicLiveMode)) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kNoLiveMode));
+  }
+  if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kAutoLoginSignInWithGoogle));
   }
   ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});
 }

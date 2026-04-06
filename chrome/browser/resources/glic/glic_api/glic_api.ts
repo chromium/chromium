@@ -2984,6 +2984,9 @@ export enum HostCapability {
   INVOKE = 8,
   // Indicates that the host does not support Live Mode.
   NO_LIVE_MODE = 9,
+  // Indicates that the host supports auto browse attempting login using Sign in
+  // with Google.
+  AUTO_LOGIN_SIGN_IN_WITH_GOOGLE = 10,
 }
 
 ///////////////////////////////////////////////
