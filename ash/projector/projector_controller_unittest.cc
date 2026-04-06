@@ -157,11 +157,19 @@ class ProjectorControllerTest : public AshTestBase {
     annotator_controller->SetToolClient(&mock_annotator_client_);
   }
 
+  void TearDown() override {
+    metadata_controller_ = nullptr;
+    mock_metadata_controller_ = nullptr;
+    controller_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   void InitializeRealMetadataController() {
     std::unique_ptr<ProjectorMetadataController> metadata_controller =
         std::make_unique<ProjectorMetadataControllerForTest>();
     metadata_controller_ = static_cast<ProjectorMetadataControllerForTest*>(
         metadata_controller.get());
+    mock_metadata_controller_ = nullptr;
     controller_->SetProjectorMetadataControllerForTest(
         std::move(metadata_controller));
   }
@@ -187,11 +195,9 @@ class ProjectorControllerTest : public AshTestBase {
     CrasAudioHandler::Get()->SetActiveInputNodes({kInternalMic->id});
   }
 
-  raw_ptr<MockProjectorMetadataController, DanglingUntriaged>
-      mock_metadata_controller_ = nullptr;
-  raw_ptr<ProjectorMetadataControllerForTest, DanglingUntriaged>
-      metadata_controller_;
-  raw_ptr<ProjectorControllerImpl, DanglingUntriaged> controller_;
+  raw_ptr<MockProjectorMetadataController> mock_metadata_controller_ = nullptr;
+  raw_ptr<ProjectorMetadataControllerForTest> metadata_controller_;
+  raw_ptr<ProjectorControllerImpl> controller_;
   MockProjectorClient mock_client_;
   MockAnnotatorClient mock_annotator_client_;
   base::HistogramTester histogram_tester_;
