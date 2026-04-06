@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_expand_on_hover_lock.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -58,19 +60,6 @@ class VerticalTabStripRegionView final
 
  public:
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAnimationCompletedEvent);
-
-  class ScopedExpandOnHoverLock {
-   public:
-    explicit ScopedExpandOnHoverLock(VerticalTabStripRegionView* region_view);
-    ScopedExpandOnHoverLock(const ScopedExpandOnHoverLock&) = delete;
-    ScopedExpandOnHoverLock& operator=(const ScopedExpandOnHoverLock&) = delete;
-    ~ScopedExpandOnHoverLock();
-
-   private:
-    raw_ptr<VerticalTabStripRegionView> region_view_;
-  };
-
-  std::unique_ptr<ScopedExpandOnHoverLock> GetExpandOnHoverLock();
 
   // TODO(crbug.com/465833741): Replace constant with derived value based on
   // caption buttons.
@@ -161,6 +150,8 @@ class VerticalTabStripRegionView final
   void SetTabStripObserver(TabStripObserver* observer) override;
   views::View* GetTabStripView() override;
   bool TraverseUsingUpDownKeys() override;
+  std::unique_ptr<ExpandOnHoverLock> GetExpandOnHoverLock(
+      ExpandOnHoverLockType lock_type) override;
 
   // BrowserRootView::DropTarget:
   void HandleDragUpdate(
@@ -214,6 +205,9 @@ class VerticalTabStripRegionView final
   };
   friend class RegionViewFocusListener;
 
+  // Used to create and destroy locks for the expand on hover state.
+  friend class VerticalTabStripExpandOnHoverLock;
+
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
   void ClearTabStripView(views::View* view);
 
@@ -242,8 +236,8 @@ class VerticalTabStripRegionView final
   void UpdateExpandOnHoverState();
   void AnimateExpandOnHover(bool expand);
 
-  void OnExpandOnHoverLockCreated();
-  void OnExpandOnHoverLockDestroyed();
+  void RegisterExpandOnHoverLock(VerticalTabStripExpandOnHoverLock* lock);
+  void UnregisterExpandOnHoverLock(VerticalTabStripExpandOnHoverLock* lock);
 
   // OmniboxTabHelper::Observer:
   void OnOmniboxInputStateChanged() override {}
@@ -331,8 +325,12 @@ class VerticalTabStripRegionView final
   base::OneShotTimer expand_on_hover_timer_;
   bool is_expanded_on_hover_ = false;
 
-  int expand_on_hover_lock_count_ = 0;
-  std::unique_ptr<ScopedExpandOnHoverLock> omnibox_open_lock_;
+  // Given that both lock counters are non-zero, force_collapse_lock_count_ will
+  // always take precedence.
+  int force_collapse_lock_count_ = 0;
+  int keep_expanded_lock_count_ = 0;
+  std::unique_ptr<ExpandOnHoverLock> omnibox_open_lock_;
+  base::flat_set<raw_ptr<VerticalTabStripExpandOnHoverLock>> hover_locks_;
 
   std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>
       hover_card_animation_lock_;

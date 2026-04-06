@@ -120,6 +120,8 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   void OnDragExited() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
   views::View* GetTabStripView() override;
+  std::unique_ptr<ExpandOnHoverLock> GetExpandOnHoverLock(
+      ExpandOnHoverLockType lock_type) override;
 
   bool HasLeadingButtons() const;
   void LogTabSearchPositionForTesting();

@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/event_utils.h"
-#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
+#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -146,12 +146,10 @@ VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
   ConfigureEditorBubbleButton(editor_bubble_button_);
   editor_bubble_opened_subscription_ =
       editor_bubble_tracker_.RegisterOnBubbleOpened(base::BindRepeating(
-          &VerticalTabGroupHeaderView::UpdateEditorBubbleButtonVisibility,
-          base::Unretained(this)));
+          &VerticalTabGroupHeaderView::OnBubbleOpened, base::Unretained(this)));
   editor_bubble_closed_subscription_ =
       editor_bubble_tracker_.RegisterOnBubbleClosed(base::BindRepeating(
-          &VerticalTabGroupHeaderView::UpdateEditorBubbleButtonVisibility,
-          base::Unretained(this)));
+          &VerticalTabGroupHeaderView::OnBubbleClosed, base::Unretained(this)));
 
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   SetInteriorMargin(gfx::Insets::VH(0, kGroupHeaderHorizontalInset));
@@ -595,6 +593,16 @@ void VerticalTabGroupHeaderView::UpdateEditorBubbleButtonVisibility() {
 
   SetEditorBubbleButtonVisibilityOnHover(
       IsMouseHovered() || Contains(focus_manager->GetFocusedView()));
+}
+
+void VerticalTabGroupHeaderView::OnBubbleOpened() {
+  expand_on_hover_lock_ = delegate_->AcquireExpandOnHoverLock();
+  UpdateEditorBubbleButtonVisibility();
+}
+
+void VerticalTabGroupHeaderView::OnBubbleClosed() {
+  expand_on_hover_lock_.reset();
+  UpdateEditorBubbleButtonVisibility();
 }
 
 void VerticalTabGroupHeaderView::SetEditorBubbleButtonVisibilityOnHover(

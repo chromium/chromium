@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 
+#include <memory>
 #include <optional>
 
 #include "chrome/browser/ui/tabs/tab_data.h"
@@ -19,6 +20,18 @@ struct TabData;
 
 class TabDragContext;
 class TabStripObserver;
+
+class ExpandOnHoverLock {
+ public:
+  virtual ~ExpandOnHoverLock() = default;
+};
+
+// `kForceCollapse` should be used when there is some other UI element that will
+// overlay over the tab strip, so we want to make sure that takes priority in
+// visibility.
+// `kKeepExpanded` should be used when the user is interacting with a bubble or
+// context menu so that their interaction with the tab strip is not interrupted.
+enum class ExpandOnHoverLockType { kForceCollapse, kKeepExpanded };
 
 // This class serves as the single point of interaction for all consumers of
 // tabstrip-related functionality. This should only be owned by BrowserView and
@@ -73,6 +86,10 @@ class TabStripRegionView : public views::AccessiblePaneView,
 
   // -- Observers --
   virtual void SetTabStripObserver(TabStripObserver* observer) = 0;
+
+  // -- Locks --
+  virtual std::unique_ptr<ExpandOnHoverLock> GetExpandOnHoverLock(
+      ExpandOnHoverLockType lock_type) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_

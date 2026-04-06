@@ -41,6 +41,10 @@ class MockDelegate : public VerticalTabGroupHeaderView::Delegate {
   MOCK_METHOD(void, UpdateHoverCard, (int), (const, override));
   MOCK_METHOD(void, HideHoverCard, (int), (const, override));
   MOCK_METHOD(bool, IsFocusInTabStrip, (), (override));
+  MOCK_METHOD(std::unique_ptr<ExpandOnHoverLock>,
+              AcquireExpandOnHoverLock,
+              (),
+              (override));
   MOCK_METHOD(void, ShiftGroupUp, (), (override));
   MOCK_METHOD(void, ShiftGroupDown, (), (override));
 };

@@ -532,6 +532,14 @@ bool VerticalTabGroupView::IsFocusInTabStrip() {
   return tab_strip_view && tab_strip_view->IsFocusInTabStrip();
 }
 
+std::unique_ptr<ExpandOnHoverLock>
+VerticalTabGroupView::AcquireExpandOnHoverLock() {
+  if (!collection_node_) {
+    return nullptr;
+  }
+  return collection_node_->GetController()->AcquireExpandOnHoverLock();
+}
+
 void VerticalTabGroupView::ShiftGroupUp() {
   if (!collection_node_) {
     return;

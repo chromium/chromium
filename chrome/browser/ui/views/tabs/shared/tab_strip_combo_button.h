@@ -33,6 +33,7 @@ class MenuRunner;
 class BrowserWindowInterface;
 class TabSearchBubbleHost;
 class TabStripFlatEdgeButton;
+class ExpandOnHoverLock;
 
 // A container for two TabStripFlatEdgeButtons that manages their flat edges
 // based on visibility and the combo button's orientation.
@@ -140,6 +141,8 @@ class TabStripComboButton : public views::View,
   base::OneShotTimer hide_tab_search_timer_;
   base::ScopedObservation<TabSearchBubbleHost, TabSearchBubbleHostObserver>
       tab_search_bubble_host_observation_{this};
+
+  std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 
   base::CallbackListSubscription projects_panel_button_subscription_;
 };

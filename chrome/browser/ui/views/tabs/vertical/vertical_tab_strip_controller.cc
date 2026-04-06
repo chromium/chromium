@@ -365,6 +365,14 @@ views::Widget* VerticalTabStripController::ShowGroupEditorBubble(
       /*stop_context_menu_propagation=*/stop_context_menu_propagation);
 }
 
+std::unique_ptr<ExpandOnHoverLock>
+VerticalTabStripController::AcquireExpandOnHoverLock() {
+  CHECK(browser_view_);
+  CHECK(browser_view_->tab_strip_view());
+  return browser_view_->tab_strip_view()->GetExpandOnHoverLock(
+      ExpandOnHoverLockType::kKeepExpanded);
+}
+
 tab_groups::TabGroupSyncService*
 VerticalTabStripController::GetTabGroupSyncService() {
   return tab_groups::TabGroupSyncServiceFactory::GetForProfile(

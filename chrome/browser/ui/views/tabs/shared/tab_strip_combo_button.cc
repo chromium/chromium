@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
@@ -39,6 +40,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr base::TimeDelta kHideTabSearchButtonDelay = base::Seconds(2);
@@ -368,6 +370,12 @@ void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void TabStripComboButton::OnBubbleInitializing() {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  CHECK(browser_view);
+  CHECK(browser_view->tab_strip_view());
+  expand_on_hover_lock_ = browser_view->tab_strip_view()->GetExpandOnHoverLock(
+      ExpandOnHoverLockType::kKeepExpanded);
+
   OnTabSearchBubbleShown();
 
   if (IsTabSearchPinned()) {
@@ -379,6 +387,8 @@ void TabStripComboButton::OnBubbleInitializing() {
 }
 
 void TabStripComboButton::OnBubbleDestroying() {
+  expand_on_hover_lock_.reset();
+
   if (IsTabSearchPinned()) {
     return;
   }

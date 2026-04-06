@@ -188,6 +188,11 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 }
 
 VerticalTabStripRegionView::~VerticalTabStripRegionView() {
+  for (const auto& lock : hover_locks_) {
+    lock->ClearRegionViewOnDestruction();
+  }
+  hover_locks_.clear();
+
   if (root_node_) {
     root_node_->SetController(nullptr);
   }
@@ -201,38 +206,6 @@ VerticalTabStripRegionView::~VerticalTabStripRegionView() {
 
   // Prevent dangling pointer.
   state_controller_->SetDelegate(nullptr);
-}
-
-VerticalTabStripRegionView::ScopedExpandOnHoverLock::ScopedExpandOnHoverLock(
-    VerticalTabStripRegionView* region_view)
-    : region_view_(region_view) {
-  if (region_view_) {
-    region_view_->OnExpandOnHoverLockCreated();
-  }
-}
-
-VerticalTabStripRegionView::ScopedExpandOnHoverLock::
-    ~ScopedExpandOnHoverLock() {
-  if (region_view_) {
-    region_view_->OnExpandOnHoverLockDestroyed();
-  }
-}
-
-std::unique_ptr<VerticalTabStripRegionView::ScopedExpandOnHoverLock>
-VerticalTabStripRegionView::GetExpandOnHoverLock() {
-  return std::make_unique<ScopedExpandOnHoverLock>(this);
-}
-
-void VerticalTabStripRegionView::OnExpandOnHoverLockCreated() {
-  expand_on_hover_lock_count_++;
-}
-
-void VerticalTabStripRegionView::OnExpandOnHoverLockDestroyed() {
-  CHECK_GT(expand_on_hover_lock_count_, 0);
-  expand_on_hover_lock_count_--;
-  if (expand_on_hover_lock_count_ == 0) {
-    UpdateExpandOnHoverState();
-  }
 }
 
 VerticalPinnedTabContainerView*
@@ -761,6 +734,12 @@ bool VerticalTabStripRegionView::TraverseUsingUpDownKeys() {
   return true;
 }
 
+std::unique_ptr<ExpandOnHoverLock>
+VerticalTabStripRegionView::GetExpandOnHoverLock(
+    ExpandOnHoverLockType lock_type) {
+  return std::make_unique<VerticalTabStripExpandOnHoverLock>(this, lock_type);
+}
+
 void VerticalTabStripRegionView::HandleDragUpdate(
     const std::optional<BrowserRootView::DropIndex>& index) {
   SetLinkDropArrow(index);
@@ -1010,12 +989,20 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
   if (!state_controller_->IsExpandOnHoverEnabled()) {
     return;
   }
-  // If not collapsed or expand on hover is locked (e.g. omnibox popup is open),
-  // then we shouldn't be in or entering the expand on hover state.
-  if (!state_controller_->IsCollapsed() || expand_on_hover_lock_count_ > 0) {
+  // If not collapsed, then we shouldn't be in or entering the expand on hover
+  // state.
+  if (!state_controller_->IsCollapsed()) {
     expand_on_hover_timer_.Stop();
     hover_card_animation_lock_.reset();
     is_expanded_on_hover_ = false;
+    return;
+  }
+  // If expand on hover is locked (e.g. omnibox popup is open), then we
+  // should not enter the expand on hover state or exit it if already expanded.
+  if (force_collapse_lock_count_ > 0) {
+    if (is_expanded_on_hover_) {
+      AnimateExpandOnHover(/*expand=*/false);
+    }
     return;
   }
 
@@ -1043,7 +1030,8 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
         base::BindOnce(&VerticalTabStripRegionView::AnimateExpandOnHover,
                        base::Unretained(this),
                        /*expand=*/true));
-  } else if (is_expanded_on_hover_ && !should_expand) {
+  } else if (is_expanded_on_hover_ && !should_expand &&
+             keep_expanded_lock_count_ == 0) {
     AnimateExpandOnHover(/*expand=*/false);
   }
 }
@@ -1056,10 +1044,42 @@ void VerticalTabStripRegionView::AnimateExpandOnHover(bool expand) {
                      : TabStripAnimations::kCollapseOnHover);
 }
 
+void VerticalTabStripRegionView::RegisterExpandOnHoverLock(
+    VerticalTabStripExpandOnHoverLock* lock) {
+  hover_locks_.insert(lock);
+  ExpandOnHoverLockType lock_type = lock->lock_type();
+  if (lock_type == ExpandOnHoverLockType::kForceCollapse) {
+    force_collapse_lock_count_++;
+  } else {
+    keep_expanded_lock_count_++;
+  }
+  UpdateExpandOnHoverState();
+}
+
+void VerticalTabStripRegionView::UnregisterExpandOnHoverLock(
+    VerticalTabStripExpandOnHoverLock* lock) {
+  hover_locks_.erase(lock);
+  ExpandOnHoverLockType lock_type = lock->lock_type();
+  if (lock_type == ExpandOnHoverLockType::kForceCollapse) {
+    CHECK_GT(force_collapse_lock_count_, 0);
+    force_collapse_lock_count_--;
+    if (force_collapse_lock_count_ == 0) {
+      UpdateExpandOnHoverState();
+    }
+  } else {
+    CHECK_GT(keep_expanded_lock_count_, 0);
+    keep_expanded_lock_count_--;
+    if (keep_expanded_lock_count_ == 0) {
+      UpdateExpandOnHoverState();
+    }
+  }
+}
+
 void VerticalTabStripRegionView::OnOmniboxPopupVisibilityChanged(bool is_open) {
   if (is_open) {
     if (!omnibox_open_lock_) {
-      omnibox_open_lock_ = GetExpandOnHoverLock();
+      omnibox_open_lock_ =
+          GetExpandOnHoverLock(ExpandOnHoverLockType::kForceCollapse);
       UpdateExpandOnHoverState();
     }
   } else {

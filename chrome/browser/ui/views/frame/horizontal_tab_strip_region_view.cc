@@ -684,6 +684,12 @@ views::View* HorizontalTabStripRegionView::GetTabStripView() {
   return tab_strip_;
 }
 
+std::unique_ptr<ExpandOnHoverLock>
+HorizontalTabStripRegionView::GetExpandOnHoverLock(
+    ExpandOnHoverLockType lock_type) {
+  return nullptr;
+}
+
 bool HorizontalTabStripRegionView::HasLeadingButtons() const {
   if (combo_button_ && combo_button_->GetVisible() &&
       ((combo_button_->start_button() &&

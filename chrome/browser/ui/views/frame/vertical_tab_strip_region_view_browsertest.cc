@@ -1017,3 +1017,45 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   EXPECT_EQ(direction, DropArrow::Direction::kRight);
   EXPECT_EQ(bounds.x(), region_view()->GetBoundsInScreen().x());
 }
+
+// TODO(crbug.com/500038662): Instead of needing to subclass, add expand on
+// hover support for the vertical tabs browser test mixin.
+class VerticalTabStripRegionViewExpandOnHoverTest
+    : public VerticalTabStripRegionViewTest {
+ public:
+  VerticalTabStripRegionViewExpandOnHoverTest() = default;
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{tabs::kVerticalTabs, {}}, {tabs::kVerticalTabsExpandOnHover, {}}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewExpandOnHoverTest,
+                       LockPrecedence) {
+  // Set up collapsed vertical tab strip with expand on hover enabled.
+  VerticalTabStripRegionView* view = region_view();
+  state_controller()->SetVerticalTabsEnabled(true);
+  state_controller()->SetExpandOnHoverEnabled(true);
+  state_controller()->RequestCollapse(true);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return state_controller()->IsCollapsed(); }));
+
+  // Request focus so that the tab strip initiates expand on hover.
+  view->RequestFocus();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return view->is_expanded_on_hover(); }));
+
+  // Verify that the tab strip stays expanded when given a `kKeepExpanded` lock.
+  auto keep_expanded_lock =
+      view->GetExpandOnHoverLock(ExpandOnHoverLockType::kKeepExpanded);
+  EXPECT_TRUE(view->is_expanded_on_hover());
+
+  // Verify that the tab strip disables the expand on hover state when given a
+  // `kForceCollapse` lock.
+  auto force_collapse_lock =
+      view->GetExpandOnHoverLock(ExpandOnHoverLockType::kForceCollapse);
+  EXPECT_FALSE(view->is_expanded_on_hover());
+}

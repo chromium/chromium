@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -57,6 +58,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
     virtual void UpdateHoverCard(int update_type) const = 0;
     virtual void HideHoverCard(int update_type) const = 0;
     virtual bool IsFocusInTabStrip() = 0;
+    virtual std::unique_ptr<ExpandOnHoverLock> AcquireExpandOnHoverLock() = 0;
 
     virtual void ShiftGroupUp() = 0;
     virtual void ShiftGroupDown() = 0;
@@ -117,6 +119,8 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
 
  private:
   void UpdateEditorBubbleButtonVisibility();
+  void OnBubbleOpened();
+  void OnBubbleClosed();
   // Bypasses the synchronous IsMouseHovered() check which can be stale on Linux
   // Wayland/X11 due to asynchronous cursor updates during mouse exit events.
   void SetEditorBubbleButtonVisibilityOnHover(bool is_hovered);
@@ -146,6 +150,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   const raw_ptr<views::ImageView> collapse_icon_ = nullptr;
   const raw_ref<Delegate> delegate_;
 
+  std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;
   base::CallbackListSubscription editor_bubble_closed_subscription_;
