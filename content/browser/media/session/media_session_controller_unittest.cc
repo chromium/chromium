@@ -318,8 +318,9 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
     return MediaSessionImpl::Get(contents());
   }
 
-  void Suspend() {
-    controller_->OnSuspend(controller_->get_player_id_for_testing());
+  void Suspend(bool triggered_by_user = true) {
+    controller_->OnSuspend(controller_->get_player_id_for_testing(),
+                           triggered_by_user);
     media_player_->WaitUntilReceivedMessage();
   }
 
@@ -514,6 +515,10 @@ TEST_F(MediaSessionControllerTest, Reinitialize) {
   // Verify the system resume behavior.
   Resume(/*triggered_by_user=*/false);
   EXPECT_TRUE(ReceivedMessagePlay(/*triggered_by_user=*/false));
+
+  // Verify the system suspend behavior.
+  Suspend(/*triggered_by_user=*/false);
+  EXPECT_TRUE(ReceivedMessagePause(/*triggered_by_user=*/false));
 }
 
 TEST_F(MediaSessionControllerTest, PositionState) {

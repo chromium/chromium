@@ -47,13 +47,11 @@ bool MediaSessionController::OnPlaybackStarted() {
   return AddOrRemovePlayer();
 }
 
-void MediaSessionController::OnSuspend(int player_id) {
+void MediaSessionController::OnSuspend(int player_id, bool triggered_by_user) {
   DCHECK_EQ(player_id_, player_id);
-  // TODO(crbug.com/40623496): Set triggered_by_user to true ONLY if that action
-  // was actually triggered by user as this will activate the frame.
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
-      ->RequestPause(/*triggered_by_user=*/true);
+      ->RequestPause(triggered_by_user);
 }
 
 void MediaSessionController::OnResume(int player_id, bool triggered_by_user) {
@@ -281,7 +279,7 @@ bool MediaSessionController::AddOrRemovePlayer() {
     // the session.
     if (!media_session_->AddPlayer(this, player_id_)) {
       // If a session can't be created, force a pause immediately.
-      OnSuspend(player_id_);
+      OnSuspend(player_id_, /*triggered_by_user=*/false);
       return false;
     }
 

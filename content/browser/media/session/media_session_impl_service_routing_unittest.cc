@@ -63,7 +63,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
   ~MockMediaSessionPlayerObserver() override = default;
 
-  MOCK_METHOD1(OnSuspend, void(int player_id));
+  MOCK_METHOD2(OnSuspend, void(int player_id, bool triggered_by_user));
   MOCK_METHOD2(OnResume, void(int player_id, bool triggered_by_user));
   MOCK_METHOD2(OnSeekForward, void(int player_id, base::TimeDelta seek_time));
   MOCK_METHOD2(OnSeekBackward, void(int player_id, base::TimeDelta seek_time));
@@ -500,7 +500,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
   CreateServiceForFrame(main_frame_);
 
-  EXPECT_CALL(*GetPlayerForFrame(sub_frame_), OnSuspend(_));
+  EXPECT_CALL(*GetPlayerForFrame(sub_frame_), OnSuspend(_, false));
   EXPECT_CALL(*GetClientForFrame(main_frame_),
               DidReceiveAction(MediaSessionAction::kPause, _))
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
@@ -522,7 +522,7 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
   CreateServiceForFrame(sub_frame_);
 
-  EXPECT_CALL(*GetPlayerForFrame(main_frame_), OnSuspend(_));
+  EXPECT_CALL(*GetPlayerForFrame(main_frame_), OnSuspend(_, false));
   EXPECT_CALL(*GetClientForFrame(sub_frame_),
               DidReceiveAction(MediaSessionAction::kPause, _))
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
@@ -1105,7 +1105,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, StopBehaviourDefault) {
   StartPlayerForFrame(main_frame_);
   CreateServiceForFrame(main_frame_);
 
-  EXPECT_CALL(*GetPlayerForFrame(main_frame_), OnSuspend(_))
+  EXPECT_CALL(*GetPlayerForFrame(main_frame_), OnSuspend(_, true))
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(*GetClientForFrame(main_frame_),
               DidReceiveAction(MediaSessionAction::kStop, _))
@@ -1121,7 +1121,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, StopBehaviourWhenActionEnabled) {
   StartPlayerForFrame(main_frame_);
   CreateServiceForFrame(main_frame_);
 
-  EXPECT_CALL(*GetPlayerForFrame(main_frame_), OnSuspend(_));
+  EXPECT_CALL(*GetPlayerForFrame(main_frame_), OnSuspend(_, true));
   EXPECT_CALL(*GetClientForFrame(main_frame_),
               DidReceiveAction(MediaSessionAction::kStop, _))
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));

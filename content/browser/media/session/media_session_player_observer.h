@@ -29,7 +29,7 @@ class MediaSessionPlayerObserver {
   virtual ~MediaSessionPlayerObserver() = default;
 
   // The given |player_id| has been suspended by the MediaSession.
-  virtual void OnSuspend(int player_id) = 0;
+  virtual void OnSuspend(int player_id, bool triggered_by_user) = 0;
 
   // The given |player_id| has been resumed by the MediaSession.
   virtual void OnResume(int player_id, bool triggered_by_user) = 0;
