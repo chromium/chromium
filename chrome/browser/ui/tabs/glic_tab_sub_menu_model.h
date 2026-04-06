@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_GLIC_TAB_SUB_MENU_MODEL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "ui/menus/simple_menu_model.h"
 
 class TabStripModel;

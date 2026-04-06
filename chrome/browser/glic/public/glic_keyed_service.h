@@ -68,7 +68,7 @@ class GlicRegionCaptureController;
 class GlicShareImageHandler;
 class GlicTabDataObserver;
 class GlicTabFaviconObserver;
-class GlicWindowController;
+class GlicInstanceCoordinator;
 class HostManager;
 class GlicWebContentsWarmingPool;
 
@@ -154,10 +154,8 @@ class GlicKeyedService : public KeyedService,
 
   GlicMetrics* metrics() { return metrics_.get(); }
   virtual GlicFreController& fre_controller();
-  virtual GlicWindowController& window_controller() const;
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
+  virtual GlicInstanceCoordinator& instance_coordinator() const;
 
-#endif
   GlicSharingManager& sharing_manager() override;
 
   bool IsTabPinnedToAnyInstance(const tabs::TabHandle& tab_handle) const;
@@ -389,7 +387,7 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicFreController> fre_controller_;
   // Is a GlicInstanceCoordinatorImpl.
-  std::unique_ptr<GlicWindowController> window_controller_;
+  std::unique_ptr<GlicInstanceCoordinator> window_controller_;
   std::unique_ptr<GlicSharingManager> sharing_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only

@@ -6,8 +6,8 @@
 
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/polling_state_observer.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -25,8 +25,8 @@ GlicFreShowingDialogObserver::~GlicFreShowingDialogObserver() = default;
 DEFINE_STATE_IDENTIFIER_VALUE(GlicFreShowingDialogObserver,
                               kGlicFreShowingDialogState);
 
-GlicWindowControllerStateObserver::GlicWindowControllerStateObserver(
-    const GlicWindowController& controller,
+GlicInstanceCoordinatorStateObserver::GlicInstanceCoordinatorStateObserver(
+    const GlicInstanceCoordinator& controller,
     tabs::TabInterface* tab)
     : PollingStateObserver([&controller, tab]() {
         if (!tab) {
@@ -35,29 +35,29 @@ GlicWindowControllerStateObserver::GlicWindowControllerStateObserver(
 
         auto* instance = controller.GetInstanceForTab(tab);
         if (instance && instance->IsShowing()) {
-          return GlicWindowController::State::kOpen;
+          return GlicInstanceCoordinator::State::kOpen;
         } else {
-          return GlicWindowController::State::kClosed;
+          return GlicInstanceCoordinator::State::kClosed;
         }
       }) {}
-GlicWindowControllerStateObserver::~GlicWindowControllerStateObserver() =
+GlicInstanceCoordinatorStateObserver::~GlicInstanceCoordinatorStateObserver() =
     default;
 
-DEFINE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
-                              kGlicWindowControllerState);
+DEFINE_STATE_IDENTIFIER_VALUE(GlicInstanceCoordinatorStateObserver,
+                              kGlicInstanceCoordinatorState);
 
-GlicWindowContorllerResizeObserver::GlicWindowContorllerResizeObserver(
-    GlicWindowController& controller)
+GlicInstanceCoordinatorResizeObserver::GlicInstanceCoordinatorResizeObserver(
+    GlicInstanceCoordinator& controller)
     : PollingStateObserver([&controller]() {
         return controller.GetGlicWidget()
                    ? controller.GetGlicWidget()->widget_delegate()->CanResize()
                    : false;
       }) {}
-GlicWindowContorllerResizeObserver::~GlicWindowContorllerResizeObserver() =
-    default;
+GlicInstanceCoordinatorResizeObserver::
+    ~GlicInstanceCoordinatorResizeObserver() = default;
 
-DEFINE_STATE_IDENTIFIER_VALUE(GlicWindowContorllerResizeObserver,
-                              kGlicWindowControllerResizeState);
+DEFINE_STATE_IDENTIFIER_VALUE(GlicInstanceCoordinatorResizeObserver,
+                              kGlicInstanceCoordinatorResizeState);
 
 GlicAppStateObserver::GlicAppStateObserver(Host* host)
     : ObservationStateObserver(host) {

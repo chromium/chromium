@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -48,7 +48,7 @@ GlicKeyedServiceAndroid::GlicKeyedServiceAndroid(GlicKeyedService* service)
   java_obj_.Reset(env, Java_GlicKeyedServiceImpl_create(
                            env, reinterpret_cast<int64_t>(this)));
   global_show_hide_subscription_ =
-      service_->window_controller().AddGlobalShowHideCallback(
+      service_->instance_coordinator().AddGlobalShowHideCallback(
           base::BindRepeating(&GlicKeyedServiceAndroid::OnGlobalShowHide,
                               base::Unretained(this)));
 }
@@ -85,8 +85,8 @@ bool GlicKeyedServiceAndroid::IsPanelShowingForBrowser(
 
 void GlicKeyedServiceAndroid::OnGlobalShowHide() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  bool is_opened = service_->window_controller().state() !=
-                   GlicWindowController::State::kClosed;
+  bool is_opened = service_->instance_coordinator().state() !=
+                   GlicInstanceCoordinator::State::kClosed;
   Java_GlicKeyedServiceImpl_onGlobalShowHide(env, java_obj_, is_opened);
 }
 

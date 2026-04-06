@@ -8,7 +8,7 @@
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "components/contextual_tasks/public/features.h"
@@ -183,7 +183,7 @@ void TabUnderlineController::OnContextTabsChanged(
 
 void TabUnderlineController::PanelStateChanged(
     const glic::mojom::PanelState& panel_state,
-    const GlicWindowController::PanelStateContext& context) {
+    const GlicInstanceCoordinator::PanelStateContext& context) {
   UpdateUnderlineView(
       panel_state.kind == mojom::PanelStateKind::kHidden
           ? UpdateUnderlineReason::kPanelStateChanged_PanelHidden
@@ -373,7 +373,7 @@ void TabUnderlineController::AnimateUnderline() {
     // There is be a chance that the underline view has already stopped showing.
     // In that case, gracefully handle the crash case in crbug.com/398319435 by
     // closing(minimizing) the glic window.
-    glic_service_->window_controller().Close({});
+    glic_service_->instance_coordinator().Close({});
   }
 
   ui_delegate_->ResetAnimationCycle();

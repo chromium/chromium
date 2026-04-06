@@ -26,10 +26,10 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -56,10 +56,6 @@ BASE_DECLARE_FEATURE(kGlicHibernateAllOnMemoryPressure);
 BASE_DECLARE_FEATURE(kGlicHibernateOnMemoryUsage);
 
 BASE_DECLARE_FEATURE(kGlicMaxAwakeInstances);
-
-// An interface to GlicInstanceCoordinatorImpl. Should be used instead of direct
-// access to GlicInstanceCoordinatorImpl to allow for test fakes.
-class GlicInstanceCoordinator : public GlicWindowController {};
 
 class GlicInstanceCoordinatorImpl
     : public GlicInstanceCoordinator,
@@ -102,10 +98,10 @@ class GlicInstanceCoordinatorImpl
   void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
                                      bool enabled) override;
 
-  // GlicWindowController and GlicInstanceCoordinatorMetrics::DataProvider
+  // GlicInstanceCoordinator and GlicInstanceCoordinatorMetrics::DataProvider
   // implementation
   std::vector<GlicInstance*> GetInstances() override;
-  // GlicWindowController implementation
+  // GlicInstanceCoordinator implementation
   HostManager& host_manager() override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
   // Sorts instances by recency and returns the instance id and

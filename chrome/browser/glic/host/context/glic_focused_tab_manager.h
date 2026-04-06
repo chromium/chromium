@@ -15,7 +15,6 @@
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -31,6 +30,7 @@ class BrowserWindowInterface;
 namespace glic {
 
 class GlicFocusedBrowserManager;
+class GlicSharingManager;
 
 // Responsible for managing which tab is considered "focused" and for accessing
 // its WebContents.
@@ -62,7 +62,6 @@ class GlicFocusedTabManager : public GlicFocusedTabManagerInterface,
 
   // TabStripModelObserver
   void OnSplitTabChanged(const SplitTabChange& change) override;
-
 
   // Callback for changes to the `WebContents` comprising the focused tab. Only
   // fired when the `WebContents` for the focused tab changes to/from nullptr or

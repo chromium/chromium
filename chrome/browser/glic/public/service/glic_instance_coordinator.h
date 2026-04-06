@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_CONTROLLER_H_
-#define CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_INSTANCE_COORDINATOR_H_
+#define CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_INSTANCE_COORDINATOR_H_
 
 #include <optional>
 #include <vector>
@@ -45,20 +45,15 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 class GlicWidget;
 
-// MIGRATION IN PROGRESS - WARNING
-//
-// GlicWindowController is a misleading name!
-//
-// GlicWindowController exists as a temporary compatibility interface
-// implemented by GlicInstanceCoordinatorImpl.
-class GlicWindowController {
+// GlicInstanceCoordinator is the interface for managing Glic instances.
+class GlicInstanceCoordinator {
  public:
   using StateObserver = PanelStateObserver;
   using PanelStateContext = ::glic::PanelStateContext;
-  GlicWindowController(const GlicWindowController&) = delete;
-  GlicWindowController& operator=(const GlicWindowController&) = delete;
-  GlicWindowController() = default;
-  virtual ~GlicWindowController() = default;
+  GlicInstanceCoordinator(const GlicInstanceCoordinator&) = delete;
+  GlicInstanceCoordinator& operator=(const GlicInstanceCoordinator&) = delete;
+  GlicInstanceCoordinator() = default;
+  virtual ~GlicInstanceCoordinator() = default;
 
   virtual HostManager& host_manager() = 0;
   virtual std::vector<GlicInstance*> GetInstances() = 0;
@@ -152,7 +147,6 @@ class GlicWindowController {
   virtual void ShowDetachedForTesting() = 0;
   virtual void SetPreviousPositionForTesting(gfx::Point position) = 0;
 
-  // TODO: Move to GlicInstanceCoordinator.
   using ActiveInstanceChangedCallback =
       base::RepeatingCallback<void(GlicInstance* new_instance)>;
   virtual base::CallbackListSubscription
@@ -170,4 +164,4 @@ class GlicWindowController {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_INSTANCE_COORDINATOR_H_

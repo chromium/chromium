@@ -445,24 +445,27 @@ GlicInstanceCoordinatorImpl::GetWeakPtr() {
 }
 
 GlicWidget* GlicInstanceCoordinatorImpl::GetGlicWidget() const {
-  // TODO(crbug.com/454112198) - Remove as part of GlicWindowController cleanup.
-  // Method should only be called on individual panels not the coordinator.
+  // TODO(crbug.com/454112198) - Remove as part of GlicInstanceCoordinator
+  // cleanup. Method should only be called on individual panels not the
+  // coordinator.
   NOTIMPLEMENTED();
   return nullptr;
 }
 
 Browser* GlicInstanceCoordinatorImpl::attached_browser() {
-  // TODO(crbug.com/454112198) - Remove as part of GlicWindowController cleanup.
-  // Method should only be called on individual panels not the coordinator.
+  // TODO(crbug.com/454112198) - Remove as part of GlicInstanceCoordinator
+  // cleanup. Method should only be called on individual panels not the
+  // coordinator.
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-GlicWindowController::State GlicInstanceCoordinatorImpl::state() const {
-  // TODO(crbug.com/454112198) - Remove as part of GlicWindowController cleanup.
-  // Method should only be called on individual panels not the coordinator.
+GlicInstanceCoordinator::State GlicInstanceCoordinatorImpl::state() const {
+  // TODO(crbug.com/454112198) - Remove as part of GlicInstanceCoordinator
+  // cleanup. Method should only be called on individual panels not the
+  // coordinator.
   NOTIMPLEMENTED();
-  return GlicWindowController::State::kClosed;
+  return GlicInstanceCoordinator::State::kClosed;
 }
 
 Profile* GlicInstanceCoordinatorImpl::profile() {
@@ -470,22 +473,25 @@ Profile* GlicInstanceCoordinatorImpl::profile() {
 }
 
 gfx::Rect GlicInstanceCoordinatorImpl::GetInitialBounds(Browser* browser) {
-  // TODO(crbug.com/454112198) - Remove as part of GlicWindowController cleanup.
-  // Method should only be called on individual panels not the coordinator.
+  // TODO(crbug.com/454112198) - Remove as part of GlicInstanceCoordinator
+  // cleanup. Method should only be called on individual panels not the
+  // coordinator.
   NOTIMPLEMENTED();
   return gfx::Rect();
 }
 
 void GlicInstanceCoordinatorImpl::ShowDetachedForTesting() {
-  // TODO(crbug.com/454112198) - Remove as part of GlicWindowController cleanup.
-  // Method should only be called on individual panels not the coordinator.
+  // TODO(crbug.com/454112198) - Remove as part of GlicInstanceCoordinator
+  // cleanup. Method should only be called on individual panels not the
+  // coordinator.
   NOTIMPLEMENTED();
 }
 
 void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
     gfx::Point position) {
-  // TODO(crbug.com/454112198) - Remove as part of GlicWindowController cleanup.
-  // Method should only be called on individual panels not the coordinator.
+  // TODO(crbug.com/454112198) - Remove as part of GlicInstanceCoordinator
+  // cleanup. Method should only be called on individual panels not the
+  // coordinator.
   NOTIMPLEMENTED();
 }
 

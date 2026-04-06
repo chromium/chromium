@@ -335,9 +335,8 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
   CHECK(host_);
   // Using base::Unretained is safe here because `this` owns the subscription.
   tab_change_subscription_ =
-      host_->sharing_manager().AddFocusedTabChangedCallback(
-          base::BindRepeating(&AnnotationTask::OnFocusedTabChanged,
-                              base::Unretained(this)));
+      host_->sharing_manager().AddFocusedTabChangedCallback(base::BindRepeating(
+          &AnnotationTask::OnFocusedTabChanged, base::Unretained(this)));
 
   // Using base::Unretained is safe because `this` owns the receiver.
   annotation_agent_host_receiver_.set_disconnect_handler(base::BindOnce(
@@ -539,7 +538,7 @@ void GlicAnnotationManager::AnnotationTask::PrimaryPageChanged(
 // as well.
 void GlicAnnotationManager::AnnotationTask::PanelStateChanged(
     const mojom::PanelState& panel_state,
-    const GlicWindowController::PanelStateContext& context) {
+    const PanelStateContext& context) {
   if (panel_state.kind != mojom::PanelStateKind::kHidden) {
     return;
   }

@@ -19,7 +19,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -249,7 +248,7 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
         InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab,
         std::move(options));
   } else {
-    static_cast<GlicInstanceCoordinatorImpl&>(service->window_controller())
+    static_cast<GlicInstanceCoordinatorImpl&>(service->instance_coordinator())
         .Invoke(tab, std::move(options));
   }
 }

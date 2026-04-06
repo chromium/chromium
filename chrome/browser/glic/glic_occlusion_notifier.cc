@@ -23,7 +23,7 @@ GlicOcclusionNotifier::~GlicOcclusionNotifier() {
 
 void GlicOcclusionNotifier::PanelStateChanged(
     const mojom::PanelState& panel_state,
-    const GlicWindowController::PanelStateContext& context) {
+    const GlicInstanceCoordinator::PanelStateContext& context) {
   // Under GlicMultiInstance, occlusion tracking is managed through
   // GlicFloatingUi.
   if (GlicEnabling::IsMultiInstanceEnabled()) {

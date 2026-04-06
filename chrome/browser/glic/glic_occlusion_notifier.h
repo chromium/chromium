@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_OCCLUSION_NOTIFIER_H_
 #define CHROME_BROWSER_GLIC_GLIC_OCCLUSION_NOTIFIER_H_
 
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 
 namespace glic {
 
@@ -21,7 +21,7 @@ class GlicOcclusionNotifier : public PanelStateObserver {
   // PanelStateObserver:
   void PanelStateChanged(
       const mojom::PanelState& panel_state,
-      const GlicWindowController::PanelStateContext& context) override;
+      const GlicInstanceCoordinator::PanelStateContext& context) override;
 
  private:
   raw_ref<GlicInstance> glic_instance_;

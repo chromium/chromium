@@ -81,7 +81,7 @@ enum class GlicFreWidgetClosedReason {
 ///////////
 
 // This class owns and manages the glic FRE modal dialog, and is owned by a
-// GlicWindowController.
+// GlicInstanceCoordinator.
 //
 // Warning: This class is used both for the FRE dialog and for the Unified
 // FRE which has no dialog. Parts of this class which relate to the dialog

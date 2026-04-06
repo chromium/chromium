@@ -62,10 +62,10 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
@@ -259,7 +259,7 @@ class ActiveStateCalculator : public PanelStateObserver {
     observers_.RemoveObserver(observer);
   }
 
-  // GlicWindowController::StateObserver implementation.
+  // GlicInstanceCoordinator::StateObserver implementation.
   void PanelStateChanged(const glic::mojom::PanelState& panel_state,
                          const PanelStateContext& context) override {
     panel_state_kind_ = panel_state.kind;
@@ -667,7 +667,7 @@ class JournalHandler {
 // TODO(crbug.com/458761731): Once `loadAndExtractContent` is defined in the
 // handler mojom interface, override and implement its mojom declaration.
 class GlicWebClientHandler : public glic::mojom::WebClientHandler,
-                             public GlicWindowController::StateObserver,
+                             public GlicInstanceCoordinator::StateObserver,
                              public GlicWebClientAccess,
                              public BrowserAttachObserver,
                              public ActiveStateCalculator::Observer,
@@ -682,7 +682,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         page_handler_(page_handler),
         glic_service_(
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
-        window_controller_(&glic_service_->window_controller()),
+        window_controller_(&glic_service_->instance_coordinator()),
         pref_service_(profile_->GetPrefs()),
         active_state_calculator_(&page_handler_->host()),
         browser_is_open_calculator_(profile_, this),
@@ -887,7 +887,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
     state->instance_is_active = host().instance_delegate().IsActive();
 
-    state->always_detached_mode = GlicWindowController::AlwaysDetached();
+    state->always_detached_mode = GlicInstanceCoordinator::AlwaysDetached();
 
     state->enable_act_in_focused_tab =
         base::FeatureList::IsEnabled(features::kGlicActor);
@@ -1087,7 +1087,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void AttachPanel() override {
-    if (GlicWindowController::AlwaysDetached()) {
+    if (GlicInstanceCoordinator::AlwaysDetached()) {
       receiver_.ReportBadMessage(
           "AttachPanel cannot be called when always detached mode is enabled.");
       return;
@@ -1096,7 +1096,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void DetachPanel() override {
-    if (GlicWindowController::AlwaysDetached()) {
+    if (GlicInstanceCoordinator::AlwaysDetached()) {
       receiver_.ReportBadMessage(
           "DetachPanel cannot be called when always detached mode is enabled.");
       return;
@@ -1842,10 +1842,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
-  // GlicWindowController::StateObserver implementation.
+  // GlicInstanceCoordinator::StateObserver implementation.
   void PanelStateChanged(
       const glic::mojom::PanelState& panel_state,
-      const GlicWindowController::PanelStateContext& context) override {
+      const GlicInstanceCoordinator::PanelStateContext& context) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
   }
 
@@ -2468,7 +2468,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   raw_ptr<Profile> profile_;
   raw_ptr<GlicPageHandler> page_handler_;
   raw_ptr<GlicKeyedService> glic_service_;
-  raw_ptr<GlicWindowController> window_controller_;
+  raw_ptr<GlicInstanceCoordinator> window_controller_;
   raw_ptr<PrefService> pref_service_;
   ActiveStateCalculator active_state_calculator_;
   BrowserIsOpenCalculator browser_is_open_calculator_;
@@ -2651,10 +2651,10 @@ void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
 
 void GlicPageHandler::SignInAndClosePanel() {
   GetGlicService()->GetAuthController().ShowReauthForAccount(base::BindOnce(
-      &GlicWindowController::ShowAfterSignIn,
+      &GlicInstanceCoordinator::ShowAfterSignIn,
       // Unretained is safe because the keyed service owns the
       // auth controller and the window controller.
-      base::Unretained(&GetGlicService()->window_controller()), nullptr));
+      base::Unretained(&GetGlicService()->instance_coordinator()), nullptr));
   host().ClosePanel(this);
 }
 

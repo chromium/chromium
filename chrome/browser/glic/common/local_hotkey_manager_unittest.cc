@@ -12,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/mock_local_hotkey_panel.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

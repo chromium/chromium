@@ -746,8 +746,8 @@ class MAYBE_GlicAnnotationManagerWithFloatingWindowInLiveModeUiTest
     return Steps(OpenGlicFloatingWindow(), Do([&]() {
                    // This is to switch to using GlicFocusedTabManager (which is
                    // used by default with GlicMultiInstance disabled).
-                     GetGlicInstanceImpl()->OnInteractionModeChange(
-                         mojom::WebClientMode::kAudio);
+                   GetGlicInstanceImpl()->OnInteractionModeChange(
+                       mojom::WebClientMode::kAudio);
                  }));
   }
 };
@@ -1316,7 +1316,9 @@ IN_PROC_BROWSER_TEST_F(
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
-      Do([&]() { glic_service()->window_controller().Close(CloseOptions()); }),
+      Do([&]() {
+        glic_service()->instance_coordinator().Close(CloseOptions());
+      }),
       WaitForHide(kGlicViewElementId),
       Check([&]() { return !fake_service()->HighlightIsActive(); },
             "Annotations should be dropped"));

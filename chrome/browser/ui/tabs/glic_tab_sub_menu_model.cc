@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,7 +33,7 @@ GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
           l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT));
 
   recent_conversations_ =
-      glic_service->window_controller().GetRecentlyActiveInstances(
+      glic_service->instance_coordinator().GetRecentlyActiveInstances(
           kMaxRecentConversations);
 
   if (!recent_conversations_.empty()) {
@@ -81,14 +81,14 @@ void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == TabStripModel::CommandGlicCreateNewChat) {
     base::UmaHistogramCounts100(
         "Glic.TabContextMenu.PinnedTabsToNewConversation", tabs.size());
-    service->window_controller().CreateNewConversationForTabs(tabs);
+    service->instance_coordinator().CreateNewConversationForTabs(tabs);
   } else if (command_id >= kMinRecentConversationCommandId &&
              command_id <= kMaxRecentConversationCommandId) {
     size_t conversation_index = command_id - kMinRecentConversationCommandId;
     CHECK_LT(conversation_index, recent_conversations_.size());
     base::UmaHistogramCounts100(
         "Glic.TabContextMenu.PinnedTabsToExistingConversation", tabs.size());
-    service->window_controller().ShowInstanceForTabs(
+    service->instance_coordinator().ShowInstanceForTabs(
         tabs, recent_conversations_[conversation_index].instance_id);
   }
 }

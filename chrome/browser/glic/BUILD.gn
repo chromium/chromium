@@ -73,7 +73,6 @@ source_set("glic") {
       "glic_tab_restore_helper.h",
       "host/context/glic_focused_tab_manager.h",
       "public/widget/glic_side_panel_coordinator_impl.h",
-      "widget/glic_window_controller.h",
     ]
 
     # Desktop-only sources
@@ -778,7 +777,7 @@ if (!is_android) {
       "host/glic_api_interactive_uitest.cc",
       "host/glic_ui_interactive_uitest.cc",
       "service/metrics/glic_instance_metrics_ui_test.cc",
-      "widget/glic_window_controller_interactive_uitest.cc",
+      "widget/glic_instance_coordinator_interactive_uitest.cc",
     ]
 
     if (!is_mac && enterprise_cloud_content_analysis) {

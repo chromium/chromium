@@ -14,7 +14,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -668,7 +668,7 @@ bool MediaNotificationService::IsIdBlocked(
 
   // Block if the request came from any glic instance.
   for (glic::GlicInstance* instance :
-       glic_keyed_service->window_controller().GetInstances()) {
+       glic_keyed_service->instance_coordinator().GetInstances()) {
     if (!instance->host().webui_contents()) {
       continue;
     }

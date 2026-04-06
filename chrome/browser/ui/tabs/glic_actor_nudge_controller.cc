@@ -27,7 +27,6 @@ namespace tabs {
 using actor::ui::ActorTaskNudgeState;
 using glic::GlicInstance;
 using glic::GlicKeyedService;
-using glic::GlicWindowController;
 using glic::Host;
 
 DEFINE_USER_DATA(GlicActorNudgeController);
@@ -44,16 +43,16 @@ GlicActorNudgeController::GlicActorNudgeController(
     RegisterActorNudgeStateCallback();
   }
 
-    ActorTaskListBubbleController* bubble_controller =
-        ActorTaskListBubbleController::From(browser_);
-    bubble_visibility_change_subscription_.push_back(
-        bubble_controller->RegisterBubbleShownCallback(base::BindRepeating(
-            &GlicActorNudgeController::OnBubbleVisibilityChange,
-            weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/true)));
-    bubble_visibility_change_subscription_.push_back(
-        bubble_controller->RegisterBubbleDestroyedCallback(base::BindRepeating(
-            &GlicActorNudgeController::OnBubbleVisibilityChange,
-            weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/false)));
+  ActorTaskListBubbleController* bubble_controller =
+      ActorTaskListBubbleController::From(browser_);
+  bubble_visibility_change_subscription_.push_back(
+      bubble_controller->RegisterBubbleShownCallback(base::BindRepeating(
+          &GlicActorNudgeController::OnBubbleVisibilityChange,
+          weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/true)));
+  bubble_visibility_change_subscription_.push_back(
+      bubble_controller->RegisterBubbleDestroyedCallback(base::BindRepeating(
+          &GlicActorNudgeController::OnBubbleVisibilityChange,
+          weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/false)));
 }
 
 GlicActorNudgeController::~GlicActorNudgeController() = default;
@@ -115,7 +114,7 @@ void GlicActorNudgeController::OnStateUpdate(
   }
 
   if (tab_strip_action_container_->GetIsShowingGlicActorTaskIconNudge()) {
-      actor::ui::RecordGlobalTaskIndicatorNudgeShown(actor_task_nudge_state);
+    actor::ui::RecordGlobalTaskIndicatorNudgeShown(actor_task_nudge_state);
   }
 }
 

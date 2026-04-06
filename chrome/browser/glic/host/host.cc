@@ -28,7 +28,7 @@
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
@@ -860,8 +860,9 @@ void Host::GuestAdded(content::WebContents* guest_contents) {
   web_client_contents_ = guest_contents->GetWeakPtr();
 }
 
-HostManager::HostManager(Profile* profile,
-                         base::WeakPtr<GlicWindowController> window_controller)
+HostManager::HostManager(
+    Profile* profile,
+    base::WeakPtr<GlicInstanceCoordinator> window_controller)
     : profile_(profile),
       window_controller_(window_controller),
       empty_embedder_delegate_(std::make_unique<EmptyEmbedderDelegate>()),
@@ -924,7 +925,6 @@ Host* HostManager::GetOrCreateHostForTab(content::WebContents* web_contents) {
   // In multi-instance mode, no instance is used for now. We should consider
   // just creating new instances for these hosts.
   GlicInstance* glic_instance = nullptr;
-
   tab_hosts_.push_back(std::make_unique<Host>(profile_, nullptr, glic_instance,
                                               instance_delegate_stub_.get()));
   Host* new_host = tab_hosts_.back().get();

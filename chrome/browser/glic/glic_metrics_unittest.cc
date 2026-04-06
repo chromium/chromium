@@ -20,12 +20,12 @@
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -294,8 +294,8 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
                                         true, 1);
   histogram_tester().ExpectUniqueSample(
       "Glic.Preferences.DefaultTabContextEnabled", true, 1);
-  histogram_tester().ExpectUniqueSample(
-      "Glic.Preferences.ActuationOnWeb", true, 1);
+  histogram_tester().ExpectUniqueSample("Glic.Preferences.ActuationOnWeb", true,
+                                        1);
 
   // Set up preferences to false.
   profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
@@ -342,10 +342,10 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
   histogram_tester().ExpectBucketCount(
       "Glic.Preferences.DefaultTabContextEnabled", false, 1);
 
-  histogram_tester().ExpectBucketCount(
-      "Glic.Preferences.ActuationOnWeb", true, 1);
-  histogram_tester().ExpectBucketCount(
-      "Glic.Preferences.ActuationOnWeb", false, 1);
+  histogram_tester().ExpectBucketCount("Glic.Preferences.ActuationOnWeb", true,
+                                       1);
+  histogram_tester().ExpectBucketCount("Glic.Preferences.ActuationOnWeb", false,
+                                       1);
 }
 
 TEST_F(GlicMetricsTest, Basic) {

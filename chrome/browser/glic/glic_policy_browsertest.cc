@@ -16,10 +16,10 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -77,16 +77,16 @@ int ToInt(GlicActuationOnWebPolicyState state) {
   return static_cast<int>(state);
 }
 
-// An observer of the GlicWindowController's panel state. Fires the given
+// An observer of the GlicInstanceCoordinator's panel state. Fires the given
 // callback when the state changes to the given kind.
-class PanelStateObserver : public GlicWindowController::StateObserver {
+class PanelStateObserver : public GlicInstanceCoordinator::StateObserver {
  public:
   PanelStateObserver(mojom::PanelStateKind kind, base::OnceClosure callback)
       : kind_(kind), callback_(std::move(callback)) {}
 
   void PanelStateChanged(
       const mojom::PanelState& panel_state,
-      const GlicWindowController::PanelStateContext& context) override {
+      const GlicInstanceCoordinator::PanelStateContext& context) override {
     if (panel_state.kind == kind_) {
       std::move(callback_).Run();
     }

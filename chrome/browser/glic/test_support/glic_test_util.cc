@@ -12,7 +12,6 @@
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -36,7 +35,8 @@ namespace {
 
 GlicInstanceCoordinatorImpl& GetInstanceCoordinator(GlicKeyedService& service) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
-  return static_cast<GlicInstanceCoordinatorImpl&>(service.window_controller());
+  return static_cast<GlicInstanceCoordinatorImpl&>(
+      service.instance_coordinator());
 }
 
 }  // namespace
@@ -171,7 +171,7 @@ GlicInstance* GetOnlyGlicInstance(Profile* profile) {
   if (!service) {
     return nullptr;
   }
-  auto instances = service->window_controller().GetInstances();
+  auto instances = service->instance_coordinator().GetInstances();
   // Ignore the warming instance.
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     auto iter = std::find(
@@ -206,7 +206,8 @@ GlicInstance* GetInstanceById(Profile* profile, InstanceId id) {
   if (!service) {
     return nullptr;
   }
-  for (GlicInstance* instance : service->window_controller().GetInstances()) {
+  for (GlicInstance* instance :
+       service->instance_coordinator().GetInstances()) {
     if (instance->id() == id) {
       return instance;
     }

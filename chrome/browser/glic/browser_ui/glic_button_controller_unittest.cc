@@ -19,7 +19,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
+#include "chrome/browser/glic/test_support/mock_glic_instance_coordinator.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -44,7 +44,8 @@
 namespace glic {
 namespace {
 
-class TestingGlicWindowController : public glic::MockGlicWindowController {
+class TestingGlicInstanceCoordinator
+    : public glic::MockGlicInstanceCoordinator {
  public:
   base::CallbackListSubscription AddGlobalShowHideCallback(
       base::RepeatingClosure callback) override {
@@ -90,7 +91,7 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
                          glic_profile_manager,
                          contextual_cueing_service,
                          actor_keyed_service),
-        window_controller_(std::make_unique<TestingGlicWindowController>()),
+        window_controller_(std::make_unique<TestingGlicInstanceCoordinator>()),
         fre_controller_(std::make_unique<TestingGlicFreController>(
             Profile::FromBrowserContext(browser_context),
             identity_manager)) {}
@@ -103,7 +104,7 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
 
   bool IsFreShowing() const override { return fre_open_; }
 
-  GlicWindowController& window_controller() const override {
+  GlicInstanceCoordinator& instance_coordinator() const override {
     return *window_controller_;
   }
 
@@ -123,7 +124,7 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
  private:
   raw_ptr<BrowserWindowInterface> browser_with_open_panel_ = nullptr;
   bool fre_open_ = false;
-  std::unique_ptr<TestingGlicWindowController> window_controller_;
+  std::unique_ptr<TestingGlicInstanceCoordinator> window_controller_;
   std::unique_ptr<TestingGlicFreController> fre_controller_;
 };
 

@@ -10,7 +10,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/prefs/pref_service.h"
@@ -46,7 +46,7 @@ GlicButtonController::GlicButtonController(
   subscriptions_.push_back(
       glic_keyed_service_->enabling().RegisterAllowedChanged(update_callback));
   subscriptions_.push_back(
-      glic_keyed_service_->window_controller().AddGlobalShowHideCallback(
+      glic_keyed_service_->instance_coordinator().AddGlobalShowHideCallback(
           update_callback));
   subscriptions_.push_back(
       glic_keyed_service_->fre_controller().AddWebUiStateChangedCallback(

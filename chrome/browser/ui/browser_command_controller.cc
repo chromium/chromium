@@ -35,7 +35,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -163,7 +163,6 @@
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/shortcuts/desktop_shortcuts_utils.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
@@ -350,7 +349,7 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
     if (service) {
       glic_active_instance_changed_subscription_ =
-          service->window_controller()
+          service->instance_coordinator()
               .AddActiveInstanceChangedCallbackAndNotifyImmediately(
                   base::BindRepeating(
                       &BrowserCommandController::GlicActiveInstanceChanged,

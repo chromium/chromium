@@ -32,8 +32,8 @@ GlicFreDialogView::GlicFreDialogView(Profile* profile,
   SetModalType(ui::mojom::ModalType::kChild);
   SetOwnershipOfNewWidget(
       views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET);
-  // TODO(cuianthony): Share this constant in GlicWindowController to use with
-  // both the FRE dialog and the main glic window.
+  // TODO(cuianthony): Share this constant in GlicInstanceCoordinator to use
+  // with both the FRE dialog and the main glic window.
   set_corner_radius(12);
   SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
 

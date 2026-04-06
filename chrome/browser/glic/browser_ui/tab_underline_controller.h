@@ -16,7 +16,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/views/view_observer.h"
 
@@ -29,7 +29,7 @@ class WebContents;
 namespace glic {
 
 class TabUnderlineController
-    : public GlicWindowController::StateObserver,
+    : public GlicInstanceCoordinator::StateObserver,
       public contextual_tasks::ActiveTaskContextProvider::Observer {
  public:
   class UiDelegate {
@@ -68,10 +68,10 @@ class TabUnderlineController
   void OnPinnedTabsChanged(
       const std::vector<content::WebContents*>& pinned_contents);
 
-  // GlicWindowController::StateObserver:
+  // GlicInstanceCoordinator::StateObserver:
   void PanelStateChanged(
       const glic::mojom::PanelState& panel_state,
-      const GlicWindowController::PanelStateContext& context) override;
+      const GlicInstanceCoordinator::PanelStateContext& context) override;
 
   void OnUserInputSubmitted();
 

@@ -36,7 +36,7 @@ class RenderProcessHost;
 namespace glic {
 class GlicKeyedService;
 class GlicPageHandler;
-class GlicWindowController;
+class GlicInstanceCoordinator;
 class WebUIContentsContainer;
 class GlicInstanceMetrics;
 class GlicInstanceMetricsBackwardsCompatibility;
@@ -564,7 +564,7 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
 class HostManager {
  public:
   HostManager(Profile* profile,
-              base::WeakPtr<GlicWindowController> window_controller);
+              base::WeakPtr<GlicInstanceCoordinator> window_controller);
   ~HostManager();
 
   void Shutdown();
@@ -595,7 +595,7 @@ class HostManager {
  private:
   std::vector<Host*> GetPrimaryHosts();
   raw_ptr<Profile> profile_;
-  base::WeakPtr<GlicWindowController> window_controller_;
+  base::WeakPtr<GlicInstanceCoordinator> window_controller_;
   std::unique_ptr<EmptyEmbedderDelegate> empty_embedder_delegate_;
   std::unique_ptr<EmptyInstanceDelegate> instance_delegate_stub_;
   // Hosts for any unclaimed page handlers, which is approximately limited to

@@ -28,7 +28,6 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_switches.h"
@@ -314,7 +313,7 @@ class GlicBrowserTestMixin : public T {
   GlicInstanceCoordinatorImpl& coordinator() {
     CHECK(GlicEnabling::IsMultiInstanceEnabled());
     return static_cast<GlicInstanceCoordinatorImpl&>(
-        GlicKeyedService::Get(T::GetProfile())->window_controller());
+        GlicKeyedService::Get(T::GetProfile())->instance_coordinator());
   }
 
   // Opens a new tab with the given URL and wait for load to complete.

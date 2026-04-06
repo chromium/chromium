@@ -9,8 +9,8 @@
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/widget/glic_view.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/polling_state_observer.h"
@@ -18,7 +18,7 @@
 namespace base {
 // Set up a custom `ScopedObservationTrait` for `Host::Observer`.
 template <>
-struct ScopedObservationTraits<glic::GlicWindowController,
+struct ScopedObservationTraits<glic::GlicInstanceCoordinator,
                                glic::Host::Observer> {
   static void AddObserver(glic::Host* host, glic::Host::Observer* observer) {
     host->AddObserver(observer);
@@ -45,31 +45,32 @@ DECLARE_STATE_IDENTIFIER_VALUE(GlicFreShowingDialogObserver,
                                kGlicFreShowingDialogState);
 
 // Observes `controller` for changes to state().
-// When `tab` is not null, it will return a GlicWindowController::State inferred
-// by the IsShowing() method of the instance for the given tab. Otherwise, it
-// will return the state() from the controller.
-class GlicWindowControllerStateObserver
-    : public ui::test::PollingStateObserver<GlicWindowController::State> {
+// When `tab` is not null, it will return a GlicInstanceCoordinator::State
+// inferred by the IsShowing() method of the instance for the given tab.
+// Otherwise, it will return the state() from the controller.
+class GlicInstanceCoordinatorStateObserver
+    : public ui::test::PollingStateObserver<GlicInstanceCoordinator::State> {
  public:
-  explicit GlicWindowControllerStateObserver(
-      const GlicWindowController& controller,
+  explicit GlicInstanceCoordinatorStateObserver(
+      const GlicInstanceCoordinator& controller,
       tabs::TabInterface* tab = nullptr);
-  ~GlicWindowControllerStateObserver() override;
+  ~GlicInstanceCoordinatorStateObserver() override;
 };
 
-DECLARE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
-                               kGlicWindowControllerState);
+DECLARE_STATE_IDENTIFIER_VALUE(GlicInstanceCoordinatorStateObserver,
+                               kGlicInstanceCoordinatorState);
 
 // Observes `controller` for changes to animation state.
-class GlicWindowContorllerResizeObserver
+class GlicInstanceCoordinatorResizeObserver
     : public ui::test::PollingStateObserver<bool> {
  public:
-  explicit GlicWindowContorllerResizeObserver(GlicWindowController& controller);
-  ~GlicWindowContorllerResizeObserver() override;
+  explicit GlicInstanceCoordinatorResizeObserver(
+      GlicInstanceCoordinator& controller);
+  ~GlicInstanceCoordinatorResizeObserver() override;
 };
 
-DECLARE_STATE_IDENTIFIER_VALUE(GlicWindowContorllerResizeObserver,
-                               kGlicWindowControllerResizeState);
+DECLARE_STATE_IDENTIFIER_VALUE(GlicInstanceCoordinatorResizeObserver,
+                               kGlicInstanceCoordinatorResizeState);
 
 // Observers the glic app internal state.
 class GlicAppStateObserver

@@ -11,9 +11,9 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
 
   // First toggle the UI to create the floaty instance.
-  glic_service->window_controller().Toggle(
+  glic_service->instance_coordinator().Toggle(
       /*browser=*/nullptr, /*prevent_close=*/false,
       mojom::InvocationSource::kOsHotkey, std::nullopt, false, std::nullopt);
 
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                                       mojom::InvocationSource::kOsHotkey, 1);
 
   // Close the floaty panel.
-  glic_service->window_controller().Toggle(
+  glic_service->instance_coordinator().Toggle(
       /*browser=*/nullptr, /*prevent_close=*/false,
       mojom::InvocationSource::kOsHotkey, std::nullopt, false, std::nullopt);
 
