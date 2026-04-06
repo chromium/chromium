@@ -263,6 +263,13 @@ void VerticalTabStripStateController::OnModeChanged() {
 void VerticalTabStripStateController::OnExpandOnHoverEnabledChanged() {
   is_expand_on_hover_enabled_ =
       pref_service_->GetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled);
+  if (is_expand_on_hover_enabled_) {
+    base::RecordAction(
+        base::UserMetricsAction("VerticalTabs_ExpandOnHover_Enabled"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("VerticalTabs_ExpandOnHover_Disabled"));
+  }
 }
 
 void VerticalTabStripStateController::SetCollapsed(bool collapsed) {

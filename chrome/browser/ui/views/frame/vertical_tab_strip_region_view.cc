@@ -1038,6 +1038,15 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState() {
 
 void VerticalTabStripRegionView::AnimateExpandOnHover(bool expand) {
   is_expanded_on_hover_ = expand;
+
+  if (expand) {
+    base::RecordAction(
+        base::UserMetricsAction("VerticalTabs_ExpandOnHover_Show"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("VerticalTabs_ExpandOnHover_Hide"));
+  }
+
   BrowserAnimationController::From(browser_view_->browser())
       ->Start(TabStripAnimations::kVerticalTabStrip,
               expand ? TabStripAnimations::kExpandOnHover

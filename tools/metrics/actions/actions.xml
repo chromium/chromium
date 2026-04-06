@@ -53585,6 +53585,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="VerticalTabs_ExpandOnHover_Disabled">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user disables the expand on hover behavior for vertical
+    tabs.
+  </description>
+</action>
+
+<action name="VerticalTabs_ExpandOnHover_Enabled">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user enables the expand on hover behavior for vertical
+    tabs.
+  </description>
+</action>
+
+<action name="VerticalTabs_ExpandOnHover_Hide">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the expand on hover animation starts to hide the vertical tab
+    strip.
+  </description>
+</action>
+
+<action name="VerticalTabs_ExpandOnHover_Show">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the expand on hover animation starts to expand the vertical
+    tab strip.
+  </description>
+</action>
+
 <action name="VerticalTabs_TabStrip_ButtonToggleCollapsed">
   <owner>charlesmeng@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
