@@ -24,6 +24,7 @@
 #include "net/base/request_priority.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/resolution_details.h"
 #include "net/http/http_server_properties.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"
@@ -247,6 +248,10 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // Returns a list of failed attempts to connect to the destination server.
   // Returns an empty list if connecting to a proxy.
   virtual ConnectionAttempts GetConnectionAttempts() const;
+
+  // Returns the details of the host resolution if available. Can be nullopt
+  // if resolution failed.
+  virtual std::optional<ResolutionDetails> GetResolutionDetails() const;
 
   // Returns error information about any host resolution attempt.
   virtual ResolveErrorInfo GetResolveErrorInfo() const = 0;

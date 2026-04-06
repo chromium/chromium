@@ -203,6 +203,7 @@ void ClientSocketHandle::ResetInternal(bool cancel, bool cancel_connect_job) {
   pool_ = nullptr;
   idle_time_ = base::TimeDelta();
   set_connect_timing(LoadTimingInfo::ConnectTiming());
+  set_resolution_details(std::nullopt);
   group_generation_ = -1;
 }
 

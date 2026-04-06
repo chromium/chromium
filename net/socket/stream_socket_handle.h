@@ -11,6 +11,7 @@
 
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
+#include "net/dns/resolution_details.h"
 
 namespace net {
 
@@ -66,6 +67,13 @@ class NET_EXPORT_PRIVATE StreamSocketHandle {
     connect_timing_ = connect_timing;
   }
 
+  const std::optional<ResolutionDetails>& resolution_details() const {
+    return resolution_details_;
+  }
+  void set_resolution_details(std::optional<ResolutionDetails> details) {
+    resolution_details_ = std::move(details);
+  }
+
   // If this handle is associated with a pool that has the concept of higher
   // layered pools, adds/removes a higher layered pool to the pool. Otherwise,
   // does nothing.
@@ -90,6 +98,8 @@ class NET_EXPORT_PRIVATE StreamSocketHandle {
 
   // Timing information is set when a connection is successfully established.
   LoadTimingInfo::ConnectTiming connect_timing_;
+
+  std::optional<ResolutionDetails> resolution_details_;
 };
 
 }  // namespace net

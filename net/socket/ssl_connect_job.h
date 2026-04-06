@@ -22,6 +22,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/resolution_details.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_params.h"
 #include "net/socket/connection_attempts.h"
@@ -135,6 +136,7 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   ResolveErrorInfo GetResolveErrorInfo() const override;
   bool IsSSLError() const override;
   scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo() override;
+  std::optional<ResolutionDetails> GetResolutionDetails() const override;
 
   // Returns the timeout for the SSL handshake. This is the same for all
   // connections regardless of whether or not there is a proxy in use.
@@ -181,6 +183,7 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   void ChangePriorityInternal(RequestPriority priority) override;
 
   scoped_refptr<SSLSocketParams> params_;
+  std::optional<ResolutionDetails> resolution_details_;
 
   State next_state_;
   CompletionRepeatingCallback callback_;

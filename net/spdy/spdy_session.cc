@@ -1318,6 +1318,13 @@ bool SpdySession::GetSSLInfo(SSLInfo* ssl_info) const {
   return socket_->GetSSLInfo(ssl_info);
 }
 
+std::optional<ResolutionDetails> SpdySession::GetResolutionDetails() const {
+  if (stream_socket_handle_) {
+    return stream_socket_handle_->resolution_details();
+  }
+  return std::nullopt;
+}
+
 std::string_view SpdySession::GetAcceptChViaAlps(
     const url::SchemeHostPort& scheme_host_port) const {
   auto it = accept_ch_entries_received_via_alps_.find(scheme_host_port);

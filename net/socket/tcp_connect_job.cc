@@ -127,6 +127,10 @@ TcpConnectJob::GetHostResolverEndpointResult() const {
   NOTREACHED();
 }
 
+std::optional<ResolutionDetails> TcpConnectJob::GetResolutionDetails() const {
+  return resolution_details_;
+}
+
 ServiceEndpoint TcpConnectJob::PassServiceEndpoint() {
   CHECK(final_service_endpoint_);
   return std::move(final_service_endpoint_).value();
@@ -605,6 +609,10 @@ void TcpConnectJob::UpdateSvcbOptional() {
 int TcpConnectJob::SetDone(int result, Connector* connector) {
   CHECK(!is_done_);
   DCHECK(!final_service_endpoint_);
+
+  if (dns_request_) {
+    resolution_details_ = dns_request_->GetResolutionDetails();
+  }
 
   if (result == OK) {
     DCHECK(EndpointsCryptoReady());

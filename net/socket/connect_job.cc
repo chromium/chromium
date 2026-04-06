@@ -142,6 +142,10 @@ ConnectionAttempts ConnectJob::GetConnectionAttempts() const {
   return ConnectionAttempts();
 }
 
+std::optional<ResolutionDetails> ConnectJob::GetResolutionDetails() const {
+  return std::nullopt;
+}
+
 bool ConnectJob::IsSSLError() const {
   return false;
 }

@@ -25,6 +25,7 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/dns/resolution_details.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
 #include "url/scheme_host_port.h"
@@ -165,6 +166,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   ResolveErrorInfo GetResolveErrorInfo() const override;
   std::optional<HostResolverEndpointResult> GetHostResolverEndpointResult()
       const override;
+  std::optional<ResolutionDetails> GetResolutionDetails() const override;
 
   static base::TimeDelta ConnectionTimeout();
 
@@ -246,6 +248,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   base::OneShotTimer fallback_timer_;
 
   ResolveErrorInfo resolve_error_info_;
+  std::optional<ResolutionDetails> resolution_details_;
   ConnectionAttempts connection_attempts_;
 
   base::WeakPtrFactory<TransportConnectJob> weak_ptr_factory_{this};

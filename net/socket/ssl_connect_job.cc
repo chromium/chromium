@@ -171,6 +171,10 @@ ResolveErrorInfo SSLConnectJob::GetResolveErrorInfo() const {
   return resolve_error_info_;
 }
 
+std::optional<ResolutionDetails> SSLConnectJob::GetResolutionDetails() const {
+  return resolution_details_;
+}
+
 bool SSLConnectJob::IsSSLError() const {
   return ssl_negotiation_started_;
 }
@@ -289,6 +293,7 @@ int SSLConnectJob::DoTransportConnect() {
 
 int SSLConnectJob::DoTransportConnectComplete(int result) {
   resolve_error_info_ = nested_connect_job_->GetResolveErrorInfo();
+  resolution_details_ = nested_connect_job_->GetResolutionDetails();
   ConnectionAttempts connection_attempts =
       nested_connect_job_->GetConnectionAttempts();
   connection_attempts_.insert(connection_attempts_.end(),
@@ -318,6 +323,7 @@ int SSLConnectJob::DoSOCKSConnect() {
 
 int SSLConnectJob::DoSOCKSConnectComplete(int result) {
   resolve_error_info_ = nested_connect_job_->GetResolveErrorInfo();
+  resolution_details_ = nested_connect_job_->GetResolutionDetails();
   if (result == OK) {
     next_state_ = STATE_SSL_CONNECT;
     nested_socket_ = nested_connect_job_->PassSocket();
@@ -340,6 +346,7 @@ int SSLConnectJob::DoTunnelConnect() {
 
 int SSLConnectJob::DoTunnelConnectComplete(int result) {
   resolve_error_info_ = nested_connect_job_->GetResolveErrorInfo();
+  resolution_details_ = nested_connect_job_->GetResolutionDetails();
   nested_socket_ = nested_connect_job_->PassSocket();
 
   if (result < 0) {

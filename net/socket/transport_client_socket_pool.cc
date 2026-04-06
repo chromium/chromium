@@ -505,7 +505,8 @@ int TransportClientSocketPool::RequestSocketInternal(
     if (socket) {
       HandOutSocket(std::move(socket),
                     StreamSocketHandle::SocketReuseType::kUnused,
-                    connect_job->connect_timing(), handle,
+                    connect_job->connect_timing(),
+                    connect_job->GetResolutionDetails(), handle,
                     /*time_idle=*/base::TimeDelta(), group, request.net_log());
     }
   }
@@ -567,9 +568,15 @@ bool TransportClientSocketPool::AssignIdleSocketToRequest(
             ? StreamSocketHandle::SocketReuseType::kReusedIdle
             : StreamSocketHandle::SocketReuseType::kUnusedIdle;
 
+    // Passing std::nullopt for resolution details. This behavior is slightly
+    // different from SPDY/QUIC, where reused streams will continue to report
+    // the resolution_details of the underlying session. Since preserving
+    // resolution details for reused sockets is not critical for HTTP/1.1,
+    // we don't pass them here.
     HandOutSocket(std::move(socket), reuse_type,
-                  LoadTimingInfo::ConnectTiming(), request.handle(), idle_time,
-                  group, request.net_log());
+                  LoadTimingInfo::ConnectTiming(),
+                  /*resolution_details=*/std::nullopt, request.handle(),
+                  idle_time, group, request.net_log());
     return true;
   }
 
@@ -1208,6 +1215,7 @@ void TransportClientSocketPool::HandOutSocket(
     std::unique_ptr<StreamSocket> socket,
     ClientSocketHandle::SocketReuseType reuse_type,
     const LoadTimingInfo::ConnectTiming& connect_timing,
+    std::optional<ResolutionDetails> resolution_details,
     ClientSocketHandle* handle,
     base::TimeDelta idle_time,
     Group* group,
@@ -1218,6 +1226,7 @@ void TransportClientSocketPool::HandOutSocket(
   handle->set_idle_time(idle_time);
   handle->set_group_generation(group->generation());
   handle->set_connect_timing(connect_timing);
+  handle->set_resolution_details(std::move(resolution_details));
 
   if (reuse_type == StreamSocketHandle::SocketReuseType::kReusedIdle) {
     net_log.AddEventWithIntParams(
@@ -1381,10 +1390,10 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
   if (result != OK)
     request->handle()->SetAdditionalErrorState(job);
   if (job->socket()) {
-    HandOutSocket(job->PassSocket(),
-                  StreamSocketHandle::SocketReuseType::kUnused,
-                  job->connect_timing(), request->handle(), base::TimeDelta(),
-                  group, request->net_log());
+    HandOutSocket(
+        job->PassSocket(), StreamSocketHandle::SocketReuseType::kUnused,
+        job->connect_timing(), job->GetResolutionDetails(), request->handle(),
+        base::TimeDelta(), group, request->net_log());
   }
   request->net_log().EndEventWithNetErrorCode(NetLogEventType::SOCKET_POOL,
                                               result);

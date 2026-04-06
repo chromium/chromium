@@ -388,6 +388,9 @@ class MockHostResolverBase::RequestImpl
   }
 
   std::optional<ResolutionDetails> GetResolutionDetails() const override {
+    if (resolver_) {
+      return resolver_->default_resolution_details_;
+    }
     return std::nullopt;
   }
 };
@@ -461,6 +464,9 @@ class MockHostResolverBase::ServiceEndpointRequestImpl
   }
 
   std::optional<ResolutionDetails> GetResolutionDetails() const override {
+    if (resolver_) {
+      return resolver_->default_resolution_details_;
+    }
     return std::nullopt;
   }
 

@@ -208,6 +208,11 @@ TransportConnectJob::GetHostResolverEndpointResult() const {
   return endpoint_results_[current_endpoint_result_];
 }
 
+std::optional<ResolutionDetails> TransportConnectJob::GetResolutionDetails()
+    const {
+  return resolution_details_;
+}
+
 base::TimeDelta TransportConnectJob::ConnectionTimeout() {
   // TODO(eroman): The use of this constant needs to be re-evaluated. The time
   // needed for TCPClientSocketXXX::Connect() can be arbitrarily long, since
@@ -348,6 +353,7 @@ int TransportConnectJob::DoResolveHostCallbackComplete() {
     }
   }
   dns_aliases_ = request_->GetDnsAliasResults();
+  resolution_details_ = request_->GetResolutionDetails();
 
   // No need to retain `request_` beyond this point.
   request_.reset();

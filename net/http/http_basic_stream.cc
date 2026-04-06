@@ -197,6 +197,12 @@ void HttpBasicStream::OnHandshakeConfirmed(CompletionOnceCallback callback,
 }
 
 void HttpBasicStream::PopulateLoadTimingInternalInfo(
-    LoadTimingInternalInfo* load_timing_internal_info) const {}
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  CHECK(load_timing_internal_info);
+  if (state_.connection()) {
+    load_timing_internal_info->resolution_details =
+        state_.connection()->resolution_details();
+  }
+}
 
 }  // namespace net

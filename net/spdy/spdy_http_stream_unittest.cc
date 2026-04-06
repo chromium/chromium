@@ -153,8 +153,10 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
   }
 
   // Initializes the session using SequencedSocketData.
-  void InitSession(base::span<const MockRead> reads,
-                   base::span<const MockWrite> writes) {
+  void InitSession(
+      base::span<const MockRead> reads,
+      base::span<const MockWrite> writes,
+      std::optional<ResolutionDetails> resolution_details = std::nullopt) {
     sequenced_data_ = std::make_unique<SequencedSocketData>(reads, writes);
     session_deps_.socket_factory->AddSocketDataProvider(sequenced_data_.get());
 
@@ -165,7 +167,8 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
     session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_);
 
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
-    session_ = CreateSpdySession(http_session_.get(), key_, NetLogWithSource());
+    session_ = CreateSpdySession(http_session_.get(), key_, NetLogWithSource(),
+                                 std::move(resolution_details));
   }
 
   SpdyTestUtil spdy_util_;
@@ -239,6 +242,160 @@ TEST_F(SpdyHttpStreamTest, SendRequest) {
 
   EXPECT_EQ(req.size(), http_stream->GetTotalSentBytes().InBytes());
   EXPECT_EQ(resp.size(), http_stream->GetTotalReceivedBytes().InBytes());
+}
+
+TEST_F(SpdyHttpStreamTest, PopulateLoadTimingInternalInfo_ResolutionDetails) {
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 1, LOWEST));
+  MockWrite writes[] = {
+      CreateMockWrite(req, 0),
+  };
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
+      base::span<const std::string_view>(), 1));
+  MockRead reads[] = {
+      CreateMockRead(resp, 1), MockRead(SYNCHRONOUS, 0, 2)  // EOF
+  };
+
+  ResolutionDetails expected_details;
+  expected_details.source = ResolutionSource::kSystem;
+
+  InitSession(reads, writes, expected_details);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = url_;
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  NetLogWithSource net_log;
+  auto http_stream =
+      std::make_unique<SpdyHttpStream>(session_, net_log.source(),
+                                       /*dns_aliases=*/std::set<std::string>());
+
+  http_stream->RegisterRequest(&request);
+  ASSERT_THAT(http_stream->InitializeStream(true, DEFAULT_PRIORITY, net_log,
+                                            CompletionOnceCallback()),
+              IsOk());
+
+  HttpRequestHeaders headers;
+  HttpResponseInfo response;
+  TestCompletionCallback callback;
+
+  EXPECT_THAT(http_stream->SendRequest(headers, &response, callback.callback()),
+              IsError(ERR_IO_PENDING));
+  callback.WaitForResult();
+
+  LoadTimingInternalInfo load_timing_internal;
+  http_stream->PopulateLoadTimingInternalInfo(&load_timing_internal);
+
+  ASSERT_TRUE(load_timing_internal.resolution_details.has_value());
+  EXPECT_EQ(expected_details.source,
+            load_timing_internal.resolution_details->source);
+
+  http_stream->Close(true);
+}
+
+TEST_F(SpdyHttpStreamTest,
+       PopulateLoadTimingInternalInfo_ResolutionDetails_ExistingSession) {
+  spdy::SpdySerializedFrame req1(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 1, LOWEST));
+  spdy::SpdySerializedFrame req2(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 3, LOWEST));
+  MockWrite writes[] = {
+      CreateMockWrite(req1, 0),
+      CreateMockWrite(req2, 1),
+  };
+  spdy::SpdySerializedFrame resp1(spdy_util_.ConstructSpdyGetReply(
+      base::span<const std::string_view>(), 1));
+  spdy::SpdySerializedFrame resp2(spdy_util_.ConstructSpdyGetReply(
+      base::span<const std::string_view>(), 3));
+  MockRead reads[] = {
+      CreateMockRead(resp1, 2), CreateMockRead(resp2, 3),
+      MockRead(SYNCHRONOUS, 0, 4)  // EOF
+  };
+
+  ResolutionDetails expected_details;
+  expected_details.source = ResolutionSource::kSystem;
+
+  InitSession(reads, writes, expected_details);
+
+  HttpRequestInfo request1;
+  request1.method = "GET";
+  request1.url = url_;
+  request1.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  NetLogWithSource net_log;
+  auto http_stream1 =
+      std::make_unique<SpdyHttpStream>(session_, net_log.source(),
+                                       /*dns_aliases=*/std::set<std::string>());
+
+  http_stream1->RegisterRequest(&request1);
+  ASSERT_THAT(http_stream1->InitializeStream(true, DEFAULT_PRIORITY, net_log,
+                                             CompletionOnceCallback()),
+              IsOk());
+
+  HttpRequestInfo request2;
+  request2.method = "GET";
+  request2.url = url_;
+  request2.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  auto http_stream2 =
+      std::make_unique<SpdyHttpStream>(session_, net_log.source(),
+                                       /*dns_aliases=*/std::set<std::string>());
+
+  http_stream2->RegisterRequest(&request2);
+  ASSERT_THAT(http_stream2->InitializeStream(true, DEFAULT_PRIORITY, net_log,
+                                             CompletionOnceCallback()),
+              IsOk());
+
+  HttpRequestHeaders headers;
+  HttpResponseInfo response1;
+  HttpResponseInfo response2;
+  TestCompletionCallback callback1;
+  TestCompletionCallback callback2;
+
+  // Send first request.
+  EXPECT_THAT(
+      http_stream1->SendRequest(headers, &response1, callback1.callback()),
+      IsError(ERR_IO_PENDING));
+  callback1.WaitForResult();
+
+  // Send second request.
+  EXPECT_THAT(
+      http_stream2->SendRequest(headers, &response2, callback2.callback()),
+      IsError(ERR_IO_PENDING));
+  callback2.WaitForResult();
+
+  // Read response headers for stream 1.
+  int rv = http_stream1->ReadResponseHeaders(callback1.callback());
+  if (rv == ERR_IO_PENDING) {
+    callback1.WaitForResult();
+  } else {
+    EXPECT_THAT(rv, IsOk());
+  }
+
+  // Read response headers for stream 2.
+  rv = http_stream2->ReadResponseHeaders(callback2.callback());
+  if (rv == ERR_IO_PENDING) {
+    callback2.WaitForResult();
+  } else {
+    EXPECT_THAT(rv, IsOk());
+  }
+
+  // Verify resolution details for both streams.
+  LoadTimingInternalInfo load_timing_internal1;
+  http_stream1->PopulateLoadTimingInternalInfo(&load_timing_internal1);
+  ASSERT_TRUE(load_timing_internal1.resolution_details.has_value());
+  EXPECT_EQ(expected_details.source,
+            load_timing_internal1.resolution_details->source);
+
+  LoadTimingInternalInfo load_timing_internal2;
+  http_stream2->PopulateLoadTimingInternalInfo(&load_timing_internal2);
+  ASSERT_TRUE(load_timing_internal2.resolution_details.has_value());
+  EXPECT_EQ(expected_details.source,
+            load_timing_internal2.resolution_details->source);
+
+  http_stream1->Close(true);
+  http_stream2->Close(true);
 }
 
 TEST_F(SpdyHttpStreamTest, RequestInfoDestroyedBeforeRead) {

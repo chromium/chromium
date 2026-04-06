@@ -27,6 +27,7 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/dns/resolution_details.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/transport_connect_job.h"
@@ -125,6 +126,7 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   ResolveErrorInfo GetResolveErrorInfo() const override;
   std::optional<HostResolverEndpointResult> GetHostResolverEndpointResult()
       const override;
+  std::optional<ResolutionDetails> GetResolutionDetails() const override;
 
   // Callers should use this instead of GetHostResolverEndpointResult(). May
   // only be called on success, and may only be called at most once. Not a
@@ -322,6 +324,7 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   bool prefer_ipv6_ = true;
 
   ResolveErrorInfo resolve_error_info_;
+  std::optional<ResolutionDetails> resolution_details_;
 
   base::OneShotTimer slow_timer_;
 

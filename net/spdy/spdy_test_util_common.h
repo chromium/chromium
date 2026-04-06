@@ -23,6 +23,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/resolution_details.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_info.h"
@@ -233,9 +234,11 @@ bool HasSpdySession(SpdySessionPool* pool, const SpdySessionKey& key);
 // Creates a SPDY session for the given key and puts it in the SPDY
 // session pool in |http_session|. A SPDY session for |key| must not
 // already exist.
-base::WeakPtr<SpdySession> CreateSpdySession(HttpNetworkSession* http_session,
-                                             const SpdySessionKey& key,
-                                             const NetLogWithSource& net_log);
+base::WeakPtr<SpdySession> CreateSpdySession(
+    HttpNetworkSession* http_session,
+    const SpdySessionKey& key,
+    const NetLogWithSource& net_log,
+    std::optional<ResolutionDetails> resolution_details = std::nullopt);
 
 // Like CreateSpdySession(), but does not fail if there is already an IP
 // pooled session for |key|.

@@ -34,6 +34,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
+#include "net/dns/resolution_details.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/next_proto.h"
@@ -573,6 +574,9 @@ class NET_EXPORT SpdySession
   // session has been used to send/receive data at all.
   bool GetLoadTimingInfo(spdy::SpdyStreamId stream_id,
                          LoadTimingInfo* load_timing_info) const;
+
+  // Returns the details of the host resolution if available.
+  std::optional<ResolutionDetails> GetResolutionDetails() const;
 
   // Returns true if session is currently active.
   bool is_active() const {

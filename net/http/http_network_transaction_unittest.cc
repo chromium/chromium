@@ -1982,6 +1982,60 @@ TEST_P(HttpNetworkTransactionTest, LoadTimingMeasuresTimeToFirstByteForHttp) {
   EXPECT_EQ("hello world", response_data);
 }
 
+TEST_P(HttpNetworkTransactionTest, LoadTiming_ResolutionDetails) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.foo.com/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  std::vector<MockWrite> data_writes = {
+      MockWrite(ASYNC, 0,
+                "GET / HTTP/1.1\r\n"
+                "Host: www.foo.com\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  std::vector<MockRead> data_reads = {
+      MockRead(ASYNC, 1, "HTTP/1.1 200 OK\r\n\r\n"),
+      MockRead(ASYNC, 2, "hello world"),
+      MockRead(SYNCHRONOUS, OK, 3),
+  };
+
+  SequencedSocketData data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  ResolutionDetails expected_details;
+  expected_details.source = ResolutionSource::kSystem;
+
+  auto* mock_resolver =
+      static_cast<MockHostResolverBase*>(session_deps_.host_resolver.get());
+  mock_resolver->set_default_resolution_details(expected_details);
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  TestCompletionCallback callback;
+  int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
+
+  LoadTimingInternalInfo load_timing_internal;
+  trans.PopulateLoadTimingInternalInfo(&load_timing_internal);
+
+  // TODO(crbug.com/485672648): Plumb DNS resolution details to the HEv3 path.
+  if (!HappyEyeballsV3Enabled()) {
+    ASSERT_TRUE(load_timing_internal.resolution_details.has_value());
+    EXPECT_EQ(expected_details.source,
+              load_timing_internal.resolution_details->source);
+  }
+}
+
 // Tests that the time-to-first-byte reported in a transaction's load timing
 // info uses the first response, even if 1XX/informational.
 void HttpNetworkTransactionTestBase::Check100ResponseTiming(bool use_spdy) {

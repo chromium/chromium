@@ -211,6 +211,10 @@ void SpdyHttpStream::PopulateLoadTimingInternalInfo(
   CHECK(load_timing_internal_info);
   load_timing_internal_info->max_stream_limit_pending_delay =
       stream_request_.max_stream_limit_pending_delay();
+  if (spdy_session_) {
+    load_timing_internal_info->resolution_details =
+        spdy_session_->GetResolutionDetails();
+  }
 }
 
 int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
