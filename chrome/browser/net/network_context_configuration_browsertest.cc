@@ -855,8 +855,16 @@ std::unique_ptr<net::test_server::HttpResponse> EchoCookieHeader(
   return response;
 }
 
+// TODO(crbug.com/499374841): Fix test flake and re-enable.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ThirdPartyCookiesAllowedForExtensions \
+  DISABLED_ThirdPartyCookiesAllowedForExtensions
+#else
+#define MAYBE_ThirdPartyCookiesAllowedForExtensions \
+  ThirdPartyCookiesAllowedForExtensions
+#endif
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       ThirdPartyCookiesAllowedForExtensions) {
+                       MAYBE_ThirdPartyCookiesAllowedForExtensions) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
 
