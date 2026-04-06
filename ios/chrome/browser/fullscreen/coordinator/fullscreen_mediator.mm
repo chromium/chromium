@@ -67,7 +67,8 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   std::unique_ptr<ScopedFullscreenDisabler> _voiceOverDisabler;
   CGFloat _lastContentOffset;
   BOOL _isBottomOmnibox;
-
+  // Indicates whether the inset ranges have been initialized on startup.
+  BOOL _hasInitializedInsets;
   // Scroll distance since the start of the drag, or since the scroll direction
   // changed.
   CGFloat _scrollTotal;
@@ -103,6 +104,10 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
            selector:@selector(voiceOverStatusDidChange)
                name:UIAccessibilityVoiceOverStatusDidChangeNotification
              object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(orientationDidChange)
+                          name:UIDeviceOrientationDidChangeNotification
+                        object:nil];
     [defaultCenter addObserver:self
                       selector:@selector(applicationDidEnterBackground)
                           name:UIApplicationDidEnterBackgroundNotification
@@ -187,7 +192,10 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
 - (void)webStateWasShown:(web::WebState*)webState {
   // TODO(crbug.com/496229929): Call InvalidateInsetRange() from the correct
   // event(s).
-  _browserAgent->InvalidateInsetRange(PassKey());
+  if (!_hasInitializedInsets) {
+    _browserAgent->InvalidateInsetRange(PassKey());
+    _hasInitializedInsets = YES;
+  }
 }
 
 - (void)webState:(web::WebState*)webState
@@ -294,6 +302,10 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   _voiceOverDisabler = UIAccessibilityIsVoiceOverRunning()
                            ? std::make_unique<ScopedFullscreenDisabler>(self)
                            : nullptr;
+}
+
+- (void)orientationDidChange {
+  _browserAgent->InvalidateInsetRange(PassKey());
 }
 
 - (void)applicationDidEnterBackground {
