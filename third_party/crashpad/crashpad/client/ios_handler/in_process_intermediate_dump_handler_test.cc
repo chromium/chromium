@@ -16,7 +16,9 @@
 
 #include <sys/utsname.h>
 
+#include <atomic>
 #include <iterator>
+#include <thread>
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
@@ -399,5 +401,68 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestNSException) {
 }
 
 }  // namespace
+
+TEST_F(InProcessIntermediateDumpHandlerTest,
+       TestCaptureMemoryPointedToByThreadState) {
+  char test_buffer[1024];
+  memset(test_buffer, 'A', sizeof(test_buffer));
+  test_buffer[128] = 'B';
+
+  // Use a std::atomic and a std::thread to simulate an arbitrary thread with a
+  // known register state.
+  std::atomic<bool> wait_for_main_thread(true);
+  std::atomic<bool> thread_started(false);
+
+  std::string thread_name("CaptureMemoryThread");
+  std::thread t([&]() {
+    pthread_setname_np(thread_name.c_str());
+    void* ptr = test_buffer + 128;
+    // Force the compiler to store our pointer in a designated register rather
+    // than on the stack
+#if defined(ARCH_CPU_ARM64)
+    register void* reg_ptr asm("x20") = ptr;
+#elif defined(ARCH_CPU_X86_64)
+    register void* reg_ptr asm("r12") = ptr;
+#endif
+    thread_started = true;
+    while (wait_for_main_thread.load(std::memory_order_relaxed)) {
+      // Dummy operation to prevent the optimizer from discarding our register
+      // assignment.
+      asm volatile("" : : "r"(reg_ptr));
+    }
+  });
+
+  while (!thread_started.load(std::memory_order_relaxed)) {
+    std::this_thread::yield();
+  }
+
+  WriteReportAndCloseWriter();
+
+  wait_for_main_thread = false;
+  t.join();
+
+  internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), {}));
+
+  bool found_our_buffer = false;
+  for (const auto* thread : process_snapshot.Threads()) {
+    if (thread->ThreadName() == thread_name) {
+      for (const auto* memory : thread->ExtraMemory()) {
+        if (memory->Address() == reinterpret_cast<uint64_t>(test_buffer)) {
+          found_our_buffer = true;
+          EXPECT_EQ(memory->Size(), 512u);
+
+          ReadToString delegate;
+          ASSERT_TRUE(memory->Read(&delegate));
+          EXPECT_EQ(delegate.result.size(), 512u);
+          EXPECT_EQ(delegate.result[128], 'B');
+          EXPECT_EQ(delegate.result[129], 'A');
+        }
+      }
+    }
+  }
+  EXPECT_TRUE(found_our_buffer);
+}
+
 }  // namespace test
 }  // namespace crashpad

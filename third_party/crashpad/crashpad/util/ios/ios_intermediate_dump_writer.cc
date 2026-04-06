@@ -148,9 +148,26 @@ bool IOSIntermediateDumpWriter::ReadCStringInternal(const char* value,
   return false;
 }
 
-bool IOSIntermediateDumpWriter::AddPropertyInternal(IntermediateDumpKey key,
-                                                    const char* value,
-                                                    size_t value_length) {
+bool IOSIntermediateDumpWriter::AddPropertyBytes(IntermediateDumpKey key,
+                                                 const void* value,
+                                                 size_t value_length) {
+  constexpr size_t kMaxPropertyBytesSmallSize = 512;
+  if (value_length <= kMaxPropertyBytesSmallSize) {
+    char buffer[kMaxPropertyBytesSmallSize];
+    vm_size_t out_size = 0;
+    kern_return_t kr = vm_read_overwrite(mach_task_self(),
+                                         reinterpret_cast<vm_address_t>(value),
+                                         value_length,
+                                         reinterpret_cast<vm_address_t>(buffer),
+                                         &out_size);
+    if (kr != KERN_SUCCESS) {
+      // It's expected that this will sometimes fail. Don't log here.
+      return false;
+    }
+
+    return Property(key, buffer, out_size);
+  }
+
   ScopedVMRead<char> vmread;
   if (!vmread.Read(value, value_length))
     return false;

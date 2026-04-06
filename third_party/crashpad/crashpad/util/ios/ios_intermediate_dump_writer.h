@@ -160,22 +160,24 @@ class IOSIntermediateDumpWriter final {
     IOSIntermediateDumpWriter* writer_;
   };
 
-  //! \return The `true` if able to AddPropertyInternal the \a key \a value
+  //! \return `true` if able to add the property with the \a key \a value
   //!     \a count tuple.
   template <typename T>
   bool AddProperty(IntermediateDumpKey key, const T* value, size_t count = 1) {
-    return AddPropertyInternal(
-        key, reinterpret_cast<const char*>(value), count * sizeof(T));
+    return AddPropertyBytes(key, value, count * sizeof(T));
   }
 
-  //! \return The `true` if able to AddPropertyInternal the \a key \a value
-  //!     \a count tuple.
+  //! \brief Adds a property using `vm_read` or `vm_read_overwrite`.
+  //!
+  //! \return `true` if able to read `value` `value_length` and write a
+  //!     kProperty command with the `key` `value` `value_length` tuple.
+  //!
+  //! \note This method automatically chooses between `vm_read_overwrite` with
+  //!     a local stack buffer for small reads (<= 512 bytes) and `vm_read`
+  //!     for larger reads to avoid unnecessary virtual memory allocations.
   bool AddPropertyBytes(IntermediateDumpKey key,
                         const void* value,
-                        size_t value_length) {
-    return AddPropertyInternal(
-        key, reinterpret_cast<const char*>(value), value_length);
-  }
+                        size_t value_length);
 
   //! \return `true` if able to vm_read a string of \a value  and write a
   //!     kProperty command with the \a key \a value up to a NUL byte.
@@ -195,12 +197,6 @@ class IOSIntermediateDumpWriter final {
                            char* buffer,
                            size_t max_length,
                            size_t* string_length);
-
-  //! \return `true` if able to vm_read \a value \a count and write a
-  //!     kProperty command  with the \a key \a value \a count tuple.
-  bool AddPropertyInternal(IntermediateDumpKey key,
-                           const char* value,
-                           size_t value_length);
 
   //! \return `true` if able to write a kArrayStart command  with the \a key.
   bool ArrayStart(IntermediateDumpKey key);
