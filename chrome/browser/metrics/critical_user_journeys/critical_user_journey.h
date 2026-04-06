@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -28,6 +29,17 @@ struct Branch {
          ui::InteractionSequence::StepType type,
          int metric_id);
   Branch(ui::CustomElementEventType event_type, int metric_id);
+
+  template <typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
+  Branch(ui::ElementIdentifier id,
+         ui::InteractionSequence::StepType type,
+         T metric_id)
+      : Branch(id, type, static_cast<int>(metric_id)) {}
+
+  template <typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
+  Branch(ui::CustomElementEventType event_type, T metric_id)
+      : Branch(event_type, static_cast<int>(metric_id)) {}
+
   ~Branch();
 
   ui::ElementIdentifier id;
@@ -67,6 +79,15 @@ class CriticalUserJourney {
         std::variant<ui::ElementIdentifier, ui::CustomElementEventType> event,
         ui::InteractionSequence::StepType type,
         int metric_id);
+
+    template <typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
+    Builder& AddStep(
+        std::variant<ui::ElementIdentifier, ui::CustomElementEventType> event,
+        ui::InteractionSequence::StepType type,
+        T metric_id) {
+      return AddStep(event, type, static_cast<int>(metric_id));
+    }
+
     Builder& AddAnyOf(const std::vector<Branch>& branches);
     Builder& AddCustomCompletionCallback(base::RepeatingClosure callback);
     Builder& LaunchHatsSurveyOnCompletion(HatsParams params);

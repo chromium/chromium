@@ -25,16 +25,18 @@ void CriticalUserJourneyRegistry::AddJourneys() {
       CriticalUserJourney::Builder(&kViewDownloadedFileJourney)
           .AddStep(kDownloadEndedCustomEventId,
                    ui::InteractionSequence::StepType::kCustomEvent,
-                   /*metric_id=*/1)
-          .AddAnyOf({Branch(kToolbarDownloadBubbleElementId,
-                            ui::InteractionSequence::StepType::kShown,
-                            /*metric_id=*/2),
-                     Branch(kToolbarDownloadButtonElementId,
-                            ui::InteractionSequence::StepType::kActivated,
-                            /*metric_id=*/3)})
+                   ViewDownloadedFileJourneySteps::kFinishDownload)
+          .AddAnyOf(
+              {Branch(kToolbarDownloadBubbleElementId,
+                      ui::InteractionSequence::StepType::kShown,
+                      ViewDownloadedFileJourneySteps::kDownloadBubbleAppears),
+               Branch(
+                   kToolbarDownloadButtonElementId,
+                   ui::InteractionSequence::StepType::kActivated,
+                   ViewDownloadedFileJourneySteps::kUserClickedDownloadBubble)})
           .AddStep(kDownloadBubbleOpenButtonId,
                    ui::InteractionSequence::StepType::kActivated,
-                   /*metric_id=*/4)
+                   ViewDownloadedFileJourneySteps::kClickDownloadedFile)
           .LaunchHatsSurveyOnCompletion(download_hats_params)
           .Build());
 
@@ -42,16 +44,19 @@ void CriticalUserJourneyRegistry::AddJourneys() {
       CriticalUserJourney::Builder(&kViewDownloadedFileFromAppMenuJourney)
           .AddStep(kDownloadEndedCustomEventId,
                    ui::InteractionSequence::StepType::kCustomEvent,
-                   /*metric_id=*/1)
-          .AddStep(kToolbarAppMenuButtonElementId,
-                   ui::InteractionSequence::StepType::kActivated,
-                   /*metric_id=*/2)
+                   ViewDownloadedFileFromAppMenuJourneySteps::kFinishDownload)
+          .AddStep(
+              kToolbarAppMenuButtonElementId,
+              ui::InteractionSequence::StepType::kActivated,
+              ViewDownloadedFileFromAppMenuJourneySteps::kAppMenuButtonClicked)
           .AddStep(AppMenuModel::kDownloadsMenuItem,
                    ui::InteractionSequence::StepType::kActivated,
-                   /*metric_id=*/3)
-          .AddStep(kDownloadedFileOpenedCustomEventId,
-                   ui::InteractionSequence::StepType::kCustomEvent,
-                   /*metric_id=*/4)
+                   ViewDownloadedFileFromAppMenuJourneySteps::
+                       kDownloadsMenuItemClicked)
+          .AddStep(
+              kDownloadedFileOpenedCustomEventId,
+              ui::InteractionSequence::StepType::kCustomEvent,
+              ViewDownloadedFileFromAppMenuJourneySteps::kDownloadedFileClicked)
           .LaunchHatsSurveyOnCompletion(download_hats_params)
           .Build());
 }

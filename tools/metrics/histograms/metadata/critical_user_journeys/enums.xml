@@ -24,6 +24,8 @@ This file defines enums used in Critical User Journey histograms.
 
 <!-- Define the steps for your journeys below! -->
 
+<!-- LINT.IfChange(ViewDownloadedFileFromAppMenuJourneySteps) -->
+
 <enum name="ViewDownloadedFileFromAppMenuJourneySteps">
   <int value="1" label="Finish download"/>
   <int value="2" label="App menu button clicked"/>
@@ -31,12 +33,18 @@ This file defines enums used in Critical User Journey histograms.
   <int value="4" label="Downloaded file clicked"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:ViewDownloadedFileFromAppMenuJourneySteps) -->
+
+<!-- LINT.IfChange(ViewDownloadedFileJourneySteps) -->
+
 <enum name="ViewDownloadedFileJourneySteps">
   <int value="1" label="Finish download"/>
   <int value="2" label="Download bubble appears"/>
   <int value="3" label="User clicked download bubble"/>
   <int value="4" label="Click downloaded file"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:ViewDownloadedFileJourneySteps) -->
 
 </enums>
 
