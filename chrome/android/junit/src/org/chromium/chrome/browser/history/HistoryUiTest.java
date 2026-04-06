@@ -582,6 +582,23 @@ public class HistoryUiTest {
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
     }
 
+    @Test
+    @SmallTest
+    public void testSetQuery() {
+        HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
+        View toolbarSearchView = toolbar.getSearchViewForTests();
+
+        Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
+
+        String query = "programmatic query";
+        mHistoryManager.setQuery(query);
+
+        Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
+
+        EditText searchEditText = toolbarSearchView.findViewById(R.id.search_text);
+        Assert.assertEquals(query, searchEditText.getText().toString());
+    }
+
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test

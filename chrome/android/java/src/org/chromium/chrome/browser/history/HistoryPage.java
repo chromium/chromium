@@ -29,6 +29,8 @@ import java.util.function.Supplier;
 /** Native page for managing browsing history. */
 @NullMarked
 public class HistoryPage extends BasicNativePage {
+    private static final String QUERY_PARAM_QUERY = "q";
+
     private HistoryManager mHistoryManager;
     private final String mTitle;
 
@@ -87,6 +89,11 @@ public class HistoryPage extends BasicNativePage {
                         host::createEdgeToEdgePadAdjuster);
         mTitle = host.getContext().getString(R.string.menu_history);
 
+        String query = uri.getQueryParameter(QUERY_PARAM_QUERY);
+        if (query != null) {
+            mHistoryManager.setQuery(query);
+        }
+
         initWithView(mHistoryManager.getView());
 
         setBackPressHandler(mHistoryManager, backPressManager);
@@ -100,6 +107,18 @@ public class HistoryPage extends BasicNativePage {
     @Override
     public String getHost() {
         return UrlConstants.HISTORY_HOST;
+    }
+
+    @Override
+    public void updateForUrl(String url) {
+        super.updateForUrl(url);
+        Uri uri = Uri.parse(url);
+        String query = uri.getQueryParameter(QUERY_PARAM_QUERY);
+        if (query != null) {
+            mHistoryManager.setQuery(query);
+        } else {
+            mHistoryManager.onEndSearch();
+        }
     }
 
     @SuppressWarnings("NullAway")

@@ -613,6 +613,22 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     /**
+     * Sets the text in the search edit text box programmatically.
+     *
+     * @param text The text to set.
+     */
+    public void setSearchText(String text) {
+        if (mInlineSearchBox != null) {
+            EditText editText = mInlineSearchBox.getSearchText();
+            editText.setText(text);
+            editText.setSelection(editText.getText().length());
+        } else if (mSearchEditText != null) {
+            mSearchEditText.setText(text);
+            mSearchEditText.setSelection(mSearchEditText.getText().length());
+        }
+    }
+
+    /**
      * Called to enable/disable search menu button.
      *
      * @param searchEnabled Whether the search button should be enabled.

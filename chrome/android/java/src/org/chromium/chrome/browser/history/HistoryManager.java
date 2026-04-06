@@ -104,6 +104,7 @@ public class HistoryManager
 
     private final PrefService mPrefService;
     private final Profile mProfile;
+    private final boolean mIsLargeFormFactorDevice;
 
     private boolean mIsSearching;
 
@@ -179,6 +180,7 @@ public class HistoryManager
         mUmaRecorder.recordOpenHistory();
         // If incognito placeholder is shown, we don't need to create History UI elements.
         if (mIsIncognito) {
+            mIsLargeFormFactorDevice = false;
             mSelectableListLayout = null;
             mRootView = getIncognitoHistoryPlaceholderView();
             return;
@@ -226,9 +228,8 @@ public class HistoryManager
                 mContentManager.getRecyclerView(),
                 edgeToEdgePadAdjusterGenerator);
 
-        boolean isLargeFormFactorDevice =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        if (mContentManager.showAppFilter() || isLargeFormFactorDevice) {
+        mIsLargeFormFactorDevice = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        if (mContentManager.showAppFilter() || mIsLargeFormFactorDevice) {
             // Now the search mode can have a header. Let the layout ignore it to
             // return the right item count.
             mSelectableListLayout.ignoreItemTypeForEmptyState(ItemViewType.STANDARD_HEADER);
@@ -270,7 +271,7 @@ public class HistoryManager
         /* If the current device is LFF device w/ physical keyboard attached,
          * then initialize the search box only; Otherwise initialize the whole toolbar
          */
-        if (!isLargeFormFactorDevice) {
+        if (!mIsLargeFormFactorDevice) {
             mToolbar.initializeSearchView(
                     this, R.string.history_manager_search, R.id.search_menu_id);
         } else {
@@ -303,7 +304,7 @@ public class HistoryManager
         onBackPressStateChanged(); // Initialize back press State.
         mContentManager.maybeQueryApps();
 
-        mContentManager.getAdapter().setIsLargeFormFactorDevice(isLargeFormFactorDevice);
+        mContentManager.getAdapter().setIsLargeFormFactorDevice(mIsLargeFormFactorDevice);
         mContentManager.getAdapter().setToolbar(mToolbar);
     }
 
@@ -386,7 +387,7 @@ public class HistoryManager
 
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {
-            enterSearchMode();
+            enterSearchMode(true);
             return true;
         } else if (item.getItemId() == R.id.info_menu_id) {
             toggleInfoHeaderVisibility();
@@ -394,19 +395,28 @@ public class HistoryManager
         return false;
     }
 
-    private void enterSearchMode() {
+    private void enterSearchMode(boolean showKeyboard) {
         assumeNonNull(mContentManager);
         assumeNonNull(mToolbar);
         assumeNonNull(mSelectableListLayout);
 
         mContentManager.maybeResetAppFilterChip();
         mContentManager.getAdapter().onSearchStart();
-        mToolbar.showSearchView(true);
+        mToolbar.showSearchView(showKeyboard);
         String searchEmptyString = getSearchEmptyString();
         mSelectableListLayout.onStartSearch(
                 searchEmptyString, R.string.history_manager_empty_state_view_or_open_more_history);
         mUmaRecorder.recordSearchHistory();
         mIsSearching = true;
+    }
+
+    public void setQuery(String query) {
+        assumeNonNull(mToolbar);
+
+        if (!mIsLargeFormFactorDevice && !mIsSearching) {
+            enterSearchMode(false);
+        }
+        mToolbar.setSearchText(query);
     }
 
     private void toggleInfoHeaderVisibility() {
