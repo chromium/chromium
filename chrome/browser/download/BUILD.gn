@@ -2,63 +2,327 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/offline_pages/buildflags/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 source_set("download") {
   public = [
+    "background_download_service_factory.h",
+    "chrome_download_manager_delegate.h",
+    "deferred_client_wrapper.h",
+    "download_completion_blocker.h",
+    "download_confirmation_reason.h",
+    "download_confirmation_result.h",
+    "download_core_service.h",
+    "download_core_service_factory.h",
+    "download_core_service_impl.h",
+    "download_crx_util.h",
     "download_danger_prompt.h",
+    "download_dialog_types.h",
+    "download_file_icon_extractor.h",
+    "download_file_picker.h",
+    "download_history.h",
+    "download_item_model.h",
     "download_item_warning_data.h",
+    "download_manager_utils.h",
+    "download_offline_content_provider.h",
+    "download_offline_content_provider_factory.h",
+    "download_permission_request.h",
+    "download_prefs.h",
     "download_prompt_status.h",
+    "download_query.h",
+    "download_request_limiter.h",
     "download_stats.h",
+    "download_status_updater.h",
+    "download_target_determiner.h",
+    "download_target_determiner_delegate.h",
+    "download_ui_controller.h",
     "download_ui_model.h",
-  ]
-
-  sources = [
-    "download_danger_prompt.cc",
-    "download_item_warning_data.cc",
-    "download_stats.cc",
+    "download_ui_safe_browsing_util.h",
+    "drag_download_item.h",
+    "insecure_download_blocking.h",
+    "notification/multi_profile_download_notifier.h",
+    "offline_item_utils.h",
+    "save_package_file_picker.h",
+    "simple_download_manager_coordinator_factory.h",
+    "trusted_sources_manager.h",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/profiles",
+    "//components/content_settings/core/browser",
+    "//components/download/content/public",
     "//components/download/public/common:public",
+    "//components/enterprise/buildflags",
+    "//components/history/core/browser",
     "//components/offline_items_collection/core",
+    "//components/permissions",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/common/proto:download_file_types_proto",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
+    "//extensions/buildflags",
     "//ui/base",
     "//ui/color:color_headers",
     "//ui/gfx",
-  ]
-
-  deps = [
-    ":status_text_builder_utils",
-    "//chrome/browser/profiles:profile",
-    "//components/profile_metrics",
-    "//components/strings",
-    "//url",
+    "//ui/shell_dialogs",
   ]
 
   if (!is_android) {
     public += [
+      "default_download_dir_policy_handler.h",
+      "download_auto_open_policy_handler.h",
       "download_commands.h",
+      "download_dir_policy_handler.h",
+      "download_dir_util.h",
       "download_item_web_app_data.h",
+      "download_ui_enterprise_util.h",
+      "download_warning_desktop_hats_utils.h",
+      "offline_item_model.h",
+      "offline_item_model_data.h",
+      "offline_item_model_manager.h",
+      "offline_item_model_manager_factory.h",
     ]
 
-    sources += [ "download_item_web_app_data.cc" ]
-
     public_deps += [ "//components/webapps/common" ]
+  }
 
+  if (!is_android && !is_chromeos) {
+    public += [ "download_ui_context_menu.h" ]
+
+    public_deps += [ "//ui/menus" ]
+  }
+
+  if (is_chromeos) {
+    public += [
+      "notification/download_item_notification.h",
+      "notification/download_notification_manager.h",
+    ]
+
+    public_deps += [
+      "//ui/message_center/public/cpp",
+      "//ui/native_theme",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "background_download_service_factory.cc",
+    "chrome_download_manager_delegate.cc",
+    "deferred_client_wrapper.cc",
+    "download_completion_blocker.cc",
+    "download_core_service.cc",
+    "download_core_service_factory.cc",
+    "download_core_service_impl.cc",
+    "download_danger_prompt.cc",
+    "download_file_picker.cc",
+    "download_history.cc",
+    "download_item_model.cc",
+    "download_item_warning_data.cc",
+    "download_manager_utils.cc",
+    "download_offline_content_provider.cc",
+    "download_offline_content_provider_factory.cc",
+    "download_permission_request.cc",
+    "download_prefs.cc",
+    "download_query.cc",
+    "download_request_limiter.cc",
+    "download_stats.cc",
+    "download_status_updater.cc",
+    "download_target_determiner.cc",
+    "download_ui_controller.cc",
+    "download_ui_model.cc",
+    "download_ui_safe_browsing_util.cc",
+    "insecure_download_blocking.cc",
+    "notification/multi_profile_download_notifier.cc",
+    "offline_item_utils.cc",
+    "save_package_file_picker.cc",
+    "simple_download_manager_coordinator_factory.cc",
+    "trusted_sources_manager.cc",
+  ]
+
+  public_deps = [
+    ":download",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    ":status_text_builder_utils",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/actor",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/content_settings:content_settings_util",
+    "//chrome/browser/devtools",
+    "//chrome/browser/history",
+    "//chrome/browser/notifications",
+    "//chrome/browser/offline_items_collection",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing:metrics_collector",
+    "//chrome/browser/signin",
+    "//chrome/browser/thumbnail/generator",
+    "//chrome/browser/transition_manager",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/select_file_policy",
+    "//chrome/common:non_code_constants",
+    "//components/background_fetch",
+    "//components/download/content/factory",
+    "//components/enterprise/common/proto:connectors_proto_gen",
+    "//components/enterprise/connectors/core",
+    "//components/history/content/browser",
+    "//components/infobars/content",
+    "//components/pdf/common:constants",
+    "//components/pdf/common:util",
+    "//components/pref_registry",
+    "//components/profile_metrics",
+    "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/content/browser/web_ui",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/security_state/content",
+    "//components/services/quarantine",
+    "//components/strings",
+    "//url",
+  ]
+
+  if (is_android) {
     deps += [
-      "//chrome/browser/policy:path_parser",
-      "//chrome/common:chrome_features",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui/android/tab_model",
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//ui/android",
     ]
   }
 
+  if (!is_android) {
+    sources += [
+      "default_download_dir_policy_handler.cc",
+      "download_auto_open_policy_handler.cc",
+      "download_commands.cc",
+      "download_dir_policy_handler.cc",
+      "download_dir_util.cc",
+      "download_item_web_app_data.cc",
+      "download_ui_enterprise_util.cc",
+      "download_warning_desktop_hats_utils.cc",
+      "offline_item_model.cc",
+      "offline_item_model_manager.cc",
+      "offline_item_model_manager_factory.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/image_decoder",
+      "//chrome/browser/policy:path_parser",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/views/download",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/common:chrome_features",
+      "//components/drive",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/tab_list",
+      "//extensions/browser:crx_installer",
+      "//extensions/browser:webstore_installer",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [ "download_ui_context_menu.cc" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "notification/download_item_notification.cc",
+      "notification/download_notification_manager.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/ash/drive",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/plugin_vm",
+      "//chrome/browser/ash/policy/dlp",
+      "//chrome/browser/ash/policy/skyvault",
+      "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/content_index",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/webui/ash/cloud_upload",
+      "//chromeos/ash/components/dbus/cros_disks",
+      "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "download_status_updater_win.cc",
+      "trusted_sources_manager_win.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "download_status_updater_mac.mm",
+      "drag_download_item_mac.mm",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [ "download_status_updater_linux.cc" ]
+  }
+
+  if (is_posix) {
+    sources += [ "trusted_sources_manager_posix.cc" ]
+  }
+
+  if (use_aura) {
+    sources += [ "drag_download_item_aura.cc" ]
+  }
+
+  if (is_android && !enable_desktop_android_extensions) {
+    sources += [ "download_crx_util_android.cc" ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [ "download_crx_util.cc" ]
+  }
+
   if (safe_browsing_mode != 0) {
-    deps +=
-        [ "//components/safe_browsing/content/browser/download:download_stats" ]
+    deps += [
+      "//components/safe_browsing/content/browser/download:download_stats",
+      "//components/safe_browsing/content/common:file_type_policies",
+    ]
+  }
+
+  if (enable_offline_pages) {
+    deps += [ "//components/offline_pages/core" ]
+  }
+
+  if (enterprise_content_analysis) {
+    deps += [
+      "//components/enterprise/connectors/core:cloud_content_scanning",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+    ]
+  }
+
+  if (safe_browsing_mode != 0 && enterprise_cloud_content_analysis) {
+    deps += [ "//chrome/browser/enterprise/connectors/reporting" ]
   }
 }
 

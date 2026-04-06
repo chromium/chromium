@@ -332,65 +332,6 @@ static_library("browser") {
     "component_updater/wasm_tts_engine_component_installer.h",
     "defaults.cc",
     "defaults.h",
-    "download/background_download_service_factory.cc",
-    "download/background_download_service_factory.h",
-    "download/chrome_download_manager_delegate.cc",
-    "download/chrome_download_manager_delegate.h",
-    "download/deferred_client_wrapper.cc",
-    "download/deferred_client_wrapper.h",
-    "download/download_confirmation_reason.h",
-    "download/download_confirmation_result.h",
-    "download/download_core_service.cc",
-    "download/download_core_service.h",
-    "download/download_core_service_factory.cc",
-    "download/download_core_service_factory.h",
-    "download/download_core_service_impl.cc",
-    "download/download_core_service_impl.h",
-    "download/download_crx_util.h",
-    "download/download_dialog_types.h",
-    "download/download_file_picker.cc",
-    "download/download_file_picker.h",
-    "download/download_history.cc",
-    "download/download_history.h",
-    "download/download_item_model.cc",
-    "download/download_item_model.h",
-    "download/download_manager_utils.cc",
-    "download/download_manager_utils.h",
-    "download/download_offline_content_provider.cc",
-    "download/download_offline_content_provider.h",
-    "download/download_offline_content_provider_factory.cc",
-    "download/download_offline_content_provider_factory.h",
-    "download/download_permission_request.cc",
-    "download/download_permission_request.h",
-    "download/download_prefs.cc",
-    "download/download_prefs.h",
-    "download/download_query.cc",
-    "download/download_query.h",
-    "download/download_request_limiter.cc",
-    "download/download_request_limiter.h",
-    "download/download_status_updater.cc",
-    "download/download_status_updater.h",
-    "download/download_target_determiner.cc",
-    "download/download_target_determiner.h",
-    "download/download_target_determiner_delegate.h",
-    "download/download_ui_controller.cc",
-    "download/download_ui_controller.h",
-    "download/download_ui_model.cc",
-    "download/download_ui_safe_browsing_util.cc",
-    "download/download_ui_safe_browsing_util.h",
-    "download/drag_download_item.h",
-    "download/insecure_download_blocking.cc",
-    "download/insecure_download_blocking.h",
-    "download/notification/multi_profile_download_notifier.cc",
-    "download/notification/multi_profile_download_notifier.h",
-    "download/offline_item_utils.cc",
-    "download/offline_item_utils.h",
-    "download/save_package_file_picker.cc",
-    "download/save_package_file_picker.h",
-    "download/simple_download_manager_coordinator_factory.cc",
-    "download/simple_download_manager_coordinator_factory.h",
-    "download/trusted_sources_manager.cc",
-    "download/trusted_sources_manager.h",
     "enterprise/browser_management/browser_management_service.cc",
     "enterprise/browser_management/browser_management_service.h",
     "enterprise/browser_management/browser_management_status_provider.cc",
@@ -1417,6 +1358,10 @@ static_library("browser") {
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/fre",
     "//chrome/browser/background/glic:impl",
+
+    # //chrome/browser/download:impl sources include headers from //chrome/browser
+    # and //chrome/browser/ui.
+    "//chrome/browser/download:impl",
   ]
 
   if (is_android) {
@@ -1433,6 +1378,7 @@ static_library("browser") {
     # should be added to browser_generated_files.
     ":browser_public_dependencies",
     ":chrome_content_browser_client_parts",
+    "//chrome/browser/download",
     "//chrome/browser/enterprise/connectors/reporting:impl",
     "//chrome/browser/external_protocol",
     "//chrome/browser/google",
@@ -1550,7 +1496,7 @@ static_library("browser") {
     "//chrome/browser/dom_distiller:impl",
     "//chrome/browser/domain_reliability",
     "//chrome/browser/domain_reliability:impl",
-    "//chrome/browser/download",
+    "//chrome/browser/download:impl",
     "//chrome/browser/download:status_text_builder_utils",
     "//chrome/browser/engagement",
     "//chrome/browser/enterprise/browser_management:management_identity",
@@ -3484,26 +3430,6 @@ static_library("browser") {
       "component_updater/soda_language_pack_component_installer.h",
       "component_updater/zxcvbn_data_component_installer.cc",
       "component_updater/zxcvbn_data_component_installer.h",
-      "download/default_download_dir_policy_handler.cc",
-      "download/default_download_dir_policy_handler.h",
-      "download/download_auto_open_policy_handler.cc",
-      "download/download_auto_open_policy_handler.h",
-      "download/download_commands.cc",
-      "download/download_dir_policy_handler.cc",
-      "download/download_dir_policy_handler.h",
-      "download/download_dir_util.cc",
-      "download/download_dir_util.h",
-      "download/download_ui_enterprise_util.cc",
-      "download/download_ui_enterprise_util.h",
-      "download/download_warning_desktop_hats_utils.cc",
-      "download/download_warning_desktop_hats_utils.h",
-      "download/offline_item_model.cc",
-      "download/offline_item_model.h",
-      "download/offline_item_model_data.h",
-      "download/offline_item_model_manager.cc",
-      "download/offline_item_model_manager.h",
-      "download/offline_item_model_manager_factory.cc",
-      "download/offline_item_model_manager_factory.h",
       "enterprise/data_protection/data_protection_features.cc",
       "enterprise/data_protection/data_protection_features.h",
       "enterprise/data_protection/data_protection_navigation_controller.cc",
@@ -4361,8 +4287,6 @@ static_library("browser") {
         "download/bubble/download_bubble_utils.h",
         "download/bubble/download_display_controller.cc",
         "download/bubble/download_display_controller.h",
-        "download/download_ui_context_menu.cc",
-        "download/download_ui_context_menu.h",
         "enterprise/remote_commands/cbcm_remote_commands_factory.cc",
         "enterprise/remote_commands/cbcm_remote_commands_factory.h",
         "first_run/upgrade_util.cc",
@@ -4515,10 +4439,6 @@ static_library("browser") {
       "device_reauth/chromeos/authenticator_chromeos.h",
       "device_reauth/chromeos/device_authenticator_chromeos.cc",
       "device_reauth/chromeos/device_authenticator_chromeos.h",
-      "download/notification/download_item_notification.cc",
-      "download/notification/download_item_notification.h",
-      "download/notification/download_notification_manager.cc",
-      "download/notification/download_notification_manager.h",
       "enterprise/connectors/analysis/file_transfer_analysis_delegate.cc",
       "enterprise/connectors/analysis/file_transfer_analysis_delegate.h",
       "enterprise/connectors/analysis/source_destination_matcher_ash.cc",
@@ -5955,8 +5875,6 @@ static_library("browser") {
       "device_reauth/win/authenticator_win.h",
       "device_reauth/win/device_authenticator_win.cc",
       "device_reauth/win/device_authenticator_win.h",
-      "download/download_status_updater_win.cc",
-      "download/trusted_sources_manager_win.cc",
       "enterprise/platform_auth/cloud_ap_provider_win.cc",
       "enterprise/platform_auth/cloud_ap_provider_win.h",
       "enterprise/platform_auth/cloud_ap_utils_win.cc",
@@ -6177,8 +6095,6 @@ static_library("browser") {
       "device_reauth/mac/authenticator_mac.mm",
       "device_reauth/mac/device_authenticator_mac.h",
       "device_reauth/mac/device_authenticator_mac.mm",
-      "download/download_status_updater_mac.mm",
-      "download/drag_download_item_mac.mm",
       "enterprise/platform_auth/extensible_enterprise_sso_entra.h",
       "enterprise/platform_auth/extensible_enterprise_sso_entra.mm",
       "enterprise/platform_auth/extensible_enterprise_sso_policy_handler.cc",
@@ -6647,7 +6563,6 @@ static_library("browser") {
     sources += [
       "chrome_browser_main_extra_parts_linux.cc",
       "chrome_browser_main_extra_parts_linux.h",
-      "download/download_status_updater_linux.cc",
       "first_run/first_run_internal_linux.cc",
       "first_run/upgrade_util_linux.cc",
       "first_run/upgrade_util_linux.h",
@@ -6689,7 +6604,6 @@ static_library("browser") {
 
   if (is_posix) {
     sources += [
-      "download/trusted_sources_manager_posix.cc",
       "shutdown_signal_handlers_posix.cc",
       "shutdown_signal_handlers_posix.h",
     ]
@@ -6779,7 +6693,6 @@ static_library("browser") {
   if (use_aura) {
     # Cross - platform Aura files.
     sources += [
-      "download/drag_download_item_aura.cc",
       "lifetime/application_lifetime_aura.cc",
       "platform_util_aura.cc",
     ]
@@ -7005,10 +6918,6 @@ static_library("browser") {
     deps += [ "//media/mojo/mojom:remoting" ]
   }
 
-  if (is_android && !enable_desktop_android_extensions) {
-    sources += [ "download/download_crx_util_android.cc" ]
-  }
-
   if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
   }
@@ -7032,7 +6941,6 @@ static_library("browser") {
       allow_circular_includes_from += [ "//chrome/browser/guest_view:impl" ]
     }
     sources += [
-      "download/download_crx_util.cc",
       "metrics/extensions_metrics_provider.cc",
       "metrics/extensions_metrics_provider.h",
       "performance_manager/extension_watcher.cc",

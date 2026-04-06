@@ -21,7 +21,7 @@
 #include "components/offline_items_collection/core/offline_item.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/download/android/open_download_dialog_bridge_delegate.h"
+#include "chrome/browser/download/android/open_download_dialog_bridge_delegate.h"  // nogncheck crbug.com/40147906
 #endif
 
 // TODO(xingliu): Remove using in the header files.

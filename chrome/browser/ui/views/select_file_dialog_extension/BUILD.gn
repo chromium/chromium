@@ -23,6 +23,7 @@ static_library("select_file_dialog_extension") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/download",
     "//chrome/browser/extensions",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/system_web_dialog",

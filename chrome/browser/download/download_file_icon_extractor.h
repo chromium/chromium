@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/icon_loader.h"
+#include "chrome/browser/icon_loader.h"  // nogncheck crbug.com/40147906
 
 // Helper class for DownloadsGetFileIconFunction. Only used for a single icon
 // extraction.

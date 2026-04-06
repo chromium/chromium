@@ -76,6 +76,7 @@ static_library("dlp") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/download",
     "//chrome/browser/favicon",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",

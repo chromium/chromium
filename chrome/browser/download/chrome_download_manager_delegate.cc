@@ -114,7 +114,7 @@
 #include "chrome/browser/download/android/insecure_download_dialog_bridge.h"
 #include "chrome/browser/download/android/new_navigation_observer.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/ui/android/pdf/pdf_jni_headers/PdfUtils_jni.h"
+#include "chrome/browser/ui/android/pdf/pdf_jni_headers/PdfUtils_jni.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -145,13 +145,13 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-#include "chrome/browser/offline_pages/offline_page_utils.h"
-#include "components/offline_pages/core/client_namespace_constants.h"
+#include "chrome/browser/offline_pages/offline_page_utils.h"  // nogncheck crbug.com/40147906
+#include "components/offline_pages/core/client_namespace_constants.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
-#include "components/enterprise/obfuscation/core/download_obfuscator.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"  // nogncheck crbug.com/40147906
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -169,9 +169,9 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
-#include "components/enterprise/connectors/core/reporting_constants.h"
-#include "components/enterprise/connectors/core/reporting_event_router.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"  // nogncheck crbug.com/40147906
+#include "components/enterprise/connectors/core/reporting_constants.h"  // nogncheck crbug.com/40147906
+#include "components/enterprise/connectors/core/reporting_event_router.h"  // nogncheck crbug.com/40147906
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 

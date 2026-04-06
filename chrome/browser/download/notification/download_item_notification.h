@@ -10,10 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_ui_model.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
-#include "chrome/browser/ui/browser.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/image_decoder/image_decoder.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser.h"  // nogncheck crbug.com/40147906
+#endif
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "third_party/skia/include/core/SkColor.h"

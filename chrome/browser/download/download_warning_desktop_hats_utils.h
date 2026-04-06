@@ -11,11 +11,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/hats/hats_service.h"
+#include "base/time/time.h"
 #include "components/download/public/common/download_item.h"
+
+class Profile;
 
 // Type of survey (corresponding to a trigger condition) that should be shown.
 // Do not renumber.
@@ -131,8 +134,10 @@ class DownloadWarningHatsProductSpecificData {
   // Note that the applicable fields must all be present before using this
   // object, so AddNumPageWarnings or AddPartialViewInteraction must have been
   // called, otherwise using this object will cause a CHECK failure.
-  const SurveyBitsData& bits_data() const { return bits_data_; }
-  const SurveyStringData& string_data() const { return string_data_; }
+  const std::map<std::string, bool>& bits_data() const { return bits_data_; }
+  const std::map<std::string, std::string>& string_data() const {
+    return string_data_;
+  }
 
   DownloadWarningHatsType survey_type() const { return survey_type_; }
 
@@ -153,8 +158,8 @@ class DownloadWarningHatsProductSpecificData {
 
   DownloadWarningHatsType survey_type_;
 
-  SurveyBitsData bits_data_;
-  SurveyStringData string_data_;
+  std::map<std::string, bool> bits_data_;
+  std::map<std::string, std::string> string_data_;
 };
 
 // A class that manages delayed download warning HaTS survey tasks. It can be

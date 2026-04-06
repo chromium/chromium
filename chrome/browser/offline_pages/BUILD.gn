@@ -117,6 +117,7 @@ source_set("impl") {
       "//chrome/browser:browser_process",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/android/locale",
+      "//chrome/browser/download",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/offline_items_collection",
       "//chrome/browser/profiles",

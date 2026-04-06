@@ -50,6 +50,7 @@ static_library("holding_space") {
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
+    "//chrome/browser/download",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/thumbnail_loader",
     "//chromeos/ash/experiences/arc",

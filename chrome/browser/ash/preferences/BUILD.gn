@@ -40,6 +40,7 @@ static_library("preferences") {
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
+    "//chrome/browser/download",
     "//chrome/browser/prefs:util",
     "//chrome/browser/ui/ash/system",
     "//chrome/common:chrome_features",

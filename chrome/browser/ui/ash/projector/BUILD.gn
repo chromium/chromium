@@ -39,6 +39,7 @@ static_library("projector") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/download",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",

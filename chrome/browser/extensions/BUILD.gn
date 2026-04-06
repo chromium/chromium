@@ -1663,6 +1663,7 @@ source_set("chrome_extensions_browser_client") {
   deps = [
     "//chrome/browser/app_mode",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/download",
     "//chrome/browser/extensions",
     "//chrome/browser/external_protocol",
     "//chrome/browser/media/webrtc",

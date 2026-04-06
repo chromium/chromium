@@ -27,6 +27,7 @@ static_library("network_ui") {
     "//chrome/browser/ash/net/network_health",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_logs",
+    "//chrome/browser/download",
     "//chrome/browser/extensions",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",

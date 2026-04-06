@@ -745,6 +745,11 @@ static_library("ui") {
   # TODO(crbug.com/41437292): Remove this circular dependency.
   # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
   # These are all-platform circular includes.
+  if (!is_android) {
+    # //chrome/browser/download:impl sources include headers from //chrome/browser/ui.
+    allow_circular_includes_from += [ "//chrome/browser/download:impl" ]
+  }
+
   allow_circular_includes_from += [
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
@@ -1569,6 +1574,7 @@ static_library("ui") {
       # No reason for this dependencies be out of alphabetical order.
       "//chrome/browser/content_extraction",
       "//chrome/browser/download",
+      "//chrome/browser/download:impl",
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/headless:command_processor",

@@ -24,7 +24,7 @@
 #include "content/public/browser/download_manager_delegate.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"  // nogncheck crbug.com/40147906
 #endif
 
 class Profile;

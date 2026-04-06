@@ -24,6 +24,7 @@ static_library("lobster") {
 
   deps = [
     "//ash/public/cpp",
+    "//chrome/browser/download",
     "//chrome/browser/profiles:profile",
     "//mojo/public/cpp/bindings",
   ]

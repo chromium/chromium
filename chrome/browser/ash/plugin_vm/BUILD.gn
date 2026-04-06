@@ -79,6 +79,7 @@ static_library("plugin_vm") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/download",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",

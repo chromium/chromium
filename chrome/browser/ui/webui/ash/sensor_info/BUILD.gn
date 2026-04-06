@@ -33,6 +33,7 @@ static_library("sensor_info") {
 
   deps = [
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/download",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/sensor_info:resources",
     "//ui/webui",

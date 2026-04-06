@@ -36,8 +36,8 @@
 #include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/download/android/download_dialog_bridge.h"
-#include "chrome/browser/download/android/download_message_bridge.h"
+#include "chrome/browser/download/android/download_dialog_bridge.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/download/android/download_message_bridge.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

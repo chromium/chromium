@@ -25,6 +25,7 @@ static_library("capture_mode") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/video_conference",
+    "//chrome/browser/download",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/policy:system_features_disable_list",
     "//chrome/browser/profiles:profile_manager",
