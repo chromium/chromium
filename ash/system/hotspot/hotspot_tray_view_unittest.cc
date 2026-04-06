@@ -65,6 +65,7 @@ class HotspotTrayViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    hotspot_tray_view_ = nullptr;
     widget_.reset();
     AshTestBase::TearDown();
   }
@@ -91,7 +92,7 @@ class HotspotTrayViewTest : public AshTestBase {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<HotspotTrayView, DanglingUntriaged> hotspot_tray_view_;
+  raw_ptr<HotspotTrayView> hotspot_tray_view_;
 };
 
 TEST_F(HotspotTrayViewTest, HotspotIconImage) {
