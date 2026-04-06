@@ -573,7 +573,14 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
       VLOG(1) << "Unserializing an update with a known tree ID: "
               << update.tree_data.tree_id;
     }
-    tree->Unserialize(update);
+    // If tree->Unserialize returns false, there is invalid state and the tree
+    // should be destroyed.
+    const bool unserialized = tree->Unserialize(update);
+    DUMP_WILL_BE_CHECK(unserialized);
+    if (!unserialized) {
+      OnAXTreeDestroyed(tree_id);
+      return;
+    }
   }
 
   // Set URL info if it hasn't already been set.
