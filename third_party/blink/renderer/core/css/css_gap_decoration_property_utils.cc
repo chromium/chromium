@@ -212,17 +212,17 @@ RuleVisibilityItems CSSGapDecorationUtils::ResolveRuleVisibilityItemsValue(
   RuleVisibilityItems rule_visibility = direction == kForColumns
                                             ? style.ColumnRuleVisibilityItems()
                                             : style.RowRuleVisibilityItems();
-  if (rule_visibility != RuleVisibilityItems::kAuto) {
+  if (rule_visibility != RuleVisibilityItems::kNormal) {
     return rule_visibility;
   }
 
-  // Resolve `auto` value based on the container type.
+  // Resolve `normal` value based on the container type.
   //
   // https://drafts.csswg.org/css-gaps-1/#visibility-rules.
   switch (container_type) {
     case GapGeometry::ContainerType::kGrid:
-    case GapGeometry::ContainerType::kFlex:
       return RuleVisibilityItems::kAll;
+    case GapGeometry::ContainerType::kFlex:
     case GapGeometry::ContainerType::kMultiColumn:
       return RuleVisibilityItems::kBetween;
   }
@@ -251,9 +251,9 @@ bool CSSGapDecorationUtils::IsRuleSegmentVisible(
       // segment state has no empty status).
       return !gap_state.HasEmptyStatus();
     case RuleVisibilityItems::kAll:
-    case RuleVisibilityItems::kAuto:
+    case RuleVisibilityItems::kNormal:
       // `kAll` should have been handled as an early return at the beginning of
-      // this function. `auto` should have been resolved before reaching this
+      // this function. `normal` should have been resolved before reaching this
       // point.
       NOTREACHED();
   }

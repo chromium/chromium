@@ -148,7 +148,7 @@ column-rule-edge-inset-start: 0px
 column-rule-interior-inset-end: 0px
 column-rule-interior-inset-start: 0px
 column-rule-style: none
-column-rule-visibility-items: auto
+column-rule-visibility-items: normal
 column-rule-width: 3px
 column-span: none
 column-width: auto
@@ -360,7 +360,7 @@ row-rule-edge-inset-start: 0px
 row-rule-interior-inset-end: 0px
 row-rule-interior-inset-start: 0px
 row-rule-style: none
-row-rule-visibility-items: auto
+row-rule-visibility-items: normal
 row-rule-width: 3px
 ruby-align: space-around
 ruby-overhang: auto

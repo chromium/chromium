@@ -80,8 +80,8 @@ class CORE_EXPORT CSSGapDecorationUtils {
       GapGeometry::ContainerType container_type);
 
   // Resolves the `rule-visibility-items` value for a given direction and
-  // container. For multicol containers, `auto` resolves to `between` while for
-  // `grid`, `auto` resolves to `all`.
+  // container. For multicol and flex containers, `normal` resolves to `between`
+  // while for `grid`, `normal` resolves to `all`.
   static RuleVisibilityItems ResolveRuleVisibilityItemsValue(
       const ComputedStyle& style,
       GapGeometry::ContainerType container_type,

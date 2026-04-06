@@ -1324,13 +1324,13 @@
     "overlap-join",
 
     // column-rule-visibility-items
-    // auto
+    // normal
     // all
     "around",
     "between",
 
     // row-rule-visibility-items
-    // auto
+    // normal
     // all
     // around
     // between
