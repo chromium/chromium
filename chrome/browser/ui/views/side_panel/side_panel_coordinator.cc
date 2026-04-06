@@ -192,7 +192,7 @@ void SidePanelCoordinator::Show(
     CHECK(side_panel);
     // If the side panel is in the process of closing, show it instead.
     if (side_panel->state() == SidePanel::State::kClosing) {
-      side_panel->Open(/*animated=*/true);
+      side_panel->Open(/*animated=*/!suppress_animations);
       side_panel_toolbar_pinning_controller_->UpdateActiveState(
           entry->key(), entry->should_show_ephemerally_in_toolbar());
       entry->OnEntryHideCancelled();
