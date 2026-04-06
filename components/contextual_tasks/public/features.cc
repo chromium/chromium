@@ -165,7 +165,7 @@ const base::FeatureParam<std::string> kContextualTasksForcedEmbeddedPageHost{
 // The base domains for the sign in page.
 const base::FeatureParam<std::string> kContextualTasksSignInDomains{
     &kContextualTasks, "contextual-tasks-sign-in-domains",
-    "accounts.google.com,login.corp.google.com"};
+    "login.corp.google.com"};
 
 constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
     {EntryPointOption::kNoEntryPoint, "no-entry-point"},
