@@ -2664,6 +2664,9 @@ void UserSessionManager::Shutdown() {
   // NOTE: Make sure that the current session length is accumulated on the prefs
   // before the primary Profile is destroyed.
   onboarding_user_activity_counter_.reset();
+
+  // NOTE: This may report UMA metric of the hats notification status.
+  hats_notification_controller_.reset();
 }
 
 void UserSessionManager::SetSwitchesForUser(
