@@ -489,8 +489,10 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
     // The popup top can never go above the content area since the popup size
     // computed to fit in the screen by GetExpandedPopupSize.
     popup_bounds.Offset(
-        0, -1 * std::max(0, popup_bounds.bottom() -
-                                visible_content_area_bounds.bottom()));
+        0,
+        std::max(visible_content_area_bounds.y() - popup_bounds.y(),
+                 -1 * std::max(0, popup_bounds.bottom() -
+                                      visible_content_area_bounds.bottom())));
     return arrow;
   }
 

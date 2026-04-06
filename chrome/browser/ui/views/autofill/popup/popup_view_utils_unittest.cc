@@ -474,6 +474,22 @@ TEST(PopupViewsUtilsTest, GetOptimalPopupPlacement) {
        {5, 300, 200, 300},
        PopupAnchorType::kField,
        views::BubbleBorder::Arrow::LEFT_TOP},
+      // The element is partially off-screen at the top.
+      // And the side is kLeft or kRight (due to narrow element).
+      // The popup y coordinate should be clamped to the content area top.
+      {false,
+       {100, -10, 1, 20},
+       {101, 0, 200, 300},
+       PopupAnchorType::kField,
+       views::BubbleBorder::Arrow::LEFT_TOP},
+      // The element is partially off-screen at the bottom.
+      // And the side is kLeft or kRight (due to narrow element).
+      // The popup y coordinate should be clamped to the content area bottom.
+      {false,
+       {100, 790, 1, 20},
+       {101, 500, 200, 300},
+       PopupAnchorType::kField,
+       views::BubbleBorder::Arrow::LEFT_TOP},
   };
 
   for (TestCase& test_case : test_cases) {
