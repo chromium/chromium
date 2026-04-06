@@ -84,28 +84,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
           1));
 }
 
-// Inherits directly from InteractiveBrowserTest to avoid scoped_feature_list_
-// conflicts with VerticalTabsInteractiveTestMixin.
-class VerticalTabStripRegionViewExpandOnHoverInteractiveUiTest
-    : public InteractiveBrowserTest {
- public:
-  VerticalTabStripRegionViewExpandOnHoverInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {tabs::kVerticalTabs, tabs::kVerticalTabsExpandOnHover}, {});
-  }
-  ~VerticalTabStripRegionViewExpandOnHoverInteractiveUiTest() override =
-      default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewExpandOnHoverInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
                        OmniboxPopupSuppressesExpandOnHover) {
   auto* const controller =
       tabs::VerticalTabStripStateController::From(browser());
 
-  controller->SetVerticalTabsEnabled(true);
   controller->RequestCollapse(true);
   controller->SetExpandOnHoverEnabled(true);
 

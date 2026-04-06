@@ -1018,24 +1018,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   EXPECT_EQ(bounds.x(), region_view()->GetBoundsInScreen().x());
 }
 
-// TODO(crbug.com/500038662): Instead of needing to subclass, add expand on
-// hover support for the vertical tabs browser test mixin.
-class VerticalTabStripRegionViewExpandOnHoverTest
-    : public VerticalTabStripRegionViewTest {
- public:
-  VerticalTabStripRegionViewExpandOnHoverTest() = default;
-
-  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      override {
-    return {{tabs::kVerticalTabs, {}}, {tabs::kVerticalTabsExpandOnHover, {}}};
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewExpandOnHoverTest,
-                       LockPrecedence) {
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LockPrecedence) {
   // Set up collapsed vertical tab strip with expand on hover enabled.
   VerticalTabStripRegionView* view = region_view();
-  state_controller()->SetVerticalTabsEnabled(true);
   state_controller()->SetExpandOnHoverEnabled(true);
   state_controller()->RequestCollapse(true);
 
