@@ -300,7 +300,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.searchboxCallbackRouter_.onContextualInputStatusChanged.addListener(
           this.onContextualInputStatusChanged_.bind(this)),
       this.searchboxCallbackRouter_.onTabStripChanged.addListener(
-          this.refreshTabSuggestions_.bind(this)),
+          this.refreshTabSuggestions.bind(this)),
       this.searchboxCallbackRouter_.addFileContext.addListener(
           this.addFileContextFromBrowser.bind(this)),
       this.searchboxCallbackRouter_.updateAutoSuggestedTabContext.addListener(
@@ -973,24 +973,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   protected onContextMenuOpened_() {
     this.contextMenuOpened = true;
-    this.refreshTabSuggestions_();
-  }
-
-  protected async refreshTabSuggestions_() {
-    if (!this.contextMenuOpened) {
-      return;
-    }
-    const {tabs} = await this.searchboxHandler_.getRecentTabs();
-    this.tabSuggestions = [...tabs];
-  }
-
-  protected async onGetTabPreview_(e: CustomEvent<{
-    tabId: number,
-    onPreviewFetched: (previewDataUrl: string) => void,
-  }>) {
-    const {previewDataUrl} =
-        await this.searchboxHandler_.getTabPreview(e.detail.tabId);
-    e.detail.onPreviewFetched(previewDataUrl || '');
+    this.refreshTabSuggestions();
   }
 
   protected voiceSearchEndCleanup_() {
