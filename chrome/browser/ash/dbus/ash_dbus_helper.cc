@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/floss_media_client.h"
+#include "chromeos/ash/components/dbus/beam/zr_vendor_os_client.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
@@ -262,6 +263,10 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<HumanPresenceDBusClient>(bus);
   }
 
+  if (features::IsHeliumArcvmKioskEnabled()) {
+    InitializeDBusClient<ZrVendorOsClient>(bus);
+  }
+
   // FeaturedClient is not a feature and instead uses the FieldTrialList (which
   // is initialized with the FeatureList) to record early-boot trials in UMA.
   InitializeDBusClient<featured::FeaturedClient>(bus);
@@ -274,6 +279,9 @@ void ShutdownDBus() {
 
   // Feature list-dependent D-Bus clients are shut down first because we try to
   // shut down in reverse order of initialization (in case of dependencies).
+  if (features::IsHeliumArcvmKioskEnabled()) {
+    ZrVendorOsClient::Shutdown();
+  }
   if (features::IsSnoopingProtectionEnabled() ||
       features::IsQuickDimEnabled()) {
     HumanPresenceDBusClient::Shutdown();

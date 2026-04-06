@@ -113,6 +113,7 @@ static_library("dbus") {
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/audio",
+    "//chromeos/ash/components/dbus/beam",
     "//chromeos/ash/components/dbus/biod",
     "//chromeos/ash/components/dbus/cdm_factory_daemon",
     "//chromeos/ash/components/dbus/cec_service",

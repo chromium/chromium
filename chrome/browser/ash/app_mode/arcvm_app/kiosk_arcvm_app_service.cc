@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chromeos/ash/components/dbus/beam/zr_vendor_os_client.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
@@ -177,6 +178,7 @@ KioskArcvmAppService::KioskArcvmAppService(Profile* profile)
   arc::ArcSessionManager::Get()->AddObserver(this);
   app_manager_->AddObserver(this);
   arc::ArcPolicyBridge::GetForBrowserContext(profile_)->AddObserver(this);
+  BindBeamServiceStatusWatcher();
   PreconditionsChanged();
 }
 
@@ -197,6 +199,24 @@ void KioskArcvmAppService::RequestIconUpdate() {
   OnIconUpdated(app_icon_.get());
 }
 
+void KioskArcvmAppService::BindBeamServiceStatusWatcher() {
+  auto* zr_vendor_os_client = ash::ZrVendorOsClient::Get();
+  CHECK(zr_vendor_os_client);
+  zr_vendor_os_client->WaitForServiceToBeAvailable(
+      base::BindOnce(&KioskArcvmAppService::OnZrVendorOsServiceReady,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void KioskArcvmAppService::OnZrVendorOsServiceReady(bool service_is_ready) {
+  if (!service_is_ready) {
+    LOG(ERROR) << "Failed to wait for zrvendor_os_service D-Bus interface.";
+    return;
+  }
+  VLOG(2) << "zrvendor_os_service is available over D-Bus.";
+  beam_services_ready_ = true;
+  PreconditionsChanged();
+}
+
 void KioskArcvmAppService::PreconditionsChanged() {
   VLOG(2) << "Preconditions for kiosk app changed";
   app_id_ = GetAppId();
@@ -214,18 +234,20 @@ void KioskArcvmAppService::PreconditionsChanged() {
           << (pending_policy_app_installs_.count(app_info_->package_name)
                   ? "non-compliant"
                   : "compliant");
+  VLOG(2) << "Beam Services dbus status: " << beam_services_ready_;
+
   RequestIconUpdate();
   if (app_info_ && app_info_->ready && compliance_report_received_ &&
       pending_policy_app_installs_.count(app_info_->package_name) == 0 &&
-      !task_id_.has_value()) {
-      if (!app_launcher_) {
-        VLOG(2) << "Starting kiosk app";
-        observers_.NotifyAppPrepared();
-        observers_.NotifyAppLaunching();
-        app_launcher_ = std::make_unique<KioskArcvmAppLauncher>(
-            ArcAppListPrefs::Get(profile_), app_id_, this);
-        app_launcher_->LaunchApp(profile_);
-      }
+      beam_services_ready_ && !task_id_.has_value()) {
+    if (!app_launcher_) {
+      VLOG(2) << "Starting kiosk app";
+      observers_.NotifyAppPrepared();
+      observers_.NotifyAppLaunching();
+      app_launcher_ = std::make_unique<KioskArcvmAppLauncher>(
+          ArcAppListPrefs::Get(profile_), app_id_, this);
+      app_launcher_->LaunchApp(profile_);
+    }
   } else if (task_id_.has_value()) {
     VLOG(2) << "Kiosk app already running";
   }

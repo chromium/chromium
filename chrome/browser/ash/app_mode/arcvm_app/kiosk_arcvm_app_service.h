@@ -104,6 +104,8 @@ class KioskArcvmAppService : public KeyedService,
   void RequestIconUpdate();
   // Triggered when app is closed to reset launcher.
   void ResetAppLauncher();
+  void BindBeamServiceStatusWatcher();
+  void OnZrVendorOsServiceReady(bool service_is_ready);
 
   const raw_ptr<Profile> profile_;
   raw_ref<KioskArcvmAppManager> app_manager_;
@@ -123,6 +125,10 @@ class KioskArcvmAppService : public KeyedService,
   bool compliance_report_received_ = false;
   // Keeps track whether the app is already launched
   std::unique_ptr<KioskArcvmAppLauncher> app_launcher_;
+  bool beam_services_ready_ = false;
+  // Must be the last member of the class to safely cancel callbacks if
+  // destroyed.
+  base::WeakPtrFactory<KioskArcvmAppService> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

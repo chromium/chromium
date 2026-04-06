@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("beam") {
+  output_name = "ash_beam"
+  defines = [ "IS_ASH_DBUS_BEAM_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/common",
+    "//dbus",
+  ]
+  sources = [
+    "fake_zr_vendor_os_client.cc",
+    "fake_zr_vendor_os_client.h",
+    "zr_vendor_os_client.cc",
+    "zr_vendor_os_client.h",
+  ]
+}

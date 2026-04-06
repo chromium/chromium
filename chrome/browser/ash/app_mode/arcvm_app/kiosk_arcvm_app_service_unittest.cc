@@ -21,6 +21,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/beam/zr_vendor_os_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -92,6 +93,7 @@ class KioskArcvmAppServiceTest : public testing::Test {
   KioskArcvmAppServiceTest() = default;
 
   void SetUp() override {
+    ash::ZrVendorOsClient::InitializeFake();
     arc_app_test_.set_persist_service_manager(true);
     arc_app_test_.SetUserEmail(kAppEmail);
     arc_app_test_.PreProfileSetUp();
@@ -138,6 +140,7 @@ class KioskArcvmAppServiceTest : public testing::Test {
     ash_test_helper_->TearDown();
     ash_test_helper_.reset();
     arc_app_test_.PostProfileTearDown();
+    ash::ZrVendorOsClient::Shutdown();
   }
 
   TestingProfile* profile() { return profile_.get(); }
