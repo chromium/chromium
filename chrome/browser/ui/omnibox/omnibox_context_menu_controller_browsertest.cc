@@ -29,6 +29,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
+#include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -319,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   // fallback to the default logic and log the histogram.
   histogram_tester.ExpectUniqueSample(
       "Omnibox.AimEntrypoint.ClassicPopup.ContextualElement.Clicked",
-      OmniboxContextMenuController::ContextType::kCanvas, 1);
+      omnibox::ContextType::kCanvas, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,

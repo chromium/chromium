@@ -18,6 +18,7 @@
 #include "components/contextual_search/input_state_model.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/input_state.h"
+#include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "ui/base/models/image_model.h"
 #include "ui/menus/simple_menu_model.h"
@@ -91,26 +92,6 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void UpdateSearchboxContext(std::optional<TabInfo> tab_info,
                               std::optional<omnibox::ToolMode> tool_mode);
 
-  // Tracks the context type.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(ContextType)
-  enum class ContextType {
-    kTab = 0,
-    kFile = 1,
-    kImage = 2,
-    kImageGen = 3,
-    kDeepResearch = 4,
-    kCanvas = 5,
-    kAutoModel = 6,
-    kThinkingModel = 7,
-    kRegularModel = 8,
-    kProNoGenUiModel = 9,
-    kUnknown = 10,
-    kMaxValue = kUnknown,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ContextType,//tools/metrics/histograms/metadata/omnibox/histograms.xml:ContextType)
-
  private:
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
                            IsCommandIdEnabledHelper_InitialState);
@@ -179,8 +160,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   int GetMaxTabSuggestions() const;
 
-  OmniboxContextMenuController::ContextType CommandIdToEnum(
-      int command_id) const;
+  omnibox::ContextType CommandIdToEnum(int command_id) const;
 
   /* Helpers for InputType input_state fields. */
   const omnibox::InputTypeConfig* GetInputTypeConfig(

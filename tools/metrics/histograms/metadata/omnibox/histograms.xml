@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".Unknown" summary=""/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:ContextType) -->
 
 <variants name="DsePreloadTriggerType">
   <variant name=".OnPress" summary="on-press trigger"/>

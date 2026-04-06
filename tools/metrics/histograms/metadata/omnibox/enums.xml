@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Unknown"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:ContextType) -->
 
 <enum name="DocumentProviderAllowedReason">
   <int value="0" label="Allowed"/>

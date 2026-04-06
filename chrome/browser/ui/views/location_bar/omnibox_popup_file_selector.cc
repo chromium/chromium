@@ -28,6 +28,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
 #include "ui/base/base_window.h"
@@ -169,9 +170,8 @@ void OmniboxPopupFileSelector::OnFileDataReady(
                                  : kClassicContextTypeHistogramPrefix;
   const std::string sliced_prefix = base::StrCat({prefix, ".Clicked"});
   base::UmaHistogramEnumeration(
-      sliced_prefix, is_image_
-                         ? OmniboxContextMenuController::ContextType::kImage
-                         : OmniboxContextMenuController::ContextType::kFile);
+      sliced_prefix,
+      is_image_ ? omnibox::ContextType::kImage : omnibox::ContextType::kFile);
 }
 
 void OmniboxPopupFileSelector::UpdateSearchboxContextData(
