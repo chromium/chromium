@@ -26,12 +26,6 @@ class AutomationManifestTest : public ChromeManifestTest {
  public:
   AutomationManifestTest() : channel_(version_info::Channel::UNKNOWN) {}
 
- protected:
-  AutomationInfo* GetAutomationInfo(scoped_refptr<Extension> extension) {
-    return static_cast<AutomationInfo*>(
-        extension->GetManifestData(manifest_keys::kAutomation));
-  }
-
  private:
   void SetUp() override {
     auto* command_line = base::CommandLine::ForCurrentProcess();
