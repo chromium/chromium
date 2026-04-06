@@ -2978,6 +2978,44 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ActiveModelIsPassed) {
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 }
 
+TEST_F(ContextualTasksComposeboxHandlerTest, SuggestInputsCallbackWorks) {
+  auto mock_session =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+
+  lens::proto::LensOverlaySuggestInputs suggest_inputs;
+
+  EXPECT_CALL(*mock_session, GetSuggestInputs())
+      .WillRepeatedly(testing::Return(suggest_inputs));
+
+  auto mock_session_ptr = mock_session.get();
+
+  auto mock_get_session_callback = base::BindRepeating(
+      [](contextual_search::MockContextualSearchSessionHandle* ptr)
+          -> contextual_search::ContextualSearchSessionHandle* { return ptr; },
+      mock_session_ptr);
+
+  mojo::PendingRemote<composebox::mojom::Page> page_remote;
+  auto page_receiver = page_remote.InitWithNewPipeAndPassReceiver();
+
+  auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
+      mock_ui_.get(), profile(), web_contents(),
+      mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+      std::move(page_remote),
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      mock_get_session_callback,
+      base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
+                          base::Unretained(mock_ui_.get())),
+      base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
+                          base::Unretained(mock_ui_.get())));
+
+  auto* client = static_cast<ContextualOmniboxClient*>(
+      custom_handler->GetOmniboxControllerForTesting()->client());
+
+  auto result = client->GetLensOverlaySuggestInputsForTesting();
+
+  ASSERT_TRUE(result.has_value());
+}
+
 TEST_F(ContextualTasksComposeboxHandlerTest,
        OnLensThumbnailCreated_TriggersUploadStatusChanges) {
   // Setup: mock the overlay token.

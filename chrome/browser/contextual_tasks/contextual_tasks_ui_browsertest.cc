@@ -298,8 +298,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   side_panel_controller->OnSidePanelStateChanged();
   run_loop.Run();
 }
-
-
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest, HandleLensButtonClick) {
   // Setup LensController
   auto override =

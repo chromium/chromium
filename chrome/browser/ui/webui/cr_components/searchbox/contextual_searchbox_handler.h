@@ -70,6 +70,10 @@ class ContextualOmniboxClient : public SearchboxOmniboxClient {
   void SetSuggestInputsCallback(GetSuggestInputsCallback callback) {
     suggest_inputs_callback_ = std::move(callback);
   }
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetLensOverlaySuggestInputsForTesting() const {
+    return GetLensOverlaySuggestInputs();
+  }
 
  protected:
   std::optional<lens::proto::LensOverlaySuggestInputs>
