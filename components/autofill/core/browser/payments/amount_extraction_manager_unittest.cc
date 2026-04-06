@@ -211,6 +211,14 @@ class AmountExtractionManagerTest
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableBuyNowPayLaterSyncing},
+      /*disabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
+                             features::kAutofillEnableAmountExtractionTesting});
+
   std::vector<FieldType> field_types = {FieldType::CREDIT_CARD_NUMBER,
                                         FieldType::CREDIT_CARD_NAME_FULL,
                                         FieldType::CREDIT_CARD_EXP_MONTH};
@@ -927,6 +935,14 @@ TEST_F(AmountExtractionManagerTest,
 }
 
 TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Timeout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableBuyNowPayLaterSyncing},
+      /*disabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
+                             features::kAutofillEnableAmountExtractionTesting});
+
   base::HistogramTester histogram_tester;
   ON_CALL(autofill_driver(), ExtractLabeledTextNodeValue)
       .WillByDefault(
@@ -1644,6 +1660,14 @@ TEST_F(AmountExtractionManagerTest,
 // extraction times out.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_AmountExtractionTimeout_BnplManagerNotified) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableBuyNowPayLaterSyncing},
+      /*disabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
+                             features::kAutofillEnableAmountExtractionTesting});
+
   EXPECT_CALL(
       *autofill_manager().GetPaymentsBnplManager(),
       OnAmountExtractionReturned(Eq(std::nullopt), /*timeout_reached=*/true))

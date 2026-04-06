@@ -3431,7 +3431,7 @@ TEST_F(BrowserAutofillManagerTest,
       /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
                             features::kAutofillEnableBuyNowPayLaterSyncing,
                             features::kAutofillEnableBuyNowPayLater},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction});
 
   personal_data().test_payments_data_manager().AddBnplIssuer(
       test::GetTestUnlinkedBnplIssuer());
