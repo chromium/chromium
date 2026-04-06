@@ -740,16 +740,10 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
   submit_query->mutable_payload()->set_query_text_source(
       create_client_to_aim_request_info->query_text_source);
 
-  omnibox::ToolMode tool_mode = create_client_to_aim_request_info->active_tool;
-  submit_query->mutable_payload()->set_use_research_agent(
-      tool_mode == omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-  submit_query->mutable_payload()->set_use_image_generation(
-      tool_mode == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN ||
-      tool_mode == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
-  submit_query->mutable_payload()->set_use_canvas(
-      tool_mode == omnibox::ToolMode::TOOL_MODE_CANVAS);
   submit_query->mutable_payload()->set_model_mode(static_cast<lens::ModelMode>(
       create_client_to_aim_request_info->active_model));
+  submit_query->mutable_payload()->set_tool_mode(static_cast<lens::ToolMode>(
+      create_client_to_aim_request_info->active_tool));
 
   // Add additional CGI params.
   for (const auto& param :

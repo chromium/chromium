@@ -3285,6 +3285,53 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequestWithUploadedPdf) {
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequest_IncludesToolModeAndModelMode) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Create the ClientToAimRequest with specific tool and model modes.
+  std::unique_ptr<CreateClientToAimRequestInfo> client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  client_to_aim_request_info->query_text = "hello";
+  client_to_aim_request_info->active_tool =
+      omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+  client_to_aim_request_info->active_model =
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
+  client_to_aim_request_info->query_start_time = kTestQueryStartTime;
+  lens::ClientToAimMessage client_to_aim_request =
+      controller().CreateClientToAimRequest(
+          std::move(client_to_aim_request_info));
+
+  // Assert: The ClientToAimRequest is populated correctly.
+  EXPECT_EQ(client_to_aim_request.submit_query().payload().model_mode(),
+            lens::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_EQ(client_to_aim_request.submit_query().payload().tool_mode(),
+            lens::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  // Act: Create another request with different modes.
+  std::unique_ptr<CreateClientToAimRequestInfo> client_to_aim_request_info_2 =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  client_to_aim_request_info_2->query_text = "hello 2";
+  client_to_aim_request_info_2->active_tool =
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
+  client_to_aim_request_info_2->active_model =
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
+  client_to_aim_request_info_2->query_start_time = kTestQueryStartTime;
+  lens::ClientToAimMessage client_to_aim_request_2 =
+      controller().CreateClientToAimRequest(
+          std::move(client_to_aim_request_info_2));
+
+  // Assert: The second request is also populated correctly.
+  EXPECT_EQ(client_to_aim_request_2.submit_query().payload().model_mode(),
+            lens::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  EXPECT_EQ(client_to_aim_request_2.submit_query().payload().tool_mode(),
+            lens::ToolMode::TOOL_MODE_IMAGE_GEN);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        CreateClientToAimRequestWithAdditionalCgiParams) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
