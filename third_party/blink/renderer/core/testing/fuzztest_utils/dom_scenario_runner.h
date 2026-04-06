@@ -87,6 +87,10 @@ class DomScenarioRunner
   // Returns true if any action was performed.
   bool PerformElementActions(Element* element, const NodeState& state);
 
+  // Creates a Web Animations API animation on the element.
+  void CreateWebAnimation(Element* element, const WebAnimationParams& params);
+  void CancelWebAnimations(const HeapVector<Member<Element>>& created_elements);
+
   // Enters fullscreen on an element, triggering :fullscreen pseudo-class,
   // top-layer, and inertness changes. Includes a style/layout update.
   void EnterFullscreen(Element* element);

@@ -9,6 +9,7 @@
 #include "base/strings/to_string.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
+#include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace blink {
@@ -168,6 +169,23 @@ std::string DomScenarioToString(const DomScenario& scenario) {
     } else if (modified.should_enter_fullscreen) {
       base::StrAppend(&out, {"   Enter Fullscreen: modified phase\n"});
     }
+
+    auto format_web_animation =
+        [](const std::optional<WebAnimationParams>& anim) -> std::string {
+      if (!anim.has_value()) {
+        return "none";
+      }
+      CSSPropertyName prop_name(anim->property);
+      return base::StrCat({prop_name.ToAtomicString().Utf8(), ": ",
+                           anim->from_value, " -> ", anim->to_value});
+    };
+    if (initial.web_animation.has_value() ||
+        modified.web_animation.has_value()) {
+      base::StrAppend(
+          &out,
+          {"   Web Animation: ", format_web_animation(initial.web_animation),
+           " | ", format_web_animation(modified.web_animation), "\n"});
+    }
   }
   base::StrAppend(&out, {"--------------------------------------"});
   return out;
@@ -196,7 +214,8 @@ fuzztest::Domain<NodeState> AnyNodeState(DomScenarioDomainSpecification* spec,
       fuzztest::OptionalOf(spec->AnyStyles()),
       fuzztest::OptionalOf(spec->AnyText()), in_shadow_dom_domain,
       use_slot_projection_domain, should_focus_domain,
-      should_scroll_into_view_domain, should_enter_fullscreen_domain);
+      should_scroll_into_view_domain, should_enter_fullscreen_domain,
+      fuzztest::OptionalOf(AnyWebAnimationParams()));
 }
 
 // Domain for a complete node specification (tag + initial state + modified

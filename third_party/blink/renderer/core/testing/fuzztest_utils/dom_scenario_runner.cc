@@ -12,7 +12,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
+#include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -70,8 +76,10 @@ void DomScenarioRunner::RunTest(const DomScenario& input) {
   InjectCustomElementDefinitions();
   CreateInitialDOM(input, root, created_elements);
   AdvanceAnimations();
+  CancelWebAnimations(created_elements);
   ApplyModifications(root, input.node_specs, created_elements);
   AdvanceAnimations();
+  CancelWebAnimations(created_elements);
   ExitFullscreen();
   GetDocument().body()->RemoveChildren();
   GetDocument().head()->RemoveChildren();
@@ -323,6 +331,10 @@ bool DomScenarioRunner::PerformElementActions(Element* element,
     EnterFullscreen(element);
     acted = true;
   }
+  if (state.web_animation.has_value()) {
+    CreateWebAnimation(element, *state.web_animation);
+    acted = true;
+  }
   if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
     if (select->UsesMenuList()) {
       select->ShowPopup();
@@ -342,6 +354,40 @@ bool DomScenarioRunner::PerformElementActions(Element* element,
     ObserveElementAction(element);
   }
   return acted;
+}
+
+void DomScenarioRunner::CreateWebAnimation(Element* element,
+                                           const WebAnimationParams& params) {
+  auto* start_keyframe = MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(
+      params.property, String(params.from_value),
+      SecureContextMode::kInsecureContext, nullptr);
+  auto* end_keyframe = MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(params.property, String(params.to_value),
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  auto* effect = MakeGarbageCollected<KeyframeEffect>(element, model, timing);
+  Animation* animation =
+      Animation::Create(effect, &GetDocument().Timeline(), ASSERT_NO_EXCEPTION);
+  animation->play();
+}
+
+void DomScenarioRunner::CancelWebAnimations(
+    const HeapVector<Member<Element>>& created_elements) {
+  for (Element* element : created_elements) {
+    for (Animation* animation : element->getAnimations()) {
+      animation->cancel();
+    }
+  }
 }
 
 void DomScenarioRunner::EnterFullscreen(Element* element) {

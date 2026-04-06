@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/testing/fuzztest_utils/css_domains.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace blink {
@@ -34,6 +35,7 @@ struct NodeState {
   bool should_focus = false;
   bool should_scroll_into_view = false;
   bool should_enter_fullscreen = false;
+  std::optional<WebAnimationParams> web_animation;
 };
 
 // Specification for a single DOM node, including its tag, initial state,

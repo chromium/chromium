@@ -7,11 +7,10 @@
 
 #include <string>
 
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace blink {
-
-enum class CSSPropertyID;
 enum class CSSValueID;
 
 // CSS-specific domain functions for use in any FuzzTest test.
@@ -118,6 +117,17 @@ fuzztest::Domain<std::string> AnyCSSMaxSizeValue();
 // Generates CSS transform values: translate, scale, rotate, skew,
 // perspective, matrix, matrix3d, or none.
 fuzztest::Domain<std::string> AnyCSSTransformValue();
+
+// Parameters for a Web Animation (element.animate() equivalent).
+struct WebAnimationParams {
+  CSSPropertyID property;
+  std::string from_value;
+  std::string to_value;
+};
+
+// Generates fuzzed Web Animation parameters: picks an animatable CSS property
+// and generates from/to values appropriate for that property.
+fuzztest::Domain<WebAnimationParams> AnyWebAnimationParams();
 
 // Generates a value that is appropriate for certain CSS properties.
 // It uses the utilities above and in the case of color-related properties,

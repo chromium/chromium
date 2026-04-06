@@ -582,6 +582,22 @@ fuzztest::Domain<std::string> AnyCSSTransformValue() {
       AnyCSSSkewValue(), AnyCSSPerspectiveValue(), AnyCSSMatrixValue());
 }
 
+fuzztest::Domain<WebAnimationParams> AnyWebAnimationParams() {
+  return fuzztest::FlatMap(
+      [](CSSPropertyID property) {
+        return fuzztest::StructOf<WebAnimationParams>(
+            fuzztest::Just(property), AnyPlausibleValueForCSSProperty(property),
+            AnyPlausibleValueForCSSProperty(property));
+      },
+      fuzztest::ElementOf<CSSPropertyID>(
+          {CSSPropertyID::kOpacity, CSSPropertyID::kTransform,
+           CSSPropertyID::kWidth, CSSPropertyID::kHeight,
+           CSSPropertyID::kDisplay, CSSPropertyID::kVisibility,
+           CSSPropertyID::kContentVisibility, CSSPropertyID::kColor,
+           CSSPropertyID::kBackgroundColor, CSSPropertyID::kMarginTop,
+           CSSPropertyID::kPaddingTop}));
+}
+
 fuzztest::Domain<std::string> AnyPlausibleValueForCSSProperty(
     CSSPropertyID property) {
   // Basic keyword-valued properties.
