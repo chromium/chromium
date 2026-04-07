@@ -1442,7 +1442,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sLockTopControlsOnLargeTablets =
             newMutableFlagWithSafeDefault(LOCK_TOP_CONTROLS_ON_LARGE_TABLETS, false);
     public static final MutableFlagWithSafeDefault sMediaIndicatorsAndroid =
-            newMutableFlagWithSafeDefault(MEDIA_INDICATORS_ANDROID, false);
+            newMutableFlagWithSafeDefault(MEDIA_INDICATORS_ANDROID, true);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, true);
     public static final MutableFlagWithSafeDefault sOmniboxAutofocusOnIncognitoNtp =

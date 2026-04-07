@@ -293,7 +293,7 @@ void CreateMediaStreamCaptureIndicatorUI(
   if (base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing) &&
       base::FeatureList::IsEnabled(chrome::android::kMediaIndicatorsAndroid) &&
       base::GetFieldTrialParamByFeatureAsBool(
-          chrome::android::kMediaIndicatorsAndroid, "sharing", false) &&
+          chrome::android::kMediaIndicatorsAndroid, "sharing", true) &&
       display_notification &&
       media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
     notification_ui = std::make_unique<TabSharingIndicatorAndroid>(media_id);

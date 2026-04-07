@@ -1070,8 +1070,7 @@ BASE_FEATURE(kAutoPictureInPictureAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables audio power level analysis on Android to determine webcontents
 // audibility changes. This modifies the behavior of the MediaIndicatorsAndroid
 // feature to achieve a more responsive UI update when audio starts or stops.
-BASE_FEATURE(kEnableAudioMonitoringOnAndroid,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableAudioMonitoringOnAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Picture-in-Picture menu item on the video context menu on Android.
 BASE_FEATURE(kContextMenuPictureInPictureAndroid,
