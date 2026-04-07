@@ -1684,6 +1684,11 @@ class CONTENT_EXPORT NavigationRequest
     // DidFinishNavigation() to observers, and destroy the NavigationRequest.
     // `MarkFinish()` is used to record this timestamp at the end of navigation.
     base::TimeTicks finish;
+
+    // The time when the renderer process was created.
+    base::TimeTicks renderer_process_created;
+    // The time when the renderer process was launched.
+    base::TimeTicks renderer_process_launched;
   };
 
   // Fill in the timestamps needed to generate a trace of the navigation
@@ -1794,6 +1799,8 @@ class CONTENT_EXPORT NavigationRequest
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
+  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest,
+                           ShouldRecordNavigationTimelineUkmForChromeUI);
 
   struct ConsoleMessage {
     blink::mojom::ConsoleMessageLevel level;
