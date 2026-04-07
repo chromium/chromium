@@ -282,6 +282,21 @@ if (build_with_chromium) {
     deps += [ "//base/test:test_support" ]
   }
 
+  executable("bssl_bench") {
+    testonly = true
+    sources = rebase_path(bench_sources + bench_internal_headers, ".", "src")
+    deps = [
+      ":boringssl",
+      "//third_party/google_benchmark",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":internal_config",
+      "//build/config/compiler:no_chromium_code",
+    ]
+  }
+
   foreach(source, fuzz_sources) {
     fuzzer = get_path_info(source, "name")
     fuzzer_test("boringssl_${fuzzer}_fuzzer") {
