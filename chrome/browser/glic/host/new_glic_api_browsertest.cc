@@ -83,7 +83,16 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
 #define MAYBE_NewGlicApiTest NewGlicApiTest
 #endif
 
-class MAYBE_NewGlicApiTest : public GlicApiBrowserTest, public WithTestParams {
+class GlicApiTestPasskeys {
+ public:
+  static InvokeWithAutoSubmitPasskey GetPassKey() {
+    return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
+  }
+};
+
+class MAYBE_NewGlicApiTest : public GlicApiBrowserTest,
+                             public WithTestParams,
+                             public GlicApiTestPasskeys {
  public:
   MAYBE_NewGlicApiTest() : GlicApiBrowserTest("./new_glic_api_browsertest.js") {
     scoped_vmodule_switches_.InitWithSwitches("*glic*=1");
@@ -220,6 +229,16 @@ IN_PROC_BROWSER_TEST_P(MAYBE_NewGlicApiTest,
   ASSERT_TRUE(OpenGlicForActiveTab());
   GetOnlyGlicInstance()->sharing_manager().PinTabs(
       {GetTabListInterface()->GetActiveTab()->GetHandle()});
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(MAYBE_NewGlicApiTest,
+                       testInvokeWaitsForNotifyPanelWillOpen) {
+  ASSERT_TRUE(OpenGlicForActiveTab());
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  coordinator().InvokeWithAutoSubmit(
+      GetPassKey(), GetTabListInterface()->GetActiveTab(), std::move(options));
+
   ExecuteJsTest();
 }
 

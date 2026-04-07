@@ -39,6 +39,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class GlicInternalsPageHandler;
   friend class GlicInstanceCoordinatorBrowserTest;
   friend class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest;
+  friend class GlicApiTestPasskeys;
 };
 
 using InvokeWithAutoSubmitPasskey =

@@ -65,9 +65,7 @@ export class WebClientImpl implements WebClientInterface {
 
   async notifyPanelWillOpen(panelOpeningData: PanelOpeningDataMojo):
       Promise<{openPanelInfo: OpenPanelInfoMojo}> {
-    return this.host.openCloseTasks.add(async () => {
-      return this.processNotifyPanelWillOpen(panelOpeningData);
-    });
+    return this.processNotifyPanelWillOpen(panelOpeningData);
   }
 
   async processNotifyPanelWasClosed(): Promise<void> {
@@ -76,8 +74,7 @@ export class WebClientImpl implements WebClientInterface {
         'glicWebClientNotifyPanelWasClosed', undefined);
   }
   notifyPanelWasClosed(): Promise<void> {
-    return this.host.openCloseTasks.add(
-        () => this.processNotifyPanelWasClosed());
+    return this.processNotifyPanelWasClosed();
   }
 
   invoke(options: InvokeOptionsMojo): Promise<void> {
