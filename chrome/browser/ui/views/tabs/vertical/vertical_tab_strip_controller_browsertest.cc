@@ -337,6 +337,67 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
   EXPECT_TRUE(bubble->GetGroupFooterViewForTesting()->GetVisible());
 }
 
-// TODO(crbug.com/490428062): Expand Test Coverage for Keyboard Commands.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+                       MoveTabFirstAndLastUnpinned) {
+  AppendTab();
+  AppendTab();
+
+  auto* tab_model = browser()->tab_strip_model();
+  ASSERT_EQ(3, tab_model->count());
+
+  auto* tab0 = tab_model->GetTabAtIndex(0);
+  auto* tab1 = tab_model->GetTabAtIndex(1);
+  auto* tab2 = tab_model->GetTabAtIndex(2);
+
+  vertical_tab_strip_controller()->MoveTabLast(tab0);
+
+  // Verify the order of the tabs after tab0 is moved to the end.
+  EXPECT_EQ(tab_model->GetTabAtIndex(2), tab0);
+  EXPECT_EQ(tab_model->GetTabAtIndex(0), tab1);
+  EXPECT_EQ(tab_model->GetTabAtIndex(1), tab2);
+
+  vertical_tab_strip_controller()->MoveTabFirst(tab0);
+
+  // Verify the order of the tabs after tab0 is moved to the front.
+  EXPECT_EQ(tab_model->GetTabAtIndex(0), tab0);
+  EXPECT_EQ(tab_model->GetTabAtIndex(1), tab1);
+  EXPECT_EQ(tab_model->GetTabAtIndex(2), tab2);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+                       MoveTabFirstAndLastPinned) {
+  AppendTab();
+  AppendTab();
+
+  auto* tab_model = browser()->tab_strip_model();
+  ASSERT_EQ(3, tab_model->count());
+
+  tab_model->SetTabPinned(0, true);
+  tab_model->SetTabPinned(1, true);
+
+  EXPECT_TRUE(tab_model->IsTabPinned(0));
+  EXPECT_TRUE(tab_model->IsTabPinned(1));
+  EXPECT_FALSE(tab_model->IsTabPinned(2));
+
+  auto* tab0 = tab_model->GetTabAtIndex(0);
+  auto* tab1 = tab_model->GetTabAtIndex(1);
+  auto* tab2 = tab_model->GetTabAtIndex(2);
+
+  vertical_tab_strip_controller()->MoveTabLast(tab0);
+
+  // Verify the order of the tabs after tab0 is moved to the end of the
+  // pinned tabs.
+  EXPECT_EQ(tab_model->GetTabAtIndex(1), tab0);
+  EXPECT_EQ(tab_model->GetTabAtIndex(0), tab1);
+  EXPECT_EQ(tab_model->GetTabAtIndex(2), tab2);
+
+  vertical_tab_strip_controller()->MoveTabFirst(tab0);
+
+  // Verify the order of the tabs after tab0 is moved to the front of the
+  // pinned tabs.
+  EXPECT_EQ(tab_model->GetTabAtIndex(0), tab0);
+  EXPECT_EQ(tab_model->GetTabAtIndex(1), tab1);
+  EXPECT_EQ(tab_model->GetTabAtIndex(2), tab2);
+}
 
 }  // namespace
