@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -25,6 +26,9 @@
 namespace net {
 
 namespace {
+
+// Allow SCTs future-dated by this grace period to account for clock skew.
+constexpr base::TimeDelta kFutureTimestampGracePeriod = base::Seconds(60);
 
 // Record SCT verification status. This metric would help detecting presence
 // of unknown CT logs as well as bad deployments (invalid SCTs).
@@ -181,7 +185,7 @@ bool MultiLogCTVerifier::VerifySingleSCT(
   }
 
   // SCT verified ok, just make sure the timestamp is legitimate.
-  if (sct->timestamp > current_time) {
+  if (sct->timestamp > current_time + kFutureTimestampGracePeriod) {
     AddSCTAndLogStatus(sct, ct::SCT_STATUS_INVALID_TIMESTAMP, output_scts);
     return false;
   }

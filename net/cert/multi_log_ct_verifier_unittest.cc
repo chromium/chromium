@@ -198,6 +198,33 @@ TEST_F(MultiLogCTVerifierTest, VerifiesSCTOverX509Cert) {
       scts, ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION));
 }
 
+TEST_F(MultiLogCTVerifierTest, FreshSCTsOnlyAcceptedWithinGracePeriod) {
+  std::string sct_list = ct::GetSCTListForTesting();
+
+  // The basic SCT verifies fine at now().
+  SignedCertificateTimestampAndStatusList scts;
+  verifier_->Verify(chain_.get(), std::string_view(), sct_list,
+                    base::Time::Now(), &scts, NetLogWithSource());
+  ASSERT_EQ(1U, scts.size());
+  base::Time sct_timestamp = scts[0].sct->timestamp;
+
+  // The SCT should still verify when it was issued 50 seconds in the future.
+  SignedCertificateTimestampAndStatusList graced_scts;
+  verifier_->Verify(chain_.get(), std::string_view(), sct_list,
+                    sct_timestamp - base::Seconds(50), &graced_scts,
+                    NetLogWithSource());
+  ASSERT_EQ(1U, graced_scts.size());
+  EXPECT_EQ(ct::SCT_STATUS_OK, graced_scts[0].status);
+
+  // The SCT should fail to verify when it was issued 70 seconds in the future.
+  SignedCertificateTimestampAndStatusList too_far_scts;
+  verifier_->Verify(chain_.get(), std::string_view(), sct_list,
+                    sct_timestamp - base::Seconds(70), &too_far_scts,
+                    NetLogWithSource());
+  ASSERT_EQ(1U, too_far_scts.size());
+  EXPECT_EQ(ct::SCT_STATUS_INVALID_TIMESTAMP, too_far_scts[0].status);
+}
+
 TEST_F(MultiLogCTVerifierTest, IdentifiesSCTFromUnknownLog) {
   std::string sct_list = ct::GetSCTListWithInvalidSCT();
   SignedCertificateTimestampAndStatusList scts;
