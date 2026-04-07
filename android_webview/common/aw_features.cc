@@ -146,7 +146,7 @@ BASE_FEATURE(kWebViewWebauthn, base::FEATURE_ENABLED_BY_DEFAULT);
 // This enables RenderDocument in WebView. Note that this will only take effect
 // iff both this feature flag and the content/public kRenderDocument flag is
 // enabled.
-BASE_FEATURE(kWebViewRenderDocument, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewRenderDocument, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, webview chromium initialization uses the startup tasks logic
 // where it runs the startup tasks asynchronously if startup is triggered from a

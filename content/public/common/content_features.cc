@@ -962,7 +962,7 @@ BASE_FEATURE(kWebOTP, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Trial to disable synchronous draw for synchronous compositor (ie Android
 // WebView).
-BASE_FEATURE(kWebViewAsyncDrawOnly, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewAsyncDrawOnly, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the web lockscreen API implementation
 // (https://github.com/WICG/lock-screen) in Chrome.
