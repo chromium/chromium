@@ -322,6 +322,16 @@ IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestNonManagedBrowser,
                   : CannotActReason::kNone);
 }
 
+// Verifies that the subscription tier is correctly logged to UMA.
+IN_PROC_BROWSER_TEST_P(GlicActorPolicyCheckerBrowserTestNonManagedBrowser,
+                       LogsSubscriptionTierHistogram) {
+  base::HistogramTester histogram_tester;
+  GetPolicyChecker().OnAiSubscriptionTierUpdated(GetParam());
+
+  histogram_tester.ExpectUniqueSample("Glic.Actor.G1SubscriptionTier",
+                                      GetParam(), 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          GlicActorPolicyCheckerBrowserTestNonManagedBrowser,
                          ::testing::Values(0, 1));

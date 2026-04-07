@@ -97,6 +97,18 @@ chromium-metrics-reviews@google.com.
   <variant name="Text"/>
 </variants>
 
+<histogram name="Glic.Actor.G1SubscriptionTier" enum="GlicG1SubscriptionTier"
+    expires_after="2026-12-31">
+  <owner>rosiey@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    Records the G1 subscription tier for consumer accounts during capability
+    checks. This metric is emitted statelessly on every evaluation, so analysts
+    must filter by Client Count on dashboards to deduplicate. This histogram
+    only focuses on consumer tiers (0-3).
+  </summary>
+</histogram>
+
 <histogram name="Glic.Actor.JournalEvent.{EventType}" units="ms"
     expires_after="2026-08-29">
   <owner>dtapuska@google.com</owner>
