@@ -196,7 +196,7 @@ void Transaction::ScheduleTask(blink::mojom::IDBTaskType type,
     return;
   }
 
-  ResetTimeoutTimer();
+  timeout_timer_.Stop();
   used_ = true;
   if (type == blink::mojom::IDBTaskType::Normal) {
     task_queue_.emplace(std::move(operation_name_for_metrics),
@@ -225,7 +225,7 @@ void Transaction::Abort(const DatabaseError& error) {
                                 UmaIDBExceptionExclusiveMaxValue);
 
   aborted_ = true;
-  ResetTimeoutTimer();
+  timeout_timer_.Stop();
 
   SetState(FINISHED);
 
@@ -823,7 +823,7 @@ Status Transaction::DoPendingCommit() {
   TRACE_EVENT1("IndexedDB", "Transaction::DoPendingCommit", "txn.id", id());
   CHECK(is_commit_pending_, base::NotFatalUntil::M145);
 
-  ResetTimeoutTimer();
+  timeout_timer_.Stop();
 
   // In multiprocess ports, front-end may have requested a commit but
   // an abort has already been initiated asynchronously by the
@@ -1091,9 +1091,10 @@ Status Transaction::RunTasks() {
     } else if (g_inactivity_timeout_enabled) {
       // Otherwise, start a timer in case the front-end gets wedged and never
       // requests further activity.
-      timeout_timer_.Start(FROM_HERE, kInactivityTimeoutPollPeriod,
-                           base::BindRepeating(&Transaction::TimeoutFired,
-                                               ptr_factory_.GetWeakPtr()));
+      timeout_timer_.Start(
+          FROM_HERE, kInactivityTimeout,
+          base::BindRepeating(&Transaction::OnInactivityTimeout,
+                              ptr_factory_.GetWeakPtr()));
     }
   }
 
@@ -1150,7 +1151,7 @@ void Transaction::NotifyOfIdbInternalsRelevantChange() {
   }
 }
 
-void Transaction::TimeoutFired() {
+void Transaction::OnInactivityTimeout() {
   // The timeout timer should only be running when these conditions are met:
   CHECK(used_, base::NotFatalUntil::M145);
   CHECK(!diagnostics_.mojo_receiver_disconnected, base::NotFatalUntil::M145);
@@ -1207,16 +1208,8 @@ void Transaction::TimeoutFired() {
     return;
   }
 
-  if (++timeout_strikes_ >= kMaxTimeoutStrikes) {
-    Abort(DatabaseError(blink::mojom::IDBException::kTimeoutError,
-                        u"Transaction timed out due to inactivity."));
-    ResetTimeoutTimer();
-  }
-}
-
-void Transaction::ResetTimeoutTimer() {
-  timeout_timer_.Stop();
-  timeout_strikes_ = 0;
+  Abort(DatabaseError(blink::mojom::IDBException::kTimeoutError,
+                      u"Transaction timed out due to inactivity."));
 }
 
 void Transaction::SetState(State state) {

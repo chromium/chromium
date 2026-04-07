@@ -109,7 +109,7 @@ BASE_FEATURE_ENUM_PARAM(SqliteRolloutStage,
 constexpr base::TimeDelta kBackingStoreGracePeriod = base::Seconds(2);
 
 // Duration of inactivity after which idle tasks are run.
-constexpr base::TimeDelta kIdleTimeout = base::Seconds(5);
+constexpr base::TimeDelta kIdleTimeout = base::Seconds(15);
 
 std::optional<bool> g_should_use_sqlite_for_testing;
 
@@ -130,9 +130,6 @@ base::OnceClosure& GetTeardownExtraStepForTesting() {
 // * It times out the request if the quota manager is taking too long.
 struct GetBucketSpaceRequestWrapper {
   static constexpr base::TimeDelta kTimeoutDuration = base::Seconds(45);
-  // The timeout is split into 3 steps. See similar logic in
-  // Transaction::kMaxTimeoutStrikes for reasoning.
-  static constexpr int kTimeoutFraction = 3;
 
   explicit GetBucketSpaceRequestWrapper(
       base::OnceCallback<void(storage::QuotaErrorOr<int64_t>)> callback)
@@ -140,9 +137,9 @@ struct GetBucketSpaceRequestWrapper {
     StartTimer();
   }
 
-  GetBucketSpaceRequestWrapper(GetBucketSpaceRequestWrapper&& other) {
-    wrapped_callback = std::move(other.wrapped_callback);
-    start_time = other.start_time;
+  GetBucketSpaceRequestWrapper(GetBucketSpaceRequestWrapper&& other)
+      : wrapped_callback(std::move(other.wrapped_callback)),
+        start_time(other.start_time) {
     StartTimer();
   }
 
@@ -150,19 +147,9 @@ struct GetBucketSpaceRequestWrapper {
 
   void StartTimer() {
     timeout.Start(
-        FROM_HERE,
-        (timeouts_observed + 1) * (kTimeoutDuration / kTimeoutFraction) -
-            (base::TimeTicks::Now() - start_time),
-        base::BindOnce(&GetBucketSpaceRequestWrapper::TimeOut,
-                       base::Unretained(this)));
-  }
-
-  void TimeOut() {
-    if (++timeouts_observed == kTimeoutFraction) {
-      InvokeCallback();
-    } else {
-      StartTimer();
-    }
+        FROM_HERE, kTimeoutDuration - (base::TimeTicks::Now() - start_time),
+        base::BindRepeating(&GetBucketSpaceRequestWrapper::InvokeCallback,
+                            base::Unretained(this)));
   }
 
   void InvokeCallback() {
@@ -186,8 +173,7 @@ struct GetBucketSpaceRequestWrapper {
             base::unexpected(storage::QuotaError::kUnknownError)));
   }
 
-  int timeouts_observed = 0;
-  base::OneShotTimer timeout;
+  InactivityTimer timeout;
   base::OnceCallback<void(storage::QuotaErrorOr<int64_t>)> wrapped_callback;
   std::optional<storage::QuotaErrorOr<int64_t>> result_value;
   base::TimeTicks start_time = base::TimeTicks::Now();

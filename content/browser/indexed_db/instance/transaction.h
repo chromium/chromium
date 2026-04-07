@@ -20,11 +20,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
+#include "content/browser/indexed_db/inactivity_timer.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
@@ -267,8 +267,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   void BlobWriteComplete(base::TimeTicks start_time, Status result);
   void CloseOpenCursors();
   Status CommitPhaseTwo();
-  void TimeoutFired();
-  void ResetTimeoutTimer();
+  void OnInactivityTimeout();
   void SetState(State state);
 
   // Generates a key for an auto_increment object store, or an invalid key if
@@ -360,15 +359,9 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // This timer is started after requests have been processed. If no subsequent
   // requests are processed before the timer fires, assume the script is
   // unresponsive and abort to unblock the transaction queue.
-  base::RepeatingTimer timeout_timer_;
-  int timeout_strikes_ = 0;
-  // Poll every 20 seconds to see if this transaction is blocking others, and
-  // kill the transaction after 3 strikes. The polling mitigates the fact that
-  // timers may or may not pause when a system is suspended
-  // (crbug.com/40296804). See also crbug.com/40581991.
-  static constexpr base::TimeDelta kInactivityTimeoutPollPeriod =
-      base::Seconds(20);
-  static const int kMaxTimeoutStrikes = 3;
+  // See also crbug.com/40581991.
+  InactivityTimer timeout_timer_;
+  static constexpr base::TimeDelta kInactivityTimeout = base::Seconds(60);
 
   Diagnostics diagnostics_;
 

@@ -196,10 +196,9 @@ TEST_P(TransactionTest, Timeout) {
   FlushBucketTasks();
   EXPECT_TRUE(transaction->IsTimeoutTimerRunning());
 
-  // Since the transaction isn't blocking another transaction, it's expected to
-  // do nothing when the timeout fires.
-  transaction->TimeoutFired();
-  EXPECT_EQ(0, transaction->timeout_strikes_);
+  // Since the transaction isn't blocking another transaction, the timeout
+  // callback should not abort.
+  transaction->OnInactivityTimeout();
   EXPECT_EQ(Transaction::STARTED, transaction->state());
 
   // Create a second transaction that's blocked on the first.
@@ -208,15 +207,8 @@ TEST_P(TransactionTest, Timeout) {
                     /*id=*/1, object_store_ids,
                     blink::mojom::IDBTransactionMode::ReadWrite);
 
-  // Now firing the timeout starts racking up strikes.
-  for (int i = 1; i < Transaction::kMaxTimeoutStrikes; ++i) {
-    transaction->TimeoutFired();
-    EXPECT_EQ(Transaction::STARTED, transaction->state());
-    EXPECT_EQ(i, transaction->timeout_strikes_);
-  }
-
-  // ... and eventually causes the transaction to abort.
-  transaction->TimeoutFired();
+  // Now the transaction is blocking another, so the timeout aborts it.
+  transaction->OnInactivityTimeout();
   EXPECT_EQ(Transaction::FINISHED, transaction->state());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
@@ -321,21 +313,18 @@ TEST_P(TransactionTest, TimeoutWithPriorities) {
     FlushBucketTasks();
     EXPECT_TRUE(transaction->IsTimeoutTimerRunning());
 
-    // Since the transaction isn't blocking another transaction, it's expected
-    // to do nothing when the timeout fires.
-    transaction->TimeoutFired();
-    EXPECT_EQ(0, transaction->timeout_strikes_);
-    EXPECT_EQ(Transaction::STARTED, transaction->state());
-
     // Create a second transaction that's blocked on the first.
     std::unique_ptr<Connection> connection2 = CreateConnection(test_case.pri_2);
     CreateTransaction(connection2.get(),
                       /*id=*/txn_id++, object_store_ids,
                       blink::mojom::IDBTransactionMode::ReadWrite);
 
-    // Now firing the timeout starts racking up strikes.
-    transaction->TimeoutFired();
-    EXPECT_EQ(test_case.can_timeout ? 1 : 0, transaction->timeout_strikes_);
+    // Fire the timeout callback. Only transactions that can be timed out
+    // (lower priority blocking higher priority) should abort.
+    transaction->OnInactivityTimeout();
+    EXPECT_EQ(
+        test_case.can_timeout ? Transaction::FINISHED : Transaction::STARTED,
+        transaction->state());
 
     // Clean up for the next iteration.
     db_ = nullptr;

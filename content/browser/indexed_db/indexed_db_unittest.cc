@@ -3469,7 +3469,7 @@ TEST_F(IndexedDBSqliteTest, BlobReadPutsOffIdleWork) {
     ASSERT_TRUE(bucket_context);
     EXPECT_TRUE(bucket_context->idle_timer_.IsRunning());
     base::TimeTicks next_idle_maintenance_time_before =
-        bucket_context->idle_timer_.desired_run_time();
+        bucket_context->idle_timer_.ExpectedFiringTimeForTesting();
 
     // Now read the blob. This should trigger OnActivity() and reset the timer.
     task_environment_.FastForwardBy(BucketContext::GetIdleTimeoutForTesting() /
@@ -3479,7 +3479,7 @@ TEST_F(IndexedDBSqliteTest, BlobReadPutsOffIdleWork) {
     base::RunLoop partial_loop;
     auto on_partial_read = base::BindLambdaForTesting([&]() {
       next_idle_maintenance_time_after_partial_read =
-          bucket_context->idle_timer_.desired_run_time();
+          bucket_context->idle_timer_.ExpectedFiringTimeForTesting();
       // Inject artificial delay since in the test context, the operation
       // completes synchronously.
       task_environment_.FastForwardBy(
@@ -3498,7 +3498,7 @@ TEST_F(IndexedDBSqliteTest, BlobReadPutsOffIdleWork) {
 
     // Finishing reading the blob also counts as activity.
     EXPECT_EQ(kBlobData, blob_future.Get());
-    EXPECT_GT(bucket_context->idle_timer_.desired_run_time(),
+    EXPECT_GT(bucket_context->idle_timer_.ExpectedFiringTimeForTesting(),
               next_idle_maintenance_time_after_partial_read);
   }
 }
