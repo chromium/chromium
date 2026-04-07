@@ -326,14 +326,17 @@ test("webnn_graph_impl_fuzzer") {
     "WebNNGraphImplFuzzer_CPU.SingleOpGemm",
     "WebNNGraphImplFuzzer_CPU.SingleOpPool2d",
     "WebNNGraphImplFuzzer_CPU.SubgraphDQConv2dQ",
+    "WebNNGraphImplFuzzer_CPU.SubgraphDQPool2dQ",
     "WebNNGraphImplFuzzer_GPU.SingleOpConv2d",
     "WebNNGraphImplFuzzer_GPU.SingleOpGemm",
     "WebNNGraphImplFuzzer_GPU.SingleOpPool2d",
     "WebNNGraphImplFuzzer_GPU.SubgraphDQConv2dQ",
+    "WebNNGraphImplFuzzer_GPU.SubgraphDQPool2dQ",
     "WebNNGraphImplFuzzer_NPU.SingleOpConv2d",
     "WebNNGraphImplFuzzer_NPU.SingleOpGemm",
     "WebNNGraphImplFuzzer_NPU.SingleOpPool2d",
     "WebNNGraphImplFuzzer_NPU.SubgraphDQConv2dQ",
+    "WebNNGraphImplFuzzer_NPU.SubgraphDQPool2dQ",
   ]
 
   deps = [
