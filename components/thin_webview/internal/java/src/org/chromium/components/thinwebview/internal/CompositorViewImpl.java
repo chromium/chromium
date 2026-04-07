@@ -21,6 +21,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
 
 /**
  * An android view backed by a {@link Surface} that is able to display a cc::Layer. Either, a {@link
@@ -55,6 +59,20 @@ public class CompositorViewImpl implements CompositorView {
         mWindowAndroid = windowAndroid;
     }
 
+    public CompositorViewImpl(
+            Context context,
+            WindowAndroid windowAndroid,
+            ThinWebViewConstraints constraints,
+            XrSceneCoreSessionManager xrSceneCoreSessionManager,
+            @XrSurfaceEntityShape int surfaceEntityShape) {
+        mContext = context;
+        mViewConstraints = constraints.clone();
+        mNativeCompositorViewImpl =
+                CompositorViewImplJni.get().init(this, windowAndroid, constraints.backgroundColor);
+        mView = createSpatialSurfaceView(xrSceneCoreSessionManager, surfaceEntityShape);
+        mWindowAndroid = windowAndroid;
+    }
+
     @Override
     public View getView() {
         return mView;
@@ -70,6 +88,9 @@ public class CompositorViewImpl implements CompositorView {
         if (mNativeCompositorViewImpl != 0) {
             CompositorViewImplJni.get().destroy(mNativeCompositorViewImpl);
             mNativeCompositorViewImpl = 0;
+            if (mView instanceof XrSurfaceEntityView entityView) {
+                entityView.getHolder().dispose();
+            }
         }
     }
 
@@ -173,6 +194,47 @@ public class CompositorViewImpl implements CompositorView {
                     }
                 });
         return textureView;
+    }
+
+    private XrSurfaceEntityView createSpatialSurfaceView(
+            XrSceneCoreSessionManager xrSceneCoreSessionManager,
+            @XrSurfaceEntityShape int surfaceEntityShape) {
+        XrSurfaceEntityHolder xrSurfaceEntityHolder =
+                xrSceneCoreSessionManager.createSurfaceEntity(surfaceEntityShape);
+        xrSurfaceEntityHolder.addCallback(
+                new XrSurfaceEntityHolder.Callback() {
+                    @Override
+                    public void surfaceCreated(Surface surface) {
+                        if (mNativeCompositorViewImpl == 0) return;
+                        CompositorViewImplJni.get().surfaceCreated(mNativeCompositorViewImpl);
+                    }
+
+                    @Override
+                    public void surfaceChanged(Surface surface, int width, int height) {
+                        if (mNativeCompositorViewImpl == 0) return;
+                        CompositorViewImplJni.get()
+                                .surfaceChanged(
+                                        mNativeCompositorViewImpl,
+                                        PixelFormat.OPAQUE,
+                                        width,
+                                        height,
+                                        false,
+                                        surface);
+                    }
+
+                    @Override
+                    public void surfaceDestroyed() {
+                        if (mNativeCompositorViewImpl == 0) return;
+                        CompositorViewImplJni.get().surfaceDestroyed(mNativeCompositorViewImpl);
+                    }
+                });
+
+        return new XrSurfaceEntityView(mContext) {
+            @Override
+            public XrSurfaceEntityHolder getHolder() {
+                return xrSurfaceEntityHolder;
+            }
+        };
     }
 
     @CalledByNative

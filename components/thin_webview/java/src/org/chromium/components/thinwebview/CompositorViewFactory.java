@@ -9,6 +9,8 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.thinwebview.internal.CompositorViewImpl;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 
 /** Factory for creating a {@link CompositorView}. */
 @NullMarked
@@ -25,5 +27,31 @@ public class CompositorViewFactory {
     public static CompositorView create(
             Context context, WindowAndroid windowAndroid, ThinWebViewConstraints constraints) {
         return new CompositorViewImpl(context, windowAndroid, constraints);
+    }
+
+    /**
+     * Creates a {@link CompositorView} backed by a {@link Surface}. The surface is provided by a
+     * {@link XrSurfaceEntity}.
+     *
+     * @param context The context to create this view.
+     * @param windowAndroid The associated {@code WindowAndroid} on which the view is to be
+     *     displayed.
+     * @param constraints A set of constraints associated with this view.
+     * @param xrSceneCoreSessionManager The {@link XrSceneCoreSessionManager} to use.
+     * @param xrSurfaceEntityShape The shape of the {@link XrSurfaceEntity}.
+     * @return A {@link CompositorView} backed by a {@link Surface}.
+     */
+    public static CompositorView create(
+            Context context,
+            WindowAndroid windowAndroid,
+            ThinWebViewConstraints constraints,
+            XrSceneCoreSessionManager xrSceneCoreSessionManager,
+            @XrSurfaceEntityShape int xrSurfaceEntityShape) {
+        return new CompositorViewImpl(
+                context,
+                windowAndroid,
+                constraints,
+                xrSceneCoreSessionManager,
+                xrSurfaceEntityShape);
     }
 }
