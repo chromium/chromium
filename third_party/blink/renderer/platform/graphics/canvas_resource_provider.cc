@@ -1923,39 +1923,6 @@ ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimer() {
                            always_enable_raster_timers_for_testing_);
 }
 
-CanvasResourceProvider::CanvasImageProvider*
-CanvasNon2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
-  if (!IsAccelerated()) {
-    return GetOrCreateSWCanvasImageProvider();
-  }
-
-  if (canvas_image_provider_) {
-    return canvas_image_provider_.get();
-  }
-
-  // Callsites are responsible for checking this before invoking this
-  // method.
-  CHECK(context_provider_wrapper_);
-
-  // Create an ImageDecodeCache for half float images only if the canvas is
-  // using half float back storage.
-  cc::ImageDecodeCache* cache_f16 = nullptr;
-  if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-    cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-        kRGBA_F16_SkColorType);
-  }
-
-  cc::ImageDecodeCache* cache_rgba8 =
-      context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-          kN32_SkColorType);
-
-  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-      cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-      cc::PlaybackImageProvider::RasterMode::kGpu);
-
-  return canvas_image_provider_.get();
-}
-
 void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {
   if (!recorder_->HasReleasableDrawOps()) {
     return;
@@ -2003,8 +1970,27 @@ void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {
                             /*hdr_headroom=*/0.f,
                             resource()->GetSharedImage()->mailbox().name);
 
+    if (!canvas_image_provider_) {
+      // Create an ImageDecodeCache for half float images only if the canvas is
+      // using half float back storage.
+      cc::ImageDecodeCache* cache_f16 = nullptr;
+      if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+        cache_f16 =
+            context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+                kRGBA_F16_SkColorType);
+      }
+
+      cc::ImageDecodeCache* cache_rgba8 =
+          context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+              kN32_SkColorType);
+
+      canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+          cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+          cc::PlaybackImageProvider::RasterMode::kGpu);
+    }
+
     ri->RasterCHROMIUM(
-        list.get(), GetOrCreateCanvasImageProvider(), size, full_raster_rect,
+        list.get(), canvas_image_provider_.get(), size, full_raster_rect,
         playback_rect, post_translate, post_scale, /*requires_clear=*/false,
         /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint);
 
