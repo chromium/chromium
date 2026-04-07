@@ -1,0 +1,10 @@
+include_rules = [
+  # keep-sorted start
+  "+components/content_settings/core/browser",
+  "+components/enterprise/browser/controller",
+  "+components/enterprise/connectors/core",
+  "+components/prefs",
+  "+ios/chrome/browser/enterprise/connectors",
+  "+ios/chrome/browser/safe_browsing/model",
+  # keep-sorted end
+]

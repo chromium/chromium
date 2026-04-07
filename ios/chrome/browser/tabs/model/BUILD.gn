@@ -92,6 +92,8 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/download/ui:features",
     "//ios/chrome/browser/drive/model:drive_tab_helper",
     "//ios/chrome/browser/enterprise/data_controls/model",
+    "//ios/chrome/browser/enterprise/data_protection/model",
+    "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/geolocation/model",
