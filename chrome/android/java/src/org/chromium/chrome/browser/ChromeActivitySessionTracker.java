@@ -62,7 +62,7 @@ public class ChromeActivitySessionTracker {
     private final ProfileKeyedMap<Boolean> mStartupProfileTasksCompleted =
             new ProfileKeyedMap<>(
                     ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
-                    ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+                    ProfileKeyedMap.noRequiredCleanupAction());
 
     private boolean mIsInitialized;
     private boolean mIsStarted;

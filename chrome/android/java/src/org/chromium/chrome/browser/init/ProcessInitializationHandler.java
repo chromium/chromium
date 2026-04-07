@@ -184,7 +184,7 @@ public class ProcessInitializationHandler {
     private final ProfileKeyedMap<Boolean> mStartupProfileTasksCompleted =
             new ProfileKeyedMap<>(
                     ProfileSelection.REDIRECTED_TO_ORIGINAL,
-                    ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+                    ProfileKeyedMap.noRequiredCleanupAction());
 
     /**
      * @return The ProcessInitializationHandler for use during the lifetime of the browser process.
