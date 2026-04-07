@@ -21,6 +21,9 @@ BASE_DECLARE_FEATURE(kEnableDownloadDataControls);
 // Controls enabling Data Controls rules for drag and drop.
 BASE_DECLARE_FEATURE(kDataControlsDragEnforcement);
 
+// Controls enabling Data Controls rules for "Search with" context menu item.
+BASE_DECLARE_FEATURE(kDataControlsSearchWith);
+
 }  // namespace data_controls
 
 #endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_CORE_BROWSER_FEATURES_H_
