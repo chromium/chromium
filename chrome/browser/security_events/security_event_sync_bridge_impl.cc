@@ -182,6 +182,7 @@ bool SecurityEventSyncBridgeImpl::IsEntityDataValid(
 void SecurityEventSyncBridgeImpl::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   store_->DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list),
       base::BindOnce(&SecurityEventSyncBridgeImpl::OnStoreCommit,
                      weak_ptr_factory_.GetWeakPtr()));
 }

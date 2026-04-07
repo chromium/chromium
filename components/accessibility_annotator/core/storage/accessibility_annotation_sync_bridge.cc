@@ -130,7 +130,8 @@ std::string AccessibilityAnnotationSyncBridge::GetStorageKey(
 void AccessibilityAnnotationSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   annotation_entries_.clear();
-  data_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
+  data_type_store_->DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list), base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

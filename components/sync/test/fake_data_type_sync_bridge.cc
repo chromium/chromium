@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
@@ -64,6 +65,7 @@ class TestMetadataChangeList : public MetadataChangeList {
   }
 
   void TransferChangesTo(MetadataChangeList* other) override { NOTREACHED(); }
+  void DropAllChanges() override { NOTREACHED(); }
 
  private:
   const raw_ptr<FakeDataTypeSyncBridge::Store> db_;

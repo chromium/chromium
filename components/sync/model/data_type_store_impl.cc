@@ -215,9 +215,17 @@ void DataTypeStoreImpl::ReadAllDataAndPreprocessDone(
   std::move(callback).Run(error);
 }
 
-void DataTypeStoreImpl::DeleteAllDataAndMetadata(CallbackWithResult callback) {
+void DataTypeStoreImpl::DeleteAllDataAndMetadata(
+    std::unique_ptr<MetadataChangeList> metadata_change_list,
+    CallbackWithResult callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
+  if (metadata_change_list) {
+    // The metadata changes are not needed anymore, as all data and metadata
+    // are being deleted. Drop all changes from the metadata change list so it's
+    // empty on destroy.
+    metadata_change_list->DropAllChanges();
+  }
   auto task = base::BindOnce(&BlockingDataTypeStore::DeleteAllDataAndMetadata,
                              base::Unretained(backend_store_.get()));
   auto reply =

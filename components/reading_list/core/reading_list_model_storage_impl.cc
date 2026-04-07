@@ -69,9 +69,11 @@ ReadingListModelStorageImpl::EnsureBatchCreated() {
   return std::make_unique<ScopedBatchUpdate>(this);
 }
 
-void ReadingListModelStorageImpl::DeleteAllEntriesAndSyncMetadata() {
+void ReadingListModelStorageImpl::DeleteAllEntriesAndSyncMetadata(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_->DeleteAllDataAndMetadata(
+      std::move(metadata_change_list),
       base::BindOnce(&ReadingListModelStorageImpl::OnDatabaseSave,
                      weak_ptr_factory_.GetWeakPtr()));
 }

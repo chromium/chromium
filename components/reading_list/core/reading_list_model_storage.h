@@ -60,7 +60,11 @@ class ReadingListModelStorage {
   // A robust way to bulk delete all data and sync metadata in storage. The same
   // behavior could be theoretically achieved by deleting entries individually,
   // but this specialized API is just more robust.
-  virtual void DeleteAllEntriesAndSyncMetadata() = 0;
+  // If `metadata_change_list` is present, it is cleared and all changes are
+  // dropped. Having it in this function is a simple way to make sure that the
+  // metadata changes are cleared before `metadata_change_list` is destroyed.
+  virtual void DeleteAllEntriesAndSyncMetadata(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list) = 0;
 
   class ScopedBatchUpdate {
    public:

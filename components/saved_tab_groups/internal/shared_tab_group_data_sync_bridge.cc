@@ -867,7 +867,8 @@ void SharedTabGroupDataSyncBridge::ApplyDisableSyncChanges(
   // Delete all shared tabs and sync metadata from the store.
   // `delete_metadata_change_list` is not used because all the metadata is
   // deleted anyway.
-  store_->DeleteAllDataAndMetadata(base::DoNothing());
+  store_->DeleteAllDataAndMetadata(std::move(delete_metadata_change_list),
+                                   base::DoNothing());
 
   model_wrapper_->OnSyncBridgeUpdateTypeChanged(
       SyncBridgeUpdateType::kCompletedDisableSyncThisSession);

@@ -113,9 +113,11 @@ void DataTypeStoreWithInMemoryCache<Entry>::CommitWriteBatch(
 
 template <typename Entry>
 void DataTypeStoreWithInMemoryCache<Entry>::DeleteAllDataAndMetadata(
+    std::unique_ptr<MetadataChangeList> metadata_change_list,
     CallbackWithResult callback) {
   in_memory_data_.clear();
-  underlying_store_->DeleteAllDataAndMetadata(std::move(callback));
+  underlying_store_->DeleteAllDataAndMetadata(std::move(metadata_change_list),
+                                              std::move(callback));
 }
 
 // static

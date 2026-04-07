@@ -78,9 +78,11 @@ void WebApkDatabase::Write(
 }
 
 void WebApkDatabase::DeleteAllDataAndMetadata(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::DataTypeStore::CallbackWithResult callback) {
   CHECK(store_);
-  store_->DeleteAllDataAndMetadata(std::move(callback));
+  store_->DeleteAllDataAndMetadata(std::move(metadata_change_list),
+                                   std::move(callback));
 }
 
 void WebApkDatabase::OnDatabaseOpened(

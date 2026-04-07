@@ -75,4 +75,9 @@ FakeReadingListModelStorage::EnsureBatchCreated() {
   return std::make_unique<FakeScopedBatchUpdate>(observer_);
 }
 
-void FakeReadingListModelStorage::DeleteAllEntriesAndSyncMetadata() {}
+void FakeReadingListModelStorage::DeleteAllEntriesAndSyncMetadata(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list) {
+  if (metadata_change_list) {
+    metadata_change_list->DropAllChanges();
+  }
+}

@@ -342,7 +342,8 @@ void SendTabToSelfBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK(store_);
 
-  store_->DeleteAllDataAndMetadata(base::DoNothing());
+  store_->DeleteAllDataAndMetadata(std::move(delete_metadata_change_list),
+                                   base::DoNothing());
 
   std::vector<std::string> all_guids = GetAllGuids();
 

@@ -152,7 +152,8 @@ void AiThreadSyncBridge::ApplyDisableSyncChanges(
     uuids.push_back(base::Uuid::ParseCaseInsensitive(server_id));
   }
   ai_thread_entities_.clear();
-  data_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
+  data_type_store_->DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list), base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   for (auto& observer : observers_) {

@@ -68,8 +68,11 @@ class ForwardingDataTypeStore : public DataTypeStore {
     other_->CommitWriteBatch(std::move(write_batch), std::move(callback));
   }
 
-  void DeleteAllDataAndMetadata(CallbackWithResult callback) override {
-    other_->DeleteAllDataAndMetadata(std::move(callback));
+  void DeleteAllDataAndMetadata(
+      std::unique_ptr<MetadataChangeList> metadata_change_list,
+      CallbackWithResult callback) override {
+    other_->DeleteAllDataAndMetadata(std::move(metadata_change_list),
+                                     std::move(callback));
   }
 
  private:

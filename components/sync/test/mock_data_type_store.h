@@ -47,7 +47,8 @@ class MockDataTypeStore : public DataTypeStore {
               (override));
   MOCK_METHOD(void,
               DeleteAllDataAndMetadata,
-              (CallbackWithResult callback),
+              (std::unique_ptr<MetadataChangeList> metadata_change_list,
+               CallbackWithResult callback),
               (override));
 };
 

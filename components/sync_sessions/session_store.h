@@ -22,6 +22,10 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 
+namespace syncer {
+class MetadataChangeList;
+}  // namespace syncer
+
 namespace sync_sessions {
 
 // Class responsible for maintaining an in-memory representation of sync
@@ -166,6 +170,7 @@ class SessionStore {
   // Returns a callback that allows synchronously re-creating an empty
   // SessionStore, by reusing the underlying DataTypeStore.
   static RecreateEmptyStoreCallback DeleteAllDataAndMetadata(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       std::unique_ptr<SessionStore> session_store);
 
   // TODO(crbug.com/41295474): Avoid exposing a mutable tracker, because that

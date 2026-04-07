@@ -255,8 +255,8 @@ TEST_F(SessionStoreTest, ShouldRecreateEmptyStore) {
   ASSERT_THAT(ReadAllPersistedDataFrom(underlying_store_.get()),
               Not(IsEmpty()));
 
-  auto recreate_store_callback =
-      SessionStore::DeleteAllDataAndMetadata(TakeSessionStore());
+  auto recreate_store_callback = SessionStore::DeleteAllDataAndMetadata(
+      /*metadata_change_list=*/nullptr, TakeSessionStore());
 
   // Re-create the store with a new cache GUID / session tag.
   const std::string kNewLocalCacheGuid = "new_cache_guid";

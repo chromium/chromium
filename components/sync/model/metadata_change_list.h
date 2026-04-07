@@ -48,6 +48,10 @@ class MetadataChangeList {
   // change list to a default, empty state. `other` must not be null. Not all
   // implementations support this operation.
   virtual void TransferChangesTo(MetadataChangeList* other) = 0;
+
+  // Drops all currently accumulated changes, resetting this change list to a
+  // default, empty state. Not all implementations support this operation.
+  virtual void DropAllChanges() = 0;
 };
 
 }  // namespace syncer

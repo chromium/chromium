@@ -568,12 +568,14 @@ std::unique_ptr<SessionStore::WriteBatch> SessionStore::CreateWriteBatch(
 
 // static
 SessionStore::RecreateEmptyStoreCallback SessionStore::DeleteAllDataAndMetadata(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     std::unique_ptr<SessionStore> session_store) {
   CHECK(session_store);
 
   // Clear the store and related info.
   session_store->session_tracker_.Clear();
-  session_store->store_->DeleteAllDataAndMetadata(base::DoNothing());
+  session_store->store_->DeleteAllDataAndMetadata(
+      std::move(metadata_change_list), base::DoNothing());
 
   // Grab the necessary stuff for (synchronously) recreating a store later.
   SessionInfo local_session_info = session_store->local_session_info_;

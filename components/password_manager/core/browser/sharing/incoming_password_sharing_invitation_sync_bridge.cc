@@ -146,7 +146,8 @@ void IncomingPasswordSharingInvitationSyncBridge::ApplyDisableSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(sync_metadata_store_);
-  sync_metadata_store_->DeleteAllDataAndMetadata(base::DoNothing());
+  sync_metadata_store_->DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list), base::DoNothing());
 }
 
 sync_pb::EntitySpecifics IncomingPasswordSharingInvitationSyncBridge::

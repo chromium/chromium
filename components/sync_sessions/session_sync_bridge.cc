@@ -314,8 +314,8 @@ void SessionSyncBridge::ApplyDisableSyncChanges(
 
   syncing_.reset();
 
-  recreate_empty_store_callback_ =
-      SessionStore::DeleteAllDataAndMetadata(std::move(store_));
+  recreate_empty_store_callback_ = SessionStore::DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list), std::move(store_));
   CHECK(recreate_empty_store_callback_);
 
   // Ensure that we clear on-demand favicons that were downloaded using user

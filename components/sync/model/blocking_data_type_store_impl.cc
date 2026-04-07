@@ -100,6 +100,8 @@ class LevelDbMetadataChangeList : public MetadataChangeList {
 
   void TransferChangesTo(MetadataChangeList* other) override { NOTREACHED(); }
 
+  void DropAllChanges() override { NOTREACHED(); }
+
  private:
   // Format key for metadata records with given id.
   std::string FormatMetadataKey(const std::string& id) const {

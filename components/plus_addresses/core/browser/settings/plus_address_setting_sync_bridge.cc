@@ -152,6 +152,7 @@ void PlusAddressSettingSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_->DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list),
       base::BindOnce(&PlusAddressSettingSyncBridge::ReportErrorIfSet,
                      weak_factory_.GetWeakPtr()));
   settings_.clear();

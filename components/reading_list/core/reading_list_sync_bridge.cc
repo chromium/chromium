@@ -328,7 +328,8 @@ void ReadingListSyncBridge::ApplyDisableSyncChanges(
       // |delete_metadata_change_list| represents), the actual reading list
       // entries need to be deleted. This function does both and is even
       // robust against orphan or unexpected data in storage.
-      model_->SyncDeleteAllEntriesAndSyncMetadata();
+      model_->SyncDeleteAllEntriesAndSyncMetadata(
+          std::move(delete_metadata_change_list));
       break;
   }
 }
@@ -375,12 +376,14 @@ bool ReadingListSyncBridge::CompareEntriesForSync(
     if ((rhs.status() == sync_pb::ReadingListSpecifics::UNSEEN &&
          lhs.status() != sync_pb::ReadingListSpecifics::UNSEEN) ||
         (rhs.status() == sync_pb::ReadingListSpecifics::UNREAD &&
-         lhs.status() == sync_pb::ReadingListSpecifics::READ))
+         lhs.status() == sync_pb::ReadingListSpecifics::READ)) {
       return false;
+    }
   }
   if (rhs.update_title_time_us() == lhs.update_title_time_us()) {
-    if (rhs.title().compare(lhs.title()) < 0)
+    if (rhs.title().compare(lhs.title()) < 0) {
       return false;
+    }
   }
   if (rhs.creation_time_us() == lhs.creation_time_us()) {
     if (rhs.first_read_time_us() == 0 && lhs.first_read_time_us() != 0) {

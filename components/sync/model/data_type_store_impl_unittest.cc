@@ -275,7 +275,7 @@ TEST_P(DataTypeStoreImplTest, WriteThenDeleteAll) {
     ASSERT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
   }
 
-  store()->DeleteAllDataAndMetadata(base::DoNothing());
+  store()->DeleteAllDataAndMetadata(nullptr, base::DoNothing());
 
   {
     std::unique_ptr<DataTypeStore::RecordList> data_records;
@@ -418,7 +418,7 @@ TEST(DataTypeStoreImplWithTwoStoreTest, DeleteAllWithSharedBackend) {
     ASSERT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
   }
 
-  store_2->DeleteAllDataAndMetadata(base::DoNothing());
+  store_2->DeleteAllDataAndMetadata(nullptr, base::DoNothing());
 
   {
     std::unique_ptr<DataTypeStore::RecordList> data_records;
@@ -467,7 +467,7 @@ TEST(DataTypeStoreImplWithTwoStoreTest,
     ASSERT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
   }
 
-  store_2->DeleteAllDataAndMetadata(base::DoNothing());
+  store_2->DeleteAllDataAndMetadata(nullptr, base::DoNothing());
 
   {
     std::unique_ptr<DataTypeStore::RecordList> data_records;
@@ -516,7 +516,7 @@ TEST(DataTypeStoreImplWithTwoStoreTest,
     ASSERT_THAT(metadata_batch, Not(IsEmptyMetadataBatch()));
   }
 
-  store_2->DeleteAllDataAndMetadata(base::DoNothing());
+  store_2->DeleteAllDataAndMetadata(nullptr, base::DoNothing());
 
   {
     std::unique_ptr<DataTypeStore::RecordList> data_records;

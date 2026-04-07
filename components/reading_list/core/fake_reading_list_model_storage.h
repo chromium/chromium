@@ -66,7 +66,9 @@ class FakeReadingListModelStorage final : public ReadingListModelStorage {
   // ReadingListModelStorage implementation.
   void Load(base::Clock* clock, LoadCallback load_cb) override;
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
-  void DeleteAllEntriesAndSyncMetadata() override;
+  void DeleteAllEntriesAndSyncMetadata(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list)
+      override;
 
   base::WeakPtr<FakeReadingListModelStorage> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

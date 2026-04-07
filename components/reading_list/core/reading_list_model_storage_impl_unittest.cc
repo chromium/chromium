@@ -133,7 +133,8 @@ TEST_F(ReadingListModelStorageImplTest, DeleteAllEntriesAndSyncMetadata) {
                                    EntryHasUrl(GURL("http://example2.com/"))));
 
   // Delete everything.
-  second_storage.DeleteAllEntriesAndSyncMetadata();
+  second_storage.DeleteAllEntriesAndSyncMetadata(
+      /*metadata_change_list=*/nullptr);
 
   // To verify the deletion, use a third storage with the same underlying
   // in-memory leveldb.

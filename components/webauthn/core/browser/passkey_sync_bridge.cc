@@ -235,7 +235,8 @@ std::string PasskeySyncBridge::GetStorageKey(
 void PasskeySyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   CHECK(store_);
-  store_->DeleteAllDataAndMetadata(base::DoNothing());
+  store_->DeleteAllDataAndMetadata(std::move(delete_metadata_change_list),
+                                   base::DoNothing());
   std::vector<PasskeyModelChange> changes;
   for (const auto& passkey : data_) {
     changes.emplace_back(PasskeyModelChange::ChangeType::REMOVE,

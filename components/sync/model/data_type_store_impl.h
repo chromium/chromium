@@ -51,7 +51,9 @@ class DataTypeStoreImpl : public DataTypeStore {
       std::unique_ptr<MetadataChangeList> metadata_change_list) override;
   void CommitWriteBatch(std::unique_ptr<WriteBatch> write_batch,
                         CallbackWithResult callback) override;
-  void DeleteAllDataAndMetadata(CallbackWithResult callback) override;
+  void DeleteAllDataAndMetadata(
+      std::unique_ptr<MetadataChangeList> metadata_change_list,
+      CallbackWithResult callback) override;
 
  private:
   // Callbacks for different calls to DataTypeStoreBackend.

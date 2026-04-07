@@ -141,7 +141,8 @@ std::string GeminiThreadSyncBridge::GetStorageKey(
 void GeminiThreadSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   gemini_thread_specifics_.clear();
-  data_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
+  data_type_store_->DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list), base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

@@ -284,7 +284,8 @@ void PersonalCollaborationDataSyncBridge::ApplyDisableSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   specifics_.clear();
-  store_->DeleteAllDataAndMetadata(base::DoNothing());
+  store_->DeleteAllDataAndMetadata(std::move(delete_metadata_change_list),
+                                   base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

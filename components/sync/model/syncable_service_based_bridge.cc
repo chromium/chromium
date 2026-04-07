@@ -381,7 +381,8 @@ void SyncableServiceBasedBridge::ApplyDisableSyncChanges(
   DCHECK(store_);
 
   in_memory_store_.clear();
-  store_->DeleteAllDataAndMetadata(base::DoNothing());
+  store_->DeleteAllDataAndMetadata(std::move(delete_metadata_change_list),
+                                   base::DoNothing());
 
   if (syncable_service_started_) {
     syncable_service_->StopSyncing(type_);
@@ -478,7 +479,8 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
           metadata_batch->GetDataTypeState().initial_sync_state()) &&
       !in_memory_store_.empty()) {
     in_memory_store_.clear();
-    store_->DeleteAllDataAndMetadata(base::DoNothing());
+    store_->DeleteAllDataAndMetadata(/*metadata_change_list=*/nullptr,
+                                     base::DoNothing());
     change_processor()->ModelReadyToSync(std::make_unique<MetadataBatch>());
     DCHECK(!change_processor()->IsTrackingMetadata());
     return;

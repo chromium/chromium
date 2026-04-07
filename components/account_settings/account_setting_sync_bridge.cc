@@ -148,8 +148,10 @@ AccountSettingSyncBridge::ApplyIncrementalSyncChanges(
 void AccountSettingSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  store_->DeleteAllDataAndMetadata(base::BindOnce(
-      &AccountSettingSyncBridge::ReportErrorIfSet, weak_factory_.GetWeakPtr()));
+  store_->DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list),
+      base::BindOnce(&AccountSettingSyncBridge::ReportErrorIfSet,
+                     weak_factory_.GetWeakPtr()));
 
   for (const auto& [name, specifics] : settings_) {
     observers_.Notify(&Observer::OnDataUpdated, name);

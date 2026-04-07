@@ -37,6 +37,11 @@ void InMemoryMetadataChangeList::TransferChangesTo(MetadataChangeList* other) {
   }
 }
 
+void InMemoryMetadataChangeList::DropAllChanges() {
+  metadata_changes_.clear();
+  state_change_.reset();
+}
+
 void InMemoryMetadataChangeList::DropMetadataChangeForStorageKey(
     const std::string& storage_key) {
   metadata_changes_.erase(storage_key);

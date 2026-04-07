@@ -30,6 +30,7 @@ class MockMetadataChangeList : public MetadataChangeList {
               ClearMetadata,
               (const std::string& storage_key),
               (override));
+  MOCK_METHOD(void, DropAllChanges, (), (override));
   MOCK_METHOD(void, TransferChangesTo, (MetadataChangeList * other), (override));
 };
 
@@ -155,6 +156,24 @@ TEST(InMemoryMetadataChangeListTest, ShouldDropMetadataChange) {
   EXPECT_CALL(mock_change_list, UpdateDataTypeState(EqualsProto(state)));
   EXPECT_CALL(mock_change_list,
               UpdateMetadata("client_tag2", EqualsProto(metadata2)));
+  cl.TransferChangesTo(&mock_change_list);
+}
+
+TEST(InMemoryMetadataChangeListTest, DropAllChanges) {
+  StrictMock<MockMetadataChangeList> mock_change_list;
+  InMemoryMetadataChangeList cl;
+
+  sync_pb::DataTypeState state;
+  state.set_encryption_key_name("ekn");
+  cl.UpdateDataTypeState(state);
+
+  sync_pb::EntityMetadata metadata;
+  metadata.set_client_tag_hash("some_hash");
+  cl.UpdateMetadata("client_tag", metadata);
+
+  cl.DropAllChanges();
+
+  // Nothing should be transferred after DropAllChanges().
   cl.TransferChangesTo(&mock_change_list);
 }
 

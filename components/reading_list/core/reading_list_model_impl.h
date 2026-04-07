@@ -101,7 +101,8 @@ class ReadingListModelImpl : public ReadingListModel {
   // API specifically for changes received via sync.
   ReadingListEntry* SyncMergeEntry(scoped_refptr<ReadingListEntry> entry);
   void SyncRemoveEntry(const GURL& url);
-  void SyncDeleteAllEntriesAndSyncMetadata();
+  void SyncDeleteAllEntriesAndSyncMetadata(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list);
 
   class ScopedReadingListBatchUpdateImpl : public ScopedReadingListBatchUpdate,
                                            public ReadingListModelObserver {

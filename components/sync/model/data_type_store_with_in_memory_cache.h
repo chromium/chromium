@@ -64,7 +64,9 @@ class DataTypeStoreWithInMemoryCache {
   std::unique_ptr<WriteBatch> CreateWriteBatch();
   void CommitWriteBatch(std::unique_ptr<WriteBatch> write_batch,
                         CallbackWithResult callback);
-  void DeleteAllDataAndMetadata(CallbackWithResult callback);
+  void DeleteAllDataAndMetadata(
+      std::unique_ptr<MetadataChangeList> metadata_change_list,
+      CallbackWithResult callback);
 
   // Synchronous access to the in-memory data cache.
   const std::map<std::string, Entry>& in_memory_data() const {

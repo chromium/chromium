@@ -263,8 +263,10 @@ void SkillsSyncBridge::ApplyDisableSyncChanges(
 
   // Do not use `delete_metadata_change_list` as all data and metadata should be
   // deleted.
-  store_->DeleteAllDataAndMetadata(base::BindOnce(
-      &SkillsSyncBridge::OnDatabaseSave, weak_ptr_factory_.GetWeakPtr()));
+  store_->DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list),
+      base::BindOnce(&SkillsSyncBridge::OnDatabaseSave,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   skills_service_->SyncStatusChanged();
 }

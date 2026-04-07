@@ -264,7 +264,8 @@ void SharedTabGroupAccountDataSyncBridge::ApplyDisableSyncChanges(
 
   storage_keys_for_missing_tabs_.clear();
   specifics_.clear();
-  store_->DeleteAllDataAndMetadata(base::DoNothing());
+  store_->DeleteAllDataAndMetadata(std::move(delete_metadata_change_list),
+                                   base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

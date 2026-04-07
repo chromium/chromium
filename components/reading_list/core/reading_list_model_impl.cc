@@ -311,9 +311,11 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
   }
 }
 
-void ReadingListModelImpl::SyncDeleteAllEntriesAndSyncMetadata() {
+void ReadingListModelImpl::SyncDeleteAllEntriesAndSyncMetadata(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list) {
   DeleteAllEntries(FROM_HERE);
-  storage_layer_->DeleteAllEntriesAndSyncMetadata();
+  storage_layer_->DeleteAllEntriesAndSyncMetadata(
+      std::move(metadata_change_list));
 }
 
 bool ReadingListModelImpl::IsUrlSupported(const GURL& url) {

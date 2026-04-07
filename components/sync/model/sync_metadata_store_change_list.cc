@@ -81,6 +81,10 @@ void SyncMetadataStoreChangeList::TransferChangesTo(MetadataChangeList* other) {
   NOTREACHED();
 }
 
+void SyncMetadataStoreChangeList::DropAllChanges() {
+  NOTREACHED();
+}
+
 const SyncMetadataStore*
 SyncMetadataStoreChangeList::GetMetadataStoreForTesting() const {
   return store_;

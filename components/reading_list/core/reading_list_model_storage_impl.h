@@ -31,7 +31,9 @@ class ReadingListModelStorageImpl : public ReadingListModelStorage {
   ~ReadingListModelStorageImpl() override;
 
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
-  void DeleteAllEntriesAndSyncMetadata() override;
+  void DeleteAllEntriesAndSyncMetadata(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list)
+      override;
 
   // ReadingListModelStorage implementation.
   void Load(base::Clock* clock, LoadCallback load_cb) override;

@@ -177,7 +177,8 @@ void CollaborationGroupSyncBridge::ApplyDisableSyncChanges(
 
   const std::vector<GroupId> group_ids_to_delete = GetCollaborationGroupIds();
   ids_to_specifics_.clear();
-  data_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
+  data_type_store_->DeleteAllDataAndMetadata(
+      std::move(delete_metadata_change_list), base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   for (auto& observer : observers_) {
