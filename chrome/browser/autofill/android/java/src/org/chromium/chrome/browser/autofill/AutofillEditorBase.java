@@ -138,6 +138,8 @@ public abstract class AutofillEditorBase extends Fragment
 
         MenuItem deleteItem = menu.findItem(R.id.delete_menu_id);
         if (deleteItem != null) deleteItem.setVisible(!mIsNewEntry && getIsDeletable());
+        MenuItem brandingIcon = menu.findItem(R.id.branding_icon_id);
+        brandingIcon.setVisible(false);
     }
 
     /** @return True if the item is deletable. Can be false for server credit cards, for example. */

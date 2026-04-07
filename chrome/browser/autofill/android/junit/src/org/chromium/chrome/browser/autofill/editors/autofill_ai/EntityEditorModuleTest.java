@@ -167,6 +167,14 @@ public class EntityEditorModuleTest {
                     .setUseCount(0)
                     .build();
 
+    private static final EntityInstance NEW_WALLET_PASSPORT =
+            new EntityInstance.Builder(PASSPORT_TYPE)
+                    .setGUID("")
+                    .setRecordType(RecordType.SERVER_WALLET)
+                    .setModifiedDate(LocalDate.of(2026, 2, 15))
+                    .setUseCount(0)
+                    .build();
+
     private static final EntityInstance WALLET_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGUID("guid")
@@ -250,6 +258,21 @@ public class EntityEditorModuleTest {
         showEditorDialog(NEW_LOCAL_PASSPORT);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
         assertEquals(PASSPORT_TYPE.getAddEntityTypeString(), toolbar.getTitle());
+        assertFalse(toolbar.getBrandingIconForTest().isVisible());
+        assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowEditorDialogForNewWalletEntity() {
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
+        showEditorDialog(NEW_WALLET_PASSPORT);
+        EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
+        assertEquals(PASSPORT_TYPE.getAddEntityTypeString(), toolbar.getTitle());
+        assertTrue(toolbar.getBrandingIconForTest().isVisible());
+        assertEquals(
+                mActivity.getString(R.string.autofill_google_wallet_title),
+                toolbar.getBrandingIconForTest().getTitle());
         assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
 
@@ -260,6 +283,7 @@ public class EntityEditorModuleTest {
         showEditorDialog(LOCAL_PASSPORT);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
         assertEquals(PASSPORT_TYPE.getEditEntityTypeString(), toolbar.getTitle());
+        assertFalse(toolbar.getBrandingIconForTest().isVisible());
         assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
 
