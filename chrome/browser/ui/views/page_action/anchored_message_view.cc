@@ -137,7 +137,7 @@ class ChipContainerView : public views::View {
               const std::optional<ui::ImageModel>& icon) {
     icon_ = icon;
     icon_view_->SetVisible(icon_ != std::nullopt);
-    label_->SetVisible(label_text.size() > 0);
+    label_->SetVisible(!label_text.empty());
     label_->SetText(label_text);
     OnThemeChanged();
   }
@@ -242,6 +242,11 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
 
 void AnchoredMessageBubbleView::UpdateContent(
     const PageActionModelInterface& model) {
+  const bool chip_has_icon = !model.GetAnchoredMessageIcon();
+  // Ensure that the anchored message always has a chip showing - that is it has
+  // an icon and/or non-empty text.
+  CHECK(chip_has_icon || !model.GetText().empty());
+
   icon_ = model.GetAnchoredMessageIcon();
   if (icon_) {
     icon_view_->SetImage(icon_.value());
@@ -255,8 +260,9 @@ void AnchoredMessageBubbleView::UpdateContent(
   label_->SetVisible(!label_text_.empty());
 
   std::optional<ui::ImageModel> chip_icon =
-      icon_ ? std::nullopt : std::optional<ui::ImageModel>(model.GetImage());
-  bool show_chip = chip_icon || model.GetText().size() > 0;
+      chip_has_icon ? std::optional<ui::ImageModel>(model.GetImage())
+                    : std::nullopt;
+  bool show_chip = chip_icon || !model.GetText().empty();
 
   chip_container_->Update(model.GetText(), chip_icon);
   chip_container_->SetVisible(show_chip);

@@ -203,28 +203,6 @@ TEST_F(AnchoredMessageBubbleViewTest, UpdateContentChangesVisibility_ChipOnly) {
   widget->CloseNow();
 }
 
-TEST_F(AnchoredMessageBubbleViewTest, UpdateContentChangesVisibility_NoChip) {
-  ON_CALL(model_, GetAnchoredMessageText())
-      .WillByDefault(ReturnRef(test_text_));
-  ON_CALL(model_, GetAnchoredMessageIcon())
-      .WillByDefault(ReturnRef(test_icon_opt_));
-  ON_CALL(model_, GetImage()).WillByDefault(ReturnRef(test_image_));
-  ON_CALL(model_, GetText()).WillByDefault(ReturnRef(empty_text_));
-
-  auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubble(std::move(view));
-  widget->Show();
-
-  RunTestSequence(
-      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageIconId),
-      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageLabelId),
-      EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId),
-      EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId));
-
-  widget->CloseNow();
-}
-
 TEST_F(AnchoredMessageBubbleViewTest, ChipCallbackRunsBeforeCloseCallback) {
   bool chip_callback_called = false;
 
