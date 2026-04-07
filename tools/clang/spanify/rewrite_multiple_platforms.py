@@ -36,6 +36,11 @@ PROJECTS = {
         'tool_arg': '--project=skia',
         'build_targets': ['//third_party/skia']
     },
+    'dawn': {
+        'compile_dirs': 'third_party/dawn/src',
+        'tool_arg': '--project=dawn',
+        'build_targets': ['//third_party/dawn/src/dawn'],
+    },
 }
 
 # Standard GN arguments common to most platforms for spanification.

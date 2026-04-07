@@ -26,6 +26,7 @@
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Refactoring.h"
+#include "dawn_project.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Support/FormatVariadic.h"
 #include "llvm/Support/TargetSelect.h"
@@ -52,6 +53,7 @@ const Project* GetProject() {
   static constexpr ChromeProject kChromeProject;
   static constexpr PartitionAllocProject kPartitionAllocProject;
   static constexpr SkiaProject kSkiaProject;
+  static constexpr DawnProject kDawnProject;
   switch (g_project) {
     case ProjectName::kChrome:
       return &kChromeProject;
@@ -59,6 +61,8 @@ const Project* GetProject() {
       return &kPartitionAllocProject;
     case ProjectName::kSkia:
       return &kSkiaProject;
+    case ProjectName::kDawn:
+      return &kDawnProject;
     default:
       llvm_unreachable("Unhandled project type in GetProject()");
   }
@@ -972,7 +976,8 @@ std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
 
   std::string replacement_text =
       qualifiers.str() +
-      llvm::formatv("{0}<{1}>", GetProject()->GetSpanRelativePath(result), type)
+      llvm::formatv("{0}<{1}> ", GetProject()->GetSpanRelativePath(result),
+                    type)
           .str();
 
   // Since the `type` might be clang deduced type, this node is keyed by the
