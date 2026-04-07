@@ -12,232 +12,185 @@
 
 namespace {
 
+// Keep the list of OAuth2 scopes sorted alphabetically.
+// keep-sorted start case=no
+// OAuth2 scope for access to the Reauth flow.
+constexpr char kAccountsReauthOAuth2Scope[] =
+    "https://www.googleapis.com/auth/accounts.reauth";
+constexpr char kAgenticPermissionOAuth2Scope[] =
+    "https://www.googleapis.com/auth/agenticpermission";
+// OAuth2 scope for DevTools GenAI features.
+constexpr char kAiCodeOAuth2Scope[] = "https://www.googleapis.com/auth/aicode";
+// OAuth2 scope for DevTools GenAI features.
+constexpr char kAidaOAuth2Scope[] = "https://www.googleapis.com/auth/aida";
+// OAuth2 scope for access to audit recording (ARI).
+constexpr char kAuditRecordingOAuth2Scope[] =
+    "https://www.googleapis.com/auth/auditrecording-pa";
+// OAuth 2 scope for readonly access to Calendar.
+constexpr char kCalendarReadOnlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/calendar.readonly";
+// OAuth2 scope for access to Cast backdrop API.
+constexpr char kCastBackdropOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cast.backdrop";
 // OAuth2 scope to access the ChromebookEmailService API.
 constexpr char kChromebookOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromebook.email";
-// OAuth2 scope for Chrome Web Store.
-constexpr char kWebstoreOAuth2Scope[] =
-    "https://www.googleapis.com/auth/chromewebstore.readonly";
-// OAuth2 scope for push notifications.
-constexpr char kPushNotificationOAuth2Scope[] =
-    "https://www.googleapis.com/auth/notifications";
-// OAuth2 scope for web history.
-constexpr char kWebHistoryOAuth2Scope[] =
-    "https://www.googleapis.com/auth/webhistory";
+constexpr char kChromeMemexOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromememex";
+// OAuth2 scope for access to Chrome safe browsing API.
+constexpr char kChromeSafeBrowsingOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chrome-safe-browsing";
+// OAuth2 scope for access to kid permissions by URL.
+constexpr char kClassifyUrlKidPermissionOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kid.permission";
+// OAuth 2 scopes for Google Classroom API.
+// https://developers.google.com/identity/protocols/oauth2/scopes#classroom
+constexpr char kClassroomCourseWorkMaterialsOAuthScope[] =
+    "https://www.googleapis.com/auth/classroom.courseworkmaterials";
+constexpr char kClassroomProfileEmailOauth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.profile.emails";
+constexpr char kClassroomProfilePhotoUrlScope[] =
+    "https://www.googleapis.com/auth/classroom.profile.photos";
+constexpr char kClassroomReadOnlyCoursesOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.courses.readonly";
+constexpr char kClassroomReadOnlyCourseWorkSelfOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.coursework.me.readonly";
+constexpr char kClassroomReadOnlyCourseWorkStudentsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.coursework.students.readonly";
+constexpr char kClassroomReadOnlyRostersOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.rosters.readonly";
+constexpr char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly";
+// OAuth2 scope for access to clear cut logs.
+constexpr char kClearCutOAuth2Scope[] = "https://www.googleapis.com/auth/cclog";
+// OAuth2 scope for access for DriveFS to use client-side notifications.
+constexpr char kClientChannelOAuth2Scope[] =
+    "https://www.googleapis.com/auth/client_channel";
+// OAuth2 scope for Cloud Search query API.
+constexpr char kCloudSearchQueryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cloud_search.query";
+constexpr char kCryptAuthOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cryptauth";
+// OAuth2 scope for Discovery Engine suggestion API.
+constexpr char kDiscoveryEngineCompleteQueryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/discoveryengine.complete_query";
+// OAuth2 scope for Access Code Cast.
+constexpr char kDiscoveryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cast-edu-messaging";
+// OAuth2 scope for access to Drive Apps.
+constexpr char kDriveAppsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/drive.apps";
+// OAuth2 scope for access to readonly Drive Apps.
+constexpr char kDriveAppsReadonlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/drive.apps.readonly";
+// OAuth2 scope for access for DriveFS to access flags.
+constexpr char kExperimentsAndConfigsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/experimentsandconfigs";
+// OAuth 2 scope for the Discover feed.
+constexpr char kFeedOAuth2Scope[] = "https://www.googleapis.com/auth/googlenow";
+// OAuth2 scopes for access to GCM.
+constexpr char kGCMCheckinServerOAuth2Scope[] =
+    "https://www.googleapis.com/auth/android_checkin";
+constexpr char kGCMGroupServerOAuth2Scope[] =
+    "https://www.googleapis.com/auth/gcm";
+// OAuth2 scope for DevTools Google Developer Program features.
+constexpr char kGdpOAuth2Scope[] =
+    "https://www.googleapis.com/auth/devprofiles.full_control";
+// OAuth 2 scope for the k-Anonymity Service API.
+constexpr char kKAnonymityServiceOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromekanonymity";
+// OAuth2 scope for access to kid family (read-only).
+constexpr char kKidFamilyReadonlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kid.family.readonly";
+// OAuth2 scope for parental consent logging for secondary account addition.
+constexpr char kKidManagementPrivilegedOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kid.management.privileged";
+// OAuth2 scope for access to Google Family Link Supervision Setup.
+constexpr char kKidsSupervisionSetupChildOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kids.supervision.setup.child";
 // OAuth2 scope for app license check.
 constexpr char kLicenseCheckOAuth2Scope[] =
     "https://www.googleapis.com/auth/applicense.bytebot";
 // OAuth2 scope for manta.
 constexpr char kMantaOAuth2Scope[] =
     "https://www.googleapis.com/auth/mdi.aratea";
-
-constexpr char kChromeMemexOAuth2Scope[] =
-    "https://www.googleapis.com/auth/chromememex";
-
-// OAuth2 scope for DevTools GenAI features.
-constexpr char kAidaOAuth2Scope[] = "https://www.googleapis.com/auth/aida";
-
-// OAuth 2 scopes for Google Tasks API.
-// https://developers.google.com/identity/protocols/oauth2/scopes#tasks
-constexpr char kTasksReadOnlyOAuth2Scope[] =
-    "https://www.googleapis.com/auth/tasks.readonly";
-constexpr char kTasksOAuth2Scope[] = "https://www.googleapis.com/auth/tasks";
-
-// OAuth 2 scope for YouTube Music API.
-// https://developers.google.com/youtube/mediaconnect/guides/authentication#identify-access-scope
-constexpr char kYouTubeMusicOAuth2Scope[] =
-    "https://www.googleapis.com/auth/music";
-
-constexpr char kSearchResultsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/searchresults";
-
-// OAuth2 scope for DevTools Google Developer Program features.
-constexpr char kGdpOAuth2Scope[] =
-    "https://www.googleapis.com/auth/devprofiles.full_control";
-
-// OAuth 2 scopes for Google Classroom API.
-// https://developers.google.com/identity/protocols/oauth2/scopes#classroom
-constexpr char kSchoolToolsAuthScope[] =
-    "https://www.googleapis.com/auth/chromeosschooltools";
-constexpr char kClassroomReadOnlyCoursesOAuth2Scope[] =
-    "https://www.googleapis.com/auth/classroom.courses.readonly";
-constexpr char kClassroomReadOnlyCourseWorkSelfOAuth2Scope[] =
-    "https://www.googleapis.com/auth/classroom.coursework.me.readonly";
-constexpr char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[] =
-    "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly";
-constexpr char kClassroomReadOnlyRostersOAuth2Scope[] =
-    "https://www.googleapis.com/auth/classroom.rosters.readonly";
-constexpr char kClassroomReadOnlyCourseWorkStudentsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/classroom.coursework.students.readonly";
-constexpr char kClassroomProfileEmailOauth2Scope[] =
-    "https://www.googleapis.com/auth/classroom.profile.emails";
-constexpr char kClassroomProfilePhotoUrlScope[] =
-    "https://www.googleapis.com/auth/classroom.profile.photos";
-constexpr char kClassroomCourseWorkMaterialsOAuthScope[] =
-    "https://www.googleapis.com/auth/classroom.courseworkmaterials";
-
-// OAuth2 scope for Private AI.
-constexpr char kPrivateAiAuthScope[] = "https://www.googleapis.com/auth/paic";
-
-constexpr char kWalletPassesOAuth2Scope[] =
-    "https://www.googleapis.com/auth/wallet_1p_passes";
-
-// OAuth2 scope for DevTools GenAI features.
-constexpr char kAiCodeOAuth2Scope[] = "https://www.googleapis.com/auth/aicode";
-
-constexpr char kAgenticPermissionOAuth2Scope[] =
-    "https://www.googleapis.com/auth/agenticpermission";
-
+// OAuth2 scope for access to nearby devices (fast pair) APIs.
+constexpr char kNearbyDevicesOAuth2Scope[] =
+    "https://www.googleapis.com/auth/nearbydevices-pa";
+// OAuth2 scope for access to nearby sharing.
+constexpr char kNearbyPresenceOAuth2Scope[] =
+    "https://www.googleapis.com/auth/nearbypresence-pa";
+// OAuth2 scope for access to nearby sharing.
+constexpr char kNearbyShareOAuth2Scope[] =
+    "https://www.googleapis.com/auth/nearbysharing-pa";
 // OAuth2 scope for One Time Token Service.
 constexpr char kOneTimeTokenOAuth2Scope[] =
     "https://www.googleapis.com/auth/chrome.passwords.onetimetoken";
-
-// OAuth 2 scope for NTP Photos module API.
-constexpr char kPhotosModuleOAuth2Scope[] =
-    "https://www.googleapis.com/auth/photos.firstparty.readonly";
-
-// OAuth 2 scope for NTP Photos module image API.
-constexpr char kPhotosModuleImageOAuth2Scope[] =
-    "https://www.googleapis.com/auth/photos.image.readonly";
-
 // OAuth2 scopes for Optimization Guide.
 constexpr char kOptimizationGuideServiceGetHintsOAuth2Scope[] =
     "https://www.googleapis.com/auth/chrome-optimization-guide";
-
 constexpr char kOptimizationGuideServiceModelExecutionOAuth2Scope[] =
     "https://www.googleapis.com/auth/chrome-model-execution";
-
-// OAuth2 scope for access to Google Family Link Supervision Setup.
-constexpr char kKidsSupervisionSetupChildOAuth2Scope[] =
-    "https://www.googleapis.com/auth/kids.supervision.setup.child";
-
-// OAuth2 scope for access to the people API (read-only).
-constexpr char kPeopleApiReadOnlyOAuth2Scope[] =
-    "https://www.googleapis.com/auth/peopleapi.readonly";
-
-// OAuth2 scope for access to the Reauth flow.
-constexpr char kAccountsReauthOAuth2Scope[] =
-    "https://www.googleapis.com/auth/accounts.reauth";
-
-// OAuth2 scope for access to audit recording (ARI).
-constexpr char kAuditRecordingOAuth2Scope[] =
-    "https://www.googleapis.com/auth/auditrecording-pa";
-
-// OAuth2 scope for access to clear cut logs.
-constexpr char kClearCutOAuth2Scope[] = "https://www.googleapis.com/auth/cclog";
-
 // OAuth2 scope for access to the parent approval widget.
 constexpr char kParentApprovalOAuth2Scope[] =
     "https://www.googleapis.com/auth/kids.parentapproval";
-
-// OAuth2 scope for access to the programmatic challenge API (read-only).
-constexpr char kProgrammaticChallengeOAuth2Scope[] =
-    "https://www.googleapis.com/auth/accounts.programmaticchallenge";
-
+// OAuth 2 scope for Google Password Manager passkey enclaves.
+constexpr char kPasskeysEnclaveOAuth2Scope[] =
+    "https://www.googleapis.com/auth/secureidentity.action";
+// OAuth2 scope for access to passwords leak checking API.
+constexpr char kPasswordsLeakCheckOAuth2Scope[] =
+    "https://www.googleapis.com/auth/identity.passwords.leak.check";
+// OAuth2 scope for access to payments.
+constexpr char kPaymentsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/wallet.chrome";
+// OAuth2 scope for access to the people API (read-only).
+constexpr char kPeopleApiReadOnlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/peopleapi.readonly";
 // OAuth2 scope for access to the people API (read-write).
 constexpr char kPeopleApiReadWriteOAuth2Scope[] =
     "https://www.googleapis.com/auth/peopleapi.readwrite";
-
+// OAuth 2 scope for NTP Photos module image API.
+constexpr char kPhotosModuleImageOAuth2Scope[] =
+    "https://www.googleapis.com/auth/photos.image.readonly";
+// OAuth 2 scope for NTP Photos module API.
+constexpr char kPhotosModuleOAuth2Scope[] =
+    "https://www.googleapis.com/auth/photos.firstparty.readonly";
+// OAuth2 scope for access to the Photos API.
+constexpr char kPhotosOAuth2Scope[] = "https://www.googleapis.com/auth/photos";
+// OAuth2 scope for Private AI.
+constexpr char kPrivateAiAuthScope[] = "https://www.googleapis.com/auth/paic";
 // OAuth2 scope for access to the people API person's locale preferences
 // (read-only).
 constexpr char kProfileLanguageReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/profile.language.read";
-
-// OAuth2 scope for access to kid family (read-only).
-constexpr char kKidFamilyReadonlyOAuth2Scope[] =
-    "https://www.googleapis.com/auth/kid.family.readonly";
-
-// OAuth2 scope for access to kid permissions by URL.
-constexpr char kClassifyUrlKidPermissionOAuth2Scope[] =
-    "https://www.googleapis.com/auth/kid.permission";
-
-// OAuth 2 scope for Google Password Manager passkey enclaves.
-constexpr char kPasskeysEnclaveOAuth2Scope[] =
-    "https://www.googleapis.com/auth/secureidentity.action";
-
-// OAuth2 scope for access to nearby sharing.
-constexpr char kNearbyShareOAuth2Scope[] =
-    "https://www.googleapis.com/auth/nearbysharing-pa";
-
-// OAuth 2 scope for the k-Anonymity Service API.
-constexpr char kKAnonymityServiceOAuth2Scope[] =
-    "https://www.googleapis.com/auth/chromekanonymity";
-
-// OAuth2 scope for Cloud Search query API.
-constexpr char kCloudSearchQueryOAuth2Scope[] =
-    "https://www.googleapis.com/auth/cloud_search.query";
-
-// OAuth2 scope for Discovery Engine suggestion API.
-constexpr char kDiscoveryEngineCompleteQueryOAuth2Scope[] =
-    "https://www.googleapis.com/auth/discoveryengine.complete_query";
-
-// OAuth2 scope for access to Chrome safe browsing API.
-constexpr char kChromeSafeBrowsingOAuth2Scope[] =
-    "https://www.googleapis.com/auth/chrome-safe-browsing";
-
-constexpr char kCryptAuthOAuth2Scope[] =
-    "https://www.googleapis.com/auth/cryptauth";
-
-// OAuth 2 scope for the Discover feed.
-constexpr char kFeedOAuth2Scope[] = "https://www.googleapis.com/auth/googlenow";
-
-// OAuth2 scope for access to payments.
-constexpr char kPaymentsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/wallet.chrome";
-
-// OAuth2 scope for access to nearby devices (fast pair) APIs.
-constexpr char kNearbyDevicesOAuth2Scope[] =
-    "https://www.googleapis.com/auth/nearbydevices-pa";
-
-// OAuth2 scope for parental consent logging for secondary account addition.
-constexpr char kKidManagementPrivilegedOAuth2Scope[] =
-    "https://www.googleapis.com/auth/kid.management.privileged";
-
-// OAuth2 scope for access to passwords leak checking API.
-constexpr char kPasswordsLeakCheckOAuth2Scope[] =
-    "https://www.googleapis.com/auth/identity.passwords.leak.check";
-
-// OAuth2 scopes for access to GCM account tracker.
-constexpr char kGCMGroupServerOAuth2Scope[] =
-    "https://www.googleapis.com/auth/gcm";
-
-constexpr char kGCMCheckinServerOAuth2Scope[] =
-    "https://www.googleapis.com/auth/android_checkin";
-
-// OAuth2 scope for access for DriveFS to use client-side notifications.
-constexpr char kClientChannelOAuth2Scope[] =
-    "https://www.googleapis.com/auth/client_channel";
-
-// OAuth2 scope for access for DriveFS to access flags.
-constexpr char kExperimentsAndConfigsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/experimentsandconfigs";
-
-// OAuth2 scope for access to nearby sharing.
-constexpr char kNearbyPresenceOAuth2Scope[] =
-    "https://www.googleapis.com/auth/nearbypresence-pa";
-
-// OAuth2 scope for access to the Photos API.
-constexpr char kPhotosOAuth2Scope[] = "https://www.googleapis.com/auth/photos";
-
-// OAuth2 scope for access to Cast backdrop API.
-constexpr char kCastBackdropOAuth2Scope[] =
-    "https://www.googleapis.com/auth/cast.backdrop";
-
-// OAuth2 scope for Access Code Cast.
-constexpr char kDiscoveryOAuth2Scope[] =
-    "https://www.googleapis.com/auth/cast-edu-messaging";
-
-// OAuth2 scope for access to Drive Apps.
-constexpr char kDriveAppsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/drive.apps";
-
-// OAuth2 scope for access to readonly Drive Apps.
-constexpr char kDriveAppsReadonlyOAuth2Scope[] =
-    "https://www.googleapis.com/auth/drive.apps.readonly";
-
-// OAuth 2 scope for readonly access to Calendar.
-constexpr char kCalendarReadOnlyOAuth2Scope[] =
-    "https://www.googleapis.com/auth/calendar.readonly";
+// OAuth2 scope for access to the programmatic challenge API (read-only).
+constexpr char kProgrammaticChallengeOAuth2Scope[] =
+    "https://www.googleapis.com/auth/accounts.programmaticchallenge";
+// OAuth2 scope for push notifications.
+constexpr char kPushNotificationOAuth2Scope[] =
+    "https://www.googleapis.com/auth/notifications";
+constexpr char kSchoolToolsAuthScope[] =
+    "https://www.googleapis.com/auth/chromeosschooltools";
+constexpr char kSearchResultsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/searchresults";
+// OAuth 2 scopes for Google Tasks API.
+// https://developers.google.com/identity/protocols/oauth2/scopes#tasks
+constexpr char kTasksOAuth2Scope[] = "https://www.googleapis.com/auth/tasks";
+constexpr char kTasksReadOnlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/tasks.readonly";
+constexpr char kWalletPassesOAuth2Scope[] =
+    "https://www.googleapis.com/auth/wallet_1p_passes";
+// OAuth2 scope for web history.
+constexpr char kWebHistoryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/webhistory";
+// OAuth2 scope for Chrome Web Store.
+constexpr char kWebstoreOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromewebstore.readonly";
+// OAuth 2 scope for YouTube Music API.
+// https://developers.google.com/youtube/mediaconnect/guides/authentication#identify-access-scope
+constexpr char kYouTubeMusicOAuth2Scope[] =
+    "https://www.googleapis.com/auth/music";
+// keep-sorted end
 
 constexpr char kSyncName[] = "sync";
 constexpr char kWallpaperGooglePhotosFetcherName[] =
