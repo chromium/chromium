@@ -107,11 +107,26 @@ struct BuildConv2dAttributes {
   uint32_t groups;
 };
 
+struct BuildGemmAttributes {
+  std::optional<OperandId> c_operand_id;
+  float alpha;
+  float beta;
+  bool a_transpose;
+  bool b_transpose;
+};
+
 struct BuildPool2dAttributes {
   std::vector<uint32_t> window_dimensions;
   std::vector<uint32_t> padding;
   std::vector<uint32_t> strides;
   std::vector<uint32_t> dilations;
+};
+
+enum class GemmCShapeKind : uint8_t {
+  kScalar = 0,
+  k1D = 1,
+  k2D_1xN = 2,
+  k2D_MxN = 3,
 };
 
 struct Conv2dParams {
@@ -138,6 +153,22 @@ struct Conv2dParams {
   bool is_input_constant;
   bool is_filter_constant;
   bool is_bias_constant;
+};
+
+struct GemmParams {
+  OperandDataType data_type;
+  uint32_t m;
+  uint32_t k;
+  uint32_t n;
+  float alpha;
+  float beta;
+  bool a_transpose;
+  bool b_transpose;
+  bool has_c;
+  GemmCShapeKind c_shape_kind;
+  bool is_a_constant;
+  bool is_b_constant;
+  bool is_c_constant;
 };
 
 struct Pool2dParams {
@@ -238,6 +269,26 @@ auto AnyConv2dParams() {
       fuzztest::Arbitrary<bool>(),  // is_input_constant
       fuzztest::Arbitrary<bool>(),  // is_filter_constant
       fuzztest::Arbitrary<bool>()   // is_bias_constant
+  );
+}
+
+auto AnyGemmParams() {
+  return fuzztest::StructOf<GemmParams>(
+      AnyOperandDataType(),
+      AnyDimSize(),                  // m
+      AnyDimSize(),                  // k
+      AnyDimSize(),                  // n
+      fuzztest::Arbitrary<float>(),  // alpha
+      fuzztest::Arbitrary<float>(),  // beta
+      fuzztest::Arbitrary<bool>(),   // a_transpose
+      fuzztest::Arbitrary<bool>(),   // b_transpose
+      fuzztest::Arbitrary<bool>(),   // has_c
+      fuzztest::ElementOf<GemmCShapeKind>(
+          {GemmCShapeKind::kScalar, GemmCShapeKind::k1D,
+           GemmCShapeKind::k2D_1xN, GemmCShapeKind::k2D_MxN}),  // c_shape_kind
+      fuzztest::Arbitrary<bool>(),                              // is_a_constant
+      fuzztest::Arbitrary<bool>(),                              // is_b_constant
+      fuzztest::Arbitrary<bool>()                               // is_c_constant
   );
 }
 
@@ -704,6 +755,7 @@ class WebNNGraphImplFuzzerImpl
     : public fuzztest::PerFuzzTestFixtureAdapter<BaseFixture> {
  public:
   void SingleOpConv2d(Conv2dParams params, uint8_t seed_for_data);
+  void SingleOpGemm(GemmParams params, uint8_t seed_for_data);
   void SingleOpPool2d(Pool2dParams params, uint8_t seed_for_data);
   void SubgraphDQConv2dQ(Conv2dParams conv2d_params,
                          QuantizationParams quantization_params,
@@ -793,6 +845,120 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
   conv2d_attr.groups = params.groups;
   builder.BuildConv2d(params.conv2d_kind, input_id, filter_id, output_id,
                       conv2d_attr, bias_id);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
+    GemmParams params,
+    uint8_t seed_for_data) {
+  std::vector<uint32_t> a_dims =
+      params.a_transpose ? std::vector<uint32_t>{params.k, params.m}
+                         : std::vector<uint32_t>{params.m, params.k};
+  std::vector<uint32_t> b_dims =
+      params.b_transpose ? std::vector<uint32_t>{params.n, params.k}
+                         : std::vector<uint32_t>{params.k, params.n};
+
+  ASSIGN_OR_RETURN_VOID(
+      auto a_desc, OperandDescriptor::Create(this->context_properties(),
+                                             params.data_type, a_dims, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto b_desc, OperandDescriptor::Create(this->context_properties(),
+                                             params.data_type, b_dims, ""));
+
+  GemmAttributes attr;
+  attr.alpha = params.alpha;
+  attr.beta = params.beta;
+  attr.a_transpose = params.a_transpose;
+  attr.b_transpose = params.b_transpose;
+
+  std::optional<OperandDescriptor> c_desc;
+  if (params.has_c) {
+    std::vector<uint32_t> c_dims;
+    switch (params.c_shape_kind) {
+      case GemmCShapeKind::kScalar:
+        c_dims = {1};
+        break;
+      case GemmCShapeKind::k1D:
+        c_dims = {params.n};
+        break;
+      case GemmCShapeKind::k2D_1xN:
+        c_dims = {1, params.n};
+        break;
+      case GemmCShapeKind::k2D_MxN:
+        c_dims = {params.m, params.n};
+        break;
+    }
+    ASSIGN_OR_RETURN_VOID(
+        c_desc, OperandDescriptor::Create(this->context_properties(),
+                                          params.data_type, c_dims, ""));
+    attr.c_operand = c_desc;
+  }
+
+  auto output_desc_result = ValidateGemmAndInferOutput(
+      this->context_properties(), a_desc, b_desc, attr);
+  if (!output_desc_result.has_value()) {
+    return;
+  }
+  auto& output_desc = output_desc_result.value();
+
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  OperandId a_id;
+  OperandId b_id;
+  std::vector<uint8_t> a_data(a_desc.PackedByteLength(), seed_for_data);
+  std::vector<uint8_t> b_data(b_desc.PackedByteLength(), seed_for_data);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  if (params.is_a_constant) {
+    a_id = builder.BuildConstant(a_desc.shape(), a_desc.data_type(),
+                                 base::as_byte_span(a_data));
+  } else {
+    a_id = builder.BuildInput("a", a_desc.shape(), a_desc.data_type());
+    named_inputs.insert({"a", a_data});
+  }
+  if (params.is_b_constant) {
+    b_id = builder.BuildConstant(b_desc.shape(), b_desc.data_type(),
+                                 base::as_byte_span(b_data));
+  } else {
+    b_id = builder.BuildInput("b", b_desc.shape(), b_desc.data_type());
+    named_inputs.insert({"b", b_data});
+  }
+
+  BuildGemmAttributes gemm_attr;
+  gemm_attr.alpha = params.alpha;
+  gemm_attr.beta = params.beta;
+  gemm_attr.a_transpose = params.a_transpose;
+  gemm_attr.b_transpose = params.b_transpose;
+
+  std::vector<uint8_t> c_data;
+  if (params.has_c) {
+    c_data.assign(c_desc->PackedByteLength(), seed_for_data);
+    if (params.is_c_constant) {
+      OperandId c_id = builder.BuildConstant(
+          c_desc->shape(), c_desc->data_type(), base::as_byte_span(c_data));
+      gemm_attr.c_operand_id = c_id;
+    } else {
+      OperandId c_id =
+          builder.BuildInput("c", c_desc->shape(), c_desc->data_type());
+      named_inputs.insert({"c", c_data});
+      gemm_attr.c_operand_id = c_id;
+    }
+  }
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildGemm(a_id, b_id, output_id, gemm_attr);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -1144,6 +1310,25 @@ WEBNN_FUZZ_TEST_F(SingleOpConv2d,
                                        /*is_bias_constant=*/true,
                                    },
                                    /*seed_for_data=*/1}}));
+
+WEBNN_FUZZ_TEST_F(SingleOpGemm,
+                  .WithDomains(AnyGemmParams(), fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{GemmParams{
+                                       OperandDataType::kFloat32,
+                                       /*m=*/3,
+                                       /*k=*/4,
+                                       /*n=*/5,
+                                       /*alpha=*/1.0f,
+                                       /*beta=*/1.0f,
+                                       /*a_transpose=*/false,
+                                       /*b_transpose=*/false,
+                                       /*has_c=*/true,
+                                       /*c_shape_kind=*/GemmCShapeKind::k2D_MxN,
+                                       /*is_a_constant=*/false,
+                                       /*is_b_constant=*/true,
+                                       /*is_c_constant=*/true,
+                                   },
+                                   /*seed_for_data=*/3}}));
 
 WEBNN_FUZZ_TEST_F(SingleOpPool2d,
                   .WithDomains(AnyPool2dParams(),
