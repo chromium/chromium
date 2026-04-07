@@ -456,8 +456,7 @@ void SimulateOpeningReceivedTab(
     Browser* browser,
     const send_tab_to_self::SendTabToSelfEntry& entry) {
   send_tab_to_self::SendTabToSelfToolbarBubbleController* controller =
-      browser->browser_window_features()
-          ->send_tab_to_self_toolbar_bubble_controller();
+      send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser);
 
   if (!controller->IsBubbleShowing()) {
     PinnedToolbarActions* pinned_controller =

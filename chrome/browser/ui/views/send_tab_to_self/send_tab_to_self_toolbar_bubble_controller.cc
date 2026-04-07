@@ -12,9 +12,19 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace send_tab_to_self {
+
+DEFINE_USER_DATA(SendTabToSelfToolbarBubbleController);
+
+// static
+SendTabToSelfToolbarBubbleController*
+SendTabToSelfToolbarBubbleController::From(BrowserWindowInterface* bwi) {
+  return Get(bwi->GetUnownedUserDataHost());
+}
+
 SendTabToSelfToolbarBubbleController::SendTabToSelfToolbarBubbleController(
     BrowserWindowInterface* bwi)
-    : bwi_(CHECK_DEREF(bwi)) {}
+    : bwi_(CHECK_DEREF(bwi)),
+      scoped_unowned_user_data_(bwi->GetUnownedUserDataHost(), *this) {}
 
 SendTabToSelfToolbarBubbleController::~SendTabToSelfToolbarBubbleController() {
   HideBubble();
@@ -27,11 +37,11 @@ void SendTabToSelfToolbarBubbleController::ShowBubble(
     bubble()->ReplaceEntry(entry);
     return;
   }
-  auto bubble_view = std::make_unique<SendTabToSelfToolbarBubbleView>(
-      *bwi_, anchor, entry,
-      base::BindOnce([](NavigateParams* params) { return Navigate(params); }));
-  bubble_tracker_.SetView(bubble_view.get());
-  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view))->Show();
+  auto* bubble_view = SendTabToSelfToolbarBubbleView::CreateBubble(
+      *bwi_, anchor, entry, base::BindOnce([](NavigateParams* params) {
+        return ::Navigate(params);
+      }));
+  bubble_tracker_.SetView(bubble_view);
 }
 
 void SendTabToSelfToolbarBubbleController::HideBubble() {
