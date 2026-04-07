@@ -10,36 +10,33 @@
 namespace base {
 namespace sequence_manager {
 
-ThreadPoolManager::ThreadPoolManager(SequenceManagerFuzzerProcessor* processor)
+ThreadPoolManager::ThreadPoolManager(SequenceManagerFuzzerProcessor* processor,
+                                     base::TimeTicks initial_time)
     : processor_(processor),
       next_time_(base::TimeTicks::Max()),
-      ready_to_compute_time_(&lock_),
-      ready_to_advance_time_(&lock_),
+      now_(initial_time),
       ready_to_terminate_(&lock_),
       ready_to_execute_threads_(&lock_),
-      ready_for_next_round_(&lock_),
-      threads_waiting_to_compute_time_(0),
-      threads_waiting_to_advance_time_(0),
-      threads_ready_for_next_round_(0),
-      threads_ready_to_terminate_(0),
-      all_threads_ready_(true),
+      ready_to_advance_time_(&lock_),
       initial_threads_created_(false) {
   DCHECK(processor_);
+  DCHECK(!initial_time.is_null())
+      << "A zero clock is not allowed as empty base::TimeTicks have a special "
+         "value "
+         "(i.e. base::TimeTicks::is_null())";
 }
 
 ThreadPoolManager::~ThreadPoolManager() = default;
 
 void ThreadPoolManager::CreateThread(
     const google::protobuf::RepeatedPtrField<
-        SequenceManagerTestDescription::Action>& initial_thread_actions,
-    base::TimeTicks time) {
+        SequenceManagerTestDescription::Action>& initial_thread_actions) {
   SimpleThread* thread;
   {
     AutoLock lock(lock_);
     threads_.push_back(std::make_unique<SimpleThreadImpl>(
-        this, time,
-        BindOnce(&ThreadPoolManager::StartThread, Unretained(this),
-                 initial_thread_actions)));
+        this, BindOnce(&ThreadPoolManager::StartThread, Unretained(this),
+                       initial_thread_actions)));
     thread = threads_.back().get();
   }
   thread->Start();
@@ -58,68 +55,43 @@ void ThreadPoolManager::StartThread(
   thread_manager->ExecuteThread(initial_thread_actions);
 }
 
-void ThreadPoolManager::AdvanceClockSynchronouslyByPendingTaskDelay(
-    ThreadManager* thread_manager) {
-  ThreadReadyToComputeTime();
-
-  {
-    AutoLock lock(lock_);
-    while (threads_waiting_to_compute_time_ != threads_.size())
-      ready_to_compute_time_.Wait();
-    next_time_ =
-        std::min(next_time_, thread_manager->NowTicks() +
-                                 thread_manager->NextPendingTaskDelay());
-    threads_waiting_to_advance_time_++;
-    if (threads_waiting_to_advance_time_ == threads_.size()) {
-      threads_waiting_to_compute_time_ = 0;
-      ready_to_advance_time_.Broadcast();
-    }
-  }
-
-  AdvanceThreadClock(thread_manager);
+base::TimeTicks ThreadPoolManager::NowTicks() const {
+  base::AutoLock lock(lock_);
+  return now_;
 }
 
-void ThreadPoolManager::AdvanceClockSynchronouslyToTime(
-    ThreadManager* thread_manager,
-    base::TimeTicks time) {
-  ThreadReadyToComputeTime();
-  {
-    AutoLock lock(lock_);
-    while (threads_waiting_to_compute_time_ != threads_.size())
-      ready_to_compute_time_.Wait();
+bool ThreadPoolManager::MaybeFastForwardToWakeUp(
+    std::optional<sequence_manager::WakeUp> next_wake_up) {
+  AutoLock lock(lock_);
+  if (next_wake_up) {
+    next_time_ = std::min(next_time_, next_wake_up->time);
+  }
+  AdvanceClockSynchronouslyImpl();
+  return !now_.is_max();
+}
+
+void ThreadPoolManager::AdvanceClockSynchronouslyToTime(base::TimeTicks time) {
+  AutoLock lock(lock_);
+  next_time_ = now_;
+  AdvanceClockSynchronouslyImpl();
+  while (now_ != time) {
     next_time_ = std::min(next_time_, time);
-    threads_waiting_to_advance_time_++;
-    if (threads_waiting_to_advance_time_ == threads_.size()) {
-      threads_waiting_to_compute_time_ = 0;
-      ready_to_advance_time_.Broadcast();
-    }
-  }
-  AdvanceThreadClock(thread_manager);
-}
-
-void ThreadPoolManager::ThreadReadyToComputeTime() {
-  AutoLock lock(lock_);
-  while (!all_threads_ready_)
-    ready_for_next_round_.Wait();
-  threads_waiting_to_compute_time_++;
-  if (threads_waiting_to_compute_time_ == threads_.size()) {
-    all_threads_ready_ = false;
-    ready_to_compute_time_.Broadcast();
+    AdvanceClockSynchronouslyImpl();
   }
 }
 
-void ThreadPoolManager::AdvanceThreadClock(ThreadManager* thread_manager) {
-  AutoLock lock(lock_);
-  while (threads_waiting_to_advance_time_ != threads_.size())
-    ready_to_advance_time_.Wait();
-  thread_manager->AdvanceMockTickClock(next_time_ - thread_manager->NowTicks());
-  threads_ready_for_next_round_++;
-  if (threads_ready_for_next_round_ == threads_.size()) {
+void ThreadPoolManager::AdvanceClockSynchronouslyImpl() {
+  threads_waiting_to_advance_time_++;
+  if (threads_waiting_to_advance_time_ == threads_.size()) {
     threads_waiting_to_advance_time_ = 0;
-    threads_ready_for_next_round_ = 0;
-    all_threads_ready_ = true;
-    next_time_ = base::TimeTicks::Max();
-    ready_for_next_round_.Broadcast();
+    now_ = std::exchange(next_time_, base::TimeTicks::Max());
+    ++barrier_step_;
+    ready_to_advance_time_.Broadcast();
+  } else {
+    uint64_t current_step = barrier_step_;
+    while (barrier_step_ == current_step) {
+      ready_to_advance_time_.Wait();
+    }
   }
 }
 
@@ -132,9 +104,9 @@ void ThreadPoolManager::StartInitialThreads() {
 }
 
 void ThreadPoolManager::WaitForAllThreads() {
+  AutoLock lock(lock_);
   if (threads_.empty())
     return;
-  AutoLock lock(lock_);
   while (threads_ready_to_terminate_ != threads_.size())
     ready_to_terminate_.Wait();
 }
