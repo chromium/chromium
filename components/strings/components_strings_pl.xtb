@@ -465,7 +465,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1717218214683051432">Czujniki ruchu</translation>
 <translation id="1717494416764505390">Zestaw tac odbiorczych 3</translation>
 <translation id="1717688554309417925">Usługi kont debetowych i bieżących</translation>
-<translation id="1717882880162336471">Wypróbuj tryb AI</translation>
 <translation id="1719434663396780149">Alerty o obniżkach cen są włączone. Aby to zmienić, otwórz <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 cali</translation>
 <translation id="1720941539803966190">Zamknij samouczek</translation>
@@ -615,7 +614,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1960664692890490165">Podczas zakupów w Chrome wyświetlaj jako opcje formy płatności inne niż karty</translation>
 <translation id="196146181975453736">Przejdź jednorazową kontrolę bezpieczeństwa, aby płacić szybciej</translation>
 <translation id="1962204205936693436">Zakładki z <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Zapłać teraz</translation>
 <translation id="1973335181906896915">Podczas przekształcania do postaci szeregowej wystąpił błąd</translation>
 <translation id="1973785048533660168">Praca w biurze i administracji</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
@@ -1045,6 +1043,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2610561535971892504">Kliknij, aby skopiować</translation>
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="2612993535136743634">Wszystkie kody zabezpieczające zapisane na Twoim urządzeniu i na koncie Google zostaną usunięte</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Aktywne minutę temu}few{Aktywne # minuty temu}many{Aktywne # minut temu}other{Aktywne # minuty temu}}</translation>
 <translation id="2614835674900828050">Niedostępna podczas tego zakupu</translation>
 <translation id="2616412942031748191">Optymalizacja witryn pod kątem wyszukiwarek i marketing</translation>
 <translation id="2618206371527040026">Konferencje i publikacje akademickie</translation>
@@ -1056,6 +1055,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2627847595568876492">Wyodrębniam tekst z pliku PDF…</translation>
 <translation id="2628025184666666186">Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />, ponieważ używa certyfikatu bezpieczeństwa, który nie jest zaufany przez Chrome ani konfigurację systemu do szyfrowania ruchu internetowego. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia.</translation>
 <translation id="2628224721443278970">Zaloguj się w Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Administrator zlokalizował to urządzenie, gdy było wyłączone. Zostało ponownie włączone i jest gotowe do użycia.</translation>
 <translation id="2631387782019878060">Kod weryfikacyjny: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Nie udało się znaleźć adresu IP serwera ze stroną <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Wpisz @, aby wyszukać w usługach <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1097,7 +1097,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2696385693639654606">Chrome Enterprise Core umożliwia zarządzanie zasadami przeglądarki, aplikacjami i rozszerzeniami w chmurze</translation>
 <translation id="2697248912349197812">Zapytaj <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Dostępne jest menu podrzędne. Aby przejść do dodatkowych opcji, naciśnij <ph name="SHORTCUT" />.</translation>
-<translation id="2700335762333112350">Zapłać później</translation>
 <translation id="2701514975700770343">W dół</translation>
 <translation id="2702592986366989640">Niska cena</translation>
 <translation id="2702801445560668637">Do przeczytania</translation>
@@ -2446,7 +2445,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4832388034239846146">Aby udostępniać grupy kart, zaktualizuj Chrome</translation>
 <translation id="483241715238664915">Włącz ostrzeżenia</translation>
 <translation id="4832961164064927107">Barbecue i grill</translation>
-<translation id="4839984801146463230">Zapisz swoje dane, aby szybciej wykonywać zadania, np. wypełniać formularze w usługach Google. Możesz <ph name="BEGIN_LINK" />zarządzać swoimi informacjami<ph name="END_LINK" /> w usłudze <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> na koncie <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Wyświetl historię Chrome</translation>
 <translation id="484462545196658690">Automatycznie</translation>
 <translation id="4844937814014739139">Przewijanie i powiększanie udostępnionych kart</translation>
@@ -2919,6 +2917,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5543564889050342791">Ogrody zoologiczne, oceanaria i rezerwaty</translation>
 <translation id="5543722831081909240">180 stopni</translation>
 <translation id="5544836308113951378">Rejsy i czartery</translation>
+<translation id="5546252337258681768">Urządzenie odblokowane</translation>
 <translation id="5547939254150808298">Druk i poligrafia</translation>
 <translation id="554815783948612276">Operatorzy forum i czatów</translation>
 <translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
@@ -2960,6 +2959,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5600044805561809264">Podczas przeglądania możesz łatwo zadawać pytania dotyczące udostępnianych kart.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> lub <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Zarządzanie jest nieobsługiwane</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Aktywne godzinę temu}few{Aktywne # godziny temu}many{Aktywne # godzin temu}other{Aktywne # godzin temu}}</translation>
 <translation id="5605249000617390290">Więcej informacji o śledzeniu cen</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Sprawdź połączenie</translation>
@@ -3513,6 +3513,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6456955391422100996">Reklama została usunięta.</translation>
 <translation id="6457206614190510200">Zszywanie grzbietowe</translation>
 <translation id="6457455098507772300">Alerty o obniżkach cen wyświetlają się jako wyskakujące powiadomienia na pulpicie</translation>
+<translation id="6458519747993638565">Aktywne teraz</translation>
 <translation id="6458606150257356946">Wklej mimo to</translation>
 <translation id="6462438303393708881">Anuluj przesyłanie</translation>
 <translation id="6464094930452079790">obrazy</translation>

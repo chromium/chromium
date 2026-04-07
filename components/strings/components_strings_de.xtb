@@ -465,7 +465,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1717218214683051432">Bewegungssensoren</translation>
 <translation id="1717494416764505390">Ablage 3</translation>
 <translation id="1717688554309417925">Giro- und Scheckdienstleistungen</translation>
-<translation id="1717882880162336471">KI-Modus ausprobieren</translation>
 <translation id="1719434663396780149">Du wirst über Preisnachlässe informiert. Das lässt sich in den <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ändern.</translation>
 <translation id="1719838434204287058">24 × 30 Zoll</translation>
 <translation id="1720941539803966190">Anleitung schließen</translation>
@@ -615,7 +614,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1960664692890490165">Wenn du in Chrome einkaufst, werden Zahlungsmethoden ohne Karte als Option angezeigt</translation>
 <translation id="196146181975453736">Führe einen einmaligen Sicherheitscheck durch, um schneller zu bezahlen</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />-Lesezeichen</translation>
-<translation id="1966259577349514951">Jetzt bezahlen</translation>
 <translation id="1973335181906896915">Fehler bei der Serialisierung</translation>
 <translation id="1973785048533660168">Büro- und Verwaltungsjobs</translation>
 <translation id="1974060860693918893">Erweitert</translation>
@@ -1098,7 +1096,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2696385693639654606">Mit Chrome Enterprise Core kannst du Browserrichtlinien, Apps und Erweiterungen über die Cloud verwalten</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> fragen</translation>
 <translation id="2699273987028089219">Untermenü verfügbar; verwende <ph name="SHORTCUT" />, um zu den zusätzlichen Optionen zu gelangen.</translation>
-<translation id="2700335762333112350">Später bezahlen</translation>
 <translation id="2701514975700770343">Vorderseite nach unten</translation>
 <translation id="2702592986366989640">Preisgünstige Option</translation>
 <translation id="2702801445560668637">Leseliste</translation>
@@ -2445,7 +2442,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4832388034239846146">Aktualisiere Chrome, um Tabgruppen zu teilen</translation>
 <translation id="483241715238664915">Warnmeldungen aktivieren</translation>
 <translation id="4832961164064927107">Barbecue und Grillen</translation>
-<translation id="4839984801146463230">Wenn du deine Daten speicherst, lassen sich viele Dinge schneller erledigen, z. B. das Ausfüllen von Formularen in Google-Produkten. Du kannst deine Daten in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> für <ph name="ACCOUNT" /> <ph name="BEGIN_LINK" />verwalten<ph name="END_LINK" />.</translation>
 <translation id="4840250757394056958">Chrome-Verlauf ansehen</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Scrollen und Zoomen auf geteilten Tabs</translation>

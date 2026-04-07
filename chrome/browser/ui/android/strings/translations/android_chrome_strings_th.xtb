@@ -640,6 +640,7 @@
 <translation id="3739455665973395693">ไม่มีรหัสผ่านที่ถูกละเมิดในบัญชี Google</translation>
 <translation id="3739899004075612870">บุ๊กมาร์กไว้ใน <ph name="PRODUCT_NAME" /> แล้ว</translation>
 <translation id="3740525748616366977">การค้นหาด้วยเสียงไม่พร้อมใช้งานในอุปกรณ์นี้</translation>
+<translation id="3763110477555836428">ระบบจะกรอกหมายเลขบัตรเสมือนเมื่อคุณชำระเงินด้วยบัตรนี้เพื่อปกป้องรายละเอียดบัตรจริงของคุณ จัดการใน Google Wallet <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับบัตรเสมือน<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">ยังไม่ได้บันทึกข้อมูลบางอย่าง</translation>
 <translation id="3770620323585347665">ตั้งชื่อหน้าต่าง</translation>
 <translation id="3771033907050503522">แท็บที่ไม่ระบุตัวตน</translation>
@@ -683,6 +684,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">4 สัปดาห์ที่ผ่านมา</translation>
 <translation id="393697183122708255">ไม่มีการเปิดใช้การค้นหาด้วยเสียง</translation>
+<translation id="3941718885865495207">Bottom Sheet การเลือกรับ Chrome Finds</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" /> แท็บในโหมดการแสดงภาพซ้อนภาพที่ปักหมุดไว้</translation>
 <translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="395377504920307820">ใช้โดยไม่มีบัญชี</translation>
@@ -1188,6 +1190,7 @@
 <translation id="6011308810877101166">ปรับปรุงการแนะนำการค้นหา</translation>
 <translation id="6013305291643746595">จัดเรียงตามรายการที่เก่าที่สุด</translation>
 <translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
+<translation id="6023820583797130428">เปิดเมนูเพื่อย้อนกลับ</translation>
 <translation id="6026538407078977628">ขยายเต็มหน้าจอ</translation>
 <translation id="6030719887161080597">จัดการข้อมูลที่เว็บไซต์ต่างๆ ใช้เพื่อวัดประสิทธิภาพโฆษณา</translation>
 <translation id="6039379616847168523">ข้ามไปยังแท็บถัดไป</translation>
@@ -1632,6 +1635,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{แท็บมาตรฐาน <ph name="TABS_COUNT_ONE" /> แท็บ}other{แท็บมาตรฐาน <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="7603168929588204083">วันที่ไม่ถูกต้อง</translation>
 <translation id="7605594153474022051">การซิงค์ไม่ทำงาน</translation>
+<translation id="7608245556672190037">การเลือกรับ Chrome Finds เปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
 <translation id="7612619742409846846">ลงชื่อเข้าใช้ Google ด้วย</translation>
 <translation id="7612989789287281429">กำลังลงชื่อเข้าใช้…</translation>
 <translation id="7619072057915878432">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเครือข่ายขัดข้อง</translation>
@@ -1639,6 +1643,7 @@
 <translation id="7628417132421583481">ไปที่เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="7630202231528827509">URL ผู้ให้บริการ</translation>
 <translation id="7638584964844754484">พาสเฟรสไม่ถูกต้อง</translation>
+<translation id="764047009170754705">การเลือกรับ Chrome Finds ปิดอยู่</translation>
 <translation id="7646499124171960488">เตือนคุณสำหรับเว็บไซต์สาธารณะที่ไม่ปลอดภัย</translation>
 <translation id="7646772052135772216">การซิงค์รหัสผ่านไม่ทำงาน</translation>
 <translation id="7655240423373329753">7 วันที่ผ่านมา</translation>
@@ -1863,6 +1868,7 @@
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="847433688444405067">ท่องเว็บในอุปกรณ์ต่างๆ</translation>
 <translation id="8477178913400731244">ลบข้อมูล</translation>
+<translation id="8481771036036087705">การเลือกรับ Chrome Finds เปิดอยู่ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">ไม่มีหน้าต่างที่ไม่ได้ใช้งาน</translation>
 <translation id="8493948351860045254">เพิ่มพื้นที่ว่าง</translation>

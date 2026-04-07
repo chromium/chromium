@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1056980582064308040">Als je de instellingen wijzigt, wordt de hotspot opnieuw opgestart. De verbinding van apparaten die de hotspot gebruiken, wordt verbroken.</translation>
 <translation id="1058262162121953039">Pukcode</translation>
+<translation id="1058848978232174442">Taak onderbroken</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Geef je nieuwe pincode op. Een pincode moet uit minstens 1 teken bestaan en mag letters, cijfers en andere tekens bevatten.}other{Geef je nieuwe pincode op. Een pincode moet uit minstens # tekens bestaan en mag letters, cijfers en andere tekens bevatten.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> tabbladen gevonden voor '<ph name="SEARCH_TEXT" />'</translation>
@@ -1722,6 +1723,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2175384018164129879">Zoek&amp;machines en Site Search beheren</translation>
 <translation id="2175526076681939329">Primaire toetsen gebruiken</translation>
 <translation id="217576141146192373">Kan printer niet toevoegen. Controleer de configuratie van je printer en probeer het opnieuw.</translation>
+<translation id="2175773164573457310">Selecteer tekst of een afbeelding om Gemini vragen te stellen</translation>
 <translation id="2175927920773552910">QR-code</translation>
 <translation id="2177950615300672361">Incognitotabblad: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3056,6 +3058,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3076966043108928831">Alleen opslaan op dit apparaat</translation>
 <translation id="3076977359333237641">Je inloggegevens zijn verwijderd</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Geen snelkoppelingen voor functies of extensies gevonden</translation>
 <translation id="3080930813589868009">Updater per gebruiker</translation>
 <translation id="3080933187214341848">Dit netwerk is niet gesynchroniseerd met je account. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Naam of ID van app</translation>
@@ -6400,6 +6403,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5436211819997237281">Huidige extensie die je pagina Nieuw tabblad beheert</translation>
 <translation id="5436492226391861498">Wachten op proxytunnel...</translation>
 <translation id="5436510242972373446">Zoeken op <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini heeft je taak gestopt. Ga terug naar Chrome om deze te controleren.</translation>
 <translation id="5438014818441491616">Het venster <ph name="WINDOW_SIDE" /> is nu <ph name="WINDOW_SIZE_PERCENT" /> breed en het deelvenster <ph name="PANE_SIDE" /> is nu <ph name="PANE_SIZE_PERCENT" /> breed.</translation>
 <translation id="5438060324827306856">&amp;Extensies zoeken</translation>
 <translation id="5440425659852470030">Zijvenster sluiten</translation>
@@ -7594,6 +7598,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="628705218210359422">Houd je wachtwoorden bij en beheer ze op één plek.</translation>
 <translation id="628726841779494414">Beheer je printers in de printerinstellingen</translation>
 <translation id="6287288864483377583">Importeren wordt alleen ondersteund voor één certificaat</translation>
+<translation id="6287713404380454515">Je beheerder heeft de pincode en het wachtwoord voor je apparaat uitgezet om beveiligingsredenen. Gebruik vanaf nu je wachtwoord van <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Android-telefoon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Geen beschikbare apparaten die delen in de buurt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Herstellen is niet mogelijk vanwege onvoldoende opslagruimte.</translation>
@@ -8850,6 +8855,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7188508872042490670">Sitegegevens op het apparaat</translation>
 <translation id="7189234443051076392">Zorg dat er voldoende ruimte op je apparaat beschikbaar is</translation>
 <translation id="7189451821249468368">Je hebt niet voldoende upgrades om dit apparaat in te schrijven. Neem contact op met de salesafdeling om meer upgrades te kopen. Als je denkt dat dit bericht ten onrechte wordt weergegeven, neem je contact op met support.</translation>
+<translation id="7189558282078169397">Tabbladen van andere apparaten</translation>
 <translation id="7189965711416741966">Vingerafdruk is toegevoegd.</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blokkeren?</translation>
 <translation id="7191063546666816478">Bepaalde ondersteunde links worden nog steeds geopend in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> en <ph name="NUMBER_OF_OTHER_APPS" /> andere apps.</translation>
@@ -9085,7 +9091,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7356908624372060336">Netwerklogboeken</translation>
 <translation id="7357271391997763660">Wachtwoordcheck uitvoeren?</translation>
 <translation id="735745346212279324">Verbinding met VPN verbroken</translation>
-<translation id="7359326150089800742">Voeg een tabblad of bestand toe aan je zoekopdracht en gebruik ook een tool</translation>
 <translation id="7359680654975233185">Kan tabblad niet casten</translation>
 <translation id="7360257054721917104">Opgeslagen bureaus en templates worden weergegeven. Druk op Tab om te navigeren.</translation>
 <translation id="7360333718677093875">emoji-kiezer</translation>
@@ -9664,6 +9669,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</translation>
 <translation id="7745554356330788383">Laad deze pagina opnieuw om je geüpdatete instellingen voor <ph name="EXTENSION_NAME" /> toe te passen op deze site</translation>
 <translation id="7745677556280361868">Dit netwerk verwijderen op de abonnementspagina van Passpoint?</translation>
+<translation id="7745849183714722618">Voor functies zoals scamdetectie kan Chrome AI-modellen gebruiken die rechtstreeks op je apparaat worden uitgevoerd. Als dit uitstaat, werken deze functies misschien niet. <ph name="BEGIN_LINK" />Meer informatie over AI op het apparaat<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Maak items op het scherm, waaronder tekst, groter of kleiner. Je kunt dit ook later doen via Instellingen &gt; Apparaat &gt; Schermen.</translation>
 <translation id="7750228210027921155">Scherm-in-scherm</translation>
 <translation id="7751260505918304024">Alles bekijken</translation>
@@ -9944,6 +9950,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="794250392403348719">Voorbeeld: Vereenvoudig dit concept voor een kind van 8 jaar. Gebruik eenvoudige taal en een analogie die ze begrijpen. Houd de hele uitleg beknopt, onder de 150 woorden.</translation>
 <translation id="7942846369224063421">Vooraf geladen UI-weergaveprogramma</translation>
 <translation id="7943271960579497371">Geïnstalleerde apps</translation>
+<translation id="7943311690198910993">Inlogmethode aangepast</translation>
 <translation id="7943368935008348579">Pdf's downloaden</translation>
 <translation id="7943837619101191061">Locatie toevoegen...</translation>
 <translation id="7944173382284143968">De website vereist een bevestiging van een eenmalig wachtwoord voordat het nieuwe wachtwoord wordt opgeslagen. Neem het proces handmatig over om de wijziging af te ronden.</translation>

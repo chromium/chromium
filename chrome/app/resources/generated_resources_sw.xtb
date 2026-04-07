@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Ilani</translation>
 <translation id="1056980582064308040">Hatua ya kubadilisha mipangilio itazima kisha kuwasha mtandao pepe. Vifaa vinavyotumia mtandao pepe vitatenganishwa.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Jukumu limekatizwa</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Weka PIN yako mpya. PIN lazima iwe angalau herufi moja na inaweza kujumuisha herufi za alfabeti, namba na herufi zingine.}other{Weka PIN yako mpya. PIN lazima iwe angalau herufi # na inaweza kujumuisha herufi za alfabeti, namba na herufi zingine.}}</translation>
 <translation id="1059484610606223931">Itifaki ya Uhamishaji wa Maandishi yenye Viungo (HTTPS)</translation>
 <translation id="1059944192885972544">Imepata Vichupo <ph name="NUM" /> Vya '<ph name="SEARCH_TEXT" />'</translation>
@@ -1728,6 +1729,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2175384018164129879">&amp;Dhibiti Mitambo ya Kutafuta na Utafutaji kwenye Tovuti</translation>
 <translation id="2175526076681939329">Tumia vitufe vya msingi</translation>
 <translation id="217576141146192373">Imeshindwa kuweka printa. Tafadhali kagua mipangilio ya printa yako kisha ujaribu tena.</translation>
+<translation id="2175773164573457310">Chagua maandishi au picha yoyote ili uulize Gemini</translation>
 <translation id="2175927920773552910">Msimbo wa QR</translation>
 <translation id="2177950615300672361">Kichupo Fiche: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3066,6 +3068,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3076966043108928831">Hifadhi kwenye kifaa hiki pekee</translation>
 <translation id="3076977359333237641">Imefuta data yako ya kuingia katika akaunti</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Hakuna njia za mkato za vipengele au viendelezi zinazopatikana</translation>
 <translation id="3080930813589868009">Kisasishaji kwa kila mtumiaji</translation>
 <translation id="3080933187214341848">Mtandao huu haujasawazishwa kwenye akaunti yako. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Jina au Kitambulisho cha Programu</translation>
@@ -6413,6 +6416,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5436211819997237281">Kiendelezi cha sasa kinachodhibiti ukurasa wako mpya wa kichupo</translation>
 <translation id="5436492226391861498">Inasubiri handaki la proksi...</translation>
 <translation id="5436510242972373446">Tafuta <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini imesimamisha jukumu lako. Rudi kwenye Chrome ili ulikague.</translation>
 <translation id="5438014818441491616">Dirisha la <ph name="WINDOW_SIDE" /> sasa ni lina upana wa <ph name="WINDOW_SIZE_PERCENT" />, kijisehemu cha <ph name="PANE_SIDE" /> sasa ni kina upana wa <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Tafuta &amp;Viendelezi</translation>
 <translation id="5440425659852470030">Funga Kidirisha cha Pembeni</translation>
@@ -7610,6 +7614,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="628705218210359422">Endelea kufuatilia manenosiri yako na uyadhibiti katika sehemu moja.</translation>
 <translation id="628726841779494414">Dhibiti printa zako kwenye mipangilio ya printa</translation>
 <translation id="6287288864483377583">Unaruhusiwa kupakia cheti kimoja tu</translation>
+<translation id="6287713404380454515">Kwa sababu za kiusalama, msimamizi wako amezima PIN na nenosiri la kifaa chako. Kuanzia sasa, tumia nenosiri lako la <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Simu ya Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Hakuna vifaa vinavyoshiriki karibu. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Imeshindwa kurejesha kwa sababu nafasi ya kuhifadhi haitoshi.</translation>
@@ -8866,6 +8871,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7188508872042490670">Data ya tovuti kwenye kifaa</translation>
 <translation id="7189234443051076392">Hakikisha kuwa una nafasi ya kutosha kwenye kifaa chako</translation>
 <translation id="7189451821249468368">Huna leseni za kutosha kusajili kifaa hiki. Tafadhali wasiliana na huduma ya mauzo ili ununue nyingine. Ikiwa unaamini kuwa unaona ujumbe huu kimakosa, tafadhali wasiliana na kituo cha usaidizi.</translation>
+<translation id="7189558282078169397">Vichupo Kutoka Kwenye Vifaa Vingine</translation>
 <translation id="7189965711416741966">Imeongeza alama bainifu.</translation>
 <translation id="7190921792980745354">Ungependa kumzuia <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Baadhi ya viungo vinavyotumika bado vitafunguka kwenye <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> na programu zingine <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
@@ -9101,7 +9107,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7356908624372060336">Kumbukumbu za Mtandao</translation>
 <translation id="7357271391997763660">Ungependa kufanya ukaguzi wa nenosiri?</translation>
 <translation id="735745346212279324">VPN imekatwa muunganisho</translation>
-<translation id="7359326150089800742">Weka faili au kichupo kwenye utafutaji wako pia utumie zana</translation>
 <translation id="7359680654975233185">Imeshindwa kutuma maudhui yaliyo kwenye kichupo</translation>
 <translation id="7360257054721917104">Unaangalia maeneokazi na violezo vilivyohifadhiwa. Bonyeza kichupo ili usogeze.</translation>
 <translation id="7360333718677093875">kiteua emoji</translation>
@@ -9681,6 +9686,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</translation>
 <translation id="7745554356330788383">Pakia upya ukurasa huu ili uweke mipangilio yako iliyosasishwa ya "<ph name="EXTENSION_NAME" />" kwenye tovuti hii</translation>
 <translation id="7745677556280361868">Ungependa kuondoa mtandao huu katika ukurasa wa usajili wa Passpoint?</translation>
+<translation id="7745849183714722618">Ili kuwezesha vipengele kama vile utambuzi wa ulaghai, Chrome inaweza kutumia mifumo ya AI inayotekelezwa moja kwa moja kwenye kifaa chako. Ukizima mipangilio hii, huenda vipengele hivi visifanye kazi. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu AI kwenye kifaa<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Ongeza au upunguze ukubwa wa vipengee vilivyo kwenye skrini yako, ikiwa ni pamoja na maandishi. Unaweza kuona mipangilio hii baadaye kwenye Mipangilio &gt; Kifaa &gt; Skrini.</translation>
 <translation id="7750228210027921155">Picha ndani ya picha</translation>
 <translation id="7751260505918304024">Onyesha zote</translation>
@@ -9961,6 +9967,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="794250392403348719">Mfano: Rahisisha dhana hii ili mtoto mwenye umri wa miaka 8 aelewe. Tumia lugha rahisi na mifano ambayo ataielewa. Hakikisha ufafanuzi wote ni mfupi, usizidi maneno 150.</translation>
 <translation id="7942846369224063421">Kitekelezaji cha Kiolesura Kilichopakiwa Mapema</translation>
 <translation id="7943271960579497371">Programu Zilizowekwa</translation>
+<translation id="7943311690198910993">Njia ya kuingia katika akaunti imesasishwa</translation>
 <translation id="7943368935008348579">Pakua PDF</translation>
 <translation id="7943837619101191061">Ongeza Eneo...</translation>
 <translation id="7944173382284143968">Tovuti inahitaji uthibitishaji kupitia nenosiri la wakati mmoja kabla ya kuhifadhi nenosiri jipya. Tafadhali endeleza mchakato mwenyewe ili ukamilishe mabadiliko.</translation>

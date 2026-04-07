@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">設定を変更すると、アクセス ポイントが再起動します。アクセス ポイントを使用しているデバイスでは接続が切断されます。</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">タスクが中断されました</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{新しい PIN を入力してください。PIN は 1 文字以上の長さにする必要があり、文字や数字などを含めることができます。}other{新しい PIN を入力してください。PIN は # 文字以上の長さにする必要があり、文字や数字などを含めることができます。}}</translation>
 <translation id="1059484610606223931">ハイパーテキスト トランスポート プロトコル（HTTPS）</translation>
 <translation id="1059944192885972544">「<ph name="SEARCH_TEXT" />」に該当するタブが <ph name="NUM" /> 個見つかりました</translation>
@@ -1718,6 +1719,7 @@
 <translation id="2175384018164129879">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
 <translation id="2175526076681939329">メインキーを使用する</translation>
 <translation id="217576141146192373">プリンタを追加できません。プリンタの設定を確認して、もう一度お試しください。</translation>
+<translation id="2175773164573457310">Gemini に質問するにはテキストまたは画像を選択してください</translation>
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="2177950615300672361">シークレット タブ: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -6390,6 +6392,7 @@
 <translation id="5436211819997237281">新しいタブページを管理している現在の拡張機能</translation>
 <translation id="5436492226391861498">プロキシ トンネルの待機中...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> を検索:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini がタスクを停止しました。Chrome に戻って確認してください。</translation>
 <translation id="5438014818441491616">現在、<ph name="WINDOW_SIDE" />ウィンドウの幅は <ph name="WINDOW_SIZE_PERCENT" />、<ph name="PANE_SIDE" />ペインの幅は <ph name="PANE_SIZE_PERCENT" /> です。</translation>
 <translation id="5438060324827306856">拡張機能を探す(&amp;E)</translation>
 <translation id="5440425659852470030">サイドパネルを閉じる</translation>
@@ -7587,6 +7590,7 @@
 <translation id="628705218210359422">パスワードを 1 か所で管理できます。</translation>
 <translation id="628726841779494414">プリンタ設定でプリンタを管理</translation>
 <translation id="6287288864483377583">インポートは 1 つの証明書のみ可能です</translation>
+<translation id="6287713404380454515">セキュリティ上の理由から、管理者がデバイスの PIN とパスワードを無効にしました。今後は <ph name="MANAGER" /> のパスワードを使用してください。</translation>
 <translation id="6287828400772161253">Android スマートフォン（<ph name="HOST_DEVICE_NAME" />）</translation>
 <translation id="6290613030083731160">近くに共有可能なデバイスはありません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">ストレージの空き容量が不足しているため復元できません。</translation>
@@ -8841,6 +8845,7 @@
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
 <translation id="7189234443051076392">デバイスに十分な空き容量があることを確認してください</translation>
 <translation id="7189451821249468368">このデバイスの登録に必要なアップグレード ライセンスを持っていません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>
+<translation id="7189558282078169397">他のデバイスからのタブ</translation>
 <translation id="7189965711416741966">指紋の登録が完了しました。</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> さんをブロックしますか？</translation>
 <translation id="7191063546666816478">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、その他 <ph name="NUMBER_OF_OTHER_APPS" /> 件のアプリで開かれます。</translation>
@@ -9076,7 +9081,6 @@
 <translation id="7356908624372060336">ネットワーク ログ</translation>
 <translation id="7357271391997763660">パスワード チェックを実行しますか？</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>
-<translation id="7359326150089800742">検索にタブまたはファイルを追加して、ツールも使用する</translation>
 <translation id="7359680654975233185">タブをキャストできません</translation>
 <translation id="7360257054721917104">保存したデスクとテンプレートを表示しています。Tab キーを押して移動できます。</translation>
 <translation id="7360333718677093875">絵文字選択ツール</translation>
@@ -9655,6 +9659,7 @@
 <translation id="7744649840067671761">新しいスイッチかキーボードのキーを押すと割り当てを開始できます。割り当て済みのスイッチかキーを押すと割り当てが解除されます。</translation>
 <translation id="7745554356330788383">更新した設定をこのサイトの「<ph name="EXTENSION_NAME" />」に適用するには、このページを再読み込みしてください</translation>
 <translation id="7745677556280361868">Passpoint の登録ページでこのネットワークを削除しますか？</translation>
+<translation id="7745849183714722618">デバイス上で直接稼働する AI モデルを使用して、Chrome の不正検出などの機能をサポートします。オフにすると、これらの機能は動作しない可能性があります。<ph name="BEGIN_LINK" />オンデバイス AI の詳細<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">画面上の項目（テキストなど）のサイズを変更します。この操作は [設定] &gt; [デバイス] &gt; [ディスプレイ] でも行うことができます。</translation>
 <translation id="7750228210027921155">ピクチャー イン ピクチャー</translation>
 <translation id="7751260505918304024">すべて表示</translation>
@@ -9935,6 +9940,7 @@
 <translation id="794250392403348719">例: このコンセプトを 8 歳の子どもにもわかるように説明してください。わかりやすい言葉と理解しやすい例えを使用して、説明は全体で 150 語以内に収めてください。</translation>
 <translation id="7942846369224063421">プリロード済み UI レンダラ</translation>
 <translation id="7943271960579497371">インストール済みのアプリケーション</translation>
+<translation id="7943311690198910993">ログイン方法を更新しました</translation>
 <translation id="7943368935008348579">PDF をダウンロードする</translation>
 <translation id="7943837619101191061">位置情報を追加...</translation>
 <translation id="7944173382284143968">このウェブサイトでは、新しいパスワードを保存する前に OTP の確認が必要です。手動のプロセスに切り替えて、変更を完了してください。</translation>

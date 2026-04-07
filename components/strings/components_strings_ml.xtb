@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">ചലന സെൻസറുകൾ</translation>
 <translation id="1717494416764505390">മെയിൽബോക്സ് 3</translation>
 <translation id="1717688554309417925">ഡെബിറ്റ്, ചെക്കിംഗ് സേവനങ്ങൾ</translation>
-<translation id="1717882880162336471">AI മോഡ് പരീക്ഷിക്കൂ</translation>
 <translation id="1719434663396780149">വിലക്കുറവുമായി ബന്ധപ്പെട്ട അലേർട്ടുകൾ ഓണാണ്. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> എന്നതിൽ നിങ്ങൾക്കിത് മാറ്റാം.</translation>
 <translation id="1719838434204287058">24 x 30 ഇഞ്ച്</translation>
 <translation id="1720941539803966190">ട്യൂട്ടോറിയൽ അടയ്‌ക്കുക</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഒരു ഓപ്ഷനായി കാർഡ് ഇതര പേയ്മെന്റ് രീതികൾ കാണുക</translation>
 <translation id="196146181975453736">കൂടുതൽ വേഗത്തിൽ പേ ചെയ്യാൻ ഒറ്റത്തവണ സുരക്ഷാ പരിശോധന പൂർത്തിയാക്കുക</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ബുക്ക്‌മാർക്കുകൾ</translation>
-<translation id="1966259577349514951">ഇപ്പോൾ പണമടയ്ക്കുക</translation>
 <translation id="1973335181906896915">സീരിയലൈസേഷൻ പിശക്</translation>
 <translation id="1973785048533660168">ക്ലെറിക്കൽ, അഡ്മിനിസ്ട്രേറ്റീവ് ജോലികൾ</translation>
 <translation id="1974060860693918893">വിപുലമായത്</translation>
@@ -1057,6 +1055,7 @@
 <translation id="2627847595568876492">PDF-ൽ നിന്ന് ടെക്സ്റ്റ് എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു...</translation>
 <translation id="2628025184666666186">വെബ് ട്രാഫിക് എൻക്രിപ്ഷന് വേണ്ടി Chrom-ന് വിശ്വാസമില്ലാത്ത ഒരു സുരക്ഷാ സർട്ടിഫിക്കറ്റ് അല്ലെങ്കിൽ നിങ്ങളുടെ സിസ്റ്റം കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാലാണ് ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാൻ കഴിയാത്തത്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അറ്റാക്കർ നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="2631059741268498165">ഈ ഉപകരണം പ്രവർത്തനരഹിതമായിരിക്കുമ്പോൾ നിങ്ങളുടെ അഡ്‌മിൻ അത് കണ്ടെത്തി. ഇത് വീണ്ടും പ്രവർത്തനക്ഷമമാക്കി, ഉപയോഗിക്കാൻ തയ്യാറാണ്.</translation>
 <translation id="2631387782019878060">പരിശോധിച്ചുറപ്പിക്കൽ കോഡ്: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ന്‍റെ സെർവർ IP വിലാസം കണ്ടെത്താനായില്ല.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> എന്നതിലുടനീളം തിരയാൻ @ എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
@@ -1098,7 +1097,6 @@
 <translation id="2696385693639654606">ക്ലൗഡിൽ നിന്ന് ബ്രൗസർ നയങ്ങൾ, ആപ്പുകൾ, വിപുലീകരണങ്ങൾ എന്നിവ മാനേജ് ചെയ്യാൻ Chrome Enterprise Core നിങ്ങളെ അനുവദിക്കുന്നു</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> എന്നതിനോട് ചോദിക്കുക</translation>
 <translation id="2699273987028089219">ഉപമെനു ലഭ്യമാണ്, അധിക ഓപ്‌ഷനുകളിലേക്ക് നാവിഗേറ്റ് ചെയ്യാൻ <ph name="SHORTCUT" /> ഉപയോഗിക്കുക.</translation>
-<translation id="2700335762333112350">പിന്നീട് പേ ചെയ്യുക</translation>
 <translation id="2701514975700770343">ഫേസ് ഡൗൺ</translation>
 <translation id="2702592986366989640">കുറഞ്ഞ നിരക്കുള്ള ഓപ്ഷൻ</translation>
 <translation id="2702801445560668637">വായനാ ലിസ്റ്റ്</translation>
@@ -2446,7 +2444,6 @@
 <translation id="4832388034239846146">ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാൻ, Chrome അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="483241715238664915">മുന്നറിയിപ്പുകൾ ഓണാക്കുക</translation>
 <translation id="4832961164064927107">BBQ-വും ഗ്രില്ലിംഗും</translation>
-<translation id="4839984801146463230">Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഫോമുകൾ പൂരിപ്പിക്കുന്നത് പോലെ, നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിച്ച് കാര്യങ്ങൾ വേഗത്തിൽ പൂർത്തിയാക്കുക. <ph name="ACCOUNT" /> എന്നതിനായി <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> എന്നതിൽ നിങ്ങൾക്ക് <ph name="BEGIN_LINK" />നിങ്ങളുടെ വിവരങ്ങൾ മാനേജ് ചെയ്യാം<ph name="END_LINK" /></translation>
 <translation id="4840250757394056958">നിങ്ങളുടെ Chrome ചരിത്രം കാണുക</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4844937814014739139">പങ്കിട്ട ടാബുകൾ സ്ക്രോൾ ചെയ്യുന്നു, സൂം ചെയ്യുന്നു</translation>
@@ -2723,6 +2720,7 @@
 <translation id="5255833070095767006">350 x 460 മി.മീ</translation>
 <translation id="5257739419779698609">{0,plural, =1{ഈ ഫയൽ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് പകർത്താൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}other{ഈ ഫയലുകൾ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് പകർത്താൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പ് ഇനി ലഭ്യമല്ല</translation>
+<translation id="5262342527470539728">നിങ്ങളുടെ വിവരങ്ങൾ <ph name="ACCOUNT" /> എന്നതിനായി <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> എന്നതിൽ സംരക്ഷിച്ചിരിക്കുന്നു</translation>
 <translation id="5263867360296733198">അപ്‌ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് അവലോകനം ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="5266128565379329178">മുകളിൽ ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="5269225904387178860">താഴെ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
@@ -2919,6 +2917,7 @@
 <translation id="5543564889050342791">മൃഗശാലകൾ, അക്വേറിയങ്ങൾ, വന്യമൃഗസങ്കേതങ്ങൾ</translation>
 <translation id="5543722831081909240">180 ഡിഗ്രി</translation>
 <translation id="5544836308113951378">ക്രൂയിസുകളും ചാർട്ടറുകളും</translation>
+<translation id="5546252337258681768">ഉപകരണം അൺലോക്ക് ചെയ്‌തു</translation>
 <translation id="5547939254150808298">പ്രിന്റിംഗും പ്രസിദ്ധീകരണവും</translation>
 <translation id="554815783948612276">ഫോറം, ചാറ്റ് സേവനദാതാക്കൾ</translation>
 <translation id="5548606607480005320">സുരക്ഷാ പരിശോധന</translation>
@@ -4770,6 +4769,7 @@
 കൂടുതൽ വിശദാംശങ്ങൾ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ഇപ്പോൾ മാത്രം മൈക്രോഫോൺ അനുവദിച്ചിരിക്കുന്നു</translation>
+<translation id="8421746712901926961">Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഫോമുകൾ പൂരിപ്പിക്കുന്നത് പോലെ, <ph name="GOOGLE_WALLET_TITLE_1" /> എന്നതിൽ നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിച്ച് കാര്യങ്ങൾ വേഗത്തിൽ പൂർത്തിയാക്കുക. <ph name="ACCOUNT" /> എന്നതിനായി നിങ്ങൾക്ക് <ph name="GOOGLE_WALLET_TITLE_2" /> എന്നതിൽ <ph name="MANAGE_INFO_LINK" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">മാറ്റുക</translation>
 <translation id="8426945547715537628">കീബോർഡ് അസാധുവാക്കാൻ അനുവദിക്കണോ?</translation>

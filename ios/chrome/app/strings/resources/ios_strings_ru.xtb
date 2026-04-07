@@ -11,6 +11,7 @@
 <translation id="1030376737535466765">Открыть Менеджер паролей</translation>
 <translation id="1035980983510608210">Будут также закрыты закрепленные вкладки.</translation>
 <translation id="1036348656032585052">Отключить</translation>
+<translation id="1036436692654972538">На устройстве будет сохранена следующая информация:</translation>
 <translation id="1041322626941363065">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="104491362976654916">Офлайн-версия страницы</translation>
 <translation id="1046742265332833834">Синяя тема</translation>
@@ -97,7 +98,6 @@
 <translation id="1335767868357998043">Выбирайте место для адресной строки</translation>
 <translation id="1347468774581902829">Управление историей</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
-<translation id="1350281503816551185">Подтверждать личность при заполнении конфиденциальной информации</translation>
 <translation id="1355337783640312381">Чтобы переключить аккаунт, нажмите на его значок</translation>
 <translation id="1358106883354237005">Управляемый аккаунт</translation>
 <translation id="1358214951266274152">Открыть скопированную ссылку</translation>
@@ -182,6 +182,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Нажмите "Добавить в Google Календарь" или "Добавить в календарь Apple".</translation>
 <translation id="1629162218487290695">Подтвердить личность</translation>
+<translation id="1634520742547161889">ММ/ГГ</translation>
 <translation id="1636234353664774105">Проложить маршруты до пункта назначения с пошаговыми инструкциями, используя функцию навигации</translation>
 <translation id="1637811476055996098">Выбрать файлы</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
@@ -195,11 +196,13 @@
 <translation id="16554782717487656">Конвертер единиц измерения</translation>
 <translation id="1657011748321897393">Не удалось опубликовать запись из-за ошибки сети.</translation>
 <translation id="1668001730617725852">Открыть в новой группе вкладок</translation>
+<translation id="1670861525135254448">Сохранить данные о транспортном средстве?</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Согласно правилам вашей организации этот файл может содержать конфиденциальную информацию</translation>
 <translation id="168389590065701766">Теперь вы можете открывать Google Объектив из адресной строки и искать всё, что видите.</translation>
 <translation id="1689333818294560261">Название</translation>
 <translation id="169048873465870056">Удалить вкладку и группу?</translation>
+<translation id="1692115862433274081">Использовать другой аккаунт</translation>
 <translation id="1698090540708020240">Импорт паролей</translation>
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1702583479431863204">Сайт откреплен.</translation>
@@ -208,6 +211,7 @@
 <translation id="1718835860248848330">Последний час</translation>
 <translation id="1728549374069268714">Вставить и перейти</translation>
 <translation id="1732468323901456775">Включить уведомления "<ph name="MODULE_NAME" />"</translation>
+<translation id="1739364174357629566">Обновить личный номер пассажира, присвоенный TSA?</translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
 <translation id="1740650426894359238">Сменить профиль</translation>
 <translation id="1741219894094057085">Умные часы</translation>
@@ -533,7 +537,6 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 сайт (плюс данные с синхронизируемых устройств)}one{# сайт (плюс данные с синхронизируемых устройств)}few{# сайта (плюс данные с синхронизируемых устройств)}many{# сайтов (плюс данные с синхронизируемых устройств)}other{# сайта (плюс данные с синхронизируемых устройств)}}</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">При угрозе безопасности отправлять в Google URL некоторых страниц, которые вы открываете</translation>
-<translation id="2877733045396505765">Будут удалены выбранные данные, сохраненные на этом устройстве и в вашем аккаунте Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2883151425485251736">Просмотр и изменение тем, которые вы скрыли</translation>
 <translation id="288655811176831528">Закрыть вкладку</translation>
 <translation id="2888631381369839306">Уведомления об изменении цен включены.</translation>
@@ -587,9 +590,11 @@
 <translation id="3106690631878101882">Скрыть действие "Перевести"</translation>
 <translation id="310900540163454140">Удалить пароль для сайта <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Отметить…</translation>
+<translation id="3116695032231023709">Сохранить информацию об удостоверении личности?</translation>
 <translation id="3119874402040566234">Вы выйдете из аккаунта, а данные о работе в браузере будут удалены</translation>
 <translation id="3124568093781685165">Открывайте близким доступ к паролям.</translation>
 <translation id="3130863904455712965">История и другие данные</translation>
+<translation id="3132345256151444894">Сохранить идентификатор Redress Number?</translation>
 <translation id="3132584647087998639">Импортируйте свои данные</translation>
 <translation id="313283613037595347">Создать вкладку инкогнито.</translation>
 <translation id="3136739222562075778">В этой карточке показывается снижение цен на товары в открытых вкладках</translation>
@@ -810,6 +815,7 @@
 <translation id="3949712484278252781">Наши специалисты не читают ваши чаты с Gemini и <ph name="GOOGLE_WORKSPACE_DATA" />, и мы не используем эту информацию для улучшения моделей генеративного ИИ.</translation>
 <translation id="3950479158728806902">Автоматически создавать ключи доступа для быстрого входа в аккаунт</translation>
 <translation id="3950820424414687140">Войти</translation>
+<translation id="395377504920307820">Продолжить без входа в аккаунт</translation>
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">У вас есть простые пароли.</translation>
 <translation id="3957016963627617921">Успевайте больше с Gemini в Chrome</translation>
@@ -847,7 +853,6 @@
 <translation id="4092655288299341041">Справочная информация</translation>
 <translation id="4095483462103784441">Создать новую группу вкладок</translation>
 <translation id="4099756562043439968">Создать напоминание</translation>
-<translation id="4101867642407836771">Они обновятся в Google Кошельке пользователя <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Обнаруживает опасные события и предупреждает о них.</translation>
 <translation id="4111985840824673503">Отметить все как прочитанные</translation>
 <translation id="411254640334432676">Ошибка при скачивании</translation>
@@ -889,6 +894,7 @@
 <translation id="4231395118547300571">Уведомления проверки безопасности включены</translation>
 <translation id="4232817129213135694">Настройка ключей доступа на этом устройстве</translation>
 <translation id="4237377247299956313">Нажмите <ph name="BEGIN_BOLD" />Приложение браузера по умолчанию<ph name="END_BOLD" />.</translation>
+<translation id="424063167283213501">Сохранить личный номер пассажира, присвоенный TSA?</translation>
 <translation id="4241893428331130998">Нет сохраненных паролей или ключей доступа</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4250432749243022864">{count,plural, =0{Открыть {count} вкладок}=1{Открыть {count} вкладку}one{Открыть {count} вкладку}few{Открыть {count} вкладки}many{Открыть {count} вкладок}other{Открыть {count} вкладки}}</translation>
@@ -1018,6 +1024,7 @@
 <translation id="4682496302933121474">Перевести эту страницу?</translation>
 <translation id="4682686630151240767">1. Откройте настройки устройства iPhone.</translation>
 <translation id="4697240968720007067">Лучшие приложения Google</translation>
+<translation id="4698308118265482293">Обновить паспортные данные?</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4709570498586527752">Нужные функции в любой момент</translation>
 <translation id="4717844083556844785">Открыто в режиме инкогнито</translation>
@@ -1269,7 +1276,6 @@
 <translation id="5560088892362098740">Дата окончания срока действия</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5565871407246142825">Банковские карты</translation>
-<translation id="5566623128829375608">Они будут сохранены на устройстве.</translation>
 <translation id="5567439033041178034">ПОДРОБНЕЕ</translation>
 <translation id="5578795271662203820">Найти это изображение в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Скрыть раздел "Список для чтения"</translation>
@@ -1477,6 +1483,8 @@
 <translation id="6232329973559504466">Поиск в режиме инкогнито</translation>
 <translation id="6234310016144827337">Проверьте подключение и повторите попытку.</translation>
 <translation id="6236952928980352967">Восстановить предупреждение</translation>
+<translation id="6240553182907836376">Изменить информацию об удостоверении личности?</translation>
+<translation id="6240601837375010619">Сохранить паспортные данные?</translation>
 <translation id="6241132809279377987">Пользуйтесь приложениями Google на iPhone</translation>
 <translation id="6247557882553405851">Google Менеджер паролей</translation>
 <translation id="6251835855431997163">Автозаполнение: <ph name="VALUE" /></translation>
@@ -1652,6 +1660,7 @@
 <translation id="6806550742467879742">Для этой страницы</translation>
 <translation id="6807287147325542056">Пароли в других приложениях</translation>
 <translation id="681368974849482173">Сохранено</translation>
+<translation id="681631578600400068">Сохранить данные водительского удостоверения?</translation>
 <translation id="6820686453637990663">CVC-код</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладка сохранена в аккаунте Google ({email}).}one{{count} закладка сохранена в аккаунте Google ({email}).}few{{count} закладки сохранено в аккаунте Google ({email}).}many{{count} закладок сохранено в аккаунте Google ({email}).}other{{count} закладки сохранено в аккаунте Google ({email}).}}</translation>
 <translation id="6826004672264649705">Вы отслеживаете этот товар. Откройте, чтобы посмотреть историю изменения цен.</translation>
@@ -1740,6 +1749,7 @@
 <translation id="7138678301420049075">Другое</translation>
 <translation id="7141960840225504692">Вкладки будут закрыты, а данные о работе в браузере удалены</translation>
 <translation id="714291438898585119">Помеченные</translation>
+<translation id="7145337554745942724">Обновить данные водительского удостоверения?</translation>
 <translation id="7146301801400584641">Доступен файл календаря</translation>
 <translation id="7149893636342594995">Последние 24 часа</translation>
 <translation id="7154417656353909837">Удалить адреса</translation>
@@ -1768,7 +1778,6 @@
 <translation id="7253951228444156601">Проверка паролей…</translation>
 <translation id="7261217796641151584">Открыть доступ</translation>
 <translation id="7266578100016339897">Так вам будет проще поддерживать порядок в браузере. Период, после которого вкладки становятся неактивными, можно изменить в любое время в настройках.</translation>
-<translation id="7268294318904284516">Вы сможете подтверждать личность, разблокируя экран, чтобы получать доступ к своему паспорту или другим конфиденциальным данным. Это пригодится, если устройством пользуется кто-то ещё.</translation>
 <translation id="7272437679830969316">Не удалось пройти проверку. Пароль не скопирован.</translation>
 <translation id="728025568708172005">Смотреть всё</translation>
 <translation id="7280980607183752256">Невозможно импортировать файл.</translation>
@@ -1788,6 +1797,7 @@
 <translation id="736564850024123010">Переместите адресную строку в удобное место.</translation>
 <translation id="7366909168761621528">Данные о работе в браузере</translation>
 <translation id="7367530036083223701">Установите виджет Менеджера паролей для безопасного доступа ко всем паролям с главного экрана.</translation>
+<translation id="73750335798090836">При каждом автозаполнении конфиденциальной информации, например документов, удостоверяющих личность, и билетов, понадобится использовать отпечаток пальца, распознавание лица или другой способ разблокировки экрана. Так ваши данные будут надежнее защищены.</translation>
 <translation id="7380220816562673297">Сейчас вы можете предоставлять доступ к паролям только участникам семейной группы. <ph name="BEGIN_LINK" />Создайте ее<ph name="END_LINK" /> максимум для шести человек и пользуйтесь дополнительными возможностями продуктов и подписок Google.</translation>
 <translation id="7380698179418029202">Выберите <ph name="BEGIN_BOLD" />ZIP<ph name="END_BOLD" />-файл, экспортированный из Safari.</translation>
 <translation id="739101637685146669">Укажите, какой URL-адрес вы хотите добавить в закладки.</translation>
@@ -1812,6 +1822,7 @@
 <translation id="7437712592381799950">Чтобы увидеть больше материалов, подобранных для вас, пролистните вверх.</translation>
 <translation id="7438473148803748807">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям, а ссылки для приглашения больше не будут работать.</translation>
 <translation id="7445682342344043969">Всплывающие окна заблокированы</translation>
+<translation id="7450486349221991286">Обновить данные о транспортном средстве?</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладка сохранена в {title}.}one{Закладки сохранены в {title}.}few{Закладки сохранены в {title}.}many{Закладки сохранены в {title}.}other{Закладки сохранены в {title}.}}</translation>
 <translation id="7451404862887877229">Нажмите "Конфиденциальность и безопасность", а затем "Безопасный просмотр".</translation>
 <translation id="7452393099119876789">Это нужно сделать только один раз.</translation>
@@ -1898,6 +1909,7 @@
 <translation id="7729458878441927652">Синхронизируйте вкладки и историю. Тогда вам станут доступны вкладки, открытые на других ваших устройствах.</translation>
 <translation id="7730020510075123961">Нет, объединить данные</translation>
 <translation id="7733646263819020771">Закладка <ph name="BOOKMRK_NAME" />. Только на этом устройстве.</translation>
+<translation id="7737550920399185748">Фотографии с главной страницы из вашей библиотеки не будут синхронизироваться между устройствами.</translation>
 <translation id="7738120385185846461">Сообщить о проблеме</translation>
 <translation id="7744192722284567281">Раскрыт при утечке данных</translation>
 <translation id="7749790401023484470">Выберите текст.</translation>
@@ -1905,7 +1917,6 @@
 <translation id="775755486779745798">Автозаполнить поле месяцем окончания срока действия: <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Фиолетовая тема</translation>
 <translation id="7759809451544302770">Необязательно</translation>
-<translation id="7763878244904387570">Будут удалены выбранные данные, сохраненные на этом устройстве.</translation>
 <translation id="7765158879357617694">Перенести</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
 <translation id="7772948288262733182">С возвращением!</translation>
@@ -2223,6 +2234,7 @@
 <translation id="8803639129939845298">Защищено</translation>
 <translation id="8813277370772331957">Напомнить позже</translation>
 <translation id="8814719628147284151">Продолжить</translation>
+<translation id="881559332211266856">Обновить идентификатор Redress Number?</translation>
 <translation id="8817524703470045896">Отслеживайте цены и получайте оповещения о скидках на любых сайтах.</translation>
 <translation id="8819155700324279105">Добавьте дополнительный уровень защиты от онлайн-угроз.</translation>
 <translation id="8820817407110198400">Закладки</translation>

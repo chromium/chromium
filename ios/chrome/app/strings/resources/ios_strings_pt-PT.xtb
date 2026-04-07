@@ -11,6 +11,7 @@
 <translation id="1030376737535466765">Abrir Gestor de Palavras-passe</translation>
 <translation id="1035980983510608210">Se fechar todos os separadores, os separadores fixos também são fechados.</translation>
 <translation id="1036348656032585052">Desativar</translation>
+<translation id="1036436692654972538">Guarda no seu dispositivo</translation>
 <translation id="1041322626941363065">Enviar-lhe um aviso se as palavras-passe forem expostas numa violação de dados</translation>
 <translation id="104491362976654916">Página offline</translation>
 <translation id="1046742265332833834">Tema azul</translation>
@@ -97,7 +98,6 @@
 <translation id="1335767868357998043">Escolha a posição da barra de endereço</translation>
 <translation id="1347468774581902829">Gerir atividade</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
-<translation id="1350281503816551185">Valide a sua identidade ao preencher informações confidenciais</translation>
 <translation id="1355337783640312381">Para alternar entre contas, toque no ícone da sua conta</translation>
 <translation id="1358106883354237005">Conta gerida</translation>
 <translation id="1358214951266274152">Aceder ao link que copiou</translation>
@@ -116,6 +116,7 @@
 <translation id="138692594145659985">Opções para guardar o cartão</translation>
 <translation id="1396260204083880024">Com sessão iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abra o menu da conta.</translation>
 <translation id="1397144142234474689">Ocultar Histórico</translation>
+<translation id="1399268420835656394">Se não for uma criança, é recomendável que verifique a idade na conta Apple neste dispositivo. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1408847409015257906">Toque em "Privacidade e segurança".</translation>
 <translation id="1411386976162024013">Pesquisa visual do Lens</translation>
@@ -182,6 +183,7 @@
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1622717322707146952">Selecione "Adicionar ao Calendário Google" ou "Adicionar ao Calendário Apple".</translation>
 <translation id="1629162218487290695">Validar a sua identidade…</translation>
+<translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Receba direções para o seu destino com as orientações passo a passo da funcionalidade de navegação</translation>
 <translation id="1637811476055996098">Escolher Ficheiros</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
@@ -195,11 +197,13 @@
 <translation id="16554782717487656">Detetar unidades</translation>
 <translation id="1657011748321897393">A partilha falhou porque não está ligado à rede.</translation>
 <translation id="1668001730617725852">Abrir num novo grupo de separadores</translation>
+<translation id="1670861525135254448">Guarde o veículo</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Com base nas políticas da sua organização, este ficheiro pode conter informações confidenciais</translation>
 <translation id="168389590065701766">Agora, pode abrir o Google Lens a partir da barra de endereço e pesquisar tudo o que vê</translation>
 <translation id="1689333818294560261">Alcunha</translation>
 <translation id="169048873465870056">Remover o separador e eliminar o grupo?</translation>
+<translation id="1692115862433274081">Usar outra conta</translation>
 <translation id="1698090540708020240">Importar palavras-passe…</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
 <translation id="1702583479431863204">Site desafixado</translation>
@@ -208,6 +212,7 @@
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Colar e ir</translation>
 <translation id="1732468323901456775">Ative as notificações de <ph name="MODULE_NAME" /></translation>
+<translation id="1739364174357629566">Atualize o número de viajante conhecido</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1740650426894359238">Mudar para outro perfil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
@@ -251,6 +256,7 @@
 <translation id="1861067954551502701">{count,plural, =1{{position} de {count} palavra-passe}other{{position} de {count} palavras-passe}}</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1864266050569350424">Num site onde guardou uma palavra-passe, toque no campo da palavra-passe de início de sessão.</translation>
+<translation id="1866700949421703765">Ocultar Ativar modo de leitura</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Convide membros da família</translation>
@@ -349,6 +355,7 @@
 <translation id="2214453882118345682">Compre, traduza e identifique o que vê com a câmara.</translation>
 <translation id="2215819824168709130">Ocultar cartão de acompanhamento de preço</translation>
 <translation id="2216366330550244277">Aceda à página de um produto</translation>
+<translation id="2219935992754556187">O Chrome mantém os seus dados confidenciais seguros com o Face ID</translation>
 <translation id="2220529011494928058">Comunicar um problema</translation>
 <translation id="2223461067862937305">Criar código QR</translation>
 <translation id="2225701818156393674">Produto adicionado à sua lista de produtos acompanhados.</translation>
@@ -455,6 +462,7 @@
 <translation id="2583688836549072561">Grupo de separadores, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> separadores, nova atividade.</translation>
 <translation id="2593272815202181319">Monoespaço</translation>
 <translation id="2601778637777010194">Acompanhe as quedas de preços de produtos</translation>
+<translation id="2602372807870028932">Esta ação elimina as informações selecionadas guardadas neste dispositivo</translation>
 <translation id="260378315836159338">Na parte superior do ecrã, toque em +</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="261305050785128654">Permita que os Websites conheçam os idiomas que fala. Vão apresentar conteúdo nesses idiomas, sempre que possível.</translation>
@@ -533,7 +541,6 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (mais em dispositivos sincronizados)}other{# sites (mais em dispositivos sincronizados)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Quando a sua segurança está em risco, envia para a Google URLs de algumas páginas que visita.</translation>
-<translation id="2877733045396505765">Esta ação elimina as informações selecionadas guardadas neste dispositivo e na sua Conta Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2883151425485251736">Veja e edite tópicos que ocultou na sua conta</translation>
 <translation id="288655811176831528">Fechar separador</translation>
 <translation id="2888631381369839306">Notificações de acompanhamento de preço ativadas</translation>
@@ -549,6 +556,7 @@
 <translation id="2922210239002704889">Aceda à página inicial ou ao teclado</translation>
 <translation id="2924940770243654951">Abrir num novo separador de navegação anónima</translation>
 <translation id="2952278131021475699">Pesquisa com a câmara do Lens</translation>
+<translation id="2953821385349876107">Escolha uma Conta Google diferente</translation>
 <translation id="2962516096219646456">Ver todos os dados de preenchimento automático</translation>
 <translation id="2965594942405840553">Não é possível anular esta ação</translation>
 <translation id="2969979262385602596">Falha ao iniciar sessão. Tente nov. mais tarde.</translation>
@@ -587,9 +595,11 @@
 <translation id="3106690631878101882">Ocultar Traduzir</translation>
 <translation id="310900540163454140">Eliminar a palavra-passe de <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marcar…</translation>
+<translation id="3116695032231023709">Guarde o cartão de identificação</translation>
 <translation id="3119874402040566234">A sua sessão vai ser terminada e os dados de navegação vão ser eliminados</translation>
 <translation id="3124568093781685165">Partilhe as suas palavras-passe com a sua família</translation>
 <translation id="3130863904455712965">Histórico e muito mais</translation>
+<translation id="3132345256151444894">Guarde o número de correção</translation>
 <translation id="3132584647087998639">Importe os seus dados</translation>
 <translation id="313283613037595347">Crie um novo separador de navegação anónima.</translation>
 <translation id="3136739222562075778">Este cartão mostra as quedas de preço dos produtos nos seus separadores abertos</translation>
@@ -810,6 +820,7 @@
 <translation id="3949712484278252781">Nem as suas conversas com o Gemini nem os seus <ph name="GOOGLE_WORKSPACE_DATA" /> são revistos por revisores humanos ou usados para melhorar os modelos de IA generativa.</translation>
 <translation id="3950479158728806902">Criar automaticamente uma chave de acesso para iniciar sessão mais rápido</translation>
 <translation id="3950820424414687140">Iniciar sessão</translation>
+<translation id="395377504920307820">Usar sem uma conta</translation>
 <translation id="3955740319737378355">Concluir</translation>
 <translation id="3955822496205734389">Tem palavras-passe fracas.</translation>
 <translation id="3957016963627617921">Faça mais com o Gemini no Chrome</translation>
@@ -847,7 +858,6 @@
 <translation id="4092655288299341041">Mostrar ajuda</translation>
 <translation id="4095483462103784441">Criar novo grupo de separadores</translation>
 <translation id="4099756562043439968">Definir lembrete</translation>
-<translation id="4101867642407836771">Na Carteira do Google de <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
 <translation id="4111985840824673503">Marcar tudo como lido</translation>
 <translation id="411254640334432676">A transferência falhou.</translation>
@@ -889,6 +899,7 @@
 <translation id="4231395118547300571">Notificações da verificação de segurança ativadas</translation>
 <translation id="4232817129213135694">Configure chaves de acesso para este dispositivo</translation>
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegador predefinida<ph name="END_BOLD" /></translation>
+<translation id="424063167283213501">Guarde o número de viajante conhecido</translation>
 <translation id="4241893428331130998">Não existem palavras-passe nem chaves de acesso guardadas</translation>
 <translation id="4242533952199664413">Abrir definições</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} separador}=1{Abrir {count} separador}other{Abrir {count} separadores}}</translation>
@@ -954,6 +965,7 @@
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="4471472356135655769">Não é possível exportar palavras-passe</translation>
 <translation id="4472575034687746823">Começar</translation>
+<translation id="4473565697543262065">Esta ação elimina as informações selecionadas guardadas neste dispositivo e na sua Conta Google <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Ocultar Acompanhar preço</translation>
 <translation id="4474142134969976028">Sem resultados</translation>
 <translation id="4474494258097106883">Concebido para o iPhone</translation>
@@ -1018,6 +1030,7 @@
 <translation id="4682496302933121474">Traduzir a página?</translation>
 <translation id="4682686630151240767">1. Abra as Definições do iPhone</translation>
 <translation id="4697240968720007067">Desfrute das melhores apps da Google com um toque</translation>
+<translation id="4698308118265482293">Atualize o passaporte</translation>
 <translation id="4699172675775169585">Imagens e ficheiros em cache</translation>
 <translation id="4709570498586527752">As funcionalidades mais relevantes para si em alturas diferentes</translation>
 <translation id="4717844083556844785">A página Web atual está na Navegação anónima</translation>
@@ -1269,7 +1282,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5560088892362098740">Data de validade</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5565871407246142825">Cartões de crédito</translation>
-<translation id="5566623128829375608">Guarda no seu dispositivo.</translation>
 <translation id="5567439033041178034">SAIBA MAIS</translation>
 <translation id="5578795271662203820">Pesquisar a imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar Lista de leitura</translation>
@@ -1429,6 +1441,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6090760257419195752">Avisos ignorados</translation>
 <translation id="6094325891006032858">Ative a Navegação segura melhorada</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> encontrado(s)</translation>
+<translation id="6099466082815574659">Este iPad está configurado para uma criança</translation>
 <translation id="6100617279104942061">Com sessão iniciada como <ph name="USER_EMAIL" />. Abre as definições.</translation>
 <translation id="6100676328067737810">Os seus dados vão ser guardados na sua Conta Google, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Veja respostas relevantes com base no conteúdo da página em que se encontra</translation>
@@ -1477,6 +1490,8 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6232329973559504466">Pesquisa na Navegação anónima</translation>
 <translation id="6234310016144827337">Verifique a ligação e tente novamente</translation>
 <translation id="6236952928980352967">Restaurar aviso</translation>
+<translation id="6240553182907836376">Atualize o cartão de identificação</translation>
+<translation id="6240601837375010619">Guarde o passaporte</translation>
 <translation id="6241132809279377987">Desbloqueie mais funcionalidades para o seu iPhone com as apps Google</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
 <translation id="6251835855431997163">Preencher automaticamente <ph name="VALUE" /></translation>
@@ -1569,6 +1584,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6532106788206463496">Guardar alterações</translation>
 <translation id="6536759809440150308">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">exemplo.pt</translation>
+<translation id="6538776393003671043">O Chrome vai oferecer a opção de as guardar na Carteira do Google da próxima vez que as usar</translation>
 <translation id="6543899060872618437">Pague mais rapidamente com o preenchimento automático em todos os seus dispositivos</translation>
 <translation id="6550675742724504774">Opções</translation>
 <translation id="6550891580932862748">Não protege contra transferências, extensões ou Websites perigosos. As suas definições da Navegação segura noutros produtos Google não são afetadas.</translation>
@@ -1652,6 +1668,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6806550742467879742">Ferramentas da página</translation>
 <translation id="6807287147325542056">Palavras-passe noutras apps</translation>
 <translation id="681368974849482173">Item criado</translation>
+<translation id="681631578600400068">Guarde a carta de condução</translation>
 <translation id="6820686453637990663">Código de segurança</translation>
 <translation id="6825078212112407882">{count,plural, =1{Marcador guardado na sua Conta Google, {email}}other{{count} marcadores guardados na sua Conta Google, {email}}}</translation>
 <translation id="6826004672264649705">Está a acompanhar este produto. Abra o separador para ver o histórico de preços</translation>
@@ -1740,6 +1757,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7138678301420049075">Outros</translation>
 <translation id="7141960840225504692">Os separadores vão ser fechados e os dados de navegação vão ser eliminados</translation>
 <translation id="714291438898585119">Marcado com estrela</translation>
+<translation id="7145337554745942724">Atualize a carta de condução</translation>
 <translation id="7146301801400584641">Ficheiro de calendário disponível</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7154417656353909837">Remover moradas</translation>
@@ -1768,7 +1786,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7253951228444156601">A verificar palavras-passe…</translation>
 <translation id="7261217796641151584">Partilhar grupo</translation>
 <translation id="7266578100016339897">Isto ajuda a manter a organização. Pode alterar esta opção nas definições em qualquer altura.</translation>
-<translation id="7268294318904284516">Se partilhar este dispositivo, use o bloqueio de ecrã para validar a sua identidade quando usar informações confidenciais, como passaportes</translation>
 <translation id="7272437679830969316">Não é possível validar a sua identidade. Palavra-passe não copiada.</translation>
 <translation id="728025568708172005">Iniciar visita guiada</translation>
 <translation id="7280980607183752256">Não é possível importar este ficheiro</translation>
@@ -1788,6 +1805,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="736564850024123010">Mude a posição da barra de endereço para ter uma experiência personalizada.</translation>
 <translation id="7366909168761621528">Dados de navegação</translation>
 <translation id="7367530036083223701">Aceda às suas palavras-passe em segurança a partir do ecrã principal com o widget do Gestor de Palavras-passe.</translation>
+<translation id="73750335798090836">Para proteção adicional, use sempre a sua impressão digital, rosto ou outro bloqueio de ecrã quando usar informações confidenciais, como documentos de viagem e de identidade</translation>
 <translation id="7380220816562673297">Por enquanto, só pode partilhar palavras-passe com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com um máximo de 6 membros e receba mais dos seus produtos e subscrições na rede Google.</translation>
 <translation id="7380698179418029202">Selecione o ficheiro <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> de exportação do Safari</translation>
 <translation id="739101637685146669">Que URL quer adicionar aos marcadores?</translation>
@@ -1812,6 +1830,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7437712592381799950">Pode deslizar rapidamente para cima para ver mais conteúdo personalizado para si.</translation>
 <translation id="7438473148803748807">Todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />", e todos os links de convite vão ser desativados</translation>
 <translation id="7445682342344043969">Pop-ups bloqueados</translation>
+<translation id="7450486349221991286">Atualize o veículo</translation>
 <translation id="7451023311965289370">{count,plural, =1{Marcador guardado em "{title}"}other{Marcadores guardados em "{title}"}}</translation>
 <translation id="7451404862887877229">Toque em "Privacidade e segurança" e, de seguida, em "Navegação Segura"</translation>
 <translation id="7452393099119876789">Apenas tem de o fazer uma vez.</translation>
@@ -1898,6 +1917,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7729458878441927652">Para ver os separadores dos seus outros dispositivos, sincronize os separadores e o histórico.</translation>
 <translation id="7730020510075123961">Não, unir dados</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
+<translation id="7737550920399185748">As fotos da página inicial da sua fototeca não são sincronizadas nos seus dispositivos.</translation>
 <translation id="7738120385185846461">Comunicar um problema…</translation>
 <translation id="7744192722284567281">Encontrada numa violação de dados</translation>
 <translation id="7749790401023484470">Não selecionou texto.</translation>
@@ -1905,7 +1925,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="775755486779745798">Preencher automaticamente o mês de validade <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759809451544302770">Opcional</translation>
-<translation id="7763878244904387570">Esta ação elimina as informações selecionadas guardadas neste dispositivo.</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar frase de acesso</translation>
 <translation id="7772948288262733182">Damos-lhe as boas-vindas de volta</translation>
@@ -1949,6 +1968,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7888562068293422208">Fechar todos?</translation>
 <translation id="7889910613639381518">Acesso fácil e seguro com o widget do Gestor de Palavras-passe da Google.</translation>
 <translation id="7899199123054742721">Marcar tudo como não lido</translation>
+<translation id="7909005666376403847">Este iPhone está configurado para uma criança</translation>
 <translation id="7911190106180361398">A sua entidade não permite que sincronize tudo.</translation>
 <translation id="7918999344502274923">Ocultar detalhes do <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Escolha um tema, uma cor e muito mais para o seu fundo</translation>
@@ -1966,6 +1986,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7952670906562503188">Está prestes a eliminar {passkey_count} chaves de acesso e a lista de sites e apps para os quais optou por nunca guardar as informações de início de sessão. As contas que criou para sites e apps não são eliminadas.</translation>
 <translation id="7958575506592576831">Informações de segurança da página</translation>
 <translation id="7961015016161918242">Nunca</translation>
+<translation id="7971651328518569075">Ocultar Desativar modo de leitura</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Experimentar</translation>
 <translation id="797588153137233716">Menu → Histórico → Eliminar dados de navegação</translation>
@@ -1982,6 +2003,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8005666035647241369">No Gestor de Palavras-passe da Google neste dispositivo</translation>
 <translation id="8010488806779226127">Explore funcionalidades que podem ajudar a fazer mais enquanto navega</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8014007212279733632">Validar a sua identidade para preencher automaticamente informações confidenciais</translation>
 <translation id="8015826420689927262">Eliminar anexo</translation>
 <translation id="8017015647846870183">Do Gestor de Palavras-passe da Google, incluindo palavras-passe e chaves de acesso</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
@@ -2223,6 +2245,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8803639129939845298">Seguro</translation>
 <translation id="8813277370772331957">Lembrar-me mais tarde</translation>
 <translation id="8814719628147284151">Continuar</translation>
+<translation id="881559332211266856">Atualize o número de correção</translation>
 <translation id="8817524703470045896">Acompanhe os preços e receba alertas quando o preço descer em qualquer site</translation>
 <translation id="8819155700324279105">Adicione uma camada extra de proteção contra ameaças online</translation>
 <translation id="8820817407110198400">Marcadores</translation>
@@ -2367,6 +2390,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="984275831282074731">Métodos de pagamento</translation>
 <translation id="985379595344853742">Fechar todos os separadores de navegação anónima</translation>
 <translation id="988141524645182168">Outros Dispositivos</translation>
+<translation id="994184244350700431">Na Carteira do Google de <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} chave de acesso importada}other{{count} chaves de acesso importadas}}</translation>
 <translation id="999768147936949692">Por enquanto, só pode partilhar palavras-passe com membros da família. <ph name="BEGIN_LINK" />Convide membros da família<ph name="END_LINK" /> para aderirem ao seu grupo e tirar maior partido dos seus produtos e subscrições na rede Google.</translation>
 </translationbundle>

@@ -465,7 +465,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1717218214683051432">Sensors de moviment</translation>
 <translation id="1717494416764505390">Bústia de correu 3</translation>
 <translation id="1717688554309417925">Serveis de targetes de dèbit i de xecs</translation>
-<translation id="1717882880162336471">Prova el mode IA</translation>
 <translation id="1719434663396780149">Les alertes de baixada de preu estan activades. Pots canviar aquesta opció a la <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 polzades</translation>
 <translation id="1720941539803966190">Tanca el tutorial</translation>
@@ -615,7 +614,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1960664692890490165">Quan facis compres a Chrome, veuràs formes de pagament sense targeta com a opció</translation>
 <translation id="196146181975453736">Completa una comprovació de seguretat única per pagar més ràpidament</translation>
 <translation id="1962204205936693436">Adreces d'interès de <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Paga ara</translation>
 <translation id="1973335181906896915">Error de serialització</translation>
 <translation id="1973785048533660168">Feines d'oficinista i d'administratiu</translation>
 <translation id="1974060860693918893">Configuració avançada</translation>
@@ -1097,7 +1095,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2696385693639654606">Chrome Enterprise Core et permet gestionar les polítiques, les aplicacions i les extensions del navegador des del núvol</translation>
 <translation id="2697248912349197812">Pregunta a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">El submenú està disponible. Utilitza <ph name="SHORTCUT" /> per navegar fins a les opcions addicionals.</translation>
-<translation id="2700335762333112350">Paga més tard</translation>
 <translation id="2701514975700770343">Cara avall</translation>
 <translation id="2702592986366989640">Opció de preu baix</translation>
 <translation id="2702801445560668637">Llista de lectura</translation>
@@ -2446,7 +2443,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4832388034239846146">Per compartir grups de pestanyes, actualitza Chrome</translation>
 <translation id="483241715238664915">Activa els advertiments</translation>
 <translation id="4832961164064927107">Barbacoa i cuina a la brasa</translation>
-<translation id="4839984801146463230">Desa la informació i enllesteix més ràpidament les tasques, com ara emplenar formularis en tots els productes de Google. Pots <ph name="BEGIN_LINK" />gestionar la teva informació<ph name="END_LINK" /> a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per a <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Mostra l'historial de Chrome</translation>
 <translation id="484462545196658690">Automàtic</translation>
 <translation id="4844937814014739139">Desplaçar-se i fer zoom a les pestanyes compartides</translation>

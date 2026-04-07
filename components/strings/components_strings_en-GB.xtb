@@ -465,7 +465,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1717218214683051432">Motion sensors</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1717688554309417925">Debit and Cheque Services</translation>
-<translation id="1717882880162336471">Try AI Mode</translation>
 <translation id="1719434663396780149">Price drop alerts are on. You can change this in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 in x 30 in</translation>
 <translation id="1720941539803966190">Close tutorial</translation>
@@ -615,7 +614,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1960664692890490165">When you make purchases in Chrome, see non-card payment methods as an option</translation>
 <translation id="196146181975453736">Complete one-time security check to pay faster</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Bookmarks</translation>
-<translation id="1966259577349514951">Pay now</translation>
 <translation id="1973335181906896915">Serialisation error</translation>
 <translation id="1973785048533660168">Clerical and Administrative Jobs</translation>
 <translation id="1974060860693918893">Advanced</translation>
@@ -1057,6 +1055,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2627847595568876492">Extracting text from PDF…</translation>
 <translation id="2628025184666666186">This server could not prove that it is <ph name="DOMAIN" /> because it is using a security certificate that is not trusted by Chrome or your system configuration for web traffic encryption. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="2628224721443278970">Sign in to Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Your administrator located this device while it was disabled. It has been re-enabled and is ready to use.</translation>
 <translation id="2631387782019878060">Verification code: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />’s server IP address could not be found.</translation>
 <translation id="2638567100095052009">Type @ to search across <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1097,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2696385693639654606">Chrome Enterprise Core lets you manage browser policies, apps and extensions from the cloud</translation>
 <translation id="2697248912349197812">Ask <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Sub-menu available, use <ph name="SHORTCUT" /> to navigate to additional options.</translation>
-<translation id="2700335762333112350">Pay later</translation>
 <translation id="2701514975700770343">Face down</translation>
 <translation id="2702592986366989640">Low-priced option</translation>
 <translation id="2702801445560668637">Reading list</translation>
@@ -2447,7 +2445,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4832388034239846146">To share tab groups, update Chrome</translation>
 <translation id="483241715238664915">Turn on warnings</translation>
 <translation id="4832961164064927107">BBQ and grilling</translation>
-<translation id="4839984801146463230">Save your info and get things done faster, like filling forms across Google products. You can <ph name="BEGIN_LINK" />manage your info<ph name="END_LINK" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">View your Chrome history</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Scrolling and zooming shared tabs</translation>
@@ -2724,6 +2721,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5255833070095767006">350 mm x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administrator policy doesn’t recommend copying this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend copying these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">The '<ph name="GROUP_NAME" />' tab group is no longer available</translation>
+<translation id="5262342527470539728">Your info is saved in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Review is required before uploading</translation>
 <translation id="5266128565379329178">Bind top</translation>
 <translation id="5269225904387178860">Quad punch bottom</translation>
@@ -2920,6 +2918,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5543564889050342791">Zoos, aquariums and preserves</translation>
 <translation id="5543722831081909240">180 degrees</translation>
 <translation id="5544836308113951378">Cruises and charters</translation>
+<translation id="5546252337258681768">Device unlocked</translation>
 <translation id="5547939254150808298">Printing and publishing</translation>
 <translation id="554815783948612276">Forum and chat providers</translation>
 <translation id="5548606607480005320">Safety check</translation>
@@ -4773,6 +4772,7 @@ Additional details:
 Additional details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microphone allowed this time</translation>
+<translation id="8421746712901926961">Save your info in <ph name="GOOGLE_WALLET_TITLE_1" /> and get things done faster, like filling forms across Google products. You can <ph name="MANAGE_INFO_LINK" /> in <ph name="GOOGLE_WALLET_TITLE_2" /> for <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Change</translation>
 <translation id="8426945547715537628">Allow keyboard override?</translation>

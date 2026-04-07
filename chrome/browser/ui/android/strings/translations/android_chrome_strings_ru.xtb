@@ -684,6 +684,7 @@
 <translation id="3927692899758076493">Без засечек</translation>
 <translation id="3931947361983910192">последние 4 недели</translation>
 <translation id="393697183122708255">Голосовой поиск недоступен</translation>
+<translation id="3941718885865495207">Нижний экран с предложением разрешить Автопоиск в Chrome</translation>
 <translation id="3943322906274039960">Закрепленная вкладка "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="3950820424414687140">Войти</translation>
 <translation id="395377504920307820">Продолжить без входа в аккаунт</translation>
@@ -1189,6 +1190,7 @@
 <translation id="6011308810877101166">Улучшать подсказки при поиске</translation>
 <translation id="6013305291643746595">Сначала старые</translation>
 <translation id="6022659036123304283">Настройте Chrome для себя</translation>
+<translation id="6023820583797130428">Открыть меню для перехода назад</translation>
 <translation id="6026538407078977628">Перейти в полноэкранный режим</translation>
 <translation id="6030719887161080597">Управление информацией, которая помогает оценивать эффективность рекламы на сайтах</translation>
 <translation id="6039379616847168523">Перейти к следующей вкладке</translation>
@@ -1633,6 +1635,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартная вкладка}one{<ph name="TABS_COUNT_MANY" /> стандартная вкладка}few{<ph name="TABS_COUNT_MANY" /> стандартные вкладки}many{<ph name="TABS_COUNT_MANY" /> стандартных вкладок}other{<ph name="TABS_COUNT_MANY" /> стандартной вкладки}}</translation>
 <translation id="7603168929588204083">Неверная дата.</translation>
 <translation id="7605594153474022051">Ошибка синхронизации</translation>
+<translation id="7608245556672190037">Нижний экран с предложением разрешить Автопоиск в Chrome открыт полностью</translation>
 <translation id="7612619742409846846">Вы вошли в аккаунт</translation>
 <translation id="7612989789287281429">Вход в аккаунт…</translation>
 <translation id="7619072057915878432">Не удалось скачать файл <ph name="FILE_NAME" /> из-за сбоев сети.</translation>
@@ -1640,6 +1643,7 @@
 <translation id="7628417132421583481">Открыть Менеджер паролей</translation>
 <translation id="7630202231528827509">URL поставщика</translation>
 <translation id="7638584964844754484">Неверная кодовая фраза</translation>
+<translation id="764047009170754705">Нижний экран с предложением разрешить Автопоиск в Chrome закрыт</translation>
 <translation id="7646499124171960488">Предупреждать о незащищенных общедоступных сайтах</translation>
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>
 <translation id="7655240423373329753">за последние 7 дней</translation>
@@ -1864,6 +1868,7 @@
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="847433688444405067">Всё нужное всегда под рукой</translation>
 <translation id="8477178913400731244">Удалить данные</translation>
+<translation id="8481771036036087705">Нижний экран с предложением разрешить Автопоиск в Chrome открыт наполовину</translation>
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="FILE_SIZE" /> <ph name="SEPARATOR" /></translation>
 <translation id="8491317241605644838">Нет неактивных окон</translation>
 <translation id="8493948351860045254">Освободить место</translation>

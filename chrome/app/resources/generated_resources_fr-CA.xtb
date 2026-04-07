@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Avertissement</translation>
 <translation id="1056980582064308040">La modification des paramètres redémarrera le point d’accès. Les appareils qui utilisent le point d’accès seront déconnectés.</translation>
 <translation id="1058262162121953039">Clé PUK</translation>
+<translation id="1058848978232174442">Tâche interrompue</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Entrez votre nouveau NIP. Un NIP doit comprendre au moins un caractère. Il peut contenir des lettres, des numéros et d'autres caractères.}one{Entrez votre nouveau NIP. Un NIP doit comprendre au moins # caractère. Il peut contenir des lettres, des numéros et d'autres caractères.}other{Entrez votre nouveau NIP. Un NIP doit comprendre au moins # caractères. Il peut contenir des lettres, des numéros et d'autres caractères.}}</translation>
 <translation id="1059484610606223931">Protocole HTTPS</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> onglets trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
@@ -1723,6 +1724,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2175384018164129879">&amp;Gérer les moteurs de recherche et la recherche de sites</translation>
 <translation id="2175526076681939329">Utiliser des touches primaires</translation>
 <translation id="217576141146192373">Impossible d'ajouter l'imprimante. Veuillez vérifier la configuration de votre imprimante, puis réessayer.</translation>
+<translation id="2175773164573457310">Sélectionnez n'importe quel texte ou n'importe quelle image pour poser une question à Gemini</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2177950615300672361">Onglet de navigation privée : <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3059,6 +3061,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3076966043108928831">Enregistrer uniquement sur cet appareil</translation>
 <translation id="3076977359333237641">Vos données de connexion ont été supprimées</translation>
 <translation id="3077734595579995578">majuscule</translation>
+<translation id="3080521492391385172">Aucun raccourci de fonctionnalité ou d'extension trouvé</translation>
 <translation id="3080930813589868009">Outil de mise à jour par utilisateur</translation>
 <translation id="3080933187214341848">Ce réseau n'est pas synchronisé avec votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Nom ou identifiant de l'appli</translation>
@@ -6406,6 +6409,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5436211819997237281">L'extension actuelle qui gère votre page Nouvel onglet</translation>
 <translation id="5436492226391861498">En attente du tunnel mandataire...</translation>
 <translation id="5436510242972373446">Recherche sur <ph name="SITE_NAME" /> :</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini a arrêté votre tâche. Retournez à Chrome pour l'examiner.</translation>
 <translation id="5438014818441491616">La largeur de la fenêtre <ph name="WINDOW_SIDE" /> est désormais de <ph name="WINDOW_SIZE_PERCENT" />, et la largeur du volet <ph name="PANE_SIDE" /> est désormais de <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Rechercher des extensions</translation>
 <translation id="5440425659852470030">Fermer le panneau latéral</translation>
@@ -7603,6 +7607,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="628705218210359422">Gardez une trace de vos mots de passe et gérez-les en un seul endroit.</translation>
 <translation id="628726841779494414">Gérez vos imprimantes dans les paramètres d'impression</translation>
 <translation id="6287288864483377583">L'importation est seulement prise en charge pour un seul certificat</translation>
+<translation id="6287713404380454515">Pour des raisons de sécurité, votre administrateur a désactivé le NIP et le mot de passe de votre appareil. À partir de maintenant, utilisez votre mot de passe <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Téléphone Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Aucun appareil à proximité avec qui partager du contenu. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Impossible d'effectuer la restauration en raison d'un manque d'espace de stockage.</translation>
@@ -8860,6 +8865,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7188508872042490670">Données relatives aux sites sur l’appareil</translation>
 <translation id="7189234443051076392">Assurez-vous qu'il y a suffisamment d'espace sur votre appareil</translation>
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de mises à niveau pour inscrire cet appareil. Veuillez communiquer avec le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez communiquer avec l'assistance technique.</translation>
+<translation id="7189558282078169397">Onglets ouverts sur d'autres appareils</translation>
 <translation id="7189965711416741966">Empreinte digitale ajoutée.</translation>
 <translation id="7190921792980745354">Bloquer <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et <ph name="NUMBER_OF_OTHER_APPS" /> autres applications.</translation>
@@ -9095,7 +9101,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7356908624372060336">Journaux réseau</translation>
 <translation id="7357271391997763660">Exécuter la vérification du mot de passe?</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>
-<translation id="7359326150089800742">Ajouter un onglet ou un fichier à votre recherche et utiliser également un outil</translation>
 <translation id="7359680654975233185">Impossible de diffuser l'onglet</translation>
 <translation id="7360257054721917104">Affichage des bureaux et des modèles enregistrés. Appuyez sur l'onglet pour naviguer.</translation>
 <translation id="7360333718677093875">sélecteur d'émoji</translation>
@@ -9675,6 +9680,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'attribution.</translation>
 <translation id="7745554356330788383">Actualisez cette page pour appliquer vos paramètres mis à jour pour « <ph name="EXTENSION_NAME" /> » sur ce site</translation>
 <translation id="7745677556280361868">Retirer ce réseau sur la page d'abonnement Passpoint?</translation>
+<translation id="7745849183714722618">Pour propulser des fonctionnalités telles que la Détection d'escroquerie, Chrome peut utiliser des modèles d'IA qui s'exécutent directement sur votre appareil. Lorsque cette option est désactivée, ces fonctionnalités peuvent ne pas fonctionner. <ph name="BEGIN_LINK" />En savoir plus sur l'IA sur l'appareil<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Créez des éléments sur votre écran, y compris du texte, plus grand ou plus petit. Vous pouvez également les trouver plus tard dans Paramètres &gt; Appareil &gt; Affichages.</translation>
 <translation id="7750228210027921155">Incrustation d'image</translation>
 <translation id="7751260505918304024">Tout afficher</translation>
@@ -9955,6 +9961,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="794250392403348719">Exemple : Simplifie ce concept pour des enfants de huit ans. Utilise un langage simple et une analogie qu'ils peuvent comprendre. Veille à ce que l'intégralité de l'explication soit concise et ne dépasse pas 150 mots.</translation>
 <translation id="7942846369224063421">Moteur de rendu de l'IU préchargé</translation>
 <translation id="7943271960579497371">Applications installées</translation>
+<translation id="7943311690198910993">Méthode de connexion mise à jour</translation>
 <translation id="7943368935008348579">Télécharger les PDF</translation>
 <translation id="7943837619101191061">Ajouter un dossier...</translation>
 <translation id="7944173382284143968">Le site Web nécessite une confirmation par mot de passe à usage unique avant d'enregistrer le nouveau mot de passe. Veuillez reprendre le processus manuellement pour terminer le changement.</translation>

@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">Αισθητήρες κίνησης</translation>
 <translation id="1717494416764505390">Γραμματοκιβώτιο 3</translation>
 <translation id="1717688554309417925">Υπηρεσίες χρέωσης και πίστωσης</translation>
-<translation id="1717882880162336471">Δοκιμή της Λειτουργίας AI</translation>
 <translation id="1719434663396780149">Οι ειδοποιήσεις για τις πτώσεις τιμών είναι ενεργοποιημένες. Μπορείτε να αλλάξετε αυτή την επιλογή στην ενότητα <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 ίντσες</translation>
 <translation id="1720941539803966190">Κλείσιμο οδηγού</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Όταν κάνετε αγορές στο Chrome, να εμφανίζονται ως επιλογή οι τρόποι πληρωμής χωρίς κάρτα</translation>
 <translation id="196146181975453736">Ολοκληρώστε έναν εφάπαξ έλεγχο ασφαλείας, για να πληρώνετε πιο γρήγορα</translation>
 <translation id="1962204205936693436">Σελιδοδείκτες <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Πληρωμή τώρα</translation>
 <translation id="1973335181906896915">Σφάλμα σειριοποίησης</translation>
 <translation id="1973785048533660168">Θέσεις εργασίας διοικητικών στελεχών και υπαλλήλων γραφείου</translation>
 <translation id="1974060860693918893">Σύνθετες</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">Κλικ για αντιγραφή</translation>
 <translation id="2612676031748830579">Αριθμός κάρτας</translation>
 <translation id="2612993535136743634">Όλοι οι κωδικοί ασφαλείας που είναι αποθηκευμένοι στη συσκευή σας και στον Λογαριασμό Google θα διαγραφούν</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Ενεργό πριν από 1 λεπτό}other{Ενεργό πριν από # λεπτά}}</translation>
 <translation id="2614835674900828050">Δεν διατίθεται για αυτή την αγορά</translation>
 <translation id="2616412942031748191">Βελτιστοποίηση και μάρκετινγκ μηχανών αναζήτησης</translation>
 <translation id="2618206371527040026">Ακαδημαϊκές διασκέψεις και δημοσιεύσεις</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">Εξαγωγή κειμένου από PDF…</translation>
 <translation id="2628025184666666186">Αυτός ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι ο τομέας <ph name="DOMAIN" />, επειδή χρησιμοποιεί ένα πιστοποιητικό ασφαλείας που δεν θεωρείται αξιόπιστο από το Chrome ή τη διαμόρφωση του συστήματός σας για την κρυπτογράφηση της επισκεψιμότητας ιστού. Αυτό μπορεί να οφείλεται σε εσφαλμένη διαμόρφωση ή σε κάποιον υπεύθυνο επίθεσης που παρεμβαίνει στη σύνδεσή σας.</translation>
 <translation id="2628224721443278970">Σύνδεση στο Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Ο διαχειριστής σας εντόπισε αυτή τη συσκευή ενώ ήταν απενεργοποιημένη. Ενεργοποιήθηκε ξανά και είναι έτοιμη για χρήση.</translation>
 <translation id="2631387782019878060">Κωδικός επαλήθευσης: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Δεν ήταν δυνατή η εύρεση της διεύθυνσης IP διακομιστή του κεντρικού υπολογιστή <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Πληκτρολογήστε @ για αναζήτηση σε <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">Το Chrome Enterprise Core σας επιτρέπει να διαχειρίζεστε πολιτικές, εφαρμογές και επεκτάσεις του προγράμματος περιήγησης από το cloud</translation>
 <translation id="2697248912349197812">Ερώτηση στο <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Διαθέσιμο υπομενού. Χρησιμοποιήστε τη συντόμευση <ph name="SHORTCUT" /> για πλοήγηση σε πρόσθετες επιλογές.</translation>
-<translation id="2700335762333112350">Πληρωμή αργότερα</translation>
 <translation id="2701514975700770343">Πρόσοψη προς τα κάτω</translation>
 <translation id="2702592986366989640">Επιλογή χαμηλής τιμής</translation>
 <translation id="2702801445560668637">Λίστα ανάγνωσης</translation>
@@ -2447,7 +2446,6 @@
 <translation id="4832388034239846146">Για να μοιραστείτε ομάδες καρτελών, ενημερώστε το Chrome</translation>
 <translation id="483241715238664915">Ενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4832961164064927107">Μπάρμπεκιου και ψητά</translation>
-<translation id="4839984801146463230">Αποθηκεύστε τις πληροφορίες σας και ολοκληρώστε πιο γρήγορα εργασίες, όπως τη συμπλήρωση φορμών σε όλα τα προϊόντα Google. Μπορείτε να <ph name="BEGIN_LINK" />διαχειριστείτε τις πληροφορίες σας<ph name="END_LINK" /> στο <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> για τον λογαριασμό <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Προβολή του ιστορικού Chrome</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
 <translation id="4844937814014739139">Κύλιση και εστίαση σε κοινόχρηστες καρτέλες</translation>
@@ -2920,6 +2918,7 @@
 <translation id="5543564889050342791">Ζωολογικοί κήποι, ενυδρεία και προστατευόμενες περιοχές</translation>
 <translation id="5543722831081909240">180 μοίρες</translation>
 <translation id="5544836308113951378">Κρουαζιέρες και τσάρτερ</translation>
+<translation id="5546252337258681768">Η συσκευή ξεκλειδώθηκε</translation>
 <translation id="5547939254150808298">Εκτύπωση και εκδόσεις</translation>
 <translation id="554815783948612276">Πάροχοι φόρουμ και συζητήσεων (Chat)</translation>
 <translation id="5548606607480005320">Έλεγχος ασφαλείας</translation>
@@ -2961,6 +2960,7 @@
 <translation id="5600044805561809264">Μπορείτε εύκολα να κάνετε ερωτήσεις σχετικά με τις καρτέλες που μοιράζεστε κατά την περιήγηση.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ή <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Η διαχείριση δεν υποστηρίζεται</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Ενεργό πριν από 1 ώρα}other{Ενεργό πριν από # ώρες}}</translation>
 <translation id="5605249000617390290">Μάθετε περισσότερα σχετικά με την παρακολούθηση τιμής</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Ελέγξτε τη σύνδεση</translation>
@@ -3515,6 +3515,7 @@
 <translation id="6456955391422100996">Η διαφήμιση καταργήθηκε.</translation>
 <translation id="6457206614190510200">Συρραφή στη ράχη</translation>
 <translation id="6457455098507772300">Οι ειδοποιήσεις πτώσης τιμών εμφανίζονται ως αναδυόμενες ειδοποιήσεις στην επιφάνεια εργασίας σας.</translation>
+<translation id="6458519747993638565">Ενεργό τώρα</translation>
 <translation id="6458606150257356946">Επικόλληση ούτως ή άλλως</translation>
 <translation id="6462438303393708881">Ακύρωση μεταφόρτωσης</translation>
 <translation id="6464094930452079790">εικόνες</translation>

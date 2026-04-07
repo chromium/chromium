@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">أجهزة استشعار الحركة</translation>
 <translation id="1717494416764505390">صندوق البريد الإلكتروني 3</translation>
 <translation id="1717688554309417925">خدمات بطاقات الخصم والحسابات الجارية</translation>
-<translation id="1717882880162336471">‏تجربة "وضع AI"</translation>
 <translation id="1719434663396780149">ميزة "إشعارات بانخفاض الأسعار" مفعَّلة. يمكنك إيقافها من خلال <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 × 30 بوصة</translation>
 <translation id="1720941539803966190">إغلاق البرنامج التعليمي</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام طُرق الدفع التي لا تعتمد على البطاقات كأحد الخيارات</translation>
 <translation id="196146181975453736">يجب إكمال فحص الأمان لمرة واحدة فقط للدفع بشكل أسرع</translation>
 <translation id="1962204205936693436">إشارات <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">الدفع الآن</translation>
 <translation id="1973335181906896915">خطأ أثناء التسلسل</translation>
 <translation id="1973785048533660168">وظائف مكتبية وإدارية</translation>
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">النقر لنسخ النص</translation>
 <translation id="2612676031748830579">رقم البطاقة</translation>
 <translation id="2612993535136743634">‏سيتم حذف كل رموز الأمان المحفوظة على جهازك وفي حسابك على Google.</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{نشط قبل دقيقة واحدة}zero{نشط قبل # دقيقة}two{نشط قبل دقيقتين}few{نشط قبل # دقائق}many{نشط قبل # دقيقة}other{نشط قبل # دقيقة}}</translation>
 <translation id="2614835674900828050">هذا الخيار غير متاح لعملية الشراء هذه</translation>
 <translation id="2616412942031748191">تسويق وتحسين محركات بحث</translation>
 <translation id="2618206371527040026">مؤتمرات ومنشورات أكاديمية</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">‏جارٍ استخراج النص من ملف PDF…</translation>
 <translation id="2628025184666666186">‏لا يستطيع هذا الخادم إثبات أنّه <ph name="DOMAIN" /> لأنّه يستخدم شهادة أمان غير موثوق بها من قِبل Chrome أو إعدادات النظام لتشفير بيانات الزيارات على الويب. وقد يعود ذلك إلى خطأ في الضبط أو مهاجم يحاول اعتراض اتصالك.</translation>
 <translation id="2628224721443278970">‏تسجيل الدخول إلى Microsoft OneDrive</translation>
+<translation id="2631059741268498165">تمكّن المشرف من تحديد موقع هذا الجهاز عندما كان غير مفعّل. وقد أعاد تفعيله وأصبح جاهزًا للاستخدام.</translation>
 <translation id="2631387782019878060">رمز التحقّق: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">‏تعذّر العثور على عنوان IP لخادم <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">يُرجى كتابة علامة @ للبحث في <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">‏يتيح لك إصدار Chrome Enterprise Core إدارة سياسات المتصفّح والتطبيقات والإضافات من السحابة الإلكترونية</translation>
 <translation id="2697248912349197812">طرح سؤال على <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">هناك قائمة فرعية متاحة، يمكنك استخدام <ph name="SHORTCUT" /> للانتقال إلى خيارات إضافية.</translation>
-<translation id="2700335762333112350">الدفع لاحقًا</translation>
 <translation id="2701514975700770343">الوجه للأسفل</translation>
 <translation id="2702592986366989640">خيار السعر المنخفض</translation>
 <translation id="2702801445560668637">قائمة القراءة</translation>
@@ -2446,7 +2445,6 @@
 <translation id="4832388034239846146">‏لمشاركة مجموعات علامات التبويب، يجب تحديث Chrome</translation>
 <translation id="483241715238664915">تفعيل التحذيرات</translation>
 <translation id="4832961164064927107">شواء</translation>
-<translation id="4839984801146463230">‏يمكنك حفظ معلوماتك لإنجاز المهام بشكل أسرع، مثل ملء النماذج في جميع منتجات Google. بإمكانك <ph name="BEGIN_LINK" />إدارة معلوماتك<ph name="END_LINK" /> في حساب <ph name="ACCOUNT" /> على "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />"</translation>
 <translation id="4840250757394056958">‏عرض سجلّ Chrome</translation>
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="4844937814014739139">الانتقال للأعلى أو للأسفل في محتوى علامات التبويب المشترَكة وتكبيره أو تصغيره</translation>
@@ -2919,6 +2917,7 @@
 <translation id="5543564889050342791">حدائق حيوان وأحواض سمك ومحميات</translation>
 <translation id="5543722831081909240">180 درجة</translation>
 <translation id="5544836308113951378">رحلات بحرية وتأجير سفن</translation>
+<translation id="5546252337258681768">تم فتح قفل الجهاز</translation>
 <translation id="5547939254150808298">طباعة ونشر</translation>
 <translation id="554815783948612276">منتديات وخدمات دردشة وتواصل</translation>
 <translation id="5548606607480005320">التحقّق من الأمان</translation>
@@ -2960,6 +2959,7 @@
 <translation id="5600044805561809264">يمكنك بسهولة طرح أسئلة حول علامات التبويب التي تتم مشاركتها أثناء التصفّح.</translation>
 <translation id="5603469469737324249">‫"<ph name="ISSUER_1_NAME" />" أو "<ph name="ISSUER_2_NAME" />"</translation>
 <translation id="560412284261940334">الإدارة غير متوفرة</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{نشط قبل ساعة واحدة}zero{نشط قبل # ساعة}two{نشط قبل ساعتين}few{نشط قبل # ساعات}many{نشط قبل # ساعة}other{نشط قبل # ساعة}}</translation>
 <translation id="5605249000617390290">مزيد من المعلومات حول ميزة "تتبُّع الأسعار"</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">التحقق من الاتصال</translation>
@@ -3513,6 +3513,7 @@
 <translation id="6456955391422100996">تمت إزالة الإعلان.</translation>
 <translation id="6457206614190510200">خزم من المنتصف</translation>
 <translation id="6457455098507772300">تظهر التنبيهات بشأن انخفاض الأسعار كإشعارات منبثقة على سطح المكتب.</translation>
+<translation id="6458519747993638565">نشط الآن</translation>
 <translation id="6458606150257356946">اللصق على أي حال</translation>
 <translation id="6462438303393708881">إلغاء التحميل</translation>
 <translation id="6464094930452079790">الصور</translation>

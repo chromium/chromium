@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Viðvörun</translation>
 <translation id="1056980582064308040">Ef breytingar eru gerðar á stillingum verður heiti reiturinn endurræstur. Tæki sem eru að nota heita reitinn munu aftengjast.</translation>
 <translation id="1058262162121953039">PUK-númer</translation>
+<translation id="1058848978232174442">Verkefni stöðvað</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Sláðu inn nýja PIN-númerið þitt. PIN-númer verður að vera að minnsta kosti einn stafur og má innihalda bókstafi, tölustafi og aðra stafi.}one{Sláðu inn nýja PIN-númerið þitt. PIN-númer verður að vera að minnsta kosti # stafur og má innihalda bókstafi, tölustafi og aðra stafi.}other{Sláðu inn nýja PIN-númerið þitt. PIN-númer verður að vera að minnsta kosti # stafir og má innihalda bókstafi, tölustafi og aðra stafi.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Fann <ph name="NUM" /> flipa fyrir „<ph name="SEARCH_TEXT" />“</translation>
@@ -1733,6 +1734,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2175384018164129879">&amp;Umsjón með leitarvélum og leit á vefsvæðum</translation>
 <translation id="2175526076681939329">Nota aðallykla</translation>
 <translation id="217576141146192373">Ekki er hægt að bæta við prentara. Athugaðu stillingu prentarans og reyndu aftur.</translation>
+<translation id="2175773164573457310">Veldu texta eða mynd til að spyrja Gemini</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="2177950615300672361">Huliðsflipi: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3070,6 +3072,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3076966043108928831">Vista aðeins á þessu tæki</translation>
 <translation id="3076977359333237641">Innskráningargögnum þínum var eytt</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Engar flýtileiðir í eiginleika eða viðbætur fundust</translation>
 <translation id="3080930813589868009">Uppfærsla fyrir notanda</translation>
 <translation id="3080933187214341848">Þetta net er ekki samstillt við reikninginn þinn. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Heiti eða auðkenni forrits</translation>
@@ -6419,6 +6422,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5436211819997237281">Núverandi viðbót stýrir síðu nýrra flipa</translation>
 <translation id="5436492226391861498">Bíður eftir proxy-gögnum...</translation>
 <translation id="5436510242972373446">Leita á <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini stöðvaði verkefnið þitt. Farðu aftur í Chrome til að skoða það.</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> gluggi er núna <ph name="WINDOW_SIZE_PERCENT" /> á breidd, <ph name="PANE_SIDE" /> svæði er núna <ph name="PANE_SIZE_PERCENT" /> á breidd.</translation>
 <translation id="5438060324827306856">Finna &amp;Viðbætur</translation>
 <translation id="5440425659852470030">Loka hliðarglugga</translation>
@@ -7616,6 +7620,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="628705218210359422">Fylgstu með aðgangsorðunum þínum og stjórnaðu þeim á einum stað.</translation>
 <translation id="628726841779494414">Stjórnaðu prenturunum í prentarastillingunum</translation>
 <translation id="6287288864483377583">Innflutningur er aðeins studdur fyrir stakt vottorð</translation>
+<translation id="6287713404380454515">Af öryggisástæðum slökkti kerfisstjórinn þinn á PIN-númeri og aðgangsorði tækisins. Héðan í frá skaltu nota <ph name="MANAGER" />-aðgangsorðið þitt.</translation>
 <translation id="6287828400772161253">Android-sími (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Engin tæki eru að deila nálægt. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Ekki er nægt geymslurými til að endurheimta.</translation>
@@ -8873,6 +8878,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7188508872042490670">Vefsvæðagögn í tækinu</translation>
 <translation id="7189234443051076392">Gakktu úr skugga um að það sé nóg pláss á tækinu</translation>
 <translation id="7189451821249468368">Þú ert ekki með tilskildar uppfærslur til að skrá þetta tæki. Hafðu samband við söludeild til að kaupa uppfærslur. Ef þú telur að þessi villuboð ættu ekki að birtast þér skaltu hafa samband við þjónustudeild.</translation>
+<translation id="7189558282078169397">Flipar frá öðrum tækjum</translation>
 <translation id="7189965711416741966">Fingrafari bætt við.</translation>
 <translation id="7190921792980745354">Setja <ph name="MEMBER_FULL_NAME" /> á bannlista?</translation>
 <translation id="7191063546666816478">Sumir studdir tenglar munu áfram opnast í <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og <ph name="NUMBER_OF_OTHER_APPS" /> forritum í viðbót.</translation>
@@ -9108,7 +9114,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7356908624372060336">Annálar netkerfis</translation>
 <translation id="7357271391997763660">Athuga aðgangsorð?</translation>
 <translation id="735745346212279324">VPN ótengt</translation>
-<translation id="7359326150089800742">Bæta flipa eða skrá við leitina þína, og nota einnig sem verkfæri</translation>
 <translation id="7359680654975233185">Ekki er hægt að varpa flipa</translation>
 <translation id="7360257054721917104">Skoðar vistuð skrifborð og sniðmát. Ýttu á dálkalykilinn (Tab) til að fletta.</translation>
 <translation id="7360333718677093875">emoji-val</translation>
@@ -9688,6 +9693,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 Ýttu á úthlutaðan rofa eða hnapp til að afturkalla úthlutun.</translation>
 <translation id="7745554356330788383">Endurhladdu þessari síðu til að nota uppfærðar stillingar „<ph name="EXTENSION_NAME" />“ á þessu vefsvæði</translation>
 <translation id="7745677556280361868">Fjarlægja þetta net á áskriftarsíðu Aðgangspunkts?</translation>
+<translation id="7745849183714722618">Chrome kann að nýta gervigreindarlíkön sem keyrð eru í tækinu þínu til að keyra eiginleika á borð við svindlvörn. Hugsanlega virka þessir eiginleikar ekki þegar slökkt er á þessu. <ph name="BEGIN_LINK" />Nánar um gervigreind í tæki<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Stækkaðu eða minnkaðu atriði á skjánum, þar á meðal texta. Þú getur einnig fundið þetta síðar í „Stillingar &gt; Tæki &gt; Skjáir“.</translation>
 <translation id="7750228210027921155">Mynd í mynd</translation>
 <translation id="7751260505918304024">Sýna allt</translation>
@@ -9968,6 +9974,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="794250392403348719">Dæmi: Einfaldaðu þetta hugtak til að 8 ára barn skilji það. Notaðu einfalt orðfæri og líkingu sem viðkomandi skilur. Hafðu útskýringuna stutta, undir 150 orðum.</translation>
 <translation id="7942846369224063421">Forhlaðin notandaviðmótshleðsla</translation>
 <translation id="7943271960579497371">Uppsett forrit</translation>
+<translation id="7943311690198910993">Innskráningaraðferð uppfærð</translation>
 <translation id="7943368935008348579">Sækja PDF-skjöl</translation>
 <translation id="7943837619101191061">Bæta staðsetningu við...</translation>
 <translation id="7944173382284143968">Vefsvæðið krefst staðfestingar með einnota aðgangsorði áður en nýtt aðgangsorð er vistað. Haltu ferlinu áfram handvirkt til að ljúka við breytinguna.</translation>

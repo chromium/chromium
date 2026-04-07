@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">更改设置会重启此热点。使用此热点的设备将断开连接。</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">任务已中断</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{请输入您的新 PIN 码。PIN 码必须包含至少 1 个字符，且可以包含字母、数字和其他字符。}other{请输入您的新 PIN 码。PIN 码必须包含至少 # 个字符，且可以包含字母、数字和其他字符。}}</translation>
 <translation id="1059484610606223931">超文本传输协议 (HTTPS)</translation>
 <translation id="1059944192885972544">找到了 <ph name="NUM" /> 个与“<ph name="SEARCH_TEXT" />”相符的标签页</translation>
@@ -1715,6 +1716,7 @@
 <translation id="2175384018164129879">管理搜索引擎和网站搜索(&amp;M)</translation>
 <translation id="2175526076681939329">使用主键</translation>
 <translation id="217576141146192373">无法添加打印机。请检查您打印机的配置，然后重试。</translation>
+<translation id="2175773164573457310">选择任何文字或图片即可问问 Gemini</translation>
 <translation id="2175927920773552910">二维码</translation>
 <translation id="2177950615300672361">无痕模式标签页：<ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3048,6 +3050,7 @@
 <translation id="3076966043108928831">仅保存到此设备上</translation>
 <translation id="3076977359333237641">您的登录数据已删除</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">未找到任何功能或扩展程序快捷方式</translation>
 <translation id="3080930813589868009">按用户安装的更新程序</translation>
 <translation id="3080933187214341848">此网络未同步到您的账号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">应用名称或 ID</translation>
@@ -6392,6 +6395,7 @@
 <translation id="5436211819997237281">当前正在管理“新标签页”页面的扩展程序</translation>
 <translation id="5436492226391861498">正在等待代理隧道的响应...</translation>
 <translation id="5436510242972373446">用 <ph name="SITE_NAME" /> 搜索：</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini 已停止任务。返回 Chrome 即可查看。</translation>
 <translation id="5438014818441491616">现在，<ph name="WINDOW_SIDE" />窗口占 <ph name="WINDOW_SIZE_PERCENT" /> 宽度，<ph name="PANE_SIDE" />窗格占 <ph name="PANE_SIZE_PERCENT" /> 宽度。</translation>
 <translation id="5438060324827306856">查找扩展程序(&amp;E)</translation>
 <translation id="5440425659852470030">关闭侧边栏</translation>
@@ -7586,6 +7590,7 @@
 <translation id="628705218210359422">在一个位置集中记录和管理您的密码。</translation>
 <translation id="628726841779494414">在打印机设置中管理您的打印机</translation>
 <translation id="6287288864483377583">仅支持导入单个证书</translation>
+<translation id="6287713404380454515">出于安全考虑，您的管理员已停用设备的 PIN 码和密码。从现在开始，请使用您的 <ph name="MANAGER" /> 密码。</translation>
 <translation id="6287828400772161253">Android 手机（“<ph name="HOST_DEVICE_NAME" />”）</translation>
 <translation id="6290613030083731160">附近没有正在分享内容的设备。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">存储空间不足，因此无法恢复。</translation>
@@ -8842,6 +8847,7 @@
 <translation id="7188508872042490670">设备端网站数据</translation>
 <translation id="7189234443051076392">确保您的设备上有足够的空间</translation>
 <translation id="7189451821249468368">您没有足够的升级许可来注册此设备。请与销售代表联系，以购买更多升级许可。如果您认为自己不应看到这条消息，请与支持人员联系。</translation>
+<translation id="7189558282078169397">从其他设备打开的标签页</translation>
 <translation id="7189965711416741966">已添加指纹。</translation>
 <translation id="7190921792980745354">要屏蔽<ph name="MEMBER_FULL_NAME" />吗？</translation>
 <translation id="7191063546666816478">部分受支持的链接仍会在“<ph name="APP_NAME" />”、“<ph name="APP_NAME_2" />”、“<ph name="APP_NAME_3" />”和另外 <ph name="NUMBER_OF_OTHER_APPS" /> 款应用中打开。</translation>
@@ -9077,7 +9083,6 @@
 <translation id="7356908624372060336">网络日志</translation>
 <translation id="7357271391997763660">是否运行密码检查？</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
-<translation id="7359326150089800742">添加标签页或文件作为搜索范围，并使用工具</translation>
 <translation id="7359680654975233185">无法投放标签页</translation>
 <translation id="7360257054721917104">正在查看已保存的桌面和模板。按 Tab 键即可导航。</translation>
 <translation id="7360333718677093875">表情符号选择器</translation>
@@ -9657,6 +9662,7 @@
 按已分配的开关键或键盘按键即可撤消分配。</translation>
 <translation id="7745554356330788383">请重新加载此页面，以便将更新后的“<ph name="EXTENSION_NAME" />”相关设置应用于此网站</translation>
 <translation id="7745677556280361868">在 Passpoint 订阅页面中移除此网络？</translation>
+<translation id="7745849183714722618">为提供诈骗检测等功能，Chrome 可使用直接在设备上运行的 AI 模型。如果关闭此设置，这些功能可能无法正常运行。<ph name="BEGIN_LINK" />详细了解设备端 AI<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">放大或缩小屏幕上的内容（包括文字）。日后还可在“设置”&gt;“设备”&gt;“显示”下找到此设置。</translation>
 <translation id="7750228210027921155">画中画</translation>
 <translation id="7751260505918304024">全部显示</translation>
@@ -9937,6 +9943,7 @@
 <translation id="794250392403348719">示例：为 8 岁的孩子简化这个概念。请简单直白一些，用他们能理解的类比进行说明。整体表述尽量简洁，字数不超过 150 字。</translation>
 <translation id="7942846369224063421">预加载的界面渲染程序</translation>
 <translation id="7943271960579497371">已安装的应用</translation>
+<translation id="7943311690198910993">登录方法已更新</translation>
 <translation id="7943368935008348579">下载 PDF 文件</translation>
 <translation id="7943837619101191061">添加位置…</translation>
 <translation id="7944173382284143968">该网站要求先确认动态密码，然后才能保存新密码。请手动接管此流程以完成更改。</translation>

@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">Датчики руху</translation>
 <translation id="1717494416764505390">Поштова скринька 3</translation>
 <translation id="1717688554309417925">Дебетові й розрахункові послуги</translation>
-<translation id="1717882880162336471">Спробуйте режим ШІ</translation>
 <translation id="1719434663396780149">Сповіщення про зниження цін увімкнено. Щоб вимкнути їх, перейдіть у <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 дюйм.</translation>
 <translation id="1720941539803966190">Закрити навчальний посібник</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Роблячи покупки в Chrome, ви бачитимете серед способів оплати безкарткові</translation>
 <translation id="196146181975453736">Пройдіть одноразову перевірку безпеки, щоб платити швидше</translation>
 <translation id="1962204205936693436">Закладки <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Оплатити зараз</translation>
 <translation id="1973335181906896915">Помилка серіалізації</translation>
 <translation id="1973785048533660168">Вакансії в канцелярській і адміністративній сфері</translation>
 <translation id="1974060860693918893">Розширені</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">Натиснути, щоб скопіювати</translation>
 <translation id="2612676031748830579">Номер картки</translation>
 <translation id="2612993535136743634">Усі коди безпеки, збережені на вашому пристрої і в обліковому записі Google, буде видалено</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Остання активність 1 хвилину тому}one{Остання активність # хвилину тому}few{Остання активність # хвилини тому}many{Остання активність # хвилин тому}other{Остання активність # хвилини тому}}</translation>
 <translation id="2614835674900828050">Недоступно для цієї покупки</translation>
 <translation id="2616412942031748191">Пошукова оптимізація і маркетинг</translation>
 <translation id="2618206371527040026">Наукові конференції і публікації</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">Отримання тексту з файлу PDF…</translation>
 <translation id="2628025184666666186">Серверу не вдалося підтвердити, що це домен <ph name="DOMAIN" />, оскільки він використовує сертифікат безпеки, який Chrome або ваша системна конфігурація для шифрування вебтрафіку не вважає надійним. Можливо, сервер налаштовано неправильно або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="2628224721443278970">Увійти в Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Адміністратор визначив місцезнаходження цього пристрою, коли його було вимкнено. Його знову ввімкнено, і він готовий до використання.</translation>
 <translation id="2631387782019878060">Код підтвердження: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-адресу сервера <ph name="HOST_NAME" /> не знайдено.</translation>
 <translation id="2638567100095052009">Введіть @, щоб шукати на вебсайтах <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core дає змогу керувати правилами, додатками й розширеннями вебпереглядача з хмари</translation>
 <translation id="2697248912349197812">Запитати <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Доступне підменю. Щоб переглянути додаткові опції, натисніть <ph name="SHORTCUT" />.</translation>
-<translation id="2700335762333112350">Оплатити пізніше</translation>
 <translation id="2701514975700770343">Лицевою стороною вниз</translation>
 <translation id="2702592986366989640">Варіант із низькою ціною</translation>
 <translation id="2702801445560668637">Список читання</translation>
@@ -2446,7 +2445,6 @@
 <translation id="4832388034239846146">Щоб ділитися групами вкладок, оновіть Chrome</translation>
 <translation id="483241715238664915">Увімкнути попередження</translation>
 <translation id="4832961164064927107">Барбекю й гриль</translation>
-<translation id="4839984801146463230">Збережіть свою інформацію, щоб швидше виконувати завдання, наприклад заповнювати форми в продуктах Google. Ви можете <ph name="BEGIN_LINK" />керувати цією інформацією<ph name="END_LINK" /> в сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> для облікового запису <ph name="ACCOUNT" />.</translation>
 <translation id="4840250757394056958">Переглянути історію Chrome</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4844937814014739139">Зміна масштабу й прокручування спільних вкладок</translation>
@@ -2919,6 +2917,7 @@
 <translation id="5543564889050342791">Зоопарки, акваріуми й заповідники</translation>
 <translation id="5543722831081909240">180 градусів</translation>
 <translation id="5544836308113951378">Круїзи й чартерні поїздки</translation>
+<translation id="5546252337258681768">Пристрій розблоковано</translation>
 <translation id="5547939254150808298">Друк і видавництво</translation>
 <translation id="554815783948612276">Форуми й чати</translation>
 <translation id="5548606607480005320">Перевірка безпеки</translation>
@@ -2960,6 +2959,7 @@
 <translation id="5600044805561809264">Ви можете легко ставити запитання про вкладки, якими ділитеся, під час вебперегляду.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> або <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Керування не підтримується</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Остання активність 1 годину тому}one{Остання активність # годину тому}few{Остання активність # години тому}many{Остання активність # годин тому}other{Остання активність # години тому}}</translation>
 <translation id="5605249000617390290">Докладніше про відстеження цін</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">перевірити наявність з’єднання</translation>
@@ -3513,6 +3513,7 @@
 <translation id="6456955391422100996">Оголошення вилучено.</translation>
 <translation id="6457206614190510200">Скріпити по згину</translation>
 <translation id="6457455098507772300">Сповіщення про зниження ціни з’являтимуться як спливаючі вікна на робочому столі</translation>
+<translation id="6458519747993638565">Активний</translation>
 <translation id="6458606150257356946">Усе одно вставити</translation>
 <translation id="6462438303393708881">Скасувати завантаження</translation>
 <translation id="6464094930452079790">зображення</translation>

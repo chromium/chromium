@@ -132,6 +132,7 @@ Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, 
 <translation id="377649297473651452">Visualização aberta do preenchimento automático do Chromium</translation>
 <translation id="3780779443901618967">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chromium.</translation>
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
+<translation id="3809591243528646631">Para ter acesso aos recursos de segurança infantil, use uma Conta do Google configurada para crianças ou adolescentes, ou o Chromium sem uma conta. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">O Chromium vai oferecer a opção de salvar sua senha.</translation>
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="3833326979834193417">O Chromium executa a Confirmação de segurança todos os dias automaticamente para proteger você de violações de dados, sites perigosos e muito mais. Saiba mais sobre a Confirmação de Segurança nas Configurações.</translation>
@@ -167,6 +168,7 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Dica do Chromium: usar o Chromium por padrão</translation>
 <translation id="458786853569524949">Agora você pode usar o Chromium sempre que toca em links em e-mails, documentos e outros apps.</translation>
+<translation id="4625730353066900738">Aprenda os conceitos básicos do Chromium para começar</translation>
 <translation id="4633738821577273991">Use também o recurso Navegação segura com proteção reforçada neste perfil do Chromium</translation>
 <translation id="4654936625574199632">Para ajudar a melhorar o app, o Chromium envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ativar o leitor do Chromium</translation>
@@ -177,7 +179,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="4856138222358683580">Ações do Chromium</translation>
 <translation id="4869706986935301458">Abra o Chromium em instantes no seu iPhone</translation>
 <translation id="4904452304169763785">Mostra alertas sobre problemas de privacidade ou segurança detectados pelo Chromium.</translation>
-<translation id="4908570938463711775">Aprenda os conceitos básicos do Chromium para começar</translation>
 <translation id="4962295957157529683">Termine o que você estava fazendo na outra janela aberta no Chromium.</translation>
 <translation id="4985291216379576555">Off-line. Não é possível verificar se há atualizações</translation>
 <translation id="4996471330284142407">Seja mais eficiente com um Chromium simples, seguro e mais rápido do que nunca.</translation>
@@ -353,6 +354,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8900052431807804054">Use o nível mais alto de segurança do Chromium</translation>
 <translation id="8908791447256515663">Acesse o Chromium com mais rapidez na base do iPad.</translation>
 <translation id="8925569192291721236">Não perca atualizações sobre monitoramento de preços e dicas do Chromium.</translation>
+<translation id="8939412301975414416">Para ter recursos de segurança infantil no Chromium, use uma Conta do Google configurada para crianças ou adolescentes, ou use o Chromium sem uma conta.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos}}</translation>
 <translation id="8963279154877372067">Permitir notificações do Chromium para receber alertas de redução no preço</translation>
 <translation id="8975812008711371178">Pesquise com a voz no Chromium.</translation>

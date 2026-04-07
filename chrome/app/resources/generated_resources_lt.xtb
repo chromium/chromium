@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Įspėjimas</translation>
 <translation id="1056980582064308040">Pakeitus nustatymus viešosios interneto prieigos taškas bus paleistas iš naujo. Įrenginiai, naudojantys viešosios interneto prieigos tašką, bus atjungti.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Užduotis nutraukta</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Įveskite naują PIN kodą. PIN kodą turi sudaryti bent vienas simbolis ir jame turi būti raidžių, skaitmenų bei kitų simbolių.}one{Įveskite naują PIN kodą. PIN kodą turi sudaryti bent # simbolis ir jame turi būti raidžių, skaitmenų bei kitų simbolių.}few{Įveskite naują PIN kodą. PIN kodą turi sudaryti bent # simboliai ir jame turi būti raidžių, skaitmenų bei kitų simbolių.}many{Įveskite naują PIN kodą. PIN kodą turi sudaryti bent # simbolio ir jame turi būti raidžių, skaitmenų bei kitų simbolių.}other{Įveskite naują PIN kodą. PIN kodą turi sudaryti bent # simbolių ir jame turi būti raidžių, skaitmenų bei kitų simbolių.}}</translation>
 <translation id="1059484610606223931">Hiperteksto transportavimo protokolas (HTTPS)</translation>
 <translation id="1059944192885972544">Rasta skirtukų: <ph name="NUM" /> pagal užklausą „<ph name="SEARCH_TEXT" />“</translation>
@@ -1735,6 +1736,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2175384018164129879">&amp;Tvarkyti paieškos variklius ir svetainių paiešką</translation>
 <translation id="2175526076681939329">Naudoti pagrindinius klavišus</translation>
 <translation id="217576141146192373">Nepavyko pridėti spausdintuvo. Patikrinkite spausdintuvo konfigūraciją ir bandykite dar kartą.</translation>
+<translation id="2175773164573457310">Pasirinkite bet kokį tekstą ar vaizdą, kad galėtumėte užduoti „Gemini“ klausimą</translation>
 <translation id="2175927920773552910">QR kodas</translation>
 <translation id="2177950615300672361">Inkognito skirtukas: „<ph name="TAB_NAME" />“</translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -6422,6 +6424,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5436211819997237281">Dabartinis plėtinys, valdantis jūsų naujo skirtuko puslapį</translation>
 <translation id="5436492226391861498">Laukiama, kol bus nustatytas tarpinio serverio tunelis...</translation>
 <translation id="5436510242972373446">Ieškoti <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\n„Gemini“ sustabdė jūsų užduotį. Grįžkite į „Chrome“, kad peržiūrėtumėte.</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> langas dabar <ph name="WINDOW_SIZE_PERCENT" /> pločio, <ph name="PANE_SIDE" /> sritis dabar <ph name="PANE_SIZE_PERCENT" /> pločio.</translation>
 <translation id="5438060324827306856">Rasti &amp;plėtinių</translation>
 <translation id="5440425659852470030">Uždaryti šoninį skydelį</translation>
@@ -7620,6 +7623,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="628705218210359422">Stebėkite slaptažodžius ir tvarkykite juos vienoje vietoje.</translation>
 <translation id="628726841779494414">Tvarkykite spausdintuvus spausdintuvų nustatymuose</translation>
 <translation id="6287288864483377583">Palaikomas tik vieno sertifikato importavimas</translation>
+<translation id="6287713404380454515">Saugumo sumetimais administratorius išjungė įrenginio PIN kodą ir slaptažodį. Nuo šiol naudokite <ph name="MANAGER" /> slaptažodį.</translation>
 <translation id="6287828400772161253">„Android“ telefonas („<ph name="HOST_DEVICE_NAME" />“)</translation>
 <translation id="6290613030083731160">Nėra jokių pasiekiamų įrenginių, bendrinančių netoliese. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Negalima atkurti, nes pritrūko saugyklos vietos.</translation>
@@ -8882,6 +8886,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7188508872042490670">Įrenginyje esantys svetainių duomenys</translation>
 <translation id="7189234443051076392">Įsitikinkite, kad įrenginyje yra pakankamai vietos</translation>
 <translation id="7189451821249468368">Neturite pakankamai licencijų naujovinimų, kad galėtumėte užregistruoti šį įrenginį. Susisiekite su pardavimo atstovu, kad įsigytumėte daugiau. Jei manote, kad šį pranešimą gavote per klaidą, susisiekite su palaikymo komanda.</translation>
+<translation id="7189558282078169397">Skirtukai iš kitų įrenginių</translation>
 <translation id="7189965711416741966">Piršto antspaudas pridėtas.</translation>
 <translation id="7190921792980745354">Blokuoti <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Kai kurios palaikomos nuorodos vis tiek bus atidarytos „<ph name="APP_NAME" />“, „<ph name="APP_NAME_2" />“, „<ph name="APP_NAME_3" />“ ir dar tiek programų: <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
@@ -9117,7 +9122,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7356908624372060336">Tinklo žurnalai</translation>
 <translation id="7357271391997763660">Paleisti slaptažodžio patikrą?</translation>
 <translation id="735745346212279324">VPN atjungtas</translation>
-<translation id="7359326150089800742">Pridėti skirtuką arba failą prie paieškos ir naudoti įrankį</translation>
 <translation id="7359680654975233185">Nepavyko perduoti skirtuko</translation>
 <translation id="7360257054721917104">Peržiūrimi išsaugoti darbalaukiai ir šablonai. Jei norite naršyti, paspauskite tabuliavimo klavišą.</translation>
 <translation id="7360333718677093875">jaustukų rinkiklis</translation>
@@ -9697,6 +9701,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</translation>
 <translation id="7745554356330788383">Atnaujintų plėtinio „<ph name="EXTENSION_NAME" />“ nustatymų pritaikymas šioje svetainėje iš naujo įkėlus šį puslapį</translation>
 <translation id="7745677556280361868">Pašalinti šį tinklą „Passpoint“ prenumeratos puslapyje?</translation>
+<translation id="7745849183714722618">Kad galėtų teikti tokias funkcijas kaip apgavikiškos veiklos aptikimas, „Chrome“ gali naudoti DI modelius, kurie veikia tiesiogiai jūsų įrenginyje. Kai tai išjungta, šios funkcijos gali neveikti. <ph name="BEGIN_LINK" />Sužinokite daugiau apie DI įrenginyje<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Rodyti elementus ekrane, įskaitant tekstą (didesnį ar mažesnį). Be to, vėliau galėsite tai rasti skiltyje „Nustatymai“ &gt; „Įrenginys“ &gt; „Ekranai“.</translation>
 <translation id="7750228210027921155">Vaizdas vaizde</translation>
 <translation id="7751260505918304024">Rodyti visas</translation>
@@ -9977,6 +9982,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="794250392403348719">Pavyzdys: supaprastink šią koncepciją aštuonerių metų vaikui. Vartok paprastus žodžius ir analogija, kurią jis suprastų. Paaiškinimas turi būti glaustas, ne ilgesnis nei 150 žodžių.</translation>
 <translation id="7942846369224063421">Iš anksto įkelta NS pateikimo priemonė</translation>
 <translation id="7943271960579497371">Įdiegtos programos</translation>
+<translation id="7943311690198910993">Prisijungimo metodas atnaujintas</translation>
 <translation id="7943368935008348579">Atsisiųsti PDF failus</translation>
 <translation id="7943837619101191061">Pridėti vietą...</translation>
 <translation id="7944173382284143968">Svetainėje reikia patvirtinti vienkartinį slaptažodį prieš išsaugant naują slaptažodį. Atlikite procesą neautomatiškai, kad užbaigtumėte pakeitimą.</translation>

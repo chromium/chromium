@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">Датчыкі руху</translation>
 <translation id="1717494416764505390">Паштовая скрынка 3</translation>
 <translation id="1717688554309417925">Дэбетовыя і разліковыя паслугі</translation>
-<translation id="1717882880162336471">Паспрабуйце рэжым AI</translation>
 <translation id="1719434663396780149">Абвесткі пра зніжэнне цэн уключаны. Каб выключыць іх, перайдзіце ў <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 цаляў</translation>
 <translation id="1720941539803966190">Закрыць дапаможнік</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Пры ажыццяўленні купляў у Chrome вы можаце скарыстаць спосабы аплаты, адрозныя ад картак</translation>
 <translation id="196146181975453736">Прайдзіце аднаразовую праверку бяспекі, каб плаціць хутчэй</translation>
 <translation id="1962204205936693436">Закладкі з дамена <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Аплаціць зараз</translation>
 <translation id="1973335181906896915">Памылка серыялізацыі</translation>
 <translation id="1973785048533660168">Вакансіі ў канцылярскай і адміністрацыйна-гаспадарчай сферах</translation>
 <translation id="1974060860693918893">Пашыраныя налады</translation>
@@ -1046,6 +1044,7 @@
 <translation id="2610561535971892504">Капіруецца адным націсканнем</translation>
 <translation id="2612676031748830579">Нумар карткі</translation>
 <translation id="2612993535136743634">Усе коды бяспекі, захаваныя на вашай прыладзе і ва Уліковым запісе Google, будуць выдалены</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Прылада была актыўная 1 хвіліну таму}one{Прылада была актыўная # хвіліну таму}few{Прылада была актыўная # хвіліны таму}many{Прылада была актыўная # хвілін таму}other{Прылада была актыўная # хвіліны таму}}</translation>
 <translation id="2614835674900828050">Недаступна для гэтай куплі</translation>
 <translation id="2616412942031748191">Пошукавая аптымізацыя і маркетынг</translation>
 <translation id="2618206371527040026">Навуковыя канферэнцыі і публікацыі</translation>
@@ -1057,6 +1056,7 @@
 <translation id="2627847595568876492">Вымаецца тэкст з PDF…</translation>
 <translation id="2628025184666666186">Серверу не ўдалося даказаць, што гэта дамен <ph name="DOMAIN" />, бо ён выкарыстоўвае сертыфікат бяспекі, якому не давярае Chrome ці канфігурацыя вашай сістэмы для шыфравання інтэрнэт-трафіка. Прычынай могуць быць няправільныя налады або спроба зламысніка перахапіць падключэнне.</translation>
 <translation id="2628224721443278970">Увайсці ў Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Адміністратар вызначыў месцазнаходжанне гэтай прылады, калі яна была адключана. Яна зноў уключана і гатовая да выкарыстання.</translation>
 <translation id="2631387782019878060">Код спраўджання: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-адрас сервера хоста <ph name="HOST_NAME" /> не знойдзены.</translation>
 <translation id="2638567100095052009">Увядзіце @ для пошуку тут: <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1098,6 @@
 <translation id="2696385693639654606">З дапамогай Chrome Enterprise Core можна праз воблака кіраваць палітыкамі браўзера, праграмамі і пашырэннямі</translation>
 <translation id="2697248912349197812">Спытаць <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Падменю даступнае. Каб адкрыць дадатковыя варыянты, націсніце <ph name="SHORTCUT" />.</translation>
-<translation id="2700335762333112350">Аплаціць пазней</translation>
 <translation id="2701514975700770343">Рабочым бокам уніз</translation>
 <translation id="2702592986366989640">Недарагі варыянт</translation>
 <translation id="2702801445560668637">Спіс чытання</translation>
@@ -2446,7 +2445,6 @@
 <translation id="4832388034239846146">Абнавіце версію Chrome, каб абагульваць групы ўкладак</translation>
 <translation id="483241715238664915">Уключыць папярэджанні</translation>
 <translation id="4832961164064927107">Барбекю і грыль</translation>
-<translation id="4839984801146463230">Захавайце звесткі, каб паскорыць працу ў розных прадуктах Google, напрыклад запаўненне форм. Вы можаце <ph name="BEGIN_LINK" />кіраваць сваёй інфармацыяй<ph name="END_LINK" /> у сэрвісе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для ўліковага запісу <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Праглядзець гісторыю Chrome</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
 <translation id="4844937814014739139">Прагортванне і змяненне маштабу абагуленых укладак</translation>
@@ -2918,6 +2916,7 @@
 <translation id="5543564889050342791">Заапаркі, акіянарыумы і запаведнікі</translation>
 <translation id="5543722831081909240">180 градусаў</translation>
 <translation id="5544836308113951378">Круізы і чартарныя рэйсы</translation>
+<translation id="5546252337258681768">Прылада разблакіравана</translation>
 <translation id="5547939254150808298">Паліграфія і выдавецкая дзейнасць</translation>
 <translation id="554815783948612276">Пастаўшчыкі паслуг форумаў і чатаў</translation>
 <translation id="5548606607480005320">Праверка бяспекі</translation>
@@ -2959,6 +2958,7 @@
 <translation id="5600044805561809264">Вы можаце задаваць пытанні пра ўкладкі, якія абагульваеце, падчас прагляду.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ці <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Кіраванне не падтрымліваецца</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Прылада была актыўная 1 гадзіну таму}one{Прылада была актыўная # гадзіну таму}few{Прылада была актыўная # гадзіны таму}many{Прылада была актыўная # гадзін таму}other{Прылада была актыўная # гадзіны таму}}</translation>
 <translation id="5605249000617390290">Даведацца больш пра сачэнне за цаной</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Праверыць падключэнне</translation>
@@ -3512,6 +3512,7 @@
 <translation id="6456955391422100996">Рэклама выдалена.</translation>
 <translation id="6457206614190510200">Брашуроўка скобамі па спінцы</translation>
 <translation id="6457455098507772300">Абвесткі пра зніжэнне цаны будуць паказвацца на працоўным стале як усплывальныя апавяшчэнні</translation>
+<translation id="6458519747993638565">Прылада актыўная</translation>
 <translation id="6458606150257356946">Усё роўна ўставіць</translation>
 <translation id="6462438303393708881">Скасаваць запампоўванне</translation>
 <translation id="6464094930452079790">відарысы</translation>

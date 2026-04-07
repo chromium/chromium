@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">Кыймыл сенсорлору</translation>
 <translation id="1717494416764505390">3-электрондук каттар кутусу</translation>
 <translation id="1717688554309417925">Дебет жана текшерүү кызматтары</translation>
-<translation id="1717882880162336471">ЖИ режимин байкап көрүңүз</translation>
 <translation id="1719434663396780149">Баанын төмөндөшү боюнча эскертүүлөр күйүк. Муну <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлүмүнөн өзгөртө аласыз.</translation>
 <translation id="1719838434204287058">24 x 30 дюйм</translation>
 <translation id="1720941539803966190">Үйрөткүчтү жабуу</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Chrome'до бир нерсе сатып алганда вариант катары картасыз төлөө ыкмаларын көрөсүз</translation>
 <translation id="196146181975453736">Тезирээк төлөө үчүн бир жолку коопсуздукту текшерүүдөн өтүңүз</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Кыстармалар</translation>
-<translation id="1966259577349514951">Азыр төлөө</translation>
 <translation id="1973335181906896915">Сериялоо катасы</translation>
 <translation id="1973785048533660168">Иш кагаздары жана административдик жумуштар</translation>
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">Көчүрүү үчүн чыкылдатыңыз</translation>
 <translation id="2612676031748830579">Картанын номери</translation>
 <translation id="2612993535136743634">Ушул түзмөктө жана Google аккаунтуңузда сакталган коопсуздук коддору өчүрүлөт</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{1 мүнөт мурда активдүү болгон}other{# мүнөт мурда активдүү болгон}}</translation>
 <translation id="2614835674900828050">Бул сатып алуу үчүн жеткиликтүү эмес</translation>
 <translation id="2616412942031748191">Издөө каражаттарын оптималдаштыруу жана маркетинг</translation>
 <translation id="2618206371527040026">Академиялык конференциялар жана жарыяланган материалдар</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">PDF'тен текст чыгарылууда...</translation>
 <translation id="2628025184666666186">Бул сервер <ph name="DOMAIN" /> экенин далилдей алган жок, анткени ал Интернеттеги трафикти шифрлөө үчүн Chrome же тутумуңуздун конфигурациясы ишеним көрсөтпөгөн коопсуздук тастыктамасын колдонуп жатат. Мындай көйгөй сервердин туура эмес конфигурацияланышы менен шартталышы мүмкүн же кимдир бирөө ортодон маалыматыңызды кармап калганга аракет кылып жатат.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive'га кирүү</translation>
+<translation id="2631059741268498165">Администраторуңуз бул түзмөктү өчүрүлгөн абалда тапты. Ал кайра иштетилди жана колдонууга даяр.</translation>
 <translation id="2631387782019878060">Текшерүү коду: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> серверинин IP дареги табылбай койду.</translation>
 <translation id="2638567100095052009">@ деп терип, төмөнкүлөрдөн издеңиз: <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core'дун жардамы менен булут аркылуу серепчинин саясаттарын, колдонмолорду жана кеңейтүүлөрдү тескей аласыз</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />'дан сураңыз</translation>
 <translation id="2699273987028089219">Көмөкчү меню жеткиликтүү, кошумча параметрлерге өтүү үчүн <ph name="SHORTCUT" /> басыңыз.</translation>
-<translation id="2700335762333112350">Кийинчерээк төлөө</translation>
 <translation id="2701514975700770343">Алдыңкы бетин ылдый каратып</translation>
 <translation id="2702592986366989640">Арзан вариант</translation>
 <translation id="2702801445560668637">Окуу тизмеси</translation>
@@ -2445,7 +2444,6 @@
 <translation id="4832388034239846146">Өтмөк топторун бөлүшүү үчүн Chrome'ду жаңыртыңыз</translation>
 <translation id="483241715238664915">Эскертүүлөрдү күйгүзүү</translation>
 <translation id="4832961164064927107">Барбекю жана гриль</translation>
-<translation id="4839984801146463230">Маалыматыңызды сактап, Google кызматтарында формаларды толтуруу сыяктуу иштерди тезирээк бүтүрүңүз. <ph name="ACCOUNT" /> үчүн <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> кызматында <ph name="BEGIN_LINK" />маалыматыңызды тескей аласыз<ph name="END_LINK" /></translation>
 <translation id="4840250757394056958">Chrome'до көрүлгөн вебсайттарды көрүү</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4844937814014739139">Жалпы өтмөктөрдү сыдыруу жана чоңойтуп/кичирейтүү</translation>
@@ -2918,6 +2916,7 @@
 <translation id="5543564889050342791">Зоопарктар, аквариумдар жана коруктар</translation>
 <translation id="5543722831081909240">180 градус</translation>
 <translation id="5544836308113951378">Круиздер жана чартерлер</translation>
+<translation id="5546252337258681768">Түзмөктүн кулпусу ачык</translation>
 <translation id="5547939254150808298">Басып чыгаруу жана жарыялоо</translation>
 <translation id="554815783948612276">Форум жана чат провайдерлери</translation>
 <translation id="5548606607480005320">Коопсуздукту текшерүү</translation>
@@ -2959,6 +2958,7 @@
 <translation id="5600044805561809264">Серептеп жатып, бөлүшүп жаткан өтмөктөр жөнүндө суроолорду оңой бере аласыз.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> же <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Башкаруу колдоого алынбайт</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{1 саат мурда активдүү болгон}other{# саат мурда активдүү болгон}}</translation>
 <translation id="5605249000617390290">Баага көз салуу жөнүндө кеңири маалымат</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Туташууну текшерип көрүңүз</translation>
@@ -3512,6 +3512,7 @@
 <translation id="6456955391422100996">Жарнама өчүрүлдү.</translation>
 <translation id="6457206614190510200">Теринин тигиши</translation>
 <translation id="6457455098507772300">Баанын төмөндөшү тууралуу эскертүүлөр компьютерде калкып чыгуучу терезедеги билдирме катары көрүнөт</translation>
+<translation id="6458519747993638565">Азыр активдүү</translation>
 <translation id="6458606150257356946">Баары бир чаптоо</translation>
 <translation id="6462438303393708881">Жүктөп берүүнү токтотуу</translation>
 <translation id="6464094930452079790">сүрөттөр</translation>

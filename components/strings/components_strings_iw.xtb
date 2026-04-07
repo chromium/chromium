@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">חיישני תנועה</translation>
 <translation id="1717494416764505390">תיבת דואר 3</translation>
 <translation id="1717688554309417925">שירותי חיוב ובדיקת אשראי</translation>
-<translation id="1717882880162336471">‏רוצה לנסות את מצב AI?</translation>
 <translation id="1719434663396780149">ההתראות על הנחות מופעלות. אפשר לשנות זאת ב<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">‏24x30 אינץ'</translation>
 <translation id="1720941539803966190">סגירת המדריך</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">‏כשמבצעים רכישות ב-Chrome, אמצעי תשלום שהם לא כרטיסים יופיעו כאפשרות</translation>
 <translation id="196146181975453736">כדי לשלם מהר יותר, צריך להשלים בדיקת אבטחה חד-פעמית</translation>
 <translation id="1962204205936693436">סימניות של <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">לביצוע התשלום</translation>
 <translation id="1973335181906896915">שגיאה בעריכה בסידרה</translation>
 <translation id="1973785048533660168">משרות בתחום הפקידות והאדמיניסטרציה</translation>
 <translation id="1974060860693918893">מתקדם</translation>
@@ -1057,6 +1055,7 @@
 <translation id="2627847595568876492">‏מתבצע חילוץ טקסט מקובץ PDF…</translation>
 <translation id="2628025184666666186">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" /> כי הוא משתמש באישור אבטחה שלא נחשב לאמין לפי Chrome או לפי הגדרות המערכת שלך להצפנת תעבורת אינטרנט. יכול להיות שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.</translation>
 <translation id="2628224721443278970">‏כניסה ל-Microsoft OneDrive</translation>
+<translation id="2631059741268498165">האדמין איתר את המכשיר הזה כשהוא היה מושבת. הוא הופעל מחדש ומוכן לשימוש.</translation>
 <translation id="2631387782019878060">קוד אימות: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">‏לא ניתן היה למצוא את כתובת ה-IP של השרת של <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">אפשר להזין @ כדי לחפש ב-<ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1097,6 @@
 <translation id="2696385693639654606">‏‫Chrome Enterprise Core מאפשר לנהל כללי מדיניות, אפליקציות ותוספים לדפדפן דרך הענן</translation>
 <translation id="2697248912349197812">לשאול את <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">בתפריט המשנה הזמין אפשר להשתמש ב<ph name="SHORTCUT" /> כדי לעבור לאפשרויות נוספות.</translation>
-<translation id="2700335762333112350">תשלום אחר כך</translation>
 <translation id="2701514975700770343">פנים כלפי מטה</translation>
 <translation id="2702592986366989640">אפשרות במחיר נמוך</translation>
 <translation id="2702801445560668637">רשימת קריאה</translation>
@@ -2451,7 +2449,6 @@ Del</translation>
 <translation id="4832388034239846146">‏כדי לשתף קבוצות של כרטיסיות, צריך לעדכן את Chrome</translation>
 <translation id="483241715238664915">הפעלת האזהרות</translation>
 <translation id="4832961164064927107">ברביקיו וצלייה</translation>
-<translation id="4839984801146463230">‏כדי לבצע פעולות כמו מילוי טפסים מהר יותר בכל מוצרי Google, כדאי לשמור את הפרטים. אפשר <ph name="BEGIN_LINK" />לנהל את הפרטים<ph name="END_LINK" /> ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> בחשבון <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">‏הצגת ההיסטוריה ב-Chrome</translation>
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4844937814014739139">גלילה ושינוי מרחק התצוגה של הכרטיסיות המשותפות</translation>
@@ -2925,6 +2922,7 @@ Del</translation>
 <translation id="5543564889050342791">גני חיות, אקווריומים ושמורות טבע</translation>
 <translation id="5543722831081909240">180 מעלות</translation>
 <translation id="5544836308113951378">הפלגות ושיט תענוגות</translation>
+<translation id="5546252337258681768">נעילת המכשיר בוטלה</translation>
 <translation id="5547939254150808298">דפוס והוצאה לאור</translation>
 <translation id="554815783948612276">ספקי פורומים וצ'אטים</translation>
 <translation id="5548606607480005320">בדיקת אבטחה</translation>

@@ -65,6 +65,7 @@ Bularni hisobga olish kerak:
 <translation id="2213327331203157297">Chromeda Lokdaun rejimini faolsizlantirish uchun iPhone qurilmangizdan oʻchiring.</translation>
 <translation id="2242467532204595597">Xabarlar, hujjatlar va boshqa ilovalardagi havolalarni bosganda Chrome ochiladi.</translation>
 <translation id="2256384876478573507">iPhone qurilmangizda kezishga tayyor boʻlganingizda Chromeni tezroq oching.</translation>
+<translation id="2270691132923135296">Ishni boshlash uchun foydali Chrome tavsiyalari bilan tanishing</translation>
 <translation id="2311240109311056604">Chrome Dino oʻyinini ochadi.</translation>
 <translation id="2339201583852607431">Parolingiz Google hisobingizda (<ph name="EMAIL" />) saqlanadi.</translation>
 <translation id="2342919707875585281">Chrome joylashuvingiz axborotini siz ruxsat bergan saytlarga ulashadi.</translation>
@@ -151,7 +152,6 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="4693084815234024320">Siz Chrome Inkognito rejimidasiz</translation>
 <translation id="4708857722625759026">Chromeni iPad dok-paneliga mahkamlab, tezroq oching.</translation>
 <translation id="4713740144985377441">Faylni yuklash uchun Chrome brauzeriga qayting</translation>
-<translation id="4713907610796204963">Ishni boshlash uchun foydali Chrome tavsiyalari bilan tanishing</translation>
 <translation id="4724297637870447613">Chrome doim yoningizda</translation>
 <translation id="4738647308035481133">Google Chrome sahifasi</translation>
 <translation id="4742795653798179840">Chrome maʼlumotlarini oʻchirish</translation>
@@ -297,6 +297,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="7599894504325210080">Chrome avtomatik kiritish panelining yoyilgan shakli</translation>
 <translation id="7617512710641355143">Chrome boshqariladi</translation>
 <translation id="7626032353295482388">Chrome brauzeriga xush kelibsiz!</translation>
+<translation id="7634397654061173327">Chromeda bolalar xavfsizligi funksiyalarini olish uchun farzandingiz uchun sozlangan Google hisobidan foydalanishingiz yoki Chromedan hisobsiz foydalanishingiz mumkin.</translation>
 <translation id="7641448682796883218">Chromium maslahati: Saytlarni kuchaytirilgan rejimda xavfsiz kezish</translation>
 <translation id="7642373780953416937">Maxfiylik va xavfsizlikka oid muammolar avtomatik aniqlanganda Chrome bu haqida xabar qiladi.</translation>
 <translation id="7660356333829433649">Chromedan unumli foydalanish maslahatlarini olish uchun keyinroq qayta tekshiring.</translation>
@@ -329,6 +330,7 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="8245080522851805544">Chrome yopilganda Inkognito varaqlar qulflansin</translation>
 <translation id="8248887045858762645">Chrome maslahati</translation>
 <translation id="8265730590513812063">Chrome menyusini oching</translation>
+<translation id="8284376267694582021">Bolalar xavfsizligi funksiyalarini olish uchun farzandingiz uchun sozlangan Google hisobidan foydalanishingiz yoki Chromedan hisobsiz foydalanishingiz mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>

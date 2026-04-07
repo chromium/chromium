@@ -684,6 +684,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">۴ هفته گذشته</translation>
 <translation id="393697183122708255">هیچ جستجوی گفتاری فعالی در دسترس نیست</translation>
+<translation id="3941718885865495207">‏برگ زیرین موافقت کردن با یافته‌های Chrome</translation>
 <translation id="3943322906274039960">‫<ph name="TAB_TITLE" />، زبانه سنجاق‌شده تصویردرتصویر</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="395377504920307820">استفاده بدون حساب</translation>
@@ -1189,6 +1190,7 @@
 <translation id="6011308810877101166">بهبود پیشنهادهای جستجو</translation>
 <translation id="6013305291643746595">ترتیب براساس قدیمی‌ترین</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
+<translation id="6023820583797130428">برای برگشتن، منو را باز کنید</translation>
 <translation id="6026538407078977628">گسترده کردن به‌حالت تمام‌صفحه</translation>
 <translation id="6030719887161080597">مدیریت اطلاعات مورداستفاده سایت‌ها برای سنجش عملکرد آگهی</translation>
 <translation id="6039379616847168523">رفتن به برگه بعدی</translation>
@@ -1633,6 +1635,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{‫<ph name="TABS_COUNT_ONE" /> زبانه استاندارد}one{‫<ph name="TABS_COUNT_MANY" /> زبانه استاندارد}other{‫<ph name="TABS_COUNT_MANY" /> زبانه استاندارد}}</translation>
 <translation id="7603168929588204083">تاریخ نامعتبر</translation>
 <translation id="7605594153474022051">همگام‌سازی کار نمی‌کند</translation>
+<translation id="7608245556672190037">‏موافقت کردن با یافته‌های Chrome به‌صورت کامل باز شده است</translation>
 <translation id="7612619742409846846">‏ثبت ورودشده در Google به‌عنوان</translation>
 <translation id="7612989789287281429">درحال وارد کردن شما به سیستم…</translation>
 <translation id="7619072057915878432">به‌دلیل نقص‌هایی در شبکه، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
@@ -1640,6 +1643,7 @@
 <translation id="7628417132421583481">رفتن به «مدیر گذرواژه»</translation>
 <translation id="7630202231528827509">نشانی وب ارائه‌دهنده</translation>
 <translation id="7638584964844754484">گذرعبارت نادرست است</translation>
+<translation id="764047009170754705">‏موافقت کردن با یافته‌های Chrome بسته شده است</translation>
 <translation id="7646499124171960488">برای سایت‌های عمومی ناامن به شما هشدار می‌دهد</translation>
 <translation id="7646772052135772216">همگام‌سازی گذرواژه کار نمی‌کند</translation>
 <translation id="7655240423373329753">۷ روز گذشته</translation>
@@ -1864,6 +1868,7 @@
 <translation id="8473863474539038330">نشانی‌ها و موارد دیگر</translation>
 <translation id="847433688444405067">پیمایش بین دستگاه‌ها</translation>
 <translation id="8477178913400731244">حذف داده‌ها</translation>
+<translation id="8481771036036087705">‏موافقت کردن با یافته‌های Chrome به‌صورت نیمه باز شده است</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">بدون پنجره غیرفعال</translation>
 <translation id="8493948351860045254">آزاد کردن فضا</translation>

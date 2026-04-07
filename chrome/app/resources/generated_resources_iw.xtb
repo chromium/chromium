@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">אזהרה</translation>
 <translation id="1056980582064308040">שינוי ההגדרות יגרום להפעלה מחדש של הנקודה לשיתוף אינטרנט. מכשירים שמחוברים לנקודה לשיתוף האינטרנט ינותקו.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">המשימה הופסקה</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{יש להזין את קוד האימות החדש. קוד אימות חייב להיות באורך תו אחד לפחות, ויכול לכלול אותיות, מספרים ותווים אחרים.}one{יש להזין את קוד האימות החדש. קוד אימות חייב להיות באורך # תווים לפחות, ויכול לכלול אותיות, מספרים ותווים אחרים.}two{יש להזין את קוד האימות החדש. קוד אימות חייב להיות באורך # תווים לפחות, ויכול לכלול אותיות, מספרים ותווים אחרים.}other{יש להזין את קוד האימות החדש. קוד אימות חייב להיות באורך # תווים לפחות, ויכול לכלול אותיות, מספרים ותווים אחרים.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">נמצאו <ph name="NUM" /> כרטיסיות עבור '<ph name="SEARCH_TEXT" />'</translation>
@@ -1730,6 +1731,7 @@
 <translation id="2175384018164129879">ניהול של מנועי החיפוש ושל החיפוש באתרים ספציפיים</translation>
 <translation id="2175526076681939329">שימוש במקלדת הראשית</translation>
 <translation id="217576141146192373">לא ניתן להוסיף מדפסת. יש לבדוק את הגדרת המדפסת ולנסות שוב.</translation>
+<translation id="2175773164573457310">‏אפשר לבחור טקסט או תמונה כדי לשאול את Gemini שאלות</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="2177950615300672361">כרטיסייה אנונימית: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3067,6 +3069,7 @@
 <translation id="3076966043108928831">שמירה רק במכשיר הזה</translation>
 <translation id="3076977359333237641">פרטי הכניסה שלך נמחקו</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">לא נמצאו קיצורי דרך לתכונות או לתוספים</translation>
 <translation id="3080930813589868009">התקנת העדכון לכל משתמש</translation>
 <translation id="3080933187214341848">הרשת הזו לא מסונכרנת לחשבון שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">שם או מזהה של אפליקציה</translation>
@@ -6417,6 +6420,7 @@
 <translation id="5436211819997237281">התוסף הנוכחי שמנהל את הדף "כרטיסייה חדשה"</translation>
 <translation id="5436492226391861498">‏בהמתנה ל-Proxy Tunnel...</translation>
 <translation id="5436510242972373446">חיפוש ב-<ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580">‏<ph name="TASK_TITLE" />\n‫Gemini הפסיק את המשימה שלך. כדי לבדוק אותה, צריך לחזור ל-Chrome.</translation>
 <translation id="5438014818441491616">עכשיו החלון בצד <ph name="WINDOW_SIDE" /> ברוחב <ph name="WINDOW_SIZE_PERCENT" />, והחלונית בצד <ph name="PANE_SIDE" /> ברוחב <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">חיפוש תוספים</translation>
 <translation id="5440425659852470030">סגירת החלונית הצדדית</translation>
@@ -7614,6 +7618,7 @@
 <translation id="628705218210359422">מעקב אחר הסיסמאות שלך וניהול שלהן ממקום אחד.</translation>
 <translation id="628726841779494414">ניתן לנהל את המדפסות בהגדרות המדפסת</translation>
 <translation id="6287288864483377583">אפשר לייבא רק אישור אחד</translation>
+<translation id="6287713404380454515">מטעמי אבטחה, האדמין השבית את הקוד הסודי והסיסמה של המכשיר שלך. מעכשיו צריך להשתמש בסיסמה של <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">‏טלפון Android ‏(<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">אין מכשירים זמינים שמשתפים בקרבת מקום. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">לא ניתן לשחזר מפני שאין מספיק מקום אחסון.</translation>
@@ -8874,6 +8879,7 @@
 <translation id="7188508872042490670">נתונים מאתרים ששמורים במכשיר</translation>
 <translation id="7189234443051076392">צריך לוודא שיש מספיק מקום פנוי במכשיר</translation>
 <translation id="7189451821249468368">אין לך מספיק שדרוגים כדי לרשום את המכשיר הזה. ניתן לרכוש עוד שדרוגים דרך מחלקת המכירות. אם לדעתך ההודעה הזו מוצגת לך בטעות, אפשר לפנות לתמיכה.</translation>
+<translation id="7189558282078169397">כרטיסיות ממכשירים אחרים</translation>
 <translation id="7189965711416741966">טביעת האצבע נוספה.</translation>
 <translation id="7190921792980745354">לחסום את <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">חלק מהקישורים הנתמכים ימשיכו להיפתח באפליקציות <ph name="APP_NAME" />,‏ <ph name="APP_NAME_2" />,‏ <ph name="APP_NAME_3" /> ובעוד <ph name="NUMBER_OF_OTHER_APPS" /> אפליקציות.</translation>
@@ -9109,7 +9115,6 @@
 <translation id="7356908624372060336">יומני רשת</translation>
 <translation id="7357271391997763660">להריץ את בדיקת הסיסמאות?</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
-<translation id="7359326150089800742">אפשר להוסיף כרטיסייה או קובץ לחיפוש, או להשתמש בכלי כלשהו</translation>
 <translation id="7359680654975233185">‏אי אפשר להפעיל Cast של הכרטיסייה</translation>
 <translation id="7360257054721917104">‏מוצגים שולחנות העבודה הווירטואליים והתבניות ששמרת. צריך להקיש על Tab כדי לנווט.</translation>
 <translation id="7360333718677093875">בורר האמוג'י</translation>
@@ -9689,6 +9694,7 @@
 כדי להסיר את ההקצאה, מקישים על מתג או מקש במקלדת שהוקצו.</translation>
 <translation id="7745554356330788383">צריך לטעון מחדש את הדף כדי להחיל את ההגדרות המעודכנות של <ph name="EXTENSION_NAME" /> על האתר הזה</translation>
 <translation id="7745677556280361868">‏להסיר את הרשת הזו בדף המינוי ל-Passpoint?</translation>
+<translation id="7745849183714722618">‏כדי להפעיל תכונות כמו זיהוי תרמיות, דפדפן Chrome יכול להשתמש במודלים של AI שפועלים ישירות במכשיר שלך. התכונות האלה לא פועלות כשההגדרה מושבתת. <ph name="BEGIN_LINK" />מידע נוסף על AI במכשיר<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">הגדלה או הקטנה של פריטים במסך, כולל טקסט. ניתן גם להגיע לאפשרות הזו מאוחר יותר דרך 'הגדרות' &gt; 'מכשיר' &gt; 'מסכים'.</translation>
 <translation id="7750228210027921155">תמונה בתוך תמונה</translation>
 <translation id="7751260505918304024">הצגת הכול</translation>
@@ -9969,6 +9975,7 @@
 <translation id="794250392403348719">דוגמה: תסביר את המושג הזה בצורה פשוטה כמו לילדים בגיל 8. תשתמש בשפה פשוטה ובאנלוגיה שהם יבינו. ההסבר צריך להיות תמציתי, ולא יותר מ-150 מילים.</translation>
 <translation id="7942846369224063421">כלי לעיבוד ממשק המשתמש בטעינה מראש</translation>
 <translation id="7943271960579497371">אפליקציות מותקנות</translation>
+<translation id="7943311690198910993">שיטת הכניסה לחשבון עודכנה</translation>
 <translation id="7943368935008348579">‏הורדת קובצי ה-PDF</translation>
 <translation id="7943837619101191061">הוספת מיקום...</translation>
 <translation id="7944173382284143968">‏האתר דורש אישור OTP לפני שמירת הסיסמה החדשה. כדי להשלים את השינוי, צריך להמשיך את התהליך באופן ידני.</translation>

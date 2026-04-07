@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Waarskuwing</translation>
 <translation id="1056980582064308040">Die warmkol sal herbegin word wanneer instellings verander word. Toestelle wat die warmkol gebruik, sal ontkoppel word.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Taak is onderbreek</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Voer jou nuwe PIN in. 'n PIN moet minstens een karakter lank wees en kan letters, syfers en ander karakters bevat.}other{Voer jou nuwe PIN in. 'n PIN moet minstens # karakters lank wees en kan letters, syfers en ander karakters bevat.}}</translation>
 <translation id="1059484610606223931">Hiperteksoordragprotokol (HTTPS)</translation>
 <translation id="1059944192885972544">Het <ph name="NUM" /> oortjies vir "<ph name="SEARCH_TEXT" />" gekry</translation>
@@ -1732,6 +1733,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2175384018164129879">&amp;Bestuur soekenjins en werfsoektog</translation>
 <translation id="2175526076681939329">Gebruik primêre sleutels</translation>
 <translation id="217576141146192373">Kan nie drukker byvoeg nie. Gaan asseblief jou drukker se opstelling na en probeer weer.</translation>
+<translation id="2175773164573457310">Kies enige teks of prent om Gemini te vra</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2177950615300672361">Incognito-oortjie: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3069,6 +3071,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3076966043108928831">Stoor net op hierdie toestel</translation>
 <translation id="3076977359333237641">Jou aanmelddata is uitgevee</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Geen kenmerk- of uitbreidingkortpaaie gevind nie</translation>
 <translation id="3080930813589868009">Opdateerder per gebruiker</translation>
 <translation id="3080933187214341848">Hierdie netwerk is nie met jou rekening gesinkroniseer nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Appnaam of -ID</translation>
@@ -6418,6 +6421,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5436211819997237281">Huidige uitbreiding bestuur jou Nuwe Oortjie-bladsy</translation>
 <translation id="5436492226391861498">Wag tans vir instaanbedienertonnel …</translation>
 <translation id="5436510242972373446">Deursoek <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini het jou taak gestop. Gaan terug na Chrome om dit na te gaan.</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> venster is nou <ph name="WINDOW_SIZE_PERCENT" /> breed, <ph name="PANE_SIDE" /> paneel is nou <ph name="PANE_SIZE_PERCENT" /> breed.</translation>
 <translation id="5438060324827306856">Kry &amp;Uitbreidings</translation>
 <translation id="5440425659852470030">Maak kantpaneel toe</translation>
@@ -7616,6 +7620,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="628705218210359422">Bly op hoogte van jou wagwoorde en bestuur dit op een plek.</translation>
 <translation id="628726841779494414">Bestuur jou drukkers in drukkerinstellings</translation>
 <translation id="6287288864483377583">Invoer word slegs vir ’n enkele sertifikaat gesteun</translation>
+<translation id="6287713404380454515">Jou admin het om sekuriteitredes jou toestel-PIN en -wagwoord gedeaktiveer. Gebruik van nou af jou <ph name="MANAGER" />-wagwoord.</translation>
 <translation id="6287828400772161253">Android-foon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Geen beskikbare toestelle in die omtrek deel tans nie <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Kon weens ’n tekort aan bergingspasie nie terugstel nie.</translation>
@@ -8871,6 +8876,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7188508872042490670">Werfdata op toestel</translation>
 <translation id="7189234443051076392">Maak seker dat daar genoeg spasie op jou toestel is</translation>
 <translation id="7189451821249468368">Jy het nie genoeg opgraderings om hierdie toestel in te skryf nie. Kontak asseblief die verkoopsafdeling om meer te koop. As jy meen dis 'n fout dat jy hierdie boodskap sien, moet jy asseblief steundienste kontak.</translation>
+<translation id="7189558282078169397">Oortjies van ander toestelle af</translation>
 <translation id="7189965711416741966">Vingerafdruk is bygevoeg.</translation>
 <translation id="7190921792980745354">Blokkeer <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Sommige gesteunde skakels sal steeds in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> en <ph name="NUMBER_OF_OTHER_APPS" /> ander programme oopmaak.</translation>
@@ -9106,7 +9112,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7356908624372060336">Netwerkloglêers</translation>
 <translation id="7357271391997763660">Voer wagwoordkontrole uit?</translation>
 <translation id="735745346212279324">VPN ontkoppel</translation>
-<translation id="7359326150089800742">Voeg ’n oortjie of lêer by jou soektog, en gebruik ook ’n nutsding</translation>
 <translation id="7359680654975233185">Kan nie oortjie uitsaai nie</translation>
 <translation id="7360257054721917104">Bekyk tans gestoorde lessenaars en template. Druk oortjie om te navigeer.</translation>
 <translation id="7360333718677093875">emosiekoonkieser</translation>
@@ -9686,6 +9691,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7745554356330788383">Herlaai hierdie bladsy om jou opgedateerde instellings vir “<ph name="EXTENSION_NAME" />” op hierdie werf toe te pas</translation>
 <translation id="7745677556280361868">Verwyder hierdie netwerk in Passpoint-intekeningbladsy?</translation>
+<translation id="7745849183714722618">Om kenmerke soos swendelbespeuring aan te dryf, kan Chrome KI-modelle gebruik wat direk op jou toestel loop. Wanneer dit af is, sal hierdie kenmerke dalk nie werk nie. <ph name="BEGIN_LINK" />Kry meer inligting oor KI op jou toestel<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Maak items op jou skerm, insluitend teks, groter of kleiner. Jy kan dit ook later kry in Instellings &gt; Toestel &gt; Skerms.</translation>
 <translation id="7750228210027921155">Prent-in-prent</translation>
 <translation id="7751260505918304024">Wys alles</translation>
@@ -9966,6 +9972,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="794250392403348719">Voorbeeld: Vereenvoudig hierdie konsep vir ’n kind wat 8 jaar oud is. Gebruik eenvoudige taal en ’n analogie wat hulle sal verstaan. Hou die totale verduideliking bondig, onder 150 woorde.</translation>
 <translation id="7942846369224063421">Voorafgelaaide UI-leweraar</translation>
 <translation id="7943271960579497371">Geïnstalleerde apps</translation>
+<translation id="7943311690198910993">Aanmeldmetode is opgedateer</translation>
 <translation id="7943368935008348579">Laai PDF's af</translation>
 <translation id="7943837619101191061">Voeg ligging by …</translation>
 <translation id="7944173382284143968">Die webwerf vereis EW-bevestiging voordat die nuwe wagwoord gestoor word. Vat die proses handmatig oor om die verandering te voltooi.</translation>

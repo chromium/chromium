@@ -465,7 +465,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1717218214683051432">Bevægelsessensorer</translation>
 <translation id="1717494416764505390">Postkasse 3</translation>
 <translation id="1717688554309417925">Betalings- og checktjenester</translation>
-<translation id="1717882880162336471">Prøv AI-tilstand</translation>
 <translation id="1719434663396780149">Underretninger om prisfald er aktiveret. Du kan ændre dette i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 tommer</translation>
 <translation id="1720941539803966190">Luk vejledningen</translation>
@@ -615,7 +614,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1960664692890490165">Når du foretager køb i Chrome, kan du se betalingsmetoder, der ikke er kort, som en valgmulighed</translation>
 <translation id="196146181975453736">Gennemfør et engangssikkerhedstjek for at betale hurtigere</translation>
 <translation id="1962204205936693436">Bogmærker fra <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Betal nu</translation>
 <translation id="1973335181906896915">Serialiseringsfejl</translation>
 <translation id="1973785048533660168">Kontorjobs og administrative jobs</translation>
 <translation id="1974060860693918893">Avanceret</translation>
@@ -1057,6 +1055,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2627847595568876492">Udtrækning af tekst fra PDF…</translation>
 <translation id="2628025184666666186">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, fordi den bruger et sikkerhedscertifikat, som Chrome eller din systemkonfiguration til kryptering af webtrafik ikke har tillid til. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="2628224721443278970">Log ind på Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Din administrator har fundet denne enhed, mens den var deaktiveret. Den er blevet genaktiveret og er klar til brug.</translation>
 <translation id="2631387782019878060">Verificeringskode: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-adressen på serveren for <ph name="HOST_NAME" /> blev ikke fundet.</translation>
 <translation id="2638567100095052009">Skriv @ for at søge på <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1097,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2696385693639654606">Chrome Enterprise Core giver dig mulighed for at administrere browserpolitikker, apps og udvidelser i skyen</translation>
 <translation id="2697248912349197812">Spørg <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Der er en tilgængelig undermenu. Brug <ph name="SHORTCUT" /> til at gå til yderligere valgmuligheder.</translation>
-<translation id="2700335762333112350">Betal senere</translation>
 <translation id="2701514975700770343">Forside nedad</translation>
 <translation id="2702592986366989640">Købsmulighed med lav pris</translation>
 <translation id="2702801445560668637">Læseliste</translation>
@@ -2447,7 +2445,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4832388034239846146">Opdater Chrome for at dele fanegrupper</translation>
 <translation id="483241715238664915">Aktivér advarsler</translation>
 <translation id="4832961164064927107">BBQ og grill</translation>
-<translation id="4839984801146463230">Gem dine oplysninger, og få mere fra hånden hurtigere, f.eks. ved at udfylde formularer i Google-produkter. Du kan <ph name="BEGIN_LINK" />administrere dine oplysninger<ph name="END_LINK" /> i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Se din Chrome-historik</translation>
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="4844937814014739139">Rulning og zoom på delte faner</translation>
@@ -2920,6 +2917,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5543564889050342791">Zoologiske haver, akvarier og reservater</translation>
 <translation id="5543722831081909240">180 grader</translation>
 <translation id="5544836308113951378">Krydstogter og charterrejser</translation>
+<translation id="5546252337258681768">Enheden er låst op</translation>
 <translation id="5547939254150808298">Trykkeri og udgivelse</translation>
 <translation id="554815783948612276">Udbydere af fora og chatprogrammer</translation>
 <translation id="5548606607480005320">Sikkerhedstjek</translation>

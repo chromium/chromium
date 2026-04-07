@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Ostrzeżenie</translation>
 <translation id="1056980582064308040">Zmiana ustawień spowoduje ponowne uruchomienie hotspota. Korzystające z niego urządzenia zostaną rozłączone.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Zadanie przerwane</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Wpisz nowy kod PIN. Musi on zawierać co najmniej 1 znak, którym może być litera, cyfra lub inny znak.}few{Wpisz nowy kod PIN. Musi on zawierać co najmniej # znaki, którymi mogą być litery, cyfry i inne znaki.}many{Wpisz nowy kod PIN. Musi on zawierać co najmniej # znaków, którymi mogą być litery, cyfry i inne znaki.}other{Wpisz nowy kod PIN. Musi on zawierać co najmniej # znaku, którymi mogą być litery, cyfry i inne znaki.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Znaleziono karty (<ph name="NUM" />) dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
@@ -1722,6 +1723,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2175384018164129879">&amp;Zarządzanie wyszukiwarkami i wyszukiwaniem w witrynach</translation>
 <translation id="2175526076681939329">Użyj klawiszy podstawowych</translation>
 <translation id="217576141146192373">Nie można dodać drukarki. Sprawdź jej konfigurację i spróbuj ponownie.</translation>
+<translation id="2175773164573457310">Wybierz dowolny tekst lub obraz, aby zapytać Gemini</translation>
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="2177950615300672361">Karta incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3041,6 +3043,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3076966043108928831">Zapisz tylko na tym urządzeniu</translation>
 <translation id="3076977359333237641">Twoje dane logowania zostały usunięte</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Nie znaleziono skrótów do funkcji ani rozszerzeń</translation>
 <translation id="3080930813589868009">Aktualizator na użytkownika</translation>
 <translation id="3080933187214341848">Ta sieć nie jest zsynchronizowana z Twoim kontem. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Nazwa lub identyfikator aplikacji</translation>
@@ -6381,6 +6384,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5436211819997237281">Rozszerzenie zarządzające teraz stroną nowej karty</translation>
 <translation id="5436492226391861498">Czekam na tunel serwera proxy...</translation>
 <translation id="5436510242972373446">Wyszukiwanie w <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini zatrzymał zadanie. Wróć do Chrome, aby je sprawdzić.</translation>
 <translation id="5438014818441491616">Okno <ph name="WINDOW_SIDE" /> ma teraz szerokość <ph name="WINDOW_SIZE_PERCENT" />, a panel <ph name="PANE_SIDE" /> – <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Znajdź &amp;rozszerzenia</translation>
 <translation id="5440425659852470030">Zamknij panel boczny</translation>
@@ -7578,6 +7582,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="628705218210359422">Śledź swoje hasła i zarządzaj nimi w 1 miejscu.</translation>
 <translation id="628726841779494414">Zarządzaj drukarkami w ustawieniach drukarek</translation>
 <translation id="6287288864483377583">Importowanie jest obsługiwane tylko w przypadku pojedynczego certyfikatu</translation>
+<translation id="6287713404380454515">Ze względów bezpieczeństwa administrator wyłączył kod PIN i hasło na Twoim urządzeniu. Od teraz używaj hasła do usługi <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Telefon z Androidem (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">W pobliżu nie ma dostępnych urządzeń udostępniających dane. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Nie udało się przywrócić z powodu braku miejsca.</translation>
@@ -8836,6 +8841,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7188508872042490670">Dane witryn na urządzeniu</translation>
 <translation id="7189234443051076392">Upewnij się, że masz wystarczająco dużo miejsca na urządzeniu</translation>
 <translation id="7189451821249468368">Nie masz wystarczającej liczby licencji, by zarejestrować to urządzenie. Aby dokupić licencje, skontaktuj się z działem sprzedaży. Jeśli uważasz, że widzisz tę wiadomość z powodu błędu, skontaktuj się z zespołem pomocy.</translation>
+<translation id="7189558282078169397">Karty z innych urządzeń</translation>
 <translation id="7189965711416741966">Odcisk palca dodany.</translation>
 <translation id="7190921792980745354">Zablokować użytkownika <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Niektóre obsługiwane linki nadal będą się otwierać w aplikacjach <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i <ph name="NUMBER_OF_OTHER_APPS" /> innych.</translation>
@@ -9071,7 +9077,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7356908624372060336">Dzienniki sieci</translation>
 <translation id="7357271391997763660">Uruchomić sprawdzanie hasła?</translation>
 <translation id="735745346212279324">VPN odłączona</translation>
-<translation id="7359326150089800742">Dodaj kartę lub plik do wyszukiwania i użyj narzędzia</translation>
 <translation id="7359680654975233185">Nie udało się przesłać karty</translation>
 <translation id="7360257054721917104">Wyświetlam zapisane biurka i szablony. Poruszaj się za pomocą klawisza Tab.</translation>
 <translation id="7360333718677093875">selektor emotikonów</translation>
@@ -9650,6 +9655,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</translation>
 <translation id="7745554356330788383">Załaduj ponownie stronę, aby zastosować w tej witrynie zaktualizowane ustawienia rozszerzenia „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="7745677556280361868">Usunąć tę sieć na stronie subskrypcji Passpoint?</translation>
+<translation id="7745849183714722618">Aby obsługiwać funkcje takie jak wykrywanie oszustw, Chrome może używać modeli AI, które działają bezpośrednio na Twoim urządzeniu. Gdy ta opcja jest wyłączona, te funkcje mogą nie działać. <ph name="BEGIN_LINK" />Więcej informacji o AI na urządzeniu<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Powiększ lub pomniejsz elementy na ekranie, w tym tekst. Możesz to zrobić później, wybierając Ustawienia &gt; Urządzenie &gt; Wyświetlacze.</translation>
 <translation id="7750228210027921155">Obraz w obrazie</translation>
 <translation id="7751260505918304024">Pokaż wszystko</translation>
@@ -9930,6 +9936,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="794250392403348719">Przykład: uprość tę koncepcję, dostosowując ją do poziomu 8-letniego dziecka. Użyj prostego języka i zrozumiałych dla dziecka analogii. Ogranicz całe wyjaśnienie do 150 słów.</translation>
 <translation id="7942846369224063421">Wstępnie załadowany mechanizm renderowania UI</translation>
 <translation id="7943271960579497371">Zainstalowane aplikacje</translation>
+<translation id="7943311690198910993">Metoda logowania została zaktualizowana</translation>
 <translation id="7943368935008348579">Pobieranie plików PDF</translation>
 <translation id="7943837619101191061">Dodaj lokalizację...</translation>
 <translation id="7944173382284143968">Przed zapisaniem nowego hasła witryna wymaga potwierdzenia jednorazowego hasła. Przejmij proces ręcznie, aby dokończyć zmianę.</translation>

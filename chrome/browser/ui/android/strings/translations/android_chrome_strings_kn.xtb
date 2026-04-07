@@ -684,6 +684,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">ಕಳೆದ 4 ವಾರಗಳು</translation>
 <translation id="393697183122708255">ಯಾವುದೇ ಸಕ್ರಿಯಗೊಳಿಸಿದ ಧ್ವನಿ ಹುಡುಕಾಟ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="3941718885865495207">Chrome finds ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೆಳಭಾಗದ ಶೀಟ್</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಿರುವ ಪಿಕ್ಚರ್-ಇನ್-ಪಿಕ್ಚರ್ ಟ್ಯಾಬ್</translation>
 <translation id="3950820424414687140">ಸೈನ್ ಇನ್</translation>
 <translation id="395377504920307820">ಖಾತೆಯಿಲ್ಲದೆ ಬಳಸಿ</translation>
@@ -1188,6 +1189,7 @@
 <translation id="6011308810877101166">ಹುಡುಕಾಟ ಸಲಹೆಗಳನ್ನು ಸುಧಾರಿಸಿ</translation>
 <translation id="6013305291643746595">ಹಳೆಯದು ಮೊದಲು ಎಂಬ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸುವುದು</translation>
 <translation id="6022659036123304283">Chrome ಅನ್ನು ನಿಮ್ಮದಾಗಿಸಿಕೊಳ್ಳಿ</translation>
+<translation id="6023820583797130428">ಹಿಂತಿರುಗಲು ಮೆನುವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="6026538407078977628">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ಗೆ ವಿಸ್ತೃತಗೊಳಿಸಿ</translation>
 <translation id="6030719887161080597">ಆ್ಯಡ್ ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಅನ್ನು ಮಾಪನ ಮಾಡಲು ಸೈಟ್‌ಗಳು ಬಳಸುವ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6039379616847168523">ಮುಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
@@ -1632,6 +1634,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್}one{<ph name="TABS_COUNT_MANY" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TABS_COUNT_MANY" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="7603168929588204083">ಅಮಾನ್ಯವಾದ ದಿನಾಂಕ</translation>
 <translation id="7605594153474022051">ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
+<translation id="7608245556672190037">Chrome finds ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="7612619742409846846">ಇದರಂತೆ Google ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="7612989789287281429">ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="7619072057915878432">ನೆಟ್‌ವರ್ಕ್ ವೈಫಲ್ಯಗಳ ಕಾರಣದಿಂದ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
@@ -1639,6 +1642,7 @@
 <translation id="7628417132421583481">Password Manager ಗೆ ಹೋಗಿ</translation>
 <translation id="7630202231528827509">ಪೂರೈಕೆದಾರರ URL</translation>
 <translation id="7638584964844754484">ತಪ್ಪಾದ ಪಾಸ್‌ಫ್ರೇಸ್</translation>
+<translation id="764047009170754705">Chrome finds ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="7646499124171960488">ಅಸುರಕ್ಷಿತ ಸಾರ್ವಜನಿಕ ಸೈಟ್‌ಗಳ ಕುರಿತು ನಿಮಗೆ ಎಚ್ಚರಿಸುತ್ತದೆ</translation>
 <translation id="7646772052135772216">ಪಾಸ್‌ವರ್ಡ್ ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
 <translation id="7655240423373329753">ಕಳೆದ 7 ದಿನಗಳು</translation>
@@ -1863,6 +1867,7 @@
 <translation id="8473863474539038330">ವಿಳಾಸಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="847433688444405067">ಸಾಧನಗಳಾದ್ಯಂತ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="8477178913400731244">ಡೇಟಾ ಅಳಿಸಿ</translation>
+<translation id="8481771036036087705">Chrome finds ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">ಯಾವುದೇ ನಿಷ್ಕ್ರಿಯ ವಿಂಡೋಗಳಿಲ್ಲ</translation>
 <translation id="8493948351860045254">ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>

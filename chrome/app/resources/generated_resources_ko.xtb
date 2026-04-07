@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">경고</translation>
 <translation id="1056980582064308040">설정을 변경하면 핫스팟이 다시 시작됩니다. 핫스팟을 사용하는 기기의 연결이 해제됩니다.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">작업이 중단됨</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{새 PIN을 입력하세요. PIN은 1자 이상이어야 하며 글자, 숫자, 기타 문자를 포함할 수 있습니다.}other{새 PIN을 입력하세요. PIN은 #자 이상이어야 하며 글자, 숫자, 기타 문자를 포함할 수 있습니다.}}</translation>
 <translation id="1059484610606223931">하이퍼텍스트 전송 프로토콜 보안(HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' 검색결과로 탭 <ph name="NUM" />개 찾음</translation>
@@ -1733,6 +1734,7 @@
 <translation id="2175384018164129879">검색엔진 및 사이트 검색 관리</translation>
 <translation id="2175526076681939329">기본 키 사용</translation>
 <translation id="217576141146192373">프린터를 추가할 수 없습니다. 프린터 설정을 확인하고 다시 시도해 보세요.</translation>
+<translation id="2175773164573457310">Gemini에게 물어볼 텍스트 또는 이미지를 선택하세요</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2177950615300672361">시크릿 탭: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3071,6 +3073,7 @@
 <translation id="3076966043108928831">이 기기에만 저장</translation>
 <translation id="3076977359333237641">로그인 데이터 삭제됨</translation>
 <translation id="3077734595579995578">Shift</translation>
+<translation id="3080521492391385172">기능 또는 확장 프로그램 바로가기 없음</translation>
 <translation id="3080930813589868009">사용자별 업데이트 프로그램</translation>
 <translation id="3080933187214341848">계정과 동기화되어 있지 않은 네트워크입니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">앱 이름 또는 ID</translation>
@@ -6418,6 +6421,7 @@
 <translation id="5436211819997237281">현재 새 탭 페이지를 관리하는 확장 프로그램</translation>
 <translation id="5436492226391861498">프록시 터널을 기다리는 중...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> 검색:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini가 작업을 중지했습니다. Chrome으로 돌아가서 검토하세요.</translation>
 <translation id="5438014818441491616">이제 <ph name="WINDOW_SIDE" /> 창의 너비가 <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> 창의 너비가 <ph name="PANE_SIZE_PERCENT" />입니다.</translation>
 <translation id="5438060324827306856">확장 프로그램 찾기(&amp;E)</translation>
 <translation id="5440425659852470030">측면 패널 닫기</translation>
@@ -7615,6 +7619,7 @@
 <translation id="628705218210359422">한곳에서 비밀번호를 추적하고 관리하세요.</translation>
 <translation id="628726841779494414">프린터 설정에서 프린터 관리</translation>
 <translation id="6287288864483377583">가져오기는 단일 인증서에만 지원됩니다.</translation>
+<translation id="6287713404380454515">보안상의 이유로 관리자가 기기 PIN 및 비밀번호를 사용 중지했습니다. 이제부터 <ph name="MANAGER" /> 비밀번호를 사용하세요.</translation>
 <translation id="6287828400772161253">Android 휴대전화(<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">근처에 공유 가능한 기기가 없습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">저장공간이 부족하여 복원할 수 없습니다.</translation>
@@ -8871,6 +8876,7 @@
 <translation id="7188508872042490670">기기 내 사이트 데이터</translation>
 <translation id="7189234443051076392">기기 저장용량이 충분한지 확인합니다.</translation>
 <translation id="7189451821249468368">기기를 등록하는 데 필요한 업그레이드가 부족합니다. 판매처에 문의하여 추가로 구매하시기 바랍니다. 이 메시지가 잘못 표시되었다고 판단되는 경우 지원팀에 문의하세요.</translation>
+<translation id="7189558282078169397">다른 기기의 탭</translation>
 <translation id="7189965711416741966">지문이 추가되었습니다.</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />님을 차단하시겠습니까?</translation>
 <translation id="7191063546666816478">지원되는 링크 일부는 <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 외 <ph name="NUMBER_OF_OTHER_APPS" />개의 다른 앱에서 계속 열 수 있습니다.</translation>
@@ -9106,7 +9112,6 @@
 <translation id="7356908624372060336">네트워크 로그</translation>
 <translation id="7357271391997763660">비밀번호 진단을 실행하시겠습니까?</translation>
 <translation id="735745346212279324">VPN 연결 끊김</translation>
-<translation id="7359326150089800742">검색에 탭 또는 파일 추가하고 도구를 사용합니다</translation>
 <translation id="7359680654975233185">탭을 전송할 수 없습니다</translation>
 <translation id="7360257054721917104">저장된 데스크 및 템플릿을 보는 중입니다. 이동하려면 Tab을 누르세요.</translation>
 <translation id="7360333718677093875">이모티콘 선택 도구</translation>
@@ -9685,6 +9690,7 @@
 할당을 삭제하려면 할당된 스위치 또는 키를 누르세요.</translation>
 <translation id="7745554356330788383">이 페이지를 새로고침하여 이 사이트에 업데이트된 '<ph name="EXTENSION_NAME" />' 설정 적용</translation>
 <translation id="7745677556280361868">Passpoint 구독 페이지에서 이 네트워크를 삭제하시겠어요?</translation>
+<translation id="7745849183714722618">사기 탐지와 같은 기능을 지원하기 위해 Chrome은 기기에서 직접 실행되는 AI 모델을 사용할 수 있습니다. 이 기능이 사용 중지되면 이러한 기능이 작동하지 않을 수 있습니다. <ph name="BEGIN_LINK" />온디바이스 AI에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">텍스트 등 화면에 표시되는 항목을 더 크게 또는 작게 표시합니다. 추후에 설정 &gt; 기기 &gt; 디스플레이에서도 설정할 수 있습니다.</translation>
 <translation id="7750228210027921155">PIP 모드</translation>
 <translation id="7751260505918304024">모두 표시</translation>
@@ -9965,6 +9971,7 @@
 <translation id="794250392403348719">예: 8살 어린이가 이해할 수 있도록 이 개념을 단순화해 줘. 쉬운 표현과 아이가 이해할 수 있는 비유를 사용하고, 전체 설명은 150단어 미만으로 간결하게 작성해 줘.</translation>
 <translation id="7942846369224063421">미리 로드된 UI 렌더기</translation>
 <translation id="7943271960579497371">설치된 애플리케이션</translation>
+<translation id="7943311690198910993">로그인 방법 업데이트됨</translation>
 <translation id="7943368935008348579">PDF 다운로드</translation>
 <translation id="7943837619101191061">위치 추가...</translation>
 <translation id="7944173382284143968">웹사이트에서 새 비밀번호를 저장하기 전에 OTP 확인이 필요합니다. 변경을 완료하려면 수동으로 프로세스를 진행하세요.</translation>

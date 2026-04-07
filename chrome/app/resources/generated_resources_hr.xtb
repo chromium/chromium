@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1056980582064308040">Promjenom postavki ponovo će se pokrenuti žarišna točka. Prekinut će se veza s uređajima koji upotrebljavaju žarišnu točku.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Zadatak je prekinut</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Unesite novi PIN. PIN mora imati najmanje jedan znak i može sadržavati slova, brojke i druge znakove.}one{Unesite novi PIN. PIN mora imati najmanje # znak i može sadržavati slova, brojke i druge znakove.}few{Unesite novi PIN. PIN mora imati najmanje # znaka i može sadržavati slova, brojke i druge znakove.}other{Unesite novi PIN. PIN mora imati najmanje # znakova i može sadržavati slova, brojke i druge znakove.}}</translation>
 <translation id="1059484610606223931">Protokol za prijenos hiperteksta (HTTPS)</translation>
 <translation id="1059944192885972544">Pronađenih kartica za "<ph name="SEARCH_TEXT" />": <ph name="NUM" /></translation>
@@ -1724,6 +1725,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2175384018164129879">Upravljanje tražilicama i pretraživanje web-lokacija</translation>
 <translation id="2175526076681939329">Upotrijebi primarne ključeve</translation>
 <translation id="217576141146192373">Nije moguće dodati pisač. Provjerite konfiguraciju pisača i pokušajte ponovno.</translation>
+<translation id="2175773164573457310">Odaberite bilo koji tekst ili sliku da biste postavili pitanje Geminiju</translation>
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="2177950615300672361">Anonimna kartica: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3059,6 +3061,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3076966043108928831">Spremi samo na ovom uređaju</translation>
 <translation id="3076977359333237641">Podaci za prijavu su izbrisani</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Nisu pronađeni prečaci za značajke ili proširenja</translation>
 <translation id="3080930813589868009">Program za ažuriranje po korisniku</translation>
 <translation id="3080933187214341848">Ova se mreža ne sinkronizira s vašim računom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Naziv ili ID aplikacije</translation>
@@ -6405,6 +6408,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5436211819997237281">Trenutačno proširenje koje upravlja vašom stranicom nove kartice</translation>
 <translation id="5436492226391861498">Čekanje na proxy tunel...</translation>
 <translation id="5436510242972373446">Pretraži <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini je zaustavio vaš zadatak. Vratite se u Chrome da biste ga pregledali.</translation>
 <translation id="5438014818441491616">Prozor <ph name="WINDOW_SIDE" /> sada je širok <ph name="WINDOW_SIZE_PERCENT" />, okno <ph name="PANE_SIDE" /> sada je široko <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Pronađite &amp;proširenja</translation>
 <translation id="5440425659852470030">Zatvori bočnu ploču</translation>
@@ -7599,6 +7603,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="628705218210359422">Pratite svoje zaporke i upravljajte njima na jednom mjestu.</translation>
 <translation id="628726841779494414">Upravljajte pisačima u postavkama pisača</translation>
 <translation id="6287288864483377583">Uvoz je podržan samo za jedan certifikat</translation>
+<translation id="6287713404380454515">Iz sigurnosnih razloga administrator je onemogućio PIN i zaporku vašeg uređaja. Od sada upotrebljavajte zaporku za <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Android telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">U blizini nema uređaja dostupnih za dijeljenje. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Vraćanje nije moguće jer nema dovoljno prostora za pohranu.</translation>
@@ -8859,6 +8864,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7188508872042490670">Podaci web-lokacije na uređaju</translation>
 <translation id="7189234443051076392">Provjerite ima li dovoljno prostora na uređaju</translation>
 <translation id="7189451821249468368">Nemate dovoljno nadogradnji za prijavu ovog uređaja. Obratite se prodaji da biste kupili više. Ako smatrate da vam se ova poruka prikazuje pogreškom, obratite se podršci.</translation>
+<translation id="7189558282078169397">Kartice s drugih uređaja</translation>
 <translation id="7189965711416741966">Otisak prsta je dodan.</translation>
 <translation id="7190921792980745354">Želite li blokirati korisnika <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Neke podržane veze i dalje će se otvarati u aplikacijama <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i njih još <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
@@ -9094,7 +9100,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7356908624372060336">Mrežni zapisnici</translation>
 <translation id="7357271391997763660">Želite li pokrenuti provjeru zaporke?</translation>
 <translation id="735745346212279324">Veza s VPN-om prekinuta</translation>
-<translation id="7359326150089800742">Dodajte karticu ili datoteku u pretraživanje i upotrijebite alat</translation>
 <translation id="7359680654975233185">Emitiranje kartice nije moguće</translation>
 <translation id="7360257054721917104">Prikaz spremljenih radnih površina i predložaka. Pritisnite karticu da biste se kretali.</translation>
 <translation id="7360333718677093875">alat za odabir emojija</translation>
@@ -9674,6 +9679,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translation>
 <translation id="7745554356330788383">Ponovno učitajte ovu stranicu da biste primijenili ažurirane postavke za proširenje <ph name="EXTENSION_NAME" /> na ovoj web-lokaciji</translation>
 <translation id="7745677556280361868">Želite li ukloniti tu mrežu na Passpointovoj stranici za pretplatu?</translation>
+<translation id="7745849183714722618">Da bi omogućio značajke kao što je otkrivanje prijevara, Chrome može upotrebljavati AI modele koji se izvode izravno na vašem uređaju. Kad je ta postavka isključena, te značajke možda neće funkcionirati. <ph name="BEGIN_LINK" />Saznajte više o AI-ju na uređaju<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Stavke na zaslonu, uključujući tekst, možete povećati ili smanjiti. To možete pronaći i poslije u odjeljku Postavke &gt; Uređaj &gt; Zasloni.</translation>
 <translation id="7750228210027921155">Slika u slici</translation>
 <translation id="7751260505918304024">Prikaži sve</translation>
@@ -9954,6 +9960,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="794250392403348719">Primjer: pojednostavi ovaj koncept za dijete od osam godina. Koristi jednostavne izraze i analogiju koju bi dijete razumjelo. Objašnjenje treba biti sažeto, do 150 riječi.</translation>
 <translation id="7942846369224063421">Unaprijed učitani ispunjivač korisničkog sučelja</translation>
 <translation id="7943271960579497371">Instalirane aplikacije</translation>
+<translation id="7943311690198910993">Način prijave je ažuriran</translation>
 <translation id="7943368935008348579">Preuzmite PDF-ove</translation>
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
 <translation id="7944173382284143968">Web-lokacija zahtijeva potvrdu OTP-a prije spremanja nove zaporke. Ručno izvršite proces da biste dovršili promjenu.</translation>

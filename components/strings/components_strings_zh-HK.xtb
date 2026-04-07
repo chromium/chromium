@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">動作感應器</translation>
 <translation id="1717494416764505390">出紙槽 3</translation>
 <translation id="1717688554309417925">扣帳及簽帳服務</translation>
-<translation id="1717882880162336471">試用「AI 模式」</translation>
 <translation id="1719434663396780149">減價通知已開啟。您可前往<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />變更。</translation>
 <translation id="1719838434204287058">24 x 30 吋</translation>
 <translation id="1720941539803966190">閂教學課程</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">在 Chrome 購物時會看到付款卡以外的付款方式選項</translation>
 <translation id="196146181975453736">完成一次性的安全檢查，加快付款程序</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 書籤</translation>
-<translation id="1966259577349514951">立即付款</translation>
 <translation id="1973335181906896915">序列化錯誤</translation>
 <translation id="1973785048533660168">文書及行政職位空缺</translation>
 <translation id="1974060860693918893">進階選項</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">點擊複製</translation>
 <translation id="2612676031748830579">信用卡號碼</translation>
 <translation id="2612993535136743634">系統將刪除已儲存在裝置上和 Google 帳戶中的所有安全碼</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{1 分鐘前在線}other{# 分鐘前在線}}</translation>
 <translation id="2614835674900828050">不適用於此交易</translation>
 <translation id="2616412942031748191">搜尋引擎優化和推廣</translation>
 <translation id="2618206371527040026">學術會議和出版物</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">正在從 PDF 擷取文字…</translation>
 <translation id="2628025184666666186">伺服器所用的安全性憑證未受 Chrome 或系統網絡流量加密設定的信任，因此無法證明屬於 <ph name="DOMAIN" /> 網域。這可能是由於設定錯誤，或有攻擊者攔截你的連線。</translation>
 <translation id="2628224721443278970">登入 Microsoft OneDrive</translation>
+<translation id="2631059741268498165">管理員在裝置停用時找到其位置。裝置已重新啟用並可供使用。</translation>
 <translation id="2631387782019878060">驗證碼：<ph name="OTP" /></translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
 <translation id="2638567100095052009">輸入 @ 即可在 <ph name="FEATURED_SEARCH_LIST" /> 上搜尋</translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core 讓你透過雲端管理瀏覽器政策、應用程式和擴充程式</translation>
 <translation id="2697248912349197812">詢問 <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">有可用的子選單，請使用<ph name="SHORTCUT" />前往其他選項。</translation>
-<translation id="2700335762333112350">稍後付款</translation>
 <translation id="2701514975700770343">正面朝下</translation>
 <translation id="2702592986366989640">低價選項</translation>
 <translation id="2702801445560668637">閱讀清單</translation>
@@ -2445,7 +2444,6 @@
 <translation id="4832388034239846146">如要共用分頁群組，請更新 Chrome</translation>
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4832961164064927107">燒烤</translation>
-<translation id="4839984801146463230">儲存資料可以提升操作效率，例如在不同 Google 產品中填寫表格。你可以在 <ph name="ACCOUNT" /> 的「<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />」中<ph name="BEGIN_LINK" />管理資料<ph name="END_LINK" /></translation>
 <translation id="4840250757394056958">查看 Chrome 記錄</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4844937814014739139">捲動及縮放已分享的分頁</translation>
@@ -2722,6 +2720,7 @@
 <translation id="5255833070095767006">350 x 460 毫米</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理員政策不建議複製此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議複製這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">「<ph name="GROUP_NAME" />」分頁群組已無法查看</translation>
+<translation id="5262342527470539728">你的資料會儲存到 <ph name="ACCOUNT" /> 的「<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />」</translation>
 <translation id="5263867360296733198">上載檔案前請務必確認</translation>
 <translation id="5266128565379329178">釘裝 (頂端)</translation>
 <translation id="5269225904387178860">四孔 (底部)</translation>
@@ -2918,6 +2917,7 @@
 <translation id="5543564889050342791">動物園、水族館和保護區</translation>
 <translation id="5543722831081909240">180 度</translation>
 <translation id="5544836308113951378">遊艇和租船</translation>
+<translation id="5546252337258681768">裝置已解鎖</translation>
 <translation id="5547939254150808298">印刷和出版</translation>
 <translation id="554815783948612276">論壇和聊天室服務供應商</translation>
 <translation id="5548606607480005320">安全檢查</translation>
@@ -2959,6 +2959,7 @@
 <translation id="5600044805561809264">瀏覽網頁時，可以輕鬆就你分享的分頁提出問題。</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> 或 <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">系統不支援管理</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{1 小時前在線}other{# 小時前在線}}</translation>
 <translation id="5605249000617390290">進一步瞭解追蹤價格</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">檢查連線狀態</translation>
@@ -3512,6 +3513,7 @@
 <translation id="6456955391422100996">已移除廣告。</translation>
 <translation id="6457206614190510200">騎馬釘</translation>
 <translation id="6457455098507772300">系統會以彈出式視窗通知形式在桌面上顯示減價通知</translation>
+<translation id="6458519747993638565">在線上</translation>
 <translation id="6458606150257356946">仍要貼上</translation>
 <translation id="6462438303393708881">取消上載</translation>
 <translation id="6464094930452079790">圖片</translation>
@@ -4769,6 +4771,7 @@
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">呢次批准用咪</translation>
+<translation id="8421746712901926961">在「<ph name="GOOGLE_WALLET_TITLE_1" />」儲存資料可以提升操作效率，例如在不同 Google 產品中填寫表格。你可以在「<ph name="GOOGLE_WALLET_TITLE_2" />」為 <ph name="ACCOUNT" /> <ph name="MANAGE_INFO_LINK" />。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8426945547715537628">要允許取代鍵盤嗎？</translation>

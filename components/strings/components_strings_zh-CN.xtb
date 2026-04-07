@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">移动传感器</translation>
 <translation id="1717494416764505390">信箱 3</translation>
 <translation id="1717688554309417925">借记卡和支票服务</translation>
-<translation id="1717882880162336471">试用 AI 模式</translation>
 <translation id="1719434663396780149">降价提醒功能已开启。您可在<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />中更改此设置。</translation>
 <translation id="1719838434204287058">24 x 30 英寸</translation>
 <translation id="1720941539803966190">关闭教程</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">当您在 Chrome 中购物时，可看到非银行卡支付方式选项</translation>
 <translation id="196146181975453736">完成一次性安全检查，即可更快地付款</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />书签</translation>
-<translation id="1966259577349514951">立即付款</translation>
 <translation id="1973335181906896915">序列化错误</translation>
 <translation id="1973785048533660168">文员和行政职位</translation>
 <translation id="1974060860693918893">高级</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">点击复制</translation>
 <translation id="2612676031748830579">卡号</translation>
 <translation id="2612993535136743634">您的设备和 Google 账号中保存的所有安全码都将删除</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{1 分钟前曾活跃}other{# 分钟前曾活跃}}</translation>
 <translation id="2614835674900828050">无法用于此购买交易</translation>
 <translation id="2616412942031748191">搜索引擎优化与营销</translation>
 <translation id="2618206371527040026">学术会议与出版物</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">正在从 PDF 文件中提取文本…</translation>
 <translation id="2628025184666666186">此服务器无法证明其所在网域是 <ph name="DOMAIN" />，因为它使用的安全证书不受 Chrome 或您系统的网站流量加密配置所信任。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。</translation>
 <translation id="2628224721443278970">登录 Microsoft OneDrive</translation>
+<translation id="2631059741268498165">管理员已定位到这部停用的设备。它已重新启用，可以使用了。</translation>
 <translation id="2631387782019878060">验证码：<ph name="OTP" /></translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的服务器 IP 地址。</translation>
 <translation id="2638567100095052009">输入 @ 即可在 <ph name="FEATURED_SEARCH_LIST" /> 中搜索</translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">借助 Chrome 企业核心版，您可以从云端管理浏览器政策、应用和扩展程序</translation>
 <translation id="2697248912349197812">问问 <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">子菜单可用，使用<ph name="SHORTCUT" />可找到其他选项。</translation>
-<translation id="2700335762333112350">先买后付</translation>
 <translation id="2701514975700770343">正面朝下</translation>
 <translation id="2702592986366989640">低价选项</translation>
 <translation id="2702801445560668637">阅读清单</translation>
@@ -2442,7 +2441,6 @@
 <translation id="4832388034239846146">如需分享标签页分组，请更新 Chrome</translation>
 <translation id="483241715238664915">开启警告</translation>
 <translation id="4832961164064927107">烧烤</translation>
-<translation id="4839984801146463230">保存信息可以提升操作效率，例如在不同 Google 产品中快速填写表单。针对账号 <ph name="ACCOUNT" />，您可在 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />中<ph name="BEGIN_LINK" />管理您的信息<ph name="END_LINK" /></translation>
 <translation id="4840250757394056958">查看您的 Chrome 历史记录</translation>
 <translation id="484462545196658690">自动</translation>
 <translation id="4844937814014739139">滚动和缩放分享的标签页</translation>
@@ -2915,6 +2913,7 @@
 <translation id="5543564889050342791">动物园、水族馆与保护区</translation>
 <translation id="5543722831081909240">180 度</translation>
 <translation id="5544836308113951378">乘船游览与租船</translation>
+<translation id="5546252337258681768">设备已解锁</translation>
 <translation id="5547939254150808298">印刷与出版</translation>
 <translation id="554815783948612276">论坛与聊天服务</translation>
 <translation id="5548606607480005320">安全检查</translation>
@@ -2956,6 +2955,7 @@
 <translation id="5600044805561809264">您可以在浏览时轻松询问有关您正在分享的标签页的问题。</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" />或<ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">不支持管理</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{1 小时前曾活跃}other{# 小时前曾活跃}}</translation>
 <translation id="5605249000617390290">详细了解价格跟踪</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">检查网络连接</translation>
@@ -3508,6 +3508,7 @@
 <translation id="6456955391422100996">已移除广告。</translation>
 <translation id="6457206614190510200">鞍式装订</translation>
 <translation id="6457455098507772300">降价提醒在桌面设备上显示为弹出式通知</translation>
+<translation id="6458519747993638565">目前活跃</translation>
 <translation id="6458606150257356946">仍然粘贴</translation>
 <translation id="6462438303393708881">取消上传</translation>
 <translation id="6464094930452079790">图片</translation>

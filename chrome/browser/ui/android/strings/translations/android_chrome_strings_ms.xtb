@@ -684,6 +684,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">4 minggu yang lalu</translation>
 <translation id="393697183122708255">Tiada carian suara yg didayakan tersedia</translation>
+<translation id="3941718885865495207">Helaian bawah ikut serta Chrome Finds</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Tab Gambar dalam Gambar yang Disematkan</translation>
 <translation id="3950820424414687140">Log masuk</translation>
 <translation id="395377504920307820">Gunakan tanpa akaun</translation>
@@ -1189,6 +1190,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6011308810877101166">Tingkatkan cadangan carian</translation>
 <translation id="6013305291643746595">Mengisih mengikut tertib paling lama</translation>
 <translation id="6022659036123304283">Peribadikan Chrome anda</translation>
+<translation id="6023820583797130428">Buka menu untuk kembali</translation>
 <translation id="6026538407078977628">Kembangkan kepada skrin penuh</translation>
 <translation id="6030719887161080597">Urus maklumat yang digunakan oleh laman untuk mengukur prestasi iklan</translation>
 <translation id="6039379616847168523">Lompat ke tab seterusnya</translation>
@@ -1633,6 +1635,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab standard}other{<ph name="TABS_COUNT_MANY" /> tab standard}}</translation>
 <translation id="7603168929588204083">Tarikh tidak sah</translation>
 <translation id="7605594153474022051">Penyegerakan tidak berfungsi</translation>
+<translation id="7608245556672190037">Ikut serta Chrome Finds dibuka pada ketinggian penuh</translation>
 <translation id="7612619742409846846">Dilog masuk ke Google sebagai</translation>
 <translation id="7612989789287281429">Anda sedang log masuk…</translation>
 <translation id="7619072057915878432">Muat turun <ph name="FILE_NAME" /> gagal kerana kegagalan rangkaian.</translation>
@@ -1640,6 +1643,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7628417132421583481">Akses Password Manager</translation>
 <translation id="7630202231528827509">URL penyedia</translation>
 <translation id="7638584964844754484">Frasa laluan tidak betul</translation>
+<translation id="764047009170754705">Ikut serta Chrome Finds ditutup</translation>
 <translation id="7646499124171960488">Memberi anda amaran untuk laman awam yang tidak selamat</translation>
 <translation id="7646772052135772216">Penyegerakan kata laluan tidak berfungsi</translation>
 <translation id="7655240423373329753">7 hari yang lalu</translation>
@@ -1864,6 +1868,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
 <translation id="847433688444405067">Semak imbas merentas peranti</translation>
 <translation id="8477178913400731244">Padamkan data</translation>
+<translation id="8481771036036087705">Ikut serta Chrome Finds dibuka pada ketinggian separuh</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Tiada tetingkap tidak aktif</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>

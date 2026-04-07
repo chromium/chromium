@@ -95,7 +95,7 @@
 <translation id="1465097259579587977">အမြန်မိတ်ဆက်ပို့ချချက်ကို ပြန်စရန်</translation>
 <translation id="1480046233931937785">ခရက်ဒစ်</translation>
 <translation id="1487494366197411587">Chromebook ပေါ်တွင် Search ကီး သည် ဘယ်ဘက် Shift ခလုတ်၏ အပေါ်ကပ်ရပ်တွင် ရှိသည်။</translation>
-<translation id="1498498210836053409">စာသားကို တည်းဖြတ်သည့်အခါ (စမတ် ကပ်ခွာစနစ်) ကပ်ခွာစနစ်ကို ပိတ်ရန်</translation>
+<translation id="1498498210836053409">စာသားကို တည်းဖြတ်သည့်အခါ (စမတ် ခလုတ်တွဲမုဒ်) ခလုတ်တွဲမုဒ်ကို ပိတ်ရန်</translation>
 <translation id="1499041187027566160">အသံ တိုးပါ</translation>
 <translation id="1502086903961450562">ယခင် ဂရပ်ဖစ်</translation>
 <translation id="1506187449813838456">အသံကို မြှင့်ပေးရန်</translation>
@@ -307,7 +307,7 @@
 <translation id="2909584066358367921">နောက်ထပ် ခလုတ် မရှိပါ</translation>
 <translation id="2911433807131383493">ChromeVox သင်တန်း ဖွင့်ရန်</translation>
 <translation id="2912405967290226587">ညာဘက်သို့ လက်သုံးချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
-<translation id="2919107550468490321">စမတ် ကပ်ခွာစနစ် ဖွင့်ထားသည်</translation>
+<translation id="2919107550468490321">စမတ် ခလုတ်တွဲမုဒ် ဖွင့်ထားသည်</translation>
 <translation id="2937799153569150791">နောက်ထပ် အဆင့် ၃ ခေါင်စီး မရှိပါ</translation>
 <translation id="2942710183375260152">မီးခိုးပြာရင့်</translation>
 <translation id="2943596527105977722">ရွှေချောင်းအရင့်</translation>
@@ -573,7 +573,7 @@
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4606933160360542263">စိတ်ကြိုက် ကီးပေါင်းစပ်မှု- <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">နောက် ကီး နှိပ်ကို လျစ်လျူရှုရန်</translation>
-<translation id="4617384941327705512">စမတ် ကပ်ခွာစနစ် ပိတ်ထားသည်</translation>
+<translation id="4617384941327705512">စမတ် ခလုတ်တွဲမုဒ် ပိတ်ထားသည်</translation>
 <translation id="4623097797855662355">အမှတ်တံဆိပ်</translation>
 <translation id="4624970070706497034">Chromebook များအတွက် စိတ်ကြိုက်လုပ်ခြင်းကို Talkback က နောက်ထပ်မပေးတော့ပါ။ ၎င်းကို သုံးနိုင်သေးသော်လည်း Talkback မူရင်းလက်ကွက်ဖြတ်လမ်းများကို သုံးပါ။ Search+A ထို့နောက် K ကိုနှိပ်ပြီး သုံးနိုင်သည့်ဖြတ်လမ်းလင့်ခ်များကို ကြည့်ပါ။ သင် Talkback ကို ဆက်သုံးလိုပါက command ကို ထပ်နှိပ်ပါ။</translation>
 <translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{bullet}} *{{{$$COUNT} bullets}}</translation>

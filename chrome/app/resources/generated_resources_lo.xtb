@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">ຄໍາເຕືອນ</translation>
 <translation id="1056980582064308040">ການປ່ຽນແປງການຕັ້ງຄ່າຈະຣີສະຕາດຮັອດສະປອດ. ອຸປະກອນທີ່ໃຊ້ຮັອດສະປອດຈະຕັດການເຊື່ອມຕໍ່.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">ໜ້າວຽກຖືກຂັດຈັງຫວະ</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{ປ້ອນ PIN ໃໝ່ຂອງທ່ານ. PIN ຕ້ອງຍາວຢ່າງໜ້ອຍໜຶ່ງຕົວອັກສອນ ແລະ ສາມາດປະກອບມີຕົວໜັງສື, ຕົວເລກ ແລະ ຕົວອັກສອນອື່ນໆ.}other{ປ້ອນ PIN ໃໝ່ຂອງທ່ານ. PIN ຕ້ອງຍາວຢ່າງໜ້ອຍ # ຕົວອັກສອນ ແລະ ສາມາດປະກອບມີຕົວໜັງສື, ຕົວເລກ ແລະ ຕົວອັກສອນອື່ນໆ.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">ພົບ <ph name="NUM" /> ແຖບສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
@@ -1730,6 +1731,7 @@
 <translation id="2175384018164129879">&amp;ຈັດການໂປຣແກຣມຊອກຫາ ແລະ ການຊອກຫາເວັບໄຊ</translation>
 <translation id="2175526076681939329">ໃຊ້ປຸ່ມຫຼັກ</translation>
 <translation id="217576141146192373">ບໍ່ສາມາດເພີ່ມເຄື່ອງພິມໄດ້. ກະລຸນາກວດເບິ່ງການຕັ້ງຄ່າເຄື່ອງພິມຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
+<translation id="2175773164573457310">ເລືອກຂໍ້ຄວາມ ຫຼື ຮູບໃດກໍໄດ້ເພື່ອຖາມ Gemini</translation>
 <translation id="2175927920773552910">ລະຫັດ QR</translation>
 <translation id="2177950615300672361">ແຖບທີ່​ບໍ່​ເຜີຍ​ຕົນ​ຕົວ: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3068,6 +3070,7 @@
 <translation id="3076966043108928831">ບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ</translation>
 <translation id="3076977359333237641">ລຶບຂໍ້ມູນການເຂົ້າສູ່ລະບົບຂອງທ່ານແລ້ວ</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">ບໍ່ພົບທາງລັດສຳລັບຄຸນສົມບັດ ຫຼື ສ່ວນຂະຫຍາຍ</translation>
 <translation id="3080930813589868009">ໂປຣແກຣມອັບເດດຕໍ່ຜູ້ໃຊ້</translation>
 <translation id="3080933187214341848">ເຄືອຂ່າຍນີ້ບໍ່ໄດ້ຊິ້ງຂໍ້ມູນກັບບັນຊີຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">ຊື່ ຫຼື ID ແອັບ</translation>
@@ -6416,6 +6419,7 @@
 <translation id="5436211819997237281">ສ່ວນຂະຫຍາຍປັດຈຸບັນທີ່ຈັດການໜ້າແຖບໃໝ່ຂອງທ່ານ</translation>
 <translation id="5436492226391861498">ກໍາລັງລໍຖ້າຊ່ອງພຣັອກຊີ...</translation>
 <translation id="5436510242972373446">ຊອກຫາ <ph name="SITE_NAME" /> :</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini ຢຸດໜ້າວຽກຂອງທ່ານແລ້ວ. ກັບຄືນໄປຫາ Chrome ເພື່ອກວດສອບ.</translation>
 <translation id="5438014818441491616">ຕອນນີ້ໜ້າຈໍ <ph name="WINDOW_SIDE" /> ກວ້າງ <ph name="WINDOW_SIZE_PERCENT" />, ແຖບ <ph name="PANE_SIDE" /> ກວ້າງ <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">ສ່ວນຂະຫຍາຍການຊອກຫາ</translation>
 <translation id="5440425659852470030">ປິດແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
@@ -7613,6 +7617,7 @@
 <translation id="628705218210359422">ຕິດຕາມ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານໄດ້ໃນບ່ອນດຽວ.</translation>
 <translation id="628726841779494414">ຈັດການເຄື່ອງພິມຂອງທ່ານໃນການຕັ້ງຄ່າເຄື່ອງພິມ</translation>
 <translation id="6287288864483377583">ຮອງຮັບການນຳເຂົ້າໃບຮັບຮອງສະບັບດຽວເທົ່ານັ້ນ</translation>
+<translation id="6287713404380454515">ເນື່ອງຈາກເຫດຜົນດ້ານຄວາມປອດໄພ, ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ປິດການນຳໃຊ້ PIN ແລະ ລະຫັດຜ່ານຂອງອຸປະກອນຂອງທ່ານ. ນັບຈາກນີ້ເປັນຕົ້ນໄປ, ໃຫ້ໃຊ້ລະຫັດຜ່ານ <ph name="MANAGER" /> ຂອງທ່ານ.</translation>
 <translation id="6287828400772161253">ໂທລະສັບ Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">ບໍ່ມີອຸປະກອນທີ່ກຳລັງແບ່ງປັນຢູ່ໃກ້ຄຽງ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">ບໍ່ສາມາດກູ້ຄືນໄດ້ເນື່ອງຈາກບໍ່ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນ.</translation>
@@ -8868,6 +8873,7 @@
 <translation id="7188508872042490670">ຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="7189234443051076392">ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ຫວ່າງພຽງພໍໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7189451821249468368">ທ່ານບໍ່ມີການອັບເກຣດທີ່ພຽງພໍເພື່ອລົງທະບຽນອຸປະກອນນີ້. ກະລຸນາຕິດຕໍ່ຝ່າຍຂາຍເພື່ອຊື້ຕື່ມອີກ. ຖ້າທ່ານເຊື່ອວ່າທ່ານກຳລັງເຫັນຂໍ້ຄວາມນີ້ຢ່າງບໍ່ຖືກຕ້ອງ, ກະລຸນາຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ.</translation>
+<translation id="7189558282078169397">ແຖບຈາກອຸປະກອນອື່ນໆ</translation>
 <translation id="7189965711416741966">ເພີ່ມລາຍນິ້ວມືແລ້ວ.</translation>
 <translation id="7190921792980745354">ບລັອກ <ph name="MEMBER_FULL_NAME" /> ບໍ?</translation>
 <translation id="7191063546666816478">ລິ້ງທີ່ຮອງຮັບບາງຢ່າງຈະຍັງຄົງເປີດໃນ <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ແລະ ອີກ <ph name="NUMBER_OF_OTHER_APPS" /> ແອັບ.</translation>
@@ -9103,7 +9109,6 @@
 <translation id="7356908624372060336">ບັນທຶກເຄືອຂ່າຍ</translation>
 <translation id="7357271391997763660">ເອີ້ນໃຊ້ການກວດສອບລະຫັດຜ່ານບໍ?</translation>
 <translation id="735745346212279324">VPN ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>
-<translation id="7359326150089800742">ເພີ່ມແຖບ ຫຼື ໄຟລ໌ໃສ່ໃນການຊອກຫາຂອງທ່ານ ແລະ ໃຊ້ເຄື່ອງມືນຳ</translation>
 <translation id="7359680654975233185">ບໍ່ສາມາດສົ່ງສັນຍານແຖບໄດ້</translation>
 <translation id="7360257054721917104">ກຳລັງເບິ່ງໂຕະ ແລະ ແມ່ແບບທີ່ບັນທຶກໄວ້. ກົດ tab ເພື່ອນຳທາງ.</translation>
 <translation id="7360333718677093875">ຕົວເລືອກອີໂມຈິ</translation>
@@ -9682,6 +9687,7 @@
 ກົດສະວິດ ຫຼື ປຸ່ມທີ່ໄດ້ຮັບມອບໝາຍເພື່ອລຶບການມອບໝາຍອອກ.</translation>
 <translation id="7745554356330788383">ໂຫຼດໜ້ານີ້ຄືນໃໝ່ເພື່ອນຳໃຊ້ການຕັ້ງຄ່າທີ່ອັບເດດແລ້ວຂອງທ່ານສຳລັບ "<ph name="EXTENSION_NAME" />" ຢູ່ເວັບໄຊນີ້</translation>
 <translation id="7745677556280361868">ລຶບເຄື່ອງຂ່າຍນີ້ອອກໃນໜ້າການສະໝັກສະມາຊິກ Passpoint ບໍ?</translation>
+<translation id="7745849183714722618">ເພື່ອຂັບເຄື່ອນຄຸນສົມບັດຕ່າງໆ ເຊັ່ນ: ການກວດຫາສະແກມ, Chrome ສາມາດໃຊ້ໂມເດວ AI ທີ່ເຮັດວຽກຢູ່ອຸປະກອນຂອງທ່ານໄດ້ໂດຍກົງ. ເມື່ອປິດການຕັ້ງຄ່ານີ້, ຄຸນສົມບັດເຫຼົ່ານີ້ອາດບໍ່ເຮັດວຽກ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ AI ຢູ່ອຸປະກອນ<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">ເຮັດໃຫ້ລາຍການຕ່າງໆຢູ່ໜ້າຈໍຂອງທ່ານຮວມທັງຂໍ້ຄວາມ, ໃຫຍ່ຂຶ້ນ ຫຼື ນ້ອຍລົງ. ທ່ານຍັງສາມາດຊອກຫາສິ່ງນີ້ໃນພາຍຫຼັງໃນການຕັ້ງຄ່າ &gt; ອຸປະກອນ &gt; ຈໍສະແດງຜົນ.</translation>
 <translation id="7750228210027921155">ສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="7751260505918304024">ສະ​ແດງ​ທັງ​ຫມົດ</translation>
@@ -9962,6 +9968,7 @@
 <translation id="794250392403348719">ຕົວຢ່າງ: ອະທິບາຍແນວຄິດນີ້ໃຫ້ເດັກນ້ອຍອາຍຸ 8 ປີເຂົ້າໃຈງ່າຍໆ. ໃຊ້ພາສາທີ່ເຂົ້າໃຈງ່າຍ ແລະ ປຽບທຽບກັບສິ່ງທີ່ເຂົາເຈົ້າເຂົ້າໃຈ. ອະທິບາຍທັງໝົດໃຫ້ກະທັດຮັດ, ໂດຍບໍ່ເກີນ 150 ຄຳ.</translation>
 <translation id="7942846369224063421">ໂຫຼດ UI Renderer ໄວ້ລ່ວງໜ້າແລ້ວ</translation>
 <translation id="7943271960579497371">ແອັບພລິເຄຊັນທີ່ຕິດຕັ້ງ</translation>
+<translation id="7943311690198910993">ອັບເດດວິທີການເຂົ້າສູ່ລະບົບແລ້ວ</translation>
 <translation id="7943368935008348579">ດາວໂຫຼດ PDF</translation>
 <translation id="7943837619101191061">ເພີ່ມ​ທີ່ຕັ້ງ...</translation>
 <translation id="7944173382284143968">ເວັບໄຊຕ້ອງໃຊ້ການຢືນຢັນ OTP ກ່ອນການບັນທຶກລະຫັດຜ່ານໃໝ່. ກະລຸນາດຳເນີນການດ້ວຍຕົວເອງເພື່ອເຮັດໃຫ້ການປ່ຽນແປງສົມບູນ.</translation>

@@ -465,7 +465,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1717218214683051432">Sensores de movemento</translation>
 <translation id="1717494416764505390">Caixa de correo 3</translation>
 <translation id="1717688554309417925">Servizos de débito e cheques</translation>
-<translation id="1717882880162336471">Proba o modo IA</translation>
 <translation id="1719434663396780149">As alertas de baixada de prezos están activadas. Podes cambiar esta opción en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 polgadas</translation>
 <translation id="1720941539803966190">Pechar titorial</translation>
@@ -615,7 +614,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1960664692890490165">Cando fagas compras en Chrome, verás métodos de pago sen tarxeta como opción</translation>
 <translation id="196146181975453736">Completa unha comprobación de seguranza única para pagar máis rápido</translation>
 <translation id="1962204205936693436">Marcadores de <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Pagar agora</translation>
 <translation id="1973335181906896915">Erro de serialización</translation>
 <translation id="1973785048533660168">Postos administrativos e de oficina</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
@@ -1057,6 +1055,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2627847595568876492">Extraendo texto do PDF...</translation>
 <translation id="2628025184666666186">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque utiliza un certificado de seguranza no que Chrome ou a configuración do sistema para a encriptación de tráfico web non confían. Isto pode deberse a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="2628224721443278970">Iniciar sesión en Microsoft OneDrive</translation>
+<translation id="2631059741268498165">A persoa que che administra a conta localizou este dispositivo mentres estaba desactivado. Xa se volveu activar e está listo para usar.</translation>
 <translation id="2631387782019878060">Código de verificación: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Non se puido atopar o enderezo IP do servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Escribe @ para facer unha busca en <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1097,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2696385693639654606">Chrome Enterprise Core permíteche xestionar as políticas do navegador, as aplicacións e as extensións desde a nube</translation>
 <translation id="2697248912349197812">Preguntar a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenú dispoñible. Usa <ph name="SHORTCUT" /> para ir a outras opcións.</translation>
-<translation id="2700335762333112350">Pagar máis tarde</translation>
 <translation id="2701514975700770343">Cara abaixo</translation>
 <translation id="2702592986366989640">Opción económica</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
@@ -2447,7 +2445,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4832388034239846146">Para compartir grupos de pestanas, actualiza Chrome</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4832961164064927107">Grelladas e churrascadas</translation>
-<translation id="4839984801146463230">Garda a túa información e realiza tarefas máis rápido, como completar formularios nos produtos de Google. Podes <ph name="BEGIN_LINK" />xestionar a túa información<ph name="END_LINK" /> en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Ver historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4844937814014739139">Desprazarse por pestanas compartidas e achegalas</translation>
@@ -2920,6 +2917,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5543564889050342791">Zoos, acuarios e reservas naturais</translation>
 <translation id="5543722831081909240">180 graos</translation>
 <translation id="5544836308113951378">Cruceiros e voos chárter</translation>
+<translation id="5546252337258681768">Dispositivo desbloqueado</translation>
 <translation id="5547939254150808298">Impresión e publicación</translation>
 <translation id="554815783948612276">Provedores de foros e chats</translation>
 <translation id="5548606607480005320">Revisión de seguranza</translation>

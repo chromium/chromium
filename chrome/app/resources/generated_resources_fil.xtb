@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Babala</translation>
 <translation id="1056980582064308040">Kapag binago ang mga setting, mare-restart ang hotspot. Madidiskonekta ang mga device na gumagamit ng hotspot.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Naantala ang gawain</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Ilagay ang iyong bagong PIN. Dapat ay may hindi bababa sa isang character ang PIN, at puwede itong maglaman ng mga titik, numero, at iba pang character.}one{Ilagay ang iyong bagong PIN. Dapat ay may hindi bababa sa # character ang PIN, at puwede itong maglaman ng mga titik, numero, at iba pang character.}other{Ilagay ang iyong bagong PIN. Dapat ay may hindi bababa sa # na character ang PIN, at puwede itong maglaman ng mga titik, numero, at iba pang character.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Nakakita ng <ph name="NUM" /> (na) Tab Para sa '<ph name="SEARCH_TEXT" />'</translation>
@@ -1733,6 +1734,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2175384018164129879">Pamahalaan ang mga Search Engine at Site Search</translation>
 <translation id="2175526076681939329">Gumamit ng mga pangunahing key</translation>
 <translation id="217576141146192373">Hindi naidagdag ang printer. Pakitingnan ang configuration ng iyong printer at subukan ulit.</translation>
+<translation id="2175773164573457310">Pumili ng anumang teksto o larawan na itatanong sa Gemini</translation>
 <translation id="2175927920773552910">QR Code</translation>
 <translation id="2177950615300672361">Tab na Incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3070,6 +3072,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3076966043108928831">I-save lang sa device na ito</translation>
 <translation id="3076977359333237641">Na-delete ang iyong data sa pag-sign in</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Walang nakitang shortcut ng feature o extension</translation>
 <translation id="3080930813589868009">Updater sa bawat user</translation>
 <translation id="3080933187214341848">Hindi naka-sync ang network na ito sa iyong account. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Pangalan o ID ng App</translation>
@@ -6419,6 +6422,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5436211819997237281">Kasalukuyang extension na namamahala sa iyong page ng bagong tab</translation>
 <translation id="5436492226391861498">Naghihintay para sa proxy tunnel...</translation>
 <translation id="5436510242972373446">Hanapan ang <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nInihinto ng Gemini ang iyong gawain. Bumalik sa Chrome para suriin ito.</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIZE_PERCENT" /> na ang lapad ngayon ng <ph name="WINDOW_SIDE" /> window, at <ph name="PANE_SIZE_PERCENT" /> na ang lapad ngayon ng <ph name="PANE_SIDE" /> pane.</translation>
 <translation id="5438060324827306856">Maghanap ng Mga &amp;Extension</translation>
 <translation id="5440425659852470030">Isara ang Panel sa Gilid</translation>
@@ -7616,6 +7620,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="628705218210359422">Subaybayan ang iyong mga password at pamahalaan ang mga ito sa iisang lugar.</translation>
 <translation id="628726841779494414">Pamahalaan ang iyong mga printer sa mga setting ng printer</translation>
 <translation id="6287288864483377583">Sinusuportahan lang ang pag-import sa isang certificate</translation>
+<translation id="6287713404380454515">Para sa mga kadahilanang panseguridad, na-disable ng iyong administrator ang PIN at password ng device mo. Mula ngayon, gamitin ang iyong password sa <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Android phone (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Walang available na kalapit na nagbabahaging device. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Hindi ma-restore dahil kulang ang storage space.</translation>
@@ -8874,6 +8879,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7188508872042490670">On-device na data ng site</translation>
 <translation id="7189234443051076392">Tiyaking may sapat na espasyo sa iyong device</translation>
 <translation id="7189451821249468368">Wala kang sapat na mga upgrade para i-enroll ang device na ito. Makipag-ugnayan sa sales para bumili ng higit pa. Kung naniniwala kang nakikita mo ang mensaheng ito dahil sa error, makipag-ugnayan sa suporta.</translation>
+<translation id="7189558282078169397">Mga tab mula sa ibang device</translation>
 <translation id="7189965711416741966">Naidagdag ang fingerprint.</translation>
 <translation id="7190921792980745354">I-block si <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, at <ph name="NUMBER_OF_OTHER_APPS" /> pang app.</translation>
@@ -9109,7 +9115,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7356908624372060336">Mga Log ng Network</translation>
 <translation id="7357271391997763660">Magpatakbo ng pagsusuri sa password?</translation>
 <translation id="735745346212279324">Nakadiskonekta ang VPN</translation>
-<translation id="7359326150089800742">Magdagdag ng tab o file sa iyong paghahanap, at gumamit din ng tool</translation>
 <translation id="7359680654975233185">Hindi ma-cast ang tab</translation>
 <translation id="7360257054721917104">Pagtingin sa mga naka-save na desk at template. Pindutin ang tab para mag-navigate.</translation>
 <translation id="7360333718677093875">picker ng emoji</translation>
@@ -9689,6 +9694,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7745554356330788383">I-reload ang page na ito para i-apply ang iyong mga in-update na setting para sa "<ph name="EXTENSION_NAME" />" sa site na ito</translation>
 <translation id="7745677556280361868">Alisin ang network na ito sa page ng subscription ng Passpoint?</translation>
+<translation id="7745849183714722618">Para paganahin ang mga feature tulad ng pag-detect ng scam, maaaring gumamit ang Chrome ng mga AI model na direktang tumatakbo sa iyong device. Tuwing naka-off ito, maaaring hindi gumana ang mga feature na ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa on-device na AI<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Gawing mas malaki o mas maliit ang mga item sa iyong screen, kabilang ang text. Makikita mo rin ito sa ibang pagkakataon sa Mga Setting &gt; Device &gt; Mga Display.</translation>
 <translation id="7750228210027921155">Picture in picture</translation>
 <translation id="7751260505918304024">Ipakita lahat</translation>
@@ -9969,6 +9975,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="794250392403348719">Halimbawa: Pasimplehin ang konseptong ito para sa isang batang 8 taong gulang. Gumamit ng simpleng pananalita at isang analogy mauunawaan niya. Panatilihing maikli ang kabuuang paliwanag, na wala pang 150 salita.</translation>
 <translation id="7942846369224063421">Naka-preload na Tagapag-render ng UI</translation>
 <translation id="7943271960579497371">Mga Naka-install na Application</translation>
+<translation id="7943311690198910993">Na-update ang paraan ng pag-sign in</translation>
 <translation id="7943368935008348579">Mag-download ng mga PDF</translation>
 <translation id="7943837619101191061">Magdagdag ng Lokasyon...</translation>
 <translation id="7944173382284143968">Nagre-require ang website ng OTP na kumpirmasyon bago i-save ang bagong password. Manual na gawin ang proseso para makumpleto ang pagbabago.</translation>

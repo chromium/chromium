@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">如果變更設定，系統將重新啟動熱點，屆時裝置與熱點的連線將會解除連結。</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">工作已中斷</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{請輸入新 PIN。PIN 必須包含至少一個字元，可以使用字母、數字和其他字元。}other{請輸入新 PIN。PIN 必須包含至少 # 個字元，可以使用字母、數字和其他字元。}}</translation>
 <translation id="1059484610606223931">超文本傳輸協定 (HTTPS)</translation>
 <translation id="1059944192885972544">搵到 <ph name="NUM" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅分頁</translation>
@@ -324,6 +325,7 @@
 <translation id="1210678701920254279">查看或新增打印機，並查看進行中的列印工作</translation>
 <translation id="1211769675100312947">自訂專屬捷徑</translation>
 <translation id="1215411991991485844">已新增背景應用程式</translation>
+<translation id="121586831132481915">關閉自動展開分頁功能</translation>
 <translation id="1216542092748365687">移除指紋</translation>
 <translation id="1216628023580643945">為技能命名</translation>
 <translation id="1216891999012841486">進一步了解點樣修正更新錯誤</translation>
@@ -544,6 +546,7 @@
 <translation id="1365650529628379165">戚眉</translation>
 <translation id="1367817137674340530">生成咗 <ph name="COUNT" /> 張圖片</translation>
 <translation id="1368603372088757436"><ph name="DEVICE_TYPE" /> 不支援 Linux。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="1369687552722438128">不要顯示此宣傳</translation>
 <translation id="1370249617397887619">如要在其他裝置上使用密碼，請將書籤儲存至 Google 帳戶</translation>
 <translation id="1370384480654163477">查看和編輯上次瀏覽此網站時的檔案：</translation>
 <translation id="1371253136879578532">使用鍵盤快速鍵，選取部分 Gemini 螢幕畫面。</translation>
@@ -1732,6 +1735,7 @@
 <translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
 <translation id="2175526076681939329">使用主鍵</translation>
 <translation id="217576141146192373">無法新增打印機。請檢查打印機設定，然後再試一次。</translation>
+<translation id="2175773164573457310">選取要問 Gemini 的文字或圖片</translation>
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="2177950615300672361">無痕式分頁：<ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -1971,6 +1975,7 @@
 <translation id="2328137272841210255">重設你的 PIN</translation>
 <translation id="2328474416100889417">所有人將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，而所有邀請連結亦將會關閉</translation>
 <translation id="2328561734797404498">請重新啟動裝置，以便使用 <ph name="APP_NAME" />。</translation>
+<translation id="2328773543844041445">懸停即可自動展開分頁</translation>
 <translation id="2329597144923131178">登入後可從任何裝置取得自己的書籤、記錄、密碼和其他設定。</translation>
 <translation id="2330182457402792918">選取此網站能讀取的檔案</translation>
 <translation id="2332115969598251205">無法載入已儲存至 <ph name="PRIMARY_EMAIL" /> 的裝置。請檢查您的互聯網連線，然後再試一次。</translation>
@@ -2761,6 +2766,7 @@
 <translation id="2869511363030898130">在「<ph name="APP_NAME" />」應用程式中開啟</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2870909136778269686">正在更新…</translation>
+<translation id="2871029453856004998">此應用程式可能不安全，因此已被 Google 封鎖</translation>
 <translation id="2871733351037274014">預先載入網頁</translation>
 <translation id="2871813825302180988">已有人在這部裝置上使用這個帳戶。</translation>
 <translation id="287205682142673348">連接埠轉送</translation>
@@ -3068,6 +3074,7 @@
 <translation id="3076966043108928831">只儲存在此裝置上</translation>
 <translation id="3076977359333237641">已刪除您的登入資料。</translation>
 <translation id="3077734595579995578">Shift</translation>
+<translation id="3080521492391385172">找不到功能或擴充程式捷徑</translation>
 <translation id="3080930813589868009">按使用者安裝的更新程式</translation>
 <translation id="3080933187214341848">此網絡沒有同步至您的帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">應用程式名稱或 ID</translation>
@@ -4855,6 +4862,7 @@
 <translation id="4327380114687339519">擴充程式選單</translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">永不翻譯<ph name="LANGUAGE" />內容</translation>
+<translation id="4330963457501417204">懸停即可展開已收合的分頁</translation>
 <translation id="4332976768901252016">設定家長監控設定</translation>
 <translation id="4334768748331667190">你將不會再看到<ph name="MODULE_NAME" /></translation>
 <translation id="4335835283689002019">「安全瀏覽」功能已關閉</translation>
@@ -6242,6 +6250,7 @@
 <translation id="5302048478445481009">語言</translation>
 <translation id="5302435492906794790">正在尋找附近可供偵測的裝置…</translation>
 <translation id="5302932258331363306">顯示替代項目</translation>
+<translation id="5304952564528359007">關閉「自動展開分頁」功能</translation>
 <translation id="5305145881844743843">此帳戶是由 <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> 管理</translation>
 <translation id="5307030433605830021">不支援的來源</translation>
 <translation id="5307386115243749078">與藍牙開關配對</translation>
@@ -6413,6 +6422,7 @@
 <translation id="5436211819997237281">目前管理新分頁的擴充程式</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道…</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini 已停止處理工作。請返回 Chrome 查看。</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" />視窗宜家嘅闊度係 <ph name="WINDOW_SIZE_PERCENT" />，<ph name="PANE_SIDE" />窗格宜家嘅闊度係 <ph name="PANE_SIZE_PERCENT" />。</translation>
 <translation id="5438060324827306856">尋找擴充程式</translation>
 <translation id="5440425659852470030">關閉側面板</translation>
@@ -7607,6 +7617,7 @@
 <translation id="628705218210359422">記錄你的密碼並集中一處管理。</translation>
 <translation id="628726841779494414">在打印機設定中管理你的打印機</translation>
 <translation id="6287288864483377583">匯入功能只支援單一憑證</translation>
+<translation id="6287713404380454515">基於安全理由，管理員已停用裝置 PIN 和密碼。請從現在開始使用 <ph name="MANAGER" /> 密碼。</translation>
 <translation id="6287828400772161253">Android 手機 (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">儲存空間不足，因此無法還原。</translation>
@@ -7752,6 +7763,7 @@
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
 <translation id="6401118106417399952">你嘅裝置 EID 係 <ph name="EID_NUMBER" />，而裝置序號係 <ph name="SERIAL_NUMBER" />。呢啲數字可以用嚟啟用服務。</translation>
 <translation id="6401458660421980302">如要將此分頁傳送至其他裝置，請在該裝置上登入 Chrome</translation>
+<translation id="6402042774506839496">請聯絡應用程式開發人員瞭解原因</translation>
 <translation id="6402921224457714577">可要求控制 MIDI 裝置及將其重新編程</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="640457954117263537">讓 ChromeOS 和 Android 應用程式和服務使用位置資料。</translation>
@@ -8036,6 +8048,7 @@
 <translation id="6599829027342135752">插入並輕觸安全密鑰即可登入「<ph name="APP_NAME" />」</translation>
 <translation id="6601262427770154296">管理用戶字典</translation>
 <translation id="6602173570135186741">自動填入和密碼</translation>
+<translation id="6602173667290651224">找不到網站捷徑</translation>
 <translation id="6602336931411102724">在書籤列中顯示分頁群組</translation>
 <translation id="6602937173026466876">存取打印機</translation>
 <translation id="6602956230557165253">使用向左鍵和向右鍵瀏覽。</translation>
@@ -8601,6 +8614,7 @@
 <translation id="6988572888918530647">管理您的 Google 帳戶</translation>
 <translation id="6989274756151920076">繼續使用</translation>
 <translation id="6991665348624301627">選取目的地</translation>
+<translation id="6992078676798011826">無法移除權限，請稍後再試。</translation>
 <translation id="6992554835374084304">開啟進階拼字檢查功能</translation>
 <translation id="6993000214273684335">已經將分頁由包含「<ph name="GROUP_CONTENTS" />」嘅未命名群組度移除</translation>
 <translation id="6995984090981858039">讀取 ChromeOS 裝置資訊和資料</translation>
@@ -8863,6 +8877,7 @@
 <translation id="7188508872042490670">裝置上的網站資料</translation>
 <translation id="7189234443051076392">確保您的裝置上有足夠的儲存空間</translation>
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
+<translation id="7189558282078169397">其他裝置上的分頁</translation>
 <translation id="7189965711416741966">已加入指紋。</translation>
 <translation id="7190921792980745354">要封鎖<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="7191063546666816478">部分支援連結將仍會在 <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> 和另外 <ph name="NUMBER_OF_OTHER_APPS" /> 個應用程式中開啟。</translation>
@@ -9098,7 +9113,6 @@
 <translation id="7356908624372060336">網絡記錄</translation>
 <translation id="7357271391997763660">係咪要執行密碼檢查？</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
-<translation id="7359326150089800742">喺搜尋度加入分頁或檔案，同埋使用工具</translation>
 <translation id="7359680654975233185">無法投放分頁</translation>
 <translation id="7360257054721917104">睇緊儲存咗嘅桌面同範本。㩒一下 Tab 鍵就可以瀏覽。</translation>
 <translation id="7360333718677093875">Emoji 選取器</translation>
@@ -9294,6 +9308,7 @@
 <translation id="7478658909253570368">不允許網站連接至序列連接埠</translation>
 <translation id="7479221278376295180">儲存空間用量概覽</translation>
 <translation id="747981547666531654">已連線至藍牙裝置，裝置名稱：「<ph name="FIRST_DEVICE" />」和「<ph name="SECOND_DEVICE" />」</translation>
+<translation id="7480076846077373008">可以對宣傳執行嘅其他操作</translation>
 <translation id="7481213027396403996">取得 Chrome 最強大的安全防護</translation>
 <translation id="7481312909269577407">向前</translation>
 <translation id="7481358317100446445">準備就緒</translation>
@@ -9675,6 +9690,7 @@
 按下已指派的按鈕裝置或按鍵，則可移除指派設定。</translation>
 <translation id="7745554356330788383">重新載入此頁面，即可將更新後的「<ph name="EXTENSION_NAME" />」設定套用至此網站</translation>
 <translation id="7745677556280361868">要從 Passpoint 訂閱頁面中移除此網絡嗎？</translation>
+<translation id="7745849183714722618">為提供詐騙偵測等功能，Chrome 可以使用直接在裝置上執行的 AI 模型。如果關閉設定，這些功能可能無法正常運作。<ph name="BEGIN_LINK" />進一步瞭解裝置內置 AI<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">放大或縮小畫面上的項目，包括文字。您亦可稍後前往「設定」&gt; [裝置] &gt; [顯示] 調整此設定。</translation>
 <translation id="7750228210027921155">畫中畫</translation>
 <translation id="7751260505918304024">顯示全部</translation>
@@ -9723,6 +9739,7 @@
 <translation id="7774581652827321413">取得與此頁面的摘要、相關搜尋內容和其他實用資料</translation>
 <translation id="7774792847912242537">要求數量過多。</translation>
 <translation id="7775694664330414886">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅未命名群組</translation>
+<translation id="7776106026456236463">懸停即可展開已收合的分頁</translation>
 <translation id="777637629667389858">當你登入帳戶後，保護你在各項 Google 服務中的安全。</translation>
 <translation id="7776701556330691704">找不到語音</translation>
 <translation id="7776950606649732730">請在檔案完成同步後再試一次。</translation>
@@ -9955,6 +9972,7 @@
 <translation id="794250392403348719">範例：為 8 歲兒童簡化有關概念。使用兒童能理解的簡單用語和比喻。整體說明應保持簡潔，不多於 150 字。</translation>
 <translation id="7942846369224063421">預先載入的使用者介面呈現器</translation>
 <translation id="7943271960579497371">已安裝的應用程式</translation>
+<translation id="7943311690198910993">登入方法已更新</translation>
 <translation id="7943368935008348579">下載 PDF</translation>
 <translation id="7943837619101191061">新增位置…</translation>
 <translation id="7944173382284143968">網站需要先確認一次性密碼，才能儲存新密碼。請接手處理此程序，以完成變更。</translation>
@@ -11176,6 +11194,7 @@
 <translation id="8767069439158587614">顯示所有關於 <ph name="QUERY_CLUSTER_NAME" /> 嘅搜尋結果</translation>
 <translation id="8767621466733104912">自動為所有使用者更新 Chrome</translation>
 <translation id="8768049274922835860">所有人</translation>
+<translation id="8768559850883798245">開啟自動展開分頁功能</translation>
 <translation id="8769047324653576116">如要配合機構設定檔使用裝置，機構需要取得裝置相關資料。這類資料可能包括已安裝的軟件、檔案、瀏覽器、裝置作業系統和 IP 位址等相關資料。</translation>
 <translation id="876956356450740926">執行 Developer Tools、IDE 和編輯器。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">擴充程式根目錄</translation>
@@ -11511,6 +11530,7 @@
 <translation id="8993853206419610596">展開所有要求</translation>
 <translation id="8993945059918628059">用手指輕觸指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>
+<translation id="8996080012222587839">開啟「自動展開分頁」功能</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{此擴充程式已儲存至 Google 帳戶，但系統可能會刪除擴充程式儲存在此裝置上的所有資料}other{這些擴充程式已儲存至 Google 帳戶，但系統可能會刪除擴充程式儲存在此裝置上的所有資料}}</translation>
 <translation id="8999027165951679951">閒置分頁：釋出咗 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">部分語法錯誤：<ph name="ERROR_LINE" /></translation>

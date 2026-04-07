@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Opozorilo</translation>
 <translation id="1056980582064308040">Če spremenite nastavitve, boste dostopno točko znova zagnali. Povezava naprav, ki uporabljajo dostopno točko, bo prekinjena.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Opravilo je prekinjeno</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Vnesite novo kodo PIN. Koda PIN mora biti dolga vsaj en znak in lahko vsebuje črke, števke in druge znake.}one{Vnesite novo kodo PIN. Koda PIN mora biti dolga vsaj # znak in lahko vsebuje črke, števke in druge znake.}two{Vnesite novo kodo PIN. Koda PIN mora biti dolga vsaj # znaka in lahko vsebuje črke, števke in druge znake.}few{Vnesite novo kodo PIN. Koda PIN mora biti dolga vsaj # znake in lahko vsebuje črke, števke in druge znake.}other{Vnesite novo kodo PIN. Koda PIN mora biti dolga vsaj # znakov in lahko vsebuje črke, števke in druge znake.}}</translation>
 <translation id="1059484610606223931">Protokol HTTPS</translation>
 <translation id="1059944192885972544">Najdeno je bilo toliko zavihkov za »<ph name="SEARCH_TEXT" />«: <ph name="NUM" />.</translation>
@@ -1734,6 +1735,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2175384018164129879">&amp;Upravljanje iskalnikov in iskanja po spletnih mestih</translation>
 <translation id="2175526076681939329">Uporabi primarne tipke</translation>
 <translation id="217576141146192373">Tiskalnika ni mogoče dodati. Preverite konfiguracijo tiskalnika in poskusite znova.</translation>
+<translation id="2175773164573457310">Izberite besedilo ali sliko, če želite vprašati Geminija</translation>
 <translation id="2175927920773552910">Koda QR</translation>
 <translation id="2177950615300672361">Zavihek za anonimni način: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3071,6 +3073,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3076966043108928831">Shrani samo v tej napravi</translation>
 <translation id="3076977359333237641">Podatki za prijavo so bili izbrisani</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Najdena ni nobena bližnjica do funkcije ali razširitve</translation>
 <translation id="3080930813589868009">Orodje za posodabljanje na uporabnika</translation>
 <translation id="3080933187214341848">To omrežje ni sinhronizirano z vašim računom. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Ime ali ID aplikacije</translation>
@@ -6420,6 +6423,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5436211819997237281">Trenutna razširitev upravlja nov zavihek s povezavami</translation>
 <translation id="5436492226391861498">Čakanje na tunel namestniškega strežnika ...</translation>
 <translation id="5436510242972373446">Iskanje po <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini je ustavil vaše opravilo. Vrnite se v Chrome in ga preglejte.</translation>
 <translation id="5438014818441491616">Okno <ph name="WINDOW_SIDE" /> je široko <ph name="WINDOW_SIZE_PERCENT" />, podokno <ph name="PANE_SIDE" /> je široko <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Iskanje razširitev</translation>
 <translation id="5440425659852470030">Zapiranje stranskega podokna</translation>
@@ -7618,6 +7622,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="628705218210359422">Spremljajte gesla in jih upravljajte na enem mestu.</translation>
 <translation id="628726841779494414">Upravljanje tiskalnikov v nastavitvah tiskalnika</translation>
 <translation id="6287288864483377583">Uvoz je podprt samo za eno potrdilo</translation>
+<translation id="6287713404380454515">Skrbnik je zaradi varnosti onemogočil kodo PIN in geslo naprave. Od zdaj naprej uporabljajte geslo za <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Telefon Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">V bližini ni naprav, na voljo za deljenje. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Ni mogoče obnoviti zaradi pomanjkanja prostora za shranjevanje.</translation>
@@ -8880,6 +8885,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7188508872042490670">Podatki spletnih mest v napravi</translation>
 <translation id="7189234443051076392">Poskrbite, da je v napravi dovolj prostora</translation>
 <translation id="7189451821249468368">Nimate dovolj nadgradenj za včlanitev te naprave. Obrnite se na prodajni oddelek za nakup dodatnih. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na podporo.</translation>
+<translation id="7189558282078169397">Zavihki iz drugih naprav</translation>
 <translation id="7189965711416741966">Prstni odtis dodan.</translation>
 <translation id="7190921792980745354">Želite blokirati člana <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Nekatere podprte povezave se bodo še vedno odprle v aplikacijah <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> in še toliko drugih aplikacijah: <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
@@ -9115,7 +9121,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7356908624372060336">Omrežni dnevniki</translation>
 <translation id="7357271391997763660">Želite zagnati preverjanje gesla?</translation>
 <translation id="735745346212279324">Povezava z navideznim zasebnim omrežjem je prekinjena</translation>
-<translation id="7359326150089800742">V iskanje dodajte zavihek ali datoteko in uporabite tudi orodje</translation>
 <translation id="7359680654975233185">Zavihka ni mogoče predvajati</translation>
 <translation id="7360257054721917104">Ogledujete si shranjena namizja in predloge. Za premikanje pritiskajte tabulatorko.</translation>
 <translation id="7360333718677093875">izbirnik emodžijev</translation>
@@ -9695,6 +9700,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</translation>
 <translation id="7745554356330788383">Znova naložite to stran, če želite uporabiti posodobljene nastavitve za »<ph name="EXTENSION_NAME" />« na tem spletnem mestu</translation>
 <translation id="7745677556280361868">Želite odstraniti to omrežje na strani za naročnine s protokolom Passpoint?</translation>
+<translation id="7745849183714722618">Chrome lahko za omogočanje funkcij, kot je zaznavanje prevar, uporablja modele umetne inteligence, ki se izvajajo neposredno v vaši napravi. Če je to izklopljeno, te funkcije morda ne bodo delovale. <ph name="BEGIN_LINK" />Preberite več o umetni inteligenci v napravi<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Povečajte ali pomanjšajte elemente na zaslonu, vključno z besedilom. To lahko najdete pozneje tudi v »Nastavitve &gt; Naprava &gt; Zasloni«.</translation>
 <translation id="7750228210027921155">Slika v sliki</translation>
 <translation id="7751260505918304024">Prikaži vse</translation>
@@ -9975,6 +9981,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="794250392403348719">Primer: Poenostavi ta koncept za 8-letnega otroka. Uporabi preprost jezik in prispodobo, ki jo bo razumel. Celotno pojasnilo naj bo kratko in naj ne presega 150 besed.</translation>
 <translation id="7942846369224063421">Vnaprej naložen upodabljalnik uporabniškega vmesnika</translation>
 <translation id="7943271960579497371">Nameščene aplikacije</translation>
+<translation id="7943311690198910993">Način prijave je posodobljen</translation>
 <translation id="7943368935008348579">Prenos datotek PDF</translation>
 <translation id="7943837619101191061">Dodaj mesto ...</translation>
 <translation id="7944173382284143968">Spletno mesto zahteva potrditev z enkratnim geslom, preden shranite novo geslo. Postopek prevzemite ročno, da dokončate spremembo.</translation>

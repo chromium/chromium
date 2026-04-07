@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">如果變更設定，系統將重新啟動無線基地台，屆時裝置與無線基地台的連線就會中斷。</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">工作已中斷</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{請輸入新的 PIN 碼。PIN 碼必須包含至少一個字元，可以使用英文字母、數字和其他字元。}other{請輸入新的 PIN 碼。PIN 碼必須包含至少 # 個字元，可以使用英文字母、數字和其他字元。}}</translation>
 <translation id="1059484610606223931">超文字安全傳輸通訊協定 (HTTPS)</translation>
 <translation id="1059944192885972544">找到 <ph name="NUM" /> 個與「<ph name="SEARCH_TEXT" />」相符的分頁</translation>
@@ -1722,6 +1723,7 @@
 <translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
 <translation id="2175526076681939329">使用主按鍵</translation>
 <translation id="217576141146192373">無法新增印表機。請檢查你的印表機設定，然後再試一次。</translation>
+<translation id="2175773164573457310">選取要問 Gemini 的文字或圖片</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2177950615300672361">無痕式分頁：<ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3056,6 +3058,7 @@
 <translation id="3076966043108928831">只儲存在這部裝置上</translation>
 <translation id="3076977359333237641">已刪除你的登入資料</translation>
 <translation id="3077734595579995578">Shift</translation>
+<translation id="3080521492391385172">找不到功能或擴充功能捷徑</translation>
 <translation id="3080930813589868009">個別使用者更新工具</translation>
 <translation id="3080933187214341848">這個網路並未同步到你的帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">應用程式名稱或 ID</translation>
@@ -6396,6 +6399,7 @@
 <translation id="5436211819997237281">現在是由這個擴充功能管理新分頁</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini 已停止你的工作。返回 Chrome 即可查看。</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" />視窗現在的寬度為 <ph name="WINDOW_SIZE_PERCENT" />，<ph name="PANE_SIDE" />窗格現在的寬度為 <ph name="PANE_SIZE_PERCENT" />。</translation>
 <translation id="5438060324827306856">尋找擴充功能(&amp;E)</translation>
 <translation id="5440425659852470030">關閉側邊面板</translation>
@@ -7589,6 +7593,7 @@
 <translation id="628705218210359422">集中一處記錄及管理密碼。</translation>
 <translation id="628726841779494414">前往印表機設定管理印表機</translation>
 <translation id="6287288864483377583">僅支援匯入單一憑證</translation>
+<translation id="6287713404380454515">為了安全起見，管理員已停用你的裝置 PIN 碼和密碼。從現在起，請使用 <ph name="MANAGER" /> 的密碼。</translation>
 <translation id="6287828400772161253">Android 手機 (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">儲存空間不足，因此無法復原。</translation>
@@ -8844,6 +8849,7 @@
 <translation id="7188508872042490670">網站在裝置端的資料</translation>
 <translation id="7189234443051076392">確認你的裝置上有足夠空間</translation>
 <translation id="7189451821249468368">你的升級授權不足，無法註冊這個裝置。請與銷售人員聯絡以購買更多授權。如果你認為不應顯示這則訊息，請與支援小組聯絡。</translation>
+<translation id="7189558282078169397">在其他裝置上的分頁</translation>
 <translation id="7189965711416741966">指紋新增成功。</translation>
 <translation id="7190921792980745354">要封鎖<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="7191063546666816478">某些支援連結仍會在「<ph name="APP_NAME" />」、「<ph name="APP_NAME_2" />」、「<ph name="APP_NAME_3" />」、「<ph name="NUMBER_OF_OTHER_APPS" />」和其他應用程式中開啟。</translation>
@@ -9079,7 +9085,6 @@
 <translation id="7356908624372060336">網路記錄</translation>
 <translation id="7357271391997763660">要執行密碼檢查嗎？</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
-<translation id="7359326150089800742">加入要搜尋的分頁或檔案，並使用工具</translation>
 <translation id="7359680654975233185">無法投放分頁</translation>
 <translation id="7360257054721917104">正在查看已儲存的桌面和範本，按下 Tab 鍵即可瀏覽。</translation>
 <translation id="7360333718677093875">表情符號挑選器</translation>
@@ -9659,6 +9664,7 @@
 按下已指派的切換工具或按鍵，則可移除指派設定。</translation>
 <translation id="7745554356330788383">重新載入這個頁面，即可在這個網站上將更新後的設定套用到「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="7745677556280361868">要從 Passpoint 訂閱頁面中移除這個網路嗎？</translation>
+<translation id="7745849183714722618">Chrome 可使用直接在裝置執行的 AI 模型，提供詐騙偵測等功能。關閉裝置端 AI 後，這些功能可能無法運作。<ph name="BEGIN_LINK" />進一步瞭解裝置端 AI<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">放大或縮小包括文字在內的畫面項目。你也可以稍後依序前往「設定」&gt;「裝置」&gt;「顯示」調整這項設定。</translation>
 <translation id="7750228210027921155">子母畫面</translation>
 <translation id="7751260505918304024">全部顯示</translation>
@@ -9939,6 +9945,7 @@
 <translation id="794250392403348719">例如：向 8 歲兒童簡單解釋這個概念，使用的語言和比喻方式要簡單易懂，整段說明文字不要超過 150 個字。</translation>
 <translation id="7942846369224063421">預先載入的 UI 轉譯器</translation>
 <translation id="7943271960579497371">已安裝的應用程式</translation>
+<translation id="7943311690198910993">登入方式已更新</translation>
 <translation id="7943368935008348579">下載 PDF</translation>
 <translation id="7943837619101191061">新增位置...</translation>
 <translation id="7944173382284143968">網站要求先確認動態密碼，才能儲存新密碼。請接手處理這項程序，以完成變更。</translation>

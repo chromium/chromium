@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Xəbərdarlıq</translation>
 <translation id="1056980582064308040">Ayarların dəyişdirilməsi hotspotu yenidən başladacaq. Hotspot istifadə edən cihazlar ayrılacaq.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Tapşırıq dayandırıldı</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Yeni PIN kodu daxil edin. PIN minimum bir simvoldan ibarət olmalıdır. Bunlar hərf, rəqəm və digər simvollar ola bilər.}other{Yeni PIN kodu daxil edin. PIN minimum # simvoldan ibarət olmalıdır. Bunlar hərf, rəqəm və digər simvollar ola bilər.}}</translation>
 <translation id="1059484610606223931">Hipermətn Transport Protokolu (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' üçün <ph name="NUM" /> Tab tapılıb</translation>
@@ -1722,6 +1723,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2175384018164129879">&amp;Axtarış Sistemlərini və Sayt Axtarışını idarə edin</translation>
 <translation id="2175526076681939329">Əsas klavişlərdən istifadə edin</translation>
 <translation id="217576141146192373">Printer əlavə etmək olmur. Printerin konfiqurasiyasını yoxlayın və yenidən cəhd edin.</translation>
+<translation id="2175773164573457310">Gemini-dan soruşmaq üçün istənilən mətn və ya şəkli seçin</translation>
 <translation id="2175927920773552910">QR Kod</translation>
 <translation id="2177950615300672361">İnkoqnito rejimi paneli: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3059,6 +3061,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3076966043108928831">Yalnız bu cihazda saxlayın</translation>
 <translation id="3076977359333237641">Giriş datanız silindi</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Funksiya və ya artırma qısayolu tapılmadı</translation>
 <translation id="3080930813589868009">Hər istifadəçi üzrə güncəlləyici</translation>
 <translation id="3080933187214341848">Bu şəbəkə hesabınızla sinxronizasiya edilmir. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Tətbiqin adı və ya ID-si</translation>
@@ -6406,6 +6409,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5436211819997237281">Tab səhifənizi idarə edən cari artırma</translation>
 <translation id="5436492226391861498">Proksi tunel gözlənilir...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> axtarın:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini tapşırığınızı dayandırdı. Nəzərdən keçirmək üçün Chrome-a qayıdın.</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> pəncərəsinin eni hazırda: <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> panelinin eni hazırda: <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Axtarış artırmaları</translation>
 <translation id="5440425659852470030">Yan Paneli bağlayın</translation>
@@ -7601,6 +7605,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="628705218210359422">Parollarınızı izləyin və onları bir yerdə idarə edin.</translation>
 <translation id="628726841779494414">Printer ayarlarında printerləri idarə edin</translation>
 <translation id="6287288864483377583">İdxal yalnız bir sertifikat üçün dəstəklənir</translation>
+<translation id="6287713404380454515">Təhlükəsizlik səbəbindən administrator cihazın PIN və parolunu deaktiv etdi. Bundan sonra <ph name="MANAGER" /> parolundan istifadə edin.</translation>
 <translation id="6287828400772161253">Android telefonu (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Yaxınlıqda paylaşım edən əlçatan cihaz yoxdur. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Yaddaş yeri az olduğuna görə bərpa etmək mümkün deyil.</translation>
@@ -8856,6 +8861,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7188508872042490670">Cihazda olan sayt məlumatları</translation>
 <translation id="7189234443051076392">Əmin olun ki cihazda kifayət qədər yer var</translation>
 <translation id="7189451821249468368">Bu cihazı qeydiyyata almaq üçün yetərincə güncəlləməniz yoxdur. Daha çoxunu almaq üçün satış şöbəsi ilə əlaqə saxlayın. Bu mesajın səhvən göndərildiyini düünürsünüzsə, dəstək xidməti ilə əlaqə saxlayın.</translation>
+<translation id="7189558282078169397">Digər cihazlardakı tablar</translation>
 <translation id="7189965711416741966">Barmaq izi əlavə edildi.</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blok edilsin?</translation>
 <translation id="7191063546666816478">Bəzi dəstəklənən keçidlər hələ də <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> və digər <ph name="NUMBER_OF_OTHER_APPS" /> tətbiqdə açılacaq.</translation>
@@ -9091,7 +9097,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7356908624372060336">Şəbəkə Loqları</translation>
 <translation id="7357271391997763660">Parol yoxlaması aparılsın?</translation>
 <translation id="735745346212279324">VPN bağlantısı kəsildi</translation>
-<translation id="7359326150089800742">Axtarışınıza tab və ya fayl əlavə edin, həmçinin alətdən istifadə edin</translation>
 <translation id="7359680654975233185">Tabı yayımlamaq olmur</translation>
 <translation id="7360257054721917104">Yadda saxlanmış masa və ya şablonlara baxılır. Keçmək üçün taba basın.</translation>
 <translation id="7360333718677093875">emoji seçici</translation>
@@ -9671,6 +9676,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</translation>
 <translation id="7745554356330788383">Bu saytda "<ph name="EXTENSION_NAME" />" üzrə yenilənmiş ayarları tətbiq etmək üçün bu səhifəni təkrar yükləyin</translation>
 <translation id="7745677556280361868">Bu şəbəkə Keçid nöqtəsi abunə səhifəsində silinsin?</translation>
+<translation id="7745849183714722618">Dələduzluq aşkarlanması kimi funksiyaları dəstəkləmək üçün Chrome birbaşa cihazınızdakı Sİ modellərindən istifadə edə bilər. Cihazda Sİ deaktiv olduqda bu funksiyalar işləməyə bilər. <ph name="BEGIN_LINK" />Cihazda Sİ haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Mətn daxil olmaqla ekrandakı elementləri böyüdün, yaxud kiçildin. Bunu Ayarlar &gt; Cihaz &gt; Displeylər bölməsində də tapa bilərsiniz.</translation>
 <translation id="7750228210027921155">Şəkil içində şəkil</translation>
 <translation id="7751260505918304024">Hamısını göstərin</translation>
@@ -9951,6 +9957,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="794250392403348719">Nümunə: Bu anlayışı 8 yaşlı uşaq üçün sadələşdir. Sadə dildən və onların başa düşəcəyi analoqdan istifadə et. Ümumi izahat qısa, 150 sözdən az olmalıdır.</translation>
 <translation id="7942846369224063421">UI vizuallaşdırıcı əvvəlcədən yükləndi</translation>
 <translation id="7943271960579497371">Quraşdırılmış tətbiqlər</translation>
+<translation id="7943311690198910993">Giriş metodu güncəlləndi</translation>
 <translation id="7943368935008348579">PDF endirin</translation>
 <translation id="7943837619101191061">Məkan əlavə edin...</translation>
 <translation id="7944173382284143968">Veb-sayt yeni parolu yadda saxlamazdan əvvəl OTP təsdiqi tələb edir. Dəyişikliyi tamamlamaq üçün manual qaydada davam edin.</translation>

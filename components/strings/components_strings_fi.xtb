@@ -465,7 +465,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1717218214683051432">Liiketunnistimet</translation>
 <translation id="1717494416764505390">Postilaatikko 3</translation>
 <translation id="1717688554309417925">Pankki- ja talletuspalvelut</translation>
-<translation id="1717882880162336471">Kokeile tekoälytilaa</translation>
 <translation id="1719434663396780149">Hinnanlaskuilmoitukset ovat päällä. Voit muuttaa tätä asetusta valitsemalla <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 tuumaa</translation>
 <translation id="1720941539803966190">Sulje ohje</translation>
@@ -615,7 +614,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1960664692890490165">Kun teet ostoksia Chromessa, näet vaihtoehtona muita maksutapoja kuin kortit</translation>
 <translation id="196146181975453736">Tee kertaluontoinen turvatarkistus, jotta voit maksaa nopeammin</translation>
 <translation id="1962204205936693436">Verkkotunnuksen <ph name="DOMAIN" /> kirjanmerkit</translation>
-<translation id="1966259577349514951">Maksa nyt</translation>
 <translation id="1973335181906896915">Sarjaesittämisen virhe</translation>
 <translation id="1973785048533660168">Toimistotyöpaikat ja hallinnolliset työpaikat</translation>
 <translation id="1974060860693918893">Lisäasetukset</translation>
@@ -1057,6 +1055,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2627847595568876492">Poimitaan tekstiä PDF-tiedostosta…</translation>
 <translation id="2628025184666666186">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />, koska se käyttää suojausvarmennetta, johon Chrome tai järjestelmän määritykset eivät luota verkkoliikenteen salauksessa. Tämä voi johtua määritysvirheestä tai yhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="2628224721443278970">Kirjaudu Microsoft OneDriveen</translation>
+<translation id="2631059741268498165">Järjestelmänvalvoja paikansi tämän laitteen, kun se oli poistettu käytöstä. Se on otettu uudelleen käyttöön ja valmis käytettäväksi.</translation>
 <translation id="2631387782019878060">Vahvistuskoodi: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Sivuston <ph name="HOST_NAME" /> palvelimen IP-osoitetta ei löytynyt.</translation>
 <translation id="2638567100095052009">Kirjoita @ hakeaksesi seuraavista: <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1097,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2696385693639654606">Chrome Enterprise Corella voit hallinnoida selainkäytäntöjä, sovelluksia ja laajennuksia pilvestä</translation>
 <translation id="2697248912349197812">Kysy <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Alavalikko käytettävissä, siirry lisävaihtoehtoihin painamalla <ph name="SHORTCUT" />.</translation>
-<translation id="2700335762333112350">Maksa myöhemmin</translation>
 <translation id="2701514975700770343">Tulostuspuoli alaspäin</translation>
 <translation id="2702592986366989640">Edullinen vaihtoehto</translation>
 <translation id="2702801445560668637">Lukulista</translation>
@@ -2448,7 +2446,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4832388034239846146">Päivitä Chrome, jotta voit jakaa välilehtiryhmiä</translation>
 <translation id="483241715238664915">Laita varoitukset päälle</translation>
 <translation id="4832961164064927107">Grillaus</translation>
-<translation id="4839984801146463230">Tallenna tietosi, niin voit hoitaa asioita nopeammin, esimerkiksi täyttää lomakkeita Googlen tuotteissa. Voit <ph name="BEGIN_LINK" />ylläpitää tietojasi<ph name="END_LINK" /> täällä: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />)</translation>
 <translation id="4840250757394056958">Tarkista Chrome-historiasi</translation>
 <translation id="484462545196658690">Automaattinen</translation>
 <translation id="4844937814014739139">Jaettujen välilehtien vierittäminen ja zoomaus</translation>
@@ -2921,6 +2918,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5543564889050342791">Eläintarhat, akvaariot ja suojelualueet</translation>
 <translation id="5543722831081909240">180 astetta</translation>
 <translation id="5544836308113951378">Risteilyt ja tilausalukset</translation>
+<translation id="5546252337258681768">Laitteen lukitus avattu</translation>
 <translation id="5547939254150808298">Paino‑ ja julkaisutoiminta</translation>
 <translation id="554815783948612276">Keskusteluryhmät ja chatit</translation>
 <translation id="5548606607480005320">Turvatarkistus</translation>

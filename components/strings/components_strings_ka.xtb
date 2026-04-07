@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">მოძრაობის სენსორები</translation>
 <translation id="1717494416764505390">საფოსტო ყუთი 3</translation>
 <translation id="1717688554309417925">სადებეტო მომსახურება და საბანკო ოპერაციები ჩეკებით</translation>
-<translation id="1717882880162336471">ცადეთ AI რეჟიმი</translation>
 <translation id="1719434663396780149">ფასების კლების შესახებ გაფრთხილებები ჩართულია. ამის შეცვლა შეგიძლიათ სექციიდან „<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />“.</translation>
 <translation id="1719838434204287058">24 x 30 დუიმი</translation>
 <translation id="1720941539803966190">სახელმძღვანელოს დახურვა</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Chrome-ის მეშვეობით რაიმეს შეძენისას ერთ-ერთ ვარიანტად გამოჩნდეს ბარათის გარეშე გადახდის მეთოდი</translation>
 <translation id="196146181975453736">დაასრულეთ უსაფრთხოების ერთჯერადი შემოწმება, რომ უფრო სწრაფად გადაიხადოთ</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> სანიშნეები</translation>
-<translation id="1966259577349514951">ახლავე გადახდა</translation>
 <translation id="1973335181906896915">სრიალიზაციის შეცდომა</translation>
 <translation id="1973785048533660168">ვაკანსიები საკანცელარიო და ადმინისტრაციულ სფეროში</translation>
 <translation id="1974060860693918893">გაფართოებული</translation>
@@ -1057,6 +1055,7 @@
 <translation id="2627847595568876492">მიმდინარეობს PDF-დან ტექსტის ამოღება...</translation>
 <translation id="2628025184666666186">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />, რადგან ის იყენებს უსაფრთხოების სერტიფიკატს, რომელსაც არ ენდობა Chrome ან თქვენი სისტემის კონფიგურაცია ვებ-ტრაფიკის დაშიფვრისთვის. ეს შეიძლება გამოწვეული იყოს არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის ხელში ჩაგდებით.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-ში შესვლა</translation>
+<translation id="2631059741268498165">თქვენმა ადმინისტრატორმა იპოვა ეს მოწყობილობა, როცა ის გათიშული იყო. ის ხელახლა ჩაირთო და მზადაა გამოსაყენებლად.</translation>
 <translation id="2631387782019878060">დამადასტურებელი კოდი: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ის სერვერის IP მისამართი ვერ მოიძებნა.</translation>
 <translation id="2638567100095052009">აკრიფეთ „@“, რომ მოიძიოთ აქ: <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core საშუალებას გაძლევთ, ღრუბლიდან მართოთ ბრაუზერის წესები, აპები და გაფართოებები</translation>
 <translation id="2697248912349197812">ჰკითხეთ <ph name="KEYWORD_SHORT_NAME" />-ს</translation>
 <translation id="2699273987028089219">ხელმისაწვდომია ქვემენიუ, გამოიყენეთ <ph name="SHORTCUT" /> დამატებით ვარიანტებზე გადასასვლელად.</translation>
-<translation id="2700335762333112350">მოგვიანებით გადახდა</translation>
 <translation id="2701514975700770343">ნაბეჭდი მხარით დაღმა</translation>
 <translation id="2702592986366989640">დაბალფასიანი ვარიანტი</translation>
 <translation id="2702801445560668637">საკითხავი სია</translation>
@@ -2447,7 +2445,6 @@
 <translation id="4832388034239846146">ჩანართების ჯგუფის გასაზიარებლად განაახლეთ Chrome</translation>
 <translation id="483241715238664915">გაფრთხილებების ჩართვა</translation>
 <translation id="4832961164064927107">ბარბექიუ და გრილი</translation>
-<translation id="4839984801146463230">შეინახეთ თქვენი ინფორმაცია და უფრო სწრაფად შეასრულეთ ამოცანები, მაგალითად, შეავსეთ ფორმები Google პროდუქტებში. შეგიძლიათ <ph name="BEGIN_LINK" />მართოთ თქვენი ინფორმაცია<ph name="END_LINK" /> <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-ში <ph name="ACCOUNT" />-ისთვის</translation>
 <translation id="4840250757394056958">თქვენი Chrome-ის ისტორიის ნახვა</translation>
 <translation id="484462545196658690">ავტომატური</translation>
 <translation id="4844937814014739139">გაზიარებული ჩანართების მასშტაბირება და მათზე გადაადგილება</translation>
@@ -2724,6 +2721,7 @@
 <translation id="5255833070095767006">350 x 460 მმ</translation>
 <translation id="5257739419779698609">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ში კოპირება რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ში კოპირება რეკომენდებული არ არის}}</translation>
 <translation id="5258473597674772367">ჩანართების ჯგუფი „<ph name="GROUP_NAME" />“ აღარ არის ხელმისაწვდომი</translation>
+<translation id="5262342527470539728">თქვენი ინფორმაცია შეინახება <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-ში <ph name="ACCOUNT" />-ისთვის</translation>
 <translation id="5263867360296733198">ატვირთვამდე საჭიროა შემოწმება</translation>
 <translation id="5266128565379329178">აკინძვა ზემოთ</translation>
 <translation id="5269225904387178860">ოთხმაგად გახვრეტა ქვემოთ</translation>
@@ -2920,6 +2918,7 @@
 <translation id="5543564889050342791">ზოოპარკები, აკვარიუმები და თავშესაფრები</translation>
 <translation id="5543722831081909240">180 გრადუსი</translation>
 <translation id="5544836308113951378">კრუიზები და ჩარტერები</translation>
+<translation id="5546252337258681768">მოწყობილობა განბლოკილია</translation>
 <translation id="5547939254150808298">ბეჭდვა და გამომცემლობა</translation>
 <translation id="554815783948612276">ფორუმებისა და ჩეთების პროვაიდერები</translation>
 <translation id="5548606607480005320">უსაფრთხოების შემოწმება</translation>
@@ -4772,6 +4771,7 @@
 დამატებითი დეტალები:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">მიკროფონი დაშვებულია ამჯერად</translation>
+<translation id="8421746712901926961">შეინახეთ თქვენი ინფორმაცია <ph name="GOOGLE_WALLET_TITLE_1" />-ში და უფრო სწრაფად შეასრულეთ ამოცანები, მაგალითად, შეავსეთ ფორმები Google პროდუქტებში. <ph name="ACCOUNT" />-ისთვის <ph name="MANAGE_INFO_LINK" /> შეგიძლიათ აქ: <ph name="GOOGLE_WALLET_TITLE_2" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">შეცვლა</translation>
 <translation id="8426945547715537628">დაუშვებთ კლავიატურის უგულებელყოფას?</translation>

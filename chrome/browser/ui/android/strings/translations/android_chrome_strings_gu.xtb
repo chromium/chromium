@@ -684,6 +684,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="393697183122708255">કોઈ ચાલુ વૉઇસ શોધ ઉપલબ્ધ નથી</translation>
+<translation id="3941718885865495207">Chrome Finds સુવિધા પસંદ કરવા માટેની બોટમ શીટ</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, પિન કરેલું ચિત્ર-માં-ચિત્રનું ટૅબ</translation>
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="395377504920307820">કોઈ એકાઉન્ટ વગર ઉપયોગ કરો</translation>
@@ -1189,6 +1190,7 @@
 <translation id="6011308810877101166">શોધ સંબંધિત સૂચનો બહેતર બનાવો</translation>
 <translation id="6013305291643746595">'સૌથી જૂના પહેલા' અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6022659036123304283">Chromeને તમારી જરૂરિયાત અનુરૂપ બનાવો</translation>
+<translation id="6023820583797130428">પાછા જવા માટે મેનૂ ખોલો</translation>
 <translation id="6026538407078977628">પૂર્ણ સ્ક્રીન જેટલું મોટું કરો</translation>
 <translation id="6030719887161080597">જાહેરાતના પર્ફોર્મન્સની માપણી કરવા માટે સાઇટ દ્વારા ઉપયોગમાં લેવાતી માહિતીને મેનેજ કરો</translation>
 <translation id="6039379616847168523">આગલા ટૅબ પર જાઓ</translation>
@@ -1633,6 +1635,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> સ્ટૅન્ડર્ડ ટૅબ}one{<ph name="TABS_COUNT_MANY" /> સ્ટૅન્ડર્ડ ટૅબ}other{<ph name="TABS_COUNT_MANY" /> સ્ટૅન્ડર્ડ ટૅબ}}</translation>
 <translation id="7603168929588204083">અમાન્ય તારીખ</translation>
 <translation id="7605594153474022051">સમન્વયન કામ કરતું નથી</translation>
+<translation id="7608245556672190037">Chrome Finds સુવિધા પસંદ કરવાનો વિકલ્પ સંપૂર્ણ ઊંચાઈએ ખોલ્યો</translation>
 <translation id="7612619742409846846">Google પર આ તરીકે સાઇન ઇન કરો</translation>
 <translation id="7612989789287281429">તમને સાઇન ઇન કરી રહ્યાં છીએ…</translation>
 <translation id="7619072057915878432">નેટવર્ક નિષ્ફળતાને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
@@ -1640,6 +1643,7 @@
 <translation id="7628417132421583481">Password Managerમાં જાઓ</translation>
 <translation id="7630202231528827509">પ્રદાતા URL</translation>
 <translation id="7638584964844754484">ખોટો પાસફ્રેઝ</translation>
+<translation id="764047009170754705">Chrome Finds સુવિધા પસંદ કરવાનો વિકલ્પ બંધ કર્યો</translation>
 <translation id="7646499124171960488">અસુરક્ષિત સાર્વજનિક સાઇટ વિશે તમને ચેતવણી આપે છે</translation>
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="7655240423373329753">છેલ્લા 7 દિવસ</translation>
@@ -1864,6 +1868,7 @@
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="847433688444405067">સમગ્ર ડિવાઇસ પર બ્રાઉઝ કરો</translation>
 <translation id="8477178913400731244">ડેટા ડિલીટ કરો</translation>
+<translation id="8481771036036087705">Chrome Finds સુવિધા પસંદ કરવાનો વિકલ્પ અડધી ઊંચાઈએ ખોલ્યો</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">કોઈ નિષ્ક્રિય વિન્ડો નથી</translation>
 <translation id="8493948351860045254">સ્થાન ખાલી કરો</translation>

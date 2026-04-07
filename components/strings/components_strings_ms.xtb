@@ -465,7 +465,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1717218214683051432">Penderia gerakan</translation>
 <translation id="1717494416764505390">Peti mel 3</translation>
 <translation id="1717688554309417925">Perkhidmatan Debit &amp; Cek</translation>
-<translation id="1717882880162336471">Cuba AI Mode</translation>
 <translation id="1719434663396780149">Makluman penurunan harga dihidupkan. Anda boleh menukar tetapan ini dalam <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Tutup tutorial</translation>
@@ -615,7 +614,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1960664692890490165">Apabila anda membuat pembelian dalam Chrome, lihat kaedah pembayaran bukan kad sebagai pilihan</translation>
 <translation id="196146181975453736">Selesaikan semakan keselamatan satu kali untuk membuat pembayaran yang lebih pantas</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Penanda halaman</translation>
-<translation id="1966259577349514951">Bayar Sekarang</translation>
 <translation id="1973335181906896915">Ralat penyirian</translation>
 <translation id="1973785048533660168">Pekerjaan Perkeranian &amp; Pentadbiran</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
@@ -1057,6 +1055,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2627847595568876492">Mengekstrak teks daripada PDF...</translation>
 <translation id="2628025184666666186">Pelayan ini tidak dapat membuktikan bahawa perkara itu ialah <ph name="DOMAIN" /> kerana sijil keselamatan yang digunakan tidak dipercayai oleh Chrome atau konfigurasi sistem anda untuk penyulitan trafik web. Hal ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda.</translation>
 <translation id="2628224721443278970">Log masuk ke Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Pentadbir anda telah mengesan peranti ini semasa peranti dilumpuhkan. Kad telah didayakan semula dan sedia untuk digunakan.</translation>
 <translation id="2631387782019878060">Kod Pengesahan: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Alamat IP pelayan <ph name="HOST_NAME" /> tidak ditemui.</translation>
 <translation id="2638567100095052009">Taip @ untuk membuat carian merentas <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1097,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2696385693639654606">Chrome Enterprise Core membolehkan anda mengurus dasar penyemak imbas, apl dan sambungan daripada awan</translation>
 <translation id="2697248912349197812">Tanya <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenu tersedia, gunakan <ph name="SHORTCUT" /> untuk menavigasi kepada pilihan tambahan.</translation>
-<translation id="2700335762333112350">Bayar Kemudian</translation>
 <translation id="2701514975700770343">Menghadap ke bawah</translation>
 <translation id="2702592986366989640">Pilihan harga murah</translation>
 <translation id="2702801445560668637">Senarai Bacaan</translation>
@@ -2448,7 +2446,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4832388034239846146">Untuk berkongsi kumpulan tab, kemas kinikan Chrome</translation>
 <translation id="483241715238664915">Hidupkan amaran</translation>
 <translation id="4832961164064927107">BBQ &amp; Gril</translation>
-<translation id="4839984801146463230">Simpan maklumat anda dan selesaikan tugasan dengan lebih pantas, seperti mengisi borang merentas produk Google. Anda boleh <ph name="BEGIN_LINK" />mengurus maklumat anda<ph name="END_LINK" /> dalam <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> untuk <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Lihat sejarah Chrome anda</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Menatal dan mengezum tab dikongsi</translation>
@@ -2725,6 +2722,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda menyalin fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda menyalin fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Kumpulan tab "<ph name="GROUP_NAME" />" tidak tersedia lagi</translation>
+<translation id="5262342527470539728">Maklumat anda disimpan dalam <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> untuk <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Semakan diperlukan sebelum memuat naik</translation>
 <translation id="5266128565379329178">Ikatan atas</translation>
 <translation id="5269225904387178860">Empat tebukan bawah</translation>
@@ -2921,6 +2919,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5543564889050342791">Zoo, Akuarium &amp; Rizab</translation>
 <translation id="5543722831081909240">180 darjah</translation>
 <translation id="5544836308113951378">Pelayaran &amp; Carter</translation>
+<translation id="5546252337258681768">Peranti dibuka kunci</translation>
 <translation id="5547939254150808298">Percetakan &amp; Penerbitan</translation>
 <translation id="554815783948612276">Penyedia Forum &amp; Sembang</translation>
 <translation id="5548606607480005320">Semakan keselamatan</translation>
@@ -4774,6 +4773,7 @@ Butiran tambahan:
 Butiran tambahan:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon dibenarkan pada masa ini</translation>
+<translation id="8421746712901926961">Simpan maklumat anda dalam <ph name="GOOGLE_WALLET_TITLE_1" /> dan selesaikan tugasan dengan lebih pantas, seperti mengisi borang merentas produk Google. Anda boleh <ph name="MANAGE_INFO_LINK" /> dalam <ph name="GOOGLE_WALLET_TITLE_2" /> untuk <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Tukar</translation>
 <translation id="8426945547715537628">Benarkan penggantian papan kekunci?</translation>

@@ -64,6 +64,7 @@ Considerações:
 <translation id="2213327331203157297">Desative o modo de bloqueio total no Chrome para desativá-lo no seu iPhone.</translation>
 <translation id="2242467532204595597">Use o Chrome sempre que tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="2256384876478573507">Abra o Chrome com mais rapidez quando quiser navegar no iPhone.</translation>
+<translation id="2270691132923135296">Aprenda os conceitos básicos do Chrome para começar</translation>
 <translation id="2311240109311056604">Abre o jogo do dinossauro do Chrome.</translation>
 <translation id="2339201583852607431">A senha será salva na sua Conta do Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">O Chrome compartilha sua localização com os sites aos quais você concede permissão.</translation>
@@ -148,7 +149,6 @@ Considerações:
 <translation id="4693084815234024320">Você está na navegação anônima do Chrome</translation>
 <translation id="4708857722625759026">Acesse o Chrome com mais rapidez na base do iPad.</translation>
 <translation id="4713740144985377441">Volte ao Chrome para fazer upload do arquivo</translation>
-<translation id="4713907610796204963">Aprenda os conceitos básicos do Chrome para começar</translation>
 <translation id="4724297637870447613">Usar o Chrome em qualquer lugar</translation>
 <translation id="4738647308035481133">Página do Google Chrome</translation>
 <translation id="4742795653798179840">Dados do Chrome excluídos</translation>
@@ -294,6 +294,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7599894504325210080">Visualização aberta do preenchimento automático do Chrome</translation>
 <translation id="7617512710641355143">O Chrome está sendo gerenciado</translation>
 <translation id="7626032353295482388">Este é o Google Chrome</translation>
+<translation id="7634397654061173327">Para ter acesso aos recursos de segurança infantil no Chrome, use uma Conta do Google configurada para crianças ou adolescentes, ou use o Chrome sem uma conta.</translation>
 <translation id="7641448682796883218">Dica do Chrome: Navegação Segura com Maior Proteção</translation>
 <translation id="7642373780953416937">Mostra alertas sobre problemas de privacidade ou segurança que o Chrome detectar automaticamente.</translation>
 <translation id="7660356333829433649">Volte aqui e veja mais dicas úteis para aproveitar o Chrome ao máximo.</translation>
@@ -326,6 +327,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="8245080522851805544">Mantenha sua navegação particular com a autenticação do dispositivo ao fechar o Chrome</translation>
 <translation id="8248887045858762645">Dica do Chrome</translation>
 <translation id="8265730590513812063">Abrir o menu do Google Chrome</translation>
+<translation id="8284376267694582021">Para ter acesso aos recursos de segurança infantil, use uma Conta do Google configurada para crianças ou adolescentes, ou o Chrome sem uma conta. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8317674518145175158">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
 
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>

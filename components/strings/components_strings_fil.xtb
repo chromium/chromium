@@ -465,7 +465,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1717218214683051432">Mga sensor ng paggalaw</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1717688554309417925">Mga Serbisyo sa Debit at Checking</translation>
-<translation id="1717882880162336471">Subukan ang AI Mode</translation>
 <translation id="1719434663396780149">Naka-on ang mga alerto sa pagbaba ng presyo. Puwede mo itong baguhin sa <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Isara ang tutorial</translation>
@@ -615,7 +614,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1960664692890490165">Kapag bumili ka sa Chrome, tingnan ang mga non-card na paraan ng pagbabayad bilang opsyon</translation>
 <translation id="196146181975453736">Kumpletuhin ang one-time na pagsusuri sa seguridad para mas mabilis na makapagbayad</translation>
 <translation id="1962204205936693436">Mga Bookmark ng <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Bayaran Ngayon</translation>
 <translation id="1973335181906896915">Error sa serialization</translation>
 <translation id="1973785048533660168">Mga Trabahong Klerikal at Administratibo</translation>
 <translation id="1974060860693918893">Advanced</translation>
@@ -1057,6 +1055,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2627847595568876492">Ine-extract ang text mula sa PDF...</translation>
 <translation id="2628025184666666186">Hindi mapatunayan ng server na ito na <ph name="DOMAIN" /> ito dahil gumagamit ito ng certificate na panseguridad na hindi pinagkakatiwalaan ng Chrome o ng iyong configuration ng system para sa pag-encrypt ng trapiko sa web. Posibleng sanhi ito ng maling pag-configure, o ng pag-intercept ng isang attacker sa koneksyon mo.</translation>
 <translation id="2628224721443278970">Mag-sign in sa Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Nahanap ng iyong administrator ang device na ito habang naka-disable ito. Na-enable ulit ito at handa na itong gamitin.</translation>
 <translation id="2631387782019878060">Code sa Pag-verify: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Hindi makita ang IP address ng server ng <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">I-type ang @ para maghanap sa <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1097,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2696385693639654606">Nagbibigay-daan sa iyo ang Chrome Enterprise Core na pamahalaan ang mga patakaran ng browser, app, at extension mula sa cloud</translation>
 <translation id="2697248912349197812">Magtanong sa <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">May available na submenu, gamitin ang <ph name="SHORTCUT" /> para mag-navigate sa mga karagdagang opsyon.</translation>
-<translation id="2700335762333112350">Pay Later</translation>
 <translation id="2701514975700770343">Nakataob</translation>
 <translation id="2702592986366989640">Murang opsyon</translation>
 <translation id="2702801445560668637">Listahan ng Babasahin</translation>
@@ -2447,7 +2445,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4832388034239846146">Para mag-share ng mga grupo ng tab, i-update ang Chrome</translation>
 <translation id="483241715238664915">I-on ang mga babala</translation>
 <translation id="4832961164064927107">BBQ at Pag-iihaw</translation>
-<translation id="4839984801146463230">I-save ang iyong impormasyon at mas mabilis na tapusin ang mga bagay, tulad ng pagsagot ng mga form sa mga produkto ng Google. Puwede mong <ph name="BEGIN_LINK" />pamahalaan ang iyong impormasyon<ph name="END_LINK" /> sa <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para sa <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Tingnan ang iyong history sa Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Pag-scroll at pag-zoom ng mga naka-share na tab</translation>
@@ -2920,6 +2917,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5543564889050342791">Mga Zoo, Aquarium, at Preserve</translation>
 <translation id="5543722831081909240">180 degrees</translation>
 <translation id="5544836308113951378">Mga Cruise at Charter</translation>
+<translation id="5546252337258681768">Naka-unlock ang device</translation>
 <translation id="5547939254150808298">Pag-print at Pag-publish</translation>
 <translation id="554815783948612276">Mga Provider ng Forum at Chat</translation>
 <translation id="5548606607480005320">Pag-check sa kaligtasan</translation>

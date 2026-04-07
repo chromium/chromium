@@ -684,6 +684,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">ბოლო 4 კვირა</translation>
 <translation id="393697183122708255">ჩართული ხმოვანი ძიება მიუწვდომელია</translation>
+<translation id="3941718885865495207">Chrome Finds-ზე ცალსახა თანხმობის ქვედა ფურცელი</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ჩამაგრებული ეკრანი ეკრანში ჩანართი</translation>
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="395377504920307820">ანგარიშის გარეშე გამოყენება</translation>
@@ -1189,6 +1190,7 @@
 <translation id="6011308810877101166">ძიების შემოთავაზებების გაუმჯობესება</translation>
 <translation id="6013305291643746595">უძველესის მიხედვით დალაგება</translation>
 <translation id="6022659036123304283">მოირგეთ Chrome</translation>
+<translation id="6023820583797130428">უკან დასაბრუნებლად გახსენით მენიუ</translation>
 <translation id="6026538407078977628">სრულ ეკრანზე გაფართოება</translation>
 <translation id="6030719887161080597">საიტების მიერ რეკლამის ეფექტურობის განსაზღვრისთვის გამოყენებული ინფორმაციის მართვა</translation>
 <translation id="6039379616847168523">შემდეგ ჩანართზე გადასვლა</translation>
@@ -1633,6 +1635,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> სტანდარტული ჩანართი}other{<ph name="TABS_COUNT_MANY" /> სტანდარტული ჩანართი}}</translation>
 <translation id="7603168929588204083">თარიღი არასწორია</translation>
 <translation id="7605594153474022051">სინქრონიზაცია არ მუშაობს</translation>
+<translation id="7608245556672190037">Chrome Finds-ზე ცალსახა თანხმობის გვერდი გაიხსნა სრულ სიმაღლეზე</translation>
 <translation id="7612619742409846846">Google-ში შესულია:</translation>
 <translation id="7612989789287281429">მიმდინარეობს შესვლა…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა ქსელთან დაკავშირებული პრობლემების გამო.</translation>
@@ -1640,6 +1643,7 @@
 <translation id="7628417132421583481">პაროლების მმართველზე გადასვლა</translation>
 <translation id="7630202231528827509">მიუთითეთ URL</translation>
 <translation id="7638584964844754484">საიდუმლო ფრაზა არასწორია</translation>
+<translation id="764047009170754705">Chrome Finds-ზე ცალსახა თანხმობის გვერდი დაიხურა</translation>
 <translation id="7646499124171960488">გაგაფრთხილებთ საჯარო დაუცველი საიტების შესახებ</translation>
 <translation id="7646772052135772216">პაროლების სინქრონიზაცია არ მუშაობს</translation>
 <translation id="7655240423373329753">ბოლო 7 დღეში</translation>
@@ -1864,6 +1868,7 @@
 <translation id="8473863474539038330">მისამართები და სხვა</translation>
 <translation id="847433688444405067">დაათვალიერეთ ყველა მოწყობილობაზე</translation>
 <translation id="8477178913400731244">მონაცემების წაშლა</translation>
+<translation id="8481771036036087705">Chrome Finds-ზე ცალსახა თანხმობის გვერდი გაიხსნა ნახევარ სიმაღლეზე</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">არააქტიური ფანჯრები არ არის</translation>
 <translation id="8493948351860045254">მეხსიერების გამოთავისუფლება</translation>

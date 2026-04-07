@@ -466,7 +466,6 @@
 <translation id="1717218214683051432">मोशन सेंसर</translation>
 <translation id="1717494416764505390">मेलबॉक्स 3</translation>
 <translation id="1717688554309417925">डेबिट और जांच सेवाएं</translation>
-<translation id="1717882880162336471">एआई मोड को आज़माएं</translation>
 <translation id="1719434663396780149">कीमत में कमी से जुड़ी सूचनाएं पाने की सुविधा चालू है. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> पर जाकर, इसे बंद किया जा सकता है.</translation>
 <translation id="1719838434204287058">24 x 30 इंच</translation>
 <translation id="1720941539803966190">ट्यूटोरियल बंद करें</translation>
@@ -616,7 +615,6 @@
 <translation id="1960664692890490165">Chrome पर खरीदारी करते समय, कार्ड के अलावा पेमेंट के अन्य तरीके देखें</translation>
 <translation id="196146181975453736">तेज़ी से पेमेंट करने के लिए, एक बार की जाने वाली सुरक्षा जांच की प्रोसेस पूरी करें</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
-<translation id="1966259577349514951">अभी पेमेंट करें</translation>
 <translation id="1973335181906896915">क्रमबद्ध करने में गड़बड़ी</translation>
 <translation id="1973785048533660168">क्लर्क और प्रशासनिक सेक्टर की नौकरियां</translation>
 <translation id="1974060860693918893">ऐडवांस सेटिंग</translation>
@@ -1046,6 +1044,7 @@
 <translation id="2610561535971892504">क्लिक टू कॉपी</translation>
 <translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="2612993535136743634">आपके डिवाइस और Google खाते में सेव किए गए सभी सुरक्षा कोड मिटा दिए जाएंगे</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{1 मिनट पहले चालू था}one{# मिनट पहले चालू था}other{# मिनट पहले चालू था}}</translation>
 <translation id="2614835674900828050">इस खरीदारी के लिए उपलब्ध नहीं है</translation>
 <translation id="2616412942031748191">सर्च इंजन ऑप्टिमाइज़ेशन और मार्केटिंग</translation>
 <translation id="2618206371527040026">अकैडमिक कॉन्फ़्रेंस और पब्लिकेशन</translation>
@@ -1057,6 +1056,7 @@
 <translation id="2627847595568876492">PDF फ़ाइल से टेक्स्ट निकाला जा रहा है...</translation>
 <translation id="2628025184666666186">यह सर्वर पुष्टि नहीं कर सका कि यह <ph name="DOMAIN" /> है. ऐसा इसलिए, क्योंकि यह एक ऐसे सुरक्षा सर्टिफ़िकेट का इस्तेमाल कर रहा है जिस पर Chrome या वेब ट्रैफ़िक को एन्क्रिप्ट (सुरक्षित) करने के लिए उपलब्ध आपका सिस्टम कॉन्फ़िगरेशन भरोसा नहीं करता. ऐसा, सिस्टम को गलत तरीके से कॉन्फ़िगर करने या किसी हमलावर का आपके कनेक्शन में छेड़छाड़ करने की वजह से हो सकता है.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive में साइन इन करें</translation>
+<translation id="2631059741268498165">आपके एडमिन ने इस डिवाइस का पता लगाया, जबकि यह बंद था. इसे फिर से चालू कर दिया गया है और अब इसका इस्तेमाल किया जा सकता है.</translation>
 <translation id="2631387782019878060">पुष्टि करने के लिए कोड: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> का सर्वर आईपी पता नहीं मिल सका.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> में खोजने के लिए @ टाइप करें</translation>
@@ -1098,7 +1098,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core की मदद से, ब्राउज़र की नीतियों, ऐप्लिकेशन, और एक्सटेंशन को क्लाउड से मैनेज किया जा सकता है</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> से पूछें</translation>
 <translation id="2699273987028089219">सबमेन्यू उपलब्ध है. ज़्यादा विकल्पों पर जाने के लिए <ph name="SHORTCUT" /> का इस्तेमाल करें.</translation>
-<translation id="2700335762333112350">बाद में पेमेंट करें</translation>
 <translation id="2701514975700770343">उलटा करके रखें</translation>
 <translation id="2702592986366989640">कम कीमत वाला विकल्प</translation>
 <translation id="2702801445560668637">रीडिंग लिस्ट</translation>
@@ -2446,7 +2445,6 @@
 <translation id="4832388034239846146">टैब ग्रुप शेयर करने के लिए Chrome को अपडेट करें</translation>
 <translation id="483241715238664915">सुरक्षा चेतावनियां चालू करें</translation>
 <translation id="4832961164064927107">बारबेक्यू और ग्रिलिंग</translation>
-<translation id="4839984801146463230">अपनी जानकारी सेव करें और Google के सभी प्रॉडक्ट पर, फ़ॉर्म भरने जैसे काम तेज़ी से करें. <ph name="ACCOUNT" /> के लिए, <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> में जाकर <ph name="BEGIN_LINK" />अपनी जानकारी मैनेज<ph name="END_LINK" /> की जा सकती है</translation>
 <translation id="4840250757394056958">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4844937814014739139">शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति दें</translation>
@@ -2723,6 +2721,7 @@
 <translation id="5255833070095767006">350 x 460 मि॰मी॰</translation>
 <translation id="5257739419779698609">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर कॉपी करने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर कॉपी करने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर कॉपी करने का सुझाव नहीं देती}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" टैब ग्रुप अब मौजूद नहीं है</translation>
+<translation id="5262342527470539728"><ph name="ACCOUNT" /> के लिए, आपकी जानकारी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> में सेव की गई है</translation>
 <translation id="5263867360296733198">फ़ाइलें अपलोड करने से पहले, उनकी समीक्षा करना ज़रूरी है</translation>
 <translation id="5266128565379329178">सबसे ऊपर बाइंड</translation>
 <translation id="5269225904387178860">नीचे की ओर क्वाड पंच</translation>
@@ -2919,6 +2918,7 @@
 <translation id="5543564889050342791">चिड़ियाघर, अक्वेरियम, और अभयारण्य</translation>
 <translation id="5543722831081909240">180 डिग्री</translation>
 <translation id="5544836308113951378">क्रूज़ और चार्टर</translation>
+<translation id="5546252337258681768">डिवाइस को अनलॉक कर दिया गया</translation>
 <translation id="5547939254150808298">प्रिंट करना और पब्लिश करना</translation>
 <translation id="554815783948612276">फ़ोरम और चैट की सुविधा देने वाले</translation>
 <translation id="5548606607480005320">सुरक्षा जांच</translation>
@@ -2960,6 +2960,7 @@
 <translation id="5600044805561809264">आपके पास ब्राउज़ करते समय, शेयर किए जा रहे टैब के बारे में आसानी से सवाल पूछने का विकल्प होता है.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> या <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">प्रबंधन समर्थित नहीं</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{1 घंटे पहले चालू था}one{# घंटे पहले चालू था}other{# घंटे पहले चालू था}}</translation>
 <translation id="5605249000617390290">कीमत ट्रैक करने के बारे में ज़्यादा जानें</translation>
 <translation id="5605670050355397069">लेजर</translation>
 <translation id="5610142619324316209">कनेक्शन की जाँच करें</translation>
@@ -3513,6 +3514,7 @@
 <translation id="6456955391422100996">विज्ञापन हटाया गया.</translation>
 <translation id="6457206614190510200">सैडल स्टिच</translation>
 <translation id="6457455098507772300">कीमत में कमी की सूचनाएं, आपके डेस्कटॉप पर पॉप-अप सूचनाओं के तौर पर दिखती हैं</translation>
+<translation id="6458519747993638565">अभी चालू है</translation>
 <translation id="6458606150257356946">फिर भी चिपकाएं</translation>
 <translation id="6462438303393708881">अपलोड को रद्द करें</translation>
 <translation id="6464094930452079790">इमेज</translation>
@@ -4770,6 +4772,7 @@
 ज़्यादा जानकारी:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">इस बार माइक्रोफ़ोन इस्तेमाल करने की अनुमति दी गई</translation>
+<translation id="8421746712901926961">अपनी जानकारी <ph name="GOOGLE_WALLET_TITLE_1" /> में सेव करें और Google के सभी प्रॉडक्ट पर, फ़ॉर्म भरने जैसे काम तेज़ी से करें. <ph name="ACCOUNT" /> के लिए, <ph name="GOOGLE_WALLET_TITLE_2" /> में <ph name="MANAGE_INFO_LINK" /> की जा सकती है.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8426945547715537628">क्या आपको कीबोर्ड के इनपुट को बदलने की अनुमति देनी है?</translation>

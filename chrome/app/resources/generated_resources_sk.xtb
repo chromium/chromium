@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Upozornenie</translation>
 <translation id="1056980582064308040">Ak zmeníte nastavenia, hotspot sa reštartuje. Zariadenia používajúce hotspot sa odpoja.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Úloha bola prerušená</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Zadajte nový PIN. PIN musí mať aspoň jeden znak a môže obsahovať písmená, čísla a ďalšie znaky.}few{Zadajte nový PIN. PIN musí mať aspoň # znaky a môže obsahovať písmená, čísla a ďalšie znaky.}many{Zadajte nový PIN. A PIN must be at least # characters long and can contain letters, numbers, and other characters.}other{Zadajte nový PIN. PIN musí mať aspoň # znakov a môže obsahovať písmená, čísla a ďalšie znaky.}}</translation>
 <translation id="1059484610606223931">Protokol HTTPS (Hypertext Transport Protocol)</translation>
 <translation id="1059944192885972544">Boli nájdené karty (<ph name="NUM" />) pre dopyt <ph name="SEARCH_TEXT" /></translation>
@@ -1724,6 +1725,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2175384018164129879">&amp;Spravovať vyhľadávače a vyhľadávanie na webe</translation>
 <translation id="2175526076681939329">Používať primárne klávesy</translation>
 <translation id="217576141146192373">Tlačiareň sa nepodarilo pridať. Skontrolujte jej konfiguráciu a skúste to znova.</translation>
+<translation id="2175773164573457310">Vyberte ľubovoľný text alebo obrázok a opýtajte sa Gemini</translation>
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2177950615300672361">Karta inkognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3058,6 +3060,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3076966043108928831">Uložiť iba v tomto zariadení</translation>
 <translation id="3076977359333237641">Vaše prihlasovacie údaje boli odstránené</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Nenašli sa žiadne skratky funkcií ani rozšírení</translation>
 <translation id="3080930813589868009">Aktualizátor pre jednotlivých používateľov</translation>
 <translation id="3080933187214341848">Táto sieť nie je synchronizovaná do vášho účtu. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Názov alebo identifikátor aplikácie</translation>
@@ -6405,6 +6408,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5436211819997237281">Vašu stránku na novej karte spravuje aktuálne rozšírenie</translation>
 <translation id="5436492226391861498">Čaká sa na tunelové prepojenie servera proxy...</translation>
 <translation id="5436510242972373446">Prehľadať webovú stránku <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini zastavil vašu úlohu. Ak si ju chcete pozrieť, vráťte sa do Chromu.</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> okno má teraz šírku <ph name="WINDOW_SIZE_PERCENT" /> a <ph name="PANE_SIDE" /> panel <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Vyhľadať rozšírenia</translation>
 <translation id="5440425659852470030">Zavrieť bočný panel</translation>
@@ -7602,6 +7606,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="628705218210359422">Sledujte svoje heslá a spravujte ich na jednom mieste.</translation>
 <translation id="628726841779494414">Spravujte tlačiarne v ich nastaveniach</translation>
 <translation id="6287288864483377583">Import je podporovaný iba pre jeden certifikát</translation>
+<translation id="6287713404380454515">Z bezpečnostných dôvodov správca deaktivoval PIN a heslo vášho zariadenia. Odteraz používajte heslo <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Telefón s Androidom (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Nablízku nie sú žiadne dostupné zdieľajúce zariadenia. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Nedá sa obnoviť pre nedostatok ukladacieho priestoru.</translation>
@@ -8862,6 +8867,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7188508872042490670">Dáta webov v zariadení</translation>
 <translation id="7189234443051076392">Uistite sa, či máte v zariadení dosť miesta</translation>
 <translation id="7189451821249468368">Nemáte dostatočný počet inovácií na registráciu tohto zariadenia. Kontaktujte obchodné oddelenie a kúpte si ďalšie. Ak sa domnievate, že ide o chybu, kontaktujte podporu.</translation>
+<translation id="7189558282078169397">Karty z iných zariadení</translation>
 <translation id="7189965711416741966">Odtlačok prsta bol pridaný.</translation>
 <translation id="7190921792980745354">Chcete zablokovať používateľa <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Niektoré podporované odkazy sa budú stále otvárať v aplikáciách <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> a <ph name="NUMBER_OF_OTHER_APPS" /> ďalších aplikáciách</translation>
@@ -9097,7 +9103,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7356908624372060336">Denníky siete</translation>
 <translation id="7357271391997763660">Chcete spustiť kontrolu hesiel?</translation>
 <translation id="735745346212279324">Sieť VPN je odpojená</translation>
-<translation id="7359326150089800742">Pridať do vyhľadávania kartu alebo súbor a použiť aj nástroj</translation>
 <translation id="7359680654975233185">Karta sa nedá prenášať</translation>
 <translation id="7360257054721917104">Zobrazujú sa uložené plochy a šablóny. Prechádzajte klávesom Tab.</translation>
 <translation id="7360333718677093875">výber emodži</translation>
@@ -9676,6 +9681,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation>
 <translation id="7745554356330788383">Znova načítajte túto stránku, aby sa použili aktualizované nastavenia rozšírenia <ph name="EXTENSION_NAME" /> na tomto webe</translation>
 <translation id="7745677556280361868">Chcete odstrániť túto sieť na stránke odberu Passpoint?</translation>
+<translation id="7745849183714722618">Chrome môže pomocou modelov umelej inteligencie, ktoré sa spúšťajú priamo vo vašom zariadení, poskytovať funkcie, ako je detekcia podvodu. Keď je toto nastavenie vypnuté, tieto funkcie nemusia fungovať. <ph name="BEGIN_LINK" />Ďalšie informácie o umelej inteligencii v zariadení<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Zväčšite alebo zmenšite položky na obrazovke vrátane textu. Môžete to urobiť aj neskôr v sekcii Nastavenia &gt; Zariadenie &gt; Obrazovky.</translation>
 <translation id="7750228210027921155">Obraz v obraze</translation>
 <translation id="7751260505918304024">Zobraziť všetky</translation>
@@ -9956,6 +9962,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="794250392403348719">Príklad: Zjednoduš tento koncept pre osemročné dieťa. Používaj jednoduché výrazy a analógiu, ktorej bude rozumieť. Celé vysvetlenie musí byť stručné a mať menej ako 150 slov.</translation>
 <translation id="7942846369224063421">Prednačítaný vykresľovací modul používateľského rozhrania</translation>
 <translation id="7943271960579497371">Nainštalované aplikácie</translation>
+<translation id="7943311690198910993">Spôsob prihlásenia bol aktualizovaný</translation>
 <translation id="7943368935008348579">Stiahnuť súbory PDF</translation>
 <translation id="7943837619101191061">Pridať umiestnenie...</translation>
 <translation id="7944173382284143968">Web vyžaduje pred uložením nového hesla potvrdenie jednorazového hesla. Ak chcete zmenu dokončiť, vykonajte proces manuálne.</translation>

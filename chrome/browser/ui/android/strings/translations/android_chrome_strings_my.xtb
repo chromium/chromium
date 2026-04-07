@@ -684,6 +684,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">နောက်ဆုံး ၄ ပတ်</translation>
 <translation id="393697183122708255">အသံဖြင့် ရှာဖွေနိုင်ခြင်းအား ဖွင့်မထားပါ</translation>
+<translation id="3941718885865495207">‘Chrome တွေ့ရှိမှုများ’ ရယူခြင်း အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />၊ နှစ်ခုထပ်၍ ကြည့်ခြင်း တဘ်ကို ပင်ထိုးထားသည်</translation>
 <translation id="3950820424414687140">ဝင်ရောက်</translation>
 <translation id="395377504920307820">အကောင့်မပါဘဲ သုံးရန်</translation>
@@ -1189,6 +1190,7 @@
 <translation id="6011308810877101166">ရှာဖွေမှု အကြံပြုချက်များ မွမ်းမံရန်</translation>
 <translation id="6013305291643746595">အဟောင်းဆုံးဖြင့် စီနေသည်</translation>
 <translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
+<translation id="6023820583797130428">နောက်သို့ပြန်သွားရန် မီနူးဖွင့်ပါ</translation>
 <translation id="6026538407078977628">စခရင်အပြည့် ချဲ့ရန်</translation>
 <translation id="6030719887161080597">ကြော်ငြာစွမ်းဆောင်ရည်ကို တိုင်းတာရန်အတွက် ဝဘ်ဆိုက်များမှ သုံးသော အချက်အလက်ကို စီမံရန်</translation>
 <translation id="6039379616847168523">နောက်တဘ်သို့ သွားရန်</translation>
@@ -1632,6 +1634,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{ပုံမှန်တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{ပုံမှန်တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="7603168929588204083">မမှန်ကန်သော ရက်စွဲ</translation>
 <translation id="7605594153474022051">စင့်ခ်လုပ်၍မရပါ</translation>
+<translation id="7608245556672190037">‘Chrome တွေ့ရှိမှုများ’ ရယူခြင်းကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
 <translation id="7612619742409846846">အဖြစ် Google သို့လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="7612989789287281429">လက်မှတ်ထိုးဝင်နေသည်…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ ကွန်ရက် ပြဿနာများကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
@@ -1639,6 +1642,7 @@
 <translation id="7628417132421583481">Password Manager သို့ သွားရန်</translation>
 <translation id="7630202231528827509">ပံ့ပိုးသူ URL</translation>
 <translation id="7638584964844754484">စကားဝှက် မမှန်</translation>
+<translation id="764047009170754705">‘Chrome တွေ့ရှိမှုများ’ ရယူခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="7646499124171960488">လုံခြုံမှုမရှိသော အများသုံးဝဘ်ဆိုက်များအတွက် သင့်ကို သတိပေးသည်</translation>
 <translation id="7646772052135772216">စကားဝှက်စင့်ခ်လုပ်ခြင်းကို အသုံးပြု၍မရပါ</translation>
 <translation id="7655240423373329753">ပြီးခဲ့သော ၇ ရက်</translation>
@@ -1863,6 +1867,7 @@
 <translation id="8473863474539038330">လိပ်စာများနှင့် အခြားအရာများ</translation>
 <translation id="847433688444405067">စက်အားလုံးတွင် ကြည့်ပါ</translation>
 <translation id="8477178913400731244">ဒေတာဖျက်ရန်</translation>
+<translation id="8481771036036087705">‘Chrome တွေ့ရှိမှုများ’ ရယူခြင်း မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">အသုံးမပြုသော ဝင်းဒိုးမရှိပါ</translation>
 <translation id="8493948351860045254">နေရာလွတ်အောင် ပြုလုပ်ပါ</translation>

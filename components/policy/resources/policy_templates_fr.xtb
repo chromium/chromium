@@ -1646,6 +1646,7 @@ Cette règle a été supprimée dans Chrome 145. Nous vous recommandons d'utili
 <translation id="2149957154942061013">Usage interne uniquement</translation>
 <translation id="2151831603578119302">Activer les raccourcis des fonctionnalités d'accessibilité</translation>
 <translation id="2156132677421487971">Configurer les règles pour <ph name="PRODUCT_NAME" />, une fonctionnalité permettant aux utilisateurs de caster le contenu des onglets, des sites ou de leur bureau depuis leur navigateur sur des écrans ou systèmes audio distants.</translation>
+<translation id="2156359411909638496">Paramètres pour les Découvertes Chrome</translation>
 <translation id="2156755242840687300">Serveurs d'impression externes activés</translation>
 <translation id="2157842368188031417">Cette règle ne concerne que les sessions Invité gérées. Elle doit être activée pour que le mode station de travail partagée d'Imprivata autorise les changements d'utilisateurs en cours de session.
       Si cette règle est définie sur "True", certaines règles sont ignorées d'office pour des fonctionnalités, qui conservent les données utilisateur sensibles et qui ne sont pas gérées par le mécanisme de nettoyage utilisé pour les changements d'utilisateurs en cours de session avec le mode station de travail partagée d'Imprivata.
@@ -4055,6 +4056,7 @@ Cette règle relative aux appareils est équivalente à la règle relative aux u
 <translation id="3749511622128647337">Désactiver la sortie audio</translation>
 <translation id="3750220015372671395">Bloquer la génération de clé sur ces sites</translation>
 <translation id="3753267109888284695">Liste d'autorisation HTTP</translation>
+<translation id="3753514818525019935">Ne pas autoriser les Découvertes Chrome.</translation>
 <translation id="3753959315989102457">Désactiver la mise à jour de la position de l'appareil</translation>
 <translation id="3755237588083934849">Permet de spécifier la fréquence d'envoi (en millisecondes) des informations sur l'état de l'appareil. La fréquence minimale autorisée est de 60 secondes.
 
@@ -6001,6 +6003,13 @@ Si cette règle est désactivée, cette fonctionnalité l'est aussi.</translatio
 <translation id="4997074784107449343">Lorsqu'elle est disponible, l'option "Imprimer en tant qu'image" permettant de générer un aperçu avant impression d'un PDF n'est pas proposée par défaut.</translation>
 <translation id="500149597848135831">Activer toutes les variantes</translation>
 <translation id="5006222080181284191">Contrôler l'activation de la fonctionnalité "Aide-moi à écrire" de ChromeOS</translation>
+<translation id="501542798290854504">Configure la connexion automatique des utilisateurs pour les comptes reposant sur un fournisseur d'identité cloud Microsoft® sur <ph name="ANDROID_NAME" />.
+
+Si cette règle est définie sur 1 (<ph name="POLICY_VALUE_ENABLED" />), les utilisateurs qui se sont connectés à une application de productivité Microsoft® sur leur appareil peuvent être connectés automatiquement aux propriétés Web Microsoft® dans <ph name="PRODUCT_NAME" />. Cette fonctionnalité nécessite la présence d'une application de courtier d'authentification Microsoft®, telle que <ph name="MS_AUTH_APP_NAME" />, <ph name="MS_ICP_NAME" /> ou <ph name="MS_LTW_NAME" />. Pour faciliter l'authentification unique, les données d'authentification nécessaires sont partagées avec le fournisseur d'identité cloud Microsoft®.
+
+Si cette règle est définie sur 0 (<ph name="POLICY_VALUE_DISABLED" />) ou n'est pas configurée, la connexion automatique décrite ci-dessus est désactivée, et les utilisateurs doivent fournir manuellement des identifiants pour les propriétés Web Microsoft®.
+
+Remarque : cette règle ne s'applique pas à la navigation privée ni au mode Invité.</translation>
 <translation id="5017157692744444035">Cette règle détermine si les informations exploitables à des fins d'identification des ordinateurs, telles que leur nom ou les adresses réseau, doivent être enregistrées.
 
 Cette règle est ignorée si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
@@ -6477,6 +6486,22 @@ Si cette règle n'est pas configurée, la valeur par défaut est de 0 degré, e
 <translation id="5293285950307241933">Effacer toutes les données utilisateur locales</translation>
 <translation id="5293619885162445352">Autoriser <ph name="PEPPER_NAME" /> à utiliser le nouveau décodeur vidéo.</translation>
 <translation id="529457411593078576">Activer les conditions d'utilisation à la première exécution des onglets personnalisés Chrome</translation>
+<translation id="529718811410033393">Cette règle permet de préciser le nombre maximal de connexions simultanées par serveur proxy pour les requêtes non WebSocket.
+
+Pour modifier les limites de requêtes WebSocket, consultez <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.
+
+Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes.
+Toutefois, certains serveurs proxy ne peuvent pas gérer un nombre élevé de connexions simultanées par client. Pour résoudre ce problème, il suffit de définir cette règle sur une valeur inférieure.
+
+La valeur doit être supérieure ou égale à 6.
+Si vous définissez une valeur inférieure à cette limite, la valeur limite (6) sera utilisée.
+Utilisez une valeur inférieure à celle par défaut (32) à vos propres risques.
+
+La valeur doit être inférieure ou égale à 256 (99 dans <ph name="PRODUCT_NAME" /> 147 et versions antérieures).
+Si vous définissez une valeur supérieure à cette limite, la valeur limite (256, ou 99 dans <ph name="PRODUCT_NAME" /> 147 et versions antérieures) sera utilisée.
+Utilisez une valeur supérieure à celle par défaut (32) à vos propres risques.</translation>
 <translation id="5297873769621042075">Cette règle permet d'établir une liste de noms d'hôte ou de modèles de nom d'hôte (tels que "[*.]example.com") qui ne seront pas mis à niveau vers le protocole HTTPS et n'afficheront pas d'interstitiel d'erreur si le mode HTTPS-First est activé. Les organisations peuvent utiliser cette règle pour maintenir l'accès aux serveurs non compatibles avec HTTPS, sans avoir à désactiver les mises à niveau HTTPS et/ou le mode HTTPS-First.
 
 Les noms d'hôte fournis doivent être indiqués sous forme canonique : tous les noms de domaine internationalisés (IDN) doivent être convertis dans leur format d'étiquette A, et toutes les lettres ASCII doivent être en minuscules.
@@ -7220,6 +7245,7 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
       Les données vitales du produit (VPD) sont un ensemble de données de configuration et d'informations (numéros de pièce et de série, par exemple) associées à l'appareil.</translation>
 <translation id="5760861224093391268">Désactiver l'authentification interne lors de la création de rapports sur les signaux de sécurité utilisateur</translation>
 <translation id="5762969307102447459">Désactiver la saisie automatique pour les adresses</translation>
+<translation id="5763723496957591166">Nombre maximal de connexions simultanées par serveur proxy pour les requêtes WebSocket</translation>
 <translation id="5765780083710877561">Description :</translation>
 <translation id="5766438888216077649">Ne définissez pas <ph name="WINDOW_OPENER_PROPERTY" /> pour les liens ciblant <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5767776869128458023">Désactiver les pages d'erreur alternatives</translation>
@@ -7231,6 +7257,7 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
 <translation id="5776485039795852974">Demander confirmation chaque fois qu'un site veut afficher des notifications sur le bureau</translation>
 <translation id="5776508475264864949">Interdire à l'appli Gemini d'effectuer des actions sur les pages Web.</translation>
 <translation id="5783009211970309878">Imprimer les en-têtes et les pieds de page</translation>
+<translation id="5786913136266632175">Autoriser les Découvertes Chrome et améliorer les modèles d'IA.</translation>
 <translation id="5789288985554424301">Permet de définir si les sites Web sont autorisés à utiliser l'API Idle Detection.
 
 Si cette règle est définie sur "1 - <ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />", les sites Web peuvent utiliser l'API sans demander l'autorisation de l'utilisateur.
@@ -8733,6 +8760,17 @@ Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, c'est
 
       Si cette règle n'est pas configurée, aucune donnée de télémétrie supplémentaire ne sera signalée en cas d'événements de modification de l'intensité du signal.</translation>
 <translation id="6751612743847158732">Restaurez toujours la dernière session.</translation>
+<translation id="6751882390104737961">Les Découvertes Chrome sont une fonctionnalité basée sur l'IA qui aide les utilisateurs à rechercher et à comprendre le contenu de la page Web actuelle.
+
+0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. Elles pourront également être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les sources et les retours écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6752711782954612641">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> vous permet de définir les paramètres d'une recherche d'URL à l'aide de la méthode POST. Il s'agit de paires de noms et de valeurs séparées par une virgule. Si une valeur correspond à un paramètre modèle, comme <ph name="SEARCH_TERM_MARKER" />, elle est remplacée par des termes de recherches réels.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> n'est pas configurée, les requêtes de recherche sont envoyées à l'aide de la méthode GET.</translation>
@@ -9569,6 +9607,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 
       Si cette règle est laissée vide ou n'est pas configurée, l'utilisateur peut utiliser n'importe quel compte Google comme compte de navigation principal sur <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Définir le nombre minimal de caractères pour le code de l'écran de verrouillage</translation>
+<translation id="7231449913899026849">Nombre maximal de connexions simultanées par serveur proxy pour les requêtes non WebSocket</translation>
 <translation id="7234280155140786597">Noms des hôtes de messagerie native non autorisés (ou "*" pour tous)</translation>
 <translation id="723621412149834592">Si cette règle est définie sur <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (valeur 2), l'autorisation de positionnement des fenêtres est par défaut automatiquement refusée aux sites. Cela limite la capacité des sites à voir les informations concernant les écrans de l'appareil, ainsi qu'à utiliser ces informations pour ouvrir et positionner des fenêtres, ou demander le passage en plein écran sur certains écrans.
 
@@ -9889,6 +9928,7 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 <translation id="7481702249684965639">La corbeille est activée pour l'utilisateur.</translation>
 <translation id="7482768039644066614">Activer l'extraction des métadonnées de chargement de la page et les modèles de machine learning pour améliorer l'expérience de navigation</translation>
 <translation id="748292668225669178">Configure l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.</translation>
+<translation id="7483786326602801858">Autoriser la connexion automatique aux fournisseurs d'identité cloud Microsoft® sur <ph name="ANDROID_NAME" /></translation>
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
 <translation id="7486205887492534734">Demander lorsque plusieurs certificats correspondent sur l'écran de connexion</translation>
 <translation id="748873163367340515">Utiliser uniquement les données et les cookies essentiels dans la recherche.</translation>
@@ -10031,6 +10071,22 @@ Si cette règle est vide, aucune exception à <ph name="FLOATING_SSO_DOMAIN_BLOC
 
       Si l'appareil de l'utilisateur n'est pas géré, la disponibilité de cette règle varie également selon que l'utilisateur est le propriétaire de l'appareil ou non.</translation>
 <translation id="7570291542739287032">Google Cloud uniquement</translation>
+<translation id="7571158727244273239">Cette règle permet de préciser le nombre maximal de connexions simultanées par serveur proxy pour les requêtes non WebSocket.
+
+Pour modifier les limites des requêtes non WebSocket, consultez <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.
+
+Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes.
+Toutefois, certains serveurs proxy ne peuvent pas gérer un nombre élevé de connexions simultanées par client. Pour résoudre ce problème, il suffit de définir cette règle sur une valeur inférieure.
+
+La valeur doit être supérieure ou égale à 6.
+Si vous définissez une valeur inférieure à cette limite, la valeur limite (6) sera utilisée.
+Utilisez une valeur inférieure à celle par défaut (32) à vos propres risques.
+
+La valeur doit être inférieure ou égale à 256.
+Si vous définissez une valeur supérieure à cette limite, la valeur limite (256) sera utilisée.
+Utilisez une valeur supérieure à celle par défaut (32) à vos propres risques.</translation>
 <translation id="7572641760104970905">Aucune complexité</translation>
 <translation id="757395965347379751">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> autorise les certificats signés par SHA-1 tant qu'ils sont validés et que leurs chaînes renvoient à un certificat CA installé localement.
 
@@ -11745,6 +11801,7 @@ Si <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> est désactivée, la traductio
 <translation id="8713535263782304771">Désactiver la navigation sécurisée</translation>
 <translation id="8714556680280715750">URL permettant aux utilisateurs d'en savoir plus. Si cette règle n'est pas configurée, plus aucune URL "En savoir plus" ne figurera dans le programme d'installation. Si l'URL est spécifiée, elle doit utiliser le format HTTPS.</translation>
 <translation id="8715885991031124968">Autoriser les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente.</translation>
+<translation id="8720288018555457355">Autoriser les Découvertes Chrome sans améliorer les modèles d'IA.</translation>
 <translation id="8720547069538712402">Autoriser l'utilisateur à activer ou désactiver le correcteur orthographique</translation>
 <translation id="8721685661759544418">Activer la lecture à voix haute des pages Web (distillation du texte et synthèse vocale)</translation>
 <translation id="8726080977639508431">Cette règle contrôle la façon dont <ph name="PRODUCT_NAME" /> interprète les règles des listes grises/de sites pour la fonctionnalité Legacy Browser Support. Cela concerne ces règles : <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> et <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.

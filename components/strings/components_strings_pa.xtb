@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰ</translation>
 <translation id="1717494416764505390">ਮੇਲਬਾਕਸ 3</translation>
 <translation id="1717688554309417925">ਡੈਬਿਟ ਅਤੇ ਚੈੱਕ ਸੰਬੰਧੀ ਸੇਵਾਵਾਂ</translation>
-<translation id="1717882880162336471">AI ਮੋਡ ਅਜ਼ਮਾਓ</translation>
 <translation id="1719434663396780149">ਕੀਮਤਾਂ ਘਟਣ ਸੰਬੰਧੀ ਅਲਰਟ ਚਾਲੂ ਹਨ। ਤੁਸੀਂ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ਵਿੱਚ ਜਾ ਕੇ ਇਸਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1719838434204287058">24 x 30 ਇੰਚ</translation>
 <translation id="1720941539803966190">ਟਿਊਟੋਰੀਅਲ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਖਰੀਦਾਂ ਕਰਦੇ ਹੋ, ਤਾਂ ਬਿਨਾਂ ਕਾਰਡ ਵਾਲੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਨੂੰ ਵਿਕਲਪਾਂ ਵਜੋਂ ਦੇਖੋ</translation>
 <translation id="196146181975453736">ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰਨ ਲਈ ਇੱਕ ਵਾਰ ਦੀ ਸੁਰੱਖਿਆ ਜਾਂਚ ਨੂੰ ਪੂਰਾ ਕਰੋ</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ਬੁੱਕਮਾਰਕਸ</translation>
-<translation id="1966259577349514951">ਹੁਣੇ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="1973335181906896915">ਸੀਰੀਅਲਾਈਜ਼ੇਸ਼ਨ ਗੜਬੜ</translation>
 <translation id="1973785048533660168">ਕਲਰਕ ਅਤੇ ਪ੍ਰਸ਼ਾਸਨ ਸੰਬੰਧੀ ਨੌਕਰੀਆਂ</translation>
 <translation id="1974060860693918893">ਉੱਨਤ</translation>
@@ -1045,6 +1043,7 @@
 <translation id="2610561535971892504">ਕਾਪੀ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2612676031748830579">ਕਾਰਡ ਨੰਬਰ</translation>
 <translation id="2612993535136743634">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਅਤੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਸਾਰੇ ਸੁਰੱਖਿਆ ਕੋਡਾਂ ਨੂੰ ਮਿਟਾਇਆ ਜਾਵੇਗਾ</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{1 ਮਿੰਟ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}one{# ਮਿੰਟ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}other{# ਮਿੰਟ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}}</translation>
 <translation id="2614835674900828050">ਇਸ ਖਰੀਦ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="2616412942031748191">ਖੋਜ ਇੰਜਣ ਸੁਯੋਗਕਰਨ ਅਤੇ ਮਾਰਕੀਟਿੰਗ</translation>
 <translation id="2618206371527040026">ਅਕਾਦਮਿਕ ਕਾਨਫਰੰਸਾਂ ਅਤੇ ਪ੍ਰਕਾਸ਼ਨ</translation>
@@ -1056,6 +1055,7 @@
 <translation id="2627847595568876492">PDF ਤੋਂ ਲਿਖਤ ਨੂੰ ਐਕਸਟਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2628025184666666186">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ ਕਿਉਂਕਿ ਇਹ ਇੱਕ ਅਜਿਹੇ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਵਰਤੋਂ ਕਰ ਰਿਹਾ ਹੈ, ਜਿਸ 'ਤੇ Chrome ਜਾਂ ਵੈੱਬ ਟਰੈਫ਼ਿਕ ਇਨਕ੍ਰਿਪਸ਼ਨ ਲਈ ਉਪਲਬਧ ਤੁਹਾਡਾ ਸਿਸਟਮ ਸੰਰੂਪਣ ਭਰੋਸਾ ਨਹੀਂ ਕਰਦਾ। ਇਸ ਦਾ ਕਾਰਨ ਕੋਈ ਗਲਤ ਸੰਰੂਪਣ ਜਾਂ ਕਿਸੇ ਹਮਲਾਵਰ ਵੱਲੋਂ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕਣਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="2628224721443278970">Microsoft OneDrive ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="2631059741268498165">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ ਡੀਵਾਈਸ ਦੇ ਬੰਦ ਹੋਣ ਦੌਰਾਨ ਇਸਦਾ ਪਤਾ ਲਗਾਇਆ। ਇਸਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ ਅਤੇ ਇਹ ਵਰਤਣ ਲਈ ਤਿਆਰ ਹੈ।</translation>
 <translation id="2631387782019878060">ਪੁਸ਼ਟੀਕਰਨ ਕੋਡ: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ਦਾ ਸਰਵਰ IP ਪਤਾ ਨਹੀਂ ਲੱਭਿਆ।</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> ਵਿੱਚ ਖੋਜਣ ਲਈ @ ਟਾਈਪ ਕਰੋ</translation>
@@ -1097,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core ਤੁਹਾਨੂੰ ਕਲਾਊਡ ਤੋਂ ਬ੍ਰਾਊਜ਼ਰ ਨੀਤੀਆਂ, ਐਪਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦਿੰਦਾ ਹੈ</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="2699273987028089219">ਸਬਮੀਨੂ ਉਪਲਬਧ ਹੈ, ਵਧੀਕ ਵਿਕਲਪਾਂ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ <ph name="SHORTCUT" /> ਵਰਤੋ।</translation>
-<translation id="2700335762333112350">ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="2701514975700770343">ਹੇਠਾਂ ਵੱਲ ਪਾਸਾ ਕੀਤੇ</translation>
 <translation id="2702592986366989640">ਘੱਟ ਕੀਮਤ ਵਾਲੇ ਵਿਕਲਪ</translation>
 <translation id="2702801445560668637">ਵਾਚਣ ਸੂਚੀ</translation>
@@ -2443,7 +2442,6 @@
 <translation id="4832388034239846146">ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="483241715238664915">ਚਿਤਾਵਨੀਆਂ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4832961164064927107">BBQ ਅਤੇ ਗ੍ਰਿਲਿੰਗ</translation>
-<translation id="4839984801146463230">ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਫ਼ਾਰਮ ਭਰਨ ਵਰਗੇ ਕੰਮ ਤੇਜ਼ੀ ਨਾਲ ਕਰੋ। ਤੁਸੀਂ <ph name="ACCOUNT" /> ਲਈ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ਵਿੱਚ <ph name="BEGIN_LINK" />ਆਪਣੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="4840250757394056958">ਆਪਣਾ Chrome ਇਤਿਹਾਸ ਦੇਖੋ</translation>
 <translation id="484462545196658690">ਸਵੈ</translation>
 <translation id="4844937814014739139">ਸਾਂਝੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸਕ੍ਰੋਲ ਕਰਨਾ ਅਤੇ ਜ਼ੂਮ ਕਰਨਾ</translation>
@@ -2916,6 +2914,7 @@
 <translation id="5543564889050342791">ਚਿੜੀਆਘਰ, ਜਲ ਜੀਵਸ਼ਾਲਾਵਾਂ ਅਤੇ ਰੱਖ</translation>
 <translation id="5543722831081909240">180 ਡਿਗਰੀ</translation>
 <translation id="5544836308113951378">ਕਰੂਜ਼ ਅਤੇ ਚਾਰਟਰ</translation>
+<translation id="5546252337258681768">ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ</translation>
 <translation id="5547939254150808298">ਪ੍ਰਿੰਟਿੰਗ ਅਤੇ ਪ੍ਰਕਾਸ਼ਨ</translation>
 <translation id="554815783948612276">ਫ਼ੋਰਮ ਅਤੇ ਚੈਟ ਪ੍ਰਦਾਨਕ</translation>
 <translation id="5548606607480005320">ਸੁਰੱਖਿਆ ਜਾਂਚ</translation>
@@ -2957,6 +2956,7 @@
 <translation id="5600044805561809264">ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ, ਤੁਸੀਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਟੈਬਾਂ ਬਾਰੇ ਆਸਾਨੀ ਨਾਲ ਸਵਾਲ ਪੁੱਛ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ਜਾਂ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ਪ੍ਰਬੰਧਨ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{1 ਘੰਟਾ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}one{# ਘੰਟਾ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}other{# ਘੰਟੇ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}}</translation>
 <translation id="5605249000617390290">ਕੀਮਤ ਦੀ ਟਰੈਕਿੰਗ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="5605670050355397069">ਵਹੀ-ਖਾਤਾ</translation>
 <translation id="5610142619324316209">ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
@@ -3509,6 +3509,7 @@
 <translation id="6456955391422100996">ਵਿਗਿਆਪਨ ਹਟਾਇਆ ਗਿਆ।</translation>
 <translation id="6457206614190510200">ਪਰਤਦਾਰ ਸਿਲਾਈ</translation>
 <translation id="6457455098507772300">ਕੀਮਤ ਘਟਣ ਸੰਬੰਧੀ ਅਲਰਟ ਤੁਹਾਡੇ ਡੈਸਕਟਾਪ 'ਤੇ ਪੌਪਅੱਪ ਸੂਚਨਾਵਾਂ ਵਜੋਂ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ</translation>
+<translation id="6458519747993638565">ਹੁਣੇ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
 <translation id="6458606150257356946">ਫਿਰ ਵੀ ਪੇਸਟ ਕਰੋ</translation>
 <translation id="6462438303393708881">ਅੱਪਲੋਡ ਰੱਦ ਕਰੋ</translation>
 <translation id="6464094930452079790">ਚਿੱਤਰ</translation>

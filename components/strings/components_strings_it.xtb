@@ -465,7 +465,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1717218214683051432">Sensori di movimento</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1717688554309417925">Servizi per conti correnti e carte di debito</translation>
-<translation id="1717882880162336471">Prova AI Mode</translation>
 <translation id="1719434663396780149">Gli avvisi relativi ai cali di prezzo sono attivi. Puoi modificare questa opzione nelle <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Chiudi il tutorial</translation>
@@ -615,7 +614,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1960664692890490165">Quando fai acquisti su Chrome, considera i metodi di pagamento diversi dalle carte come opzione</translation>
 <translation id="196146181975453736">Completa un controllo di sicurezza una tantum per pagare più rapidamente</translation>
 <translation id="1962204205936693436">Segnalibri di <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Paga ora</translation>
 <translation id="1973335181906896915">Errore di serializzazione</translation>
 <translation id="1973785048533660168">Offerte di lavoro per ruoli impiegatizi e amministrativi</translation>
 <translation id="1974060860693918893">Avanzate</translation>
@@ -1045,6 +1043,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2610561535971892504">Fai clic per copiare</translation>
 <translation id="2612676031748830579">Numero carta</translation>
 <translation id="2612993535136743634">Tutti i codici di sicurezza salvati sul dispositivo e nell'Account Google verranno eliminati</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Attivo 1 minuto fa}other{Attivo # minuti fa}}</translation>
 <translation id="2614835674900828050">Non disponibile per questo acquisto</translation>
 <translation id="2616412942031748191">Marketing e ottimizzazione per i motori di ricerca</translation>
 <translation id="2618206371527040026">Conferenze e pubblicazioni accademiche</translation>
@@ -1097,7 +1096,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2696385693639654606">Chrome Enterprise Core ti consente di gestire le policy, le app e le estensioni del browser dal cloud</translation>
 <translation id="2697248912349197812">Chiedi a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Sottomenu disponibile, usa <ph name="SHORTCUT" /> per passare alle opzioni aggiuntive.</translation>
-<translation id="2700335762333112350">Paga dopo</translation>
 <translation id="2701514975700770343">A faccia in giù</translation>
 <translation id="2702592986366989640">Opzione prezzo basso</translation>
 <translation id="2702801445560668637">Elenco di lettura</translation>
@@ -2443,7 +2441,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4832388034239846146">Per condividere gruppi di schede, aggiorna Chrome</translation>
 <translation id="483241715238664915">Attiva gli avvisi</translation>
 <translation id="4832961164064927107">BBQ e grigliate</translation>
-<translation id="4839984801146463230">Salva le tue informazioni e velocizza le attività, ad esempio la compilazione dei moduli nei prodotti Google. Puoi <ph name="BEGIN_LINK" />gestire le tue informazioni<ph name="END_LINK" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Visualizza la tua cronologia di Chrome</translation>
 <translation id="484462545196658690">Automatico</translation>
 <translation id="4844937814014739139">Scorrimento e zoom delle schede condivise</translation>
@@ -2957,6 +2954,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5600044805561809264">Puoi fare domande sulle schede che condividi mentre navighi, in tutta semplicità.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Gestione non supportata</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Attivo 1 ora fa}other{Attivo # ore fa}}</translation>
 <translation id="5605249000617390290">Scopri di più sul monitoraggio dei prezzi</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Verificare la connessione</translation>
@@ -3509,6 +3507,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6456955391422100996">Annuncio rimosso.</translation>
 <translation id="6457206614190510200">Pinzatura centrale</translation>
 <translation id="6457455098507772300">Gli avvisi relativi ai cali di prezzo vengono visualizzati come notifiche popup sul desktop</translation>
+<translation id="6458519747993638565">Attivo ora</translation>
 <translation id="6458606150257356946">Incolla comunque</translation>
 <translation id="6462438303393708881">Annulla caricamento</translation>
 <translation id="6464094930452079790">immagini</translation>

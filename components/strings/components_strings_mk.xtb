@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">Сензори за движење</translation>
 <translation id="1717494416764505390">Поштенско сандаче 3</translation>
 <translation id="1717688554309417925">Услуги за дебитни картички и тековни сметки</translation>
-<translation id="1717882880162336471">Испробајте го „AI-режимот“</translation>
 <translation id="1719434663396780149">Известувањата за намалени цени се вклучени. Ова може да го промените во <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 инчи</translation>
 <translation id="1720941539803966190">Затвори го упатството</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Кога купувате во Chrome, погледнете ги начините на плаќање што не се картичка како опција</translation>
 <translation id="196146181975453736">Извршете еднократна безбедносна проверка за да платите побрзо</translation>
 <translation id="1962204205936693436">Обележувачи на <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Платете сега</translation>
 <translation id="1973335181906896915">Грешка во серијализацијата</translation>
 <translation id="1973785048533660168">Канцелариски и административни работни места</translation>
 <translation id="1974060860693918893">Напредни</translation>
@@ -1057,6 +1055,7 @@
 <translation id="2627847595568876492">Се извлекува текст од PDF…</translation>
 <translation id="2628025184666666186">Серверов не можеше да докаже дека е <ph name="DOMAIN" /> бидејќи користи сертификат за безбедност во којшто нема доверба Chrome или конфигурацијата на системот за шифрирање сообраќај на интернет. Тоа може да се должи на погрешна конфигурација или на напаѓач што ја пресретнува врската.</translation>
 <translation id="2628224721443278970">Најавете се на Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Администраторот го лоцира уредов додека беше оневозможен. Повторно е овозможен и подготвен за користење.</translation>
 <translation id="2631387782019878060">Код за потврда: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-адресата за серверот на <ph name="HOST_NAME" /> не може да се најде.</translation>
 <translation id="2638567100095052009">Напишете @ за да пребарувате во <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1098,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core ви овозможува да управувате со правилата, апликациите и екстензиите за прелистувачот од облакот</translation>
 <translation id="2697248912349197812">Прашајте го <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Достапно е подмени, па користете <ph name="SHORTCUT" /> за да дојдете до дополнителните опции.</translation>
-<translation id="2700335762333112350">Платете подоцна</translation>
 <translation id="2701514975700770343">Со лицето надолу</translation>
 <translation id="2702592986366989640">Опција со ниски цени</translation>
 <translation id="2702801445560668637">Список за читање</translation>
@@ -2447,7 +2445,6 @@
 <translation id="4832388034239846146">За да споделувате групи картички, ажурирајте го Chrome</translation>
 <translation id="483241715238664915">Вклучи опомени</translation>
 <translation id="4832961164064927107">Скара</translation>
-<translation id="4839984801146463230">Зачувајте ги вашите податоци и завршувајте ги работите побрзо, како пополнувањето формулари во производите на Google. <ph name="BEGIN_LINK" />Може да управувате со вашите податоци<ph name="END_LINK" /> во <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Прикажи ја историјата на Chrome</translation>
 <translation id="484462545196658690">Автоматски</translation>
 <translation id="4844937814014739139">Лизгање и зумирање на споделените картички</translation>
@@ -2920,6 +2917,7 @@
 <translation id="5543564889050342791">Зоолошки, аквариуми и резервати</translation>
 <translation id="5543722831081909240">180 степени</translation>
 <translation id="5544836308113951378">Крстарења и чартери</translation>
+<translation id="5546252337258681768">Уредот е отклучен</translation>
 <translation id="5547939254150808298">Печатарство и издаваштво</translation>
 <translation id="554815783948612276">Даватели на услуги за форум и разговори</translation>
 <translation id="5548606607480005320">Безбедносна проверка</translation>

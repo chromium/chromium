@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">મોશન સેન્સર</translation>
 <translation id="1717494416764505390">મેઇલબૉક્સ 3</translation>
 <translation id="1717688554309417925">ડેબિટ અને ચેકિંગ સેવાઓ</translation>
-<translation id="1717882880162336471">AI મોડ અજમાવો</translation>
 <translation id="1719434663396780149">કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવવાની સુવિધા ચાલુ છે. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />માં જઈને તમે આમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="1719838434204287058">24 x 30 ઇંચ</translation>
 <translation id="1720941539803966190">ટ્યૂટૉરિઅલ બંધ કરો</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">જ્યારે તમે Chromeમાં ખરીદી કરો, ત્યારે કાર્ડ સિવાયની ચુકવણી પદ્ધતિઓને વિકલ્પ તરીકે જુઓ</translation>
 <translation id="196146181975453736">ઝડપથી ચુકવણી કરવા માટે એક-વખતની સુરક્ષા તપાસ પૂર્ણ કરો</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> બુકમાર્ક</translation>
-<translation id="1966259577349514951">હમણાં ચુકવણી કરો</translation>
 <translation id="1973335181906896915">અનુક્રમાંકન ભૂલ</translation>
 <translation id="1973785048533660168">કારકુની અને વહીવટી નોકરીઓ</translation>
 <translation id="1974060860693918893">વિગતવાર</translation>
@@ -1057,6 +1055,7 @@
 <translation id="2627847595568876492">PDFમાંથી ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છીએ...</translation>
 <translation id="2628025184666666186">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે કારણ કે તે એવા સુરક્ષા સર્ટિફિકેટનો ઉપયોગ કરી રહ્યું છે જેનો Chrome અથવા વેબ ટ્રાફિક એન્ક્રિપ્શન માટેની તમારી સિસ્ટમની ગોઠવણી દ્વારા વિશ્વાસ કરવામાં આવતો નથી. આવું કદાચ કોઈ ખોટી ગોઠવણી અથવા કોઈ અટૅક કરનારાએ તમારા કનેક્શનમાં અવરોધ ઊભો કર્યો હોવાને કારણે થયું હોઈ શકે છે.</translation>
 <translation id="2628224721443278970">Microsoft OneDriveમાં સાઇન ઇન કરો</translation>
+<translation id="2631059741268498165">જ્યારે આ ડિવાઇસ બંધ હતું, ત્યારે તમારા ઍડમિનિસ્ટ્રેટરને તે મળ્યું હતું. તે ફરીથી ચાલુ કરવામાં આવ્યું છે અને ઉપયોગ માટે તૈયાર છે.</translation>
 <translation id="2631387782019878060">ચકાસણીનો કોડ: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />નું સર્વર IP ઍડ્રેસ ન મળ્યું.</translation>
 <translation id="2638567100095052009">સમગ્ર <ph name="FEATURED_SEARCH_LIST" /> પર શોધવા માટે @ ટાઇપ કરો</translation>
@@ -1098,7 +1097,6 @@
 <translation id="2696385693639654606">Chrome Enterprise Core તમને ક્લાઉડમાંથી બ્રાઉઝરની પૉલિસીઓ, ઍપ અને એક્સ્ટેન્શન મેનેજ કરવાની સુવિધા આપે છે</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />ને પૂછો</translation>
 <translation id="2699273987028089219">સબમેનૂ ઉપલબ્ધ છે, વધારાનાં વિકલ્પો પર નૅવિગેટ કરવા માટે <ph name="SHORTCUT" />નો ઉપયોગ કરો.</translation>
-<translation id="2700335762333112350">પછીથી ચુકવણી કરો</translation>
 <translation id="2701514975700770343">નીચે તરફ</translation>
 <translation id="2702592986366989640">ઓછી કિંમતનો વિકલ્પ</translation>
 <translation id="2702801445560668637">વાંચન સૂચિ</translation>
@@ -2447,7 +2445,6 @@
 <translation id="4832388034239846146">ટૅબના ગ્રૂપ શેર કરવા માટે, Chrome અપડેટ કરો</translation>
 <translation id="483241715238664915">ચેતવણીઓ ચાલુ કરો</translation>
 <translation id="4832961164064927107">BBQ અને ગ્રિલિંગ</translation>
-<translation id="4839984801146463230">તમારી માહિતી સાચવો અને Googleની તમામ પ્રોડક્ટ પર ફોર્મ ભરવા જેવી બાબતો વધુ ઝડપથી કરો. તમે <ph name="ACCOUNT" /> માટે <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />માં <ph name="BEGIN_LINK" />તમારી માહિતી મેનેજ<ph name="END_LINK" /> કરી શકો છો</translation>
 <translation id="4840250757394056958">તમારો Chrome ઇતિહાસ જુઓ</translation>
 <translation id="484462545196658690">ઑટો</translation>
 <translation id="4844937814014739139">શેર કરેલા ટૅબમાં સ્ક્રોલ અને નાનું-મોટું કરવાની સુવિધા</translation>
@@ -2724,6 +2721,7 @@
 <translation id="5255833070095767006">350 x 460 મિમી</translation>
 <translation id="5257739419779698609">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર કૉપિ કરવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર કૉપિ કરવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર કૉપિ કરવાનો સુઝાવ આપતી નથી}}</translation>
 <translation id="5258473597674772367">ટૅબનું ગ્રૂપ "<ph name="GROUP_NAME" />" હવે ઉપલબ્ધ રહ્યું નથી</translation>
+<translation id="5262342527470539728"><ph name="ACCOUNT" /> માટે તમારી માહિતી <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />માં સાચવવામાં આવી છે</translation>
 <translation id="5263867360296733198">અપલોડ કરતા પહેલાં રિવ્યૂ કરવો આવશ્યક છે</translation>
 <translation id="5266128565379329178">ઉપરની બાજુએ જોડો</translation>
 <translation id="5269225904387178860">નીચે ચતુષ્કોણ કાણું પાડો</translation>
@@ -2920,6 +2918,7 @@
 <translation id="5543564889050342791">પ્રાણી સંગ્રહાલયો, માછલીઘર અને અભયારણ્યો</translation>
 <translation id="5543722831081909240">180 ડિગ્રી</translation>
 <translation id="5544836308113951378">ક્રૂઝ અને ચાર્ટર</translation>
+<translation id="5546252337258681768">ડિવાઇસ અનલૉક કર્યું</translation>
 <translation id="5547939254150808298">પ્રિન્ટિંગ અને પબ્લિશિંગ</translation>
 <translation id="554815783948612276">ચર્ચામંચ અને ચૅટની સુવિધા આપતા પ્રદાતાઓ</translation>
 <translation id="5548606607480005320">સલામતી માટે તપાસ</translation>
@@ -4773,6 +4772,7 @@
 વધારાની વિગતો:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">આ વખતે માઇક્રોફોનને મંજૂરી આપી છે</translation>
+<translation id="8421746712901926961"><ph name="GOOGLE_WALLET_TITLE_1" />માં તમારી માહિતી સાચવો અને Googleની તમામ પ્રોડક્ટ પર ફોર્મ ભરવા જેવી બાબતો વધુ ઝડપથી કરો. તમે <ph name="ACCOUNT" />માં <ph name="GOOGLE_WALLET_TITLE_2" /> માટે <ph name="MANAGE_INFO_LINK" /> કરી શકો છો.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">બદલો</translation>
 <translation id="8426945547715537628">કીબોર્ડ ઓવરરાઇડ કરવાની મંજૂરી આપીએ?</translation>

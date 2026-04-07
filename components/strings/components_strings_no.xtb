@@ -465,7 +465,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1717218214683051432">Bevegelsessensorer</translation>
 <translation id="1717494416764505390">Postkasse 3</translation>
 <translation id="1717688554309417925">Debiterings- og sjekktjenester</translation>
-<translation id="1717882880162336471">Prøv AI-modus</translation>
 <translation id="1719434663396780149">Varsler om avslag er på. Du kan endre dette i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 tommer</translation>
 <translation id="1720941539803966190">Lukk veiledningen</translation>
@@ -615,7 +614,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1960664692890490165">Når du kjøper noe i Chrome, kan du se betalingsmåter som ikke er kort, som et alternativ</translation>
 <translation id="196146181975453736">Gjennomfør en engangs-sikkerhetssjekk for å betale raskere</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />-bokmerker</translation>
-<translation id="1966259577349514951">Betal nå</translation>
 <translation id="1973335181906896915">Serialiseringsfeil</translation>
 <translation id="1973785048533660168">Kontorjobber og administrative jobber</translation>
 <translation id="1974060860693918893">Avanserte</translation>
@@ -1045,6 +1043,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2610561535971892504">Klikk for å kopiere</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2612993535136743634">Alle sikkerhetskoder som er lagret på enheten og i Google-kontoen din, blir slettet</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Aktiv for  min siden}other{Aktiv # for  min siden}}</translation>
 <translation id="2614835674900828050">Utilgjengelig for dette kjøpet</translation>
 <translation id="2616412942031748191">Søkemotoroptimalisering og markedsføring</translation>
 <translation id="2618206371527040026">Akademiske konferanser og publikasjoner</translation>
@@ -1056,6 +1055,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2627847595568876492">Henter ut tekst fra PDF-filen …</translation>
 <translation id="2628025184666666186">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />, fordi den bruker et sikkerhetssertifikat som ikke er klarert av Chrome eller systemkonfigurasjonen din for kryptering av nettrafikk. Dette kan skyldes en feilkonfigurering eller at en angriper avskjærer tilkoblingen din.</translation>
 <translation id="2628224721443278970">Logg på Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Administratoren din fant denne enheten mens den var deaktivert. Den er aktivert igjen og klar til bruk.</translation>
 <translation id="2631387782019878060">Bekreftelseskode: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Fant ikke IP-adressen til tjeneren for <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Skriv @ for å søke på tvers av <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1097,7 +1097,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2696385693639654606">Med Chrome Enterprise Core kan du administrere nettleserregler, apper og utvidelser fra nettskyen</translation>
 <translation id="2697248912349197812">Spør <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">En undermeny er tilgjengelig. Bruk <ph name="SHORTCUT" /> for å navigere til flere alternativer.</translation>
-<translation id="2700335762333112350">Betal senere</translation>
 <translation id="2701514975700770343">Forsiden ned</translation>
 <translation id="2702592986366989640">Alternativ med lav pris</translation>
 <translation id="2702801445560668637">Leseliste</translation>
@@ -2446,7 +2445,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4832388034239846146">Oppdater Chrome for å dele fanegrupper</translation>
 <translation id="483241715238664915">Slå på varsler</translation>
 <translation id="4832961164064927107">Grilling</translation>
-<translation id="4839984801146463230">Lagre informasjonen din for å få ting gjort raskere, for eksempel å fylle ut skjemaer på tvers av Google-produkter. Du kan <ph name="BEGIN_LINK" />administrere informasjonen din<ph name="END_LINK" /> i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Se Chrome-loggen din</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Rulling og zooming på delte faner</translation>
@@ -2723,6 +2721,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administratorreglene anbefaler ikke at du kopierer denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du kopierer disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Fanegruppen «<ph name="GROUP_NAME" />» er ikke tilgjengelig lenger</translation>
+<translation id="5262342527470539728">Informasjonen din er lagret i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Filene må gjennomgås før de kan lastes opp</translation>
 <translation id="5266128565379329178">Innbinding topp</translation>
 <translation id="5269225904387178860">Fire hull bunn</translation>
@@ -2919,6 +2918,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5543564889050342791">Dyrehager, akvarier og reservater</translation>
 <translation id="5543722831081909240">180 grader</translation>
 <translation id="5544836308113951378">Cruise og charterturer</translation>
+<translation id="5546252337258681768">Enheten er ulåst</translation>
 <translation id="5547939254150808298">Utskrift og publisering</translation>
 <translation id="554815783948612276">Leverandører av forumer og chat</translation>
 <translation id="5548606607480005320">Sikkerhetssjekk</translation>
@@ -2960,6 +2960,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5600044805561809264">Når du surfer, kan du enkelt stille spørsmål om fanene du deler.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> eller <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Administrering støttes ikke</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Aktiv for  t. siden}other{Aktiv # for  t. siden}}</translation>
 <translation id="5605249000617390290">Finn ut mer om prissporing</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Sjekk tilkoblingen</translation>
@@ -3513,6 +3514,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6456955391422100996">Annonsen er fjernet.</translation>
 <translation id="6457206614190510200">Ryggstifting</translation>
 <translation id="6457455098507772300">Varsler om avslag vises som forgrunnsvarsler på skrivebordet</translation>
+<translation id="6458519747993638565">Aktiv nå</translation>
 <translation id="6458606150257356946">Lim inn likevel</translation>
 <translation id="6462438303393708881">Avbryt opplastingen</translation>
 <translation id="6464094930452079790">bilder</translation>
@@ -4769,6 +4771,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 Mer informasjon:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon er tillatt denne gangen</translation>
+<translation id="8421746712901926961">Lagre informasjonen din i <ph name="GOOGLE_WALLET_TITLE_1" /> for å få ting gjort raskere, for eksempel å fylle ut skjemaer i ulike Google-produkter. Du kan <ph name="MANAGE_INFO_LINK" /> i <ph name="GOOGLE_WALLET_TITLE_2" /> for <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Endre</translation>
 <translation id="8426945547715537628">Vil du tillate tastaturoverstyring?</translation>

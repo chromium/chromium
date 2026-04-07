@@ -684,6 +684,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">das últimas quatro semanas</translation>
 <translation id="393697183122708255">Nenhuma pesq. por voz ativada disponível</translation>
+<translation id="3941718885865495207">Página inferior para ativação da função de descoberta no Chrome.</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, guia picture-in-picture fixada</translation>
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="395377504920307820">Usar sem uma conta</translation>
@@ -1190,6 +1191,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
 <translation id="6013305291643746595">Ordenar por mais antigos</translation>
 <translation id="6022659036123304283">Deixe o Chrome do seu jeito</translation>
+<translation id="6023820583797130428">Abra o menu para voltar</translation>
 <translation id="6026538407078977628">Abrir em tela cheia</translation>
 <translation id="6030719887161080597">Gerencie as informações usadas por sites para avaliar a performance de anúncios</translation>
 <translation id="6039379616847168523">Ir para a próxima guia</translation>
@@ -1634,6 +1636,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> guia padrão}one{<ph name="TABS_COUNT_MANY" /> guia padrão}other{<ph name="TABS_COUNT_MANY" /> guias padrão}}</translation>
 <translation id="7603168929588204083">Data inválida</translation>
 <translation id="7605594153474022051">A sincronização não está funcionando</translation>
+<translation id="7608245556672190037">A opção de ativar a função de descoberta no Chrome foi aberta no tamanho máximo.</translation>
 <translation id="7612619742409846846">Conta conectada ao Google como</translation>
 <translation id="7612989789287281429">Fazendo login…</translation>
 <translation id="7619072057915878432">Falha no download do arquivo <ph name="FILE_NAME" /> devido a falhas na rede.</translation>
@@ -1641,6 +1644,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7628417132421583481">Acessar o Gerenciador de Senhas</translation>
 <translation id="7630202231528827509">URL do provedor</translation>
 <translation id="7638584964844754484">Senha incorreta</translation>
+<translation id="764047009170754705">A opção de ativar a função de descoberta no Chrome foi fechada.</translation>
 <translation id="7646499124171960488">Avisa sobre sites públicos sem segurança</translation>
 <translation id="7646772052135772216">A sincronização de senha não está funcionando</translation>
 <translation id="7655240423373329753">nos últimos 7 dias</translation>
@@ -1865,6 +1869,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="847433688444405067">Navegue em vários dispositivos</translation>
 <translation id="8477178913400731244">Excluir dados</translation>
+<translation id="8481771036036087705">A opção de ativar a função de descoberta no Chrome foi aberta na metade do tamanho.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Nenhuma janela inativa</translation>
 <translation id="8493948351860045254">Liberar espaço</translation>

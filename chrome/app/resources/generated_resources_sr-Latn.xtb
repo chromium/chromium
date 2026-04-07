@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1056980582064308040">Ako promenite podešavanja, hotspot će se restartovati. Veza uređaja sa hotspotom biće prekinuta.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Zadatak je prekinut</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Unesite novi PIN. PIN mora da ima bar jedan znak i može da sadrži slova, brojeve i druge znakove.}one{Unesite novi PIN. PIN mora da ima bar # znak i može da sadrži slova, brojeve i druge znakove.}few{Unesite novi PIN. PIN mora da ima bar # znaka i može da sadrži slova, brojeve i druge znakove.}other{Unesite novi PIN. PIN mora da ima bar # znakova i može da sadrži slova, brojeve i druge znakove.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Pronađenih kartica za „<ph name="SEARCH_TEXT" />“: <ph name="NUM" /></translation>
@@ -1720,6 +1721,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2175384018164129879">&amp;Upravljajte pretraživačima i pretragom sajta</translation>
 <translation id="2175526076681939329">Koristi primarne tastere</translation>
 <translation id="217576141146192373">Dodavanje štampača nije uspelo. Proverite konfiguraciju štampača i probajte ponovo.</translation>
+<translation id="2175773164573457310">Izaberite bilo koji tekst ili sliku da biste postavili pitanje Gemini-ju</translation>
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="2177950615300672361">Kartica Bez arhiviranja: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -6402,6 +6404,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5436211819997237281">Aktuelni dodatak koji upravlja stranicom nove kartice</translation>
 <translation id="5436492226391861498">Čekanje na proksi tunel...</translation>
 <translation id="5436510242972373446">Pretraži sajt <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini je zaustavio zadatak. Vratite se u Chrome da biste ga pregledali.</translation>
 <translation id="5438014818441491616">Prozor <ph name="WINDOW_SIDE" /> je sada širok <ph name="WINDOW_SIZE_PERCENT" />, a okno <ph name="PANE_SIDE" /> je sada široko <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Pronađite dodatke</translation>
 <translation id="5440425659852470030">Zatvori bočnu tablu</translation>
@@ -7600,6 +7603,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="628705218210359422">Pratite lozinke i upravljajte njima na jednom mestu.</translation>
 <translation id="628726841779494414">Upravljajte štampačima u podešavanjima štampača</translation>
 <translation id="6287288864483377583">Uvoz je podržan samo za jedan sertifikat</translation>
+<translation id="6287713404380454515">Iz bezbednosnih razloga, administrator je onemogućio PIN i lozinku uređaja. Od sada koristite lozinku za <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Android telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Nema dostupnih uređaja koji dele u blizini. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Vraćanje nije uspelo zbog nedostatka memorijskog prostora.</translation>
@@ -8860,6 +8864,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7188508872042490670">Podaci o sajtovima na uređaju</translation>
 <translation id="7189234443051076392">Proverite da li na uređaju ima dovoljno prostora</translation>
 <translation id="7189451821249468368">Nemate dovoljno nadogradnji da biste registrovali ovaj uređaj. Obratite se sektoru prodaje da biste kupili još licenci. Ako smatrate da se ova poruka prikazuje greškom, obratite se podršci.</translation>
+<translation id="7189558282078169397">Kartice sa drugih uređaja</translation>
 <translation id="7189965711416741966">Dodali ste otisak prsta.</translation>
 <translation id="7190921792980745354">Želite da blokirate korisnika <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Neki podržani linkovi će se i dalje otvarati u aplikacijama <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i još <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
@@ -9095,7 +9100,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7356908624372060336">Evidencija mreže</translation>
 <translation id="7357271391997763660">Želite da pokrenete proveru lozinke?</translation>
 <translation id="735745346212279324">Veza sa VPN-om je prekinuta</translation>
-<translation id="7359326150089800742">Dodajte karticu ili fajl u pretragu, a koristite i alatku</translation>
 <translation id="7359680654975233185">Prebacivanje kartice nije uspelo</translation>
 <translation id="7360257054721917104">Prikazuju se sačuvane radne površine i šabloni. Pritisnite karticu da biste se kretali.</translation>
 <translation id="7360333718677093875">birač emodžija</translation>
@@ -9675,6 +9679,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation>
 <translation id="7745554356330788383">Ponovo učitajte ovu stranicu da biste primenili ažurirana podešavanja za dodatak <ph name="EXTENSION_NAME" /> na ovom sajtu</translation>
 <translation id="7745677556280361868">Želite da uklonite ovu mrežu sa stranice pretplate za Passpoint?</translation>
+<translation id="7745849183714722618">Da bi omogućio funkcije kao što je otkrivanje prevara, Chrome može da koristi modele veštačke inteligencije koji se pokreću direktno na uređaju. Ako je to isključeno, te funkcije možda neće raditi. <ph name="BEGIN_LINK" />Saznajte više o veštačkoj inteligenciji na uređaju<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Umanjite ili uvećajte stavke na ekranu, uključujući tekst. Ovo možete da pronađete i kasnije u odeljku Podešavanja &gt; Uređaj &gt; Ekrani.</translation>
 <translation id="7750228210027921155">Slika u slici</translation>
 <translation id="7751260505918304024">Prikaži sve</translation>
@@ -9955,6 +9960,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="794250392403348719">Primer: Pojednostavi ovaj koncept za dete od 8 godina. Koristi jednostavan jezik i analogiju koju će razumeti. Objašnjenje treba da bude sažeto, do 150 reči.</translation>
 <translation id="7942846369224063421">Predučitani prikazivač korisničkog interfejsa</translation>
 <translation id="7943271960579497371">Instalirane aplikacije</translation>
+<translation id="7943311690198910993">Način prijavljivanja je ažuriran</translation>
 <translation id="7943368935008348579">Preuzimajte PDF-ove</translation>
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
 <translation id="7944173382284143968">Veb-sajt zahteva OTP potvrdu pre čuvanja nove lozinke. Dovršite postupak ručno da biste dovršili promenu.</translation>

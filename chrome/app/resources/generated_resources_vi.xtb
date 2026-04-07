@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Cảnh báo</translation>
 <translation id="1056980582064308040">Khi bạn thay đổi chế độ cài đặt, điểm phát sóng sẽ khởi động lại. Các thiết bị sử dụng điểm phát sóng sẽ ngắt kết nối.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">Việc cần làm đã bị dừng xử lý</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Nhập mã PIN mới. Mã PIN phải có ít nhất một ký tự, có thể chứa chữ cái, số và các ký tự khác.}other{Nhập mã PIN mới. Mã PIN phải có ít nhất # ký tự, có thể chứa chữ cái, số và các ký tự khác.}}</translation>
 <translation id="1059484610606223931">Giao thức truyền tải siêu văn bản (HTTPS)</translation>
 <translation id="1059944192885972544">Đã tìm thấy <ph name="NUM" /> thẻ cho "<ph name="SEARCH_TEXT" />"</translation>
@@ -1732,6 +1733,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2175384018164129879">&amp;Quản lý Công cụ tìm kiếm và công cụ Tìm kiếm trang web</translation>
 <translation id="2175526076681939329">Sử dụng các phím chính</translation>
 <translation id="217576141146192373">Không thể thêm máy in. Vui lòng kiểm tra cấu hình của máy in rồi thử lại.</translation>
+<translation id="2175773164573457310">Chọn văn bản hoặc hình ảnh bất kỳ để hỏi Gemini</translation>
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="2177950615300672361">Thẻ ẩn danh: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3069,6 +3071,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3076966043108928831">Chỉ lưu trên thiết bị này</translation>
 <translation id="3076977359333237641">Đã xóa dữ liệu đăng nhập của bạn</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Không tìm thấy lối tắt đến tính năng hoặc tiện ích nào</translation>
 <translation id="3080930813589868009">Trình cập nhật cho từng người dùng</translation>
 <translation id="3080933187214341848">Mạng này chưa được đồng bộ hóa với tài khoản của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Tên hoặc mã ứng dụng</translation>
@@ -6418,6 +6421,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5436211819997237281">Tiện ích hiện đang quản lý trang thẻ mới</translation>
 <translation id="5436492226391861498">Chờ đường hầm proxy...</translation>
 <translation id="5436510242972373446">Tìm kiếm <ph name="SITE_NAME" />:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini đã dừng xử lý việc cần làm của bạn. Vui lòng quay lại Chrome để xem xét.</translation>
 <translation id="5438014818441491616">Cửa sổ <ph name="WINDOW_SIDE" /> hiện rộng <ph name="WINDOW_SIZE_PERCENT" />, ngăn <ph name="PANE_SIDE" /> hiện rộng <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Tìm kiếm &amp;tiện ích</translation>
 <translation id="5440425659852470030">Đóng Bảng điều khiển bên</translation>
@@ -7615,6 +7619,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="628705218210359422">Theo dõi và quản lý mật khẩu của bạn ở cùng một nơi.</translation>
 <translation id="628726841779494414">Quản lý máy in của bạn trong phần cài đặt máy in</translation>
 <translation id="6287288864483377583">Chỉ hỗ trợ nhập một chứng chỉ</translation>
+<translation id="6287713404380454515">Vì lý do bảo mật, quản trị viên đã vô hiệu hoá mã PIN và mật khẩu của thiết bị của bạn. Từ bây giờ, hãy sử dụng mật khẩu của <ph name="MANAGER" />.</translation>
 <translation id="6287828400772161253">Điện thoại Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Không có thiết bị nào ở gần đang chia sẻ với bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Không thể khôi phục do thiếu không gian lưu trữ.</translation>
@@ -8873,6 +8878,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7188508872042490670">Dữ liệu trang web trên máy</translation>
 <translation id="7189234443051076392">Hãy đảm bảo thiết bị của bạn có đủ dung lượng</translation>
 <translation id="7189451821249468368">Bạn không có đủ bản nâng cấp để đăng ký thiết bị này. Vui lòng liên hệ với bộ phận bán hàng để mua thêm. Nếu bạn nhận được thư này do nhầm lẫn, vui lòng liên hệ với nhóm hỗ trợ.</translation>
+<translation id="7189558282078169397">Thẻ từ các thiết bị khác</translation>
 <translation id="7189965711416741966">Đã thêm vân tay.</translation>
 <translation id="7190921792980745354">Chặn <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Một số đường liên kết được hỗ trợ vẫn sẽ mở trong <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> và <ph name="NUMBER_OF_OTHER_APPS" /> ứng dụng khác.</translation>
@@ -9108,7 +9114,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7356908624372060336">Nhật ký mạng</translation>
 <translation id="7357271391997763660">Chạy tính năng kiểm tra mật khẩu?</translation>
 <translation id="735745346212279324">Đã ngắt kết nối VPN</translation>
-<translation id="7359326150089800742">Thêm thẻ hoặc tệp vào yêu cầu tìm kiếm, đồng thời sử dụng một công cụ</translation>
 <translation id="7359680654975233185">Không truyền được thẻ</translation>
 <translation id="7360257054721917104">Đang xem không gian làm việc và mẫu đã lưu. Hãy nhấn phím tab để di chuyển.</translation>
 <translation id="7360333718677093875">bộ chọn biểu tượng cảm xúc</translation>
@@ -9688,6 +9693,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7745554356330788383">Tải lại trang này để áp dụng chế độ cài đặt đã cập nhật cho "<ph name="EXTENSION_NAME" />" trên trang web này</translation>
 <translation id="7745677556280361868">Xoá mạng này trong trang đăng ký Passpoint?</translation>
+<translation id="7745849183714722618">Để cung cấp các tính năng như phát hiện lừa đảo, Chrome có thể sử dụng các mô hình AI chạy trực tiếp trên thiết bị của bạn. Khi chế độ này tắt, các tính năng này có thể không hoạt động. <ph name="BEGIN_LINK" />Tìm hiểu thêm về AI trên thiết bị<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Thu nhỏ hoặc phóng to các mục trên màn hình, bao gồm cả văn bản. Bạn cũng có thể tìm tuỳ chọn này sau trong phần Cài đặt &gt; Thiết bị &gt; Màn hình.</translation>
 <translation id="7750228210027921155">Hình trong hình</translation>
 <translation id="7751260505918304024">Hiển thị tất cả</translation>
@@ -9968,6 +9974,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="794250392403348719">Ví dụ: Vui lòng đơn giản hoá khái niệm cho trẻ 8 tuổi. Sử dụng ngôn từ đơn giản và một ví dụ tương tự mà trẻ có thể hiểu. Đảm bảo toàn bộ phần giải thích ngắn gọn, dưới 150 từ.</translation>
 <translation id="7942846369224063421">Trình kết xuất giao diện người dùng tải trước</translation>
 <translation id="7943271960579497371">Ứng dụng đã cài đặt</translation>
+<translation id="7943311690198910993">Đã cập nhật phương thức đăng nhập</translation>
 <translation id="7943368935008348579">Tải tệp PDF xuống</translation>
 <translation id="7943837619101191061">Thêm vị trí...</translation>
 <translation id="7944173382284143968">Trang web yêu cầu xác nhận bằng OTP trước khi lưu mật khẩu mới. Vui lòng thực hiện quy trình theo cách thủ công để hoàn tất thay đổi.</translation>

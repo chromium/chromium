@@ -465,7 +465,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1717218214683051432">Hareket sensörleri</translation>
 <translation id="1717494416764505390">Posta kutusu 3</translation>
 <translation id="1717688554309417925">Banka Kartı ve Cari Hesap Hizmetleri</translation>
-<translation id="1717882880162336471">AI Modu'nu deneyin</translation>
 <translation id="1719434663396780149">Fiyat düşüşü uyarıları açık. Bunu <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> bölümünde değiştirebilirsiniz.</translation>
 <translation id="1719838434204287058">24 x 30 inç</translation>
 <translation id="1720941539803966190">Eğitimi kapat</translation>
@@ -615,7 +614,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1960664692890490165">Chrome'da alışveriş yaparken kart harici ödeme yöntemleri seçeneği gösterilir</translation>
 <translation id="196146181975453736">Daha hızlı ödeme yapmak için tek seferlik güvenlik kontrolünü tamamlayın</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Yer İşaretleri</translation>
-<translation id="1966259577349514951">Şimdi Ödeyin</translation>
 <translation id="1973335181906896915">Serileştirme hatası</translation>
 <translation id="1973785048533660168">Büro ve Yönetim İşleri</translation>
 <translation id="1974060860693918893">Gelişmiş</translation>
@@ -1045,6 +1043,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2610561535971892504">Kopyalamak için tıkla</translation>
 <translation id="2612676031748830579">Kart numarası</translation>
 <translation id="2612993535136743634">Cihazınızda ve Google Hesabınızda kayıtlı tüm güvenlik kodları silinecek</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{1 dk. önce etkindi}other{# dk. önce etkindi}}</translation>
 <translation id="2614835674900828050">Bu satın alma işleminde kullanılamaz</translation>
 <translation id="2616412942031748191">Arama Motoru Optimizasyonu ve Pazarlaması</translation>
 <translation id="2618206371527040026">Akademik Konferanslar ve Yayınlar</translation>
@@ -1056,6 +1055,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2627847595568876492">PDF'deki metin çıkarılıyor...</translation>
 <translation id="2628025184666666186">Bu sunucu, web trafiği şifreleme için Chrome veya sistem yapılandırmanız tarafından güvenilmeyen bir güvenlik sertifikası kullandığından <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Bu durum, yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive'da oturum açın</translation>
+<translation id="2631059741268498165">Yöneticiniz bu cihazı devre dışıyken buldu. Yeniden etkinleştirildi ve kullanıma hazır.</translation>
 <translation id="2631387782019878060">Doğrulama Kodu: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ana makinesinin sunucu IP adresi bulunamadı.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> üzerinde arama yapmak için @ yazın</translation>
@@ -1097,7 +1097,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2696385693639654606">Chrome Enterprise Core ile tarayıcı politikaları, uygulamalar ve uzantıları buluttan yönetebilirsiniz</translation>
 <translation id="2697248912349197812">Siz sorun, <ph name="KEYWORD_SHORT_NAME" /> yanıtlasın</translation>
 <translation id="2699273987028089219">Alt menü mevcut. Ek seçeneklere gitmek için <ph name="SHORTCUT" /> öğesini kullanın.</translation>
-<translation id="2700335762333112350">Sonra Ödeyin</translation>
 <translation id="2701514975700770343">Aşağı dönük</translation>
 <translation id="2702592986366989640">Düşük fiyatlı seçenek</translation>
 <translation id="2702801445560668637">Okuma Listesi</translation>
@@ -2446,7 +2445,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4832388034239846146">Sekme gruplarını paylaşmak için Chrome'u güncelleyin</translation>
 <translation id="483241715238664915">Uyarıları açın</translation>
 <translation id="4832961164064927107">Barbekü ve Izgara</translation>
-<translation id="4839984801146463230">Google ürünlerinde form doldurma gibi işlemleri daha hızlı yapmak için bilgilerinizi kaydedin. <ph name="ACCOUNT" /> hesabına ait <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> uygulamasında <ph name="BEGIN_LINK" />bilgilerinizi yönetebilirsiniz<ph name="END_LINK" />.</translation>
 <translation id="4840250757394056958">Chrome geçmişimi göster</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Paylaşılan sekmeleri kaydırma ve yakınlaştırma</translation>
@@ -2919,6 +2917,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5543564889050342791">Hayvanat Bahçeleri, Akvaryumlar ve Doğa Koruma Alanları</translation>
 <translation id="5543722831081909240">180 derece</translation>
 <translation id="5544836308113951378">Gemi Yolculukları ve Tekne Kiralama</translation>
+<translation id="5546252337258681768">Cihazın kilidi açıldı</translation>
 <translation id="5547939254150808298">Baskı ve Yayıncılık</translation>
 <translation id="554815783948612276">Forum ve Sohbet Sağlayıcıları</translation>
 <translation id="5548606607480005320">Güvenlik kontrolü</translation>
@@ -2960,6 +2959,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5600044805561809264">Göz atarken paylaştığınız sekmelerle ilgili soruları kolayca sorabilirsiniz.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> veya <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Yönetim desteklenmiyor</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{1 saat önce etkindi}other{# saat önce etkindi}}</translation>
 <translation id="5605249000617390290">Fiyat takibi hakkında daha fazla bilgi</translation>
 <translation id="5605670050355397069">Ana Defter</translation>
 <translation id="5610142619324316209">Bağlantınızı kontrol etme</translation>
@@ -3513,6 +3513,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6456955391422100996">Reklam kaldırıldı.</translation>
 <translation id="6457206614190510200">Ortada tel zımba</translation>
 <translation id="6457455098507772300">Fiyat düşüşü uyarıları, masaüstünüzde pop-up bildirimleri olarak gösterilir</translation>
+<translation id="6458519747993638565">Şu anda etkin</translation>
 <translation id="6458606150257356946">Yine de yapıştır</translation>
 <translation id="6462438303393708881">Yüklemeyi iptal et</translation>
 <translation id="6464094930452079790">resimler</translation>

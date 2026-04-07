@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">وارننگ</translation>
 <translation id="1056980582064308040">ترتیبات کو تبدیل کرنے سے ہاٹ اسپاٹ ری اسٹارٹ ہو جائے گا۔ ہاٹ اسپاٹ استعمال کرنے والے آلات غیر منسلک ہو جائیں گے۔</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">ٹاسک میں خلل پڑا</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{‏اپنا نیا PIN درج کریں۔ PIN کم از کم ایک حرف طویل ہونا چاہیے اور اس میں حروف، اعداد اور دیگر کیریکٹرز شامل ہو سکتے ہیں۔}other{‏اپنا نیا PIN درج کریں۔ PIN کم از کم # حروف طویل ہونا چاہیے اور اس میں حروف، اعداد اور دیگر کیریکٹرز شامل ہو سکتے ہیں۔}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' کیلئے <ph name="NUM" /> ٹیبز ملے</translation>
@@ -1723,6 +1724,7 @@
 <translation id="2175384018164129879">سرچ انجنز اور سائٹ کی تلاش کا نظم کریں</translation>
 <translation id="2175526076681939329">بنیادی کلیدیں استعمال کریں</translation>
 <translation id="217576141146192373">پرنٹر شامل کرنے سے قاصر۔ براہ کرم اپنے پرنٹر کی کنفیگریشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="2175773164573457310">‏‫Gemini سے پوچھنے کے لیے کوئی بھی ٹیکسٹ یا تصویر منتخب کریں</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
 <translation id="2177950615300672361">پوشیدگی ٹیب: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3058,6 +3060,7 @@
 <translation id="3076966043108928831">صرف اس آلے پر محفوظ کریں</translation>
 <translation id="3076977359333237641">آپ کا سائن ان ڈیٹا حذف کر دیا گیا</translation>
 <translation id="3077734595579995578">شفٹ</translation>
+<translation id="3080521492391385172">کوئی خصوصیت یا ایکسٹینشن شارٹ کٹ نہیں ملا</translation>
 <translation id="3080930813589868009">فی صارف اپڈیٹر</translation>
 <translation id="3080933187214341848">یہ نیٹ ورک آپ کے اکاؤنٹ میں مطابقت پذیر نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">‏ایپ کا نام یا ID</translation>
@@ -6402,6 +6405,7 @@
 <translation id="5436211819997237281">موجودہ ایکسٹینشن آپ کے نئے ٹیب صفحہ کا نظم کر رہی ہے</translation>
 <translation id="5436492226391861498">پراکسی ٹنل کا انتظار ہے…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> کو تلاش کریں:</translation>
+<translation id="5437863035930787580">‏<ph name="TASK_TITLE" />\n‏Gemini نے آپ کا ٹاسک روک دیا۔ اس کا جائزہ لینے کیلئے Chrome پر واپس جائیں۔</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> ونڈو اب <ph name="WINDOW_SIZE_PERCENT" /> چوڑا ہے <ph name="PANE_SIDE" /> پین اب <ph name="PANE_SIZE_PERCENT" /> چوڑا ہے۔</translation>
 <translation id="5438060324827306856">ایکسٹینشنز تلاش کریں</translation>
 <translation id="5440425659852470030">سائیڈ پینل بند کریں</translation>
@@ -7599,6 +7603,7 @@
 <translation id="628705218210359422">اپنے پاس ورڈز کا ٹریک رکھیں اور ان کا ایک جگہ پر نظم کریں۔</translation>
 <translation id="628726841779494414">پرنٹر کی ترتیبات میں اپنے پرنٹرز کا نظم کریں</translation>
 <translation id="6287288864483377583">درآمد صرف ایک سرٹیفکیٹ کے لیے تعاون یافتہ ہے</translation>
+<translation id="6287713404380454515">‏سیکیورٹی وجوہات کی بناء پر، آپ کے منتظم نے آپ کے آلے کے PIN اور پاس ورڈ کو غیر فعال کر دیا ہے۔ اب سے، اپنا <ph name="MANAGER" /> پاس ورڈ استعمال کریں۔</translation>
 <translation id="6287828400772161253">‏Android فون (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">قریبی اشتراک کرنے والا کوئی بھی آلہ دستیاب نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">اسٹوریج کی جگہ کم ہونے کی وجہ سے بحال نہیں کیا جا سکتا۔</translation>
@@ -8854,6 +8859,7 @@
 <translation id="7188508872042490670">آلہ پر موجود سائٹ کا ڈیٹا</translation>
 <translation id="7189234443051076392">یقینی بنائیں کہ آپ کے آلہ پر کافی جگہ ہے</translation>
 <translation id="7189451821249468368">آپ کے پاس اس آلے کا اندراج کرنے کیلئے کافی اپ گریڈز نہیں ہیں۔ براہ کرم مزید خریداری کیلئے سیلز سے رابطہ کریں۔ اگر آپ کو یقین ہے کہ آپ کو یہ پیغام غلطی سے نظر آ رہا ہے تو براہ کرم سپورٹ سے رابطہ کریں۔</translation>
+<translation id="7189558282078169397">دیگر آلات کے ٹیبز</translation>
 <translation id="7189965711416741966">فنگر پرنٹ شامل ہو گیا۔</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> کو بلاک کریں؟</translation>
 <translation id="7191063546666816478">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" />، <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" /> اور دیگر <ph name="NUMBER_OF_OTHER_APPS" /> میں کھلیں گے۔</translation>
@@ -9089,7 +9095,6 @@
 <translation id="7356908624372060336">نیٹ ورک لاگز</translation>
 <translation id="7357271391997763660">پاس ورڈ چیک چلائیں؟</translation>
 <translation id="735745346212279324">‏VPN منقطع ہو گیا</translation>
-<translation id="7359326150089800742">اپنی تلاش کیلئے کوئی ٹیب یا فائل شامل کریں اور ایک ٹول کا بھی استعمال کریں</translation>
 <translation id="7359680654975233185">ٹیب کاسٹ کرنے سے قاصر</translation>
 <translation id="7360257054721917104">محفوظ کردہ ڈیسکس اور تمثیلات دیکھی جا رہی ہیں۔ نیویگیٹ کرنے کے لیے ٹیب دبائیں۔</translation>
 <translation id="7360333718677093875">ایموجی چنندہ</translation>
@@ -9669,6 +9674,7 @@
 تفویض کو ہٹانے کیلئے تفویض کردہ سوئچ یا کلید دبائیں۔</translation>
 <translation id="7745554356330788383">اس سائٹ پر "<ph name="EXTENSION_NAME" />" کے لیے اپنی اپ ڈیٹ کردہ ترتیبات کو لاگو کرنے کے لیے اس صفحہ کو دوبارہ لوڈ کریں</translation>
 <translation id="7745677556280361868">اس نیٹ ورک کو پاس پوائنٹ سبسکرپشن کے صفحہ پر ہٹائیں؟</translation>
+<translation id="7745849183714722618">‏فریب کاری کا پتا لگانے جیسی خصوصیات کو تقویت دینے کے لیے، Chrome ایسے AI ماڈلز کا استعمال کر سکتا ہے جو براہ راست آپ کے آلے پر چلتے ہیں۔ اس کے آف ہونے پر، ہو سکتا ہے یہ خصوصیات کام نہ کریں۔ <ph name="BEGIN_LINK" />آلہ پر AI کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">ٹیکسٹ سمیت، اپنی اسکرین پر موجود آئٹمز کو زیادہ بڑا یا زیادہ چھوٹا بنائیں۔ آپ بعد میں اسے ترتیبات &gt; آلہ &gt; ڈسپلیز میں بھی دیکھ سکتے ہیں۔</translation>
 <translation id="7750228210027921155">تصویر میں تصویر</translation>
 <translation id="7751260505918304024">سبھی دکھائیں</translation>
@@ -9949,6 +9955,7 @@
 <translation id="794250392403348719">مثال: اس تصور کو 8 سال کی عمر کے بچے کے لیے آسان بنائیں۔ سادہ زبان اور ایک تشبیہ استعمال کریں جسے وہ سمجھ سکیں۔ کل وضاحت کو 150 الفاظ کے نیچے، مختصر رکھیں۔</translation>
 <translation id="7942846369224063421">‏پیشگی لوڈ کردہ UI رینڈرر</translation>
 <translation id="7943271960579497371">انسٹال کردہ ایپلیکیشنز</translation>
+<translation id="7943311690198910993">سائن ان کا طریقہ اپ ڈیٹ ہو گیا</translation>
 <translation id="7943368935008348579">‏PDFs ڈاؤن لوڈ کریں</translation>
 <translation id="7943837619101191061">مقام شامل کریں…</translation>
 <translation id="7944173382284143968">‏نیا پاس ورڈ محفوظ کرنے سے پہلے، ویب سائٹ کو OTP تصدیق کی ضرورت ہوتی ہے۔ تبدیلی مکمل کرنے کیلئے، براہ کرم دستی طور پر پروسیس مکمل کریں۔</translation>

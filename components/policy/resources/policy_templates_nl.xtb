@@ -1646,6 +1646,7 @@ Dit is verwijderd in Chrome 145. We raden je aan in plaats daarvan de methode re
 <translation id="2149957154942061013">Alleen intern</translation>
 <translation id="2151831603578119302">Snelkoppelingen voor toegankelijkheidsfuncties aanzetten</translation>
 <translation id="2156132677421487971">Stel beleid voor <ph name="PRODUCT_NAME" /> in, een functie waarmee gebruikers de content van tabbladen, sites of hun bureaublad vanuit de browser naar externe schermen en geluidssystemen kunnen sturen.</translation>
+<translation id="2156359411909638496">Instellingen voor Chrome Finds</translation>
 <translation id="2156755242840687300">Aangezette externe afdrukservers</translation>
 <translation id="2157842368188031417">Het beleid is alleen van toepassing op beheerde gastsessies. Het moet worden aangezet voor de gedeelde werkstationmodus van Imprivata om tijdens een sessie tussen gebruikers te kunnen wisselen.
       Als je het beleid instelt op True, worden bepaalde beleidsregels afgedwongen overschreven voor functies die gevoelige gebruikersgegevens bewaren en die niet worden verwerkt door het opschoonmechanisme dat wordt gebruikt om in de gedeelde werkstationmodus van Imprivata tijdens een sessie tussen gebruikers te wisselen.
@@ -4052,6 +4053,7 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
 <translation id="3749511622128647337">Audio-uitvoer uitzetten</translation>
 <translation id="3750220015372671395">Het genereren van sleutels op deze sites blokkeren</translation>
 <translation id="3753267109888284695">HTTP-toelatingslijst</translation>
+<translation id="3753514818525019935">Chrome Finds niet toestaan.</translation>
 <translation id="3753959315989102457">Rapportage voor locatie van apparaat uitzetten</translation>
 <translation id="3755237588083934849">Met dit beleid bepaal je hoe vaak (in milliseconden) apparaatstatusuploads moeten worden gestuurd. Het toegestane minimum is 60 seconden.
 
@@ -5971,6 +5973,13 @@ Als je het beleid niet toepast, staat deze functie uit.</translation>
 <translation id="4997074784107449343">Als de optie Afdrukken als afbeelding beschikbaar is, wordt deze standaard niet ingesteld voor afdrukvoorbeelden van pdf-documenten.</translation>
 <translation id="500149597848135831">Alle varianten aanzetten</translation>
 <translation id="5006222080181284191">Bepalen of de ChromeOS-functie Help me met schrijven kan worden aangezet</translation>
+<translation id="501542798290854504">Hiermee wordt automatisch inloggen voor gebruikers ingesteld voor accounts die worden ondersteund door een Microsoft®-cloudidentiteitsprovider op <ph name="ANDROID_NAME" />.
+
+Als je dit beleid instelt op 1 (<ph name="POLICY_VALUE_ENABLED" />), kunnen gebruikers die zijn ingelogd bij een Microsoft®-productiviteitsapp op hun apparaat, automatisch worden ingelogd bij Microsoft®-webproperty's binnen <ph name="PRODUCT_NAME" />. Voor deze functionaliteit moet er een Microsoft-verificatiebroker-app zijn, zoals <ph name="MS_AUTH_APP_NAME" />, <ph name="MS_ICP_NAME" /> of <ph name="MS_LTW_NAME" />. Om Single sign-on mogelijk te maken, worden de vereiste verificatiegegevens gedeeld met de Microsoft®-cloudidentiteitsprovider.
+
+Als je dit beleid instelt op 0 (<ph name="POLICY_VALUE_DISABLED" />) of niet instelt, wordt automatisch inloggen zoals hierboven beschreven uitgezet en moeten gebruikers handmatig inloggegevens invoeren voor webproperty's van Microsoft®.
+
+Opmerking: Dit beleid is niet van toepassing op de incognito- of gastmodus.</translation>
 <translation id="5017157692744444035">Met dit beleid wordt bepaald of er informatie moet worden gerapporteerd die kan worden gebruikt om machines te identificeren, zoals machinenaam en netwerkadressen.
 
 Als je het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet instelt of niet toepast, wordt dit beleid genegeerd.
@@ -6447,6 +6456,22 @@ Als je het beleid niet instelt, is de standaardwaarde 0 graden en kunnen gebruik
 <translation id="5293285950307241933">Alle lokale gebruikersgegevens wissen</translation>
 <translation id="5293619885162445352">Toestaan dat <ph name="PEPPER_NAME" /> de nieuwe videodecoder gebruikt.</translation>
 <translation id="529457411593078576">Servicevoorwaarden aanzetten tijdens eerste uitvoering voor CCT</translation>
+<translation id="529718811410033393">Als je het beleid instelt, geef je het maximale aantal gelijktijdige verbindingen per proxyserver aan voor niet-WebSocket-verzoeken.
+
+Zie <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" /> om de limieten voor WebSocket-verzoeken aan te passen.
+
+Als je het beleid niet instelt, wordt de standaardwaarde 32 gebruikt.
+
+Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend.
+Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen.
+
+De waarde moet gelijk zijn aan of hoger zijn dan 6.
+Als je een waarde onder die limiet instelt, wordt 6 gebruikt.
+Als je deze waarde tot onder de standaardwaarde (32) verlaagt, doe je dat op eigen risico.
+
+De waarde moet gelijk zijn aan of lager zijn dan 256 (99 in <ph name="PRODUCT_NAME" /> 147 en eerdere versies).
+Als je een waarde boven die limiet instelt, wordt 256 gebruikt (99 in <ph name="PRODUCT_NAME" /> 147 en eerdere versies).
+Als je deze waarde tot boven de standaardwaarde (32) verhoogt, doe je dat op eigen risico.</translation>
 <translation id="5297873769621042075">Als je het beleid instelt, wordt een lijst met hostnamen of hostnaampatronen (zoals '[*.]example.com') opgegeven die niet naar HTTPS worden geüpgraded en wordt er geen fout-interstitial getoond als de modus Eerst HTTPS wordt aangezet. Organisaties kunnen dit beleid gebruiken om toegang te houden tot servers die geen HTTPS ondersteunen, zonder dat ze HTTPS-upgrades en/of de modus Eerst HTTPS hoeven uit te zetten.
 
 De opgegeven hostnamen moeten een canonieke URL hebben. Eventuele IDN's moeten worden omgezet naar de A-labelindeling en alle ASCII-letters moeten kleine letters zijn.
@@ -7178,6 +7203,7 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
       VPD (Vital Product Data) is een verzameling configuratiegegevens en informatie, zoals onderdeel- en serienummers, die bij het apparaat horen.</translation>
 <translation id="5760861224093391268">First-party verificatie uitzetten bij het rapporteren van gebruikersbeveiligingssignalen</translation>
 <translation id="5762969307102447459">Automatisch invullen voor adressen uitzetten</translation>
+<translation id="5763723496957591166">Maximumaantal gelijktijdige verbindingen per proxyserver voor WebSocket-verzoeken</translation>
 <translation id="5765780083710877561">Beschrijving:</translation>
 <translation id="5766438888216077649"><ph name="WINDOW_OPENER_PROPERTY" /> niet instellen voor links die <ph name="BLANK_PAGE_NAME" /> targeten</translation>
 <translation id="5767776869128458023">Alternatieve foutpagina's uitzetten</translation>
@@ -7189,6 +7215,7 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
 <translation id="5776485039795852974">Altijd goedkeuring vragen wanneer een site bureaubladmeldingen wil tonen</translation>
 <translation id="5776508475264864949">De Gemini-app niet toestaan om actie te ondernemen op de webpagina's.</translation>
 <translation id="5783009211970309878">Kop- en voetteksten afdrukken</translation>
+<translation id="5786913136266632175">Chrome Finds toestaan en AI-modellen verbeteren.</translation>
 <translation id="5789288985554424301">Hiermee kun je instellen of websites de Idle Detection API mogen gebruiken.
 
 Als je dit beleid instelt op 1 (<ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />), kunnen websites de API gebruiken zonder de gebruiker om toestemming te vragen.
@@ -8689,6 +8716,17 @@ Als je het beleid instelt op Onwaar of niet instelt, wordt het standaardgedrag g
 
       Als je het beleid niet instelt, worden er geen aanvullende telemetriegegevens gerapporteerd bij wijzigingen in signaalsterkte.</translation>
 <translation id="6751612743847158732">De laatste sessie altijd herstellen.</translation>
+<translation id="6751882390104737961">Chrome Finds is een AI-gestuurde functie waarmee gebruikers content op de huidige webpagina kunnen zoeken en begrijpen.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6752711782954612641">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> instelt, worden de parameters gespecificeerd als een URL wordt gezocht via POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter is (zoals <ph name="SEARCH_TERM_MARKER" />), wordt deze vervangen door de echte zoektermen.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> niet instelt, worden zoekopdrachten gestuurd met de GET-methode.</translation>
@@ -9523,6 +9561,7 @@ Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_
 
       Als dit beleid niet wordt ingesteld of leeg is, kan de gebruiker elk willekeurig Google-account instellen als primair browseraccount in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">De minimumlengte van de pincode voor het vergrendelscherm instellen</translation>
+<translation id="7231449913899026849">Maximumaantal gelijktijdige verbindingen per proxyserver voor niet-WebSocket-verzoeken</translation>
 <translation id="7234280155140786597">Namen van de verboden hosts voor systeemeigen berichten (of * voor alle)</translation>
 <translation id="723621412149834592">Als je het beleid instelt op <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (waarde 2), wordt het recht voor vensterplaatsing automatisch geweigerd voor alle sites. Dit beperkt de mogelijkheid van sites om informatie over de schermen van het apparaat te bekijken en die informatie te gebruiken om vensters te openen en te plaatsen of om een volledig scherm voor bepaalde schermen aan te vragen.
 
@@ -9843,6 +9882,7 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="7481702249684965639">De prullenbak is aangezet voor de gebruiker.</translation>
 <translation id="7482768039644066614">Ophalen aanzetten van metadata voor het laden van pagina's en machinelearning-modellen die de browsefunctionaliteit verbeteren</translation>
 <translation id="748292668225669178">Hiermee stel je de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> in</translation>
+<translation id="7483786326602801858">Automatisch inloggen bij Microsoft®-cloudidentiteitsproviders toestaan op <ph name="ANDROID_NAME" /></translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
 <translation id="7486205887492534734">Prompt voor als meerdere certificaten overeenkomen op het inlogscherm</translation>
 <translation id="748873163367340515">Alleen essentiële cookies en gegevens gebruiken voor zoeken.</translation>
@@ -9985,6 +10025,22 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 
       Als het apparaat van de gebruiker niet wordt beheerd, is de beschikbaarheid van deze functionaliteit ook afhankelijk van of de gebruiker de eigenaar is van het apparaat.</translation>
 <translation id="7570291542739287032">Alleen Google Cloud</translation>
+<translation id="7571158727244273239">Als je het beleid instelt, geef je het maximale aantal gelijktijdige verbindingen per proxyserver aan voor WebSocket-verzoeken.
+
+Zie <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" /> om limieten voor niet-WebSocket-verzoeken aan te passen.
+
+Als je het beleid niet instelt, wordt de standaardwaarde 32 gebruikt.
+
+Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend.
+Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen.
+
+De waarde moet gelijk zijn aan of hoger zijn dan 6.
+Als je een waarde onder die limiet instelt, wordt 6 gebruikt.
+Als je deze waarde tot onder de standaardwaarde (32) verlaagt, doe je dat op eigen risico.
+
+De waarde moet gelijk zijn aan of lager zijn dan 256.
+Als je een waarde boven die limiet instelt, wordt 256 gebruikt.
+Als je deze waarde tot boven de standaardwaarde (32) verhoogt, doe je dat op eigen risico.</translation>
 <translation id="7572641760104970905">Geen complexiteit</translation>
 <translation id="757395965347379751">Als deze instelling aanstaat, staat <ph name="PRODUCT_NAME" /> met SHA-1 ondertekende certificaten toe, zolang deze correct zijn gevalideerd en zijn gekoppeld aan een lokaal geïnstalleerd CA-certificaat.
 
@@ -11696,6 +11752,7 @@ Als je <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> niet toepast, staat Live v
 <translation id="8713535263782304771">Safe Browsing uitzetten</translation>
 <translation id="8714556680280715750">Een URL die gebruikers kunnen bezoeken voor meer informatie. Als je dit beleid niet instelt, bevat het installatieprogramma geen URL met meer informatie. Indien aanwezig moet dit het https-schema gebruiken.</translation>
 <translation id="8715885991031124968">JavaScript-dialoogvensters toestaan als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
+<translation id="8720288018555457355">Chrome Finds toestaan zonder AI-modellen te verbeteren.</translation>
 <translation id="8720547069538712402">Toestaan dat gebruikers de spellingcontrole aan- of uitzetten</translation>
 <translation id="8721685661759544418">Voorlezen (tekstdistillatie en tekst-naar-spraak-synthese) aanzetten voor webpagina's</translation>
 <translation id="8726080977639508431">Met dit beleid bepaal je hoe <ph name="PRODUCT_NAME" /> beleid voor sitelijsten/grijze lijsten interpreteert voor de ondersteuningsfunctie voor oudere browsers. Het is alleen van invloed op het volgende beleid: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> en <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.

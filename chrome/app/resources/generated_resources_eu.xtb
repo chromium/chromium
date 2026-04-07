@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Abisua</translation>
 <translation id="1056980582064308040">Ezarpenak aldatuz gero, wifi-gunea berrabiaraziko da. Hura erabiltzen ari diren gailuak deskonektatuko dira.</translation>
 <translation id="1058262162121953039">PUK kodea</translation>
+<translation id="1058848978232174442">Zeregina eten egin da</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Idatzi PIN berria. PINak karaktere bat izan behar du gutxienez, eta hizkiak, zenbakiak eta bestelako karaktereak eduki ditzake.}other{Idatzi PIN berria. PINak # karaktere izan behar ditu gutxienez, eta hizkiak, zenbakiak eta bestelako karaktereak eduki ditzake.}}</translation>
 <translation id="1059484610606223931">Hipertestua transferitzeko protokolo segurua (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> fitxa aurkitu dira "<ph name="SEARCH_TEXT" />" bilaketarako</translation>
@@ -1721,6 +1722,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2175384018164129879">&amp;Kudeatu bilatzaileak eta Webgune-bilaketa</translation>
 <translation id="2175526076681939329">Erabili tekla nagusiak</translation>
 <translation id="217576141146192373">Ezin da gehitu inprimagailua. Egiaztatu ongi konfiguratuta dagoela eta saiatu berriro.</translation>
+<translation id="2175773164573457310">Hautatu testu edo irudi bat Gemini-ri hari buruz galdetzeko</translation>
 <translation id="2175927920773552910">QR kodea</translation>
 <translation id="2177950615300672361">Ezkutuko fitxa: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3055,6 +3057,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3076966043108928831">Gorde gailu honetan bakarrik</translation>
 <translation id="3076977359333237641">Ezabatu dira saioa hasteko datuak</translation>
 <translation id="3077734595579995578">maius</translation>
+<translation id="3080521492391385172">Ez da aurkitu eginbide edo luzapenetarako lasterbiderik</translation>
 <translation id="3080930813589868009">Erabiltzaile bakoitzeko eguneratzailea</translation>
 <translation id="3080933187214341848">Sare hau ez dago sinkronizatuta zure kontuarekin. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Aplikazioaren izena edo identifikatzailea</translation>
@@ -6400,6 +6403,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5436211819997237281">Fitxa berriaren orria une honetan kudeatzen duen luzapena</translation>
 <translation id="5436492226391861498">Proxy-tunelaren zain…</translation>
 <translation id="5436510242972373446">Bilatu <ph name="SITE_NAME" /> bidez:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini-k zeregina gelditu du. Hura berrikusteko, itzuli Chrome-ra.</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> leihoaren zabalera <ph name="WINDOW_SIZE_PERCENT" /> da orain, <ph name="PANE_SIDE" /> panelaren zabalera <ph name="PANE_SIZE_PERCENT" /> da orain.</translation>
 <translation id="5438060324827306856">Bilatu luzapenak</translation>
 <translation id="5440425659852470030">Itxi alboko panela</translation>
@@ -7594,6 +7598,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="628705218210359422">Egin pasahitzen jarraipena eta kudea itzazu toki berean.</translation>
 <translation id="628726841779494414">Kudeatu inprimagailuak haien ezarpenetan</translation>
 <translation id="6287288864483377583">Ziurtagiri bat soilik inporta daiteke</translation>
+<translation id="6287713404380454515">Segurtasun-arrazoiengatik, administratzaileak gailuaren PINa eta pasahitza desgaitu ditu. Aurrerantzean, erabili <ph name="MANAGER" /> zerbitzuko pasahitza.</translation>
 <translation id="6287828400772161253">Android-eko telefonoa (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Ez dago partekatzen ari den gailurik inguruan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Ezin da leheneratu, ez dagoelako behar adina biltegiratzeko toki.</translation>
@@ -8849,6 +8854,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7188508872042490670">Gailuan gordetako webguneetako datuak</translation>
 <translation id="7189234443051076392">Ziurtatu gailuan behar adina toki duzula</translation>
 <translation id="7189451821249468368">Ez dituzu behar adina lizentzia gailua erregistratzeko. Gehiago erosteko, jarri salmenta sailarekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri laguntza-zerbitzuarekin harremanetan.</translation>
+<translation id="7189558282078169397">Beste gailu batzuetako fitxak</translation>
 <translation id="7189965711416741966">Gehitu da hatz-marka.</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blokeatu nahi duzu?</translation>
 <translation id="7191063546666816478">Laguntza emateko esteka batzuek <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> eta beste <ph name="NUMBER_OF_OTHER_APPS" /> aplikaziotan irekitzen jarraituko dute.</translation>
@@ -9084,7 +9090,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7356908624372060336">Sarearen erregistroak</translation>
 <translation id="7357271391997763660">Pasahitz-egiaztapena exekutatu nahi duzu?</translation>
 <translation id="735745346212279324">VPN deskonektatu da</translation>
-<translation id="7359326150089800742">Gehitu fitxa edo fitxategi bat bilaketan, eta erabili tresna bat ere</translation>
 <translation id="7359680654975233185">Ezin da igorri fitxa</translation>
 <translation id="7360257054721917104">Gordetako lan-eremuak eta txantiloiak ikusgai. Nabigatzeko, sakatu tabuladorea.</translation>
 <translation id="7360333718677093875">emoji-hautatzailea</translation>
@@ -9663,6 +9668,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-etengailu edo teklatuko tekla bat.</translation>
 <translation id="7745554356330788383">Kargatu berriro orria "<ph name="EXTENSION_NAME" />" luzapenerako ezarpen berriak webgune honetan aplikatzeko</translation>
 <translation id="7745677556280361868">Passpoint-eko harpidetzaren orritik sare hau kendu nahi duzu?</translation>
+<translation id="7745849183714722618">Azpikeria-hautematea eta antzeko eginbideak eskaintzeko, Chrome-k gailuan zuzenean exekutatzen diren AAko ereduak erabil ditzake. Desaktibatuta badago, baliteke eginbide horiek ez funtzionatzea. <ph name="BEGIN_LINK" />Lortu gailuko AAri buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Handitu edo txikitu pantailako elementuak, testua barne. Ezarpenak &gt; Gailua &gt; Pantailak atalean ere aurki dezakezu aukera hau.</translation>
 <translation id="7750228210027921155">Pantaila txiki gainjarria</translation>
 <translation id="7751260505918304024">Erakutsi guztiak</translation>
@@ -9943,6 +9949,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="794250392403348719">Adibidea: sinplifikatu kontzeptu hau 8 urteko haur batentzat. Erabili hizkera sinplea eta ulertuko duen analogia bat. Egin azalpen labur bat (150 hitz baino gutxiago).</translation>
 <translation id="7942846369224063421">Aurrez kargatutako erabiltzaile-interfazearen errendatzailea</translation>
 <translation id="7943271960579497371">Instalatutako aplikazioak</translation>
+<translation id="7943311690198910993">Eguneratu da saioa hasteko metodoa</translation>
 <translation id="7943368935008348579">Deskargatu PDFak</translation>
 <translation id="7943837619101191061">Gehitu kokapena…</translation>
 <translation id="7944173382284143968">Webguneak erabilera bakarreko pasahitz bidezko berrespena behar du pasahitz berria gorde aurretik. Aldaketa osatzeko, jarraitu prozesuarekin eskuz.</translation>

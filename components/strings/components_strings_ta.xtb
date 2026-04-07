@@ -465,7 +465,6 @@
 <translation id="1717218214683051432">மோஷன் சென்சார்கள்</translation>
 <translation id="1717494416764505390">அஞ்சல் பெட்டி 3</translation>
 <translation id="1717688554309417925">டெபிட் &amp; சரிபார்ப்புச் சேவைகள்</translation>
-<translation id="1717882880162336471">AI மோட் பயன்படுத்துங்கள்</translation>
 <translation id="1719434663396780149">விலை குறைவது தொடர்பான விழிப்பூட்டல்கள் இயக்கப்பட்டுள்ளன. இதை <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> என்பதில் மாற்றலாம்.</translation>
 <translation id="1719838434204287058">24 x 30 இன்ச்</translation>
 <translation id="1720941539803966190">பயிற்சியை மூடும்</translation>
@@ -615,7 +614,6 @@
 <translation id="1960664692890490165">Chromeமில் பர்ச்சேஸ்களைச் செய்யும்போது கார்டு தேவைப்படாத பேமெண்ட் முறைகளை விருப்பங்களில் காட்டும்</translation>
 <translation id="196146181975453736">விரைவாகப் பணம் செலுத்த ஒருமுறை பாதுகாப்புச் சரிபார்ப்பை நிறைவுசெய்யுங்கள்</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> புக்மார்க்குகள்</translation>
-<translation id="1966259577349514951">பணம் செலுத்துதல்</translation>
 <translation id="1973335181906896915">தொடராக்க பிழை</translation>
 <translation id="1973785048533660168">எழுத்தர் &amp; நிர்வாகப் பணிகள்</translation>
 <translation id="1974060860693918893">மேம்பட்டவை</translation>
@@ -1057,6 +1055,7 @@
 <translation id="2627847595568876492">PDF ஃபைலில் இருந்து வார்த்தைகளைப் பிரித்தெடுக்கிறது...</translation>
 <translation id="2628025184666666186">இந்தச் சேவையகம் Chrome நம்பாத பாதுகாப்புச் சான்றிதழையோ இணைய டிராஃபிக் என்க்ரிப்ஷனுக்கான உங்கள் சிஸ்டத்தின் உள்ளமைவையோ பயன்படுத்துகிறது. இதனால், இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகத்தால் உறுதிப்படுத்த முடியவில்லை. இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது ஹேக்கர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
 <translation id="2628224721443278970">Microsoft OneDriveவில் உள்நுழை</translation>
+<translation id="2631059741268498165">இந்தச் சாதனம் முடக்கப்பட்டிருந்தபோது உங்கள் நிர்வாகி அதைக் கண்டறிந்துள்ளார். அது மீண்டும் இயக்கப்பட்டு பயன்படுத்தத் தயாராக உள்ளது.</translation>
 <translation id="2631387782019878060">சரிபார்ப்புக் குறியீடு: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> இன் சேவையக IP முகவரியைக் கண்டறிய முடியவில்லை.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> முழுவதிலும் தேட @ என்று டைப் செய்யவும்</translation>
@@ -1098,7 +1097,6 @@
 <translation id="2696385693639654606">பிரவுசர் கொள்கைகள், ஆப்ஸ், நீட்டிப்புகள் ஆகியவற்றை நீங்கள் கிளவுடில் இருந்து நிர்வகிக்க Chrome Enterprise Core உதவும்</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ஐக் கேளுங்கள்</translation>
 <translation id="2699273987028089219">துணைமெனு கிடைக்கிறது, கூடுதல் விருப்பங்களுக்குச் செல்ல <ph name="SHORTCUT" /> பயன்படுத்தவும்.</translation>
-<translation id="2700335762333112350">பிறகு பணம் செலுத்துதல்</translation>
 <translation id="2701514975700770343">கீழ் நோக்கியது</translation>
 <translation id="2702592986366989640">குறைவான விலை</translation>
 <translation id="2702801445560668637">வாசிப்புப் பட்டியல்</translation>
@@ -2443,7 +2441,6 @@
 <translation id="4832388034239846146">பக்கக் குழுக்களைப் பகிர Chromeமைப் புதுப்பிக்கவும்</translation>
 <translation id="483241715238664915">எச்சரிக்கைகளை இயக்கு</translation>
 <translation id="4832961164064927107">பார்பிக்யூ மற்றும் கிரில்லிங்</translation>
-<translation id="4839984801146463230">உங்கள் தகவல்களைச் சேமித்து Google தயாரிப்புகள் எல்லாவற்றிலும் படிவங்களை நிரப்புவது போன்ற செயல்களை விரைவாக மேற்கொள்ளலாம். <ph name="ACCOUNT" />க்கான <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> இல் <ph name="BEGIN_LINK" />உங்கள் தகவல்களை நிர்வகிக்கலாம்<ph name="END_LINK" /></translation>
 <translation id="4840250757394056958">எனது Chrome செயல்பாடுகளைக் காட்டு</translation>
 <translation id="484462545196658690">தானியங்கு</translation>
 <translation id="4844937814014739139">பகிர்ந்த பக்கங்களை ஸ்கோரல் செய்தல் மற்றும் அவற்றின் அளவை மாற்றுதல்</translation>
@@ -2720,6 +2717,7 @@
 <translation id="5255833070095767006">350 x 460 மிமீ</translation>
 <translation id="5257739419779698609">{0,plural, =1{<ph name="DESTINATION_NAME" />க்கு இந்த ஃபைலை நகலெடுப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}other{<ph name="DESTINATION_NAME" />க்கு இந்த ஃபைல்களை நகலெடுப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" பக்கக் குழு இனி கிடைக்காது</translation>
+<translation id="5262342527470539728"><ph name="ACCOUNT" /> கணக்கிற்கான உங்கள் தகவல் <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> இல் சேமிக்கப்படுகிறது</translation>
 <translation id="5263867360296733198">பதிவேற்றும் முன் சரிபார்க்க வேண்டும்</translation>
 <translation id="5266128565379329178">பைண்டு டாப்</translation>
 <translation id="5269225904387178860">குவாட் பஞ்ச் பாட்டம்</translation>
@@ -2916,6 +2914,7 @@
 <translation id="5543564889050342791">உயிரியல் பூங்காக்கள், மீன் காட்சியகங்கள் மற்றும் சரணாலயங்கள்</translation>
 <translation id="5543722831081909240">180 டிகிரி</translation>
 <translation id="5544836308113951378">சொகுசுக் கப்பல்கள் மற்றும் வாடகைக்கு விடுதல்</translation>
+<translation id="5546252337258681768">சாதனம் அன்லாக் செய்யப்பட்டுள்ளது</translation>
 <translation id="5547939254150808298">அச்சிடுதல் மற்றும் வெளியிடுதல்</translation>
 <translation id="554815783948612276">மன்றம் மற்றும் உரையாடல் சேவை வழங்குநர்கள்</translation>
 <translation id="5548606607480005320">பாதுகாப்புச் சரிபார்ப்பு</translation>
@@ -4768,6 +4767,7 @@
 கூடுதல் விவரங்கள்:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">இந்த முறை மைக்ரோஃபோனுக்கான அனுமதி வழங்கப்பட்டது</translation>
+<translation id="8421746712901926961">உங்கள் தகவல்களை <ph name="GOOGLE_WALLET_TITLE_1" /> இல் சேமித்து Google தயாரிப்புகள் எல்லாவற்றிலும் படிவங்களை நிரப்புவது போன்ற செயல்களை விரைவாக மேற்கொள்ளலாம். <ph name="ACCOUNT" /> கணக்குக்கு <ph name="GOOGLE_WALLET_TITLE_2" /> இல் <ph name="MANAGE_INFO_LINK" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">மாற்று</translation>
 <translation id="8426945547715537628">கீபோர்டு மீறிச் செயல்படுதலை அனுமதிக்க வேண்டுமா?</translation>

@@ -169,6 +169,7 @@
 หากต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="4578500311756617174">เคล็ดลับสำหรับ Chromium: ใช้ Chromium โดยค่าเริ่มต้น</translation>
 <translation id="458786853569524949">ตอนนี้คุณสามารถใช้ Chromium ทุกครั้งที่แตะลิงก์ในอีเมล เอกสาร และแอปอื่นๆ</translation>
+<translation id="4625730353066900738">ดูข้อมูลพื้นฐานที่เป็นประโยชน์เกี่ยวกับ Chromium เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="4633738821577273991">รับ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นสำหรับโปรไฟล์ Chromium นี้ด้วย</translation>
 <translation id="4654936625574199632">Chromium จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">เปิดโปรแกรมสแกนของ Chromium</translation>
@@ -179,7 +180,6 @@
 <translation id="4856138222358683580">การดำเนินการใน Chromium</translation>
 <translation id="4869706986935301458">เปิด Chromium ได้ทันทีเมื่อคุณใช้ iPhone</translation>
 <translation id="4904452304169763785">การแจ้งเตือนเกี่ยวกับปัญหาความเป็นส่วนตัวหรือความปลอดภัยที่ Chromium ตรวจหาให้คุณ</translation>
-<translation id="4908570938463711775">เรียนรู้ข้อมูลพื้นฐานที่เป็นประโยชน์เกี่ยวกับ Chromium เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="4962295957157529683">ทำสิ่งที่กำลังทำในหน้าต่าง Chromium ที่เปิดอยู่อีกหน้าต่างหนึ่งให้เสร็จสิ้น</translation>
 <translation id="4985291216379576555">ออฟไลน์อยู่ Chromium ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="4996471330284142407">ทำสิ่งต่างๆ ได้มากขึ้นด้วย Chromium ที่ใช้งานง่าย ปลอดภัย และรวดเร็วกว่าที่เคย</translation>

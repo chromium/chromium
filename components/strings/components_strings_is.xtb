@@ -465,7 +465,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1717218214683051432">Hreyfiskynjarar</translation>
 <translation id="1717494416764505390">Pósthólf 3</translation>
 <translation id="1717688554309417925">Debet- og tékkareikningsþjónustur</translation>
-<translation id="1717882880162336471">Prófaðu gervigreindarstillinguna</translation>
 <translation id="1719434663396780149">Kveikt er á verðlækkunartilkynningum. Þú getur breytt þessu í <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 to.</translation>
 <translation id="1720941539803966190">Loka leiðsögn</translation>
@@ -615,7 +614,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1960664692890490165">Sjáðu aðra valkosti en greiðslukort sem valkosti þegar þú gengur frá kaupum í Chrome</translation>
 <translation id="196146181975453736">Ljúka stakri öryggisskoðun til að greiða hraðar</translation>
 <translation id="1962204205936693436">Bókamerki frá <ph name="DOMAIN" /></translation>
-<translation id="1966259577349514951">Greiða núna</translation>
 <translation id="1973335181906896915">Röðunarvilla</translation>
 <translation id="1973785048533660168">Skrifstofu- og stjórnunarstörf</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
@@ -1045,6 +1043,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2610561535971892504">Smelltu til að afrita</translation>
 <translation id="2612676031748830579">Kortanúmer</translation>
 <translation id="2612993535136743634">Öllum öryggisnúmerum sem vistuð eru í tækinu og á Google-reikningnum verður eytt</translation>
+<translation id="2613758321247965174">{MINUTES,plural, =1{Virkur fyrir einni mínútu}one{Virk(ur) fyrir # mínútu}other{Virk(ur) fyrir # mínútum}}</translation>
 <translation id="2614835674900828050">Ekki í boði fyrir þessi kaup</translation>
 <translation id="2616412942031748191">Leitarvélabestun og markaðssetning</translation>
 <translation id="2618206371527040026">Fræðaráðstefnur og útgáfa fræðirita</translation>
@@ -1056,6 +1055,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2627847595568876492">Dregur texta út úr PDF-skjali...</translation>
 <translation id="2628025184666666186">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" /> vegna þess að hann notar öryggisvottorð sem Chrome eða kerfisstillingin þín treystir ekki fyrir dulkóðun vefumferðar. Þetta kann að orsakast af rangri stillingu eða tölvuþrjóti sem hefur komist inn í tenginguna.</translation>
 <translation id="2628224721443278970">Skrá inn í Microsoft OneDrive</translation>
+<translation id="2631059741268498165">Kerfisstjórinn þinn fann þetta tæki þegar það var slökkt á því. Kveikt hefur verið á því aftur og það er tilbúið til notkunar.</translation>
 <translation id="2631387782019878060">Staðfestingarkóði: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-tala þjóns <ph name="HOST_NAME" /> fannst ekki.</translation>
 <translation id="2638567100095052009">Slá inn @ til að leita á <ph name="FEATURED_SEARCH_LIST" /></translation>
@@ -1097,7 +1097,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2696385693639654606">Chrome Enterprise Core gerir þér kleift að stjórna reglum vafra, forritum og viðbótum úr skýinu</translation>
 <translation id="2697248912349197812">Spurðu <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Undirvalmynd í boði, notaðu <ph name="SHORTCUT" /> til að fletta að frekari valkostum.</translation>
-<translation id="2700335762333112350">Greiða seinna</translation>
 <translation id="2701514975700770343">Snýr niður</translation>
 <translation id="2702592986366989640">Lágt verð</translation>
 <translation id="2702801445560668637">Leslisti</translation>
@@ -2446,7 +2445,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4832388034239846146">Til að deila flipahópum skaltu uppfæra Chrome</translation>
 <translation id="483241715238664915">Kveikja á viðvörunum</translation>
 <translation id="4832961164064927107">Grill</translation>
-<translation id="4839984801146463230">Vistaðu upplýsingarnar þínar og komdu hlutum hraðar í verk, t.d. að fylla út eyðublöð í Google-vörum. Þú getur <ph name="BEGIN_LINK" />stjórnað upplýsingunum þínum<ph name="END_LINK" /> í <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> fyrir <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Skoða Chrome ferilinn þinn</translation>
 <translation id="484462545196658690">Sjálfvirkt</translation>
 <translation id="4844937814014739139">Skoða og stækka/minnka samnýtta flipa</translation>
@@ -2919,6 +2917,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5543564889050342791">Dýragarðar, sædýrasöfn og friðuð landsvæði</translation>
 <translation id="5543722831081909240">180 gráður</translation>
 <translation id="5544836308113951378">Skemmtisiglingar og leigusiglingar</translation>
+<translation id="5546252337258681768">Tæki tekið úr lás</translation>
 <translation id="5547939254150808298">Prent og útgáfa</translation>
 <translation id="554815783948612276">Umræðasvæða- og spjallveitur</translation>
 <translation id="5548606607480005320">Öryggisathugun</translation>
@@ -2960,6 +2959,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5600044805561809264">Þú getur auðveldlega spurt spurninga um flipana sem þú deilir á meðan þú vafrar.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> eða <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Stjórnun er ekki studd</translation>
+<translation id="560431066250575003">{HOURS,plural, =1{Virk(ur) fyrir einni klukkustund}one{Virk(ur) fyrir # klukkustund}other{Virk(ur) fyrir # klukkustundum}}</translation>
 <translation id="5605249000617390290">Nánar um verðrakningu</translation>
 <translation id="5605670050355397069">Kladdi</translation>
 <translation id="5610142619324316209">Athuga tenginguna</translation>
@@ -3513,6 +3513,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6456955391422100996">Auglýsing fjarlægð.</translation>
 <translation id="6457206614190510200">Kjalhefting</translation>
 <translation id="6457455098507772300">Tilkynningar um verðlækkanir birtast sem sprettigluggatilkynningar á skjáborðinu</translation>
+<translation id="6458519747993638565">Virk(ur) núna</translation>
 <translation id="6458606150257356946">Líma samt</translation>
 <translation id="6462438303393708881">Hætta við flutning</translation>
 <translation id="6464094930452079790">myndir</translation>

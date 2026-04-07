@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">ચેતવણી</translation>
 <translation id="1056980582064308040">સેટિંગમાં ફેરફાર કરવાથી હૉટસ્પૉટ ફરી શરૂ થશે. હૉટસ્પૉટનો ઉપયોગ કરી રહેલા ડિવાઇસ ડિસ્કનેક્ટ થઈ જશે.</translation>
 <translation id="1058262162121953039">PUK</translation>
+<translation id="1058848978232174442">કાર્યમાં વિક્ષેપ આવ્યો</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{તમારો નવો પિન દાખલ કરો. પિન ઓછામાં ઓછા એક અક્ષરનો હોવો જરૂરી છે અને તેમાં અક્ષરો, સંખ્યા અને અન્ય વર્ણો શામેલ હોઈ શકે છે.}one{તમારો નવો પિન દાખલ કરો. પિન ઓછામાં ઓછા # અક્ષરનો હોવો જરૂરી છે અને તેમાં અક્ષરો, સંખ્યા અને અન્ય વર્ણો શામેલ હોઈ શકે છે.}other{તમારો નવો પિન દાખલ કરો. પિન ઓછામાં ઓછા # અક્ષરનો હોવો જરૂરી છે અને તેમાં અક્ષરો, સંખ્યા અને અન્ય વર્ણો શામેલ હોઈ શકે છે.}}</translation>
 <translation id="1059484610606223931">હાઇપરટેક્સ્ટ ટ્રાન્સપોર્ટ પ્રોટોકૉલ (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' માટે <ph name="NUM" /> ટૅબ મળી</translation>
@@ -325,6 +326,7 @@
 <translation id="1210678701920254279">પ્રિન્ટર જુઓ અથવા ઉમેરો અને સક્રિય પ્રિન્ટ જૉબ જુઓ</translation>
 <translation id="1211769675100312947">શૉર્ટકટ તમારા દ્વારા પસંદ કરવામાં આવે છે</translation>
 <translation id="1215411991991485844">નવી બૅકગ્રાઉન્ડ ઍપ ઉમેરી છે</translation>
+<translation id="121586831132481915">ટૅબને ઑટોમૅટિક રીતે મોટા કરવાની સુવિધા બંધ કરો</translation>
 <translation id="1216542092748365687">ફિંગરપ્રિન્ટ કાઢી નાખો</translation>
 <translation id="1216628023580643945">તમારા કૌશલ્યને કોઈ નામ આપો</translation>
 <translation id="1216891999012841486">અપડેટ સંબંધિત બધી ભૂલો સુધારવા વિશે વધુ જાણો</translation>
@@ -545,6 +547,7 @@
 <translation id="1365650529628379165">ભમ્મરો ઊંચી કરો</translation>
 <translation id="1367817137674340530"><ph name="COUNT" /> છબી જનરેટ કરી</translation>
 <translation id="1368603372088757436">તમારા <ph name="DEVICE_TYPE" /> પર Linuxને સપોર્ટ કરવામાં આવતો નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="1369687552722438128">આ પ્રોમો બતાવશો નહીં</translation>
 <translation id="1370249617397887619">તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ માં સાચવો</translation>
 <translation id="1370384480654163477">આ સાઇટની તમે છેલ્લે મુલાકાત લીધી તે સમયની ફાઇલો જુઓ અને તેમાં ફેરફાર કરો:</translation>
 <translation id="1371253136879578532">Geminiમાં સ્ક્રીનનો ભાગ પસંદ કરવા માટે, કીબોર્ડ શૉર્ટકટનો ઉપયોગ કરો.</translation>
@@ -1720,6 +1723,7 @@
 <translation id="2175384018164129879">શોધ એન્જિન અને સાઇટમાં શોધવાની સુવિધા &amp;મેનેજ કરો</translation>
 <translation id="2175526076681939329">પ્રાથમિક કીનો ઉપયોગ કરો</translation>
 <translation id="217576141146192373">પ્રિન્ટર ઉમેરી શકાયું નથી. કૃપા કરીને તમારા પ્રિન્ટરની ગોઠવણી ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="2175773164573457310">Geminiને પૂછવા માટે કોઈપણ ટેક્સ્ટ અથવા છબી પસંદ કરો</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
 <translation id="2177950615300672361">છુપો ટેબ: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -1957,6 +1961,7 @@
 <translation id="2328137272841210255">તમારો પિન રીસેટ કરો</translation>
 <translation id="2328474416100889417">દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને આમંત્રણની બધી લિંક બંધ થઈ જશે</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" />નો ઉપયોગ કરવા માટે કૃપા કરીને તમારું ડિવાઇસ ફરી શરૂ કરો.</translation>
+<translation id="2328773543844041445">ટૅબ પર માઉસ લઈ જવાથી ઑટોમૅટિક રીતે મોટા થાય છે</translation>
 <translation id="2329597144923131178">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ મેળવવા માટે સાઇન ઇન કરો.</translation>
 <translation id="2330182457402792918">આ સાઇટ વાંચી શકે એવી ફાઇલો ખોલો</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" />માં સાચવેલા ડિવાઇસ લોડ કરી શકાતા નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
@@ -2748,6 +2753,7 @@
 <translation id="2869511363030898130"><ph name="APP_NAME" /> ઍપમાં ખોલો</translation>
 <translation id="2870560284913253234">સાઇટ</translation>
 <translation id="2870909136778269686">અપડેટ કરી રહ્યાં છીએ...</translation>
+<translation id="2871029453856004998">આ ઍપ સંભવિત રીતે જોખમી છે અને Google દ્વારા બ્લૉક કરવામાં આવી હતી</translation>
 <translation id="2871733351037274014">પહેલેથી લોડ કરેલા પેજ</translation>
 <translation id="2871813825302180988">આ એકાઉન્ટ પહેલાથી જ આ ડિવાઇસ પર ઉપયોગમાં લેવાઈ રહ્યું છે.</translation>
 <translation id="287205682142673348">પોર્ટ ફૉરવર્ડિંગ</translation>
@@ -4845,6 +4851,7 @@
 <translation id="4327380114687339519">એક્સ્ટેન્શન મેનૂ</translation>
 <translation id="4330191372652740264">બરફનું પાણી</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="4330963457501417204">નાના કરેલા ટૅબ પર માઉસ લઈ જઈને તેને મોટા કરો</translation>
 <translation id="4332976768901252016">માતાપિતાના યોગ્ય નિયંત્રણોનું સેટઅપ કરો</translation>
 <translation id="4334768748331667190">તમને <ph name="MODULE_NAME" /> ફરીથી દેખાશે નહીં</translation>
 <translation id="4335835283689002019">Safe Browsing બંધ છે</translation>
@@ -6234,6 +6241,7 @@
 <translation id="5302048478445481009">ભાષા</translation>
 <translation id="5302435492906794790">નજીકના શોધી શકવા યોગ્ય ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
 <translation id="5302932258331363306">અવેજીઓ બતાવો</translation>
+<translation id="5304952564528359007">ટૅબને ઑટોમૅટિક રીતે મોટા કરવાની સુવિધા બંધ કરો</translation>
 <translation id="5305145881844743843">આ એકાઉન્ટ <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="5307030433605830021">સૉર્સ સમર્થિત નથી</translation>
 <translation id="5307386115243749078">બ્લૂટૂથ સ્વિચ જોડો</translation>
@@ -6405,6 +6413,7 @@
 <translation id="5436211819997237281">તમારા નવા ટૅબના પેજને મેનેજ કરતું વર્તમાન એક્સ્ટેન્શન</translation>
 <translation id="5436492226391861498">પ્રૉક્સી ટનલની પ્રતીક્ષા કરી રહ્યાં છે...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> શોધો:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nGemini દ્વારા તમારું કાર્ય રોકવામાં આવ્યું. તેનો રિવ્યૂ કરવા માટે Chrome પર પાછા ફરો.</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> વિન્ડો હવે <ph name="WINDOW_SIZE_PERCENT" /> પહોળી છે, <ph name="PANE_SIDE" /> વિભાગ હવે <ph name="PANE_SIZE_PERCENT" /> પહોળો છે.</translation>
 <translation id="5438060324827306856">&amp;એક્સ્ટેન્શન શોધો</translation>
 <translation id="5440425659852470030">બાજુની પૅનલ બંધ કરો</translation>
@@ -7604,6 +7613,7 @@ USB ડિવાઇસ</translation>
 <translation id="628705218210359422">તમારા પાસવર્ડનો ટ્રૅક રાખો અને તેને એક જ જગ્યાએ મેનેજ કરો.</translation>
 <translation id="628726841779494414">પ્રિન્ટરના સેટિંગમાં જઈને તમારા પ્રિન્ટર મેનેજ કરો</translation>
 <translation id="6287288864483377583">આયાત માત્ર એક જ સર્ટિફિકેટ માટે સપોર્ટેડ છે</translation>
+<translation id="6287713404380454515">સુરક્ષાના કારણોસર, તમારા ઍડમિનિસ્ટ્રેટરે તમારા ડિવાઇસનો પિન અને પાસવર્ડ બંધ કર્યો છે. હવેથી, તમારા <ph name="MANAGER" /> પાસવર્ડનો ઉપયોગ કરો.</translation>
 <translation id="6287828400772161253">Android ફોન (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">નજીકમાં શેર કરનારું કોઈ ડિવાઇસ ઉપલબ્ધ નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">સ્ટોરેજ સ્પેસના અભાવે રિસ્ટોર કરી શકતા નથી.</translation>
@@ -7749,6 +7759,7 @@ USB ડિવાઇસ</translation>
 <translation id="6400360390396538896">હંમેશાં ચાલુ <ph name="ORIGIN" /></translation>
 <translation id="6401118106417399952">તમારા ડિવાઇસનો EID <ph name="EID_NUMBER" /> અને ડિવાઇસનો અનુક્રમ નંબર <ph name="SERIAL_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ કરી શકાય છે.</translation>
 <translation id="6401458660421980302">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, એ ડિવાઇસના Chromeમાં સાઇન ઇન કરો</translation>
+<translation id="6402042774506839496">શા માટે, તે જાણવા માટે ઍપ ડેવલપરનો સંપર્ક કરો</translation>
 <translation id="6402921224457714577">Sites તમારા MIDI ડિવાઇસ નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવા માટે પૂછી શકે છે</translation>
 <translation id="6404511346730675251">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="640457954117263537">ChromeOS અને Android ઍપ અને સેવાઓ માટે લોકેશનનો ઉપયોગ કરો.</translation>
@@ -8035,6 +8046,7 @@ USB ડિવાઇસ</translation>
 <translation id="6599829027342135752"><ph name="APP_NAME" /> માટે તમારી સિક્યુરિટી કીનો ઉપયોગ કરવા માટે શામેલ કરો અને તેને ટચ કરો</translation>
 <translation id="6601262427770154296">વપરાશકર્તાના શબ્દકોશો મેનેજ કરો</translation>
 <translation id="6602173570135186741">ઑટોમૅટિક રીતે ભરવાની સુવિધા અને પાસવર્ડ</translation>
+<translation id="6602173667290651224">સાઇટનો કોઈ શૉર્ટકટ મળ્યો નથી</translation>
 <translation id="6602336931411102724">બુકમાર્ક બારમાં ટૅબના ગ્રૂપ બતાવો</translation>
 <translation id="6602937173026466876">તમારા પ્રિન્ટરને ઍક્સેસ કરો</translation>
 <translation id="6602956230557165253">નૅવિગેટ કરવા માટે ડાબી અને જમણી Arrow કીનો ઉપયોગ કરો.</translation>
@@ -8600,6 +8612,7 @@ USB ડિવાઇસ</translation>
 <translation id="6988572888918530647">તમારા Google એકાઉન્ટને મેનેજ કરો</translation>
 <translation id="6989274756151920076">અહીં રહો</translation>
 <translation id="6991665348624301627">ગંતવ્ય પસંદ કરો</translation>
+<translation id="6992078676798011826">પરવાનગી કાઢી નાખી શકાઈ નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6992554835374084304">વધુ સારી બનાવાયેલી જોડણીની તપાસ ચાલુ કરો</translation>
 <translation id="6993000214273684335">નામ વિનાના ગ્રૂપ - <ph name="GROUP_CONTENTS" />માંથી ટૅબ કાઢી નાખવામાં આવી</translation>
 <translation id="6995984090981858039">ChromeOS ડિવાઇસની માહિતી અને ડેટા વાંચો</translation>
@@ -8862,6 +8875,7 @@ USB ડિવાઇસ</translation>
 <translation id="7188508872042490670">ડિવાઇસ પર સાઇટનો ડેટા</translation>
 <translation id="7189234443051076392">ખાતરી કરો કે તમારા ઉપકરણ પર પૂરતી સ્પેસ છે</translation>
 <translation id="7189451821249468368">આ ડિવાઇસની નોંધણી કરવા માટે તમે પૂરતા અપગ્રેડ ધરાવતા નથી. વધુ અપગ્રેડ ખરીદવા માટે કૃપા કરીને વેચાણ સંબંધિત ટીમનો સંપર્ક કરો. જો તમે માનતા હો કે તમને આ મેસેજ ભૂલથી દેખાઈ રહ્યો છે, તો કૃપા કરીને સપોર્ટ ટીમનો સંપર્ક કરો.</translation>
+<translation id="7189558282078169397">અન્ય ડિવાઇસમાંથી ટૅબ</translation>
 <translation id="7189965711416741966">ફિંગરપ્રિન્ટ ઉમેરી.</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />ને બ્લૉક કરીએ?</translation>
 <translation id="7191063546666816478">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> અને અન્ય <ph name="NUMBER_OF_OTHER_APPS" /> ઍપમાં ખૂલશે.</translation>
@@ -9097,7 +9111,6 @@ USB ડિવાઇસ</translation>
 <translation id="7356908624372060336">નેટવર્ક લૉગ</translation>
 <translation id="7357271391997763660">પાસવર્ડ ચેક કરવાનું શરુ કરીએ?</translation>
 <translation id="735745346212279324">VPN ડિસ્કનેક્ટ કર્યું છે</translation>
-<translation id="7359326150089800742">તમારી શોધમાં ટૅબ અથવા ફાઇલ ઉમેરો અને કોઈ ટૂલનો પણ ઉપયોગ કરો</translation>
 <translation id="7359680654975233185">ટૅબને કાસ્ટ કરી શકતા નથી</translation>
 <translation id="7360257054721917104">સાચવેલા ડેસ્ક અને નમૂના જોઈ રહ્યાં છીએ. નૅવિગેટ કરવા ટૅબ દબાવો.</translation>
 <translation id="7360333718677093875">ઇમોજી પિકર</translation>
@@ -9294,6 +9307,7 @@ USB ડિવાઇસ</translation>
 <translation id="7478658909253570368">સાઇટને સીરિયલ પોર્ટ સાથે કનેક્ટ થવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7479221278376295180">સ્ટોરેજ વપરાશની ઝલક</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" /> અને <ph name="SECOND_DEVICE" /> નામના બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટેડ છે</translation>
+<translation id="7480076846077373008">પ્રોમો માટે વધુ ઍક્શન</translation>
 <translation id="7481213027396403996">Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="7481312909269577407">ફોર્વર્ડ કરો</translation>
 <translation id="7481358317100446445">હવે તૈયાર</translation>
@@ -9677,6 +9691,7 @@ USB ડિવાઇસ</translation>
 સોંપણી કાઢી નાખવા માટે, કોઈ સોંપણી કરેલી સ્વિચ કે કી દબાવો.</translation>
 <translation id="7745554356330788383">આ સાઇટ પર "<ph name="EXTENSION_NAME" />" માટે તમારા અપડેટ કરેલા સેટિંગ લાગુ કરવા માટે આ પેજને ફરીથી લોડ કરો</translation>
 <translation id="7745677556280361868">Passpoint સબ્સ્ક્રિપ્શન પેજમાંથી આ નેટવર્ક કાઢી નાખીએ?</translation>
+<translation id="7745849183714722618">સ્કૅમ ડિટેક્શન જેવી સુવિધાઓને સક્ષમ બનાવવા માટે, Chrome એવા AI મૉડલનો ઉપયોગ કરી શકે છે જે સીધા તમારા ડિવાઇસ પર ચાલે છે. જ્યારે આ બંધ હોય, ત્યારે આ સુવિધાઓ કદાચ કામ કરશે નહીં. <ph name="BEGIN_LINK" />ડિવાઇસ પર AI વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">તમારી સ્ક્રીન પરની આઇટમ, જેમાં ટેક્સ્ટનો પણ સમાવેશ થાય છે, ને નાની અથવા મોટી કરો. તમે પછીથી સેટિંગ &gt; ડિવાઇસ &gt; ડિસ્પ્લેમાં જઈને પણ આ શોધી શકો છો.</translation>
 <translation id="7750228210027921155">ચિત્રમાં ચિત્ર</translation>
 <translation id="7751260505918304024">બધું બતાવો</translation>
@@ -9725,6 +9740,7 @@ USB ડિવાઇસ</translation>
 <translation id="7774581652827321413">પેજનો સારાંશ, સંબંધિત શોધો તેમજ આ પેજ વિશે અન્ય ઉપયોગી માહિતી મેળવો</translation>
 <translation id="7774792847912242537">ઘણી બધી વિનંતીઓ.</translation>
 <translation id="7775694664330414886">નામ વિનાના ગ્રૂપ - <ph name="GROUP_CONTENTS" />માં ટૅબને ખસેડવામાં આવી</translation>
+<translation id="7776106026456236463">નાના કરેલા ટૅબ પર માઉસ લઈ જઈને તેને મોટા કરો</translation>
 <translation id="777637629667389858">તમે સાઇન ઇન હો ત્યારે, તમને સમગ્ર Google સેવાઓમાં સંરક્ષિત કરે છે.</translation>
 <translation id="7776701556330691704">કોઈ વૉઇસ મળ્યાં નથી</translation>
 <translation id="7776950606649732730">ફાઇલ સિંક થઈ જાય તે પછી ફરી પ્રયાસ કરો.</translation>
@@ -9957,6 +9973,7 @@ USB ડિવાઇસ</translation>
 <translation id="794250392403348719">ઉદાહરણ: 8 વર્ષના બાળક માટે આ કલ્પનાને સરળ બનાવો. તેઓ સમજી શકે એવી સરળ ભાષા અને સામ્યતાનો ઉપયોગ કરો. સંપૂર્ણ સ્પષ્ટીકરણ 150થી ઓછા શબ્દોમાં સંક્ષિપ્ત રાખો.</translation>
 <translation id="7942846369224063421">પહેલેથી લોડ કરેલા UI રેન્ડરર</translation>
 <translation id="7943271960579497371">ઇન્સ્ટૉલ કરેલી ઍપ્લિકેશનો</translation>
+<translation id="7943311690198910993">સાઇન-ઇન કરવાની પદ્ધતિ અપડેટ કરી</translation>
 <translation id="7943368935008348579">PDFs ડાઉનલોડ કરો</translation>
 <translation id="7943837619101191061">સ્થાન ઉમેરો...</translation>
 <translation id="7944173382284143968">વેબસાઇટ પર નવો પાસવર્ડ સાચવતા પહેલાં OTP કન્ફર્મેશન જરૂરી છે. ફેરફાર પૂર્ણ કરવા માટે કૃપા કરીને મેન્યુઅલી પ્રક્રિયા હાથ ધરો.</translation>
@@ -11173,6 +11190,7 @@ USB ડિવાઇસ</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />ની બધી શોધ બતાવો</translation>
 <translation id="8767621466733104912">Chrome ને તમામ વપરાશકર્તાઓ માટે ઑટોમૅટિક રીતે અપડેટ કરો</translation>
 <translation id="8768049274922835860">પ્રત્યેક</translation>
+<translation id="8768559850883798245">ટૅબને ઑટોમૅટિક રીતે મોટા કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="8769047324653576116">તમારી સંસ્થાની પ્રોફાઇલ સાથે તમારા ડિવાઇસનો ઉપયોગ કરવા, તમારી સંસ્થાને ડિવાઇસ વિશેની માહિતીની જરૂર છે.
 
 આમાં ઇન્સ્ટૉલ કરેલા સૉફ્ટવેર, ફાઇલો, તમારું બ્રાઉઝર, ડિવાઇસના ઑપરેટિંગ સિસ્ટમ અને IP ઍડ્રેસ વિશેની માહિતી શામેલ હોઈ શકે છે.</translation>
@@ -11513,6 +11531,7 @@ USB ડિવાઇસ</translation>
 <translation id="8993853206419610596">બધી વિનંતીઓ મોટી કરો</translation>
 <translation id="8993945059918628059">તમારી આંગળી વડે ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો. તમારી ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="899403249577094719">નેટસ્કેપ પ્રમાણપત્ર બેઝ URL</translation>
+<translation id="8996080012222587839">ટૅબને ઑટોમૅટિક રીતે મોટા કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="8996978916555523196">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{આ એક્સ્ટેન્શન તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, પરંતુ તેના દ્વારા ફક્ત આ ડિવાઇસ પર સાચવવામાં આવેલો કોઈપણ ડેટા ડિલીટ થઈ શકે છે}one{આ એક્સ્ટેન્શન તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, પરંતુ તેના દ્વારા ફક્ત આ ડિવાઇસ પર સાચવવામાં આવેલો કોઈપણ ડેટા ડિલીટ થઈ શકે છે}other{આ એક્સ્ટેન્શન તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યા છે, પરંતુ તેના દ્વારા ફક્ત આ ડિવાઇસ પર સાચવવામાં આવેલો કોઈપણ ડેટા ડિલીટ થઈ શકે છે}}</translation>
 <translation id="8999027165951679951">નિષ્ક્રિય ટૅબ: <ph name="MEMORY_SAVINGS" /> મેમરી ખાલી કરી</translation>
 <translation id="8999560016882908256">વિભાગ સિન્ટેક્સ ભૂલ: <ph name="ERROR_LINE" /></translation>

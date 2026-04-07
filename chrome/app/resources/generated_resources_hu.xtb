@@ -91,6 +91,7 @@
 <translation id="1056898198331236512">Figyelmeztetés</translation>
 <translation id="1056980582064308040">A beállítások módosításával újraindítja a hotspotot. A hotspotot használó eszközök kapcsolata megszakad.</translation>
 <translation id="1058262162121953039">PUK-kód</translation>
+<translation id="1058848978232174442">Feladat megszakítva</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Írja be az új PIN-kódot. A PIN-kódnak legalább egy karakterből kell állnia, és tartalmazhat betűket, számokat és egyéb karaktereket is.}other{Írja be az új PIN-kódot. A PIN-kódnak legalább # karakterből kell állnia, és tartalmazhat betűket, számokat és egyéb karaktereket is.}}</translation>
 <translation id="1059484610606223931">Hypertext Transfer Protocol Secure (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> lap található a következőre: „<ph name="SEARCH_TEXT" />”</translation>
@@ -1730,6 +1731,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2175384018164129879">Keresőmotorok és webhelyeken történő keresés kezelése</translation>
 <translation id="2175526076681939329">Elsődleges billentyűk használata</translation>
 <translation id="217576141146192373">Nem sikerült hozzáadni a nyomtatót. Ellenőrizze a nyomtató beállításait, majd próbálja újra.</translation>
+<translation id="2175773164573457310">Jelöljön ki bármilyen szöveget vagy képet, hogy kérdezhessen a Geminitől</translation>
 <translation id="2175927920773552910">QR-kód</translation>
 <translation id="2177950615300672361">Inkognitó lap: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3067,6 +3069,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3076966043108928831">Mentés csak ezen az eszközön</translation>
 <translation id="3076977359333237641">Bejelentkezési adatai törlődtek</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080521492391385172">Nem találhatók funkció- vagy bővítmény-billentyűparancsok</translation>
 <translation id="3080930813589868009">Felhasználónkénti frissítő</translation>
 <translation id="3080933187214341848">Ez a hálózat nincs szinkronizálva az Ön fiókjával. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="3082077944141570429">Alkalmazás neve vagy azonosítója</translation>
@@ -6415,6 +6418,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5436211819997237281">Az új lap oldalt kezelő aktuális bővítmény</translation>
 <translation id="5436492226391861498">Várakozás a proxy alagútra...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> keresés:</translation>
+<translation id="5437863035930787580"><ph name="TASK_TITLE" />\nA Gemini leállította a feladatot. Az ellenőrzéséhez térjen vissza a Chrome-ba.</translation>
 <translation id="5438014818441491616">A(z) <ph name="WINDOW_SIDE" /> ablak most <ph name="WINDOW_SIZE_PERCENT" /> széles, a(z) <ph name="PANE_SIDE" /> panel most <ph name="PANE_SIZE_PERCENT" /> széles.</translation>
 <translation id="5438060324827306856">Bővítmény&amp;ek keresése</translation>
 <translation id="5440425659852470030">Oldalsó panel bezárása</translation>
@@ -7613,6 +7617,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="628705218210359422">Egy helyen követheti nyomon és kezelheti jelszavait.</translation>
 <translation id="628726841779494414">A nyomtatókat a nyomtatóbeállításokban kezelheti</translation>
 <translation id="6287288864483377583">Csak egy tanúsítvány importálása támogatott</translation>
+<translation id="6287713404380454515">Biztonsági okokból az adminisztrátor letiltotta az eszköz PIN-kódját és jelszavát. Mostantól használja <ph name="MANAGER" />-jelszavát.</translation>
 <translation id="6287828400772161253">Androidos telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Nincsenek rendelkezésre álló eszközök a Közeli megosztáshoz. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="6291580570300353047">A túl kevés tárhely miatt nem lehetséges a visszaállítás.</translation>
@@ -8869,6 +8874,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7188508872042490670">Eszközön tárolt webhelyadatok</translation>
 <translation id="7189234443051076392">Győződjön meg arról, hogy elegendő tárhely áll rendelkezésre az eszközön</translation>
 <translation id="7189451821249468368">Ön nem rendelkezik elegendő bővítéssel az eszköz regisztrálásához. Kérjük, vegye fel a kapcsolatot az értékesítéssel továbbiak vásárlásához. Ha úgy gondolja, ezt az üzenetet tévesen kapta meg, forduljon az ügyfélszolgálathoz.</translation>
+<translation id="7189558282078169397">Más eszközök lapjai</translation>
 <translation id="7189965711416741966">Ujjlenyomat hozzáadva.</translation>
 <translation id="7190921792980745354">Letiltja a következőt: <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Egyes támogatott linkek továbbra is a(z) <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> és <ph name="NUMBER_OF_OTHER_APPS" /> további alkalmazásban nyílnak meg.</translation>
@@ -9104,7 +9110,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7356908624372060336">Hálózati naplók</translation>
 <translation id="7357271391997763660">Jelszóellenőrzést szeretne futtatni?</translation>
 <translation id="735745346212279324">A VPN nincs csatlakoztatva</translation>
-<translation id="7359326150089800742">Lap vagy fájl hozzáadása a kereséshez, illetve eszköz használata</translation>
 <translation id="7359680654975233185">Nem lehet átküldeni a lapot</translation>
 <translation id="7360257054721917104">Mentett asztalok és sablonok megtekintése. A Tab billentyű lenyomásával navigálhat.</translation>
 <translation id="7360333718677093875">emojiválasztó</translation>
@@ -9683,6 +9688,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelés megszüntetéséhez.</translation>
 <translation id="7745554356330788383">Az oldal újratöltésével alkalmazhatja a(z) „<ph name="EXTENSION_NAME" />” frissített beállításait erre a webhelyre</translation>
 <translation id="7745677556280361868">Eltávolítja ezt a hálózatot a Passpoint-előfizetés oldalán?</translation>
+<translation id="7745849183714722618">Az olyan funkciók működtetéséhez, mint a csalásészlelés, a Chrome használhat közvetlenül az eszközön futó AI-modelleket. Ha az eszközalapú AI ki van kapcsolva, akkor előfordulhat, hogy ezek a funkciók nem működnek. <ph name="BEGIN_LINK" />További információ az eszközalapú AI-ról<ph name="END_LINK" /></translation>
 <translation id="7746045113967198252">Nagyíthatja vagy kicsinyítheti a képernyőn megjelenő elemeket (például a szöveget). Ezt később a Beállítások &gt; Eszköz &gt; Megjelenítés menüpontban is megtalálja.</translation>
 <translation id="7750228210027921155">Kép a képben</translation>
 <translation id="7751260505918304024">Összes megjelenítése</translation>
@@ -9963,6 +9969,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="794250392403348719">Példa: Egyszerűsítsd le ezt a fogalmat egy nyolcéves gyermek számára. Használj egyszerű nyelvezetet és olyan analógiát, amelyet megért. A teljes magyarázat legyen tömör, 150 szónál rövidebb.</translation>
 <translation id="7942846369224063421">Előre betöltött UI-megjelenítő</translation>
 <translation id="7943271960579497371">Telepített alkalmazások</translation>
+<translation id="7943311690198910993">Bejelentkezési mód frissítve</translation>
 <translation id="7943368935008348579">PDF-ek letöltése</translation>
 <translation id="7943837619101191061">Hely hozzáadása...</translation>
 <translation id="7944173382284143968">A webhely egyszer használatos jelszóval való megerősítést kér az új jelszó mentéséhez. A módosítás befejezéséhez vegye át a folyamat irányítását.</translation>

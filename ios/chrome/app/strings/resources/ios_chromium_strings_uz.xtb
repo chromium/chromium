@@ -133,6 +133,7 @@ Hisoblarni almashtirishdan oldin bir necha daqiqa kuting. Hisoblarni hozir almas
 <translation id="377649297473651452">Chromium avtomatik kiritish panelining yoyilgan shakli</translation>
 <translation id="3780779443901618967">Standart himoyadan koʻra koʻproq saytlardan olingan maʼlumotlarni tahlil qilish orqali sizni xavfli saytlar, hatto Google ilgari bilmagan saytlar haqida ogohlantiradi. Chromium ogohlantirishlarini eʼtiborsiz qoldirishni tanlashingiz mumkin.</translation>
 <translation id="3805899903892079518">Chromium rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasi orqali ruxsat bering.</translation>
+<translation id="3809591243528646631">Bolalar xavfsizligi funksiyalarini olish uchun farzandingiz uchun sozlangan Google hisobidan foydalanishingiz yoki Chromiumdan hisobsiz foydalanishingiz mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3816686541346279443">Chromium parolingizni saqlashni taklif qiladi.</translation>
 <translation id="3827545470516145620">Bu qurilmada standart xavfsizlik sozlamasi amal qiladi</translation>
 <translation id="3833326979834193417">Chromium maʼlumotlarni oshkor qilish, xavfli saytlar va boshqalardan himoyalash uchun har kuni Xavfsizlik tekshiruvini bajaradi. Xavfsizlik tekshiruvi haqida batafsil axborotni Sozlamalardan olish mumkin.</translation>
@@ -168,6 +169,7 @@ Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chromium maʼlumotlarini Google
 Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="4578500311756617174">Chromium maslahati: Chromiumni asosiy brauzer etib tayinlang</translation>
 <translation id="458786853569524949">Siz endi Chromium brauzerini har doim xatlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
+<translation id="4625730353066900738">Ishni boshlash uchun foydali Chromium tavsiyalari bilan tanishing</translation>
 <translation id="4633738821577273991">Bu Chromium profili orqali xavfsiz qidiruvni ham kuchaytirilgan rejimda himoyalang</translation>
 <translation id="4654936625574199632">Ilovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_LINK" />Boshqarish<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium skanerini ochish</translation>
@@ -178,7 +180,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="4856138222358683580">Chromium amallari</translation>
 <translation id="4869706986935301458">iPhone qurilmangizda Chromiumni darhol oching</translation>
 <translation id="4904452304169763785">Maxfiylik va xavfsizlikka oid muammolar haqidagi Chromium bildirishnomalari</translation>
-<translation id="4908570938463711775">Ishni boshlash uchun foydali Chromium tavsiyalari bilan tanishing</translation>
 <translation id="4962295957157529683">Yopilmagan Chromium oynangizdagi ishni davom ettiring.</translation>
 <translation id="4985291216379576555">Oflayn, Chromium yangilanishlar chiqqanini tekshira olmadi</translation>
 <translation id="4996471330284142407">Oddiy, xavfsiz va har qachongidan tezkor Chromium brauzerida koʻplab imkoniyatlar.</translation>
@@ -354,6 +355,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="8900052431807804054">Chromium brauzerining kuchli xavfsizligidan foydalaning</translation>
 <translation id="8908791447256515663">Chromiumni iPad dok-paneliga mahkamlab, tezroq oching.</translation>
 <translation id="8925569192291721236">Chromium foydali maslahatlari va narx kuzatuvi xabarlarini olish.</translation>
+<translation id="8939412301975414416">Chromiumda bolalar xavfsizligi funksiyalarini olish uchun farzandingiz uchun sozlangan Google hisobidan foydalanishingiz yoki Chromiumdan hisobsiz foydalanishingiz mumkin.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi}other{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi}}</translation>
 <translation id="8963279154877372067">Chromium bildirishnomalari narx tushishi haqida xabar berishiga ruxsat bering</translation>
 <translation id="8975812008711371178">Chromiumda ovoz bilan qidirish</translation>
