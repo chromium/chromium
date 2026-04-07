@@ -985,6 +985,9 @@ extern const char
 extern const char kSupervisedUserUseUrlFilteringServiceName[];
 extern const char kSupervisedUserUseUrlFilteringServiceDescription[];
 
+extern const char kSyncAIThreadsName[];
+extern const char kSyncAIThreadsDescription[];
+
 extern const char kSyncAccountSettingsName[];
 extern const char kSyncAccountSettingsDescription[];
 

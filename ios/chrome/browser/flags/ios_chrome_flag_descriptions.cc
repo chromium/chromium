@@ -1611,6 +1611,10 @@ const char kSupervisedUserUseUrlFilteringServiceDescription[] =
     "directly from supervision services instead of using PrefService (no "
     "user-visible effect).";
 
+const char kSyncAIThreadsName[] = "Sync AI Threads";
+const char kSyncAIThreadsDescription[] =
+    "Enables syncing of AI threads across devices.";
+
 const char kSyncAccountSettingsName[] = "Sync account settings";
 const char kSyncAccountSettingsDescription[] =
     "Enables syncing account settings to the server.";
