@@ -95,7 +95,7 @@ void PinInfoBarController::MaybeShowInfoBarForBrowser(
   // Don't show the infobar if a higher priority infobar has been shown or might
   // be about to show, to avoid asking too many similar questions in a session.
   if (another_infobar_shown || !browser) {
-    std::move(done_callback).Run(false);
+    std::move(done_callback).Run(another_infobar_shown);
     return;
   }
   PinInfoBarController* controller = PinInfoBarController::From(browser.get());
