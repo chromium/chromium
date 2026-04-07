@@ -432,6 +432,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/payments",
     "//chrome/browser/payments/browser_binding:browser_bound_key_deleter",
+    "//chrome/browser/performance_manager",
     "//chrome/browser/permissions",
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/plus_addresses",

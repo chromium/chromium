@@ -1,0 +1,283 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("performance_manager") {
+  public = [
+    "decorators/helpers/page_live_state_decorator_helper.h",
+    "mechanisms/page_discarder.h",
+    "mechanisms/termination_target_setter.h",
+    "mechanisms/working_set_trimmer.h",
+    "metrics/metrics_provider_common.h",
+    "observers/page_load_metrics_observer.h",
+    "persistence/site_data/site_data_cache_facade.h",
+    "persistence/site_data/site_data_cache_facade_factory.h",
+    "policies/best_effort_task_inhibiting_policy.h",
+    "policies/cannot_discard_reason.h",
+    "policies/discard_eligibility_policy.h",
+    "policies/frame_throttling_policy.h",
+    "policies/keep_alive_dse_policy.h",
+    "policies/page_discarding_helper.h",
+    "policies/policy_features.h",
+    "policies/termination_target_policy.h",
+    "policies/transient_keep_alive_policy.h",
+    "policies/working_set_trimmer_policy.h",
+    "public/chrome_browser_main_extra_parts_performance_manager.h",
+    "public/chrome_content_browser_client_performance_manager_part.h",
+    "user_tuning/profile_discard_opt_out_list_helper.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:chrome_content_browser_client_parts",
+    "//chrome/browser:main_extra_parts",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resource_coordinator:mojo_bindings",
+    "//chrome/browser/resource_coordinator:mojo_bindings_shared",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/memory_pressure",
+    "//components/metrics",
+    "//components/performance_manager",
+    "//components/performance_manager/scenario_api",
+    "//components/prefs",
+    "//components/search_engines",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//url",
+  ]
+
+  if (is_android) {
+    public += [
+      "policies/discard_page_with_crashed_subframe_policy.h",
+      "policies/process_rank_policy_android.h",
+    ]
+    public_deps += [ "//content/public/browser" ]
+  }
+
+  if (!is_android) {
+    public += [
+      "execution_context_priority/side_panel_loading_voter.h",
+      "mechanisms/page_loader.h",
+      "metrics/metrics_provider_desktop.h",
+      "policies/background_tab_loading_policy.h",
+      "policies/background_tab_loading_policy_helpers.h",
+      "policies/freezing_opt_out_checker.h",
+      "policies/memory_saver_mode_policy.h",
+      "policies/sustained_memory_pressure_evaluator.h",
+      "policies/urgent_page_discarding_policy.h",
+      "public/background_tab_loading_policy.h",
+      "public/side_panel_loading_policy.h",
+      "user_tuning/cpu_health_tracker.h",
+    ]
+    public_deps += [
+      "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/performance_manager/user_tuning",
+      "//components/system_cpu",
+    ]
+  }
+
+  if (is_chromeos) {
+    public += [
+      "mechanisms/working_set_trimmer_chromeos.h",
+      "policies/oom_score_policy_chromeos.h",
+      "policies/report_page_processes_policy.h",
+      "policies/working_set_trimmer_policy_arcvm.h",
+      "policies/working_set_trimmer_policy_chromeos.h",
+    ]
+    public_deps += [
+      "//chrome/browser/ash/arc/session:session",
+      "//chromeos/ash/experiences/arc",
+      "//chromeos/ash/experiences/arc/mojom",
+      "//chromeos/ash/experiences/arc/session",
+      "//chromeos/ash/experiences/arc/session:connection_holder",
+      "//chromeos/ash/experiences/arc/process",
+      "//chromeos/dbus/power",
+      "//ui/wm/public",
+    ]
+  }
+
+  if (is_win) {
+    public += [
+      "policies/priority_boost_browser_network_policy.h",
+      "policies/priority_boost_foreground_browser_network_policy.h",
+      "policies/priority_boost_gpu_browser_network_policy.h",
+      "policies/priority_boost_helpers.h",
+      "policies/priority_boost_loading_browser_network_policy.h",
+      "public/dll_pre_read_policy_win.h",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    public += [ "extension_watcher.h" ]
+    public_deps += [
+      "//extensions/browser",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_browser_main_extra_parts_performance_manager.cc",
+    "chrome_content_browser_client_performance_manager_part.cc",
+    "decorators/helpers/page_live_state_decorator_helper.cc",
+    "mechanisms/page_discarder.cc",
+    "mechanisms/termination_target_setter.cc",
+    "mechanisms/working_set_trimmer.cc",
+    "metrics/metrics_provider_common.cc",
+    "observers/page_load_metrics_observer.cc",
+    "persistence/site_data/site_data_cache_facade.cc",
+    "persistence/site_data/site_data_cache_facade_factory.cc",
+    "policies/best_effort_task_inhibiting_policy.cc",
+    "policies/cannot_discard_reason.cc",
+    "policies/discard_eligibility_policy.cc",
+    "policies/frame_throttling_policy.cc",
+    "policies/keep_alive_dse_policy.cc",
+    "policies/page_discarding_helper.cc",
+    "policies/policy_features.cc",
+    "policies/termination_target_policy.cc",
+    "policies/transient_keep_alive_policy.cc",
+    "policies/working_set_trimmer_policy.cc",
+    "user_tuning/profile_discard_opt_out_list_helper.cc",
+    "user_tuning/user_tuning_utils.cc",
+  ]
+
+  public_deps = [
+    ":performance_manager",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/devtools",
+    "//chrome/browser/glic",
+    "//chrome/browser/history",
+    "//chrome/browser/memory",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles:profiles",
+    "//chrome/browser/resource_coordinator",
+    "//chrome/browser/resource_coordinator:mojo_bindings",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/sessions",
+    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/common:buildflags",
+    "//chrome/common:chrome_features",
+    "//components/favicon/content",
+    "//components/guest_view/browser",
+    "//components/guest_view/buildflags",
+    "//components/no_state_prefetch/browser",
+    "//components/performance_manager",
+    "//components/permissions",
+    "//components/tabs:public",
+    "//components/url_matcher",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/common:headers",
+    "//ui/accessibility",
+  ]
+
+  if (is_android) {
+    sources += [
+      "policies/discard_page_with_crashed_subframe_policy.cc",
+      "policies/process_rank_policy_android.cc",
+    ]
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui/android/tab_model",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "execution_context_priority/side_panel_loading_voter.cc",
+      "mechanisms/page_loader.cc",
+      "metrics/metrics_provider_desktop.cc",
+      "policies/background_tab_loading_policy.cc",
+      "policies/background_tab_loading_policy_helpers.cc",
+      "policies/freezing_opt_out_checker.cc",
+      "policies/memory_saver_mode_policy.cc",
+      "policies/sustained_memory_pressure_evaluator.cc",
+      "policies/urgent_page_discarding_policy.cc",
+      "side_panel_loading_policy.cc",
+      "user_tuning/battery_saver_mode_manager.cc",
+      "user_tuning/cpu_health_tracker.cc",
+      "user_tuning/performance_detection_manager.cc",
+      "user_tuning/user_performance_tuning_manager.cc",
+      "user_tuning/user_performance_tuning_notifier.cc",
+    ]
+    deps += [
+      "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/web_applications",
+      "//chrome/common:chrome_features",
+      "//components/split_tabs",
+      "//third_party/perfetto:libperfetto",
+      "//ui/accessibility:ax_base",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "mechanisms/working_set_trimmer_chromeos.cc",
+      "policies/oom_score_policy_chromeos.cc",
+      "policies/report_page_processes_policy.cc",
+      "policies/working_set_trimmer_policy_arcvm.cc",
+      "policies/working_set_trimmer_policy_chromeos.cc",
+    ]
+    deps += [
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc:arc_util",
+      "//chrome/browser/ash/arc/session:session",
+      "//chrome/browser/ash/arc/vmm",
+      "//chromeos/ash/components/dbus/resourced",
+      "//chromeos/ash/components/memory",
+      "//chromeos/ash/experiences/arc",
+      "//chromeos/ash/experiences/arc/process",
+      "//chromeos/dbus/power",
+      "//components/exo",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "policies/dll_pre_read_policy_win.cc",
+      "policies/priority_boost_browser_network_policy.cc",
+      "policies/priority_boost_foreground_browser_network_policy.cc",
+      "policies/priority_boost_gpu_browser_network_policy.cc",
+      "policies/priority_boost_helpers.cc",
+      "policies/priority_boost_loading_browser_network_policy.cc",
+    ]
+    deps += [
+      "//chrome/browser:browser_features",
+      "//components/startup_metric_utils",
+      "//services/network/public/mojom",
+    ]
+  }
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    sources += [ "user_tuning/memory_saver_policy_handler.cc" ]
+    deps += [ "//components/policy/core/browser" ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [ "extension_watcher.cc" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions/browser",
+      "//extensions/common:common_constants",
+    ]
+  }
+}

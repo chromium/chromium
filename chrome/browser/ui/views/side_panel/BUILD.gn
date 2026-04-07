@@ -106,6 +106,7 @@ source_set("side_panel") {
     "//chrome/browser/favicon",
     "//chrome/browser/glic",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/performance_manager",
     "//chrome/browser/profiles",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/resources:component_extension_resources_grit",
