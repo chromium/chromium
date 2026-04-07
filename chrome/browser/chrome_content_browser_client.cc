@@ -534,6 +534,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
+#include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
@@ -4915,6 +4916,11 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       base::FeatureList::IsEnabled(::features::kDevToolsAiOriginTrialsApis)) {
     web_prefs->ai_ot_apis_enabled = true;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  web_prefs->is_indigo_onboarding =
+      indigo::IndigoOnboardingDialog::IsOnboardingWebContents(web_contents);
+#endif
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(

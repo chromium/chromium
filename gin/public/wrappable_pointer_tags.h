@@ -77,7 +77,8 @@ enum WrappablePointerTag : uint16_t {
   kWebAXObjectProxy,             // content::WebAXObjectProxy
   kWrappedExceptionHandler,      // extensions::WrappedExceptionHandler
   kIndigoContext,                // indigo::IndigoContext
-  kLastPointerTag = kIndigoContext,
+  kIndigoOnboarding,             // indigo::OnboardingContext
+  kLastPointerTag = kIndigoOnboarding,
 };
 
 static_assert(kLastPointerTag <

@@ -8,17 +8,18 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -32,6 +33,26 @@
 namespace indigo {
 
 namespace {
+class OnboardingDialogTracker
+    : public content::WebContentsUserData<OnboardingDialogTracker> {
+ public:
+  ~OnboardingDialogTracker() override = default;
+  IndigoOnboardingDialog* dialog() { return dialog_.get(); }
+
+ private:
+  friend class content::WebContentsUserData<OnboardingDialogTracker>;
+
+  explicit OnboardingDialogTracker(content::WebContents* web_contents,
+                                   base::WeakPtr<IndigoOnboardingDialog> dialog)
+      : content::WebContentsUserData<OnboardingDialogTracker>(*web_contents),
+        dialog_(std::move(dialog)) {}
+
+  base::WeakPtr<IndigoOnboardingDialog> dialog_;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OnboardingDialogTracker);
+
 constexpr gfx::Size kMinSize{480, 360};
 constexpr gfx::Size kMaxSize{480, 600};
 
@@ -115,7 +136,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoOnboardingDialog, kWebViewId);
 std::unique_ptr<IndigoOnboardingDialog> IndigoOnboardingDialog::Show(
     tabs::TabInterface& tab,
     const GURL& onboarding_url,
-    base::OnceClosure close_callback) {
+    base::OnceCallback<void(const OnboardingResult&)> close_callback) {
   if (!tab.CanShowModalUI()) {
     return nullptr;
   }
@@ -123,9 +144,10 @@ std::unique_ptr<IndigoOnboardingDialog> IndigoOnboardingDialog::Show(
       tab, onboarding_url, std::move(close_callback)));
 }
 
-IndigoOnboardingDialog::IndigoOnboardingDialog(tabs::TabInterface& tab,
-                                               const GURL& onboarding_url,
-                                               base::OnceClosure close_callback)
+IndigoOnboardingDialog::IndigoOnboardingDialog(
+    tabs::TabInterface& tab,
+    const GURL& onboarding_url,
+    base::OnceCallback<void(const OnboardingResult&)> close_callback)
     : tab_(&tab), close_callback_(std::move(close_callback)) {
   Profile* profile =
       Profile::FromBrowserContext(tab.GetContents()->GetBrowserContext());
@@ -137,6 +159,14 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(tabs::TabInterface& tab,
         return tab ? tab->GetBrowserWindowInterface() : nullptr;
       },
       tab.GetWeakPtr()));
+
+  OnboardingDialogTracker::CreateForWebContents(web_view->GetWebContents(),
+                                                weak_ptr_factory_.GetWeakPtr());
+
+  // Force preferences update to pick up the tracker and set
+  // is_indigo_onboarding.
+  web_view->GetWebContents()->NotifyPreferencesChanged();
+
   content::NavigationController::LoadURLParams load_params(onboarding_url);
   load_params.extra_headers = "X-Chrome-Onboarding: ?1";
   web_view->GetWebContents()->GetController().LoadURLWithParams(load_params);
@@ -186,8 +216,55 @@ void IndigoOnboardingDialog::OnWidgetClosed(
   widget_.reset();
 
   if (close_callback_) {
-    std::move(close_callback_).Run();
+    std::move(close_callback_).Run(onboarding_result_);
   }
+}
+
+// static
+void IndigoOnboardingDialog::BindOnboardingDialogHost(
+    mojo::PendingAssociatedReceiver<chrome::mojom::IndigoOnboardingDialogHost>
+        receiver,
+    content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (!web_contents) {
+    return;
+  }
+  OnboardingDialogTracker* tracker =
+      OnboardingDialogTracker::FromWebContents(web_contents);
+  if (!tracker) {
+    return;
+  }
+  if (IndigoOnboardingDialog* dialog = tracker->dialog()) {
+    dialog->receiver_set_.Add(dialog, std::move(receiver),
+                              render_frame_host->GetGlobalId());
+  }
+}
+
+void IndigoOnboardingDialog::AcknowledgeChromeDisclaimer() {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(receiver_set_.current_context());
+  // A primary main frame can become non-primary by being stored in bfcache.
+  // It shouldn't be able to acknowledge while in such a state.
+  if (!rfh || !rfh->IsInPrimaryMainFrame()) {
+    return;
+  }
+  CHECK_EQ(content::WebContents::FromRenderFrameHost(rfh),
+           static_cast<views::WebView*>(delegate_->GetContentsView())
+               ->GetWebContents());
+  onboarding_result_.acknowledge_chrome_disclaimer = true;
+}
+
+// static
+bool IndigoOnboardingDialog::IsOnboardingWebContents(
+    content::WebContents* web_contents) {
+  if (!base::FeatureList::IsEnabled(features::kIndigo)) {
+    return false;
+  }
+  return OnboardingDialogTracker::FromWebContents(web_contents) != nullptr;
 }
 
 }  // namespace indigo

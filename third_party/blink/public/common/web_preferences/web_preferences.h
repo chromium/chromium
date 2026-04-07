@@ -481,6 +481,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool should_screenshot_on_mainframe_same_doc_navigation = true;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  // Set if this is in a WebView for chrome/browser/indigo/onboarding/.
+  // Consumed only in chrome/renderer/ (not by Blink).
+  bool is_indigo_onboarding = false;
+
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.

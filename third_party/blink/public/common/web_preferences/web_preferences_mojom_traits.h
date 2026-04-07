@@ -851,6 +851,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
   }
 #endif  // BUILDFLAG(IS_MAC)
 
+  static bool is_indigo_onboarding(const blink::web_pref::WebPreferences& r) {
+    return r.is_indigo_onboarding;
+  }
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

@@ -33,6 +33,7 @@ class TabInterface;
 namespace indigo {
 
 class IndigoOnboardingDialog;
+struct OnboardingResult;
 class IndigoService;
 
 // Manages the Indigo page action and its various entry points, ensuring they
@@ -68,7 +69,7 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void UpdateEntryPointsState();
 
   // Called when the onboarding dialog is closed.
-  void OnOnboardingDialogClosed();
+  void OnOnboardingDialogClosed(const OnboardingResult& result);
 
   // Called when the profile state has changed in a way that might affect
   // whether this feature should be offered.

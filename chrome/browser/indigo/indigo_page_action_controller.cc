@@ -250,7 +250,8 @@ void IndigoPageActionController::UpdateEntryPointsState() {
   is_shown_ = should_show;
 }
 
-void IndigoPageActionController::OnOnboardingDialogClosed() {
+void IndigoPageActionController::OnOnboardingDialogClosed(
+    const OnboardingResult& result) {
   onboarding_dialog_.reset();
 }
 

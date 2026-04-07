@@ -7,9 +7,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
@@ -34,25 +36,34 @@ MATCHER_P2(SizeIsInRange, min_size, max_size, "") {
          arg.height() >= min_size.height() && arg.height() <= max_size.height();
 }
 
-GURL HTMLToDataView(std::string_view html) {
-  return GURL("data:text/html;charset=utf-8," +
-              base::EscapeAllExceptUnreserved(html));
-}
-
 class IndigoOnboardingDialogBrowserTest : public InteractiveBrowserTest {
+ public:
+  IndigoOnboardingDialogBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kIndigo);
+  }
+
  protected:
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
   void OpenDialog(tabs::TabInterface& tab, const GURL& url) {
-    dialog_ = IndigoOnboardingDialog::Show(tab, url,
-                                           base::BindLambdaForTesting([&]() {
-                                             closed_ = true;
-                                             dialog_.reset();
-                                           }));
+    dialog_ = IndigoOnboardingDialog::Show(
+        tab, url,
+        base::BindLambdaForTesting([&](const OnboardingResult& result) {
+          closed_ = true;
+          last_result_ = result;
+          dialog_.reset();
+        }));
   }
 
   bool WasDialogClosed() const { return closed_; }
 
   std::unique_ptr<IndigoOnboardingDialog> dialog_;
   bool closed_ = false;
+  OnboardingResult last_result_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, ShowAndClose) {
@@ -98,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, JSWindowClose) {
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
-  const GURL onboarding_url("about:blank");
+  const GURL onboarding_url = embedded_test_server()->GetURL("/empty.html");
   RunTestSequence(Do([&]() { OpenDialog(*tab, onboarding_url); }),
                   WaitForShow(IndigoOnboardingDialog::kWebViewId),
                   InstrumentNonTabWebView(kDialogWebContentsId,
@@ -117,22 +128,20 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest,
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
-  const GURL onboarding_url = HTMLToDataView(R"html(
-    <!DOCTYPE html>
-    <html><body>
-      <a id="link-blank" href="about:blank" target="_blank">Blank</a>
-    </body></html>
-  )html");
+  const GURL onboarding_url =
+      embedded_test_server()->GetURL("/link_new_page.html");
 
-  RunTestSequence(Do([&]() { OpenDialog(*tab, onboarding_url); }),
-                  WaitForShow(IndigoOnboardingDialog::kWebViewId),
-                  InstrumentNonTabWebView(kDialogWebContentsId,
-                                          IndigoOnboardingDialog::kWebViewId),
-                  WaitForWebContentsReady(kDialogWebContentsId, onboarding_url),
-                  InstrumentNextTab(kNewTabId),
-                  ClickElement(kDialogWebContentsId, DeepQuery{"#link-blank"})
-                      .SetMustRemainVisible(false),
-                  WaitForWebContentsReady(kNewTabId, GURL("about:blank")));
+  RunTestSequence(
+      Do([&]() { OpenDialog(*tab, onboarding_url); }),
+      WaitForShow(IndigoOnboardingDialog::kWebViewId),
+      InstrumentNonTabWebView(kDialogWebContentsId,
+                              IndigoOnboardingDialog::kWebViewId),
+      WaitForWebContentsReady(kDialogWebContentsId, onboarding_url),
+      InstrumentNextTab(kNewTabId),
+      ClickElement(kDialogWebContentsId, DeepQuery{"#new-page-link"})
+          .SetMustRemainVisible(false),
+      WaitForWebContentsReady(
+          kNewTabId, embedded_test_server()->GetURL("/link_new_page.html")));
 }
 
 // Test middle-clicking a link. This verifies the
@@ -141,23 +150,74 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, MiddleClickLink) {
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
-  const GURL onboarding_url = HTMLToDataView(R"html(
-    <!DOCTYPE html>
-    <html><body>
-      <a id="link-normal" href="about:blank">Normal</a>
-    </body></html>
-  )html");
+  const GURL onboarding_url = embedded_test_server()->GetURL("/links.html");
+
+  RunTestSequence(
+      Do([&]() { OpenDialog(*tab, onboarding_url); }),
+      WaitForShow(IndigoOnboardingDialog::kWebViewId),
+      InstrumentNonTabWebView(kDialogWebContentsId,
+                              IndigoOnboardingDialog::kWebViewId),
+      WaitForWebContentsReady(kDialogWebContentsId, onboarding_url),
+      InstrumentNextTab(kNewTabId),
+      ClickElement(kDialogWebContentsId, DeepQuery{"#title1"},
+                   ui_controls::MIDDLE)
+          .SetMustRemainVisible(false),
+      WaitForWebContentsReady(kNewTabId,
+                              embedded_test_server()->GetURL("/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest,
+                       SetResultBeforeClose) {
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  ASSERT_TRUE(tab);
+
+  const GURL onboarding_url = embedded_test_server()->GetURL("/empty.html");
+  RunTestSequence(
+      Do([&]() { OpenDialog(*tab, onboarding_url); }),
+      WaitForShow(IndigoOnboardingDialog::kWebViewId),
+      InstrumentNonTabWebView(kDialogWebContentsId,
+                              IndigoOnboardingDialog::kWebViewId),
+      WaitForWebContentsReady(kDialogWebContentsId, onboarding_url),
+      CheckJsResult(kDialogWebContentsId,
+                    "() => typeof window.chromeOnboarding", "object"),
+      ExecuteJs(kDialogWebContentsId,
+                R"js(
+                  () => {
+                    window.chromeOnboarding.acknowledgeChromeDisclaimer();
+                    window.close();
+                  }
+                )js",
+                ExecuteJsMode::kFireAndForget),
+      WaitForHide(IndigoOnboardingDialog::kWebViewId),
+      Check([&]() { return WasDialogClosed(); }),
+      Check([&]() { return last_result_.acknowledge_chrome_disclaimer; }));
+}
+
+// Ensure that a dictionary parameter passed to this function is ignored.
+// This just protects our ability to add more to this function in the future if
+// needed, since this aspect of gin bindings isn't obvious.
+IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest,
+                       AcknowledgeWithParam) {
+  GURL onboarding_url = embedded_test_server()->GetURL("/empty.html");
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
 
   RunTestSequence(Do([&]() { OpenDialog(*tab, onboarding_url); }),
                   WaitForShow(IndigoOnboardingDialog::kWebViewId),
                   InstrumentNonTabWebView(kDialogWebContentsId,
                                           IndigoOnboardingDialog::kWebViewId),
                   WaitForWebContentsReady(kDialogWebContentsId, onboarding_url),
-                  InstrumentNextTab(kNewTabId),
-                  ClickElement(kDialogWebContentsId, DeepQuery{"#link-normal"},
-                               ui_controls::MIDDLE)
-                      .SetMustRemainVisible(false),
-                  WaitForWebContentsReady(kNewTabId, GURL("about:blank")));
+                  ExecuteJs(kDialogWebContentsId,
+                            R"js(
+                  () => {
+                    window.chromeOnboarding.acknowledgeChromeDisclaimer({});
+                    window.close();
+                  }
+                )js",
+                            ExecuteJsMode::kFireAndForget),
+                  WaitForHide(IndigoOnboardingDialog::kWebViewId),
+                  Check([&]() { return WasDialogClosed(); }), Check([&]() {
+                    return last_result_.acknowledge_chrome_disclaimer;
+                  }));
 }
 
 }  // namespace

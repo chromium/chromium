@@ -33,3 +33,10 @@ interface IndigoAgent {
   // injected, or it hasn't registered by calling `window.indigo.setup()`.
   Invoke() => ();
 };
+
+// Renderer -> browser interface for the Indigo Onboarding Dialog.
+// This exists on the main frame of the onboarding dialog only.
+interface IndigoOnboardingDialogHost {
+  // Notifies the browser that the user has acknowledged the Chrome disclaimer.
+  AcknowledgeChromeDisclaimer();
+};

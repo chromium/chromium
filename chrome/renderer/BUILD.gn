@@ -430,6 +430,8 @@ static_library("renderer") {
     sources += [
       "indigo/indigo_agent.cc",
       "indigo/indigo_agent.h",
+      "indigo/onboarding_agent.cc",
+      "indigo/onboarding_agent.h",
     ]
   }
 }

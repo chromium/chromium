@@ -10,11 +10,20 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/common/indigo/indigo.mojom.h"
+#include "content/public/browser/global_routing_id.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
 class GURL;
+
+namespace content {
+class RenderFrameHost;
+class WebContents;
+}  // namespace content
 
 namespace tabs {
 class TabInterface;
@@ -27,8 +36,14 @@ class View;
 
 namespace indigo {
 
+struct OnboardingResult {
+  bool acknowledge_chrome_disclaimer = false;
+};
+
 // Owns and manages an onboarding dialog which is mainly powered by a WebView.
-class IndigoOnboardingDialog : public views::ViewObserver {
+class IndigoOnboardingDialog
+    : public views::ViewObserver,
+      public chrome::mojom::IndigoOnboardingDialogHost {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWebViewId);
 
@@ -39,7 +54,17 @@ class IndigoOnboardingDialog : public views::ViewObserver {
   static std::unique_ptr<IndigoOnboardingDialog> Show(
       tabs::TabInterface& tab,
       const GURL& onboarding_url,
-      base::OnceClosure close_callback);
+      base::OnceCallback<void(const OnboardingResult&)> close_callback);
+
+  static void BindOnboardingDialogHost(
+      mojo::PendingAssociatedReceiver<chrome::mojom::IndigoOnboardingDialogHost>
+          receiver,
+      content::RenderFrameHost* render_frame_host);
+
+  static bool IsOnboardingWebContents(content::WebContents* web_contents);
+
+  // chrome::mojom::OnboardingDialogHost:
+  void AcknowledgeChromeDisclaimer() override;
 
   IndigoOnboardingDialog(const IndigoOnboardingDialog&) = delete;
   IndigoOnboardingDialog& operator=(const IndigoOnboardingDialog&) = delete;
@@ -51,9 +76,10 @@ class IndigoOnboardingDialog : public views::ViewObserver {
   void Close();
 
  private:
-  explicit IndigoOnboardingDialog(tabs::TabInterface& tab,
-                                  const GURL& onboarding_url,
-                                  base::OnceClosure close_callback);
+  explicit IndigoOnboardingDialog(
+      tabs::TabInterface& tab,
+      const GURL& onboarding_url,
+      base::OnceCallback<void(const OnboardingResult&)> close_callback);
 
   void OnWidgetClosed(views::Widget::ClosedReason reason);
 
@@ -65,7 +91,7 @@ class IndigoOnboardingDialog : public views::ViewObserver {
   // destroyed.
   const raw_ptr<tabs::TabInterface> tab_;
 
-  base::OnceClosure close_callback_;
+  base::OnceCallback<void(const OnboardingResult&)> close_callback_;
 
   std::unique_ptr<views::DialogDelegate> delegate_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
@@ -76,6 +102,13 @@ class IndigoOnboardingDialog : public views::ViewObserver {
   // be destroyed before `view_observation_`, since it is accessed (to reset)
   // in `OnWidgetClosed`, which can happen during widget destruction.
   std::unique_ptr<views::Widget> widget_;
+
+  mojo::AssociatedReceiverSet<chrome::mojom::IndigoOnboardingDialogHost,
+                              content::GlobalRenderFrameHostId>
+      receiver_set_;
+  OnboardingResult onboarding_result_;
+
+  base::WeakPtrFactory<IndigoOnboardingDialog> weak_ptr_factory_{this};
 };
 
 }  // namespace indigo

@@ -253,6 +253,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.should_screenshot_on_mainframe_same_doc_navigation();
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  out->is_indigo_onboarding = data.is_indigo_onboarding();
+
   return true;
 }
 
