@@ -6,6 +6,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -473,4 +475,23 @@ TEST_F(LoginStateCheckerTest, RetryLoginCheck) {
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       /* expected_retry_count=*/1);
+}
+
+TEST_F(LoginStateCheckerTest, EmitsHistogramOnCaptureFailure) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<LoginCheckResult> future;
+
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
+  ASSERT_TRUE(checker->capturer());
+
+  EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
+
+  static_cast<FakeAnnotatedPageContentCapturer*>(checker->capturer())
+      ->SimulateResponse(base::unexpected("Capture failed"));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.FailedCapturingPageContent",
+      password_manager::metrics_util::PasswordChangeFlowStep::kLoginCheckStep,
+      1);
 }
