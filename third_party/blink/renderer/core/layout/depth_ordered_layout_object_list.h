@@ -59,6 +59,7 @@ class DepthOrderedLayoutObjectList {
   int size() const;
   CORE_EXPORT bool IsEmpty() const;
 
+  bool Contains(LayoutObject&) const;
   const HeapHashSet<Member<LayoutObject>>& Unordered() const;
   const HeapVector<LayoutObjectWithDepth>& Ordered();
 
