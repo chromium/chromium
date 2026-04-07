@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "query_classifier_unittest.cc",
     "query_intent_type_util_unittest.cc",
     "sync_bridge_data_provider_unittest.cc",
+    "util_unittest.cc",
   ]
 
   deps = [
@@ -92,7 +93,5 @@ source_set("unit_tests") {
 
   if (build_with_model_execution) {
     sources += [ "one_p_resolver_impl_unittest.cc" ]
-    deps +=
-        [ "//components/optimization_guide/core:model_execution_test_support" ]
   }
 }

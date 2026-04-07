@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_UTIL_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_UTIL_H_
 
+#include <optional>
 #include <string_view>
 
+#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
+#include "components/optimization_guide/proto/features/annotation_reducer_one_p_resolver.pb.h"
 
 namespace accessibility_annotator {
 
@@ -18,6 +21,16 @@ std::string_view StripMarkdownCodeBlocks(std::string_view text);
 // Maps the intent string returned from Gemini back to the corresponding
 // QueryIntentType enum.
 QueryIntentType StringToQueryIntentType(std::string_view intent_str);
+
+// Maps the intent type returned from the 1P service back to the corresponding
+// QueryIntentType enum.
+std::optional<QueryIntentType> AnswerTypeToQueryIntentType(
+    optimization_guide::proto::ReducedAnswer::AnswerType answer_type);
+
+// Maps the source type returned from the 1P service back to the corresponding
+// MemoryEntrySourceType enum.
+std::optional<MemoryEntrySourceType> SourceTypeToMemoryEntrySourceType(
+    optimization_guide::proto::ReducedAnswer::Source::SourceType type);
 
 }  // namespace accessibility_annotator
 

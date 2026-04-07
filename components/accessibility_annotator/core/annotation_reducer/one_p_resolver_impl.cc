@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -170,7 +171,8 @@ void OnePResolverImpl::OnUrlLoadComplete(
   }
   simple_url_loader_.reset();
 
-  // Parse the protobuf response.
+  // The server returns a serialized OnePAnnotationsResponse proto where the
+  // response field contains a JSON string.
   accessibility_annotator::OnePAnnotationsResponse response_proto;
   if (!response_proto.ParseFromString(*response_body)) {
     run_empty();
@@ -178,7 +180,8 @@ void OnePResolverImpl::OnUrlLoadComplete(
   }
 
   // Extract the embedded JSON payload from the response proto.
-  // The response is wrapped in a JSON string containing the 'context'.
+  // The payload is expected to be a JSON object containing a "context" key
+  // that points to a nested object (e.g. {"context": {"references": [...]}}).
   std::optional<base::Value> root_value =
       base::JSONReader::Read(response_proto.response(), base::JSON_PARSE_RFC);
   if (!root_value || !root_value->is_dict()) {
@@ -186,8 +189,16 @@ void OnePResolverImpl::OnUrlLoadComplete(
     return;
   }
 
-  const std::string* context_str = root_value->GetDict().FindString("context");
-  if (!context_str) {
+  const auto* context_dict = root_value->GetIfDict()->FindDict("context");
+  if (!context_dict) {
+    run_empty();
+    return;
+  }
+
+  // The model executor expects the context to be a JSON string.
+  // We re-serialize the context dictionary back into a JSON string.
+  std::string context_str;
+  if (!base::JSONWriter::Write(*context_dict, &context_str)) {
     run_empty();
     return;
   }
@@ -200,7 +211,7 @@ void OnePResolverImpl::OnUrlLoadComplete(
   // Delegate the extracted context and original query to the model executor.
   optimization_guide::proto::AnnotationReducerOnePResolverRequest request;
   request.set_query(std::move(query_string));
-  request.set_context(*context_str);
+  request.set_context(std::move(context_str));
 
   remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::
@@ -238,44 +249,65 @@ void OnePResolverImpl::OnModelExecutionComplete(
     return;
   }
 
-  std::string_view response_string =
-      StripMarkdownCodeBlocks(response->answer());
-
-  // Parse the sanitized model response string into JSON.
-  std::optional<base::Value> value =
-      base::JSONReader::Read(response_string, base::JSON_PARSE_RFC);
-  if (!value || !value->is_list()) {
-    run_empty();
-    return;
-  }
-
-  // Extract each dictionary item into a MemorySearchResult.
+  // Extract each answer item into a MemorySearchResult.
+  // We iterate through the list of results provided by the model. Each item
+  // should represent a single search result with its type, value, sources, and
+  // metadata.
   std::vector<MemorySearchResult> results;
-  for (const base::Value& item : value->GetList()) {
-    const base::DictValue* dict = item.GetIfDict();
-    if (!dict) {
-      continue;
+  for (const optimization_guide::proto::ReducedAnswer& answer :
+       response->answers()) {
+    std::optional<QueryIntentType> type =
+        AnswerTypeToQueryIntentType(answer.type());
+    if (!type) {
+      // TODO: crbug.com/499110476 -  Bubble up errors to the caller instead of
+      // silently returning empty.
+      run_empty();
+      return;
     }
 
-    const std::string* value_str = dict->FindString("value");
-    const std::string* description_str = dict->FindString("description");
+    // The type_name will be provided by the server if the entity is an adhoc
+    // entity type (kUnknown) to be displayed in the UI, otherwise it will be
+    // empty.
+    std::u16string type_name = base::UTF8ToUTF16(answer.type_name());
 
-    // We require all core fields to consider the result valid.
-    if (!value_str || !description_str) {
-      continue;
+    MemorySearchResult search_result(*type, std::move(type_name),
+                                     base::UTF8ToUTF16(answer.value()),
+                                     answer.confidence_score());
+
+    // Extract sources. This includes the source type and an optional
+    // deeplink URL.
+    for (const auto& source : answer.sources()) {
+      std::optional<MemoryEntrySourceType> source_type =
+          SourceTypeToMemoryEntrySourceType(source.type());
+      if (!source_type) {
+        continue;
+      }
+      search_result.sources.emplace_back(
+          *source_type, source.has_deeplink_url()
+                            ? std::make_optional(source.deeplink_url())
+                            : std::nullopt);
     }
 
-    double confidence_score = 0.0;
-    if (std::optional<double> score = dict->FindDouble("ranking_score")) {
-      confidence_score = *score;
-    } else if (const std::string* score_str =
-                   dict->FindString("ranking_score")) {
-      base::StringToDouble(*score_str, &confidence_score);
-    }
+    // Extract metadata, providing additional context. These are
+    // treated as key-value pairs similar to the top-level result.
+    for (const auto& meta : answer.metadata_list()) {
+      std::optional<QueryIntentType> meta_type =
+          AnswerTypeToQueryIntentType(meta.type());
+      if (!meta_type) {
+        // TODO: crbug.com/499110476 -  Bubble up errors to the caller instead
+        // of silently returning empty.
+        run_empty();
+        return;
+      }
 
-    MemorySearchResult search_result = MemorySearchResult(
-        EntryType::kUnknown, base::UTF8ToUTF16(*description_str),
-        base::UTF8ToUTF16(*value_str), confidence_score);
+      // The server guarantees that type_name is properly populated (only for
+      // adhoc entities).
+      std::u16string meta_type_name = base::UTF8ToUTF16(meta.type_name());
+
+      search_result.metadata_list.emplace_back(*meta_type,
+                                               std::move(meta_type_name),
+                                               base::UTF8ToUTF16(meta.value()));
+    }
 
     results.push_back(std::move(search_result));
   }

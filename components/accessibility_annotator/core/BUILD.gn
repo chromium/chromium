@@ -23,6 +23,7 @@ source_set("core") {
   public_deps = [
     "//base",
     "//components/accessibility_annotator/core/annotation_reducer",
+    "//components/accessibility_annotator/core/annotation_reducer:one_p_resolver",
     "//components/accessibility_annotator/core/data_models",
     "//components/accessibility_annotator/core/storage",
     "//components/account_settings",

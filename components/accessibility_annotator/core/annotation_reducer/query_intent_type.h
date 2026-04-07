@@ -87,7 +87,9 @@ enum class QueryIntentType {
   kCreditCardNameOnCard,
   kCreditCardNickname,
 };
-// LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/util.cc:QueryIntentType)
+// LINT.ThenChange(
+//     //components/accessibility_annotator/core/annotation_reducer/util.cc:QueryIntentType,
+//     //components/accessibility_annotator/core/annotation_reducer/util.cc:AnswerTypeToQueryIntentType)
 
 }  // namespace accessibility_annotator
 

@@ -30,6 +30,7 @@ MockAccessibilityQueryService::MockAccessibilityQueryService()
     : accessibility_annotator::AccessibilityQueryService(
           std::make_unique<StubAccessibilityQueryServiceDelegate>(),
           /*data_providers=*/{},
+          /*one_p_resolver=*/nullptr,
           /*remote_model_executor=*/nullptr) {}
 
 MockAccessibilityQueryService::~MockAccessibilityQueryService() = default;

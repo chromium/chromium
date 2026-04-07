@@ -36,14 +36,17 @@ struct EntryMetadata {
 };
 
 // Type of the data source.
+// LINT.IfChange(MemoryEntrySourceType)
 enum class MemoryEntrySourceType {
   kAutofill,
   kGmail,
   kCalendar,
   kPhotos,
   kAmbient,
-  kLiveTabs
+  kLiveTabs,
+  kMaxValue = kLiveTabs,
 };
+// LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/util.cc:SourceTypeToMemoryEntrySourceType)
 
 // Source of the search result entry, including the data source type and an
 // optional direct attribution.

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/accessibility_annotator/core/accessibility_query_service_delegate.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/accessibility_annotator/core/annotation_reducer/one_p_resolver.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_classifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -31,6 +32,7 @@ class AccessibilityQueryService : public KeyedService {
   AccessibilityQueryService(
       std::unique_ptr<AccessibilityQueryServiceDelegate> delegate,
       std::vector<std::unique_ptr<MemoryDataProvider>> data_providers,
+      std::unique_ptr<OnePResolver> one_p_resolver,
       optimization_guide::RemoteModelExecutor* remote_model_executor);
   AccessibilityQueryService(const AccessibilityQueryService&) = delete;
   AccessibilityQueryService& operator=(const AccessibilityQueryService&) =
@@ -53,16 +55,25 @@ class AccessibilityQueryService : public KeyedService {
 
  private:
   void OnClassificationComplete(
+      std::u16string query,
       base::RepeatingCallback<void(MemorySearchResults)> update_callback,
       ClassifiedQuery classified_query);
 
   void OnDataRetrieved(
+      std::u16string query,
       ClassifiedQuery classified_query,
       base::RepeatingCallback<void(MemorySearchResults)> update_callback,
       std::vector<std::vector<MemorySearchResult>> entries_list);
 
+  void QueryOnePResolver(
+      std::u16string query,
+      base::RepeatingCallback<void(MemorySearchResults)> update_callback,
+      std::vector<MemorySearchResult> fallback_entries,
+      MemorySearchStatus fallback_status);
+
   std::unique_ptr<AccessibilityQueryServiceDelegate> delegate_;
   std::vector<std::unique_ptr<MemoryDataProvider>> data_providers_;
+  std::unique_ptr<OnePResolver> one_p_resolver_;
   QueryClassifier classifier_;
 
   base::WeakPtrFactory<AccessibilityQueryService> weak_ptr_factory_{this};
