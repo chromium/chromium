@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 
+#include "base/metrics/user_metrics.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -95,6 +96,10 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
         ChainedBackNavigationTracker::FromWebContents(web_contents);
     CHECK(tracker);
     tracker->RecordBackButtonClickForChainedBackNavigation();
+  }
+
+  if (direction_ == Direction::kBack) {
+    base::RecordAction(base::UserMetricsAction("Toolbar_BackButton_Clicked"));
   }
 
   // Do this last because upon activation the MenuModel gets updated, removing
