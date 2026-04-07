@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/renderer_prelauncher.h"
 #include "content/public/browser/site_instance.h"
@@ -19,12 +20,15 @@ namespace chromecast {
 LRURendererCache::LRURendererCache(content::BrowserContext* browser_context,
                                    size_t max_renderers)
     : browser_context_(browser_context),
-      max_renderers_(max_renderers),
+      max_renderers_basis_(max_renderers),
       in_use_count_(0),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kLruRendererCache,
-          this),
+      current_max_renderers_(max_renderers),
+      memory_consumer_registration_(
+          "LRURendererCache",
+          std::nullopt,  // TODO(b/489671163): Fix traits.
+          this,
+          base::MemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::MemoryConsumerRegistration::CheckRegistryExists::kDisabled),
       weak_factory_(this) {
   DCHECK(browser_context_);
 }
@@ -109,24 +113,35 @@ void LRURendererCache::StartNextPrelauncher(const GURL& page_url) {
   cache_.front()->Prelaunch();
 }
 
-void LRURendererCache::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
+void LRURendererCache::OnUpdateMemoryLimit() {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    EvictCache();
-    return;
+    // IMPORTANT: Ensure no memory is released during this call.
+    // By using std::max, we ensure the new limit is at least the current size,
+    // preventing growth without triggering immediate eviction.
+    // The target size is calculated by scaling the baseline maximum
+    // |max_renderers_basis_| by the memory allocation ratio.
+    size_t target_size = max_renderers_basis_ * memory_limit_ratio();
+    current_max_renderers_ =
+        std::max(in_use_count_ + cache_.size(), target_size);
   }
+}
 
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    DLOG(INFO) << "Dropping prelauncher cache due to memory pressure.";
+void LRURendererCache::OnReleaseMemory() {
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    current_max_renderers_ = max_renderers_basis_ * memory_limit_ratio();
+    EvictCache();
+  } else if (memory_limit_ratio() <= base::kCriticalMemoryPressureThreshold) {
+    DLOG(INFO) << "Dropping prelauncher cache due to memory coordinator "
+                  "notification.";
     cache_.clear();
   }
 }
 
 size_t LRURendererCache::GetCurrentMaxRenderers() const {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    return max_renderers_ * GetMemoryLimitRatio();
+    return current_max_renderers_;
   }
-  return max_renderers_;
+  return max_renderers_basis_;
 }
 
 void LRURendererCache::SetFactoryForTesting(
