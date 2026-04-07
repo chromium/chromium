@@ -169,6 +169,13 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
       !data.ReadDynamicRangeLimit(&quad->dynamic_range_limit)) {
     return false;
   }
+
+  // The texture coordinate rect must have non-negative width and height.
+  if (quad->tex_coord_rect_.width() < 0 || quad->tex_coord_rect_.height() < 0) {
+    viz::SetDeserializationCrashKeyString("Draw quad invalid tex coord rect");
+    return false;
+  }
+
   quad->protected_video_type = protected_video_type;
   quad->overlay_priority_hint = overlay_priority_hint;
   if (!data.ReadBackgroundColor(&quad->background_color))
@@ -179,6 +186,18 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   quad->is_video_frame = data.is_video_frame();
   quad->force_rgbx = data.force_rgbx();
   quad->is_normalized_coords = data.is_normalized_coords();
+  if (quad->is_normalized_coords) {
+    // If the texture coordinates are normalized, they must be in the range
+    // [0, 1], we've already checked above zero above.
+    const bool is_tex_coord_rect_in_range =
+        quad->tex_coord_rect_.width() <= 1.0f &&
+        quad->tex_coord_rect_.height() <= 1.0f;
+    if (!is_tex_coord_rect_in_range) {
+      viz::SetDeserializationCrashKeyString(
+          "Draw quad invalid normalized tex coord rect");
+      return false;
+    }
+  }
 
   if (!data.ReadDamageRect(&quad->damage_rect))
     return false;
