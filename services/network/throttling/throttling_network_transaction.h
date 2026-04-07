@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -70,9 +71,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
            int buf_len,
            net::CompletionOnceCallback callback) override;
   void StopCaching() override;
-  int64_t GetTotalReceivedBytes() const override;
-  int64_t GetTotalSentBytes() const override;
-  int64_t GetReceivedBodyBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalSentBytes() const override;
+  base::ByteSize GetReceivedBodyBytes() const override;
   void DoneReading() override;
   const net::HttpResponseInfo* GetResponseInfo() const override;
   net::LoadState GetLoadState() const override;

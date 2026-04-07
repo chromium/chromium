@@ -294,12 +294,13 @@ void HttpCache::Writers::UpdateEncodedBodySizeInCacheEntry() {
     return;
   }
 
-  int64_t encoded_body_bytes = network_transaction_->GetReceivedBodyBytes();
-  if (encoded_body_bytes <= 0) {
+  base::ByteSize encoded_body_bytes =
+      network_transaction_->GetReceivedBodyBytes();
+  if (encoded_body_bytes.is_zero()) {
     return;
   }
 
-  response_info_truncation_.encoded_body_size = encoded_body_bytes;
+  response_info_truncation_.encoded_body_size = encoded_body_bytes.InBytes();
   auto data = base::MakeRefCounted<PickledIOBuffer>(
       response_info_truncation_.MakePickle(
           /*skip_transient_headers=*/true,

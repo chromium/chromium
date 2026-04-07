@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/byte_size.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/load_states.h"
@@ -136,13 +137,13 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   virtual void StopCaching() = 0;
 
   // Get the number of bytes received from network.
-  virtual int64_t GetTotalReceivedBytes() const = 0;
+  virtual base::ByteSize GetTotalReceivedBytes() const = 0;
 
   // Get the number of bytes sent over the network.
-  virtual int64_t GetTotalSentBytes() const = 0;
+  virtual base::ByteSize GetTotalSentBytes() const = 0;
 
   // Get the number of bytes of the body received from network.
-  virtual int64_t GetReceivedBodyBytes() const = 0;
+  virtual base::ByteSize GetReceivedBodyBytes() const = 0;
 
   // Called to tell the transaction that we have successfully reached the end
   // of the stream. This is equivalent to performing an extra Read() at the end

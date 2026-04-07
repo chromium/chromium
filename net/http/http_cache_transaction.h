@@ -16,6 +16,7 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -146,9 +147,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
            int buf_len,
            CompletionOnceCallback callback) override;
   void StopCaching() override;
-  int64_t GetTotalReceivedBytes() const override;
-  int64_t GetTotalSentBytes() const override;
-  int64_t GetReceivedBodyBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalSentBytes() const override;
+  base::ByteSize GetReceivedBodyBytes() const override;
   void DoneReading() override;
   const HttpResponseInfo* GetResponseInfo() const override;
   LoadState GetLoadState() const override;
@@ -208,9 +209,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     // 304 and 206 response cases, as the network transaction may be destroyed
     // before the caller requests load timing information.
     std::unique_ptr<LoadTimingInfo> old_network_trans_load_timing;
-    int64_t total_received_bytes = 0;
-    int64_t total_sent_bytes = 0;
-    int64_t received_body_bytes = 0;
+    base::ByteSize total_received_bytes;
+    base::ByteSize total_sent_bytes;
+    base::ByteSize received_body_bytes;
     ConnectionAttempts old_connection_attempts;
     IPEndPoint old_remote_endpoint;
   };

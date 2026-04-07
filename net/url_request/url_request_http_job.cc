@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -662,9 +663,9 @@ void URLRequestHttpJob::DestroyTransaction() {
   DoneWithRequest(ABORTED);
 
   total_received_bytes_from_previous_transactions_ +=
-      transaction_->GetTotalReceivedBytes();
+      transaction_->GetTotalReceivedBytes().InBytes();
   total_sent_bytes_from_previous_transactions_ +=
-      transaction_->GetTotalSentBytes();
+      transaction_->GetTotalSentBytes().InBytes();
   response_info_ = nullptr;
   transaction_.reset();
   override_response_headers_ = nullptr;
@@ -1830,7 +1831,7 @@ int64_t URLRequestHttpJob::GetTotalReceivedBytes() const {
   int64_t total_received_bytes =
       total_received_bytes_from_previous_transactions_;
   if (transaction_) {
-    total_received_bytes += transaction_->GetTotalReceivedBytes();
+    total_received_bytes += transaction_->GetTotalReceivedBytes().InBytes();
   }
   return total_received_bytes;
 }
@@ -1838,14 +1839,14 @@ int64_t URLRequestHttpJob::GetTotalReceivedBytes() const {
 int64_t URLRequestHttpJob::GetTotalSentBytes() const {
   int64_t total_sent_bytes = total_sent_bytes_from_previous_transactions_;
   if (transaction_) {
-    total_sent_bytes += transaction_->GetTotalSentBytes();
+    total_sent_bytes += transaction_->GetTotalSentBytes().InBytes();
   }
   return total_sent_bytes;
 }
 
 int64_t URLRequestHttpJob::GetReceivedBodyBytes() const {
   if (transaction_) {
-    return transaction_->GetReceivedBodyBytes();
+    return transaction_->GetReceivedBodyBytes().InBytes();
   }
   return 0;
 }

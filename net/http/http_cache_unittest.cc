@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
@@ -225,8 +226,8 @@ void RunTransactionTestBase(HttpCache* cache,
                             HttpResponseInfo* response_info,
                             const NetLogWithSource& net_log,
                             LoadTimingInfo* load_timing_info,
-                            int64_t* sent_bytes,
-                            int64_t* received_bytes,
+                            base::ByteSize* sent_bytes,
+                            base::ByteSize* received_bytes,
                             IPEndPoint* remote_endpoint) {
   TestCompletionCallback callback;
 
@@ -5058,8 +5059,9 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingVerifyNetworkBytes) {
   EXPECT_EQ(0, cache.GetCountDoneHeadersQueue(cache_key));
 
   // Get the network bytes read by the first transaction.
-  int total_received_bytes = context_list[0]->trans->GetTotalReceivedBytes();
-  EXPECT_GT(total_received_bytes, 0);
+  base::ByteSize total_received_bytes =
+      context_list[0]->trans->GetTotalReceivedBytes();
+  EXPECT_GT(total_received_bytes, base::ByteSize(0));
 
   // Complete Read by the 2nd transaction so that the 1st transaction that
   // created the network transaction is now a reader.
@@ -5070,7 +5072,7 @@ TEST_F(HttpCacheSimpleGetTest, ParallelWritingVerifyNetworkBytes) {
 
   // Verify that the network bytes read are not attributed to the 2nd
   // transaction but to the 1st.
-  EXPECT_EQ(0, context_list[1]->trans->GetTotalReceivedBytes());
+  EXPECT_EQ(base::ByteSize(0), context_list[1]->trans->GetTotalReceivedBytes());
 
   EXPECT_GE(total_received_bytes,
             context_list[0]->trans->GetTotalReceivedBytes());
@@ -12689,8 +12691,8 @@ namespace {
 
 void RunTransactionAndGetNetworkBytes(MockHttpCache* cache,
                                       const MockTransaction& trans_info,
-                                      int64_t* sent_bytes,
-                                      int64_t* received_bytes) {
+                                      base::ByteSize* sent_bytes,
+                                      base::ByteSize* received_bytes) {
   RunTransactionTestBase(
       cache->http_cache(), trans_info, MockHttpRequest(trans_info), nullptr,
       NetLogWithSource(), nullptr, sent_bytes, received_bytes, nullptr);
@@ -12702,21 +12704,21 @@ TEST_F(HttpCacheTest, NetworkBytesCacheMissAndThenHit) {
   MockHttpCache cache;
 
   MockTransaction transaction(kSimpleGET_Transaction);
-  int64_t sent, received;
+  base::ByteSize sent, received;
   RunTransactionAndGetNetworkBytes(&cache, transaction, &sent, &received);
   EXPECT_EQ(MockNetworkTransaction::kTotalSentBytes, sent);
   EXPECT_EQ(MockNetworkTransaction::kTotalReceivedBytes, received);
 
   RunTransactionAndGetNetworkBytes(&cache, transaction, &sent, &received);
-  EXPECT_EQ(0, sent);
-  EXPECT_EQ(0, received);
+  EXPECT_EQ(base::ByteSize(0), sent);
+  EXPECT_EQ(base::ByteSize(0), received);
 }
 
 TEST_F(HttpCacheTest, NetworkBytesConditionalRequest304) {
   MockHttpCache cache;
 
   ScopedMockTransaction transaction(kETagGET_Transaction);
-  int64_t sent, received;
+  base::ByteSize sent, received;
   RunTransactionAndGetNetworkBytes(&cache, transaction, &sent, &received);
   EXPECT_EQ(MockNetworkTransaction::kTotalSentBytes, sent);
   EXPECT_EQ(MockNetworkTransaction::kTotalReceivedBytes, received);
@@ -12739,7 +12741,7 @@ TEST_F(HttpCacheTest, NetworkBytesConditionalRequest200) {
       "Etag: \"foopy\"\n"
       "Cache-Control: max-age=0\n"
       "Vary: Foo\n";
-  int64_t sent, received;
+  base::ByteSize sent, received;
   RunTransactionAndGetNetworkBytes(&cache, transaction, &sent, &received);
   EXPECT_EQ(MockNetworkTransaction::kTotalSentBytes, sent);
   EXPECT_EQ(MockNetworkTransaction::kTotalReceivedBytes, received);
@@ -12758,15 +12760,15 @@ TEST_F(HttpCacheTest, NetworkBytesRange) {
   ScopedMockTransaction transaction(kRangeGET_TransactionOK);
 
   // Read bytes 40-49 from the network.
-  int64_t sent, received;
+  base::ByteSize sent, received;
   RunTransactionAndGetNetworkBytes(&cache, transaction, &sent, &received);
   EXPECT_EQ(MockNetworkTransaction::kTotalSentBytes, sent);
   EXPECT_EQ(MockNetworkTransaction::kTotalReceivedBytes, received);
 
   // Read bytes 40-49 from the cache.
   RunTransactionAndGetNetworkBytes(&cache, transaction, &sent, &received);
-  EXPECT_EQ(0, sent);
-  EXPECT_EQ(0, received);
+  EXPECT_EQ(base::ByteSize(0), sent);
+  EXPECT_EQ(base::ByteSize(0), received);
   base::RunLoop().RunUntilIdle();
 
   // Read bytes 30-39 from the network.
@@ -15492,7 +15494,7 @@ TEST_F(HttpCacheTest, EncodedBodySizePreservedFromCache) {
     const HttpResponseInfo* response_info = trans->GetResponseInfo();
     ASSERT_TRUE(response_info);
     ASSERT_TRUE(response_info->encoded_body_size.has_value());
-    EXPECT_EQ(MockNetworkTransaction::kReceivedBodyBytes,
+    EXPECT_EQ(MockNetworkTransaction::kReceivedBodyBytes.InBytes(),
               response_info->encoded_body_size.value());
   }
 

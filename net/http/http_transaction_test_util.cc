@@ -434,15 +434,15 @@ void MockNetworkTransaction::StopCaching() {
     transaction_factory_->TransactionStopCaching();
 }
 
-int64_t MockNetworkTransaction::GetTotalReceivedBytes() const {
+base::ByteSize MockNetworkTransaction::GetTotalReceivedBytes() const {
   return received_bytes_;
 }
 
-int64_t MockNetworkTransaction::GetTotalSentBytes() const {
+base::ByteSize MockNetworkTransaction::GetTotalSentBytes() const {
   return sent_bytes_;
 }
 
-int64_t MockNetworkTransaction::GetReceivedBodyBytes() const {
+base::ByteSize MockNetworkTransaction::GetReceivedBodyBytes() const {
   return received_body_bytes_;
 }
 
@@ -505,13 +505,13 @@ void MockNetworkTransaction::SetWebSocketHandshakeStreamCreateHelper(
 }
 
 // static
-const int64_t MockNetworkTransaction::kTotalReceivedBytes = 1000;
+const auto MockNetworkTransaction::kTotalReceivedBytes = base::ByteSize(1000);
 
 // static
-const int64_t MockNetworkTransaction::kTotalSentBytes = 100;
+const auto MockNetworkTransaction::kTotalSentBytes = base::ByteSize(100);
 
 // static
-const int64_t MockNetworkTransaction::kReceivedBodyBytes = 500;
+const auto MockNetworkTransaction::kReceivedBodyBytes = base::ByteSize(500);
 
 int MockNetworkTransaction::StartInternal(HttpRequestInfo request,
                                           CompletionOnceCallback callback) {

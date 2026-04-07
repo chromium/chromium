@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -411,15 +412,17 @@ void SharedDictionaryNetworkTransaction::StopCaching() {
   network_transaction_->StopCaching();
 }
 
-int64_t SharedDictionaryNetworkTransaction::GetTotalReceivedBytes() const {
+base::ByteSize SharedDictionaryNetworkTransaction::GetTotalReceivedBytes()
+    const {
   return network_transaction_->GetTotalReceivedBytes();
 }
 
-int64_t SharedDictionaryNetworkTransaction::GetTotalSentBytes() const {
+base::ByteSize SharedDictionaryNetworkTransaction::GetTotalSentBytes() const {
   return network_transaction_->GetTotalSentBytes();
 }
 
-int64_t SharedDictionaryNetworkTransaction::GetReceivedBodyBytes() const {
+base::ByteSize SharedDictionaryNetworkTransaction::GetReceivedBodyBytes()
+    const {
   return network_transaction_->GetReceivedBodyBytes();
 }
 

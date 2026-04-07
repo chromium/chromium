@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
@@ -50,7 +51,8 @@ int ThrottlingNetworkTransaction::Throttle(bool start, int result) {
 
   base::TimeTicks send_end;
   if (start) {
-    throttled_byte_count_ += network_transaction_->GetTotalReceivedBytes();
+    throttled_byte_count_ +=
+        network_transaction_->GetTotalReceivedBytes().InBytes();
     net::LoadTimingInfo load_timing_info;
     if (GetLoadTimingInfo(&load_timing_info)) {
       send_end = load_timing_info.send_end;
@@ -221,15 +223,15 @@ void ThrottlingNetworkTransaction::StopCaching() {
   network_transaction_->StopCaching();
 }
 
-int64_t ThrottlingNetworkTransaction::GetTotalReceivedBytes() const {
+base::ByteSize ThrottlingNetworkTransaction::GetTotalReceivedBytes() const {
   return network_transaction_->GetTotalReceivedBytes();
 }
 
-int64_t ThrottlingNetworkTransaction::GetTotalSentBytes() const {
+base::ByteSize ThrottlingNetworkTransaction::GetTotalSentBytes() const {
   return network_transaction_->GetTotalSentBytes();
 }
 
-int64_t ThrottlingNetworkTransaction::GetReceivedBodyBytes() const {
+base::ByteSize ThrottlingNetworkTransaction::GetReceivedBodyBytes() const {
   return network_transaction_->GetReceivedBodyBytes();
 }
 

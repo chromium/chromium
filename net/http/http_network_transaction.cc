@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -656,23 +657,23 @@ int HttpNetworkTransaction::Read(IOBuffer* buf,
 
 void HttpNetworkTransaction::StopCaching() {}
 
-int64_t HttpNetworkTransaction::GetTotalReceivedBytes() const {
+base::ByteSize HttpNetworkTransaction::GetTotalReceivedBytes() const {
   base::ByteSize total_received_bytes = total_received_bytes_;
   if (stream_) {
     total_received_bytes += stream_->GetTotalReceivedBytes();
   }
-  return total_received_bytes.InBytes();
+  return total_received_bytes;
 }
 
-int64_t HttpNetworkTransaction::GetTotalSentBytes() const {
+base::ByteSize HttpNetworkTransaction::GetTotalSentBytes() const {
   base::ByteSize total_sent_bytes = total_sent_bytes_;
   if (stream_) {
     total_sent_bytes += stream_->GetTotalSentBytes();
   }
-  return total_sent_bytes.InBytes();
+  return total_sent_bytes;
 }
 
-int64_t HttpNetworkTransaction::GetReceivedBodyBytes() const {
+base::ByteSize HttpNetworkTransaction::GetReceivedBodyBytes() const {
   return received_body_bytes_;
 }
 
@@ -1724,12 +1725,12 @@ int HttpNetworkTransaction::DoReadBodyComplete(int result) {
     DCHECK_NE(ERR_IO_PENDING, result);
     done = true;
   } else {
-    received_body_bytes_ += result;
+    received_body_bytes_ += base::ByteSize(base::as_unsigned(result));
   }
 
   TRACE_EVENT("net", "HttpNetworkTransaction::ReadBodyComplete",
               NetLogWithSourceToFlow(net_log_), "result", result,
-              "received_body_bytes", received_body_bytes_);
+              "received_body_bytes", received_body_bytes_.InBytes());
 
   // Clean up connection if we are done.
   if (done) {

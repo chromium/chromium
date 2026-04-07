@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -487,8 +488,8 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
     int rv;
     std::string status_line;
     std::string response_data;
-    int64_t total_received_bytes;
-    int64_t total_sent_bytes;
+    base::ByteSize total_received_bytes;
+    base::ByteSize total_sent_bytes;
     LoadTimingInfo load_timing_info;
     ConnectionAttempts connection_attempts;
     IPEndPoint remote_endpoint_after_start;
@@ -623,7 +624,7 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
     StaticSocketDataProvider* data[] = {&reads};
     SimpleGetHelperResult out = SimpleGetHelperForData(data);
 
-    EXPECT_EQ(CountWriteBytes(data_writes), out.total_sent_bytes);
+    EXPECT_EQ(CountWriteByteSize(data_writes), out.total_sent_bytes);
     return out;
   }
 
@@ -951,7 +952,7 @@ TEST_P(HttpNetworkTransactionTest, SimpleGET) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/1.0 200 OK", out.status_line);
   EXPECT_EQ("hello world", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
   EXPECT_EQ(reads_size, out.total_received_bytes);
   EXPECT_EQ(0u, out.connection_attempts.size());
 
@@ -969,7 +970,7 @@ TEST_P(HttpNetworkTransactionTest, SimpleGETNoHeaders) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/0.9 200 OK", out.status_line);
   EXPECT_EQ("hello world", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
   EXPECT_EQ(reads_size, out.total_received_bytes);
   histogram_tester_.ExpectTotalCount(kStreamRequestSuccessHistogram, 1);
 }
@@ -1352,7 +1353,7 @@ TEST_P(HttpNetworkTransactionTest, StatusLineJunk3Bytes) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/1.0 404 Not Found", out.status_line);
   EXPECT_EQ("DATA", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
   EXPECT_EQ(reads_size, out.total_received_bytes);
 }
 
@@ -1366,7 +1367,7 @@ TEST_P(HttpNetworkTransactionTest, StatusLineJunk4Bytes) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/1.0 404 Not Found", out.status_line);
   EXPECT_EQ("DATA", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
   EXPECT_EQ(reads_size, out.total_received_bytes);
 }
 
@@ -1380,7 +1381,7 @@ TEST_P(HttpNetworkTransactionTest, StatusLineJunk5Bytes) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/0.9 200 OK", out.status_line);
   EXPECT_EQ("xxxxxHTTP/1.1 404 Not Found\nServer: blah", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
   EXPECT_EQ(reads_size, out.total_received_bytes);
 }
 
@@ -1398,7 +1399,7 @@ TEST_P(HttpNetworkTransactionTest, StatusLineJunk4Bytes_Slow) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/1.0 404 Not Found", out.status_line);
   EXPECT_EQ("DATA", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
   EXPECT_EQ(reads_size, out.total_received_bytes);
 }
 
@@ -1412,7 +1413,7 @@ TEST_P(HttpNetworkTransactionTest, StatusLinePartial) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/0.9 200 OK", out.status_line);
   EXPECT_EQ("HTT", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
   EXPECT_EQ(reads_size, out.total_received_bytes);
 }
 
@@ -1430,8 +1431,8 @@ TEST_P(HttpNetworkTransactionTest, StopsReading204) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/1.1 204 No Content", out.status_line);
   EXPECT_EQ("", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
-  int64_t response_size = reads_size - strlen(junk);
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
+  base::ByteSizeDelta response_size = reads_size - base::ByteSize(strlen(junk));
   EXPECT_EQ(response_size, out.total_received_bytes);
 }
 
@@ -1453,8 +1454,9 @@ TEST_P(HttpNetworkTransactionTest, ChunkedEncoding) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/1.1 200 OK", out.status_line);
   EXPECT_EQ("Hello world", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
-  int64_t response_size = reads_size - extra_data.size();
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
+  base::ByteSizeDelta response_size =
+      reads_size - base::ByteSize(extra_data.size());
   EXPECT_EQ(response_size, out.total_received_bytes);
 }
 
@@ -1891,27 +1893,29 @@ TEST_P(HttpNetworkTransactionTest, GetReceivedBodyBytes) {
   const size_t kBufferSize = 256;
 
   auto buf = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
-  EXPECT_THAT(trans.GetReceivedBodyBytes(), 0);
+  EXPECT_THAT(trans.GetReceivedBodyBytes(), base::ByteSize(0));
 
   TestCompletionCallback read_cb1;
   EXPECT_THAT(read_cb1.GetResult(
                   trans.Read(buf.get(), kBufferSize, read_cb1.callback())),
               strlen(chunk1));
 
-  EXPECT_THAT(trans.GetReceivedBodyBytes(), strlen(chunk1));
+  EXPECT_THAT(trans.GetReceivedBodyBytes(), base::ByteSize(strlen(chunk1)));
 
   TestCompletionCallback read_cb2;
   EXPECT_THAT(read_cb2.GetResult(
                   trans.Read(buf.get(), kBufferSize, read_cb2.callback())),
               strlen(chunk2));
 
-  EXPECT_THAT(trans.GetReceivedBodyBytes(), strlen(chunk1) + strlen(chunk2));
+  EXPECT_THAT(trans.GetReceivedBodyBytes(),
+              base::ByteSize(strlen(chunk1) + strlen(chunk2)));
 
   TestCompletionCallback read_cb3;
   EXPECT_THAT(read_cb3.GetResult(
                   trans.Read(buf.get(), kBufferSize, read_cb3.callback())),
               IsOk());
-  EXPECT_THAT(trans.GetReceivedBodyBytes(), strlen(chunk1) + strlen(chunk2));
+  EXPECT_THAT(trans.GetReceivedBodyBytes(),
+              base::ByteSize(strlen(chunk1) + strlen(chunk2)));
 }
 
 TEST_P(HttpNetworkTransactionTest, LoadTimingMeasuresTimeToFirstByteForHttp) {
@@ -3277,9 +3281,9 @@ TEST_P(HttpNetworkTransactionTest, BasicAuth) {
   EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info1));
   TestLoadTimingNotReused(load_timing_info1, CONNECT_TIMING_HAS_DNS_TIMES);
 
-  int64_t writes_size1 = CountWriteBytes(data_writes1);
+  base::ByteSize writes_size1 = CountWriteByteSize(data_writes1);
   EXPECT_EQ(writes_size1, trans.GetTotalSentBytes());
-  int64_t reads_size1 = CountReadBytes(data_reads1);
+  base::ByteSize reads_size1 = CountReadByteSize(data_reads1);
   EXPECT_EQ(reads_size1, trans.GetTotalReceivedBytes());
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
@@ -3303,9 +3307,9 @@ TEST_P(HttpNetworkTransactionTest, BasicAuth) {
             load_timing_info2.connect_timing.connect_start);
   EXPECT_NE(load_timing_info1.socket_log_id, load_timing_info2.socket_log_id);
 
-  int64_t writes_size2 = CountWriteBytes(data_writes2);
+  base::ByteSize writes_size2 = CountWriteByteSize(data_writes2);
   EXPECT_EQ(writes_size1 + writes_size2, trans.GetTotalSentBytes());
-  int64_t reads_size2 = CountReadBytes(data_reads2);
+  base::ByteSize reads_size2 = CountReadByteSize(data_reads2);
   EXPECT_EQ(reads_size1 + reads_size2, trans.GetTotalReceivedBytes());
 
   response = trans.GetResponseInfo();
@@ -3384,9 +3388,9 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthWithAddressChange) {
   EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info1));
   TestLoadTimingNotReused(load_timing_info1, CONNECT_TIMING_HAS_DNS_TIMES);
 
-  int64_t writes_size1 = CountWriteBytes(data_writes1);
+  base::ByteSize writes_size1 = CountWriteByteSize(data_writes1);
   EXPECT_EQ(writes_size1, trans.GetTotalSentBytes());
-  int64_t reads_size1 = CountReadBytes(data_reads1);
+  base::ByteSize reads_size1 = CountReadByteSize(data_reads1);
   EXPECT_EQ(reads_size1, trans.GetTotalReceivedBytes());
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
@@ -3415,9 +3419,9 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthWithAddressChange) {
             load_timing_info2.connect_timing.connect_start);
   EXPECT_NE(load_timing_info1.socket_log_id, load_timing_info2.socket_log_id);
 
-  int64_t writes_size2 = CountWriteBytes(data_writes2);
+  base::ByteSize writes_size2 = CountWriteByteSize(data_writes2);
   EXPECT_EQ(writes_size1 + writes_size2, trans.GetTotalSentBytes());
-  int64_t reads_size2 = CountReadBytes(data_reads2);
+  base::ByteSize reads_size2 = CountReadByteSize(data_reads2);
   EXPECT_EQ(reads_size1 + reads_size2, trans.GetTotalReceivedBytes());
 
   response = trans.GetResponseInfo();
@@ -3535,9 +3539,9 @@ TEST_P(HttpNetworkTransactionTest, DoNotSendAuth) {
   rv = callback.WaitForResult();
   EXPECT_EQ(0, rv);
 
-  int64_t writes_size = CountWriteBytes(data_writes);
+  base::ByteSize writes_size = CountWriteByteSize(data_writes);
   EXPECT_EQ(writes_size, trans.GetTotalSentBytes());
-  int64_t reads_size = CountReadBytes(data_reads);
+  base::ByteSize reads_size = CountReadByteSize(data_reads);
   EXPECT_EQ(reads_size, trans.GetTotalReceivedBytes());
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
@@ -3633,9 +3637,9 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAlive) {
     std::string response_data;
     EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
 
-    int64_t writes_size = CountWriteBytes(data_writes);
+    base::ByteSize writes_size = CountWriteByteSize(data_writes);
     EXPECT_EQ(writes_size, trans.GetTotalSentBytes());
-    int64_t reads_size = CountReadBytes(data_reads);
+    base::ByteSize reads_size = CountReadByteSize(data_reads);
     EXPECT_EQ(reads_size, trans.GetTotalReceivedBytes());
   }
 }
@@ -23966,8 +23970,8 @@ TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesPost) {
   std::string response_data;
   EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
 
-  EXPECT_EQ(CountWriteBytes(data_writes), trans.GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(data_reads), trans.GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(data_writes), trans.GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(data_reads), trans.GetTotalReceivedBytes());
 }
 
 TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesPost100Continue) {
@@ -24011,8 +24015,8 @@ TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesPost100Continue) {
   std::string response_data;
   EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
 
-  EXPECT_EQ(CountWriteBytes(data_writes), trans.GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(data_reads), trans.GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(data_writes), trans.GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(data_reads), trans.GetTotalReceivedBytes());
 }
 
 TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesChunkedPost) {
@@ -24062,8 +24066,8 @@ TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesChunkedPost) {
   std::string response_data;
   EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
 
-  EXPECT_EQ(CountWriteBytes(data_writes), trans.GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(data_reads), trans.GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(data_writes), trans.GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(data_reads), trans.GetTotalReceivedBytes());
 }
 
 void CheckContentEncodingMatching(SpdySessionDependencies* session_deps,

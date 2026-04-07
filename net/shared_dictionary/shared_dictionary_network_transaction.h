@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -68,9 +69,9 @@ class NET_EXPORT SharedDictionaryNetworkTransaction : public HttpTransaction {
            int buf_len,
            CompletionOnceCallback callback) override;
   void StopCaching() override;
-  int64_t GetTotalReceivedBytes() const override;
-  int64_t GetTotalSentBytes() const override;
-  int64_t GetReceivedBodyBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalSentBytes() const override;
+  base::ByteSize GetReceivedBodyBytes() const override;
   void DoneReading() override;
   const HttpResponseInfo* GetResponseInfo() const override;
   LoadState GetLoadState() const override;
