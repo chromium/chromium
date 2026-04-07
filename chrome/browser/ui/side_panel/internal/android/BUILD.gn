@@ -14,6 +14,8 @@ source_set("android") {
   sources = [
     "side_panel_coordinator_android.cc",
     "side_panel_coordinator_android.h",
+    "side_panel_tab_list_observer_android.cc",
+    "side_panel_tab_list_observer_android.h",
     "window_scoped_side_panel_registry_bridge.cc",
     "window_scoped_side_panel_registry_bridge.h",
   ]
