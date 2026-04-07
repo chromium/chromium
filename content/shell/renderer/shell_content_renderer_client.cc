@@ -334,6 +334,15 @@ bool ShellContentRendererClient::OverrideCreatePlugin(
     const blink::WebPluginParams& params,
     blink::WebPlugin** plugin) {
 #if BUILDFLAG(ENABLE_SURFACE_EMBED)
+  // Tries to create a SurfaceEmbedWebPlugin for
+  // <embed type="application/x-chromium-surface-embed">. The render process
+  // will reach a NOTREACHED() if the browser process does not provide the
+  // SurfaceEmbedHost interface. The interface is available in surface embed's
+  // content_browsertests / components_browsertests by overriding
+  // RegisterBrowserInterfaceBindersForFrame and is not available in the general
+  // content_shell.
+  // TODO(crbug.com/500385593): don't crash content_shell when SurfaceEmbedHost
+  // is not available.
   if (surface_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
     return true;
   }

@@ -26,9 +26,15 @@ namespace surface_embed {
 class SurfaceEmbedHostCollection;
 
 // The browser process counterpart to the SurfaceEmbedWebPlugin. This class
-// bridges the plugin in the embedder page and the SecureEmbedConnector owned by
-// the child WebContents. It provides the plugin with the surface of the child
-// WebContents and synchronizes visual properties with the connector.
+// bridges the plugin in the parent document and the SurfaceEmbedConnector owned
+// by the child WebContents. It provides the plugin with the surface of the
+// child WebContents and synchronizes visual properties with the connector.
+// SurfaceEmbedHost is owned by the parent RenderFrameHost, but will also go
+// away if the embedded WebContents is destroyed. It is available on
+// the RenderFrameHost that hosts certain WebUI (currently, only
+// WebUIBrowserUI). A RenderFrameHost can have multiple SurfaceEmbedHost, each
+// of which corresponds to an
+// <embed type="application/x-chromium-surface-embed"> element.
 class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
                          public content::SurfaceEmbedConnector::Delegate {
  public:
