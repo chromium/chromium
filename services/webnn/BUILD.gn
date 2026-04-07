@@ -323,11 +323,14 @@ test("webnn_graph_impl_fuzzer") {
 
   fuzztests = [
     "WebNNGraphImplFuzzer_CPU.SingleOpConv2d",
-    "WebNNGraphImplFuzzer_GPU.SingleOpConv2d",
-    "WebNNGraphImplFuzzer_NPU.SingleOpConv2d",
     "WebNNGraphImplFuzzer_CPU.SingleOpPool2d",
+    "WebNNGraphImplFuzzer_CPU.SubgraphDQConv2dQ",
+    "WebNNGraphImplFuzzer_GPU.SingleOpConv2d",
     "WebNNGraphImplFuzzer_GPU.SingleOpPool2d",
+    "WebNNGraphImplFuzzer_GPU.SubgraphDQConv2dQ",
+    "WebNNGraphImplFuzzer_NPU.SingleOpConv2d",
     "WebNNGraphImplFuzzer_NPU.SingleOpPool2d",
+    "WebNNGraphImplFuzzer_NPU.SubgraphDQConv2dQ",
   ]
 
   deps = [
@@ -340,6 +343,7 @@ test("webnn_graph_impl_fuzzer") {
     "//services/webnn/public/cpp",
     "//services/webnn/public/mojom",
     "//testing/gtest",
+    "//third_party/fp16",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
 }
