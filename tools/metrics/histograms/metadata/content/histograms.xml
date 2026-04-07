@@ -280,16 +280,6 @@ chromium-metrics-reviews@google.com.
   <token key="ProviderType" variants="ContentAllProviderTypes"/>
 </histogram>
 
-<histogram name="ContentSettings.AllowStorageAccessSync" units="ms"
-    expires_after="2024-04-28">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Measures how long a sync call to ContentSettingsManager::AllowStorageAccess
-    takes. Logged each time a sync call is made that is not cached.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.Bubble.StorageAccess.Action"
     enum="ContentSettingBubbleAction" expires_after="2024-07-10">
   <owner>fsenra@chromium.org</owner>
