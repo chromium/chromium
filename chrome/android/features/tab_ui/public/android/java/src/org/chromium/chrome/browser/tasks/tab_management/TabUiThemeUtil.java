@@ -129,9 +129,14 @@ public class TabUiThemeUtil {
                         : R.color.compositor_tab_title_bar_text);
     }
 
-    /** Returns the color for the tab strip tab underline. */
-    public static @ColorInt int getTabUnderlineColor(Context context) {
-        return SemanticColorUtils.getColorPrimary(context);
+    /** Returns the color for the tab strip tab underline gradient start. */
+    public static @ColorInt int getTabUnderlineGradientStart(Context context) {
+        return context.getColor(R.color.material_primary_50);
+    }
+
+    /** Returns the color for the tab strip tab underline gradient end. */
+    public static @ColorInt int getTabUnderlineGradientEnd(Context context) {
+        return context.getColor(R.color.material_primary_70);
     }
 
     /**

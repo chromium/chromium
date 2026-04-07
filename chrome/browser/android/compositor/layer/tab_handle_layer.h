@@ -79,7 +79,8 @@ class TabHandleLayer : public Layer {
                      float width_to_hide_tab_title,
                      float pinned_icon_offset_x,
                      bool is_underlined,
-                     SkColor underline_color);
+                     SkColor underline_start_color,
+                     SkColor underline_end_color);
   bool foreground();
   bool is_pinned();
   scoped_refptr<cc::slim::Layer> layer() override;
@@ -106,7 +107,8 @@ class TabHandleLayer : public Layer {
   scoped_refptr<cc::slim::NinePatchLayer> decoration_tab_;
   scoped_refptr<cc::slim::NinePatchLayer> tab_outline_;
   scoped_refptr<cc::slim::Layer> title_layer_;
-  scoped_refptr<cc::slim::SolidColorLayer> underline_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> underline_end_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> underline_start_layer_;
 
   scoped_refptr<cc::slim::NinePatchLayer> keyboard_focus_ring_;
 

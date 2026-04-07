@@ -328,6 +328,7 @@ public class TabStripSceneLayerTest {
                         anyBoolean(),
                         anyFloat(),
                         anyBoolean(),
+                        anyInt(),
                         anyInt());
     }
 
@@ -399,6 +400,7 @@ public class TabStripSceneLayerTest {
                         anyBoolean(),
                         anyFloat(),
                         anyBoolean(),
+                        anyInt(),
                         anyInt());
     }
 
@@ -472,6 +474,7 @@ public class TabStripSceneLayerTest {
                         anyBoolean(),
                         anyFloat(),
                         anyBoolean(),
+                        anyInt(),
                         anyInt());
     }
 
@@ -544,6 +547,7 @@ public class TabStripSceneLayerTest {
                         anyBoolean(),
                         anyFloat(),
                         anyBoolean(),
+                        anyInt(),
                         anyInt());
     }
 

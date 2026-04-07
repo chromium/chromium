@@ -267,7 +267,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             @TabId int selectedTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
         @ColorInt
-        int underlineColor = TabUiThemeUtil.getTabUnderlineColor(layoutHelper.getContext());
+        int underlineStartColor =
+                TabUiThemeUtil.getTabUnderlineGradientStart(layoutHelper.getContext());
+        int underlineEndColor =
+                TabUiThemeUtil.getTabUnderlineGradientEnd(layoutHelper.getContext());
 
         // TODO(crbug.com/40270147): Cleanup params, as some don't change and others are now
         //  unused.
@@ -353,7 +356,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             isPinned,
                             Math.round(st.getPinnedTabFaviconOffsetX() * mDpToPx),
                             st.isUnderlined(),
-                            underlineColor);
+                            underlineStartColor,
+                            underlineEndColor);
         }
     }
 
@@ -554,7 +558,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 boolean isPinned,
                 float pinnedIconOffsetX,
                 boolean isUnderlined,
-                @ColorInt int underlineColor);
+                @ColorInt int underlineStartColor,
+                @ColorInt int underlineEndColor);
 
         void putGroupIndicatorLayer(
                 long nativeTabStripSceneLayer,
