@@ -1254,8 +1254,10 @@ static_library("browser") {
     # from //chrome/browser/ui/webui, which are not modularized yet.
     "//chrome/browser/ui/webui/about:impl",
 
-    # TODO(crbug.com/430804948): Remove this circular dependency when profiles/profile_manager.h
-    # gets componentized.
+    # TODO(crbug.com/430804948): Remove this circular dependency when the
+    # following headers get componentized:
+    # - c/b/enterprise/signin/profile_management_disclaimer_service_factory.h
+    # - c/b/enterprise/util/managed_browser_utils.h
     "//chrome/browser/ui/profiles:impl",
 
     # TODO(crbug.com/432061436): Remove this circular dependency when c/b/password_manager gets
@@ -1278,8 +1280,8 @@ static_library("browser") {
     # c/b/net/system_network_context_manager.h gets componentized.
     "//chrome/browser/assist_ranker:impl",
 
-    # TODO(crbug.com/353332589): Remove once profile_manager.h has been moved
-    # into the //chrome/browser/profiles target.
+    # TODO(crbug.com/353332589): Remove this circular dependency when
+    # c/b/metrics/profile_metrics_service_factory.h gets componentized.
     "//chrome/browser/regional_capabilities:metrics_provider_impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency once the following
@@ -1305,7 +1307,6 @@ static_library("browser") {
     # c/b/printing/print_preview_context_menu_observer.h
     # c/b/printing/print_preview_dialog_controller.h
     # c/b/printing/print_view_manager_common.h
-    # c/b/profiles/profile_manager.h
     # c/b/profiles/profile_window.h
     # c/b/sharing/click_to_call/click_to_call_context_menu_observer.h
     # c/b/sharing/click_to_call/click_to_call_metrics.h
@@ -1318,7 +1319,6 @@ static_library("browser") {
     # headers get componentized:
     # - c/b/net/referrer.h"
     # - c/b/notifications/system_notification_helper.h"
-    # - c/b/profiles/profile_manager.h"
     "//chrome/browser/usb:impl",
     "//chrome/browser/notifications:system_notification_helper_impl",
 
@@ -1337,10 +1337,6 @@ static_library("browser") {
     # headers get componentized:
     # - c/b/chrome_content_browser_client.h
     "//chrome/browser/btm:impl",
-
-    # TODO(crbug.com/430804948): Remove this circular dependency when profiles/profile_manager.h
-    # gets componentized.
-    "//chrome/browser/subscription_eligibility",
 
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/actor",
