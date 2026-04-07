@@ -15331,6 +15331,38 @@
             ]
         }
     ],
+    "NdkVideoEncodeAcceleratorBitrateLayering": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NdkVideoEncodeAcceleratorBitrateLayering"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NdkVideoEncodeAcceleratorNativeSvc": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NdkVideoEncodeAcceleratorNativeSvc"
+                    ]
+                }
+            ]
+        }
+    ],
     "NearbySharingRemoveRestrictToContacts": [
         {
             "platforms": [
