@@ -4091,6 +4091,7 @@ if (!is_android) {
 
     if (is_chrome_for_testing) {
       sources += [ "../browser/chrome_for_testing/chrome_for_testing_info_bar_browsertest.cc" ]
+      deps += [ "//chrome/browser/chrome_for_testing:browser_tests" ]
     }
 
     if (enable_reporting) {
@@ -10923,6 +10924,10 @@ test("unit_tests") {
 
   if (is_win || is_mac || is_linux) {
     deps += [ "//chrome/browser/ui/startup/default_browser_prompt:unit_tests" ]
+  }
+
+  if (is_chrome_for_testing) {
+    deps += [ "//chrome/browser/chrome_for_testing:unit_tests" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

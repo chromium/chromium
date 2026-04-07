@@ -202,4 +202,8 @@ static_library("test_support") {
       deps += [ "//ui/linux:display_server_utils" ]
     }
   }
+
+  if (is_chrome_for_testing) {
+    deps += [ "//chrome/browser/chrome_for_testing:browser" ]
+  }
 }
