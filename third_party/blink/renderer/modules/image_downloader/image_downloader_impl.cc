@@ -329,8 +329,7 @@ void ImageDownloaderImpl::ContextDestroyed() {
   // DidFetchImage(). To avoid `image_fetchers_` being mutated while it's being
   // iterated over, move its contents to a temporary var before doing the
   // iteration.
-  auto fetchers = std::move(image_fetchers_);
-  image_fetchers_.clear();
+  auto fetchers = std::exchange(image_fetchers_, {});
 
   for (const auto& fetcher : fetchers) {
     // Will run callbacks with an empty image vector.
