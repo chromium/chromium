@@ -479,6 +479,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void RemoveValue();
   std::u16string GetValue() const;
 
+  void SetValueForRange(float value);
+  void SetMinValueForRange(float value);
+  void SetMaxValueForRange(float value);
+
   void SetDefaultActionVerb(
       const ax::mojom::DefaultActionVerb default_action_verb);
   ax::mojom::DefaultActionVerb GetDefaultActionVerb() const;

@@ -307,6 +307,38 @@ TEST_P(SliderTest, AccessibleValue) {
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
+TEST_P(SliderTest, AccessibleRangeAttributes) {
+  // Range attributes reflect the slider's actual range: [0, 1] for continuous
+  // sliders, or the bounds of the allowed values for discrete sliders.
+  ui::AXNodeData data;
+  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(GetMinValue(),
+            data.GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange));
+  EXPECT_EQ(GetMaxValue(),
+            data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange));
+  EXPECT_EQ(slider()->GetValue(),
+            data.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange));
+
+  // After setting the value, kValueForRange should update.
+  slider()->SetValue(0.5f);
+  data = ui::AXNodeData();
+  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(0.5f,
+            data.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange));
+  EXPECT_EQ(GetMinValue(),
+            data.GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange));
+  EXPECT_EQ(GetMaxValue(),
+            data.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange));
+
+  // Setting to a value at the boundary. For discrete sliders that exclude 1
+  // from the allowed set, the value is snapped to the largest allowed value.
+  slider()->SetValue(1.0f);
+  data = ui::AXNodeData();
+  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(slider()->GetValue(),
+            data.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange));
+}
+
 // Checks the pending value update when the slider is invisible and becomes
 // visible again.
 TEST_P(SliderTest, SliderPendingValueUpdate) {

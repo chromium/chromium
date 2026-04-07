@@ -1499,6 +1499,36 @@ std::u16string ViewAccessibility::GetValue() const {
       data_.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
+void ViewAccessibility::SetValueForRange(float value) {
+  if (data_.HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange) &&
+      data_.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange) ==
+          value) {
+    return;
+  }
+  data_.AddFloatAttribute(ax::mojom::FloatAttribute::kValueForRange, value);
+  NotifyDataChanged();
+}
+
+void ViewAccessibility::SetMinValueForRange(float value) {
+  if (data_.HasFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange) &&
+      data_.GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange) ==
+          value) {
+    return;
+  }
+  data_.AddFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange, value);
+  NotifyDataChanged();
+}
+
+void ViewAccessibility::SetMaxValueForRange(float value) {
+  if (data_.HasFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange) &&
+      data_.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange) ==
+          value) {
+    return;
+  }
+  data_.AddFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange, value);
+  NotifyDataChanged();
+}
+
 void ViewAccessibility::SetDefaultActionVerb(
     const ax::mojom::DefaultActionVerb default_action_verb) {
   data_.SetDefaultActionVerb(default_action_verb);

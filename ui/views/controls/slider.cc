@@ -50,6 +50,11 @@ constexpr int kSliderPadding = 2;
 // The radius of the highlighted thumb of the slider
 constexpr float kThumbHighlightRadius = 12.f;
 
+// Default minimum and maximum values for the slider range. Discrete sliders
+// derive bounds from their allowed values set.
+constexpr float kDefaultMinValue = 0.0f;
+constexpr float kDefaultMaxValue = 1.0f;
+
 float GetNearestAllowedValue(const base::flat_set<float>& allowed_values,
                              float suggested_value) {
   if (allowed_values.empty()) {
@@ -90,6 +95,9 @@ Slider::Slider(SliderListener* listener) : listener_(listener) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
   GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
+  GetViewAccessibility().SetMinValueForRange(kDefaultMinValue);
+  GetViewAccessibility().SetMaxValueForRange(kDefaultMaxValue);
+  GetViewAccessibility().SetValueForRange(value_);
 }
 
 Slider::~Slider() = default;
@@ -130,6 +138,8 @@ void Slider::SetRenderingStyle(RenderingStyle style) {
 void Slider::SetAllowedValues(const base::flat_set<float>* allowed_values) {
   if (!allowed_values) {
     allowed_values_.clear();
+    GetViewAccessibility().SetMinValueForRange(kDefaultMinValue);
+    GetViewAccessibility().SetMaxValueForRange(kDefaultMaxValue);
     return;
   }
 #if DCHECK_IS_ON()
@@ -137,11 +147,13 @@ void Slider::SetAllowedValues(const base::flat_set<float>* allowed_values) {
   DCHECK(allowed_values->size());
   for (const float v : *allowed_values) {
     // sanity check.
-    DCHECK_GE(v, 0.0f);
-    DCHECK_LE(v, 1.0f);
+    DCHECK_GE(v, kDefaultMinValue);
+    DCHECK_LE(v, kDefaultMaxValue);
   }
 #endif
   allowed_values_ = *allowed_values;
+  GetViewAccessibility().SetMinValueForRange(*allowed_values_.cbegin());
+  GetViewAccessibility().SetMaxValueForRange(*allowed_values_.crbegin());
 
   const auto position = allowed_values_.lower_bound(value_);
   const float new_value = (position == allowed_values_.end())
@@ -188,10 +200,10 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
   bool old_value_valid = value_is_valid_;
 
   value_is_valid_ = true;
-  if (value < 0.0) {
-    value = 0.0;
-  } else if (value > 1.0) {
-    value = 1.0;
+  if (value < kDefaultMinValue) {
+    value = kDefaultMinValue;
+  } else if (value > kDefaultMaxValue) {
+    value = kDefaultMaxValue;
   }
   value = GetNearestAllowedValue(allowed_values_, value);
   if (value_ == value) {
@@ -513,6 +525,7 @@ void Slider::UpdateAccessibleValue() {
       GetViewAccessibility());
   GetViewAccessibility().SetValue(base::UTF8ToUTF16(
       base::StringPrintf("%d%%", static_cast<int>(value_ * 100 + 0.5))));
+  GetViewAccessibility().SetValueForRange(value_);
 }
 
 BEGIN_METADATA(Slider)
