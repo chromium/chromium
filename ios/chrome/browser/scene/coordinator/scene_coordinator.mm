@@ -1382,6 +1382,11 @@ void OnListFamilyMembersResponse(
   if (IsChromeNextIaEnabled()) {
     _appBarCoordinator.incognitoBrowser = incognitoBrowser;
   }
+  [_sceneMediator
+      setIncognitoFullscreenController:incognitoBrowser == nullptr
+                                           ? nullptr
+                                           : FullscreenController::FromBrowser(
+                                                 incognitoBrowser)];
 }
 
 - (UIViewController*)activeViewController {

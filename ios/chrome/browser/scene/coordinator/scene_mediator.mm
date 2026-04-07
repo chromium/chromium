@@ -58,6 +58,7 @@
 
 - (void)setIncognitoFullscreenController:
     (FullscreenController*)incognitoFullscreenController {
+  _incognitoFullscreenUIUpdater.reset();
   _incognitoFullscreenController = incognitoFullscreenController;
   if (_incognitoFullscreenController && _consumer) {
     _incognitoFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
