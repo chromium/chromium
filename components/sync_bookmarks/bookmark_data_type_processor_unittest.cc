@@ -839,54 +839,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
   EXPECT_TRUE(new_processor.IsTrackingMetadata());
 }
 
-// Test suite with kSyncResetBookmarksInitialMergeLimitExceededError enabled.
-class BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest
-    : public BookmarkDataTypeProcessorTest {
- private:
-  base::test::ScopedFeatureList features_{
-      syncer::kSyncResetBookmarksInitialMergeLimitExceededError};
-};
-
-// Test suite with kSyncResetBookmarksInitialMergeLimitExceededError disabled.
-class BookmarkDataTypeProcessorWithResetErrorFeatureDisabledTest
-    : public BookmarkDataTypeProcessorTest {
- public:
-  BookmarkDataTypeProcessorWithResetErrorFeatureDisabledTest() {
-    features_.InitAndDisableFeature(
-        syncer::kSyncResetBookmarksInitialMergeLimitExceededError);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureDisabledTest,
-       ShouldNotResetExceededLimitErrorWithTimestamp) {
-  sync_pb::BookmarkModelMetadata model_metadata =
-      CreateMetadataForPermanentNodes(bookmark_model());
-  model_metadata
-      .set_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros(
-          (base::Time::Now() - base::Days(31))
-              .ToDeltaSinceWindowsEpoch()
-              .InMicroseconds());
-
-  EXPECT_CALL(*schedule_save_closure(), Run()).Times(0);
-  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
-                                schedule_save_closure()->Get(),
-                                bookmark_model());
-
-  EXPECT_FALSE(processor()->GetTrackerForTest());
-  std::string new_metadata_str = processor()->EncodeSyncMetadata();
-  sync_pb::BookmarkModelMetadata new_model_metadata;
-  new_model_metadata.ParseFromString(new_metadata_str);
-  EXPECT_FALSE(
-      new_model_metadata.last_initial_merge_remote_updates_exceeded_limit());
-  EXPECT_TRUE(
-      new_model_metadata
-          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
-}
-
-TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldSetTimestampForExceededLimitErrorForMigratingUsers) {
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model());
@@ -922,7 +875,7 @@ TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest,
   EXPECT_LE(time_since_limit_set, base::Days(30));
 }
 
-TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldResetExceededLimitErrorAfter30Days) {
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model());
@@ -950,7 +903,7 @@ TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest,
           .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
 }
 
-TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotResetExceededLimitErrorWithin30Days) {
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model());

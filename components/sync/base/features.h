@@ -69,10 +69,6 @@ BASE_DECLARE_FEATURE(kSyncAccessibilityAnnotation);
 BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// If enabled, the error that the bookmarks count exceeded the limit during the
-// last initial merge is reset after a certain period.
-BASE_DECLARE_FEATURE(kSyncResetBookmarksInitialMergeLimitExceededError);
-
 // If enabled, shows a user-actionable error when the bookmarks count limit is
 // exceeded.
 BASE_DECLARE_FEATURE(kSyncShowBookmarksLimitExceededError);
