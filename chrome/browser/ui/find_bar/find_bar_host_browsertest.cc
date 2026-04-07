@@ -100,8 +100,8 @@ class FindInPageControllerTest : public InProcessBrowserTest {
     views::test::WaitForAnimatingLayoutManager(
         static_cast<PinnedToolbarActionsContainer*>(
             BrowserView::GetBrowserViewForBrowser(browser())
-                ->toolbar()
-                ->pinned_toolbar_actions()));
+                ->toolbar_button_provider()
+                ->GetPinnedToolbarActions()));
   }
 
   bool GetFindBarWindowInfoForBrowser(Browser* browser,

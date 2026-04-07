@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest,
       << "Test needs modification to support WebUIPinnedToolbarActions";
   PinnedToolbarActionsContainer* container =
       static_cast<PinnedToolbarActionsContainer*>(
-          browser_view->toolbar()->pinned_toolbar_actions());
+          browser_view->toolbar_button_provider()->GetPinnedToolbarActions());
   container->UpdateActionState(kActionSendTabToSelf, true);
   views::test::WaitForAnimatingLayoutManager(container);
 

@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTestToolbarPinningOnly,
       << "Test needs modification to support WebUIPinnedToolbarActions";
   PinnedToolbarActionsContainer* container =
       static_cast<PinnedToolbarActionsContainer*>(
-          browser_view->toolbar()->pinned_toolbar_actions());
+          browser_view->toolbar_button_provider()->GetPinnedToolbarActions());
   PinnedActionToolbarButton* button =
       container->GetButtonFor(kActionShowPasswordsBubbleOrPage);
   ASSERT_NE(button, nullptr);

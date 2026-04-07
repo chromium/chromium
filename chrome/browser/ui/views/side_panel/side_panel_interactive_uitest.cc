@@ -328,8 +328,8 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
         << "Test needs modification to support WebUIPinnedToolbarActions";
     return static_cast<PinnedToolbarActionsContainer*>(
         BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar()
-            ->pinned_toolbar_actions());
+            ->toolbar_button_provider()
+            ->GetPinnedToolbarActions());
   }
 
   auto OpenReadingModeSidePanel() {

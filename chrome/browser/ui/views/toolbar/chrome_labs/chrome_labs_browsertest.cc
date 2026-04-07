@@ -74,8 +74,8 @@ class ChromeLabsTestHelper {
     views::test::WaitForAnimatingLayoutManager(
         static_cast<PinnedToolbarActionsContainer*>(
             BrowserView::GetBrowserViewForBrowser(browser)
-                ->toolbar()
-                ->pinned_toolbar_actions()));
+                ->toolbar_button_provider()
+                ->GetPinnedToolbarActions()));
   }
 
   // Clicks the Chrome Labs button to show the bubble.

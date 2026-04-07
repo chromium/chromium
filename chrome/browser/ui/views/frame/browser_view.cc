@@ -3047,7 +3047,8 @@ void BrowserView::MaybeShowTabStripToolbarButtonIPH() {
   bool should_show =
       tabs::GetTabSearchPosition(browser()) ==
           tabs::TabSearchPosition::kToolbarButton &&
-      toolbar_->pinned_toolbar_actions()->IsActionPinned(kActionTabSearch);
+      toolbar_button_provider()->GetPinnedToolbarActions()->IsActionPinned(
+          kActionTabSearch);
   if (should_show) {
     BrowserUserEducationInterface::From(browser())
         ->MaybeShowStartupFeaturePromo(

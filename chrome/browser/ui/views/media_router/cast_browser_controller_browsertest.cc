@@ -69,8 +69,8 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
         << "Test needs modification to support WebUIPinnedToolbarActions";
     button_ = static_cast<PinnedToolbarActionsContainer*>(
                   BrowserView::GetBrowserViewForBrowser(browser())
-                      ->toolbar()
-                      ->pinned_toolbar_actions())
+                      ->toolbar_button_provider()
+                      ->GetPinnedToolbarActions())
                   ->GetButtonFor(kActionRouteMedia);
     controller_ =
         browser()->browser_window_features()->cast_browser_controller();

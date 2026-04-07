@@ -59,8 +59,8 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
     auto* pinned_toolbar_actions_container =
         static_cast<PinnedToolbarActionsContainer*>(
             BrowserView::GetBrowserViewForBrowser(browser())
-                ->toolbar()
-                ->pinned_toolbar_actions());
+                ->toolbar_button_provider()
+                ->GetPinnedToolbarActions());
     views::test::ReduceAnimationDuration(pinned_toolbar_actions_container);
   }
 

@@ -23,7 +23,7 @@ void TabSearchToolbarButtonController::OnBubbleInitializing() {
   actions::ActionItem* tab_search_action_item = GetTabSearchActionItem();
   tab_search_action_item->SetIsShowingBubble(true);
   PinnedToolbarActions* pinned_toolbar_actions =
-      browser_view_->toolbar()->pinned_toolbar_actions();
+      browser_view_->toolbar_button_provider()->GetPinnedToolbarActions();
 
   if (pinned_toolbar_actions->IsActionPinned(kActionTabSearch)) {
     return;
@@ -37,7 +37,7 @@ void TabSearchToolbarButtonController::OnBubbleDestroying() {
   actions::ActionItem* tab_search_action_item = GetTabSearchActionItem();
   tab_search_action_item->SetIsShowingBubble(false);
   PinnedToolbarActions* pinned_toolbar_actions =
-      browser_view_->toolbar()->pinned_toolbar_actions();
+      browser_view_->toolbar_button_provider()->GetPinnedToolbarActions();
 
   if (pinned_toolbar_actions->IsActionPinned(kActionTabSearch)) {
     return;
@@ -83,7 +83,7 @@ void TabSearchToolbarButtonController::UpdateBubbleHost(
 
 void TabSearchToolbarButtonController::MaybeHideActionEphemerallyInToolbar() {
   PinnedToolbarActions* pinned_toolbar_actions =
-      browser_view_->toolbar()->pinned_toolbar_actions();
+      browser_view_->toolbar_button_provider()->GetPinnedToolbarActions();
 
   if (GetTabSearchActionItem()->GetIsShowingBubble() ||
       pinned_toolbar_actions->IsActionPinned(kActionTabSearch)) {

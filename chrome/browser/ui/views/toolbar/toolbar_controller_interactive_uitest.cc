@@ -78,7 +78,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
         << "Test needs modification to support WebUIPinnedToolbarActions";
     views::test::WaitForAnimatingLayoutManager(
         static_cast<PinnedToolbarActionsContainer*>(
-            browser_view_->toolbar()->pinned_toolbar_actions()));
+            browser_view_->toolbar_button_provider()
+                ->GetPinnedToolbarActions()));
     toolbar_controller_ = const_cast<ToolbarController*>(
         browser_view_->toolbar()->toolbar_controller());
     toolbar_container_view_ = const_cast<views::View*>(
