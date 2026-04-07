@@ -21,6 +21,7 @@ import android.view.Display;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -313,6 +314,25 @@ public class TabUtils {
             case MediaState.PICTURE_IN_PICTURE -> R.drawable.ic_picture_in_picture_alt_24dp;
             default -> Resources.ID_NULL;
         };
+    }
+
+    /**
+     * Returns the tint color for a given media state.
+     *
+     * @param context The {@link Context} used to retrieve color.
+     * @param mediaState The {@link MediaState} for which to get the tint.
+     * @param defaultTint The default tint to use.
+     */
+    public static @ColorInt int getMediaIndicatorTintColor(
+            Context context, @MediaState int mediaState, @ColorInt int defaultTint) {
+        if (mediaState == MediaState.RECORDING) {
+            return context.getColor(R.color.tab_recording_media_color);
+        } else if (mediaState == MediaState.SHARING) {
+            return context.getColor(R.color.tab_sharing_media_color);
+        } else if (mediaState == MediaState.PICTURE_IN_PICTURE) {
+            return context.getColor(R.color.tab_pip_media_color);
+        }
+        return defaultTint;
     }
 
     private static int getThumbnailHeightDiff(Context context) {

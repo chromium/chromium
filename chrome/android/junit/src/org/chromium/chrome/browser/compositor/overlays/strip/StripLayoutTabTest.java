@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate.VisualState;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
@@ -267,6 +268,28 @@ public class StripLayoutTabTest {
         Rect rect = new Rect();
         mNormalTab.getAnchorRect(rect);
         assertEquals(new Rect(folioFootLengthPx, 0, widthWithoutFolio, height), rect);
+    }
+
+    @Test
+    public void testTabIndicator_ActuationPriority() {
+        // Create a tab with AUDIBLE media state.
+        StripLayoutTab tab =
+                new StripLayoutTab(
+                        mContext, 0, null, null, null, null, false, false, MediaState.AUDIBLE);
+
+        // Set actuation status to STATIC.
+        tab.setTabIndicatorStatus(TabIndicatorStatus.STATIC);
+
+        // Verify prioritization.
+        assertTrue("Indicator should be shown when actuation is active", tab.shouldShowIndicator());
+        assertEquals(
+                "Should return actuation icon res",
+                R.drawable.ic_arrow_selector_spark_16dp,
+                tab.getIndicatorRes());
+        assertEquals(
+                "Should return primary color for actuation tint",
+                SemanticColorUtils.getColorPrimary(mContext),
+                tab.getIndicatorTint());
     }
 
     private StripLayoutTab createStripLayoutTab(boolean incognito) {

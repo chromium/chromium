@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.compositor.scene_layer;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
-import android.content.res.Resources;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -29,9 +27,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
-import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.TabId;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.resources.ResourceManager;
@@ -285,17 +281,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             : TabUiThemeUtil.getTabKeyboardFocusDrawableRes();
             TintedCompositorButton closeButton = st.getCloseButton();
             @ColorInt int closeButtonTint = closeButton.getTint();
-            @MediaState int mediaState = st.getMediaState();
-            boolean shouldShowMediaIndicator =
-                    !(mediaState == MediaState.NONE || st.shouldHideMediaIndicator());
-            @DrawableRes
-            int mediaIndicatorRes =
-                    shouldShowMediaIndicator
-                            ? TabUtils.getMediaIndicatorDrawable(mediaState)
-                            : Resources.ID_NULL;
-            @ColorInt
-            int mediaIndicatorTint =
-                    layoutHelper.getMediaIndicatorTintColor(mediaState, closeButtonTint);
+
+            boolean shouldShowIndicator = st.shouldShowIndicator();
+            @DrawableRes int indicatorRes = st.getIndicatorRes();
+            @ColorInt int indicatorTint = st.getIndicatorTint();
+
             boolean isPinned = st.getIsPinned();
             float widthToHideTabTitle =
                     (StripLayoutUtils.shouldApplyMoreDensity() || isPinned)
@@ -322,10 +312,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.isForegrounded(),
                             shouldShowOutline,
                             st.getClosePressed(),
-                            st.shouldHideFavicon(shouldShowMediaIndicator),
-                            shouldShowMediaIndicator,
-                            mediaIndicatorRes,
-                            mediaIndicatorTint,
+                            st.shouldHideFavicon(shouldShowIndicator),
+                            shouldShowIndicator,
+                            indicatorRes,
+                            indicatorTint,
                             Math.round(st.getMediaIndicatorWidth() * mDpToPx),
                             Math.round(st.getMediaIndicatorToCloseButtonSpacing() * mDpToPx),
                             Math.round(st.getMediaIndicatorInternalPadding() * mDpToPx),

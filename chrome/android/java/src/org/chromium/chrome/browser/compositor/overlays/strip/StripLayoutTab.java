@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FO
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -26,6 +27,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
@@ -37,6 +39,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -193,6 +196,7 @@ public class StripLayoutTab extends StripLayoutView {
     private float mBottomMargin;
     private float mContainerOpacity;
     private @MediaState int mMediaState;
+    private @TabIndicatorStatus int mTabIndicatorStatus;
     private boolean mIsUnderlined;
 
     // For avoiding unnecessary accessibility description updates.
@@ -379,7 +383,56 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * Sets whether this tab is underlined
+     * Sets the status of the tab's indicator. This is only used for Glic actuation indicators and
+     * is separate from media indicators.
+     *
+     * @param status The {@link TabIndicatorStatus} to set.
+     */
+    /* package */ void setTabIndicatorStatus(@TabIndicatorStatus int status) {
+        mTabIndicatorStatus = status;
+    }
+
+    /**
+     * @return The {@link TabIndicatorStatus} representing the actuation state of the tab.
+     */
+    public @TabIndicatorStatus int getTabIndicatorStatus() {
+        return mTabIndicatorStatus;
+    }
+
+    /**
+     * @return Whether some tab indicator (actuation or media) should be shown.
+     */
+    public boolean shouldShowIndicator() {
+        return mTabIndicatorStatus != TabIndicatorStatus.NONE
+                || (mMediaState != MediaState.NONE && !shouldHideMediaIndicator());
+    }
+
+    /**
+     * @return The resource ID of the indicator to show, prioritizing actuation over media.
+     */
+    public @DrawableRes int getIndicatorRes() {
+        if (mTabIndicatorStatus != TabIndicatorStatus.NONE) {
+            return R.drawable.ic_arrow_selector_spark_16dp;
+        }
+        if (shouldShowIndicator()) {
+            return TabUtils.getMediaIndicatorDrawable(mMediaState);
+        }
+        return Resources.ID_NULL;
+    }
+
+    /**
+     * @return The tint color for the active indicator.
+     */
+    public @ColorInt int getIndicatorTint() {
+        if (mTabIndicatorStatus != TabIndicatorStatus.NONE) {
+            return SemanticColorUtils.getColorPrimary(mContext);
+        }
+        return TabUtils.getMediaIndicatorTintColor(
+                mContext, mMediaState, getCloseButton().getTint());
+    }
+
+    /**
+     * Sets whether this tab is underlined.
      *
      * @param isUnderlined whether this tab is underlined.
      */

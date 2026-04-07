@@ -91,6 +91,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -795,6 +796,33 @@ public class StripLayoutHelperTest {
                 MediaState.RECORDING,
                 stripTabs[0].getMediaState());
         assertFalse("Tab should no longer be a placeholder.", stripTabs[0].getIsPlaceholder());
+    }
+
+    @Test
+    public void testOnActuationStateChanged() {
+        // Initialize with 2 tabs.
+        initializeTest(false, false, 0, 2);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        Tab tab0 = mModel.getTabAt(0);
+
+        // Initially should be NONE.
+        assertEquals(
+                "Initial status should be NONE.",
+                TabIndicatorStatus.NONE,
+                tabs[0].getTabIndicatorStatus());
+
+        // Update to STATIC.
+        mStripLayoutHelper.onActuationStateChanged(tab0.getId(), TabIndicatorStatus.STATIC);
+        assertEquals(
+                "Status should be STATIC.",
+                TabIndicatorStatus.STATIC,
+                tabs[0].getTabIndicatorStatus());
+
+        // Update to NONE.
+        mStripLayoutHelper.onActuationStateChanged(tab0.getId(), TabIndicatorStatus.NONE);
+        assertEquals(
+                "Status should be NONE.", TabIndicatorStatus.NONE, tabs[0].getTabIndicatorStatus());
     }
 
     @Test
