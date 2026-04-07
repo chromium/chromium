@@ -287,12 +287,14 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
   [self updateAssistantButtonTitleIfNeeded];
+  [self updateTabGridButtonTitleIfNeeded];
+  [self updateOpenNewTabButtonTitleIfNeeded];
 }
 
-// Returns `fullTitle` if it fits within the available width for the assistant
-// button, or `truncatedTitle` otherwise.
-- (NSString*)assistantButtonTitleWithFullTitle:(NSString*)fullTitle
-                                truncatedTitle:(NSString*)truncatedTitle {
+// Returns `fullTitle` if it fits within the available width for the
+// buttons, or `truncatedTitle` otherwise.
+- (NSString*)buttonTitleWithFullTitle:(NSString*)fullTitle
+                       truncatedTitle:(NSString*)truncatedTitle {
   if (self.view.bounds.size.width == 0) {
     return fullTitle;
   }
@@ -315,10 +317,9 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   switch (_assistantButtonState) {
     case AppBarAssistantButtonState::kAsk:
       return [self
-          assistantButtonTitleWithFullTitle:l10n_util::GetNSString(
-                                                IDS_IOS_APP_BAR_ASK_GEMINI)
-                             truncatedTitle:l10n_util::GetNSString(
-                                                IDS_IOS_APP_BAR_ASK)];
+          buttonTitleWithFullTitle:l10n_util::GetNSString(
+                                       IDS_IOS_APP_BAR_ASK_GEMINI)
+                    truncatedTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK)];
     case AppBarAssistantButtonState::kAIM:
       return l10n_util::GetNSString(IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT);
     default:
@@ -337,6 +338,47 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
     UIButtonConfiguration* configuration = _assistantButton.configuration;
     configuration.title = title;
     _assistantButton.configuration = configuration;
+  }
+}
+
+// Returns the title for the Tab Grid button based on size.
+- (NSString*)tabGridButtonTitleForCurrentState {
+  return [self
+      buttonTitleWithFullTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_ALL_TABS)
+                truncatedTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_TABS)];
+}
+
+// Updates the Tab Grid button title if it has changed.
+- (void)updateTabGridButtonTitleIfNeeded {
+  if (!_tabGridButton) {
+    return;
+  }
+  NSString* title = [self tabGridButtonTitleForCurrentState];
+  if (![_tabGridButton.configuration.title isEqualToString:title]) {
+    UIButtonConfiguration* configuration = _tabGridButton.configuration;
+    configuration.title = title;
+    _tabGridButton.configuration = configuration;
+  }
+}
+
+// Returns the title for the Open New Tab button based on size.
+- (NSString*)openNewTabButtonTitleForCurrentState {
+  return [self
+      buttonTitleWithFullTitle:l10n_util::GetNSString(
+                                   IDS_IOS_TOOLS_MENU_NEW_TAB)
+                truncatedTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_NEW)];
+}
+
+// Updates the Open New Tab button title if it has changed.
+- (void)updateOpenNewTabButtonTitleIfNeeded {
+  if (!_openNewTabButton) {
+    return;
+  }
+  NSString* title = [self openNewTabButtonTitleForCurrentState];
+  if (![_openNewTabButton.configuration.title isEqualToString:title]) {
+    UIButtonConfiguration* configuration = _openNewTabButton.configuration;
+    configuration.title = title;
+    _openNewTabButton.configuration = configuration;
   }
 }
 
@@ -395,7 +437,7 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
 
 // Returns a new "New Tab" button.
 - (UIButton*)createOpenNewTabButton {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_APP_BAR_NEW);
+  NSString* title = [self openNewTabButtonTitleForCurrentState];
   UIImage* image = DefaultAppBarSymbol(kPlusInCircleSymbol);
   UIButton* button = [self buttonWithTitle:title image:image];
   button.menu = _openNewTabButtonMenu;
@@ -416,7 +458,7 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   _tabGridSymbolView = tabGridSymbolView;
 
   // Set up button.
-  NSString* title = l10n_util::GetNSString(IDS_IOS_APP_BAR_ALL_TABS);
+  NSString* title = [self tabGridButtonTitleForCurrentState];
   UIImage* image = DefaultAppBarSymbol(kAppSymbol);
   UIButton* button = [self buttonWithTitle:title image:image];
   button.menu = _tabGridButtonMenu;
