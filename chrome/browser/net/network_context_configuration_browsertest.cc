@@ -20,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -32,14 +31,12 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/platform_browser_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -112,13 +109,10 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/feed/feed_feature_list.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "extensions/test/result_catcher.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
 
@@ -208,7 +202,7 @@ class ConnectionTypeWaiter
 
 // Tests the system, profile, and incognito profile NetworkContexts.
 class NetworkContextConfigurationBrowserTest
-    : public PlatformBrowserTest,
+    : public InProcessBrowserTest,
       public testing::WithParamInterface<TestCase> {
  public:
   // Backing storage types that can used for various things (HTTP cache,
@@ -234,13 +228,7 @@ class NetworkContextConfigurationBrowserTest
     // TODO(crbug.com/334954143) Fix the tests when turning on the reduce
     // accept-language feature.
     scoped_feature_list_.InitWithFeatures(
-#if BUILDFLAG(IS_ANDROID)
-        // Needed to support incognito on desktop Android.
-        {feed::kAndroidOpenIncognitoAsWindow},
-#else
-        {},
-#endif
-        {network::features::kReduceAcceptLanguage});
+        {}, {network::features::kReduceAcceptLanguage});
 
     // Have to get a port before setting up the command line, but can only set
     // up the connection listener after there's a main thread, so can't start
@@ -270,17 +258,6 @@ class NetworkContextConfigurationBrowserTest
 
   ~NetworkContextConfigurationBrowserTest() override = default;
 
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
-
-#if BUILDFLAG(IS_ANDROID)
-    // Disable the first-run experience (FRE) so that when a function under test
-    // launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity will be
-    // shown instead of FirstRunActivity.
-    command_line->AppendSwitch("disable-fre");
-#endif
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
@@ -305,7 +282,7 @@ class NetworkContextConfigurationBrowserTest
     https_server()->StartAcceptingConnections();
 
     if (is_incognito())
-      incognito_ = CreateIncognitoBrowserWindow();
+      incognito_ = CreateIncognitoBrowser();
     SimulateNetworkServiceCrashIfNecessary();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -316,17 +293,6 @@ class NetworkContextConfigurationBrowserTest
     ConnectionTypeWaiter().Wait(
         net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 #endif
-  }
-
-  BrowserWindowInterface* CreateIncognitoBrowserWindow() {
-    auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
-    Profile* incognito_profile =
-        GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-    BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
-        type, *incognito_profile, /*from_user_gesture=*/true);
-    base::test::TestFuture<BrowserWindowInterface*> future;
-    CreateBrowserWindow(std::move(create_params), future.GetCallback());
-    return future.Get();
   }
 
   // Returns true if the NetworkContext being tested is associated with an
@@ -365,35 +331,35 @@ class NetworkContextConfigurationBrowserTest
   content::StoragePartition* GetStoragePartitionForContextType(
       NetworkContextType network_context_type) {
     const auto kOnDiskConfig = content::StoragePartitionConfig::Create(
-        GetProfile(), "foo", /*partition_name=*/"",
+        browser()->profile(), "foo", /*partition_name=*/"",
         /*in_memory=*/false);
     const auto kInMemoryConfig = content::StoragePartitionConfig::Create(
-        GetProfile(), "foo", /*partition_name=*/"", /*in_memory=*/true);
+        browser()->profile(), "foo", /*partition_name=*/"", /*in_memory=*/true);
 
     switch (network_context_type) {
       case NetworkContextType::kSystem:
       case NetworkContextType::kSafeBrowsing:
         NOTREACHED() << "Network context has no storage partition";
       case NetworkContextType::kProfile:
-        return GetProfile()->GetDefaultStoragePartition();
+        return browser()->profile()->GetDefaultStoragePartition();
       case NetworkContextType::kIncognitoProfile:
         DCHECK(incognito_);
-        return incognito_->GetProfile()->GetDefaultStoragePartition();
+        return incognito_->profile()->GetDefaultStoragePartition();
       case NetworkContextType::kOnDiskApp:
-        return GetProfile()->GetStoragePartition(kOnDiskConfig);
+        return browser()->profile()->GetStoragePartition(kOnDiskConfig);
       case NetworkContextType::kInMemoryApp:
-        return GetProfile()->GetStoragePartition(kInMemoryConfig);
+        return browser()->profile()->GetStoragePartition(kInMemoryConfig);
       case NetworkContextType::kOnDiskAppWithIncognitoProfile: {
         DCHECK(incognito_);
         // Note: Even though we are requesting an on-disk config, the function
         // will return an in-memory config because incognito profiles are not
         // supposed to to use on-disk storage.
         const auto kIncognitoConfig = content::StoragePartitionConfig::Create(
-            incognito_->GetProfile(), "foo", /*partition_name=*/"",
+            incognito_->profile(), "foo", /*partition_name=*/"",
             /*in_memory=*/false);
         DCHECK(kIncognitoConfig.in_memory());
 
-        return incognito_->GetProfile()->GetStoragePartition(kIncognitoConfig);
+        return incognito_->profile()->GetStoragePartition(kIncognitoConfig);
       }
     }
     NOTREACHED();
@@ -411,7 +377,7 @@ class NetworkContextConfigurationBrowserTest
             ->GetURLLoaderFactory();
       case NetworkContextType::kSafeBrowsing:
         return g_browser_process->safe_browsing_service()
-            ->GetURLLoaderFactory(GetProfile())
+            ->GetURLLoaderFactory(browser()->profile())
             .get();
       case NetworkContextType::kProfile:
       case NetworkContextType::kIncognitoProfile:
@@ -437,7 +403,7 @@ class NetworkContextConfigurationBrowserTest
             ->GetContext();
       case NetworkContextType::kSafeBrowsing:
         return g_browser_process->safe_browsing_service()->GetNetworkContext(
-            GetProfile());
+            browser()->profile());
       case NetworkContextType::kProfile:
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskApp:
@@ -490,12 +456,13 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kProfile:
       case NetworkContextType::kInMemoryApp:
       case NetworkContextType::kOnDiskApp:
-        return GetProfile()->GetPrefs();
+        return browser()->profile()->GetPrefs();
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         // Incognito actually uses the non-incognito prefs, so this should end
         // up being the same pref store as in the KProfile case.
-        return GetProfile()
+        return browser()
+            ->profile()
             ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
             ->GetPrefs();
     }
@@ -520,13 +487,13 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kProfile:
       case NetworkContextType::kInMemoryApp:
       case NetworkContextType::kOnDiskApp:
-        ProfileNetworkContextServiceFactory::GetForContext(GetProfile())
+        ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
             ->FlushProxyConfigMonitorForTesting();
         break;
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         ProfileNetworkContextServiceFactory::GetForContext(
-            GetProfile()->GetPrimaryOTRProfile(
+            browser()->profile()->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true))
             ->FlushProxyConfigMonitorForTesting();
         break;
@@ -556,13 +523,7 @@ class NetworkContextConfigurationBrowserTest
       ASSERT_TRUE(simple_loader_helper.response_body());
       EXPECT_EQ(*simple_loader_helper.response_body(), "Echo");
     } else {
-#if BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/498341268): Figure out why the error is different on
-      // Android.
-      EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED, simple_loader->NetError());
-#else
       EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, simple_loader->NetError());
-#endif
       ASSERT_FALSE(simple_loader_helper.response_body());
     }
   }
@@ -662,7 +623,7 @@ class NetworkContextConfigurationBrowserTest
         break;
       case NetworkContextType::kSafeBrowsing:
         g_browser_process->safe_browsing_service()
-            ->FlushNetworkInterfaceForTesting(GetProfileForContext());
+            ->FlushNetworkInterfaceForTesting(GetProfile());
         break;
       case NetworkContextType::kProfile:
       case NetworkContextType::kIncognitoProfile:
@@ -674,19 +635,18 @@ class NetworkContextConfigurationBrowserTest
     }
   }
 
-  // The name is awkward because GetProfile() is already taken.
-  Profile* GetProfileForContext() {
+  Profile* GetProfile() {
     switch (GetParam().network_context_type) {
       case NetworkContextType::kSystem:
       case NetworkContextType::kSafeBrowsing:
       case NetworkContextType::kProfile:
       case NetworkContextType::kInMemoryApp:
       case NetworkContextType::kOnDiskApp:
-        return GetProfile();
+        return browser()->profile();
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         DCHECK(incognito_);
-        return incognito_->GetProfile();
+        return incognito_->profile();
     }
   }
 
@@ -722,7 +682,7 @@ class NetworkContextConfigurationBrowserTest
           callback) {
     // Create Incognito Profile if needed.
     if (!incognito_)
-      incognito_ = CreateIncognitoBrowserWindow();
+      incognito_ = CreateIncognitoBrowser();
 
     // True if the |network_context_type| corresponding to GetParam() has been
     // found. Used to verify that kNetworkContextTypes is kept up to date, and
@@ -783,8 +743,7 @@ class NetworkContextConfigurationBrowserTest
     FlushNetworkInterface();
   }
 
-  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> incognito_ =
-      nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_ = nullptr;
 
   net::EmbeddedTestServer https_server_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
@@ -844,7 +803,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_EQ("cookie", *simple_loader_helper.response_body());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 std::unique_ptr<net::test_server::HttpResponse> EchoCookieHeader(
     const net::test_server::HttpRequest& request) {
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -855,27 +814,14 @@ std::unique_ptr<net::test_server::HttpResponse> EchoCookieHeader(
   return response;
 }
 
-// TODO(crbug.com/499374841): Fix test flake and re-enable.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_ThirdPartyCookiesAllowedForExtensions \
-  DISABLED_ThirdPartyCookiesAllowedForExtensions
-#else
-#define MAYBE_ThirdPartyCookiesAllowedForExtensions \
-  ThirdPartyCookiesAllowedForExtensions
-#endif
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       MAYBE_ThirdPartyCookiesAllowedForExtensions) {
-  if (IsRestartStateWithInProcessNetworkService())
-    return;
+                       ThirdPartyCookiesAllowedForExtensions) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/494643383): The test is flaky in incognito on Android
-  // and Linux CFI.
-  if (GetParam().network_context_type ==
-      NetworkContextType::kIncognitoProfile) {
+  if (IsRestartStateWithInProcessNetworkService()) {
     return;
   }
-#endif
 
   // Loading an extension only makes sense for profile contexts.
   if (GetParam().network_context_type != NetworkContextType::kProfile &&
@@ -894,51 +840,41 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   SetCookie(CookieType::kFirstParty, CookiePersistenceType::kPersistent,
             embedded_test_server());
 
-  // Use a manifest V3 extension for desktop Android support. Manifest V3
-  // extensions require the "cookies" permission to access third-party cookies.
   extensions::TestExtensionDir extension_dir;
   extension_dir.WriteManifest(R"({
     "name": "Cookie Test",
-    "manifest_version": 3,
+    "manifest_version": 2,
     "version": "1.0",
     "background": {
-      "service_worker": "background.js"
+      "scripts": ["background.js"]
     },
     "incognito": "split",
-    "permissions": ["cookies"],
-    "host_permissions": ["<all_urls>"]
+    "permissions": ["<all_urls>"]
    })");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  extensions::ChromeTestExtensionLoader loader(GetProfile());
+  loader.set_allow_incognito_access(true);
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
 
   // This request will show up as cross-site because the chrome-extension URL
   // won't match the test_server domain (127.0.0.1), but because we set
   // |force_ignore_site_for_cookies| to true for extension-initiated requests,
   // this will actually be able to get the cookie.
-  //
-  // Use fetch() because service workers don't support XMLHttpRequest.
   GURL url = test_server.GetURL("/echocookieheader");
-  constexpr char kScriptTemplate[] = R"(
-    chrome.test.runTests([
-      async function testThirdPartyCookie() {
-        const response = await fetch('$1');
-        const text = await response.text();
-        chrome.test.assertEq('cookie', text);
-        chrome.test.succeed();
-      }
-    ]);
-  )";
-  std::string script =
-      base::ReplaceStringPlaceholders(kScriptTemplate, {url.spec()}, nullptr);
-  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), script);
-
-  extensions::ResultCatcher catcher;
-  extensions::ChromeTestExtensionLoader loader(GetProfileForContext());
-  loader.set_allow_incognito_access(true);
-  scoped_refptr<const extensions::Extension> extension =
-      loader.LoadExtension(extension_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+  std::string script = R"((url => {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onload = () => chrome.test.sendScriptResult(xhr.responseText);
+    xhr.send();
+  }))";
+  base::Value result =
+      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+          GetProfile(), extension->id(), script + "('" + url.spec() + "')");
+  EXPECT_EQ("cookie", result);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#endif
 
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, BasicRequest) {
   if (IsRestartStateWithInProcessNetworkService())
@@ -1030,15 +966,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Cache) {
   }
 }
 
-// TODO(crbug.com/494643383): Flaky on desktop Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_CacheIsolation DISABLED_CacheIsolation
-#else
-#define MAYBE_CacheIsolation CacheIsolation
-#endif
 // Make sure that NetworkContexts can't access each other's disk caches.
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       MAYBE_CacheIsolation) {
+IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, CacheIsolation) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
   // Make a request whose response should be cached.
@@ -1096,8 +1025,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_DiskCache) {
   GURL test_url = embedded_test_server()->GetURL(kCacheRandomPath);
   url::Origin test_origin = url::Origin::Create(test_url);
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath save_url_file_path =
-      GetProfile()->GetPath().Append(FILE_PATH_LITERAL("url_for_test.txt"));
+  base::FilePath save_url_file_path = browser()->profile()->GetPath().Append(
+      FILE_PATH_LITERAL("url_for_test.txt"));
 
   // Make a request whose response should be cached.
   std::unique_ptr<network::ResourceRequest> request =
@@ -1150,8 +1079,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
 
   // Load URL from the above test body to disk.
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath save_url_file_path =
-      GetProfile()->GetPath().Append(FILE_PATH_LITERAL("url_for_test.txt"));
+  base::FilePath save_url_file_path = browser()->profile()->GetPath().Append(
+      FILE_PATH_LITERAL("url_for_test.txt"));
   std::string file_data;
   ASSERT_TRUE(ReadFileToString(save_url_file_path, &file_data));
 
@@ -1309,8 +1238,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_Hsts) {
   // Write the URL with HSTS information to a file, so it can be loaded in the
   // next test. Have to use a file for this, since the server's port is random.
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath save_url_file_path =
-      GetProfile()->GetPath().Append(FILE_PATH_LITERAL("url_for_test.txt"));
+  base::FilePath save_url_file_path = browser()->profile()->GetPath().Append(
+      FILE_PATH_LITERAL("url_for_test.txt"));
   std::string file_data = start_url.spec();
   ASSERT_TRUE(base::WriteFile(save_url_file_path, file_data));
 }
@@ -1327,8 +1256,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Hsts) {
     return;
   }
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath save_url_file_path =
-      GetProfile()->GetPath().Append(FILE_PATH_LITERAL("url_for_test.txt"));
+  base::FilePath save_url_file_path = browser()->profile()->GetPath().Append(
+      FILE_PATH_LITERAL("url_for_test.txt"));
   std::string file_data;
   ASSERT_TRUE(ReadFileToString(save_url_file_path, &file_data));
   GURL start_url = GURL(file_data);
@@ -1423,7 +1352,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
 
   // Change AcceptLanguages preferences, and check that headers are updated.
   // First, A single language.
-  GetProfile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages, "zu");
+  browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
+                                              "zu");
   FlushNetworkInterface();
   std::string accept_language2, user_agent2;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language2));
@@ -1432,8 +1362,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_EQ(embedder_support::GetUserAgent(), user_agent2);
 
   // Second, a single language with locale.
-  GetProfile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
-                                      "zu-ZA");
+  browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
+                                              "zu-ZA");
   FlushNetworkInterface();
   std::string accept_language3, user_agent3;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language3));
@@ -1443,13 +1373,13 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
 
   // Third, a list with multiple languages. Incognito mode should return only
   // the first.
-  GetProfile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
-                                      "ar,am,en-GB,ru,zu");
+  browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
+                                              "ar,am,en-GB,ru,zu");
   FlushNetworkInterface();
   std::string accept_language4;
   std::string user_agent4;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language4));
-  if (GetProfileForContext()->IsOffTheRecord()) {
+  if (GetProfile()->IsOffTheRecord()) {
     EXPECT_EQ(system ? kNoAcceptLanguage : "ar", accept_language4);
   } else {
     EXPECT_EQ(system ? kNoAcceptLanguage
@@ -1602,7 +1532,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
 }
 
 // Disabled due to flakiness. See https://crbug.com/1126755.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PRE_ThirdPartyCookiesBlocked DISABLED_PRE_ThirdPartyCookiesBlocked
 #define MAYBE_ThirdPartyCookiesBlocked DISABLED_ThirdPartyCookiesBlocked
 #else
@@ -1653,7 +1583,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_TRUE(GetCookies(https_server()->base_url()).empty());
 
   // Add exception, third party cookies should be allowed now.
-  CookieSettingsFactory::GetForProfile(GetProfile())
+  CookieSettingsFactory::GetForProfile(browser()->profile())
       ->SetCookieSetting(https_server()->base_url(), CONTENT_SETTING_ALLOW);
   // Set a third-party cookie. It should actually get set this time.
   SetCookie(CookieType::kThirdParty, CookiePersistenceType::kSession,
@@ -1674,7 +1604,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   if (system)
     return;
 
-  CookieSettingsFactory::GetForProfile(GetProfile())
+  CookieSettingsFactory::GetForProfile(browser()->profile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   FlushNetworkInterface();
   SetCookie(CookieType::kFirstParty, CookiePersistenceType::kSession,
@@ -1701,7 +1631,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, CookieSettings) {
   EXPECT_TRUE(GetCookies(embedded_test_server()->base_url()).empty());
 
   // Set default setting to allow, cookies should be set now.
-  CookieSettingsFactory::GetForProfile(GetProfile())
+  CookieSettingsFactory::GetForProfile(browser()->profile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
   FlushNetworkInterface();
   SetCookie(CookieType::kFirstParty, CookiePersistenceType::kSession,
@@ -2097,11 +2027,10 @@ class NetworkContextConfigurationProxySettingsBrowserTest
           base::StringPrintf("/hung_%u", i));
 
       auto client = std::make_unique<WaitingHandshakeClient>();
-      tabs::TabInterface* active_tab =
-          TabListInterface::From(GetBrowserWindowInterface())->GetActiveTab();
-      ASSERT_TRUE(active_tab);
-      content::RenderFrameHost* const frame =
-          active_tab->GetContents()->GetPrimaryMainFrame();
+      content::RenderFrameHost* const frame = browser()
+                                                  ->tab_strip_model()
+                                                  ->GetActiveWebContents()
+                                                  ->GetPrimaryMainFrame();
       content::RenderProcessHost* const process = frame->GetProcess();
       const std::vector<std::string> requested_protocols;
       std::vector<network::mojom::HttpHeaderPtr> additional_headers;
@@ -2427,8 +2356,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationReportingAndNelBrowserTest,
   TestCase({NetworkServiceState::kEnabled, network_context_type}), \
       TestCase({NetworkServiceState::kRestarted, network_context_type})
 
-// Android does not support these app types.
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #define INSTANTIATE_EXTENSION_TESTS(TestFixture)                        \
   INSTANTIATE_TEST_SUITE_P(                                             \
       OnDiskApp, TestFixture,                                           \
@@ -2442,9 +2370,9 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationReportingAndNelBrowserTest,
       OnDiskAppWithIncognitoProfile, TestFixture,                       \
       ::testing::Values(                                                \
           TEST_CASES(NetworkContextType::kOnDiskAppWithIncognitoProfile)));
-#else  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+#else  // !BUILDFLAG(ENABLE_EXTENSIONS)
 #define INSTANTIATE_EXTENSION_TESTS(TestFixture)
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 
 #define INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(TestFixture)             \
   INSTANTIATE_EXTENSION_TESTS(TestFixture)                               \

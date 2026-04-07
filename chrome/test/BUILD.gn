@@ -1527,16 +1527,6 @@ source_set("platform_browser_tests") {
     }
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
-    sources += [ "../browser/net/network_context_configuration_browsertest.cc" ]
-    deps += [
-      "//chrome/browser/ui/browser_window:create_browser_window",
-      "//components/embedder_support",
-      "//components/embedder_support:user_agent",
-      "//components/feed:feature_list",
-    ]
-  }
-
   if (is_win || is_linux || is_mac || is_android || is_chromeos) {
     sources +=
         [ "../browser/enterprise/net/proxy_override_rules_browsertest.cc" ]
@@ -3592,6 +3582,7 @@ if (!is_android) {
       "../browser/net/net_error_tab_helper_browsertest.cc",
       "../browser/net/netinfo_network_quality_estimator_holdback_browsertest.cc",
       "../browser/net/network_connection_tracker_browsertest.cc",
+      "../browser/net/network_context_configuration_browsertest.cc",
       "../browser/net/network_quality_estimator_browsertest.cc",
       "../browser/net/network_quality_estimator_prefs_browsertest.cc",
       "../browser/net/network_quality_netinfo_browsertest.cc",
