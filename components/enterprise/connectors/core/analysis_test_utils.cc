@@ -279,30 +279,6 @@ AnalysisSettings* NoSettings() {
   return nullptr;
 }
 
-void SetDownloadConnectorsBlock(PrefService* prefs,
-                                std::vector<std::string> rules,
-                                bool machine_scope) {
-  ScopedListPrefUpdate list(
-      prefs, AnalysisConnectorPref(AnalysisConnector::FILE_DOWNLOADED));
-  if (!list->empty()) {
-    list->clear();
-  }
-
-  for (const std::string& rule : rules) {
-    list->Append(
-        *base::JSONReader::Read(rule, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-  }
-
-  prefs->SetInteger(
-      AnalysisConnectorScopePref(AnalysisConnector::FILE_DOWNLOADED),
-      machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
-}
-
-void ClearDownloadProtectionRules(PrefService* prefs) {
-  prefs->ClearPref(enterprise_connectors::AnalysisConnectorPref(
-      enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED));
-}
-
 void SetAnalysisConnectorsPrefs(PrefService* prefs,
                                 AnalysisConnector connector,
                                 std::vector<std::string> rules,

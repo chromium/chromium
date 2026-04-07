@@ -14,8 +14,8 @@
 
 + (void)setBlockDownloadRule {
   PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
-  enterprise_connectors::test::SetDownloadConnectorsBlock(
-      prefs, {R"({
+  enterprise_connectors::test::SetAnalysisConnectorsPrefs(
+      prefs, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, {R"({
         "service_provider": "google",
         "enable": [{
           "url_list": ["*"],

@@ -61,20 +61,6 @@ AnalysisSettings* NormalSettingsWithCustomMessage();
 AnalysisSettings* NormalSettingsDlpRequiresBypassJustification();
 AnalysisSettings* NoSettings();
 
-// Set the Download Protection prefs for testing and block all download.
-//
-// - machine_scope: The scope of a policy flag whether it is meant to be applied
-//                  to the machine(true) or the current user(false).
-//
-// TODO(crbug.com/479863110): Refactor other tests that use this method to use
-// the new version added below and remove this.
-void SetDownloadConnectorsBlock(PrefService* prefs,
-                                std::vector<std::string> rules,
-                                bool machine_scope = true);
-
-// Clears all download protection rules.
-void ClearDownloadProtectionRules(PrefService* prefs);
-
 // Set the Analysis Connectors prefs for testing according to rules.
 //
 // - machine_scope: The scope of a policy flag whether it is meant to be applied
