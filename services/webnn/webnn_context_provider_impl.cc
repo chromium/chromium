@@ -276,11 +276,39 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       gpu::CommandBufferIdFromChannelAndRoute(params.client_id,
                                               g_next_route_id.GetNext());
 
-  // TODO(crbug.com/474940915): Create the `gpu_sequence` with
-  // `owning_task_runner` instead of `main_thread_task_runner_` to avoid
-  // resetting it later.
+  bool use_main_thread = (g_backend_for_testing != nullptr);
+
+#if BUILDFLAG(IS_WIN)
+  const bool should_create_dml_context = dml::ShouldCreateDmlContext(*options);
+  // DirectML contexts are created and owned on the main thread.
+  use_main_thread |= should_create_dml_context;
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_APPLE)
+  bool should_create_coreml_context = false;
+  if (__builtin_available(macOS 14.4, *)) {
+    should_create_coreml_context =
+        base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML) &&
+        !params.is_incognito
+#if BUILDFLAG(IS_MAC)
+        && base::mac::GetCPUType() == base::mac::CPUType::kArm
+#endif  // BUILDFLAG(IS_MAC)
+        ;
+    // CoreML contexts are created and owned on the main thread.
+  }
+  use_main_thread |= should_create_coreml_context;
+#endif  // BUILDFLAG(IS_APPLE)
+
+  // Task runner used to create the context on gpu sequence.
+  // Backends that support multi-threading can use a separate task runner.
+  scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner =
+      use_main_thread ? main_thread_task_runner_
+                      : base::ThreadPool::CreateSingleThreadTaskRunner(
+                            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
   auto gpu_sequence = std::make_unique<ScopedGpuSequence>(
-      *scheduler_, main_thread_task_runner_, command_buffer_id,
+      *scheduler_, owning_task_runner, command_buffer_id,
       kWebNNContextImplNamespaceId);
 
   scoped_refptr<gpu::MemoryTracker> memory_tracker =
@@ -293,17 +321,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   if (g_backend_for_testing) {
     context_impls_.emplace(g_backend_for_testing->CreateWebNNContext(
         AsWeakPtr(), std::move(options), std::move(gpu_sequence),
-        std::move(memory_tracker), main_thread_task_runner_,
-        shared_image_manager_, main_thread_task_runner_, std::move(callback)));
+        std::move(memory_tracker), owning_task_runner, shared_image_manager_,
+        main_thread_task_runner_, std::move(callback)));
     return;
   }
-
-  // Task runner used to create the context on gpu sequence.
-  // Backend must support multi-threading to use a separate task runner.
-  scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner =
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   WebNNContextImplPtr context_impl(nullptr,
                                    OnTaskRunnerDeleter(owning_task_runner));
@@ -343,9 +364,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
           std::move(scoped_trace), std::move(options),
           std::move(write_tensor_producer), std::move(write_tensor_consumer),
           std::move(read_tensor_producer), std::move(read_tensor_consumer),
-          command_buffer_id, std::move(gpu_sequence),
-          std::move(owning_task_runner), std::move(receiver), std::move(remote),
-          std::move(callback), params.is_incognito, std::move(memory_tracker),
+          std::move(gpu_sequence), std::move(owning_task_runner),
+          std::move(receiver), std::move(remote), std::move(callback),
+          params.is_incognito, std::move(memory_tracker),
           /*ep_package_info=*/{});
       return;
     }
@@ -355,18 +376,18 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         AsWeakPtr(), std::move(scoped_trace), std::move(options),
         std::move(write_tensor_producer), std::move(write_tensor_consumer),
         std::move(read_tensor_producer), std::move(read_tensor_consumer),
-        command_buffer_id, std::move(gpu_sequence),
-        std::move(owning_task_runner), std::move(receiver), std::move(remote),
-        std::move(callback), params.is_incognito, std::move(memory_tracker)));
+        std::move(gpu_sequence), std::move(owning_task_runner),
+        std::move(receiver), std::move(remote), std::move(callback),
+        params.is_incognito, std::move(memory_tracker)));
     return;
-  } else if (dml::ShouldCreateDmlContext(*options)) {
+  } else if (should_create_dml_context) {
     base::expected<WebNNContextImplPtr, mojom::ErrorPtr>
         context_creation_results = dml::CreateContextFromOptions(
             std::move(options), std::move(write_tensor_consumer),
             std::move(read_tensor_producer), gpu_feature_info_, gpu_info_,
             shared_context_state_.get(), std::move(receiver), AsWeakPtr(),
             std::move(gpu_sequence), std::move(memory_tracker),
-            main_thread_task_runner_, shared_image_manager_,
+            owning_task_runner, shared_image_manager_,
             main_thread_task_runner_);
     if (!context_creation_results.has_value()) {
       std::move(callback).Run(mojom::CreateContextResult::NewError(
@@ -378,13 +399,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_APPLE)
-  if (__builtin_available(macOS 14.4, *)) {
-    if (base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML) &&
-        !params.is_incognito
-#if BUILDFLAG(IS_MAC)
-        && base::mac::GetCPUType() == base::mac::CPUType::kArm
-#endif  // BUILDFLAG(IS_MAC)
-    ) {
+  if (should_create_coreml_context) {
+    if (__builtin_available(macOS 14.4, *)) {
       // Using mojo data pipe is not yet implemented in CoreML backend.
       write_tensor_producer.reset();
       write_tensor_consumer.reset();
@@ -393,8 +409,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       context_impl = coreml::ContextImplCoreml::Create(
           std::move(receiver), AsWeakPtr(), std::move(options),
           std::move(gpu_sequence), std::move(memory_tracker),
-          main_thread_task_runner_, shared_image_manager_,
-          main_thread_task_runner_);
+          owning_task_runner, shared_image_manager_, main_thread_task_runner_);
     }
   }
 #endif  // BUILDFLAG(IS_APPLE)
@@ -406,9 +421,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(scoped_trace), std::move(options),
         std::move(write_tensor_producer), std::move(write_tensor_consumer),
         std::move(read_tensor_producer), std::move(read_tensor_consumer),
-        command_buffer_id, std::move(gpu_sequence),
-        std::move(owning_task_runner), std::move(receiver), std::move(remote),
-        std::move(callback), params.is_incognito, std::move(memory_tracker));
+        std::move(gpu_sequence), std::move(owning_task_runner),
+        std::move(receiver), std::move(remote), std::move(callback),
+        params.is_incognito, std::move(memory_tracker));
     return;
   }
 #endif  // BUILDFLAG(WEBNN_USE_LITERT)
@@ -419,9 +434,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(scoped_trace), std::move(options),
         std::move(write_tensor_producer), std::move(write_tensor_consumer),
         std::move(read_tensor_producer), std::move(read_tensor_consumer),
-        command_buffer_id, std::move(gpu_sequence),
-        std::move(owning_task_runner), std::move(receiver), std::move(remote),
-        std::move(callback), params.is_incognito, std::move(memory_tracker));
+        std::move(gpu_sequence), std::move(owning_task_runner),
+        std::move(receiver), std::move(remote), std::move(callback),
+        params.is_incognito, std::move(memory_tracker));
     return;
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
@@ -477,7 +492,6 @@ void WebNNContextProviderImpl::CreateTFLiteContext(
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-    gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedGpuSequence> gpu_sequence,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -485,11 +499,6 @@ void WebNNContextProviderImpl::CreateTFLiteContext(
     CreateWebNNContextCallback callback,
     bool is_incognito,
     scoped_refptr<gpu::MemoryTracker> memory_tracker) {
-  gpu_sequence.reset();
-  gpu_sequence = std::make_unique<ScopedGpuSequence>(
-      *scheduler_, task_runner, command_buffer_id,
-      kWebNNContextImplNamespaceId);
-
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -514,7 +523,6 @@ void WebNNContextProviderImpl::CreateLiteRtContext(
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-    gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedGpuSequence> gpu_sequence,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -522,11 +530,6 @@ void WebNNContextProviderImpl::CreateLiteRtContext(
     CreateWebNNContextCallback callback,
     bool is_incognito,
     scoped_refptr<gpu::MemoryTracker> memory_tracker) {
-  gpu_sequence.reset();
-  gpu_sequence = std::make_unique<ScopedGpuSequence>(
-      *scheduler_, task_runner, command_buffer_id,
-      kWebNNContextImplNamespaceId);
-
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -551,7 +554,6 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-    gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedGpuSequence> gpu_sequence,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -592,9 +594,9 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
         std::move(scoped_trace), std::move(options),
         std::move(write_tensor_producer), std::move(write_tensor_consumer),
         std::move(read_tensor_producer), std::move(read_tensor_consumer),
-        command_buffer_id, std::move(gpu_sequence), std::move(task_runner),
-        std::move(receiver), std::move(remote), std::move(callback),
-        is_incognito, std::move(memory_tracker));
+        std::move(gpu_sequence), std::move(task_runner), std::move(receiver),
+        std::move(remote), std::move(callback), is_incognito,
+        std::move(memory_tracker));
     return;
   }
 #endif  // BUILDFLAG(WEBNN_USE_LITERT)
@@ -604,8 +606,8 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
       std::move(scoped_trace), std::move(options),
       std::move(write_tensor_producer), std::move(write_tensor_consumer),
       std::move(read_tensor_producer), std::move(read_tensor_consumer),
-      command_buffer_id, std::move(gpu_sequence), std::move(task_runner),
-      std::move(receiver), std::move(remote), std::move(callback), is_incognito,
+      std::move(gpu_sequence), std::move(task_runner), std::move(receiver),
+      std::move(remote), std::move(callback), is_incognito,
       std::move(memory_tracker));
   return;
 #else
@@ -624,7 +626,6 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-    gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedGpuSequence> gpu_sequence,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -635,13 +636,6 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
     base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info) {
   scoped_trace.AddStep("ort::Environment::GetInstance");
 
-  // Re-create gpu sequence for the new task runner. Destroying the old
-  // gpu sequence is safe since it has no scheduled tasks yet.
-  gpu_sequence.reset();
-  gpu_sequence = std::make_unique<ScopedGpuSequence>(
-      *scheduler_, task_runner, command_buffer_id,
-      kWebNNContextImplNamespaceId);
-
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ort::Environment::GetInstance, gpu_feature_info_,
@@ -651,9 +645,9 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
           std::move(scoped_trace), std::move(options),
           std::move(write_tensor_producer), std::move(write_tensor_consumer),
           std::move(read_tensor_producer), std::move(read_tensor_consumer),
-          command_buffer_id, std::move(gpu_sequence), task_runner,
-          std::move(receiver), std::move(remote), std::move(callback),
-          is_incognito, std::move(memory_tracker)));
+          std::move(gpu_sequence), task_runner, std::move(receiver),
+          std::move(remote), std::move(callback), is_incognito,
+          std::move(memory_tracker)));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
