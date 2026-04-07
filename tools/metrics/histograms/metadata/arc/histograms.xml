@@ -2886,7 +2886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.WM.WindowEnterTabletModeDelayTimeV2.{ChromeOSAppType}"
-    units="ms" expires_after="2026-04-06">
+    units="ms" expires_after="2027-04-06">
   <owner>lingyufeng@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
@@ -2898,7 +2898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.WM.WindowExitTabletModeDelayTimeV2.{ChromeOSAppType}"
-    units="ms" expires_after="2026-04-06">
+    units="ms" expires_after="2027-04-06">
   <owner>lingyufeng@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>
