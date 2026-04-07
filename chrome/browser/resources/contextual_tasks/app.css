@@ -109,9 +109,9 @@
       + 2 * var(--file-chip-thumbnail-padding));
   --file-chip-thumbnail-icon-size: 24px;
   --file-chip-title-line-height: 18px;
-  --file-chip-title-text-size: 16px;
+  --file-chip-title-text-size: 14px;
   --file-chip-url-line-height: 16px;
-  --file-chip-url-text-size: 12px;
+  --file-chip-url-text-size: 11px;
   --file-chip-width: auto;
   --ghost-loader-base: #F3F5F6;
   --ghost-loader-highlight: #DEE1E3;
