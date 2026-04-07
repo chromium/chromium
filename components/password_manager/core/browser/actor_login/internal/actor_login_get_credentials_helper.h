@@ -19,10 +19,13 @@ class ActorLoginMetricsHelperInterface;
 // done. It then responds with the result asynchronously.
 class ActorLoginGetCredentialsHelper {
  public:
+  using GetCredentialsCallback =
+      base::OnceCallback<void(CredentialsOrError, bool)>;
+
   ActorLoginGetCredentialsHelper(
       std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers,
       ActorLoginMetricsHelperInterface* metrics_helper,
-      CredentialsOrErrorReply callback);
+      GetCredentialsCallback callback);
 
   ActorLoginGetCredentialsHelper(const ActorLoginGetCredentialsHelper&) =
       delete;
@@ -51,12 +54,13 @@ class ActorLoginGetCredentialsHelper {
   // Checks if the results contain an error or simply no credentials.
   CredentialsOrError GetErrorOrNoCredentials(std::vector<FetchResult> results);
 
-  std::vector<Credential> MergeCredentials(std::vector<FetchResult> results);
+  std::pair<std::vector<Credential>, bool> MergeCredentials(
+      std::vector<FetchResult> results);
 
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers_;
   // Owned by ActorLoginDelegateImpl.
   raw_ptr<ActorLoginMetricsHelperInterface> metrics_helper_;
-  CredentialsOrErrorReply callback_;
+  GetCredentialsCallback callback_;
 
   base::WeakPtrFactory<ActorLoginGetCredentialsHelper> weak_ptr_factory_{this};
 };
