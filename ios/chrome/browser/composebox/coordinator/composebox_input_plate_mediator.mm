@@ -891,10 +891,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   return webStateIDs;
 }
 
-- (NSUInteger)nonTabAttachmentCount {
-  return _items.nonTabAttachmentCount;
-}
-
 - (NSUInteger)maxTabAttachmentCount {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 

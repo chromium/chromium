@@ -45,10 +45,6 @@
   return self.tabsCount > 0 || self.filesCount > 0;
 }
 
-- (size_t)nonTabAttachmentCount {
-  return self.imagesCount + self.filesCount;
-}
-
 - (size_t)imagesCount {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSUInteger result = 0;
@@ -64,7 +60,7 @@
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSUInteger result = 0;
   for (ComposeboxInputItem* item in _containedItems) {
-    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeFile) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
       result++;
     }
   }
@@ -75,7 +71,7 @@
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSUInteger result = 0;
   for (ComposeboxInputItem* item in _containedItems) {
-    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeFile) {
       result++;
     }
   }
