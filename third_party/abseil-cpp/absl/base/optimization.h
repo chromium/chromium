@@ -217,7 +217,7 @@
 #elif defined(_MSC_VER)
 #define ABSL_INTERNAL_UNREACHABLE_IMPL() __assume(false)
 #else
-#define ABSL_INTERNAL_UNREACHABLE_IMPL()
+#define ABSL_INTERNAL_UNREACHABLE_IMPL() ((void)0)
 #endif
 
 // `ABSL_UNREACHABLE()` is an unreachable statement.  A program which reaches

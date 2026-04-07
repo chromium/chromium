@@ -58,7 +58,7 @@ template <class Cond>
 using EnableIf = std::enable_if_t<Cond::value, int>;
 
 template <bool Value, class T>
-using HasValue = std::conditional_t<Value, T, absl::negation<T>>;
+using HasValue = std::conditional_t<Value, T, std::negation<T>>;
 
 template <class T>
 struct IfRRef {

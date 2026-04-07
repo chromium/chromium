@@ -412,8 +412,8 @@ class btree_set_container : public btree_container<Tree> {
   // `this`, it is left unmodified in `src`.
   template <
       typename T,
-      typename absl::enable_if_t<
-          absl::conjunction<
+      typename std::enable_if_t<
+          std::conjunction<
               std::is_same<value_type, typename T::value_type>,
               std::is_same<allocator_type, typename T::allocator_type>,
               std::is_same<typename params_type::is_map_container,
@@ -431,8 +431,8 @@ class btree_set_container : public btree_container<Tree> {
 
   template <
       typename T,
-      typename absl::enable_if_t<
-          absl::conjunction<
+      typename std::enable_if_t<
+          std::conjunction<
               std::is_same<value_type, typename T::value_type>,
               std::is_same<allocator_type, typename T::allocator_type>,
               std::is_same<typename params_type::is_map_container,
@@ -474,7 +474,7 @@ class btree_map_container : public btree_set_container<Tree> {
                           typename Tree::params_type::mapped_type, M>>;
   template <class K, bool KValue, class M, bool MValue, typename... Dummy>
   using LifetimeBoundKV =
-      absl::conjunction<LifetimeBoundK<K, KValue, absl::void_t<Dummy...>>,
+      std::conjunction<LifetimeBoundK<K, KValue, absl::void_t<Dummy...>>,
                         LifetimeBoundV<M, MValue>>;
 
  public:
@@ -824,8 +824,8 @@ class btree_multiset_container : public btree_container<Tree> {
   // Moves all elements from `src` into `this`.
   template <
       typename T,
-      typename absl::enable_if_t<
-          absl::conjunction<
+      typename std::enable_if_t<
+          std::conjunction<
               std::is_same<value_type, typename T::value_type>,
               std::is_same<allocator_type, typename T::allocator_type>,
               std::is_same<typename params_type::is_map_container,
@@ -840,8 +840,8 @@ class btree_multiset_container : public btree_container<Tree> {
 
   template <
       typename T,
-      typename absl::enable_if_t<
-          absl::conjunction<
+      typename std::enable_if_t<
+          std::conjunction<
               std::is_same<value_type, typename T::value_type>,
               std::is_same<allocator_type, typename T::allocator_type>,
               std::is_same<typename params_type::is_map_container,

@@ -32,6 +32,7 @@
 #include "absl/debugging/leak_check.h"
 #include "absl/debugging/stacktrace.h"
 #include "absl/debugging/symbolize.h"
+#include "absl/hash/hash.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/status/status_payload_printer.h"
@@ -41,6 +42,8 @@
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/source_location.h"
+#include "absl/types/span.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -130,6 +133,14 @@ void StatusRep::ForEachPayload(
   }
 }
 
+absl::Span<const SourceLocation> StatusRep::GetSourceLocations() const {
+  return absl::MakeSpan(source_locations_);
+}
+
+void StatusRep::AddSourceLocation(absl::SourceLocation loc) {
+  source_locations_.push_back(loc);
+}
+
 std::string StatusRep::ToString(StatusToStringMode mode) const {
   std::string text;
   absl::StrAppend(&text, absl::StatusCodeToString(code()), ": ", message());
@@ -149,6 +160,17 @@ std::string StatusRep::ToString(StatusToStringMode mode) const {
           result.has_value() ? *result : absl::CHexEscape(std::string(payload)),
           "']");
     });
+  }
+  const bool with_source_location =
+      (mode & StatusToStringMode::kWithSourceLocation) ==
+      StatusToStringMode::kWithSourceLocation;
+  if (with_source_location && !source_locations_.empty()) {
+    absl::string_view whitespace = (absl::Hash<int>{}(42) % 2 == 0) ? "" : " ";
+    absl::StrAppend(&text, "\n=== Source Location Trace: ===", whitespace,
+                    "\n");
+    for (const absl::SourceLocation loc : GetSourceLocations()) {
+      absl::StrAppend(&text, loc.file_name(), ":", loc.line(), "\n");
+    }
   }
 
   return text;
@@ -204,6 +226,7 @@ StatusRep* absl_nonnull StatusRep::CloneAndUnref() const {
     payloads = absl::make_unique<status_internal::Payloads>(*payloads_);
   }
   auto* new_rep = new StatusRep(code_, message_, std::move(payloads));
+  new_rep->source_locations_ = source_locations_;
   Unref();
   return new_rep;
 }

@@ -608,7 +608,7 @@ class FlagImpl final : public CommandLineFlag {
     *value = ReadOneBool();
   }
   template <typename T,
-            absl::enable_if_t<flags_internal::StorageKind<T>() ==
+            std::enable_if_t<flags_internal::StorageKind<T>() ==
                                   FlagValueStorageKind::kOneWordAtomic,
                               int> = 0>
   void Read(T* value) const ABSL_LOCKS_EXCLUDED(DataGuard()) {

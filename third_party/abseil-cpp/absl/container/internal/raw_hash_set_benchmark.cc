@@ -244,6 +244,30 @@ void BM_EraseEmplace(benchmark::State& state) {
 }
 BENCHMARK(BM_EraseEmplace)->Arg(1)->Arg(2)->Arg(4)->Arg(8)->Arg(16)->Arg(100);
 
+void BM_EraseEmplaceString(benchmark::State& state) {
+  StringTable t;
+  int64_t size = state.range(0);
+  for (int64_t i = 0; i < size; ++i) {
+    std::string s = std::to_string(i);
+    t.emplace(s, s);
+  }
+  while (state.KeepRunningBatch(size)) {
+    for (int64_t i = 0; i < size; ++i) {
+      benchmark::DoNotOptimize(t);
+      std::string s = std::to_string(i);
+      t.erase(s);
+      t.emplace(s, s);
+    }
+  }
+}
+BENCHMARK(BM_EraseEmplaceString)
+    ->Arg(1)
+    ->Arg(2)
+    ->Arg(4)
+    ->Arg(8)
+    ->Arg(16)
+    ->Arg(100);
+
 void BM_EndComparison(benchmark::State& state) {
   StringTable t = {{"a", "a"}, {"b", "b"}};
   auto it = t.begin();

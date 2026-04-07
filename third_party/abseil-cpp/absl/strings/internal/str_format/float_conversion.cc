@@ -25,6 +25,7 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <type_traits>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -100,7 +101,7 @@ class StackArray {
 // Requires: `0 <= carry <= 9`
 template <typename Int>
 inline char MultiplyBy10WithCarry(Int* v, char carry) {
-  using BiggerInt = absl::conditional_t<sizeof(Int) == 4, uint64_t, uint128>;
+  using BiggerInt = std::conditional_t<sizeof(Int) == 4, uint64_t, uint128>;
   BiggerInt tmp =
       10 * static_cast<BiggerInt>(*v) + static_cast<BiggerInt>(carry);
   *v = static_cast<Int>(tmp);
@@ -1184,8 +1185,8 @@ constexpr bool CanFitMantissa() {
 template <typename Float>
 struct Decomposed {
   using MantissaType =
-      absl::conditional_t<std::is_same<long double, Float>::value, uint128,
-                          uint64_t>;
+      std::conditional_t<std::is_same<long double, Float>::value, uint128,
+                         uint64_t>;
   static_assert(std::numeric_limits<Float>::digits <= sizeof(MantissaType) * 8,
                 "");
   MantissaType mantissa;

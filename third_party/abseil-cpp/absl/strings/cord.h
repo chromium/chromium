@@ -174,7 +174,7 @@ class Cord {
  private:
   template <typename T>
   using EnableIfString =
-      absl::enable_if_t<std::is_same<T, std::string>::value, int>;
+      std::enable_if_t<std::is_same<T, std::string>::value, int>;
 
  public:
   // Cord::Cord() Constructors.
@@ -1137,7 +1137,7 @@ template <typename Releaser>
 CordRep* absl_nonnull NewExternalRep(absl::string_view data,
                                      Releaser&& releaser) {
   assert(!data.empty());
-  using ReleaserType = absl::decay_t<Releaser>;
+  using ReleaserType = std::decay_t<Releaser>;
   CordRepExternal* rep = new CordRepExternalImpl<ReleaserType>(
       std::forward<Releaser>(releaser), 0);
   InitializeCordRepExternal(data, rep);
@@ -1162,7 +1162,7 @@ Cord MakeCordFromExternal(absl::string_view data, Releaser&& releaser) {
                                    data, std::forward<Releaser>(releaser)),
                                Cord::MethodIdentifier::kMakeCordFromExternal);
   } else {
-    using ReleaserType = absl::decay_t<Releaser>;
+    using ReleaserType = std::decay_t<Releaser>;
     cord_internal::InvokeReleaser(
         cord_internal::Rank1{}, ReleaserType(std::forward<Releaser>(releaser)),
         data);

@@ -517,18 +517,20 @@ namespace container_internal {
 // There is no guarantees on the order of the function calls.
 // Erasure and/or insertion of elements in the function is not allowed.
 template <typename T, typename H, typename E, typename A, typename Function>
-decay_t<Function> c_for_each_fast(const flat_hash_set<T, H, E, A>& c,
-                                  Function&& f) {
+std::decay_t<Function> c_for_each_fast(const flat_hash_set<T, H, E, A>& c,
+                                       Function&& f) {
   container_internal::ForEach(f, &c);
   return f;
 }
 template <typename T, typename H, typename E, typename A, typename Function>
-decay_t<Function> c_for_each_fast(flat_hash_set<T, H, E, A>& c, Function&& f) {
+std::decay_t<Function> c_for_each_fast(flat_hash_set<T, H, E, A>& c,
+                                       Function&& f) {
   container_internal::ForEach(f, &c);
   return f;
 }
 template <typename T, typename H, typename E, typename A, typename Function>
-decay_t<Function> c_for_each_fast(flat_hash_set<T, H, E, A>&& c, Function&& f) {
+std::decay_t<Function> c_for_each_fast(flat_hash_set<T, H, E, A>&& c,
+                                       Function&& f) {
   container_internal::ForEach(f, &c);
   return f;
 }

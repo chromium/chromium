@@ -945,8 +945,8 @@ TEST(ThrowingValueTraitsTest, RelationalOperators) {
 }
 
 TEST(ThrowingAllocatorTraitsTest, Assignablility) {
-  EXPECT_TRUE(absl::is_move_assignable<ThrowingAllocator<int>>::value);
-  EXPECT_TRUE(absl::is_copy_assignable<ThrowingAllocator<int>>::value);
+  EXPECT_TRUE(std::is_move_assignable<ThrowingAllocator<int>>::value);
+  EXPECT_TRUE(std::is_copy_assignable<ThrowingAllocator<int>>::value);
   EXPECT_TRUE(std::is_nothrow_move_assignable<ThrowingAllocator<int>>::value);
   EXPECT_TRUE(std::is_nothrow_copy_assignable<ThrowingAllocator<int>>::value);
 }

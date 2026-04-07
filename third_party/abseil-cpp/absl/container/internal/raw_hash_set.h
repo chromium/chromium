@@ -1930,7 +1930,7 @@ class raw_hash_set {
   // An enabler for insert(T&&): T must be convertible to init_type or be the
   // same as [cv] value_type [ref].
   template <class T>
-  using Insertable = absl::disjunction<
+  using Insertable = std::disjunction<
       std::is_same<absl::remove_cvref_t<reference>, absl::remove_cvref_t<T>>,
       std::is_convertible<T, init_type>>;
   template <class T>
@@ -1970,9 +1970,9 @@ class raw_hash_set {
     using iterator_category = std::forward_iterator_tag;
     using value_type = typename raw_hash_set::value_type;
     using reference =
-        absl::conditional_t<PolicyTraits::constant_iterators::value,
+        std::conditional_t<PolicyTraits::constant_iterators::value,
                             const value_type&, value_type&>;
-    using pointer = absl::remove_reference_t<reference>*;
+    using pointer = std::remove_reference_t<reference>*;
     using difference_type = typename raw_hash_set::difference_type;
 
     iterator() {}

@@ -614,22 +614,22 @@ namespace container_internal {
 // Erasure and/or insertion of elements in the function is not allowed.
 template <typename K, typename V, typename H, typename E, typename A,
           typename Function>
-decay_t<Function> c_for_each_fast(const flat_hash_map<K, V, H, E, A>& c,
-                                  Function&& f) {
+std::decay_t<Function> c_for_each_fast(const flat_hash_map<K, V, H, E, A>& c,
+                                       Function&& f) {
   container_internal::ForEach(f, &c);
   return f;
 }
 template <typename K, typename V, typename H, typename E, typename A,
           typename Function>
-decay_t<Function> c_for_each_fast(flat_hash_map<K, V, H, E, A>& c,
-                                  Function&& f) {
+std::decay_t<Function> c_for_each_fast(flat_hash_map<K, V, H, E, A>& c,
+                                       Function&& f) {
   container_internal::ForEach(f, &c);
   return f;
 }
 template <typename K, typename V, typename H, typename E, typename A,
           typename Function>
-decay_t<Function> c_for_each_fast(flat_hash_map<K, V, H, E, A>&& c,
-                                  Function&& f) {
+std::decay_t<Function> c_for_each_fast(flat_hash_map<K, V, H, E, A>&& c,
+                                       Function&& f) {
   container_internal::ForEach(f, &c);
   return f;
 }

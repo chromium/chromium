@@ -1528,6 +1528,10 @@ std::pair<ctrl_t*, void*> PrepareInsertSmallNonSoo(
   if (common.capacity() == 1) {
     if (common.empty()) {
       IncrementSmallSizeNonSoo(common, policy);
+      if (common.has_infoz()) {
+        common.infoz().RecordInsertMiss(get_hash(common.seed().seed()),
+                                        /*distance_from_desired=*/0);
+      }
       return {SooControl(), common.slot_array()};
     } else {
       return Grow1To3AndPrepareInsert(common, policy, get_hash);

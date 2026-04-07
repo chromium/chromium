@@ -35,6 +35,7 @@
 #include "absl/strings/internal/ostringstream.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
+#include "absl/types/source_location.h"
 #include "absl/utility/utility.h"
 
 namespace absl {
@@ -87,6 +88,10 @@ class LogStreamer final {
     // To match `LOG`'s defaults:
     stream_->setf(std::ios_base::showbase | std::ios_base::boolalpha);
   }
+  explicit LogStreamer(
+      absl::LogSeverity severity,
+      absl::SourceLocation loc = absl::SourceLocation::current())
+      : LogStreamer(severity, loc.file_name(), static_cast<int>(loc.line())) {}
 
   // A moved-from `absl::LogStreamer` does not `LOG` when destroyed,
   // and a program that streams into one has undefined behavior.
@@ -174,6 +179,27 @@ inline LogStreamer LogFatalStreamer(absl::string_view file, int line) {
 // destroyed, regardless of whether any data were streamed in.
 inline LogStreamer LogDebugFatalStreamer(absl::string_view file, int line) {
   return absl::LogStreamer(absl::kLogDebugFatal, file, line);
+}
+
+inline LogStreamer LogInfoStreamer(
+    absl::SourceLocation loc = absl::SourceLocation::current()) {
+  return absl::LogStreamer(absl::LogSeverity::kInfo, loc);
+}
+inline LogStreamer LogWarningStreamer(
+    absl::SourceLocation loc = absl::SourceLocation::current()) {
+  return absl::LogStreamer(absl::LogSeverity::kWarning, loc);
+}
+inline LogStreamer LogErrorStreamer(
+    absl::SourceLocation loc = absl::SourceLocation::current()) {
+  return absl::LogStreamer(absl::LogSeverity::kError, loc);
+}
+inline LogStreamer LogFatalStreamer(
+    absl::SourceLocation loc = absl::SourceLocation::current()) {
+  return absl::LogStreamer(absl::LogSeverity::kFatal, loc);
+}
+inline LogStreamer LogDebugFatalStreamer(
+    absl::SourceLocation loc = absl::SourceLocation::current()) {
+  return absl::LogStreamer(absl::kLogDebugFatal, loc);
 }
 
 ABSL_NAMESPACE_END

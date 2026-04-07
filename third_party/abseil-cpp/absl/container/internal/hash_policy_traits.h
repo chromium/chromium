@@ -38,7 +38,7 @@ struct hash_policy_traits : common_policy_traits<Policy> {
  private:
   struct ReturnKey {
     template <class Key,
-              absl::enable_if_t<std::is_lvalue_reference<Key>::value, int> = 0>
+              std::enable_if_t<std::is_lvalue_reference<Key>::value, int> = 0>
     static key_type& Impl(Key&& k, int) {
       return *std::launder(
           const_cast<key_type*>(std::addressof(std::forward<Key>(k))));

@@ -88,7 +88,7 @@ class raw_hash_map : public raw_hash_set<Policy, Params...> {
                           typename Policy::mapped_type, V>>;
   template <class K, bool KValue, class V, bool VValue, typename... Dummy>
   using LifetimeBoundKV =
-      absl::conjunction<LifetimeBoundK<K, KValue, absl::void_t<Dummy...>>,
+      std::conjunction<LifetimeBoundK<K, KValue, absl::void_t<Dummy...>>,
                         LifetimeBoundV<V, VValue>>;
 
  public:

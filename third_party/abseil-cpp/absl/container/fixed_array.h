@@ -96,7 +96,7 @@ class ABSL_ATTRIBUTE_WARN_UNUSED FixedArray {
            absl::allocator_is_nothrow<allocator_type>::value;
   }
   static constexpr bool DefaultConstructorIsNonTrivial() {
-    return !absl::is_trivially_default_constructible<StorageElement>::value;
+    return !std::is_trivially_default_constructible<StorageElement>::value;
   }
 
  public:
@@ -414,14 +414,14 @@ class ABSL_ATTRIBUTE_WARN_UNUSED FixedArray {
   //     error: call to int __builtin___sprintf_chk(etc...)
   //     will always overflow destination buffer [-Werror]
   //
-  template <typename OuterT, typename InnerT = absl::remove_extent_t<OuterT>,
+  template <typename OuterT, typename InnerT = std::remove_extent_t<OuterT>,
             size_t InnerN = std::extent<OuterT>::value>
   struct StorageElementWrapper {
     InnerT array[InnerN];
   };
 
   using StorageElement =
-      absl::conditional_t<std::is_array<value_type>::value,
+      std::conditional_t<std::is_array<value_type>::value,
                           StorageElementWrapper<value_type>, value_type>;
 
   static pointer AsValueType(pointer ptr) { return ptr; }
@@ -458,7 +458,7 @@ class ABSL_ATTRIBUTE_WARN_UNUSED FixedArray {
   };
 
   using InlinedStorage =
-      absl::conditional_t<inline_elements == 0, EmptyInlinedStorage,
+      std::conditional_t<inline_elements == 0, EmptyInlinedStorage,
                           NonEmptyInlinedStorage>;
 
   // Storage

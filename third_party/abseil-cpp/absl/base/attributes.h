@@ -531,6 +531,24 @@
 #define ABSL_XRAY_LOG_ARGS(N)
 #endif
 
+// ABSL_ATTRIBUTE_NULL_AFTER_MOVE
+//
+// Indicates that a user-defined smart-pointer-like type makes guarantees on the
+// state of a moved-from object, leaving it in a null state, where it can be
+// used as long as it is not dereferenced. In other words, these are the same
+// semantics that smart pointers from the standard library provide.
+//
+// The clang-tidy check bugprone-use-after-move allows member functions of types
+// marked with this attribute to be called on objects that have been moved from;
+// without the attribute, this would result in a use-after-move warning.
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate)
+#define ABSL_ATTRIBUTE_NULL_AFTER_MOVE                       \
+  [[clang::annotate("clang-tidy", "bugprone-use-after-move", \
+                    "null_after_move")]]
+#else
+#define ABSL_ATTRIBUTE_NULL_AFTER_MOVE
+#endif
+
 // ABSL_ATTRIBUTE_REINITIALIZES
 //
 // Indicates that a member function reinitializes the entire object to a known

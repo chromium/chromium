@@ -29,6 +29,44 @@ absl_cc_library(
 
 absl_cc_library(
   NAME
+    any_span
+  HDRS
+    "any_span.h"
+  SRCS
+    "internal/any_span.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+    absl::core_headers
+    absl::nullability
+    absl::raw_logging_internal
+    absl::throw_delegate
+    absl::type_traits
+  PUBLIC
+)
+
+absl_cc_test(
+  NAME
+    any_span_test
+  SRCS
+    "any_span_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::config
+    absl::core_headers
+    absl::exception_testing
+    absl::hash_testing
+    absl::raw_logging_internal
+    absl::span
+    absl::strings
+    absl::type_traits
+    GTest::gmock_main
+)
+
+absl_cc_library(
+  NAME
     span
   HDRS
     "span.h"
@@ -132,10 +170,13 @@ absl_cc_library(
     source_location
   HDRS
     "source_location.h"
+  SRCS
+    "source_location.cc"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::config
+    absl::core_headers
     absl::nullability
   PUBLIC
 )

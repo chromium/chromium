@@ -21,10 +21,6 @@ ABSL_NAMESPACE_BEGIN
 
 namespace debugging_internal {
 
-int InstallSymbolDecorator(LegacySymbolDecorator, void*) { return -1; }
-bool RemoveSymbolDecorator(int) { return false; }
-bool RemoveAllSymbolDecorators(void) { return false; }
-
 SymbolDecorator::Factory* SetSymbolDecoratorFactory(SymbolDecorator::Factory*) {
   return nullptr;
 }

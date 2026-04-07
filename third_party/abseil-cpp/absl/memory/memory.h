@@ -134,7 +134,7 @@ typename memory_internal::MakeUniqueResult<T>::scalar
 template <typename T>
 typename memory_internal::MakeUniqueResult<T>::array
     make_unique_for_overwrite(size_t n) {
-  return std::unique_ptr<T>(new typename absl::remove_extent_t<T>[n]);
+  return std::unique_ptr<T>(new typename std::remove_extent_t<T>[n]);
 }
 
 // `absl::make_unique_for_overwrite` overload for an array T[N] of known bounds.

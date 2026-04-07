@@ -146,17 +146,6 @@ inline constexpr bool kPlatformUsesOPDSections = false;
 // pointers and the first one is the function's entry.
 const size_t kFunctionDescriptorSize = sizeof(void *) * 2;
 
-const int kMaxDecorators = 10;  // Seems like a reasonable upper limit.
-
-struct InstalledSymbolDecorator {
-  LegacySymbolDecorator fn;
-  void *arg;
-  int ticket;
-};
-
-int g_num_decorators;
-InstalledSymbolDecorator g_decorators[kMaxDecorators];
-
 std::atomic<SymbolDecorator::Factory*> g_decorator_factory = nullptr;
 
 struct FileMappingHint {
@@ -165,16 +154,6 @@ struct FileMappingHint {
   uint64_t offset;
   const char *filename;
 };
-
-// Protects g_decorators.
-// We are using SpinLock and not a Mutex here, because we may be called
-// from inside Mutex::Lock itself, and it prohibits recursive calls.
-// This happens in e.g. base/stacktrace_syscall_unittest.
-// Moreover, we are using only try_lock(), if the decorator list
-// is being modified (is busy), we skip all decorators, and possibly
-// loose some info. Sorry, that's the best we could do.
-ABSL_CONST_INIT absl::base_internal::SpinLock g_decorators_mu(
-    absl::base_internal::SCHEDULE_KERNEL_ONLY);
 
 const int kMaxFileMappingHints = 8;
 int g_num_file_mapping_hints;
@@ -1507,7 +1486,6 @@ static bool MaybeInitializeObjFile(
 const char *Symbolizer::GetUncachedSymbol(const void *pc) {
   ObjFile *const obj = FindObjFile(pc, 1);
   ptrdiff_t relocation = 0;
-  int fd = -1;
   if (obj != nullptr) {
     if (MaybeInitializeObjFile(obj, decorator_factory_)) {
       const size_t start_addr = reinterpret_cast<size_t>(obj->start_addr);
@@ -1549,7 +1527,6 @@ const char *Symbolizer::GetUncachedSymbol(const void *pc) {
         }
       }
 
-      fd = obj->fd;
       if (GetSymbolFromObjectFile(*obj, pc, relocation, symbol_buf_,
                                   sizeof(symbol_buf_), tmp_buf_,
                                   sizeof(tmp_buf_)) == SYMBOL_FOUND) {
@@ -1574,18 +1551,6 @@ const char *Symbolizer::GetUncachedSymbol(const void *pc) {
 #endif
   }
 
-  if (g_decorators_mu.try_lock()) {
-    if (g_num_decorators > 0) {
-      SymbolDecoratorArgs decorator_args = {
-          pc,       relocation,       fd,     symbol_buf_, sizeof(symbol_buf_),
-          tmp_buf_, sizeof(tmp_buf_), nullptr};
-      for (int i = 0; i < g_num_decorators; ++i) {
-        decorator_args.arg = g_decorators[i].arg;
-        g_decorators[i].fn(&decorator_args);
-      }
-    }
-    g_decorators_mu.unlock();
-  }
   if (obj != nullptr && obj->decorator != nullptr) {
     obj->decorator->Decorate(pc, relocation, symbol_buf_, sizeof(symbol_buf_),
                              tmp_buf_, sizeof(tmp_buf_));
@@ -1631,55 +1596,6 @@ const char *Symbolizer::GetSymbol(const void *pc) {
 #else
   return GetUncachedSymbol(pc);
 #endif
-}
-
-bool RemoveAllSymbolDecorators() {
-  SetSymbolDecoratorFactory(nullptr);
-
-  if (!g_decorators_mu.try_lock()) {
-    // Someone else is using decorators. Get out.
-    return false;
-  }
-  g_num_decorators = 0;
-  g_decorators_mu.unlock();
-  return true;
-}
-
-bool RemoveSymbolDecorator(int ticket) {
-  if (!g_decorators_mu.try_lock()) {
-    // Someone else is using decorators. Get out.
-    return false;
-  }
-  for (int i = 0; i < g_num_decorators; ++i) {
-    if (g_decorators[i].ticket == ticket) {
-      while (i < g_num_decorators - 1) {
-        g_decorators[i] = g_decorators[i + 1];
-        ++i;
-      }
-      g_num_decorators = i;
-      break;
-    }
-  }
-  g_decorators_mu.unlock();
-  return true;  // Decorator is known to be removed.
-}
-
-int InstallSymbolDecorator(LegacySymbolDecorator decorator, void *arg) {
-  static int ticket = 0;
-
-  if (!g_decorators_mu.try_lock()) {
-    // Someone else is using decorators. Get out.
-    return -2;
-  }
-  int ret = ticket;
-  if (g_num_decorators >= kMaxDecorators) {
-    ret = -1;
-  } else {
-    g_decorators[g_num_decorators] = {decorator, arg, ticket++};
-    ++g_num_decorators;
-  }
-  g_decorators_mu.unlock();
-  return ret;
 }
 
 SymbolDecorator::Factory* SetSymbolDecoratorFactory(

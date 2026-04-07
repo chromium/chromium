@@ -216,6 +216,7 @@ cc_library(
         "//absl/strings",
         "//absl/strings:internal",
         "//absl/time",
+        "//absl/types:source_location",
         "//absl/types:span",
     ],
 )

@@ -224,7 +224,7 @@ struct SplitterIsConvertibleToImpl<C, true, false>
 
 template <typename C>
 struct SplitterIsConvertibleToImpl<C, true, true>
-    : absl::conjunction<
+    : std::conjunction<
           std::is_constructible<typename C::key_type, absl::string_view>,
           std::is_constructible<typename C::mapped_type, absl::string_view>> {};
 
@@ -494,7 +494,7 @@ class Splitter {
     // Inserts the key and an empty value into the map, returning an iterator to
     // the inserted item. We use emplace() if available, otherwise insert().
     template <typename M>
-    static absl::enable_if_t<HasEmplace<M>::value, iterator> InsertOrEmplace(
+    static std::enable_if_t<HasEmplace<M>::value, iterator> InsertOrEmplace(
         M* m, absl::string_view key) {
       // Use piecewise_construct to support old versions of gcc in which pair
       // constructor can't otherwise construct string from string_view.
@@ -502,7 +502,7 @@ class Splitter {
                                std::tuple<>()));
     }
     template <typename M>
-    static absl::enable_if_t<!HasEmplace<M>::value, iterator> InsertOrEmplace(
+    static std::enable_if_t<!HasEmplace<M>::value, iterator> InsertOrEmplace(
         M* m, absl::string_view key) {
       return ToIter(m->insert(std::make_pair(First(key), Second(""))));
     }

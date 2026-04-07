@@ -78,46 +78,6 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {
 
-// Legacy stateless symbol decorator API. Will be removed soon.
-struct SymbolDecoratorArgs {
-  // The program counter we are getting symbolic name for.
-  const void *pc;
-  // 0 for main executable, load address for shared libraries.
-  ptrdiff_t relocation;
-  // Read-only file descriptor for ELF image covering "pc",
-  // or -1 if no such ELF image exists in /proc/self/maps.
-  int fd;
-  // Output buffer, size.
-  // Note: the buffer may not be empty -- default symbolizer may have already
-  // produced some output, and earlier decorators may have adorned it in
-  // some way. You are free to replace or augment the contents (within the
-  // symbol_buf_size limit).
-  char *const symbol_buf;
-  size_t symbol_buf_size;
-  // Temporary scratch space, size.
-  // Use that space in preference to allocating your own stack buffer to
-  // conserve stack.
-  char *const tmp_buf;
-  size_t tmp_buf_size;
-  // User-provided argument
-  void* arg;
-};
-using LegacySymbolDecorator = void (*)(const SymbolDecoratorArgs *);
-
-// Installs a function-pointer as a decorator. Returns a value less than zero
-// if the system cannot install the decorator. Otherwise, returns a unique
-// identifier corresponding to the decorator. This identifier can be used to
-// uninstall the decorator - See RemoveSymbolDecorator() below.
-int InstallSymbolDecorator(LegacySymbolDecorator decorator, void* arg);
-
-// Removes a previously installed function-pointer decorator. Parameter "ticket"
-// is the return-value from calling InstallSymbolDecorator().
-bool RemoveSymbolDecorator(int ticket);
-
-// Remove all installed decorators.  Returns true if successful, false if
-// symbolization is currently in progress.
-bool RemoveAllSymbolDecorators();
-
 class SymbolDecorator;
 
 class SymbolDecoratorDeleter {

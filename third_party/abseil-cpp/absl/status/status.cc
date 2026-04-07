@@ -37,6 +37,7 @@
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/source_location.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -104,11 +105,36 @@ const std::string* absl_nonnull Status::MovedFromString() {
   return kMovedFrom.get();
 }
 
-Status::Status(absl::StatusCode code, absl::string_view msg)
-    : rep_(CodeToInlinedRep(code)) {
-  if (code != absl::StatusCode::kOk && !msg.empty()) {
-    rep_ = PointerToRep(new status_internal::StatusRep(code, msg, nullptr));
+absl::Status absl::Status::MakeNonOkStatusWithOkCode(
+    absl::string_view message) {
+  return absl::Status(
+      absl::Status::PointerToRep(new absl::status_internal::StatusRep(
+          absl::StatusCode::kOk, message, nullptr)));
+}
+
+uintptr_t Status::MakeRep(uintptr_t inlined_rep, absl::string_view msg,
+                          absl::SourceLocation loc) {
+  bool ok = inlined_rep == CodeToInlinedRep(absl::StatusCode::kOk);
+  if (ok) return inlined_rep;
+  if (msg.empty()
+  ) {
+    return inlined_rep;
   }
+  auto* rep = new status_internal::StatusRep(InlinedRepToCode(inlined_rep), msg,
+                                             nullptr);
+  if (loc.file_name()[0] != '\0') {
+    rep->AddSourceLocation(loc);
+  }
+  return PointerToRep(rep);
+}
+
+uintptr_t Status::AddSourceLocationImpl(uintptr_t rep,
+                                        absl::SourceLocation loc) {
+  if (IsInlined(rep)) return rep;
+  if (loc.file_name()[0] == '\0') return rep;
+  status_internal::StatusRep* rep_ptr = PrepareToModify(rep);
+  rep_ptr->AddSourceLocation(loc);
+  return PointerToRep(rep_ptr);
 }
 
 status_internal::StatusRep* absl_nonnull Status::PrepareToModify(
@@ -132,68 +158,74 @@ std::ostream& operator<<(std::ostream& os, const Status& x) {
   return os;
 }
 
-Status AbortedError(absl::string_view message) {
-  return Status(absl::StatusCode::kAborted, message);
+Status AbortedError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kAborted, message, loc);
 }
 
-Status AlreadyExistsError(absl::string_view message) {
-  return Status(absl::StatusCode::kAlreadyExists, message);
+Status AlreadyExistsError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kAlreadyExists, message, loc);
 }
 
-Status CancelledError(absl::string_view message) {
-  return Status(absl::StatusCode::kCancelled, message);
+Status CancelledError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kCancelled, message, loc);
 }
 
-Status DataLossError(absl::string_view message) {
-  return Status(absl::StatusCode::kDataLoss, message);
+Status DataLossError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kDataLoss, message, loc);
 }
 
-Status DeadlineExceededError(absl::string_view message) {
-  return Status(absl::StatusCode::kDeadlineExceeded, message);
+Status DeadlineExceededError(absl::string_view message,
+                             absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kDeadlineExceeded, message, loc);
 }
 
-Status FailedPreconditionError(absl::string_view message) {
-  return Status(absl::StatusCode::kFailedPrecondition, message);
+Status FailedPreconditionError(absl::string_view message,
+                               absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kFailedPrecondition, message, loc);
 }
 
-Status InternalError(absl::string_view message) {
-  return Status(absl::StatusCode::kInternal, message);
+Status InternalError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kInternal, message, loc);
 }
 
-Status InvalidArgumentError(absl::string_view message) {
-  return Status(absl::StatusCode::kInvalidArgument, message);
+Status InvalidArgumentError(absl::string_view message,
+                            absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kInvalidArgument, message, loc);
 }
 
-Status NotFoundError(absl::string_view message) {
-  return Status(absl::StatusCode::kNotFound, message);
+Status NotFoundError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kNotFound, message, loc);
 }
 
-Status OutOfRangeError(absl::string_view message) {
-  return Status(absl::StatusCode::kOutOfRange, message);
+Status OutOfRangeError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kOutOfRange, message, loc);
 }
 
-Status PermissionDeniedError(absl::string_view message) {
-  return Status(absl::StatusCode::kPermissionDenied, message);
+Status PermissionDeniedError(absl::string_view message,
+                             absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kPermissionDenied, message, loc);
 }
 
-Status ResourceExhaustedError(absl::string_view message) {
-  return Status(absl::StatusCode::kResourceExhausted, message);
+Status ResourceExhaustedError(absl::string_view message,
+                              absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kResourceExhausted, message, loc);
 }
 
-Status UnauthenticatedError(absl::string_view message) {
-  return Status(absl::StatusCode::kUnauthenticated, message);
+Status UnauthenticatedError(absl::string_view message,
+                            absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kUnauthenticated, message, loc);
 }
 
-Status UnavailableError(absl::string_view message) {
-  return Status(absl::StatusCode::kUnavailable, message);
+Status UnavailableError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kUnavailable, message, loc);
 }
 
-Status UnimplementedError(absl::string_view message) {
-  return Status(absl::StatusCode::kUnimplemented, message);
+Status UnimplementedError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kUnimplemented, message, loc);
 }
 
-Status UnknownError(absl::string_view message) {
-  return Status(absl::StatusCode::kUnknown, message);
+Status UnknownError(absl::string_view message, absl::SourceLocation loc) {
+  return Status(absl::StatusCode::kUnknown, message, loc);
 }
 
 bool IsAborted(const Status& status) {
@@ -404,9 +436,10 @@ std::string MessageForErrnoToStatus(int error_number,
 }
 }  // namespace
 
-Status ErrnoToStatus(int error_number, absl::string_view message) {
+Status ErrnoToStatus(int error_number, absl::string_view message,
+                     absl::SourceLocation loc) {
   return Status(ErrnoToStatusCode(error_number),
-                MessageForErrnoToStatus(error_number, message));
+                MessageForErrnoToStatus(error_number, message), loc);
 }
 
 const char* absl_nonnull StatusMessageAsCStr(const Status& status) {

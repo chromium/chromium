@@ -22,6 +22,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "absl/hash/hash.h"
@@ -269,7 +270,7 @@ bool RunOnStartup<f>::run = (f(), true);
 template <
     typename T, typename U,
     // Only trigger for when (T != U),
-    typename = absl::enable_if_t<!std::is_same<T, U>::value>,
+    typename = std::enable_if_t<!std::is_same<T, U>::value>,
     // This statement works in two ways:
     //  - First, it instantiates RunOnStartup and forces the initialization of
     //    `run`, which set the global variable.

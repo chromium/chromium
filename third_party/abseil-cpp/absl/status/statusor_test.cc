@@ -37,6 +37,7 @@
 #include "absl/status/status_matchers.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/source_location.h"
 #include "absl/utility/utility.h"
 
 namespace {
@@ -1798,6 +1799,102 @@ TEST(StatusOr, ErrorPrinting) {
                   AllOf(StartsWith("["), EndsWith("]"))));
   EXPECT_THAT(stream.str(), error_matcher);
   EXPECT_THAT(absl::StrCat(print_me), error_matcher);
+}
+
+#ifdef ABSL_INTERNAL_HAVE_BUILTIN_LINE_FILE
+#define GET_SOURCE_LOCATION(offset) __builtin_LINE() - offset
+#else
+#define GET_SOURCE_LOCATION(offset) 1
+#endif
+
+template <typename T>
+void CheckSourceLocation(
+    const absl::StatusOr<T>& status_or, std::vector<int> lines = {},
+    absl::SourceLocation loc = absl::SourceLocation::current()) {
+  ASSERT_EQ(status_or.GetSourceLocations().size(), lines.size())
+      << "Size check failed at " << loc.line();
+  for (size_t i = 0; i < lines.size(); ++i) {
+    EXPECT_EQ(absl::string_view(status_or.GetSourceLocations()[i].file_name()),
+              absl::string_view(loc.file_name()))
+        << "File name check failed at " << loc.line();
+    EXPECT_EQ(status_or.GetSourceLocations()[i].line(), lines[i])
+        << "Line check failed at " << loc.line();
+  }
+}
+
+TEST(StatusOr, AddSourceLocation) {
+  constexpr int kMaxIter = 10;
+  {
+    // Status that ignores source location.
+    absl::StatusOr<int> status_ignores_source_location[] = {
+        123, absl::Status(absl::StatusCode::kInternal, "")};
+    for (absl::StatusOr<int>& s : status_ignores_source_location) {
+      for (int i = 0; i < kMaxIter; ++i) {
+        s.AddSourceLocation(absl::SourceLocation::current());
+        s.AddSourceLocation(absl::SourceLocation());
+      }
+      CheckSourceLocation(s);
+    }
+  }
+  {
+    // Default SourceLocation is not added.
+    absl::StatusOr<int> status = absl::Status(
+        absl::StatusCode::kInternal, "foo", absl::SourceLocation::current());
+    int line = GET_SOURCE_LOCATION(1);
+    for (int i = 0; i < kMaxIter; ++i) {
+      status.AddSourceLocation(absl::SourceLocation());
+    }
+    CheckSourceLocation(status, {line});
+  }
+  {
+    // Default SourceLocation is not added.
+    absl::StatusOr<int> status = absl::Status(
+        absl::StatusCode::kInternal, "foo", absl::SourceLocation::current());
+    int line = GET_SOURCE_LOCATION(1);
+    std::vector<int> lines = {line};
+    lines.reserve(1 + kMaxIter);
+    for (int i = 0; i < kMaxIter; ++i) {
+      status.AddSourceLocation(absl::SourceLocation::current());
+      lines.push_back(GET_SOURCE_LOCATION(1));
+    }
+    CheckSourceLocation(status, lines);
+  }
+}
+
+absl::StatusOr<int>&& IsRvalueStatus(absl::StatusOr<int>&& s) {
+  return std::move(s);
+}
+
+TEST(StatusOr, WithSourceLocationMove) {
+  absl::StatusOr<int> original = absl::Status(
+      absl::StatusCode::kInternal, "message", absl::SourceLocation::current());
+  int line = GET_SOURCE_LOCATION(1);
+
+  const absl::StatusOr<int> status_or = IsRvalueStatus(
+      std::move(original).WithSourceLocation(absl::SourceLocation::current()));
+  int line2 = GET_SOURCE_LOCATION(1);
+
+  CheckSourceLocation(status_or, {line, line2});
+  EXPECT_FALSE(status_or.ok());
+}
+
+TEST(StatusOr, WithSourceLocationReturn) {
+  absl::SourceLocation loc1 = absl::SourceLocation::current();
+  int line1 = GET_SOURCE_LOCATION(1);
+  absl::SourceLocation loc2 = absl::SourceLocation::current();
+  int line2 = GET_SOURCE_LOCATION(1);
+
+  const auto return_error = [&loc1]() -> absl::StatusOr<int> {
+    return absl::InvalidArgumentError("I am error", loc1);
+  };
+  const auto return_error_with_source_location =
+      [&return_error, &loc2]() -> absl::StatusOr<int> {
+    return return_error().WithSourceLocation(loc2);
+  };
+
+  absl::StatusOr<int> status_or = return_error_with_source_location();
+  CheckSourceLocation(status_or, {line1, line2});
+  EXPECT_FALSE(status_or.ok());
 }
 
 TEST(StatusOr, SupportsReferenceTypes) {

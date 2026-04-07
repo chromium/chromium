@@ -204,7 +204,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
 
  public:
   using element_type = T;
-  using value_type = absl::remove_cv_t<T>;
+  using value_type = std::remove_cv_t<T>;
   // TODO(b/316099902) - pointer should be absl_nullable, but this makes it hard
   // to recognize foreach loops as safe. absl_nullability_unknown is currently
   // used to suppress -Wnullability-completeness warnings.
