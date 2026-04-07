@@ -94,6 +94,9 @@ MojoActionForChromeAction(actions::ActionId action_id) {
       return side_panel::customize_chrome::mojom::ActionId::kSplitTab;
     case kActionSidePanelShowContextualTasks:
       return side_panel::customize_chrome::mojom::ActionId::kContextualTasks;
+    case kActionSidePanelShowTabsFromOtherDevices:
+      return side_panel::customize_chrome::mojom::ActionId::
+          kShowTabsFromOtherDevices;
     default:
       return std::nullopt;
   }
@@ -110,6 +113,9 @@ std::optional<actions::ActionId> ChromeActionForMojoAction(
       return kActionSidePanelShowReadAnything;
     case side_panel::customize_chrome::mojom::ActionId::kShowReadingList:
       return kActionSidePanelShowReadingList;
+    case side_panel::customize_chrome::mojom::ActionId::
+        kShowTabsFromOtherDevices:
+      return kActionSidePanelShowTabsFromOtherDevices;
     case side_panel::customize_chrome::mojom::ActionId::kShowLensOverlay:
       return kActionSidePanelShowLensOverlayResults;
     case side_panel::customize_chrome::mojom::ActionId::kShowSearchCompanion:
@@ -343,6 +349,8 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   add_action(kActionSidePanelShowBookmarks,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionSidePanelShowReadingList,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionSidePanelShowTabsFromOtherDevices,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionSidePanelShowHistoryCluster,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);

@@ -687,9 +687,11 @@ TEST_F(PinnedToolbarActionsContainerTest, ActiveActionSkipsExecution) {
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
-  bool is_tab_search_pinnable =
+  const bool is_tab_search_pinnable =
       tabs::GetTabSearchPosition(browser_view()->browser()) ==
       tabs::TabSearchPosition::kToolbarButton;
+  const bool is_tabs_from_other_devices_pinnable =
+      base::FeatureList::IsEnabled(features::kTabsFromOtherDevicesSidePanel);
   // Verify all pinnable buttons have a suffix listed in actions.xml.
   actions::ActionItemVector action_items;
   actions::ActionManager::Get().GetActions(
@@ -704,11 +706,15 @@ TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
   const auto pinnable_action_variants = base::test::ReadActionVariantsForAction(
       "Actions.PinnedToolbarButtonActivation", ".");
   EXPECT_EQ(1U, pinnable_action_variants.size());
-  // Only one of history or history clusters should be pinnable. The split view
-  // action is not available via `root_action_item()`. Tab search is only
-  // pinnable if its position is in the toolbar.
+  // * Only one of history or history clusters should be pinnable.
+  // * The split view action is not available via `root_action_item()`.
+  // * Tabs from other devices is only pinnable if the corresponding feature
+  //   flag is enabled.
+  // * Tab search is only pinnable if its position is in the toolbar.
   size_t expected_pinnable_count =
-      pinnable_action_variants[0].size() - (is_tab_search_pinnable ? 2 : 3);
+      pinnable_action_variants[0].size() - 2 -
+      (is_tab_search_pinnable ? 0 : 1) -
+      (is_tabs_from_other_devices_pinnable ? 0 : 1);
 #if BUILDFLAG(IS_CHROMEOS)
   // Downloads action item does not exist for ChromeOS.
   EXPECT_EQ(pinnable_count, expected_pinnable_count - 1);
