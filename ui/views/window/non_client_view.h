@@ -124,7 +124,6 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void Layout(PassKey) override;
-  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
  protected:
   // NonClientView, View overrides:
@@ -132,9 +131,6 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
       const ViewHierarchyChangedDetails& details) override;
 
  private:
-  // ViewTargeterDelegate:
-  View* TargetForRect(View* root, const gfx::Rect& rect) override;
-
   // The FrameView that renders the non-client portions of the window.
   // This object is not owned by the view hierarchy because it can be replaced
   // dynamically as the system settings change.
