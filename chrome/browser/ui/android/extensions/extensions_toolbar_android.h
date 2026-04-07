@@ -47,6 +47,7 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
   bool CanShowToolbarActionPopupForAPICall(
       const ToolbarActionsModel::ActionId& action_id) override;
   void ToggleExtensionsMenu() override;
+  void ShowManageExtensionsIPH() override;
 
   // ExtensionsToolbarViewModel::Observer:
   void OnActionsInitialized() override;

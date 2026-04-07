@@ -12,6 +12,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extension_installed_watcher.h"
@@ -118,7 +119,9 @@ class ExtensionPostInstallDialog : public ui::DialogModelDelegate {
 void ShowExtensionPostInstallDialog(
     Profile* profile,
     content::WebContents* web_contents,
-    std::unique_ptr<ExtensionPostInstallDialogModel> model) {
+    std::unique_ptr<ExtensionPostInstallDialogModel> model,
+    base::OnceCallback<void(base::WeakPtr<content::WebContents>)>
+        show_iph_callback) {
   if (!web_contents) {
     return;
   }
@@ -133,6 +136,14 @@ void ShowExtensionPostInstallDialog(
   auto* weak_delegate = delegate.get();
 
   ui::DialogModel::Builder dialog_model_builder(std::move(delegate));
+
+  if (!show_iph_callback.is_null()) {
+    dialog_model_builder.SetDialogDestroyingCallback(base::BindOnce(
+        base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
+        base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
+        base::BindOnce(std::move(show_iph_callback),
+                       web_contents->GetWeakPtr())));
+  }
 
   auto manage_shortcuts_callback =
       base::BindRepeating(&ExtensionPostInstallDialog::LinkClicked,
@@ -166,7 +177,9 @@ void TriggerPostInstallDialog(
     Profile* profile,
     scoped_refptr<const extensions::Extension> extension,
     const SkBitmap& icon,
-    base::OnceCallback<content::WebContents*()> get_web_contents_callback) {
+    base::OnceCallback<content::WebContents*()> get_web_contents_callback,
+    base::OnceCallback<void(base::WeakPtr<content::WebContents>)>
+        show_iph_callback) {
   auto watcher = std::make_unique<ExtensionInstalledWatcher>(profile);
   ExtensionInstalledWatcher* watcher_ptr = watcher.get();
   watcher_ptr->WaitForInstall(
@@ -176,6 +189,8 @@ void TriggerPostInstallDialog(
              scoped_refptr<const extensions::Extension> ext, Profile* prof,
              const SkBitmap& icon_val,
              base::OnceCallback<content::WebContents*()> get_web_contents_cb,
+             base::OnceCallback<void(base::WeakPtr<content::WebContents>)>
+                 show_iph_cb,
              bool installed) {
             if (!installed) {
               return;
@@ -187,11 +202,11 @@ void TriggerPostInstallDialog(
             }
             auto model = std::make_unique<ExtensionPostInstallDialogModel>(
                 prof, ext.get(), icon_val);
-            extensions::ShowExtensionPostInstallDialog(prof, web_contents,
-                                                       std::move(model));
+            extensions::ShowExtensionPostInstallDialog(
+                prof, web_contents, std::move(model), std::move(show_iph_cb));
           },
           std::move(watcher), extension, profile, icon,
-          std::move(get_web_contents_callback)));
+          std::move(get_web_contents_callback), std::move(show_iph_callback)));
 }
 
 }  // namespace extensions

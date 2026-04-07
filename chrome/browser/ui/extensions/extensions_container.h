@@ -45,6 +45,9 @@ class ExtensionsContainer {
 
   // Whether there are any Extensions registered with the ExtensionsContainer.
   virtual bool HasAnyExtensions() const = 0;
+
+  // Triggers the manage extensions IPH.
+  virtual void ShowManageExtensionsIPH() {}
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_

@@ -7780,6 +7780,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_GLIC_ACTOR_TASK_IN_PROGRESS" desc="Snackbar message shown when a Glic actor task is still in progress.">
         Your task is still in progress
       </message>
-    </messages>
+      <message name="IDS_EXTENSIONS_MENU_MANAGE_IPH" desc="IPH message pointing to the extension puzzle piece shown after a user installs their first extension explaining they can manage their extensions in the toolbar.">
+        Manage your extensions in the toolbar
+      </message>
+</messages>
   </release>
 </grit>

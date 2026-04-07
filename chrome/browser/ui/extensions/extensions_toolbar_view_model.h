@@ -54,6 +54,9 @@ class ExtensionsToolbarViewModel
     // delegate or the observer.
     virtual void ToggleExtensionsMenu() = 0;
 
+    // Triggers the manage extensions IPH.
+    virtual void ShowManageExtensionsIPH() {}
+
    protected:
     virtual ~Delegate() = default;
   };
@@ -169,6 +172,7 @@ class ExtensionsToolbarViewModel
   bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                         ShowPopupCallback callback) override;
   void ToggleExtensionsMenu() override;
+  void ShowManageExtensionsIPH() override;
   bool HasAnyExtensions() const override;
 
   // ToolbarActionsModel::Observer:

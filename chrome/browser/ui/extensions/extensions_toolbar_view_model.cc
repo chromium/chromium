@@ -255,6 +255,10 @@ void ExtensionsToolbarViewModel::ToggleExtensionsMenu() {
   delegate_->ToggleExtensionsMenu();
 }
 
+void ExtensionsToolbarViewModel::ShowManageExtensionsIPH() {
+  delegate_->ShowManageExtensionsIPH();
+}
+
 bool ExtensionsToolbarViewModel::HasAnyExtensions() const {
   return !GetAllActionIds().empty();
 }

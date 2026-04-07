@@ -129,6 +129,11 @@ void ExtensionsToolbarAndroid::ToggleExtensionsMenu() {
   NOTIMPLEMENTED();
 }
 
+void ExtensionsToolbarAndroid::ShowManageExtensionsIPH() {
+  Java_ExtensionsToolbarBridge_showManageExtensionsIPH(AttachCurrentThread(),
+                                                       java_object_);
+}
+
 void ExtensionsToolbarAndroid::OnActionsInitialized() {
   for (const auto& action_id : toolbar_view_model_->GetAllActionIds()) {
     RegisterIconObserverForAction(action_id);

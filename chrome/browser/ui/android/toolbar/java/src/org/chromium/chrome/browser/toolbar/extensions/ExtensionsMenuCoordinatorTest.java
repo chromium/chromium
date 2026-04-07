@@ -34,6 +34,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -48,6 +49,8 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
@@ -72,6 +75,7 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
     @Mock private MenuButtonPinningDelegate mMenuButtonPinningDelegate;
+    @Mock private Tracker mTracker;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -87,6 +91,7 @@ public class ExtensionsMenuCoordinatorTest {
 
     @Before
     public void setUp() {
+        TrackerFactory.setTrackerForTests(mTracker);
         ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
         when(mExtensionsMenuBridgeJniMock.init(Mockito.any(), Mockito.anyLong())).thenReturn(1L);
 
@@ -158,6 +163,9 @@ public class ExtensionsMenuCoordinatorTest {
         mExtensionsMenuButton.performClick();
         verify(shownListener, never()).onPopupMenuShown();
         assertNotNull(mExtensionsMenuCoordinator.mMediator);
+
+        // Verify that the IPH event was recorded.
+        verify(mTracker).notifyEvent(EventConstants.EXTENSIONS_MENU_BUTTON_CLICKED);
 
         // Menu should be shown once mediator trigger the onReady runnable.
         triggerOnMediatorReady();

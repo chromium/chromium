@@ -5,7 +5,11 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,16 +33,21 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 
 import java.util.Collection;
 
@@ -68,8 +77,17 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
 
     private boolean mCanShowMenuIcon = true;
     private boolean mShowExtensionsMenuPending;
+    private final ExtensionsToolbarBridge.Observer mExtensionsToolbarBridgeObserver =
+            new ExtensionsToolbarBridge.Observer() {
+                @Override
+                public void showManageExtensionsIPH() {
+                    showIphInternal();
+                }
+            };
     private final MenuButtonPinningDelegate mMenuButtonPinningDelegate =
             new MenuButtonPinningDelegate();
+    private View.@Nullable OnLayoutChangeListener mLayoutChangeListener;
+    private ChromeAndroidTask mTask;
     private Profile mProfile;
     private PrefService mPrefService;
     private PrefChangeRegistrar mPrefChangeRegistrar;
@@ -88,12 +106,14 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
         mBridge = new ExtensionActionsBridge(task, profile);
+        mTask = task;
         mProfile = profile;
 
         extensionsToolbarStub.setLayoutResource(R.layout.extensions_toolbar_container);
         mContainer = (LinearLayout) extensionsToolbarStub.inflate();
 
         mExtensionsToolbarBridge = new ExtensionsToolbarBridge(task, profile);
+        mExtensionsToolbarBridge.addObserver(mExtensionsToolbarBridgeObserver);
 
         mPrefService = UserPrefs.get(profile);
 
@@ -142,6 +162,14 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
 
     @Override
     public void destroy() {
+        if (mLayoutChangeListener != null && mContainer != null) {
+            View anchorView = mContainer.findViewById(R.id.extensions_menu_button);
+            if (anchorView != null) {
+                anchorView.removeOnLayoutChangeListener(mLayoutChangeListener);
+            }
+            mLayoutChangeListener = null;
+        }
+
         mMenuButtonChangeProcessor.destroy();
 
         if (mPrefChangeRegistrar != null) {
@@ -149,6 +177,7 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
             mPrefChangeRegistrar.destroy();
         }
 
+        mExtensionsToolbarBridge.removeObserver(mExtensionsToolbarBridgeObserver);
         mExtensionAccessControlButtonCoordinator.destroy();
         mExtensionsMenuCoordinator.destroy();
         mExtensionActionListCoordinator.destroy();
@@ -189,6 +218,68 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
                     mShowExtensionsMenuPending = false;
                     extensionsMenuButton.performClick();
                 });
+    }
+
+    private void showIphInternal() {
+        if (mProfile.shutdownStarted()) return;
+
+        ActivityWindowAndroid activityWindowAndroid = mTask.getTopActivityWindowAndroid();
+        if (activityWindowAndroid == null) return;
+        Activity activity = activityWindowAndroid.getActivity().get();
+        if (activity == null) return;
+
+        View anchorView = mContainer.findViewById(R.id.extensions_menu_button);
+        if (anchorView == null) return;
+
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        if (anchorView.isShown()) {
+            showIphInternalHelper(activity, anchorView, handler);
+        } else {
+            if (mLayoutChangeListener != null) {
+                anchorView.removeOnLayoutChangeListener(mLayoutChangeListener);
+            }
+            mLayoutChangeListener =
+                    new View.OnLayoutChangeListener() {
+                        @Override
+                        public void onLayoutChange(
+                                View v,
+                                int left,
+                                int top,
+                                int right,
+                                int bottom,
+                                int oldLeft,
+                                int oldTop,
+                                int oldRight,
+                                int oldBottom) {
+                            if (v.isShown()) {
+                                v.removeOnLayoutChangeListener(this);
+                                mLayoutChangeListener = null;
+                                showIphInternalHelper(activity, v, handler);
+                            }
+                        }
+                    };
+            anchorView.addOnLayoutChangeListener(mLayoutChangeListener);
+        }
+    }
+
+    private void showIphInternalHelper(Activity activity, View anchorView, Handler handler) {
+        UserEducationHelper userEducationHelper =
+                new UserEducationHelper(activity, mProfile, handler);
+
+        userEducationHelper.requestShowIph(
+                new IphCommandBuilder(
+                                anchorView.getContext().getResources(),
+                                FeatureConstants.IPH_EXTENSIONS_MANAGE_FEATURE,
+                                R.string.extensions_menu_manage_iph,
+                                R.string.extensions_menu_manage_iph)
+                        .setAnchorView(anchorView)
+                        .setPreferredHorizontalOrientation(
+                                HorizontalOrientation.MAX_AVAILABLE_SPACE)
+                        .setHorizontalOverlapAnchor(true)
+                        .setRemoveArrow(true)
+                        .setInsetRect(new Rect())
+                        .build());
     }
 
     private void saveMenuButtonPinState(boolean pinned) {

@@ -203,6 +203,15 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     @CalledByNative
+    public void showManageExtensionsIPH() {
+        if (mProfile.shutdownStarted()) return;
+
+        for (Observer observer : mObservers) {
+            observer.showManageExtensionsIPH();
+        }
+    }
+
+    @CalledByNative
     public void triggerPopup(@JniType("std::string") String actionId, long nativeHostPtr) {
         // {@link mActionListDelegate} should be set in {@code ExtensionActionListMediator}'s
         // constructor.
@@ -335,6 +344,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
         // Called when both the extensions button and the request access button should be updated.
         default void onToolbarControlStateUpdated() {}
+
+        // Called when the manage extensions IPH should be shown.
+        default void showManageExtensionsIPH() {}
     }
 
     public interface ActionListDelegate {

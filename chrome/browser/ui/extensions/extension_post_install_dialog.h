@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_POST_INSTALL_DIALOG_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "extensions/buildflags/buildflags.h"
@@ -26,7 +27,9 @@ void TriggerPostInstallDialog(
     Profile* profile,
     scoped_refptr<const extensions::Extension> extension,
     const SkBitmap& icon,
-    base::OnceCallback<content::WebContents*()> get_web_contents_callback);
+    base::OnceCallback<content::WebContents*()> get_web_contents_callback,
+    base::OnceCallback<void(base::WeakPtr<content::WebContents>)>
+        show_iph_callback = base::DoNothing());
 
 }  // namespace extensions
 

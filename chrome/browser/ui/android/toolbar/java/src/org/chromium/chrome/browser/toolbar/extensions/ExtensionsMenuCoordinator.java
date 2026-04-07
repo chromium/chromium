@@ -18,6 +18,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -145,6 +147,8 @@ public class ExtensionsMenuCoordinator
         // Menu mediator is created when menu is triggered.
         mExtensionsMenuButton.setOnClickListener(
                 (view) -> {
+                    TrackerFactory.getTrackerForProfile(mProfile)
+                            .notifyEvent(EventConstants.EXTENSIONS_MENU_BUTTON_CLICKED);
                     createMediator();
                 });
 
