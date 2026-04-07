@@ -246,8 +246,10 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
 // enabled, which would result in creation of an HTMLUnknownElement with the
 // "fencedframe" tag name. We can't support casting those elements to
 // HTMLFencedFrameElements because they are not fenced frame elements.
-// See third_party/blink/renderer/core/html/Custom_element_type_helpers.md
+// See
+// https://chromium.googlesource.com/chromium/src.git/+/main/docs/custom_type_helpers_for_origin_trial_elements.md
 // for more details.
+//
 // TODO(crbug.com/1123606): Remove these custom helpers when the origin trial is
 // over.
 template <>

@@ -213,6 +213,7 @@ used when committed.
 *   [Runtime Enabled Features](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md)
 *   [Initialization of Blink runtime features in content layer](initialize_blink_features.md)
 *   [Integrating a feature with the origin trials framework](origin_trials_integration.md)
+*   [Custom Type Helpers for Origin-Trial-Controlled HTML Elements](custom_type_helpers_for_origin_trial_elements.md)
 
 ### GPU-related docs
 *   [GPU Pixel Wrangling](gpu/pixel_wrangling.md) - Instructions for GPU
