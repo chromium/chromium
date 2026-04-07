@@ -10672,6 +10672,7 @@ test("unit_tests") {
       "../browser/ui/views/autofill/popup/popup_warning_view_unittest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
       "../browser/ui/views/bookmarks/bookmark_bar_view_unittest.cc",
+      "../browser/ui/views/bookmarks/bookmark_button_unittest.cc",
       "../browser/ui/views/bookmarks/bookmark_context_menu_unittest.cc",
       "../browser/ui/views/bookmarks/bookmark_editor_view_unittest.cc",
       "../browser/ui/views/bookmarks/bookmark_page_action_controller_unittest.cc",

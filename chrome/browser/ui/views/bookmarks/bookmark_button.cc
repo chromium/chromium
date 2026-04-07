@@ -148,17 +148,12 @@ void BookmarkButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   UpdateMaxTooltipWidth();
 }
 
-void BookmarkButton::UpdateTooltipText() {
-  if (!GetWidget()) {
-    return;
+std::u16string BookmarkButton::GetRenderedTooltipText(
+    const gfx::Point& p) const {
+  if (tooltip_text_needs_update_) {
+    const_cast<BookmarkButton*>(this)->MaybeUpdateTooltipText();
   }
-
-  const views::TooltipManager* tooltip_manager =
-      GetWidget()->GetTooltipManager();
-  if (tooltip_manager) {
-    SetTooltipText(BookmarkBarView::CreateToolTipForURLAndTitle(
-        max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText()));
-  }
+  return GetTooltipText();
 }
 
 void BookmarkButton::AdjustAccessibleName(std::u16string& new_name,
@@ -175,10 +170,29 @@ void BookmarkButton::AdjustAccessibleName(std::u16string& new_name,
 
 void BookmarkButton::SetText(std::u16string_view text) {
   BookmarkButtonBase::SetText(text);
-  UpdateTooltipText();
+  tooltip_text_needs_update_ = true;
+}
+
+void BookmarkButton::MaybeUpdateTooltipText() {
+  if (!tooltip_text_needs_update_) {
+    return;
+  }
+  tooltip_text_needs_update_ = false;
+  if (!GetWidget()) {
+    return;
+  }
+  const views::TooltipManager* tooltip_manager =
+      GetWidget()->GetTooltipManager();
+  if (tooltip_manager) {
+    SetTooltipText(BookmarkBarView::CreateToolTipForURLAndTitle(
+        max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText()));
+  }
 }
 
 void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
+  // Compute the tooltip text before it's queried by the tooltip manager.
+  MaybeUpdateTooltipText();
+
   // Reset source information for taking metrics for following mouse events.
 
   BookmarkButtonBase::OnMouseEntered(event);
@@ -336,7 +350,7 @@ void BookmarkButton::UpdateMaxTooltipWidth() {
   int max_tooltip_width = tooltip_manager->GetMaxWidth(p);
   if (max_tooltip_width != max_tooltip_width_) {
     max_tooltip_width_ = max_tooltip_width;
-    UpdateTooltipText();
+    tooltip_text_needs_update_ = true;
   }
 }
 
