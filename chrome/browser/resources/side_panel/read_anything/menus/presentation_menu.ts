@@ -39,12 +39,13 @@ export class PresentationMenuElement extends PresentationMenuElementBase
     return {
       presentationState: {type: Number},
       nonModal: {type: Boolean},
+      options_: {type: Array},
     };
   }
   accessor presentationState: number = 0;
   accessor nonModal: boolean = true;
 
-  protected options_: Array<MenuStateItem<number>> = [
+  protected accessor options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('sidePanelLabel'),
       data: chrome.readingMode.inSidePanelPresentationState,

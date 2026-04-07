@@ -88,6 +88,7 @@ export class ManagedUserProfileNoticeAppElement extends
 
       disableProceedButton_: {type: Boolean},
       currentState_: {type: Number},
+      showValueProposition_: {type: Boolean},
       showDisclosure_: {type: Boolean},
       showProcessing_: {type: Boolean},
       showSuccess_: {type: Boolean},
@@ -107,11 +108,13 @@ export class ManagedUserProfileNoticeAppElement extends
       mergeDataChoiceTitle_: {type: String},
       mergeDataChoiceDetails_: {type: String},
       usePrimaryAndTonalButtons_: {type: Boolean},
+      email_: {type: String},
+      accountName_: {type: String},
     };
   }
 
-  protected email_: string = '';
-  protected accountName_: string = '';
+  protected accessor email_: string = '';
+  protected accessor accountName_: string = '';
   private accessor continueAs_: string = '';
   protected accessor showEnterpriseBadge_: boolean = false;
   protected accessor pictureUrl_: string = '';
@@ -125,7 +128,7 @@ export class ManagedUserProfileNoticeAppElement extends
   protected accessor errorSubtitle_: string = '';
   protected accessor disableProceedButton_: boolean = false;
   private accessor currentState_: State = State.DISCLOSURE;
-  protected showValueProposition_: boolean = false;
+  protected accessor showValueProposition_: boolean = false;
   protected accessor showDisclosure_: boolean = false;
   protected accessor showProcessing_: boolean = false;
   protected accessor showSuccess_: boolean = false;

@@ -88,6 +88,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       presentationState_: {type: Number},
       lineFocusStyle_: {type: Object},
       lineFocusMovement_: {type: Number},
+      isDocsLoadMoreButtonVisible_: {type: Boolean},
     };
   }
 
@@ -97,7 +98,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor lineFocusStyle_: LineFocusStyle|null = null;
   protected accessor lineFocusMovement_: LineFocusMovement|null = null;
 
-  protected isDocsLoadMoreButtonVisible_: boolean = false;
+  protected accessor isDocsLoadMoreButtonVisible_: boolean = false;
   protected isImmersiveEnabled_: boolean = false;
 
   // If the speech engine is considered "loaded." If it is, we should display

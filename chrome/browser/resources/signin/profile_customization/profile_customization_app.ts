@@ -86,11 +86,13 @@ export class ProfileCustomizationAppElement extends
 
       /** Exposed to CSS as 'is-refreshed-ui_'. */
       isRefreshedUI_: {type: Boolean, reflect: true},
+
+      hasEnterpriseLabel: {type: Boolean},
     };
   }
 
   protected accessor isManaged_: boolean = false;
-  protected hasEnterpriseLabel: boolean = false;
+  protected accessor hasEnterpriseLabel: boolean = false;
   protected accessor profileName_: string = '';
   protected accessor pictureUrl_: string = '';
   protected accessor welcomeTitle_: string = '';

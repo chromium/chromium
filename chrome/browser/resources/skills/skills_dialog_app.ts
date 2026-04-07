@@ -174,12 +174,12 @@ export class SkillsDialogAppElement extends CrLitElement {
   private textareaResizeObserver_: ResizeObserver | null = null;
   private dialogResizeObserver_: ResizeObserver | null = null;
 
-  protected get isSaveButtonDisabled() {
+  protected isSaveButtonDisabled() {
     return !this.skill_.name || !this.skill_.prompt ||
       this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
   }
 
-  protected get isRefinementEnabled_() {
+  protected isRefinementEnabled_() {
     return loadTimeData.getBoolean('isRefinementEnabled');
   }
 

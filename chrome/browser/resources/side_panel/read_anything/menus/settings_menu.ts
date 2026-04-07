@@ -159,6 +159,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         state: true,
         type: String,
       },
+      options_: {type: Array},
     };
   }
 
@@ -167,7 +168,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   accessor isSpeechActive: boolean = false;
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
 
-  protected options_: SettingsItem[] = [];
+  protected accessor options_: SettingsItem[] = [];
   protected accessor currentOpenId_: string|null = null;
 
   private interceptedEvents_: string[] =

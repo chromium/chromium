@@ -42,13 +42,14 @@ export class LineSpacingMenuElement extends LineSpacingMenuElementBase
     return {
       settingsPrefs: {type: Object},
       nonModal: {type: Boolean},
+      options_: {type: Array},
     };
   }
 
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor nonModal: boolean = false;
 
-  protected options_: Array<MenuStateItem<number>> = [
+  protected accessor options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('lineSpacingStandardTitle'),
       icon: 'read-anything:line-spacing-standard',

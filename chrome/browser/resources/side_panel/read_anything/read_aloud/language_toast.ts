@@ -46,11 +46,12 @@ export class LanguageToastElement extends LanguageToastElementBase implements
       toastMessage_: {type: String},
       showErrors: {type: Boolean},
       numAvailableVoices: {type: Number},
+      toastDuration_: {type: Number},
     };
   }
 
   protected notifications_: Map<string, NotificationType> = new Map();
-  protected toastDuration_: number = toastDurationMs;
+  protected accessor toastDuration_: number = toastDurationMs;
   protected accessor toastTitle_: string = '';
   protected accessor toastMessage_: string = '';
 

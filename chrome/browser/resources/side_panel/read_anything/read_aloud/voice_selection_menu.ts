@@ -93,6 +93,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
       downloadingMessages_: {type: Array},
       voiceGroups_: {type: Array},
       nonModal: {type: Boolean},
+      errorMessages_: {type: Array},
     };
   }
 
@@ -108,7 +109,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
       {[language: string]: NotificationType} = {};
 
   private accessor previewVoiceInitiated: SpeechSynthesisVoice|null = null;
-  protected errorMessages_: string[] = [];
+  protected accessor errorMessages_: string[] = [];
   protected accessor downloadingMessages_: string[] = [];
   protected accessor voiceGroups_: VoiceDropdownGroup[] = [];
   protected accessor showLanguageMenuDialog_: boolean = false;

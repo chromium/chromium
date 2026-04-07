@@ -41,13 +41,14 @@ export class HighlightMenuElement extends HighlightMenuElementBase implements
     return {
       settingsPrefs: {type: Object},
       nonModal: {type: Boolean},
+      options_: {type: Array},
     };
   }
 
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor nonModal: boolean = false;
 
-  protected options_: Array<MenuStateItem<number>> = [
+  protected accessor options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('autoHighlightTitle'),
       data: chrome.readingMode.autoHighlighting,

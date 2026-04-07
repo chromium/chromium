@@ -43,6 +43,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
       nonModal: {type: Boolean},
       lineFocusStyle: {type: Object},
       lineFocusMovement: {type: Number},
+      options_: {type: Array},
     };
   }
 
@@ -99,10 +100,11 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
       eventName: ToolbarEvent.LINE_FOCUS_MOVEMENT,
     },
   ];
-  protected options_: Array<MenuStateItem<LineFocusStyle|LineFocusMovement>> = [
-    ...this.styleOptions_,
-    ...this.movementOptions_,
-  ];
+  protected accessor options_:
+      Array<MenuStateItem<LineFocusStyle|LineFocusMovement>> = [
+        ...this.styleOptions_,
+        ...this.movementOptions_,
+      ];
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   override willUpdate(changedProperties: PropertyValues<this>) {

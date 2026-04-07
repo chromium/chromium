@@ -38,10 +38,11 @@ export class SkillsSidebarElement extends CrLitElement {
   static override get properties() {
     return {
       selectedPage: {type: String},
+      menuItems: {type: Array},
     };
   }
 
-  readonly menuItems: MenuItem[] = [
+  accessor menuItems: MenuItem[] = [
     {
       icon: 'skills:explore',
       name: loadTimeData.getString('browseSkillsTitle'),

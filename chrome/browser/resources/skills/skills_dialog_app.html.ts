@@ -81,7 +81,7 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
           </div>
           <div id="textareaWrapper" ?loading="${this.isRefineLoading_}"
             ?error="${this.hasPromptError_()}"
-            ?refinement-enabled="${this.isRefinementEnabled_}">
+            ?refinement-enabled="${this.isRefinementEnabled_()}">
             ${this.isRefineLoading_ ? html`
               <cr-loading-gradient id="instructionsLoader">
                 <svg width="100%" height="100%">
@@ -101,7 +101,7 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
                   @input="${this.onInstructionsInput_}">
               </textarea>
             `}
-            ${this.isRefinementEnabled_ ? html`
+            ${this.isRefinementEnabled_() ? html`
               <div class="textarea-actions">
                 <cr-icon-button id="iconUndo" iron-icon="skills:undo"
                     class="refine-icon" title="$i18n{undo}"
@@ -148,7 +148,7 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
           $i18n{cancel}
         </cr-button>
         <cr-button  id="saveButton" class="action-button"
-            ?disabled="${this.isSaveButtonDisabled}"
+            ?disabled="${this.isSaveButtonDisabled()}"
             @click="${this.onSubmitSkillClick_}">
           $i18n{save}
         </cr-button>
