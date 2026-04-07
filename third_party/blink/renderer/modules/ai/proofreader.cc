@@ -58,7 +58,7 @@ Vector<String> Tokenize(const String& text) {
   // create substrings, which we consider as tokens.
   int32_t start = it->first();
   for (int32_t end = it->next(); end != -1; end = it->next()) {
-    tokens.push_back(text.Substring(start, end - start));
+    tokens.push_back(text.substr(start, end - start));
     start = end;
   }
 
@@ -624,8 +624,8 @@ void Proofreader::GetCorrectionTypes(
           WrapPersistent(resolver), WrapPersistent(signal),
           WrapPersistent(script_state)));
 
-  String from = input.Substring(correction.error_start,
-                                correction.error_end - correction.error_start);
+  StringView from = input.subview(
+      correction.error_start, correction.error_end - correction.error_start);
   String to = correction.correction;
   String correction_instruction =
       StrCat({"Correcting `", from, "` to `", to, "`"});
@@ -633,13 +633,13 @@ void Proofreader::GetCorrectionTypes(
   // Annotate the current error in the original input.
   String input_with_error =
       StrCat({input.subview(0, correction.error_start), "`", from, "`",
-              input.Substring(correction.error_end)});
+              input.subview(correction.error_end)});
 
   // Annotate the current correction in the corrected input.
   String corrected_input = result->correctedInput();
   String corrected_input_with_correction =
       StrCat({corrected_input.subview(0, correction.correction_start), "`", to,
-              "`", corrected_input.Substring(correction.correction_end)});
+              "`", corrected_input.subview(correction.correction_end)});
 
   remote_->GetCorrectionType(input_with_error, corrected_input_with_correction,
                              correction_instruction, std::move(pending_remote));

@@ -77,7 +77,7 @@ void InnerTextBuilder::AddNextNonFrameSegments(
       *matching_node_location_ <= next_child_offset) {
     if (text_offset != *matching_node_location_) {
       frame.segments.push_back(mojom::blink::InnerTextSegment::NewText(
-          text.Substring(text_offset, *matching_node_location_ - text_offset)));
+          text.substr(text_offset, *matching_node_location_ - text_offset)));
       text_offset = *matching_node_location_;
     }
     frame.segments.push_back(mojom::blink::InnerTextSegment::NewNodeLocation(
@@ -86,7 +86,7 @@ void InnerTextBuilder::AddNextNonFrameSegments(
   }
   if (next_child_offset > text_offset) {
     frame.segments.push_back(mojom::blink::InnerTextSegment::NewText(
-        text.Substring(text_offset, next_child_offset - text_offset)));
+        text.substr(text_offset, next_child_offset - text_offset)));
     text_offset = next_child_offset;
   }
 }
