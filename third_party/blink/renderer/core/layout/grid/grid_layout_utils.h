@@ -398,6 +398,16 @@ bool ValidateMinMaxSizesCache(const BlockNode& grid_node,
                               const GridSizingSubtree& sizing_subtree,
                               GridTrackSizingDirection track_direction);
 
+// Returns true if an additional track sizing pass is needed after the block
+// size transitions from indefinite to definite.
+bool NeedsAdditionalLayoutPass(
+    const ComputedStyle& style,
+    const ConstraintSpace& constraint_space,
+    const BlockNode& node,
+    const BoxStrut& border_padding,
+    const GridSizingTrackCollection& track_collection,
+    LayoutUnit grid_inline_size);
+
 // Returns the synthesized logical baseline for a grid item. This is used when
 // computing min/max content contributions without a full layout result.
 LayoutUnit GetSynthesizedLogicalBaseline(

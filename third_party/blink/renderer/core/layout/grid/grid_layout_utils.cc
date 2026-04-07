@@ -1066,6 +1066,37 @@ bool ValidateMinMaxSizesCache(const BlockNode& grid_node,
   return should_invalidate_min_max_sizes_cache;
 }
 
+bool NeedsAdditionalLayoutPass(
+    const ComputedStyle& style,
+    const ConstraintSpace& constraint_space,
+    const BlockNode& node,
+    const BoxStrut& border_padding,
+    const GridSizingTrackCollection& track_collection,
+    LayoutUnit grid_inline_size) {
+  bool needs_additional_pass = false;
+
+  // If we have any rows, gaps which will resolve differently if we have a
+  // definite available size, re-compute the grid using the resolved block size.
+  needs_additional_pass |= (style.RowGap() && style.RowGap()->HasPercent()) ||
+                           track_collection.IsDependentOnAvailableSize();
+
+  // If we are a flex-item, we may have our initial block-size forced to be
+  // indefinite, however grid layout always re-computes the grid using the
+  // final "used" block-size. We can detect this case by checking if computing
+  // our block-size (with an indefinite intrinsic size) is definite.
+  //
+  // TODO(layout-dev): A small optimization here would be to do this only if
+  // we have 'auto' tracks which fill the remaining available space.
+  if (constraint_space.IsInitialBlockSizeIndefinite()) {
+    needs_additional_pass |=
+        ComputeBlockSizeForFragment(constraint_space, node, border_padding,
+                                    /*intrinsic_size=*/kIndefiniteSize,
+                                    grid_inline_size) != kIndefiniteSize;
+  }
+
+  return needs_additional_pass;
+}
+
 LayoutUnit GetSynthesizedLogicalBaseline(
     const GridItemData& grid_item,
     LayoutUnit block_size,

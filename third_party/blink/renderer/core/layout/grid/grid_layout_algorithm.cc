@@ -435,28 +435,10 @@ const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
             (block_size - border_scrollbar_padding.BlockSum())
                 .ClampNegativeToZero();
 
-    // If we have any rows, gaps which will resolve differently if we have a
-    // definite |grid_available_size_| re-compute the grid using the
-    // |block_size| calculated above.
-    needs_additional_pass |=
-        (container_style.RowGap() && container_style.RowGap()->HasPercent()) ||
-        layout_data.Rows().IsDependentOnAvailableSize();
-
-    // If we are a flex-item, we may have our initial block-size forced to be
-    // indefinite, however grid layout always re-computes the grid using the
-    // final "used" block-size.
-    // We can detect this case by checking if computing our block-size (with an
-    // indefinite intrinsic size) is definite.
-    //
-    // TODO(layout-dev): A small optimization here would be to do this only if
-    // we have 'auto' tracks which fill the remaining available space.
-    if (constraint_space.IsInitialBlockSizeIndefinite()) {
-      needs_additional_pass |=
-          ComputeBlockSizeForFragment(
-              constraint_space, node, BorderPadding(),
-              /* intrinsic_block_size */ kIndefiniteSize,
-              container_builder_.InlineSize()) != kIndefiniteSize;
-    }
+    needs_additional_pass |= NeedsAdditionalLayoutPass(
+        container_style, constraint_space, node, BorderPadding(),
+        layout_data.SizingCollection(kForRows),
+        container_builder_.InlineSize());
 
     // After resolving the block-size, if we don't need to rerun the track
     // sizing algorithm, simply apply any content alignment to its rows.
