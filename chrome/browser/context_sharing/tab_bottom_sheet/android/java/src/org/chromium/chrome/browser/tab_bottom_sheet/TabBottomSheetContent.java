@@ -69,6 +69,12 @@ public class TabBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public boolean hasCustomScrimLifecycle() {
+        // No scrim.
+        return true;
+    }
+
+    @Override
     public void onBackPressed() {
         handleBackPress();
     }

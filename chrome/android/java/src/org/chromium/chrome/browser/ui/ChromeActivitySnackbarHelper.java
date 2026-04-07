@@ -70,9 +70,8 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
                     assert content == null
                                     || content.allowInSheetContentSnackbars()
                                     || content.hasCustomScrimLifecycle()
-                                    || content.hasCustomLifecycle()
                             : "BottomSheetContent can only prevent out-of-sheet snackbars if it has"
-                                    + " a custom (scrim) lifecycle.";
+                                    + " a custom scrim lifecycle.";
 
                     boolean shouldOverride =
                             (newState == SheetState.HALF || newState == SheetState.FULL)
