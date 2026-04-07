@@ -15265,8 +15265,10 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
         is_same_document);
   CHECK(!is_same_document_history_api_navigation || is_same_document);
   CHECK(!IsPendingDeletion());     // IPC is filtered out by the caller.
-  CHECK(!IsInBackForwardCache());  // A page in the BackForwardCache is fully
-                                   // loaded and has no pending navigations.
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(!IsInBackForwardCache());  // A page in the BackForwardCache is fully
+                                    // loaded and has no pending navigations.
   // See `owner_` invariants about IsPendingDeletion() and
   // IsInBackForwardCache().
   CHECK(owner_);

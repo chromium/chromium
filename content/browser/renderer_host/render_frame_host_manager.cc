@@ -5791,7 +5791,9 @@ void RenderFrameHostManager::CreateOpenerProxies(
 
     auto opener_frame_token =
         node->render_manager()->GetOpenerFrameToken(group);
-    CHECK(opener_frame_token);
+    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK(opener_frame_token);
     proxy->GetAssociatedRemoteFrame()->UpdateOpener(opener_frame_token);
   }
 
