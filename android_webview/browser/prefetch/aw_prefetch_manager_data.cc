@@ -23,7 +23,7 @@ AwPrefetchManagerData::~AwPrefetchManagerData() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-AwPrefetchKey AwPrefetchManagerData::AddPrefetchHandle(
+AwPrefetchKey AwPrefetchManagerData::AddNewPrefetchHandleWrapper(
     std::unique_ptr<AwPrefetchHandleWrapper> prefetch_handle_wrapper) {
   int32_t new_prefetch_key;
 

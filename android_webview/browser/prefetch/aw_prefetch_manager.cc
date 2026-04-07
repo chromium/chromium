@@ -347,11 +347,11 @@ int AwPrefetchManager::StartRequest(
   // `kWebViewPrefetchOffTheMainThread` is enabled. See
   // `AwPrefetchManagerData::AddPrefetchHandle` for more details.
   if (pre_prefetch_handle) {
-    return aw_prefetch_manager_data_.AddPrefetchHandle(
+    return aw_prefetch_manager_data_.AddNewPrefetchHandleWrapper(
         std::make_unique<AwPrefetchHandleWrapper>(
             pf_url, expected_no_vary_search, std::move(pre_prefetch_handle)));
   } else if (prefetch_handle) {
-    return aw_prefetch_manager_data_.AddPrefetchHandle(
+    return aw_prefetch_manager_data_.AddNewPrefetchHandleWrapper(
         std::make_unique<AwPrefetchHandleWrapper>(
             pf_url, expected_no_vary_search, std::move(prefetch_handle)));
   } else {

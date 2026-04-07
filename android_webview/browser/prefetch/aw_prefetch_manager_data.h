@@ -78,7 +78,7 @@ class AwPrefetchManagerData {
   // if enabled, since the look up and update for `all_prefetches_map_` is not
   // an atomic operation. See crrev.com/c/7666497/comment/074daee9_6ca0a982/ for
   // more details.
-  AwPrefetchKey AddPrefetchHandle(
+  AwPrefetchKey AddNewPrefetchHandleWrapper(
       std::unique_ptr<AwPrefetchHandleWrapper> prefetch_handle_wrapper)
       LOCKS_EXCLUDED(lock_);
 
