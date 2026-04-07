@@ -69,14 +69,11 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
@@ -173,6 +170,8 @@ void MaybeCreateSafeBrowsingForRenderer(
       std::move(receiver));
 }
 
+// TODO(crbug.com/486154580): Switch to ENABLE_EXTENSIONS_CORE when safe
+// browsing is better supported on desktop Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void MaybeCreateExtensionWebRequestReporterForRenderer(
     int process_id,
@@ -243,6 +242,8 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
                 &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
                 base::Unretained(this))),
         ui_task_runner);
+// TODO(crbug.com/486154580): Switch to ENABLE_EXTENSIONS_CORE when safe
+// browsing is better supported on desktop Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     registry->AddInterface<safe_browsing::mojom::ExtensionWebRequestReporter>(
         base::BindRepeating(&MaybeCreateExtensionWebRequestReporterForRenderer,
@@ -365,7 +366,7 @@ void ChromeContentBrowserClient::
   map->Add<blink::mojom::BadgeService>(&BindBadgeServiceForServiceWorker);
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const GURL& site = service_worker_version_info.scope;
   if (!site.SchemeIs(extensions::kExtensionScheme)) {
     return;
