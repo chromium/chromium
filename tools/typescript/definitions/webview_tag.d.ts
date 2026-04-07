@@ -347,6 +347,8 @@ declare global {
         terminate(): void;
         getUserAgent(): string;
         setUserAgentOverride(userAgent: string): void;
+        getZoom(callback: (zoomFactor: number) => void): void;
+        setZoom(zoomFactor: number, callback?: () => void): void;
       }
 
       export function setAudioMuted(mute: boolean): void;

@@ -250,14 +250,12 @@ export class WebviewController {
   zoom(zoomAction: ZoomAction) {
     // `WebViewType` is a union of `chrome.webviewTag.WebView` and
     // `SlimWebviewElement`. Only full webviews support zoom.
+    // TODO(crbug.com/500052160): Support zoom for slim webviews.
     if (!isFullWebView(this.webview)) {
       return;
     }
 
-    // Cast to any because the WebView type definition seems to be missing
-    // `getZoom` and `setZoom`. We've already checked that this.webview is a
-    // full WebView so this should be safe.
-    const webview = this.webview as any;
+    const webview = this.webview;
 
     if (zoomAction === ZoomAction.kReset) {
       webview.setZoom(1.0);
