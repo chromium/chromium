@@ -2759,6 +2759,8 @@ bool PropertyTrees::AnimationScaleCacheIsInvalid(int transform_id) const {
   // animation itself while we want to treat the scale as valid during the
   // animation. |update_number| is reset to kInvalidUpdateNumber when a new
   // property tree is pushed.
+  CHECK(transform_id >= 0 &&
+        transform_id < static_cast<int>(cached_data_.animation_scales.size()));
   return cached_data_.animation_scales[transform_id].update_number ==
          kInvalidUpdateNumber;
 }
@@ -2775,6 +2777,8 @@ const AnimationScaleData& PropertyTrees::GetAnimationScaleData(
     int transform_id) {
   DCHECK(!is_main_thread());
 
+  CHECK(transform_id >= 0 &&
+        transform_id < static_cast<int>(cached_data_.animation_scales.size()));
   auto& animation_scale = cached_data_.animation_scales[transform_id];
   if (animation_scale.update_number ==
       cached_data_.transform_tree_update_number) {
@@ -2844,6 +2848,8 @@ void PropertyTrees::SetMaximumAnimationToScreenScaleForTesting(
     int transform_id,
     float maximum_scale,
     bool affected_by_invalid_scale) {
+  CHECK(transform_id >= 0 &&
+        transform_id < static_cast<int>(cached_data_.animation_scales.size()));
   auto& animation_scale = cached_data_.animation_scales[transform_id];
   animation_scale.maximum_to_screen_scale = maximum_scale;
   animation_scale.affected_by_invalid_scale = affected_by_invalid_scale;
@@ -2899,6 +2905,8 @@ bool PropertyTrees::GetFromTarget(int transform_id,
 DrawTransformData& PropertyTrees::FetchDrawTransformsDataFromCache(
     int transform_id,
     int effect_id) const {
+  CHECK(transform_id >= 0 &&
+        transform_id < static_cast<int>(cached_data_.draw_transforms.size()));
   for (auto& transform_data : cached_data_.draw_transforms[transform_id]) {
     // We initialize draw_transforms with 1 element vectors when
     // ResetCachedData, so if we hit an invalid target id, it means it's the
