@@ -13,8 +13,8 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="?android:attr/selectableItemBackground"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp"
+    android:paddingStart="@dimen/extensions_menu_horizontal_padding"
+    android:paddingEnd="@dimen/extensions_menu_horizontal_padding"
     android:clickable="true"
     android:focusable="true"
     tools:ignore="UnusedResources" >

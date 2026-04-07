@@ -13,8 +13,8 @@ found in the LICENSE file.
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingStart="@dimen/extensions_menu_horizontal_padding"
-    android:paddingEnd="16dp"
-    android:paddingTop="8dp"
+    android:paddingEnd="@dimen/extensions_menu_horizontal_padding"
+    android:paddingVertical="@dimen/extensions_menu_header_vertical_padding"
     tools:ignore="UnusedResources">
 
     <TextView
@@ -22,14 +22,16 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/extensions_menu_title"/>
+        android:text="@string/extensions_menu_title"
+        android:textAppearance="@style/TextAppearance.Headline2"/>
 
     <ImageButton
         android:id="@+id/extensions_menu_close_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/extensions_menu_header_button_size"
+        android:layout_height="@dimen/extensions_menu_header_button_size"
         android:src="@drawable/ic_close"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/close"/>
+        android:contentDescription="@string/close"
+        android:scaleType="fitCenter"/>
 
 </LinearLayout>
