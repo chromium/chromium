@@ -34,6 +34,10 @@ void EiInputInjector::SetKeymap(base::WeakPtr<EiKeymap> keymap) {
   keymap_ = keymap;
 }
 
+void EiInputInjector::SetEiSession(base::WeakPtr<EiSenderSession> session) {
+  ei_session_ = session;
+}
+
 void EiInputInjector::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
   clipboard_->Start(std::move(client_clipboard));

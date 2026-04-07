@@ -126,8 +126,12 @@ class PortalRemoteDesktopSession {
   void OnConnectionCreated(GDBusConnectionRef connection);
   void OnCreateSessionResponse(gvariant::GVariantRef<"a{sv}"> result);
   void OnSelectDevicesResponse(gvariant::GVariantRef<"a{sv}"> result);
+  void ConnectToEIS(
+      GDBusConnectionRef::CallCallback<
+          std::pair<std::tuple<GDBusFdList::Handle>, GDBusFdList>> callback);
   void OnCaptureStreamInitResult(base::expected<void, std::string> result);
   void OnEisFd(std::pair<std::tuple<GDBusFdList::Handle>, GDBusFdList> args);
+  void OnEiSessionDisconnected();
   void OnEiSession(std::unique_ptr<EiSenderSession> ei_session);
   void OnSessionClosed(gvariant::GVariantRef<"a{sv}"> details);
 

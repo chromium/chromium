@@ -136,8 +136,12 @@ class GnomeRemoteDesktopSession {
   void OnGotSessionId(std::string session_id);
   void OnScreenCastSessionCreated(std::tuple<gvariant::ObjectPath> args);
   void OnSessionStarted(std::tuple<>);
+  void ConnectToEIS(
+      GDBusConnectionRef::CallCallback<
+          std::pair<std::tuple<GDBusFdList::Handle>, GDBusFdList>> callback);
   void OnEisFd(std::pair<std::tuple<GDBusFdList::Handle>, GDBusFdList> args);
   void OnEiSession(std::unique_ptr<EiSenderSession> ei_session);
+  void OnEiSessionDisconnected();
   void OnDisplayConfigReceived(const GnomeDisplayConfig& config);
 
   SEQUENCE_CHECKER(sequence_checker_);

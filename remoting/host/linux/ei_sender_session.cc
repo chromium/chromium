@@ -169,6 +169,18 @@ void EiSenderSession::SetInputInjector(
   input_injector_ = input_injector;
   input_injector_->SetKeymap(
       keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back())->GetWeakPtr());
+  input_injector_->SetEiSession(GetWeakPtr());
+}
+
+void EiSenderSession::TransferStateTo(EiSenderSession& replacement) {
+  if (keyboard_layout_monitor_) {
+    replacement.SetKeyboardLayoutMonitor(keyboard_layout_monitor_);
+  }
+  if (input_injector_) {
+    replacement.SetInputInjector(input_injector_);
+  }
+  keyboard_layout_monitor_.reset();
+  input_injector_.reset();
 }
 
 void EiSenderSession::InjectKeyEvent(std::uint32_t usb_keycode, bool is_press) {
@@ -343,7 +355,9 @@ void EiSenderSession::InjectScrollDiscrete(float ticks_x, float ticks_y) {
   ei_device_frame(scroll_device.get(), ei_now(ei_.get()));
 }
 
-void EiSenderSession::CreateWithFd(base::ScopedFD fd, CreateCallback callback) {
+void EiSenderSession::CreateWithFd(base::ScopedFD fd,
+                                   CreateCallback callback,
+                                   base::OnceClosure disconnect_callback) {
   auto sender_session = base::WrapUnique(new EiSenderSession());
   auto* raw = sender_session.get();
   raw->InitWithFd(
@@ -359,13 +373,17 @@ void EiSenderSession::CreateWithFd(base::ScopedFD fd, CreateCallback callback) {
                       return std::move(error);
                     }));
           },
-          std::move(sender_session), std::move(callback)));
+          std::move(sender_session), std::move(callback)),
+      std::move(disconnect_callback));
 }
 
 EiSenderSession::EiSenderSession() = default;
 
-void EiSenderSession::InitWithFd(base::ScopedFD fd, InitCallback callback) {
+void EiSenderSession::InitWithFd(base::ScopedFD fd,
+                                 InitCallback callback,
+                                 base::OnceClosure disconnect_callback) {
   init_callback_ = std::move(callback);
+  disconnect_callback_ = std::move(disconnect_callback);
   ei_ = EiPtr::Take(ei_new_sender(nullptr));
   int result = ei_setup_backend_fd(ei_.get(), fd.release());
   if (result != 0) {
@@ -407,6 +425,9 @@ void EiSenderSession::OnDisconnected(bool shutting_down) {
     return;
   }
   LOG(ERROR) << "Unexpectedly disconnected from EIS";
+  if (disconnect_callback_) {
+    std::move(disconnect_callback_).Run();
+  }
 }
 
 void EiSenderSession::OnSeatAdded(EiSeatPtr seat) {

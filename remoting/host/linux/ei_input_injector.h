@@ -33,6 +33,7 @@ class EiInputInjector : public InputInjector {
   base::WeakPtr<EiInputInjector> GetWeakPtr();
 
   void SetKeymap(base::WeakPtr<EiKeymap> keymap);
+  void SetEiSession(base::WeakPtr<EiSenderSession> session);
 
   // InputInjector implementation
   void Start(
