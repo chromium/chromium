@@ -46,6 +46,7 @@ source_set("password_change") {
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/core",
     "//components/page_content_annotations/core:features",
+    "//components/page_load_metrics/browser",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",
@@ -70,6 +71,7 @@ source_set("unit_tests") {
     "form_filling_helper_unittest.cc",
     "login_state_checker_unittest.cc",
     "model_quality_logs_uploader_unittest.cc",
+    "password_change_page_stability_waiter_unittest.cc",
     "password_change_submission_verifier_unittest.cc",
   ]
   deps = [

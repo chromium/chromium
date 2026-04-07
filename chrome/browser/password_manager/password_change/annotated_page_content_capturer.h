@@ -14,6 +14,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
+namespace password_manager {
+class PasswordManagerClient;
+}
+
 namespace content {
 class WebContents;
 }
@@ -34,6 +38,7 @@ class AnnotatedPageContentCapturer {
 
   static std::unique_ptr<AnnotatedPageContentCapturer> Create(
       content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client,
       blink::mojom::AIPageContentOptionsPtr options,
       optimization_guide::OnAIPageContentDone callback);
 

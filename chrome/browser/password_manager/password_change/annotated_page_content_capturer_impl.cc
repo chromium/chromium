@@ -15,6 +15,7 @@
 
 AnnotatedPageContentCapturerImpl::AnnotatedPageContentCapturerImpl(
     content::WebContents* web_contents,
+    password_manager::PasswordManagerClient* client,
     blink::mojom::AIPageContentOptionsPtr options,
     optimization_guide::OnAIPageContentDone callback,
     AnnotatedPageContentCapturer::GetAIPageContentFunction get_page_content)
@@ -26,7 +27,7 @@ AnnotatedPageContentCapturerImpl::AnnotatedPageContentCapturerImpl(
           password_manager::features::kAwaitPageStabilityForPasswordChange)) {
     page_stability_waiter_ =
         std::make_unique<PasswordChangePageStabilityWaiter>(
-            web_contents,
+            web_contents, client,
             base::BindOnce(&AnnotatedPageContentCapturerImpl::OnPageStable,
                            weak_ptr_factory_.GetWeakPtr()));
   } else {

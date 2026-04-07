@@ -24,6 +24,7 @@ AnnotatedPageContentCapturer::GetFactory() {
 std::unique_ptr<AnnotatedPageContentCapturer>
 AnnotatedPageContentCapturer::Create(
     content::WebContents* web_contents,
+    password_manager::PasswordManagerClient* client,
     blink::mojom::AIPageContentOptionsPtr options,
     optimization_guide::OnAIPageContentDone callback) {
   auto& factory = GetFactory();
@@ -31,7 +32,7 @@ AnnotatedPageContentCapturer::Create(
     return factory.Run(web_contents, std::move(options), std::move(callback));
   }
   return std::make_unique<AnnotatedPageContentCapturerImpl>(
-      web_contents, std::move(options), std::move(callback),
+      web_contents, client, std::move(options), std::move(callback),
       base::BindRepeating(&optimization_guide::GetAIPageContent,
                           base::Unretained(web_contents)));
 }

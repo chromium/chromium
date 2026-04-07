@@ -22,6 +22,7 @@ class AnnotatedPageContentCapturerImpl : public AnnotatedPageContentCapturer,
  public:
   AnnotatedPageContentCapturerImpl(
       content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client,
       blink::mojom::AIPageContentOptionsPtr options,
       optimization_guide::OnAIPageContentDone callback,
       AnnotatedPageContentCapturer::GetAIPageContentFunction get_page_content);

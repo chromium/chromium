@@ -111,7 +111,7 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
           password_manager::features::kAwaitPageStabilityForPasswordChange)) {
     page_stability_waiter_ =
         std::make_unique<PasswordChangePageStabilityWaiter>(
-            web_contents_,
+            web_contents_, client_,
             base::BindOnce(&ChangePasswordFormFinder::OnPageStableInitially,
                            weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -147,9 +147,8 @@ void ChangePasswordFormFinder::OnFormNotFoundInitially() {
     logger->LogBoolean(
         Logger::STRING_PASSWORD_CHANGE_INITIAL_FORM_WAITING_RESULT, false);
   }
-
   capturer_ = AnnotatedPageContentCapturer::Create(
-      web_contents_, GetAIPageContentOptions(),
+      web_contents_, client_, GetAIPageContentOptions(),
       base::BindOnce(&ChangePasswordFormFinder::OnPageContentReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -21,6 +21,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,7 +132,8 @@ class LoginStateCheckerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<LoginStateChecker> CreateChecker(
       LoginStateChecker::LoginStateResultCallback callback) {
     return std::make_unique<LoginStateChecker>(
-        web_contents(), logs_uploader_.get(), nullptr, std::move(callback));
+        web_contents(), logs_uploader_.get(), &stub_client_,
+        std::move(callback));
   }
 
   const std::unique_ptr<ModelQualityLogsUploader>& logs_uploader() {
@@ -145,6 +147,7 @@ class LoginStateCheckerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
+  password_manager::StubPasswordManagerClient stub_client_;
 };
 
 TEST_F(LoginStateCheckerTest, UserIsLoggedInOnFirstAttempt) {

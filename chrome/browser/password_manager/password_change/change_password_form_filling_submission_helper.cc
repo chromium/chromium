@@ -306,7 +306,7 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
   form_manager_->UpdateBackupPassword(stored_password_);
 
   capturer_ = AnnotatedPageContentCapturer::Create(
-      web_contents_, GetAIPageContentOptions(),
+      web_contents_, client_, GetAIPageContentOptions(),
       base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived,
           weak_ptr_factory_.GetWeakPtr()));
