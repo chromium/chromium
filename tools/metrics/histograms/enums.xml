@@ -7298,6 +7298,7 @@ Called by update_net_error_codes.py.-->
     Reported as page source language when language detection code was not run
     (i.e. page closed or navigated away before running).
   </int>
+  <int value="-1884915686" label="de-BE">German (Belgium)</int>
   <int value="-1872667487" label="rm">Romansh</int>
   <int value="-1855113037" label="vi">Vietnamese</int>
   <int value="-1835493637" label="ce">Chechen</int>
@@ -7341,6 +7342,7 @@ Called by update_net_error_codes.py.-->
   <int value="-1284862637" label="ru">Russian</int>
   <int value="-1283061184" label="bo">Tibetan</int>
   <int value="-1273588087" label="kn">Kannada</int>
+  <int value="-1272657710" label="nb-NO">Norwegian Bokmål (Norway)</int>
   <int value="-1242903543" label="es-UY">Spanish (Uruguay)</int>
   <int value="-1230368678" label="kok">Konkani</int>
   <int value="-1211529228" label="gd">Gaelic</int>
@@ -7352,6 +7354,7 @@ Called by update_net_error_codes.py.-->
   <int value="-1069161714" label="yue">Cantonese</int>
   <int value="-1052948093" label="jw">Javanese</int>
   <int value="-1051941586" label="ff">Fulah</int>
+  <int value="-1050663026" label="en-IE">English (Ireland)</int>
   <int value="-1048980531" label="ur">Urdu</int>
   <int value="-1042449480" label="cy">Welsh</int>
   <int value="-1033645590" label="fil">Filipino</int>
@@ -7360,6 +7363,7 @@ Called by update_net_error_codes.py.-->
   <int value="-1010619188" label="ru-Latn">Russian (Latin)</int>
   <int value="-1007452579" label="mni">Manipuri</int>
   <int value="-1000295094" label="no">Norwegian</int>
+  <int value="-974210431" label="ru-RU">Russian (Russia)</int>
   <int value="-950444864" label="tk">Turkmen</int>
   <int value="-926982267" label="de-AT">German (Austria)</int>
   <int value="-912744476" label="lus">Mizo</int>
@@ -7417,6 +7421,7 @@ Called by update_net_error_codes.py.-->
   <int value="-91654905" label="luo">Luo</int>
   <int value="-78164291" label="kk">Kazakh</int>
   <int value="-74147910" label="en">English</int>
+  <int value="-66144385" label="th-TH">Thai (Thailand)</int>
   <int value="-35182995" label="fi">Finnish</int>
   <int value="-27733173" label="mfe">Morisyen</int>
   <int value="-5034744" label="ny">Nyanja</int>
@@ -7461,17 +7466,21 @@ Called by update_net_error_codes.py.-->
   <int value="796588925" label="yo">Yoruba</int>
   <int value="804120371" label="jv">Javanese</int>
   <int value="806431033" label="mgh">Makhuwa-Meetto</int>
+  <int value="828492107" label="ko-KR">Korean (South Korea)</int>
   <int value="842939712" label="se">Northern Sami</int>
   <int value="844238123" label="kl">Kalaallisut</int>
   <int value="861252498" label="seh">Sena</int>
   <int value="873647701" label="th">Thai</int>
+  <int value="891241772" label="tr-TR">Turkish (Turkey)</int>
   <int value="910795716" label="ne">Nepali</int>
   <int value="911100675" label="de-DE">German (Germany)</int>
   <int value="911759580" label="kab">Kabyle</int>
   <int value="919128771" label="dua">Duala</int>
   <int value="925733725" label="ms">Malay</int>
+  <int value="968050531" label="vi-VN">Vietnamese (Vietnam)</int>
   <int value="1062172280" label="en-IN">English (India)</int>
   <int value="1084091282" label="sah">Sakha</int>
+  <int value="1090772584" label="pl-PL">Polish (Poland)</int>
   <int value="1092864716" label="ht">Haitian</int>
   <int value="1110169461" label="hmn">Hmong</int>
   <int value="1117613525" label="ewo">Ewondo</int>
@@ -7480,6 +7489,7 @@ Called by update_net_error_codes.py.-->
   <int value="1140816756" label="ar">Arabic</int>
   <int value="1152813109" label="to">Tongan</int>
   <int value="1166708194" label="is">Icelandic</int>
+  <int value="1175494664" label="fr-BE">French (Belgium)</int>
   <int value="1196096274" label="es-US">Spanish (United States)</int>
   <int value="1199169847" label="en-AU">English (Australia)</int>
   <int value="1214473765" label="unknown">Unknown</int>
@@ -7487,6 +7497,7 @@ Called by update_net_error_codes.py.-->
   <int value="1225967405" label="lg">Ganda</int>
   <int value="1227107723" label="nyn">Nyankole</int>
   <int value="1228519432" label="fo">Faroese</int>
+  <int value="1250267781" label="nl-NL">Dutch (Netherlands)</int>
   <int value="1282439493" label="es-MX">Spanish (Mexico)</int>
   <int value="1308353869" label="sv-SE">Swedish (Sweden)</int>
   <int value="1311313702" label="pt">Portuguese</int>
@@ -7510,13 +7521,16 @@ Called by update_net_error_codes.py.-->
   <int value="1724977738" label="ia">Interlingua</int>
   <int value="1747828010" label="os">Ossetic</int>
   <int value="1754979806" label="fy">Western Frisian</int>
+  <int value="1803346164" label="en-SG">English (Singapore)</int>
   <int value="1837633193" label="mai">Maithili</int>
   <int value="1853848431" label="tr">Turkish</int>
   <int value="1865219403" label="nd">North Ndebele</int>
   <int value="1866346468" label="in">Indonesian</int>
   <int value="1883413742" label="kam">Kamba</int>
   <int value="1884922344" label="ckb">Central Kurdish</int>
+  <int value="1897045680" label="id-ID">Indonesian (Indonesia)</int>
   <int value="1921155040" label="br">Breton</int>
+  <int value="1950844743" label="da-DK">Danish (Denmark)</int>
   <int value="1958157353" label="nso">Northern Sotho</int>
   <int value="1988450082" label="tw">Twi</int>
   <int value="1995581006" label="kde">Makonde</int>

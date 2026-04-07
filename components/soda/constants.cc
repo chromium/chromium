@@ -38,13 +38,17 @@ constexpr auto kChineseLocaleMap =
 
 constexpr auto kSodaLanguageToBcp47Map =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({
-        {"cmn-hans-cn", "zh-CN"}, {"cmn-hant-tw", "zh-TW"}, {"da-dk", "da-DK"},
-        {"de-de", "de-DE"},       {"en-us", "en-US"},       {"es-es", "es-ES"},
-        {"fr-fr", "fr-FR"},       {"hi-in", "hi-IN"},       {"id-id", "id-ID"},
-        {"it-it", "it-IT"},       {"ja-jp", "ja-JP"},       {"ko-kr", "ko-KR"},
-        {"nb-no", "nb-NO"},       {"nl-nl", "nl-NL"},       {"pl-pl", "pl-PL"},
-        {"pt-br", "pt-BR"},       {"ru-ru", "ru-RU"},       {"sv-se", "sv-SE"},
-        {"th-th", "th-TH"},       {"tr-tr", "tr-TR"},       {"vi-vn", "vi-VN"},
+        {"cmn-hans-cn", "zh"}, {"cmn-hant-tw", "zh-Hant"}, {"da-dk", "da-DK"},
+        {"de-be", "de-BE"},    {"de-ch", "de-CH"},         {"de-de", "de-DE"},
+        {"en-au", "en-AU"},    {"en-gb", "en-GB"},         {"en-ie", "en-IE"},
+        {"en-in", "en-IN"},    {"en-sg", "en-SG"},         {"en-us", "en-US"},
+        {"es-es", "es-ES"},    {"es-us", "es-US"},         {"fr-be", "fr-BE"},
+        {"fr-ca", "fr-CA"},    {"fr-ch", "fr-CH"},         {"fr-fr", "fr-FR"},
+        {"hi-in", "hi-IN"},    {"id-id", "id-ID"},         {"it-it", "it-IT"},
+        {"ja-jp", "ja-JP"},    {"ko-kr", "ko-KR"},         {"nb-no", "nb-NO"},
+        {"nl-nl", "nl-NL"},    {"pl-pl", "pl-PL"},         {"pt-br", "pt-BR"},
+        {"ru-ru", "ru-RU"},    {"sv-se", "sv-SE"},         {"th-th", "th-TH"},
+        {"tr-tr", "tr-TR"},    {"vi-vn", "vi-VN"},
     });
 
 }  // namespace
