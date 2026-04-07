@@ -195,7 +195,11 @@ class TestingBrowserProcess
   SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
 #if !BUILDFLAG(IS_ANDROID)
   HidSystemTrayIcon* hid_system_tray_icon() override;
+  void set_hid_system_tray_icon_for_test(
+      std::unique_ptr<HidSystemTrayIcon> icon) override;
   UsbSystemTrayIcon* usb_system_tray_icon() override;
+  void set_usb_system_tray_icon_for_test(
+      std::unique_ptr<UsbSystemTrayIcon> icon) override;
 #endif
   os_crypt_async::OSCryptAsync* os_crypt_async() override;
   void set_additional_os_crypt_async_provider_for_test(
@@ -230,10 +234,6 @@ class TestingBrowserProcess
   void SetComponentUpdater(
       std::unique_ptr<component_updater::ComponentUpdateService>
           component_updater);
-  void SetHidSystemTrayIcon(
-      std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon);
-  void SetUsbSystemTrayIcon(
-      std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon);
 #endif
 
   // Same as local_state() but provides TestingPrefServiceSimple interface.

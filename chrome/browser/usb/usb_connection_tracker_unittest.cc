@@ -18,14 +18,15 @@ class UsbConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
   void SetUp() override {
     DeviceConnectionTrackerTestBase::SetUp();
     auto usb_system_tray_icon = std::make_unique<TestUsbSystemTrayIcon>();
-    TestingBrowserProcess::GetGlobal()->SetUsbSystemTrayIcon(
+    TestingBrowserProcess::GetGlobal()->set_usb_system_tray_icon_for_test(
         std::move(usb_system_tray_icon));
   }
 
   void TearDown() override {
     // Set the system tray icon to null to avoid uninteresting call to it during
     // profile destruction.
-    TestingBrowserProcess::GetGlobal()->SetUsbSystemTrayIcon(nullptr);
+    TestingBrowserProcess::GetGlobal()->set_usb_system_tray_icon_for_test(
+        nullptr);
     DeviceConnectionTrackerTestBase::TearDown();
   }
 
@@ -55,7 +56,8 @@ TEST_F(UsbConnectionTrackerTest, DeviceConnectionExtensionOrigins) {
 // Test the scenario with null USB system tray icon and it doesn't cause crash.
 TEST_F(UsbConnectionTrackerTest,
        DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
-  TestingBrowserProcess::GetGlobal()->SetUsbSystemTrayIcon(nullptr);
+  TestingBrowserProcess::GetGlobal()->set_usb_system_tray_icon_for_test(
+      nullptr);
   TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/false);
 }
 

@@ -32,7 +32,8 @@ class HidStatusIconTest : public DeviceStatusIconTestBase {
             /*device_content_settings_label_=*/u"HID settings") {}
 
   void ResetTestingBrowserProcessSystemTrayIcon() override {
-    TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
+    TestingBrowserProcess::GetGlobal()->set_hid_system_tray_icon_for_test(
+        nullptr);
   }
 
   std::u16string GetExpectedTitle(size_t num_origins,

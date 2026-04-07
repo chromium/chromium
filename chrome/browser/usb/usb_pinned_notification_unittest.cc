@@ -30,7 +30,8 @@ class UsbPinnedNotificationTest : public DevicePinnedNotificationTestBase {
             /*device_content_settings_label=*/u"USB settings") {}
 
   void ResetTestingBrowserProcessSystemTrayIcon() override {
-    TestingBrowserProcess::GetGlobal()->SetUsbSystemTrayIcon(nullptr);
+    TestingBrowserProcess::GetGlobal()->set_usb_system_tray_icon_for_test(
+        nullptr);
   }
 
   std::u16string GetExpectedTitle(size_t num_origins,

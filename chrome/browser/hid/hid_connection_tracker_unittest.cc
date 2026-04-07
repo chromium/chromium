@@ -18,14 +18,15 @@ class HidConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
   void SetUp() override {
     DeviceConnectionTrackerTestBase::SetUp();
     auto hid_system_tray_icon = std::make_unique<TestHidSystemTrayIcon>();
-    TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(
+    TestingBrowserProcess::GetGlobal()->set_hid_system_tray_icon_for_test(
         std::move(hid_system_tray_icon));
   }
 
   void TearDown() override {
     // Set the system tray icon to null to avoid uninteresting call to it during
     // profile destruction.
-    TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
+    TestingBrowserProcess::GetGlobal()->set_hid_system_tray_icon_for_test(
+        nullptr);
     DeviceConnectionTrackerTestBase::TearDown();
   }
 
@@ -54,7 +55,8 @@ TEST_F(HidConnectionTrackerTest, DeviceConnectionExtensionOrigins) {
 
 TEST_F(HidConnectionTrackerTest,
        DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
-  TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
+  TestingBrowserProcess::GetGlobal()->set_hid_system_tray_icon_for_test(
+      nullptr);
   TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/false);
 }
 

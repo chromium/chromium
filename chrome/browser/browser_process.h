@@ -324,10 +324,14 @@ class BrowserProcess {
   // Returns the object which maintains Human Interface Device (HID) system tray
   // icon.
   virtual HidSystemTrayIcon* hid_system_tray_icon() = 0;
+  virtual void set_hid_system_tray_icon_for_test(
+      std::unique_ptr<HidSystemTrayIcon> icon) = 0;
 
   // Returns the object which maintains Universal Serial Bus (USB) system tray
   // icon.
   virtual UsbSystemTrayIcon* usb_system_tray_icon() = 0;
+  virtual void set_usb_system_tray_icon_for_test(
+      std::unique_ptr<UsbSystemTrayIcon> icon) = 0;
 #endif
 
   // Obtain the browser instance of OSCryptAsync, which should be used for data
