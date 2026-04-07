@@ -157,12 +157,8 @@ if (is_android) {
     }
   }
 
-  if (!defined(default_android_ndk_root)) {
-    default_android_ndk_root = "//third_party/android_toolchain/ndk"
-    default_android_ndk_version = "r28"
-  } else {
-    assert(defined(default_android_ndk_version))
-  }
+  android_ndk_root = "//third_party/android_toolchain/ndk"
+  android_ndk_version = "r28"
 
   public_android_sdk_root = "//third_party/android_sdk/public"
   public_android_sdk_platform_version = "37.0"
@@ -236,9 +232,6 @@ if (is_android) {
          "SDK release " + android_sdk_release + " not recognized.")
 
   declare_args() {
-    android_ndk_root = default_android_ndk_root
-    android_ndk_version = default_android_ndk_version
-
     android_ndk_api_level = default_min_sdk_version
 
     if (current_cpu == "riscv64" && default_min_sdk_version < 35) {
