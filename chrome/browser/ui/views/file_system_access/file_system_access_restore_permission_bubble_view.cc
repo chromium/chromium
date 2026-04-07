@@ -170,7 +170,7 @@ void FileSystemAccessRestorePermissionBubbleView::UpdateAnchor(
   if (configuration.highlighted_element) {
     SetHighlightedElement(*configuration.highlighted_element);
   }
-  if (std::holds_alternative<std::nullptr_t>(configuration.anchor)) {
+  if (configuration.anchor.IsNull()) {
     SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser));
   }
   SetArrow(configuration.bubble_arrow);

@@ -61,15 +61,8 @@ class BubbleAnchorUtilViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(BubbleAnchorUtilViewTest, IsHighlightableView) {
-  EXPECT_TRUE(IsHighlightable(button_));
-  EXPECT_FALSE(IsHighlightable(separator_));
-
-  // The BubbleAnchor variant is a bit strange since one can end up with a
-  // nullptr_t null, or a Views* null; so make sure the latter works fine, too.
-  views::View* null_view = nullptr;
-  views::BubbleAnchor null_view_anchor = null_view;
-  EXPECT_TRUE(std::holds_alternative<views::View*>(null_view_anchor));
-  EXPECT_FALSE(IsHighlightable(null_view_anchor));
+  EXPECT_TRUE(IsHighlightable(views::BubbleAnchor(button_)));
+  EXPECT_FALSE(IsHighlightable(views::BubbleAnchor(separator_)));
 }
 
 TEST_F(BubbleAnchorUtilViewTest, IsHighlightableElement) {
@@ -80,20 +73,12 @@ TEST_F(BubbleAnchorUtilViewTest, IsHighlightableElement) {
       views::ElementTrackerViews::GetInstance()->GetElementForView(separator_);
   ASSERT_TRUE(separator_element);
 
-  EXPECT_TRUE(IsHighlightable(button_element));
-  EXPECT_FALSE(IsHighlightable(separator_element));
-
-  // The BubbleAnchor variant is a bit strange since one can end up with a
-  // nullptr_t null, or a ui::TrackedElement* null; so make sure the latter
-  // works fine, too.
-  ui::TrackedElement* null_element = nullptr;
-  views::BubbleAnchor null_element_anchor = null_element;
-  EXPECT_TRUE(std::holds_alternative<ui::TrackedElement*>(null_element_anchor));
-  EXPECT_FALSE(IsHighlightable(null_element_anchor));
+  EXPECT_TRUE(IsHighlightable(views::BubbleAnchor(button_element)));
+  EXPECT_FALSE(IsHighlightable(views::BubbleAnchor(separator_element)));
 }
 
 TEST_F(BubbleAnchorUtilViewTest, IsHighlightableNull) {
-  EXPECT_FALSE(IsHighlightable(nullptr));
+  EXPECT_FALSE(IsHighlightable(views::BubbleAnchor()));
 }
 
 }  // namespace bubble_anchor_util

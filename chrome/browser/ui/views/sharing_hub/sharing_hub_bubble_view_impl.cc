@@ -50,7 +50,7 @@ SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
                                     attempt.web_contents.get(),
                                     /*autosize=*/true),
       attempt_(attempt) {
-  DCHECK(!std::holds_alternative<std::nullptr_t>(anchor));
+  DCHECK(!anchor.IsNull());
   DCHECK(controller);
 
   SetBackgroundColor(ui::kColorMenuBackground);

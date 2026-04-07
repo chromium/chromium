@@ -239,11 +239,10 @@ void ShowSafetyTipDialog(
       bubble_anchor_util::GetPageInfoAnchorConfiguration(
           browser->GetBrowserForMigrationOnly(),
           bubble_anchor_util::Anchor::kLocationBar);
-  gfx::Rect anchor_rect =
-      std::holds_alternative<std::nullptr_t>(configuration.anchor)
-          ? bubble_anchor_util::GetPageInfoAnchorRect(
-                browser->GetBrowserForMigrationOnly())
-          : gfx::Rect();
+  gfx::Rect anchor_rect = configuration.anchor.IsNull()
+                              ? bubble_anchor_util::GetPageInfoAnchorRect(
+                                    browser->GetBrowserForMigrationOnly())
+                              : gfx::Rect();
   gfx::NativeWindow parent_window = browser->GetWindow()->GetNativeWindow();
   gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
 
@@ -265,6 +264,6 @@ PageInfoBubbleViewBase* CreateSafetyTipBubbleForTesting(
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
   return new SafetyTipPageInfoBubbleView(
-      nullptr, gfx::Rect(), parent_view, web_contents, safety_tip_status,
-      suggested_url, std::move(close_callback));
+      views::BubbleAnchor(), gfx::Rect(), parent_view, web_contents,
+      safety_tip_status, suggested_url, std::move(close_callback));
 }

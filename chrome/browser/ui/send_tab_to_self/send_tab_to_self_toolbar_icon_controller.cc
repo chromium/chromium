@@ -114,7 +114,7 @@ void SendTabToSelfToolbarIconController::ShowToolbarButton(
 
   controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
   auto anchor = controller->GetBubbleAnchor(kActionSendTabToSelf);
-  CHECK(!std::holds_alternative<std::nullptr_t>(anchor));
+  CHECK(!anchor.IsNull());
   browser->GetFeatures()
       .send_tab_to_self_toolbar_bubble_controller()
       ->ShowBubble(entry, anchor);

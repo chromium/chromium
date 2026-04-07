@@ -37,7 +37,7 @@ views::BubbleAnchor GetAnchor(BrowserView* browser_view) {
 
 #if BUILDFLAG(IS_MAC)
   if (fullscreen_utils::IsInContentFullscreen(browser_view->browser())) {
-    return nullptr;
+    return views::BubbleAnchor();
   }
 #endif
   auto* immersive_mode_controller =
@@ -51,7 +51,7 @@ views::BubbleAnchor GetAnchor(BrowserView* browser_view) {
     return browser_view->toolbar_button_provider()->GetBubbleAnchor(
         kActionZoomNormal);
   }
-  return nullptr;
+  return views::BubbleAnchor();
 }
 
 // Find the extension that initiated the zoom change, if any.
@@ -156,8 +156,7 @@ void ZoomBubbleCoordinator::Show(
 
   widget_observation_.Observe(widget);
 
-  if (std::holds_alternative<std::nullptr_t>(anchor) &&
-      browser_view_->browser()->window()->IsFullscreen()) {
+  if (anchor.IsNull() && browser_view_->browser()->window()->IsFullscreen()) {
     bubble_raw->AdjustForFullscreen(
         browser_view_->browser()->window()->GetBounds());
   }
@@ -210,8 +209,8 @@ bool ZoomBubbleCoordinator::CanRefresh(ZoomBubbleView* current_bubble,
   }
 
   // If the anchor view has changed, we must create a new bubble.
-  if (current_bubble->GetAnchor() !=
-      GetAnchor(base::to_address(browser_view_))) {
+  if (!current_bubble->IsSameAnchor(
+          GetAnchor(base::to_address(browser_view_)))) {
     return false;
   }
 

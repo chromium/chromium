@@ -29,6 +29,7 @@
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -218,27 +219,17 @@ FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, ActivateSurface);
 FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, Confirm);
 }  // namespace test
 
-// A bubble can be anchored to a view, a tracked element, or nothing.
-// BubbleAnchor is a variant type that can hold any of these.
-//
-// A tracked element is useful when the element could be either a View or a HTML
-// element in a WebUI. The element can be retrieved using its ElementIdentifier,
-// example:
-//
-//   #include "ui/base/interaction/element_tracker.h"
-//   ui::TrackedElement* element = ui::ElementTracker::GetElementTracker()
-//       ->GetElementInAnyContext(kElementId);
-//   auto bubble_delegate = std::make_unique<BubbleDialogDelegate>(
-//       element, BubbleBorder::Arrow::TOP_LEFT);
-//   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
-//   ...
-//
-using BubbleAnchor = std::variant<std::nullptr_t, View*, ui::TrackedElement*>;
-
 class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
  public:
   BubbleDialogDelegate(
       BubbleAnchor anchor,
+      BubbleBorder::Arrow arrow,
+      BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
+      bool autosize = false);
+
+  // Compatibility alias for old type.
+  BubbleDialogDelegate(
+      View* anchor_view,
       BubbleBorder::Arrow arrow,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false);
@@ -307,6 +298,11 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // anchor view can easily migrate to accept a WebUI anchor.
   void SetAnchor(BubbleAnchor anchor);
   BubbleAnchor GetAnchor() const;
+
+  // Returns true when this is anchored on the same thing in `anchor`; this is
+  // needed since GetAnchor() can return different representations than what
+  // was initially passed in.
+  bool IsSameAnchor(BubbleAnchor anchor) const;
 
   //////////////////////////////////////////////////////////////////////////////
   // The anchor widget:
@@ -769,7 +765,10 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
       BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false)
-      : BubbleDialogDelegateView(anchor_view, arrow, shadow, autosize) {}
+      : BubbleDialogDelegateView(BubbleAnchor(anchor_view),
+                                 arrow,
+                                 shadow,
+                                 autosize) {}
 
   BubbleDialogDelegateView(const BubbleDialogDelegateView&) = delete;
   BubbleDialogDelegateView& operator=(const BubbleDialogDelegateView&) = delete;
@@ -924,10 +923,21 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   // argument. Unless on Mac when the bubble needs to use Views base shadow,
   // override it with suitable bubble border type.
   explicit BubbleDialogDelegateView(
-      BubbleAnchor anchor = nullptr,
+      BubbleAnchor anchor = {},
       BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false);
+
+  // Compat alias for old type.
+  explicit BubbleDialogDelegateView(
+      views::View* anchor_view,
+      BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
+      BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
+      bool autosize = false)
+      : BubbleDialogDelegateView(BubbleAnchor(anchor_view),
+                                 arrow,
+                                 shadow,
+                                 autosize) {}
 
   static BddvPassKey CreatePassKey() { return BddvPassKey(); }
 };

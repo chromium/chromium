@@ -89,6 +89,12 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
                         BubbleBorder::Arrow arrow,
                         bool autosize = true);
 
+  // Compat alias for old type.
+  BubbleDialogModelHost(std::unique_ptr<ui::DialogModel> model,
+                        views::View* anchor_view,
+                        BubbleBorder::Arrow arrow,
+                        bool autosize = true);
+
   // "Private" constructor (uses base::PassKey), use another constructor or
   // ::CreateModal().
   BubbleDialogModelHost(base::PassKey<BubbleDialogModelHost>,

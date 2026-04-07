@@ -53,9 +53,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
 
   views::BubbleAnchor anchor =
       browser_view->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);
-  auto* anchor_view = std::get_if<views::View*>(&anchor);
-  ASSERT_TRUE(anchor_view);
-  EXPECT_EQ(*anchor_view, browser_view->toolbar()->location_bar_view());
+  views::View* anchor_view = anchor.GetIfView();
+  EXPECT_EQ(anchor_view, browser_view->toolbar()->location_bar_view());
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
@@ -71,10 +70,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
 
   views::BubbleAnchor anchor =
       browser_view->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);
-  auto* anchor_view = std::get_if<views::View*>(&anchor);
-  ASSERT_TRUE(anchor_view);
+  views::View* anchor_view = anchor.GetIfView();
   // The fallback uses top_container when the location bar is not drawn.
-  EXPECT_EQ(*anchor_view,
+  EXPECT_EQ(anchor_view,
             static_cast<views::View*>(browser_view->top_container()));
 }
 

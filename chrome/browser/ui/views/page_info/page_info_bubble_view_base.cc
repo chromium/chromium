@@ -63,7 +63,7 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
   SetShowCloseButton(true);
 
   set_parent_window(parent_window);
-  if (std::holds_alternative<std::nullptr_t>(anchor)) {
+  if (anchor.IsNull()) {
     SetAnchorRect(anchor_rect);
   }
   SetProperty(views::kElementIdentifierKey, kPageInfoBubbleElementIdentifier);

@@ -38,12 +38,13 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
     if (anchor == Anchor::kLocationBar &&
         permission_dashboard_view->GetVisible()) {
       if (permission_dashboard_view->GetIndicatorChip()->GetVisible()) {
-        return {permission_dashboard_view->GetIndicatorChip(),
-                PermissionChipView::kIndicatorChipElementId,
-                views::BubbleBorder::TOP_LEFT};
+        return {
+            views::BubbleAnchor(permission_dashboard_view->GetIndicatorChip()),
+            PermissionChipView::kIndicatorChipElementId,
+            views::BubbleBorder::TOP_LEFT};
       }
 
-      return {permission_dashboard_view->GetRequestChip(),
+      return {views::BubbleAnchor(permission_dashboard_view->GetRequestChip()),
               PermissionChipView::kPermissionRequestChipElementId,
               views::BubbleBorder::TOP_LEFT};
     }
@@ -55,7 +56,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
   }
 
   if (anchor == Anchor::kLocationBar && location_bar_view->IsDrawn()) {
-    return {location_bar_view, kLocationIconElementId,
+    return {views::BubbleAnchor(location_bar_view), kLocationIconElementId,
             views::BubbleBorder::TOP_LEFT};
   }
 
@@ -63,14 +64,14 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
       browser_view->GetIsPictureInPictureType()) {
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
         browser_view->browser_widget()->GetFrameView());
-    return {frame_view->GetLocationIconView(), kLocationIconElementId,
-            views::BubbleBorder::TOP_LEFT};
+    return {views::BubbleAnchor(frame_view->GetLocationIconView()),
+            kLocationIconElementId, views::BubbleBorder::TOP_LEFT};
   }
 
   if (anchor == Anchor::kCustomTabBar &&
       browser_view->toolbar()->custom_tab_bar()) {
-    return {browser_view->toolbar()->custom_tab_bar(), kLocationIconElementId,
-            views::BubbleBorder::TOP_LEFT};
+    return {views::BubbleAnchor(browser_view->toolbar()->custom_tab_bar()),
+            kLocationIconElementId, views::BubbleBorder::TOP_LEFT};
   }
 
   // Fall back to menu button.
@@ -87,7 +88,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
     return {};
   }
 
-  return {app_menu_button, kToolbarAppMenuButtonElementId,
+  return {views::BubbleAnchor(app_menu_button), kToolbarAppMenuButtonElementId,
           views::BubbleBorder::TOP_RIGHT};
 }
 
@@ -101,7 +102,7 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     ui::TrackedElement* tracked_element =
         browser_view->GetLocationBar()->GetAnchorOrNull();
     if (tracked_element) {
-      return {tracked_element,
+      return {views::BubbleAnchor(tracked_element),
               PermissionChipView::kPermissionRequestChipElementId,
               views::BubbleBorder::TOP_LEFT};
     }
@@ -116,8 +117,7 @@ AnchorConfiguration GetAppMenuAnchorConfiguration(Browser* browser) {
 gfx::Rect GetPageInfoAnchorRect(Browser* browser) {
   // GetPageInfoAnchorConfiguration()'s anchor should be preferred if
   // available.
-  DCHECK(std::holds_alternative<std::nullptr_t>(
-      GetPageInfoAnchorConfiguration(browser).anchor));
+  DCHECK(GetPageInfoAnchorConfiguration(browser).anchor.IsNull());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   // Get position in view (taking RTL UI into account).
@@ -133,11 +133,11 @@ gfx::Rect GetPageInfoAnchorRect(Browser* browser) {
 
 // Returns true if the given anchor can be used as a highlight.
 bool IsHighlightable(views::BubbleAnchor anchor) {
-  if (auto* view_anchor = std::get_if<views::View*>(&anchor)) {
-    return views::Button::AsButton(*view_anchor);
-  } else if (auto* element_anchor = std::get_if<ui::TrackedElement*>(&anchor)) {
+  if (views::View* view_anchor = anchor.GetIfView()) {
+    return views::Button::AsButton(view_anchor);
+  } else if (ui::TrackedElement* element_anchor = anchor.GetIfElement()) {
     return ui::ElementHighlighter::GetElementHighlighter()->CanBeHighlighted(
-        *element_anchor);
+        element_anchor);
   } else {
     // nullptr isn't highlightable.
     return false;

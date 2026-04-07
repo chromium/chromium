@@ -64,8 +64,8 @@ class AnchoredMessageBubbleViewTest
 
   std::unique_ptr<AnchoredMessageBubbleView> CreateView() {
     auto view = std::make_unique<AnchoredMessageBubbleView>(
-        anchor_widget_->GetContentsView(), model_, base::DoNothing(),
-        base::DoNothing());
+        views::BubbleAnchor(anchor_widget_->GetContentsView()), model_,
+        base::DoNothing(), base::DoNothing());
     view->set_parent_window(anchor_widget_->GetNativeView());
     return view;
   }

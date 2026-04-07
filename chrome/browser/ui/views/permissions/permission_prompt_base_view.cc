@@ -86,7 +86,7 @@ int CountValidRequests(
 PermissionPromptBaseView::PermissionPromptBaseView(
     Browser* browser,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
-    : BubbleDialogDelegateView(/*anchor_view=*/nullptr,
+    : BubbleDialogDelegateView(views::BubbleAnchor(),
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::DIALOG_SHADOW,
                                /*autosize=*/true),
@@ -139,13 +139,11 @@ void PermissionPromptBaseView::AnchorToPageInfoOrChip() {
   SetAnchor(configuration.anchor);
   // In fullscreen, `anchor` may be nullptr because the toolbar is hidden,
   // therefore anchor to the browser window instead.
-  if (std::holds_alternative<View*>(configuration.anchor)) {
-    set_parent_window(
-        std::get<View*>(configuration.anchor)->GetWidget()->GetNativeView());
-  } else if (std::holds_alternative<ui::TrackedElement*>(
-                 configuration.anchor)) {
-    set_parent_window(
-        std::get<ui::TrackedElement*>(configuration.anchor)->GetNativeView());
+  if (View* view = configuration.anchor.GetIfView()) {
+    set_parent_window(view->GetWidget()->GetNativeView());
+  } else if (ui::TrackedElement* element =
+                 configuration.anchor.GetIfElement()) {
+    set_parent_window(element->GetNativeView());
   } else {
     set_parent_window(
         platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
@@ -153,7 +151,7 @@ void PermissionPromptBaseView::AnchorToPageInfoOrChip() {
   if (configuration.highlighted_element) {
     SetHighlightedElement(*configuration.highlighted_element);
   }
-  if (std::holds_alternative<std::nullptr_t>(configuration.anchor)) {
+  if (configuration.anchor.IsNull()) {
     SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser_));
   }
   SetArrow(configuration.bubble_arrow);

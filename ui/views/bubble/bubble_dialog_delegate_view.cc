@@ -498,6 +498,13 @@ BubbleDialogDelegate::BubbleDialogDelegate(BubbleAnchor anchor,
       base::Unretained(this), *bubble_created_time_));
 }
 
+BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
+                                           BubbleBorder::Arrow arrow,
+                                           BubbleBorder::Shadow shadow,
+                                           bool autosize)
+    : BubbleDialogDelegate(BubbleAnchor(anchor_view), arrow, shadow, autosize) {
+}
+
 BubbleDialogDelegate::~BubbleDialogDelegate() {
   SetAnchorView(nullptr);
 }
@@ -864,10 +871,12 @@ gfx::Size BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
 #endif
 
   gfx::Rect anchor_rect;
-  if (std::holds_alternative<View*>(anchor)) {
-    anchor_rect = std::get<View*>(anchor)->GetAnchorBoundsInScreen();
+  if (View* view = anchor.GetIfView()) {
+    anchor_rect = view->GetAnchorBoundsInScreen();
   } else {
-    anchor_rect = std::get<ui::TrackedElement*>(anchor)->GetScreenBounds();
+    ui::TrackedElement* element = anchor.GetIfElement();
+    CHECK(element);
+    anchor_rect = element->GetScreenBounds();
   }
   gfx::Rect screen_rect =
       display::Screen::Get()
@@ -1144,11 +1153,9 @@ void BubbleDialogDelegate::SetAnchorRect(const gfx::Rect& rect) {
 }
 
 void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
-  if (std::holds_alternative<View*>(anchor)) {
-    SetAnchorView(std::get<View*>(anchor));
-  } else if (std::holds_alternative<ui::TrackedElement*>(anchor)) {
-    auto* tracked_element = std::get<ui::TrackedElement*>(anchor);
-    CHECK(tracked_element);
+  if (View* view = anchor.GetIfView()) {
+    SetAnchorView(view);
+  } else if (ui::TrackedElement* tracked_element = anchor.GetIfElement()) {
     if (auto* element_views = tracked_element->AsA<TrackedElementViews>()) {
       SetAnchorView(element_views->view());
     } else {
@@ -1163,7 +1170,7 @@ void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
       SetAnchorWidget(widget);
     }
   } else {
-    CHECK(std::holds_alternative<std::nullptr_t>(anchor));
+    CHECK(anchor.IsNull());
     SetAnchorView(nullptr);
     SetAnchorRect(gfx::Rect());
   }
@@ -1171,12 +1178,32 @@ void BubbleDialogDelegate::SetAnchor(BubbleAnchor anchor) {
 
 BubbleAnchor BubbleDialogDelegate::GetAnchor() const {
   if (GetAnchorView()) {
-    return GetAnchorView();
+    return BubbleAnchor(GetAnchorView());
   }
   if (anchor_tracked_element_) {
-    return anchor_tracked_element_;
+    return BubbleAnchor(anchor_tracked_element_);
   }
-  return nullptr;
+  return BubbleAnchor();
+}
+
+bool BubbleDialogDelegate::IsSameAnchor(BubbleAnchor anchor) const {
+  // Normalize `anchor` similar to how SetAnchor would.
+  if (ui::TrackedElement* tracked_element = anchor.GetIfElement()) {
+    if (auto* element_views = tracked_element->AsA<TrackedElementViews>()) {
+      anchor = BubbleAnchor(element_views->view());
+    }
+  }
+
+  BubbleAnchor lhs = GetAnchor();
+
+  if (ui::TrackedElement* rhs_element = anchor.GetIfElement()) {
+    return rhs_element == lhs.GetIfElement();
+  } else if (views::View* rhs_view = anchor.GetIfView()) {
+    return rhs_view == lhs.GetIfView();
+  } else {
+    DCHECK(anchor.IsNull());
+    return lhs.IsNull();
+  }
 }
 
 void BubbleDialogDelegate::SizeToContents() {

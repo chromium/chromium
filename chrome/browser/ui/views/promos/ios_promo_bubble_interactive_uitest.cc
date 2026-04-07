@@ -86,7 +86,7 @@ class IOSPromoBubbleBrowserTest
           browser_view->toolbar_button_provider();
 
       PromoType promo_type = GetPromoType();
-      views::BubbleAnchor anchor = nullptr;
+      views::BubbleAnchor anchor;
       views::Button* highlighted_button = nullptr;
       std::optional<ui::ElementIdentifier> highlighted_element;
 

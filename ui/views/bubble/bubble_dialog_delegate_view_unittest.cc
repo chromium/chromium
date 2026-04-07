@@ -1495,9 +1495,30 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
   bubble->Close();
 }
 
-TEST_F(BubbleDialogDelegateViewAnchorTest, NullAnchor) {
-  views::BubbleAnchor anchor;
-  EXPECT_TRUE(std::holds_alternative<std::nullptr_t>(anchor));
+TEST_F(BubbleDialogDelegateViewAnchorTest, IsSameAnchor) {
+  auto widget = CreateTopLevelWidget();
+  auto other_widget = CreateTopLevelWidget();
+  auto* bubble = CreateBubble(dummy_widget());
+  auto* anchor_view = GetAnchorView(dummy_widget());
+  auto* other_view = GetAnchorView(other_widget.get());
+  auto* delegate = static_cast<AnchorTestBubbleDialogDelegateView*>(
+      bubble->widget_delegate());
+
+  EXPECT_FALSE(delegate->IsSameAnchor(BubbleAnchor()));
+  EXPECT_TRUE(delegate->IsSameAnchor(BubbleAnchor(anchor_view)));
+
+  ui::TrackedElement* as_tracked_element =
+      ElementTrackerViews::GetInstance()->GetElementForView(
+          anchor_view,
+          /*assign_temporary_id=*/true);
+  EXPECT_TRUE(delegate->IsSameAnchor(BubbleAnchor(as_tracked_element)));
+
+  EXPECT_FALSE(delegate->IsSameAnchor(BubbleAnchor(other_view)));
+  ui::TrackedElement* other_tracked_element =
+      ElementTrackerViews::GetInstance()->GetElementForView(
+          other_view,
+          /*assign_temporary_id=*/true);
+  EXPECT_FALSE(delegate->IsSameAnchor(BubbleAnchor(other_tracked_element)));
 }
 
 // Tests that if the anchor view has kWidgetForAnchoringKey property,
