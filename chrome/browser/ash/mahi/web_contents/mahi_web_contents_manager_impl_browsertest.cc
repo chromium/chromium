@@ -29,6 +29,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -195,14 +196,21 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
                   .favicon.isNull());
 
   base::RunLoop run_loop;
-  // Expects that `MahiManager` should receive the focused page change.
-  EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
-      // When browser opens with `chrome://newtab`, we should be notified to
-      // clear the previous focus info.
-      .WillOnce([](chromeos::MahiPageInfo page_info) {
-        EXPECT_EQ(GURL(), page_info.url);
+
+  EXPECT_CALL(mock_mahi_manager_,
+              SetCurrentFocusedPageInfo(testing::Field(
+                  &chromeos::MahiPageInfo::url, testing::Not(GURL(kUrl)))))
+      // When browser opens with `chrome://newtab` or `about:blank`, we should
+      // be notified to clear the previous focus info.
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly([](chromeos::MahiPageInfo page_info) {
         EXPECT_FALSE(page_info.is_distillable.has_value());
-      })
+      });
+
+  // Expects that `MahiManager` should receive the focused page change.
+  EXPECT_CALL(mock_mahi_manager_,
+              SetCurrentFocusedPageInfo(
+                  testing::Field(&chromeos::MahiPageInfo::url, GURL(kUrl))))
       // When a new page gets focus, the `MahiManager` should be notified
       // without the distillability check.
       .WillOnce([&histogram](chromeos::MahiPageInfo page_info) {
@@ -238,8 +246,19 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
 
   // First create a web page so there is a place to extract the contents from.
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
-      .WillOnce([](chromeos::MahiPageInfo page_info) {})
+  EXPECT_CALL(mock_mahi_manager_,
+              SetCurrentFocusedPageInfo(testing::Field(
+                  &chromeos::MahiPageInfo::url, testing::Not(GURL(kUrl)))))
+      // When browser opens with `chrome://newtab` and/or `about:blank`, we
+      // should be notified to clear the previous focus info.
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly([](chromeos::MahiPageInfo page_info) {
+        EXPECT_FALSE(page_info.is_distillable.has_value());
+      });
+
+  EXPECT_CALL(mock_mahi_manager_,
+              SetCurrentFocusedPageInfo(
+                  testing::Field(&chromeos::MahiPageInfo::url, (GURL(kUrl)))))
       .WillOnce([](chromeos::MahiPageInfo page_info) {})
       .WillOnce([&run_loop, &focused_page_id,
                  this](chromeos::MahiPageInfo page_info) {

@@ -58,6 +58,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1693,14 +1694,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, IssuesIdlePriorityRequests) {
 
 // Checks that a registered ServiceWorker (SW) that is not currently running
 // will intercepts a prefetch request.
-// TODO(crbug.com/499825436): Failing on CrOS/Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ServiceWorkerIntercept DISABLED_ServiceWorkerIntercept
-#else
-#define MAYBE_ServiceWorkerIntercept ServiceWorkerIntercept
-#endif
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       MAYBE_ServiceWorkerIntercept) {
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
   // Register and launch a SW.
   std::u16string expected_title = u"SW READY";
   content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
@@ -1738,8 +1732,26 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
     iter.GetCurrentValue()->Shutdown(content::RESULT_CODE_KILLED);
     process_exit_observer.Wait();
   }
-  // There should be at most one render_process_host, that created for the SW.
-  EXPECT_EQ(1, host_count);
+  // We expect two render_process_hosts for the service worker when
+  // kMigrateToBlockV8OptimizerOnUnfamiliarSites is enabled. This happens
+  // due to a BrowsingInstance swap triggered by mismatched V8 settings:
+  //
+  // 1. Initial State: On test startup, a navigation to about:blank occurs.
+  //    The BlockV8OptimizersOnUnfamiliarSites policy considers about:blank
+  //    a "familiar" site, so V8 optimizers remain enabled.
+  // 2. Navigation: The test navigates to the kServiceWorkerLoader URL.
+  //    The policy marks this URL as "unfamiliar," requiring V8 optimizers
+  //    to be disabled.
+  // 3. Result: This transition from a familiar site (V8 ON) to an unfamiliar
+  //    site (V8 OFF) forces a BrowsingInstance swap. Consequently, 2 hosts
+  //    are created instead of the previously expected 1.
+  // TODO(crbug.com/493200120): Find a better way to handle this situation.
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites)) {
+    EXPECT_EQ(2, host_count);
+  } else {
+    EXPECT_EQ(1, host_count);
+  }
 
   // Open a new tab to replace the one closed with all the RenderProcessHosts.
   ui_test_utils::NavigateToURLWithDisposition(
