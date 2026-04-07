@@ -16,8 +16,10 @@ namespace base {
 class FilePath;
 }
 
-// NSBundle isn't thread-safe; all functions in this file must be called on the
-// main thread.
+// The functions in this file are not thread-safe. While NSBundle itself is
+// thread-safe, the override functions in this file mutate global state without
+// synchronization. Therefore, all functions in this file should be called on
+// the main thread.
 
 namespace base::apple {
 
