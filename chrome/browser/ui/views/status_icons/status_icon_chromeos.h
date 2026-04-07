@@ -12,6 +12,10 @@
 #include "ui/display/display_observer.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace ash {
+struct TrayIconConfiguration;
+}  // namespace ash
+
 class StatusIconChromeOS : public StatusIcon, public display::DisplayObserver {
  public:
   explicit StatusIconChromeOS(int64_t icon_id);
@@ -42,6 +46,15 @@ class StatusIconChromeOS : public StatusIcon, public display::DisplayObserver {
 
  private:
   void AddStatusIconForDisplay(int64_t display_id);
+
+  // Populates `config` with the current state of this status icon.
+  void PopulateTrayIconConfiguration(ash::TrayIconConfiguration& config) const;
+
+  // Updates the tray icon on all displays.
+  void UpdateTrayIconForAllDisplays();
+
+  // Removes the tray icon from the given `displays`.
+  void RemoveTrayIconFromDisplays(const display::Displays& displays);
 
   const int64_t id_;
   std::optional<std::u16string> tool_tip_;
