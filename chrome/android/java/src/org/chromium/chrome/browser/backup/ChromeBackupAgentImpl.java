@@ -137,7 +137,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         // User already signed-in with an account.
         int ALREADY_SIGNED_IN = 10;
 
-        int NUM_ENTRIES = ALREADY_SIGNED_IN;
+        int NUM_ENTRIES = ALREADY_SIGNED_IN + 1;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidRestoreResult)
