@@ -10,7 +10,6 @@
 #endif
 
 #include "basic_union.test-mojom.h"
-
 #include <stdint.h>
 #include <utility>
 #include "base/notreached.h"

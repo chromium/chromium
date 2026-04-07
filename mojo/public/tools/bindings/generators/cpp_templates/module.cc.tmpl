@@ -13,16 +13,19 @@
 
 #include "{{variant_path(module.path, variant)}}.h"
 
+{%- if interfaces %}
+#include <math.h>
+{%- endif %}
 #include <stdint.h>
 #include <utility>
 
+{%- if interfaces %}
+#include "base/debug/alias.h"
+{%- endif %}
 {%- if interfaces or unions %}
 #include "base/notreached.h"
 {%- endif %}
 {%- if interfaces %}
-#include <math.h>
-
-#include "base/debug/alias.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"

@@ -10,7 +10,6 @@
 #endif
 
 #include "optional_primitives.test-mojom.h"
-
 #include <stdint.h>
 #include <utility>
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
