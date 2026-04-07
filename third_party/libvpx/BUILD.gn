@@ -29,14 +29,12 @@ if (current_cpu == "x86") {
     cpu_arch_full = "arm-neon"
   }
 } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
-  if (is_linux || is_win || is_chromeos || is_mac || is_ios ||
-      is_desktop_android) {
-    # This is necessary for CrOS and macOS as they reuse the Linux
-    # configuration, of which there are two (see the later definition of
-    # os_category).
-    cpu_arch_full = "arm64-highbd"
-  } else {
+  # We support vp9 profile 2 for SW decoding on all platforms except mobile
+  # Android or Fuchsia.
+  if ((is_android && !is_desktop_android) || is_fuchsia) {
     cpu_arch_full = "arm64"
+  } else {
+    cpu_arch_full = "arm64-highbd"
   }
 } else if (current_cpu == "riscv64") {
   cpu_arch_full = "generic"
