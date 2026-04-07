@@ -96,6 +96,16 @@ bool BeginFrameArgsAreEquivalent(const BeginFrameArgs& first,
   return first.frame_id == second.frame_id;
 }
 
+class MockLayerContextClient : public mojom::LayerContextClient {
+ public:
+  MockLayerContextClient() = default;
+  ~MockLayerContextClient() override = default;
+
+  MOCK_METHOD1(OnRequestCommitForFrame, void(const BeginFrameArgs&));
+  MOCK_METHOD2(OnTilingsReadyForCleanup,
+               void(int32_t, const std::vector<float>&));
+};
+
 }  // namespace
 
 class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
@@ -2798,6 +2808,37 @@ TEST_F(CompositorFrameSinkSupportTestBase,
   // - Finally, we finish the cleanup for the original transition. If we were
   //   still using an outdated reference to the storage, we would crash here.
   OnSaveTransitionDirectiveProcessed(support_.get(), save_directive);
+}
+
+TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
+       TreesInVizAcksCompositorFrames) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTreesInViz);
+  manager_->RegisterFrameSinkId(kAnotherArbitraryFrameSinkId,
+                                true /* report_activation */);
+  MockCompositorFrameSinkClient mock_client;
+  auto support = std::make_unique<CompositorFrameSinkSupport>(
+      &mock_client, manager_.get(), kAnotherArbitraryFrameSinkId, kIsRoot);
+
+  // Sets layer context, which is what happens in TreesInViz mode.
+  auto context = mojom::PendingLayerContext::New();
+  mojo::AssociatedRemote<mojom::LayerContext> layer_context;
+  context->receiver = layer_context.BindNewEndpointAndPassReceiver();
+  MockLayerContextClient mock_layer_context_client;
+  mojo::AssociatedReceiver<mojom::LayerContextClient>
+      layer_context_client_receiver(
+          &mock_layer_context_client,
+          context->client.InitWithNewEndpointAndPassReceiver());
+
+  auto settings = mojom::LayerContextSettings::New();
+  support->BindLayerContext(*context, std::move(settings));
+
+  LocalSurfaceId local_surface_id(6, kArbitraryToken);
+  support->SubmitCompositorFrame(
+      local_surface_id,
+      MakeDefaultInteractiveCompositorFrame(kBeginFrameSourceId));
+  EXPECT_CALL(mock_client, DidReceiveCompositorFrameAck(_));
+  support->SendCompositorFrameAck();
 }
 
 }  // namespace viz
