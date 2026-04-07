@@ -1894,8 +1894,15 @@ void SpdySession::ResetStreamIterator(ActiveStreamMap::iterator it,
   RequestPriority priority = it->second->priority();
   EnqueueResetStreamFrame(stream_id, priority, error_code, description);
 
-  // Removes any pending writes for the stream except for possibly an
-  // in-flight one.
+  // EnqueueResetStreamFrame() can synchronously call DoDrainSession() ->
+  // StartGoingAway() -> CloseActiveStreamIterator(), which erases entries
+  // from `active_streams_` and invalidates `it`. Re-look-up the stream by
+  // ID; if it was already closed by the drain, there is nothing left to do.
+  it = active_streams_.find(stream_id);
+  if (it == active_streams_.end()) {
+    return;
+  }
+
   CloseActiveStreamIterator(it, error);
 }
 
