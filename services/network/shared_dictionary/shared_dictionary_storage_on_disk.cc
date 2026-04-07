@@ -113,6 +113,8 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
              base::Time start_time,
              net::SQLitePersistentSharedDictionaryStore::DictionaryListOrError
                  result) {
+            TRACE_EVENT("net",
+                        "SharedDictionaryStorageOnDisk::OnGetDictionaries");
             RecordMetadataReadTimeMetrics(result,
                                           base::Time::Now() - start_time);
             if (weak_ptr) {
