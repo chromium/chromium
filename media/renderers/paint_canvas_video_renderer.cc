@@ -1410,7 +1410,6 @@ bool PaintCanvasVideoRenderer::
         int level,
         SkAlphaType dst_alpha_type,
         GrSurfaceOrigin dst_origin) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video_frame);
   CHECK(video_frame->HasSharedImage());
   CHECK(destination_gl);

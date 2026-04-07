@@ -1201,10 +1201,12 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
           destination_context_->ContextSupport(),
           std::move(destination_access));
     } else {
-      renderer_.CopyVideoFrameTexturesToGLTextureViaIntermediateSI(
-          media_context_.get(), destination_gl, frame,
-          renderer_.GetRGBSharedImageCache(), target, texture, GL_RGBA, GL_RGBA,
-          GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType, kTopLeft_GrSurfaceOrigin);
+      PaintCanvasVideoRenderer::
+          CopyVideoFrameTexturesToGLTextureViaIntermediateSI(
+              media_context_.get(), destination_gl, frame,
+              renderer_.GetRGBSharedImageCache(), target, texture, GL_RGBA,
+              GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
+              kTopLeft_GrSurfaceOrigin);
     }
 
     base::HeapArray<uint8_t> pixels =

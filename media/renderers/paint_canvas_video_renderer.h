@@ -138,7 +138,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // an intermediate SharedImage.
   //
   // The format of |video_frame| must be VideoFrame::NATIVE_TEXTURE.
-  bool CopyVideoFrameTexturesToGLTextureViaIntermediateSI(
+  static bool CopyVideoFrameTexturesToGLTextureViaIntermediateSI(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
       scoped_refptr<VideoFrame> video_frame,
@@ -227,7 +227,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // If `video_frame` holds pixels and `yuv_shared_image_cache` is provided, the
   // intermediate YUV SharedImage to which the pixels are uploaded will be
   // obtained from and stored in the cache.
-  [[nodiscard]] gpu::SyncToken CopyVideoFrameToSharedImage(
+  [[nodiscard]] static gpu::SyncToken CopyVideoFrameToSharedImage(
       viz::RasterContextProvider* raster_context_provider,
       scoped_refptr<VideoFrame> video_frame,
       scoped_refptr<gpu::ClientSharedImage> dest_shared_image,
@@ -237,7 +237,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
 
   // Check whether video frame can be uploaded through
   // CopyVideoFrameToSharedImage().
-  bool CanUseCopyVideoFrameToSharedImage(const VideoFrame& video_frame);
+  static bool CanUseCopyVideoFrameToSharedImage(const VideoFrame& video_frame);
 
   // In general, We hold the most recently painted frame to increase the
   // performance for the case that the same frame needs to be painted
