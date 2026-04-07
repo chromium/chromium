@@ -1066,6 +1066,10 @@ TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
             data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }
 
+// TODO(crbug.com/40672441): Remove this once ViewsAX is enabled on Windows.
+// kTextChanged from SetValue() is only fired on Windows so that UIA fires
+// UIA_Text_TextChangedEventId.
+#if BUILDFLAG(IS_WIN)
 // Changing the value of the combobox should trigger a kTextChanged event.
 TEST_F(ComboboxTest, SetValueAccessibilityEvents) {
   InitCombobox(nullptr);
@@ -1076,6 +1080,7 @@ TEST_F(ComboboxTest, SetValueAccessibilityEvents) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
   EXPECT_EQ(value, combobox()->GetViewAccessibility().GetValue());
 }
+#endif
 
 // Regression test for crbug.com/1264288.
 // Should fail in ASan build before the fix.

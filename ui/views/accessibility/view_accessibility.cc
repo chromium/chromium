@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -1468,11 +1469,16 @@ void ViewAccessibility::SetValue(const std::string& value) {
     OnStringAttributeChanged(ax::mojom::StringAttribute::kValue, value);
     NotifyEvent(ax::mojom::Event::kValueChanged, true);
 
-    // Only fire a text changed event on text fields and select elements to
-    // mimic what is done in the web content.
+    // TODO(crbug.com/40672441): Remove this once ViewsAX is enabled on
+    // Windows. Only fire a text changed event on text fields and select
+    // elements on Windows so that UIA fires UIA_Text_TextChangedEventId.
+    // On macOS and Linux, this incorrectly maps to title/name-changed
+    // events rather than value-changed events.
+#if BUILDFLAG(IS_WIN)
     if (data_.IsTextField() || ui::IsSelectElement(data_.role)) {
       NotifyEvent(ax::mojom::Event::kTextChanged, true);
     }
+#endif
   }
 
   NotifyDataChanged();
