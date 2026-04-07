@@ -62,7 +62,7 @@ class OptimizationGuideGlobalState final
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   // This accessor is mainly for the chrome://on-device-internals page and
   // tests.
-  ModelBrokerState& model_broker_state() { return on_device_capability_; }
+  ModelBrokerState* model_broker_state() { return &on_device_capability_; }
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   OnDeviceCapability& on_device_capability() { return on_device_capability_; }

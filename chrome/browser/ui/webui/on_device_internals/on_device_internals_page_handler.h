@@ -46,7 +46,7 @@ class PageHandler : public mojom::PageHandler,
 #endif
 
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  optimization_guide::ModelBrokerState& GetModelBrokerState();
+  optimization_guide::ModelBrokerState* GetModelBrokerState();
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   void OnModelAssetsLoaded(

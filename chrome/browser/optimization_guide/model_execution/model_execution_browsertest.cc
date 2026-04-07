@@ -697,10 +697,10 @@ class OnDeviceModelExecutionEnabledBrowserTest
   ModelBrokerState* broker_state() {
     // Ensure keyed service is created, which should create and hold state.
     GetOptimizationGuideKeyedService();
-    return &g_browser_process->GetFeatures()
-                ->optimization_guide_global_feature()
-                ->Get()
-                .model_broker_state();
+    return g_browser_process->GetFeatures()
+        ->optimization_guide_global_feature()
+        ->Get()
+        .model_broker_state();
   }
 
   void SetUpLocalStatePrefService(PrefService* local_state) override {
