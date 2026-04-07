@@ -46,9 +46,9 @@
 #include "url/origin.h"
 
 using password_manager::ContentPasswordManagerDriver;
-using password_manager::PasswordForm;
 using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
+
 namespace actor_login {
 
 namespace {
@@ -257,11 +257,7 @@ void ActorLoginDelegateImpl::AttemptLogin(
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                          weak_ptr_factory_.GetWeakPtr())));
-  // If cleaning duplicate permissions is required, the user granted a new one
-  // and the login is being performed with a password, listen for the login
-  // success status to trigger the cleanup.
-  if (credential.type == CredentialType::kPassword && should_store_permission &&
-      found_conflicting_permissions_) {
+  if (credential.type == CredentialType::kPassword && should_store_permission) {
     observation_.Reset();
     observation_.Observe(password_manager);
   }
@@ -269,19 +265,38 @@ void ActorLoginDelegateImpl::AttemptLogin(
   credential_filler_->AttemptLogin(password_manager);
 }
 
-void ActorLoginDelegateImpl::OnLoginSuccessful(const PasswordForm& form) {
+void ActorLoginDelegateImpl::OnLoginSuccessful(
+    const password_manager::PasswordForm& form) {
   observation_.Reset();
   if (!last_attempted_credential_ ||
       last_attempted_credential_->type != CredentialType::kPassword) {
     return;
   }
 
-  if (ShouldCleanUpConflictingPermissions(form)) {
-    ClearConflictingPermissions(form.signon_realm);
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kActorLoginConflictingPermissionCleanup)) {
+    return;
   }
 
-  last_attempted_credential_.reset();
-  found_conflicting_permissions_ = false;
+  // The delegate only observes the password manager for password-based logins,
+  // which are meant to store a permanent permission if successful.
+  // Still, to make sure the login does correspond to the filled credential,
+  // check the form against the cached last used credential.
+  // TODO(crbug.com/494551592): Replace url comparison with signon_realm
+  // comparison.
+  if (form.actor_login_approved &&
+      form.username_value == last_attempted_credential_->username &&
+      ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(form.url) ==
+          last_attempted_credential_->source_site_or_app) {
+    auto* cleaning_service =
+        ActorLoginPermissionCleaningServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+    CHECK(cleaning_service);
+    cleaning_service->ClearConflictingPermissions(
+        *last_attempted_credential_, form.signon_realm, base::DoNothing());
+    last_attempted_credential_.reset();
+  }
 }
 
 void ActorLoginDelegateImpl::WebContentsDestroyed() {
@@ -327,10 +342,8 @@ bool ActorLoginDelegateImpl::IsTaskInFocus() {
 
 void ActorLoginDelegateImpl::OnGetCredentialsCompleted(
     CredentialsOrErrorReply callback,
-    CredentialsOrError result,
-    bool conflicting_permissions) {
+    CredentialsOrError result) {
   get_credentials_helper_.reset();
-  found_conflicting_permissions_ = conflicting_permissions;
 
   RecordGetCredentialsMetricsAndResetHelper(result);
 
@@ -415,43 +428,6 @@ void ActorLoginDelegateImpl::OnActorTaskStateChanged(actor::ActorTask& task) {
     content::webid::FederatedEmbedderLoginRequest::Remove(web_contents());
     actor_task_state_subscription_ = {};
   }
-}
-
-bool ActorLoginDelegateImpl::ShouldCleanUpConflictingPermissions(
-    const PasswordForm& form) const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kActorLoginConflictingPermissionCleanup)) {
-    return false;
-  }
-
-  // If the latest request didn't find conflicting permissions, there is
-  // nothing to clean up for the current credential configuration.
-  if (!found_conflicting_permissions_) {
-    return false;
-  }
-
-  // If the signal we got doesn't correspond to the latest attempted credential
-  // or if the logged in credential didn't contain a new permission, don't
-  // perform a cleanup.
-  // TODO(crbug.com/494551592): Replace url comparison with signon_realm
-  // comparison.
-  if (!form.actor_login_approved ||
-      form.username_value != last_attempted_credential_->username ||
-      ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(form.url) !=
-          last_attempted_credential_->source_site_or_app) {
-    return false;
-  }
-  return true;
-}
-
-void ActorLoginDelegateImpl::ClearConflictingPermissions(
-    std::optional<std::string> signon_realm) {
-  auto* cleaning_service =
-      ActorLoginPermissionCleaningServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
-  cleaning_service->ClearConflictingPermissions(
-      *last_attempted_credential_, signon_realm, base::DoNothing());
 }
 
 void ActorLoginDelegateImpl::RecordGetCredentialsMetricsAndResetHelper(
