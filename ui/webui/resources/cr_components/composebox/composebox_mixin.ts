@@ -160,6 +160,7 @@ export const ComposeboxEmbedderMixin =
         accessor showFileCarousel: boolean = false;
         accessor usePecApi: boolean = getLoadTimeBoolean(
             'contextualMenuUsePecApi', /*defaultValue=*/ false);
+        showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
         showVoiceSearch: boolean = getLoadTimeBoolean(
             'composeboxShowVoiceSearch', /*defaultValue=*/ false);
         accessor smartComposeInlineHint: string = '';
@@ -260,6 +261,77 @@ export const ComposeboxEmbedderMixin =
               this.deleteFile(uuid);
             }
           });
+        }
+
+        onContextualInputStatusChanged(
+            token: UnguessableToken, status: ContextUploadStatus,
+            errorType: ContextUploadErrorType|null) {
+          // If error message is updated, then the returned file is stale and
+          // removed from carousel. File is removed from carousel on
+          // `kUploadReplaced` as well despite no error message being returned
+          // (special case). Else, `file` below is updated to its most recent
+          // state, and `errorMessage` is null.
+          const {file, errorMessage} =
+              this.updateFileStatus(token, status, errorType);
+          if (errorMessage) {  // `file` value is definitely stale.
+            this.errorMessage = errorMessage;
+            this.pendingUploads.delete(token);
+            this.fileUploadsComplete = this.pendingUploads.size === 0;
+          } else if (file) {
+            // Treat `kUploadReplaced` like an error upload state
+            // (like `kUploadFailed`. `kValidationFailed`,
+            // `kUploadExpired`), just without setting `errorMessage`.
+            // This means for `kUploadReplaced`, we do not fetch suggestions,
+            // etc.
+            if (file.status === ContextUploadStatus.kUploadReplaced) {
+              this.pendingUploads.delete(file.uuid);
+              this.fileUploadsComplete = this.pendingUploads.size === 0;
+              return;
+            } else if (file.status === ContextUploadStatus.kUploadSuccessful) {
+              // At this point, due to the error message handling above (for
+              // `kValidationFailed`, `kUploadExpired`, and `kUploadFailed`),
+              // if kUploadSuccessful, the file upload is complete.
+              // Else, the file upload is in progress.
+              this.pendingUploads.delete(file.uuid);
+              this.fileUploadsComplete = this.pendingUploads.size === 0;
+
+              const announcer = getAnnouncerInstance();
+              announcer.announce(this.i18n('composeboxFileUploadCompleteText'));
+            } else if (
+                file.status === ContextUploadStatus.kProcessing ||
+                file.status ===
+                    ContextUploadStatus.kProcessingSuggestSignalsReady) {
+              // `NotUploaded`, `UploadStarted` come before and after
+              // `kProcessing`
+              //  respectively, so we only need to add to `pendingUploads` when
+              //  in a type of processing state.
+              this.addToPendingUploads(file.uuid);
+            }
+
+            // Fetch contextual suggestions for processingSuggestSignalsReady
+            // non-images:
+            if (status === ContextUploadStatus.kProcessingSuggestSignalsReady &&
+                this.showZps && !file.type.includes('image')) {
+              // Query autocomplete to get contextual suggestions for files.
+              this.queryAutocomplete(/* clearMatches= */ true);
+            }
+            // For image files:
+            if (status === ContextUploadStatus.kProcessingSuggestSignalsReady &&
+                file.type.includes('image')) {
+              if (this.enableImageContextualSuggestions) {
+                // Query autocomplete to get contextual suggestions for files.
+                this.queryAutocomplete(/* clearMatches= */ true);
+              } else {
+                this.showDropdown = false;
+              }
+            }
+
+            // Query autocomplete to get contextual suggestions for tabs.
+            if (status === ContextUploadStatus.kProcessing &&
+                file.type.includes('tab')) {
+              this.queryAutocomplete(/* clearMatches= */ true);
+            }
+          }
         }
 
         onInputInput(_e: CustomEvent<Event>) {
@@ -1033,6 +1105,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   dropdownNeeded: boolean;
   showFileCarousel: boolean;
   usePecApi: boolean;
+  showZps: boolean;
   showVoiceSearch: boolean;
   smartComposeInlineHint: string;
   state: ComposeboxState|null;
@@ -1067,6 +1140,9 @@ export interface ComposeboxEmbedderMixinInterface extends
   onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
   onMatchFocusin(e: CustomEvent<{index: number}>): void;
   onInputStateChanged(inputState: InputState): void;
+  onContextualInputStatusChanged(
+      token: UnguessableToken, status: ContextUploadStatus,
+      errorType: ContextUploadErrorType|null): void;
   onInputInput(e: CustomEvent<Event>): void;
   onInputFocusin(): void;
   onKeydown(e: KeyboardEvent): void;
