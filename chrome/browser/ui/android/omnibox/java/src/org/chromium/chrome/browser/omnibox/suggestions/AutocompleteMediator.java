@@ -1894,7 +1894,7 @@ class AutocompleteMediator
     @EnsuresNonNullIf(
             value = {"mAutocompleteInput", "mSessionState", "mAutocomplete"},
             result = true)
-    private boolean isInInputSession() {
+    /* package */ boolean isInInputSession() {
         return mSessionState != null
                 && mAutocompleteInput != null
                 && mAutocomplete != null
