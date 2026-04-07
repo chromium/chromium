@@ -127,7 +127,8 @@ public class ExtensionActionListMediatorTest {
 
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
 
-    @Captor private ArgumentCaptor<ExtensionsToolbarBridge.Delegate> mBridgeDelegateCaptor;
+    @Captor
+    private ArgumentCaptor<ExtensionsToolbarBridge.ActionListDelegate> mBridgeDelegateCaptor;
 
     @Before
     public void setUp() {
@@ -201,7 +202,7 @@ public class ExtensionActionListMediatorTest {
                 };
 
         mMediator.fitActionsWithinWidth(1000);
-        verify(mExtensionsToolbarBridge).setDelegate(mBridgeDelegateCaptor.capture());
+        verify(mExtensionsToolbarBridge).setActionListDelegate(mBridgeDelegateCaptor.capture());
 
         shadowOf(Looper.getMainLooper()).idle();
     }

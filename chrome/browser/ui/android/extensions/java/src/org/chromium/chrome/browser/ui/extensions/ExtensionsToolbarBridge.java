@@ -50,9 +50,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Profile mProfile;
 
-    // The delegate is set via a setter because of a bidirectional dependency
-    // with {@code ExtensionActionListMediator}.
-    private @Nullable Delegate mDelegate;
+    // The delegates are set via setters because of bidirectional dependencies.
+    private @Nullable ActionListDelegate mActionListDelegate;
+    private @Nullable MenuDelegate mMenuDelegate;
 
     public ExtensionsToolbarBridge(ChromeAndroidTask task, Profile profile) {
         mProfile = profile;
@@ -77,8 +77,12 @@ public class ExtensionsToolbarBridge implements Destroyable {
         mObservers.removeObserver(observer);
     }
 
-    public void setDelegate(@Nullable Delegate delegate) {
-        mDelegate = delegate;
+    public void setActionListDelegate(@Nullable ActionListDelegate delegate) {
+        mActionListDelegate = delegate;
+    }
+
+    public void setMenuDelegate(@Nullable MenuDelegate delegate) {
+        mMenuDelegate = delegate;
     }
 
     @Nullable
@@ -200,18 +204,20 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
     @CalledByNative
     public void triggerPopup(@JniType("std::string") String actionId, long nativeHostPtr) {
-        // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
-        assert mDelegate != null;
+        // {@link mActionListDelegate} should be set in {@code ExtensionActionListMediator}'s
+        // constructor.
+        assert mActionListDelegate != null;
 
-        mDelegate.triggerPopup(actionId, nativeHostPtr);
+        mActionListDelegate.triggerPopup(actionId, nativeHostPtr);
     }
 
     @CalledByNative
     void showContextMenu(@JniType("std::string") String actionId) {
-        // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
-        assert mDelegate != null;
+        // {@link mActionListDelegate} should be set in {@code ExtensionActionListMediator}'s
+        // constructor.
+        assert mActionListDelegate != null;
 
-        mDelegate.showContextMenu(actionId);
+        mActionListDelegate.showContextMenu(actionId);
     }
 
     @CalledByNative
@@ -230,26 +236,37 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
     @CalledByNative
     public boolean hasPoppedOutAction() {
-        // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
-        assert mDelegate != null;
+        // {@link mActionListDelegate} should be set in {@code ExtensionActionListMediator}'s
+        // constructor.
+        assert mActionListDelegate != null;
 
-        return mDelegate.hasPoppedOutAction();
+        return mActionListDelegate.hasPoppedOutAction();
     }
 
     @CalledByNative
     public void hideActivePopup() {
-        // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
-        assert mDelegate != null;
+        // {@link mActionListDelegate} should be set in {@code ExtensionActionListMediator}'s
+        // constructor.
+        assert mActionListDelegate != null;
 
-        mDelegate.hideActivePopup();
+        mActionListDelegate.hideActivePopup();
     }
 
     @CalledByNative
     public boolean hasActivePopup() {
-        // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
-        assert mDelegate != null;
+        // {@link mActionListDelegate} should be set in {@code ExtensionActionListMediator}'s
+        // constructor.
+        assert mActionListDelegate != null;
 
-        return mDelegate.hasActivePopup();
+        return mActionListDelegate.hasActivePopup();
+    }
+
+    @CalledByNative
+    public void closeExtensionsMenuIfOpen() {
+        // {@link mMenuDelegate} should be set in {@code ExtensionsMenuCoordinator}'s constructor.
+        assert mMenuDelegate != null;
+
+        mMenuDelegate.closeExtensionsMenuIfOpen();
     }
 
     @CalledByNative
@@ -320,7 +337,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
         default void onToolbarControlStateUpdated() {}
     }
 
-    public interface Delegate {
+    public interface ActionListDelegate {
         // Called when the popup should be shown.
         void triggerPopup(String actionId, long nativeHostPtr);
 
@@ -335,6 +352,11 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
         // Returns whether there is an active popup.
         boolean hasActivePopup();
+    }
+
+    public interface MenuDelegate {
+        // Closes the extensions menu if it was open.
+        void closeExtensionsMenuIfOpen();
     }
 
     @NativeMethods

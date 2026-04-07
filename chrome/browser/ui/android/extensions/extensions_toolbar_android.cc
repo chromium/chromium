@@ -113,8 +113,8 @@ void ExtensionsToolbarAndroid::HideActivePopup() {
 }
 
 void ExtensionsToolbarAndroid::CloseExtensionsMenuIfOpen() {
-  // TODO(crbug.com/461981075)
-  NOTIMPLEMENTED();
+  Java_ExtensionsToolbarBridge_closeExtensionsMenuIfOpen(AttachCurrentThread(),
+                                                         java_object_);
 }
 
 bool ExtensionsToolbarAndroid::CanShowToolbarActionPopupForAPICall(

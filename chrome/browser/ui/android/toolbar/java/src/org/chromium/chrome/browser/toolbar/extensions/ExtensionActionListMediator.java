@@ -136,7 +136,7 @@ class ExtensionActionListMediator implements Destroyable {
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
 
-        mExtensionsToolbarBridge.setDelegate(mToolbarDelegate);
+        mExtensionsToolbarBridge.setActionListDelegate(mToolbarDelegate);
         mExtensionsToolbarBridge.addObserver(mToolbarObserver);
         reconcileActionItems();
     }
@@ -149,7 +149,7 @@ class ExtensionActionListMediator implements Destroyable {
         assert mActionState instanceof ActionState.Idle;
 
         mExtensionsToolbarBridge.removeObserver(mToolbarObserver);
-        mExtensionsToolbarBridge.setDelegate(null);
+        mExtensionsToolbarBridge.setActionListDelegate(null);
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
@@ -647,7 +647,7 @@ class ExtensionActionListMediator implements Destroyable {
         }
     }
 
-    private class ToolbarDelegate implements ExtensionsToolbarBridge.Delegate {
+    private class ToolbarDelegate implements ExtensionsToolbarBridge.ActionListDelegate {
         @Override
         public void triggerPopup(String actionId, long nativeHostPtr) {
             requestShowPopup(actionId, nativeHostPtr);

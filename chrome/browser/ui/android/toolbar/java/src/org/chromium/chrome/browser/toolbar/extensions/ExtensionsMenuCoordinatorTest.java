@@ -315,6 +315,24 @@ public class ExtensionsMenuCoordinatorTest {
                 .onSiteSettingsToggleChanged(Mockito.anyLong(), Mockito.eq(true));
     }
 
+    /** Tests that calling {@code closeExtensionsMenuIfOpen()} successfully dismisses the menu. */
+    @Test
+    public void testCloseExtensionsMenuIfOpen() {
+        // Show the menu.
+        ListMenuHost.PopupMenuShownListener shownListener =
+                Mockito.mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
+        mExtensionsMenuButton.performClick();
+        triggerOnMediatorReady();
+        verify(shownListener).onPopupMenuShown();
+
+        // Trigger the programmatic close.
+        mExtensionsMenuCoordinator.closeExtensionsMenuIfOpen();
+
+        // Verify that the menu is closed.
+        verify(shownListener).onPopupMenuDismissed();
+    }
+
     private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(
             String label, boolean isOn) {
         return createSiteSettingsState(

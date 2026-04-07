@@ -49,7 +49,10 @@ import org.chromium.ui.widget.RectProvider;
  * responsible for the button and the menu.
  */
 @NullMarked
-public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbarBridge.Observer {
+public class ExtensionsMenuCoordinator
+        implements Destroyable,
+                ExtensionsToolbarBridge.Observer,
+                ExtensionsToolbarBridge.MenuDelegate {
     private final Context mContext;
     private final ListMenu mExtensionsMenu;
     private final ListMenuButton mExtensionsMenuButton;
@@ -101,6 +104,8 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         mTask = task;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
         mMenuButtonPinningDelegate = menuButtonPinningDelegate;
+
+        mExtensionsToolbarBridge.setMenuDelegate(this);
 
         mContentView = LayoutInflater.from(mContext).inflate(R.layout.extensions_menu, null, false);
 
@@ -386,6 +391,11 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
     @Override
     public void onActionUpdated(String actionId) {
         updateButtonState();
+    }
+
+    @Override
+    public void closeExtensionsMenuIfOpen() {
+        mExtensionsMenuButton.dismiss();
     }
 
     @Override
