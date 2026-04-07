@@ -88,7 +88,7 @@ public class AdaptiveToolbarUiCoordinator {
     private BottomSheetController mBottomSheetController;
     private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private Supplier<ScrimManager> mScrimSupplier;
-    private Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
 
     /**
@@ -119,7 +119,7 @@ public class AdaptiveToolbarUiCoordinator {
     void initialize(
             AdaptiveToolbarBehavior toolbarBehavior,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             BottomSheetController bottomSheetController,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             Supplier<TabBookmarker> tabBookmarkerSupplier,

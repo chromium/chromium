@@ -31,7 +31,7 @@ public class PriceHistoryBottomSheetContentCoordinator
     public PriceHistoryBottomSheetContentCoordinator(
             Context context,
             Supplier<@Nullable Tab> tabSupplier,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             PriceInsightsDelegate priceInsightsDelegate) {
         mPriceHistoryContentContainer =
                 LayoutInflater.from(context)

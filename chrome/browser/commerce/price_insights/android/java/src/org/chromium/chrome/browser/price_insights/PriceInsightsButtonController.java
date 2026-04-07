@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.price_insights;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -46,7 +48,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<@Nullable Tab> mTabSupplier;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
     private @Nullable PriceInsightsBottomSheetCoordinator mBottomSheetCoordinator;
@@ -57,7 +59,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
     public PriceInsightsButtonController(
             Context context,
             Supplier<@Nullable Tab> tabSupplier,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Supplier<ShoppingService> shoppingServiceSupplier,
             ModalDialogManager modalDialogManager,
             BottomSheetController bottomSheetController,
@@ -127,7 +129,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
                                 mContext,
                                 mBottomSheetController,
                                 tab,
-                                mTabModelSelectorSupplier.get(),
+                                assertNonNull(mTabModelSelectorSupplier.get()),
                                 mShoppingServiceSupplier.get(),
                                 mPriceInsightsDelegate);
             }

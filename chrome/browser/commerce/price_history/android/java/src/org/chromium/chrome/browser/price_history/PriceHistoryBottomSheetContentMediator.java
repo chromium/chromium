@@ -41,7 +41,7 @@ import java.util.function.Supplier;
 public class PriceHistoryBottomSheetContentMediator {
     private final Context mContext;
     private final Supplier<@Nullable Tab> mTabSupplier;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final PropertyModel mPropertyModel;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
 
@@ -50,7 +50,7 @@ public class PriceHistoryBottomSheetContentMediator {
     public PriceHistoryBottomSheetContentMediator(
             Context context,
             Supplier<@Nullable Tab> tabSupplier,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             PropertyModel propertyModel,
             PriceInsightsDelegate priceInsightsDelegate) {
         mContext = context;
@@ -123,13 +123,11 @@ public class PriceHistoryBottomSheetContentMediator {
                 "Commerce.PriceInsights.BuyingOptionsClicked",
                 mPriceBucket,
                 PriceBucket.MAX_VALUE + 1);
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        if (tabModelSelector == null) return;
+
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-        mTabModelSelectorSupplier
-                .get()
-                .openNewTab(
-                        loadUrlParams,
-                        TabLaunchType.FROM_LINK,
-                        mTabSupplier.get(),
-                        /* incognito= */ false);
+        tabModelSelector.openNewTab(
+                loadUrlParams, TabLaunchType.FROM_LINK, mTabSupplier.get(), /* incognito= */ false);
     }
 }

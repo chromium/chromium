@@ -1144,6 +1144,7 @@ public class RootUiCoordinator
     @Override
     @CallSuper
     public void onFinishNativeInitialization() {
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.asNonNull().get();
         Profile profile = mProfileSupplier.get();
         if (profile != null) {
             initProfileDependentFeatures(profile);
@@ -1154,8 +1155,8 @@ public class RootUiCoordinator
         }
 
         if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
-            mExclusiveAccessManager.initialize(
-                    mTabModelSelectorSupplier.get(), mActivity, mActivityTabProvider);
+            assumeNonNull(mExclusiveAccessManager);
+            mExclusiveAccessManager.initialize(tabModelSelector, mActivity, mActivityTabProvider);
         }
 
         initMessagesInfra();
@@ -1182,8 +1183,7 @@ public class RootUiCoordinator
                     () ->
                             mTabCreatorManagerSupplier
                                     .get()
-                                    .getTabCreator(
-                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
+                                    .getTabCreator(tabModelSelector.isIncognitoSelected());
             ContextMenuPopulatorFactory contextMenuPopulatorFactory =
                     new ChromeContextMenuPopulatorFactory(
                             /* itemDelegate= */ null,
@@ -1200,7 +1200,6 @@ public class RootUiCoordinator
                             assertNonNull(getBottomSheetController()),
                             contextMenuPopulatorFactory));
         }
-        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         ReadAloudController controller =
                 new ReadAloudController(
                         mActivity,
@@ -1305,7 +1304,7 @@ public class RootUiCoordinator
                         mFullscreenManager,
                         mBrowserControlsManager,
                         mWindowAndroid,
-                        mTabModelSelectorSupplier.get(),
+                        mTabModelSelectorSupplier.asNonNull().get(),
                         mEdgeToEdgeControllerSupplier));
     }
 
@@ -1504,7 +1503,7 @@ public class RootUiCoordinator
                                 mActivityResultTracker,
                                 new WebSigninAccountPickerDelegate(
                                         profile,
-                                        mTabModelSelectorSupplier.get(),
+                                        mTabModelSelectorSupplier.asNonNull().get(),
                                         new WebSigninBridge.Factory()),
                                 assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                                 profileSupplier,
@@ -1521,7 +1520,7 @@ public class RootUiCoordinator
                 : "Sub-classes need to provide a valid factory instance.";
         mIncognitoReauthController =
                 new IncognitoReauthControllerImpl(
-                        mTabModelSelectorSupplier.get(),
+                        mTabModelSelectorSupplier.asNonNull().get(),
                         mActivityLifecycleDispatcher,
                         mLayoutStateProviderOneShotSupplier,
                         mProfileSupplier,
@@ -1897,7 +1896,7 @@ public class RootUiCoordinator
                                                 mModalDialogManagerSupplier.get(),
                                                 assertNonNull(mSnackbarManagerSupplier.get()),
                                                 mLayoutManager,
-                                                mTabModelSelectorSupplier.get(),
+                                                mTabModelSelectorSupplier.asNonNull().get(),
                                                 tabModelSelector);
                                 quickDeleteController.showDialog();
                             },
@@ -2033,7 +2032,10 @@ public class RootUiCoordinator
                             hideAppMenu();
                             // Attempt to show the promo sheet for the restore tabs feature.
                             // Do not attempt to show the promo if in incognito mode.
-                            if (!mTabModelSelectorSupplier.get().isIncognitoSelected()) {
+                            if (!mTabModelSelectorSupplier
+                                    .asNonNull()
+                                    .get()
+                                    .isIncognitoSelected()) {
                                 // TODO(crbug.com/40274033): Add support for triggering in incognito
                                 // mode.
                                 attemptToShowRestoreTabsPromo();
@@ -2141,7 +2143,7 @@ public class RootUiCoordinator
         mFindToolbarManager =
                 new FindToolbarManager(
                         mActivity.findViewById(stubId),
-                        mTabModelSelectorSupplier.get(),
+                        mTabModelSelectorSupplier.asNonNull().get(),
                         mWindowAndroid,
                         mActionModeControllerCallback,
                         mBackPressManager);

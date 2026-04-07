@@ -153,6 +153,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private EdgeToEdgeManager mEdgeToEdgeManager;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private IdentityManager mIdentityManager;
     @Mock private Supplier<BrowserServicesThemeColorProvider> mBrowserServicesColorProviderSupplier;
@@ -166,8 +167,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     private final MonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier =
             ObservableSuppliers.alwaysNull();
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
-            ObservableSuppliers.alwaysNull();
-    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.alwaysNull();
     private final NonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier =
             ObservableSuppliers.createNonNull(mModalDialogManager);
@@ -219,7 +218,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mProfileSupplier,
                         mBookmarkModelSupplier,
                         mTabBookmarkerSupplier,
-                        mTabModelSelectorSupplier,
+                        ObservableSuppliers.createNonNull(mTabModelSelector),
                         mBrowserControlsManager,
                         mWindowAndroid,
                         mActivityResultTracker,

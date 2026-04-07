@@ -48,8 +48,8 @@ public class BookmarkAllTabsHandler implements MenuOrKeyboardActionHandler {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBookmarkAllTabsResult)
-    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final WindowAndroid mWindowAndroid;
 
     /**
@@ -58,8 +58,8 @@ public class BookmarkAllTabsHandler implements MenuOrKeyboardActionHandler {
      * @param windowAndroid The window associated with the action.
      */
     public BookmarkAllTabsHandler(
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Supplier<SnackbarManager> snackbarManagerSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable SnackbarManager> snackbarManagerSupplier,
             WindowAndroid windowAndroid) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
@@ -115,11 +115,10 @@ public class BookmarkAllTabsHandler implements MenuOrKeyboardActionHandler {
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
         if (id == R.id.bookmark_all_tabs) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-            if (tabModelSelector != null) {
+            SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
+            if (tabModelSelector != null && snackbarManager != null) {
                 bookmarkAllTabs(
-                        tabModelSelector.getCurrentModel(),
-                        mWindowAndroid,
-                        mSnackbarManagerSupplier.get());
+                        tabModelSelector.getCurrentModel(), mWindowAndroid, snackbarManager);
             }
             return true;
         }
