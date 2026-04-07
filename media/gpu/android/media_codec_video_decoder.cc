@@ -765,8 +765,8 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   if (!codec && should_retry_codec_allocation &&
       device_info_->SdkVersion() >=
           base::android::android_info::SDK_VERSION_R &&
-      device_info_->SdkVersion() <= 32 /* SDK_VERSION_S_V2 */
-  ) {
+      device_info_->SdkVersion() <=
+          base::android::android_info::SDK_VERSION_Sv2) {
     // We might want to post this with a short delay, but there is already quite
     // a lot of overhead in codec allocation.
     CreateCodec();
