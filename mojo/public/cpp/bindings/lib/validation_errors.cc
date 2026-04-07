@@ -7,8 +7,10 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,6 +22,18 @@
 namespace mojo {
 namespace internal {
 namespace {
+
+std::string ArrayExpectedSizeErrorToString(
+    const ArrayExpectedSizeError& details) {
+  return base::StringPrintf("%s: array size - %zu; expected size - %zu",
+                            details.message, details.size,
+                            details.expected_size);
+}
+
+std::string ArrayIndexErrorToString(const ArrayIndexError& details) {
+  return base::StringPrintf("%s: array size - %zu; index - %zu",
+                            details.message, details.size, details.index);
+}
 
 base::RepeatingCallback<void(ValidationError)>* g_validation_error_callback =
     nullptr;
@@ -36,6 +50,16 @@ std::string MessageHeaderAsHexString(Message* message) {
         {"<incomplete>", base::HexEncode(message->data_as_span())});
   }
   return base::HexEncode(base::byte_span_from_ref(*message->header()));
+}
+
+bool ReportSerializationWarning(ValidationError error,
+                                SendValidation validation_type) {
+  if (g_serialization_warning_callback) {
+    (*g_serialization_warning_callback).Run(error, validation_type);
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -120,6 +144,20 @@ void ReportValidationError(ValidationContext* context,
   }
 }
 
+void ReportValidationError(ValidationContext* context,
+                           ValidationError error,
+                           const ArrayIndexError& details) {
+  ReportValidationError(context, error,
+                        ArrayIndexErrorToString(details).c_str());
+}
+
+void ReportValidationError(ValidationContext* context,
+                           ValidationError error,
+                           const ArrayExpectedSizeError& error_info) {
+  ReportValidationError(context, error,
+                        ArrayExpectedSizeErrorToString(error_info).c_str());
+}
+
 void ReportValidationErrorForMessage(mojo::Message* message,
                                      ValidationError error,
                                      const char* interface_name,
@@ -151,15 +189,48 @@ void SetValidationErrorCallbackForTesting(
   g_validation_error_callback = callback;
 }
 
-bool ReportSerializationWarning(ValidationError error,
-                                SendValidation validation_type) {
-  if (g_serialization_warning_callback) {
-    (*g_serialization_warning_callback).Run(error, validation_type);
-    return true;
+void HandleSerializationError(ValidationError error, const char* description) {
+  if (ReportSerializationWarning(error, SendValidation::kFatal)) {
+    return;
   }
-
-  return false;
+  CHECK(false) << "The outgoing message will trigger "
+               << ValidationErrorToString(error) << " at the receiving side ("
+               << description << ").";
 }
+
+void HandleSerializationError(ValidationError error,
+                              const ArrayIndexError& details) {
+  HandleSerializationError(error, ArrayIndexErrorToString(details).c_str());
+}
+
+void HandleSerializationError(ValidationError error,
+                              const ArrayExpectedSizeError& details) {
+  HandleSerializationError(error,
+                           ArrayExpectedSizeErrorToString(details).c_str());
+}
+
+#if DCHECK_IS_ON()
+void HandleSerializationWarning(ValidationError error,
+                                const char* description) {
+  if (ReportSerializationWarning(error, SendValidation::kWarning)) {
+    return;
+  }
+  DLOG(FATAL) << "The outgoing message will trigger "
+              << ValidationErrorToString(error) << " at the receiving side ("
+              << description << ").";
+}
+
+void HandleSerializationWarning(ValidationError error,
+                                const ArrayIndexError& details) {
+  HandleSerializationWarning(error, ArrayIndexErrorToString(details).c_str());
+}
+
+void HandleSerializationWarning(ValidationError error,
+                                const ArrayExpectedSizeError& details) {
+  HandleSerializationWarning(error,
+                             ArrayExpectedSizeErrorToString(details).c_str());
+}
+#endif
 
 }  // namespace internal
 }  // namespace mojo
