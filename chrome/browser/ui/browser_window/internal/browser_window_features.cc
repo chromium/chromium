@@ -376,7 +376,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // but is only initialized for normal browser windows. This simplifies the
   // logic for code shared by both normal and non-normal windows.
   lens_overlay_entry_point_controller_ =
-      std::make_unique<lens::LensOverlayEntryPointController>();
+      GetUserDataFactory()
+          .CreateInstance<lens::LensOverlayEntryPointController>(*browser,
+                                                                 browser);
   lens_region_search_controller_ =
       std::make_unique<lens::LensRegionSearchController>();
 

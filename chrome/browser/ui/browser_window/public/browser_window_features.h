@@ -302,10 +302,6 @@ class BrowserWindowFeatures {
   // implementation is not inlined.
   SidePanelUI* side_panel_ui();
 
-  lens::LensOverlayEntryPointController* lens_overlay_entry_point_controller() {
-    return lens_overlay_entry_point_controller_.get();
-  }
-
   lens::LensRegionSearchController* lens_region_search_controller() {
     return lens_region_search_controller_.get();
   }

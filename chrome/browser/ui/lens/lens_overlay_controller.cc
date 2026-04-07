@@ -1931,9 +1931,8 @@ void LensOverlayController::InitializeTutorialIPHUrlMatcher() {
 }
 
 void LensOverlayController::MaybeShowDelayedTutorialIPH(const GURL& url) {
-  auto* entry_point_controller = tab_->GetBrowserWindowInterface()
-                                     ->GetFeatures()
-                                     .lens_overlay_entry_point_controller();
+  auto* entry_point_controller = lens::LensOverlayEntryPointController::From(
+      tab_->GetBrowserWindowInterface());
   if (!entry_point_controller || !entry_point_controller->IsEnabled()) {
     return;
   }
@@ -2059,9 +2058,7 @@ void LensOverlayController::NotifyPageContentUpdated() {
 }
 
 void LensOverlayController::UpdateEntryPointsState() {
-  tab_->GetBrowserWindowInterface()
-      ->GetFeatures()
-      .lens_overlay_entry_point_controller()
+  lens::LensOverlayEntryPointController::From(tab_->GetBrowserWindowInterface())
       ->UpdateEntryPointsState(
           /*hide_toolbar_entrypoint=*/false);
 }

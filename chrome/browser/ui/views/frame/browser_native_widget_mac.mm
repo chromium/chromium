@@ -334,10 +334,9 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       result->new_toggle_state =
           prefs->GetBoolean(omnibox::kShowGoogleLensShortcut);
       // Disable this menu option if the LensOverlay feature is not enabled.
-      result->enable = lens::features::IsOmniboxEntryPointEnabled() &&
-                       browser->GetFeatures()
-                           .lens_overlay_entry_point_controller()
-                           ->IsEnabled();
+      result->enable =
+          lens::features::IsOmniboxEntryPointEnabled() &&
+          lens::LensOverlayEntryPointController::From(browser)->IsEnabled();
       break;
     }
     case IDC_SHOW_AI_MODE_OMNIBOX_BUTTON: {

@@ -132,9 +132,8 @@ bool LensOverlayHomeworkPageActionController::ShouldShow() {
 
   // Hide the homework chip if the broader lens feature is disabled.
   const auto* lens_overlay_entry_point_controller =
-      tab_->GetBrowserWindowInterface()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller();
+      lens::LensOverlayEntryPointController::From(
+          tab_->GetBrowserWindowInterface());
   if (!lens_overlay_entry_point_controller ||
       !lens_overlay_entry_point_controller->AreVisible()) {
     return false;

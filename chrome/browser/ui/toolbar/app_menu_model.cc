@@ -2083,10 +2083,8 @@ void AppMenuModel::Build() {
             features::kGlicAppMenuNewBadge));
   }
 
-  if (browser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled()) {
+  if (auto* controller = lens::LensOverlayEntryPointController::From(browser());
+      controller && controller->IsEnabled()) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;

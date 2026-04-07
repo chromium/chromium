@@ -2102,9 +2102,8 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
 
   const int search_for_image_idc = GetSearchForImageIdc();
   auto* entry_point_controller =
-      GetBrowser()
-          ? GetBrowser()->GetFeatures().lens_overlay_entry_point_controller()
-          : nullptr;
+      GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
+                   : nullptr;
   if (entry_point_controller && entry_point_controller->IsEnabled() &&
       lens::features::UseLensOverlayForImageSearch()) {
     // If the entrypoint is ephermally hidden, don't add the item.
@@ -2204,9 +2203,8 @@ void RenderViewContextMenu::AppendVideoItems() {
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
     const int search_for_video_frame_idc = GetSearchForVideoFrameIdc();
     auto* entry_point_controller =
-        GetBrowser()
-            ? GetBrowser()->GetFeatures().lens_overlay_entry_point_controller()
-            : nullptr;
+        GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
+                     : nullptr;
     if (entry_point_controller && entry_point_controller->IsEnabled() &&
         lens::features::UseLensOverlayForVideoFrameSearch()) {
       // If the entrypoint is ephermally hidden, exit early so the item is not
@@ -2794,9 +2792,8 @@ void RenderViewContextMenu::AppendClickToCallItem() {
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
   auto* entry_point_controller =
-      GetBrowser()
-          ? GetBrowser()->GetFeatures().lens_overlay_entry_point_controller()
-          : nullptr;
+      GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
+                   : nullptr;
   if (entry_point_controller && entry_point_controller->IsEnabled()) {
     // If the entrypoint is ephermally hidden, exit early so the item is not
     // added.
@@ -3840,9 +3837,7 @@ bool RenderViewContextMenu::ShouldOpenTextQueryInLens() const {
   return lens::features::
              IsLensOverlayTextSelectionContextMenuEntrypointEnabled() &&
          browser &&
-         browser->GetFeatures()
-             .lens_overlay_entry_point_controller()
-             ->IsEnabled();
+         lens::LensOverlayEntryPointController::From(browser)->IsEnabled();
 }
 
 // Controller functions --------------------------------------------------------
@@ -4075,10 +4070,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
     return false;
   }
 
-  if (GetBrowser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled()) {
+  if (lens::LensOverlayEntryPointController::From(GetBrowser())->IsEnabled()) {
     return true;
   }
 
@@ -4530,10 +4522,7 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags) {
       IsLensOptionEnteredThroughKeyboard(event_flags) &&
       !lens::features::IsLensOverlayKeyboardSelectionEnabled();
   bool lens_overlay_for_image_search_enabled =
-      GetBrowser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled() &&
+      lens::LensOverlayEntryPointController::From(GetBrowser())->IsEnabled() &&
       lens::features::UseLensOverlayForImageSearch();
   if (lens_overlay_for_image_search_enabled &&
       !use_keyboard_accessibility_fallback) {
@@ -4602,10 +4591,7 @@ void RenderViewContextMenu::ExecRegionSearch(
   CHECK(browser);
 
   bool lens_overlay_for_region_search_enabled =
-      GetBrowser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled();
+      lens::LensOverlayEntryPointController::From(GetBrowser())->IsEnabled();
   // If Lens overlay is enabled but keyboard selection is disabled and the user
   // triggered the context menu option via keyboard, use the Lens region search
   // flow (with results forced into a new tab) instead of the Lens Overlay flow.
@@ -4915,10 +4901,7 @@ void RenderViewContextMenu::SearchForVideoFrame(
   }
 
   bool lens_overlay_for_video_search_enabled =
-      GetBrowser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled() &&
+      lens::LensOverlayEntryPointController::From(GetBrowser())->IsEnabled() &&
       lens::features::UseLensOverlayForVideoFrameSearch() && is_lens_query;
   // TODO(crbug/353984457): Clean this branching when the new server
   // results flow is ready.

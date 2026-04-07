@@ -1868,10 +1868,8 @@ TEST_P(RenderViewContextMenuReadAnythingTest, AppendPageItems) {
                                  menu_params);
 
   ASSERT_TRUE(GetBrowser());
-  const bool enable_region_search = GetBrowser()
-                                        ->GetFeatures()
-                                        .lens_overlay_entry_point_controller()
-                                        ->IsEnabled();
+  const bool enable_region_search =
+      lens::LensOverlayEntryPointController::From(GetBrowser())->IsEnabled();
   if (enable_region_search) {
     SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                          /*supports_image_search=*/true);

@@ -2386,14 +2386,14 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
   // example. There is an effort to move simple_web_view_dialog away from
   // location_bar_view and from this nullptr situation.
   if (lens::features::IsOmniboxEntryPointEnabled() &&
-      location_bar_view_->browser() &&
-      location_bar_view_->browser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled()) {
-    menu_contents->AddCheckItemWithStringId(
-        IDC_SHOW_GOOGLE_LENS_SHORTCUT,
-        IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
+      location_bar_view_->browser()) {
+    if (auto* controller = lens::LensOverlayEntryPointController::From(
+            location_bar_view_->browser());
+        controller && controller->IsEnabled()) {
+      menu_contents->AddCheckItemWithStringId(
+          IDC_SHOW_GOOGLE_LENS_SHORTCUT,
+          IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
+    }
   }
 
   if (omnibox::ShouldShowAimContextMenuOption(

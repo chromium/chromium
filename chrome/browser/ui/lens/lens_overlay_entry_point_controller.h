@@ -14,6 +14,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ui/actions/actions.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_observer.h"
 
@@ -43,7 +44,12 @@ class LensOverlayEntryPointController : public FullscreenObserver,
                                         public views::FocusChangeListener,
                                         public views::ViewObserver {
  public:
-  LensOverlayEntryPointController();
+  DECLARE_USER_DATA(LensOverlayEntryPointController);
+  static LensOverlayEntryPointController* From(
+      BrowserWindowInterface* browser_window_interface);
+
+  explicit LensOverlayEntryPointController(
+      BrowserWindowInterface* browser_window_interface);
   ~LensOverlayEntryPointController() override;
 
   // This class does nothing if not initialized. IsEnabled returns false.
@@ -134,6 +140,9 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   // eligibility.
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_{nullptr};
+
+  ui::ScopedUnownedUserData<LensOverlayEntryPointController>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace lens

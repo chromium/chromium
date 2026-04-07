@@ -4567,10 +4567,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
   // The default policy is to allow the feature to be enabled.
-  EXPECT_TRUE(browser()
-                  ->GetFeatures()
-                  .lens_overlay_entry_point_controller()
-                  ->IsEnabled());
+  EXPECT_TRUE(
+      lens::LensOverlayEntryPointController::From(browser())->IsEnabled());
 
   // If GenAiDefaultSettings is set, the feature enablement should
   // fallback to GenAiDefaultSettings setting.
@@ -4579,28 +4577,22 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(2), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
-  EXPECT_FALSE(browser()
-                   ->GetFeatures()
-                   .lens_overlay_entry_point_controller()
-                   ->IsEnabled());
+  EXPECT_FALSE(
+      lens::LensOverlayEntryPointController::From(browser())->IsEnabled());
 
   policies.Set("LensOverlaySettings", policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(1), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
-  EXPECT_FALSE(browser()
-                   ->GetFeatures()
-                   .lens_overlay_entry_point_controller()
-                   ->IsEnabled());
+  EXPECT_FALSE(
+      lens::LensOverlayEntryPointController::From(browser())->IsEnabled());
 
   policies.Set("LensOverlaySettings", policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(0), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
-  EXPECT_TRUE(browser()
-                  ->GetFeatures()
-                  .lens_overlay_entry_point_controller()
-                  ->IsEnabled());
+  EXPECT_TRUE(
+      lens::LensOverlayEntryPointController::From(browser())->IsEnabled());
 }
 
 class LensOverlayControllerEntrypointsBrowserTest
@@ -9747,10 +9739,8 @@ class LensOverlayControllerContextualTasksBrowserTest
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualTasksBrowserTest,
                        EnterprisePolicy) {
   // The default policy is to allow the feature to be enabled.
-  EXPECT_TRUE(browser()
-                  ->GetFeatures()
-                  .lens_overlay_entry_point_controller()
-                  ->IsEnabled());
+  EXPECT_TRUE(
+      lens::LensOverlayEntryPointController::From(browser())->IsEnabled());
 
   // Even if the LensOverlaySettings policy is set to disabled, the feature
   // should still be enabled since the enterprise policy for contextual tasks is
@@ -9760,26 +9750,20 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualTasksBrowserTest,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(1), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
-  EXPECT_TRUE(browser()
-                  ->GetFeatures()
-                  .lens_overlay_entry_point_controller()
-                  ->IsEnabled());
+  EXPECT_TRUE(
+      lens::LensOverlayEntryPointController::From(browser())->IsEnabled());
 
   policies.Set("SearchContentSharingSettings", policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(1), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
-  EXPECT_FALSE(browser()
-                   ->GetFeatures()
-                   .lens_overlay_entry_point_controller()
-                   ->IsEnabled());
+  EXPECT_FALSE(
+      lens::LensOverlayEntryPointController::From(browser())->IsEnabled());
 
   policies.Set("SearchContentSharingSettings", policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(0), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
-  EXPECT_TRUE(browser()
-                  ->GetFeatures()
-                  .lens_overlay_entry_point_controller()
-                  ->IsEnabled());
+  EXPECT_TRUE(
+      lens::LensOverlayEntryPointController::From(browser())->IsEnabled());
 }
