@@ -955,6 +955,25 @@ TEST_P(PasswordManagerTest, GeneratedPasswordFormSubmitEmptyStore) {
   EXPECT_EQ(forms_saved[0].password_value, generated_password);
 }
 
+TEST_P(PasswordManagerTest, GeneratedPasswordFormSubmit_SavingDisabled) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(false));
+
+  std::vector<FormData> observed;
+  FormData form_data(MakeSignUpFormData());
+  observed.push_back(form_data);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+
+  // Simulate the user generating the password.
+  const std::u16string generated_password = u"GeNeRaTeDRaNdOmPa$$";
+  manager()->OnPresaveGeneratedPassword(&driver_, form_data,
+                                        generated_password);
+  task_environment_.RunUntilIdle();
+
+  // Verify that it was NOT saved!
+  EXPECT_THAT(store_->stored_passwords(), IsEmpty());
+}
+
 #if BUILDFLAG(IS_IOS)
 
 // Tests that the information held by the field data manager is propagated on
