@@ -237,8 +237,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void ReleaseLockedImages();
 
-  void EnsureSkiaCanvas();
-
   template <class T>
   static std::unique_ptr<T> CreateSharedImageProviderBase(
       gfx::Size size,

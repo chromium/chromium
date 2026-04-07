@@ -1809,16 +1809,6 @@ void CanvasResourceProvider::NotifyWillTransfer(
   GetFlushForImageListener()->NotifyFlushForImage(content_id);
 }
 
-void CanvasResourceProvider::EnsureSkiaCanvas() {
-  CHECK(!IsAccelerated());
-
-  if (skia_canvas_)
-    return;
-
-  skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-      GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
-}
-
 CanvasResourceProvider::CanvasImageProvider*
 CanvasResourceProvider::GetOrCreateSWCanvasImageProvider() {
   if (canvas_image_provider_) {
@@ -1930,7 +1920,10 @@ void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {
 
   cc::PaintRecord last_recording = recorder_->ReleaseMainRecording();
   if (!is_accelerated_) {
-    EnsureSkiaCanvas();
+    if (!skia_canvas_) {
+      skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+          GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+    }
     skia_canvas_->drawPicture(std::move(last_recording));
   } else if (!IsGpuContextLost()) {
     auto access = WillDrawInternal(is_overwrite);
@@ -2036,7 +2029,10 @@ void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
   CHECK(!IsAccelerated());
   CHECK(IsCanvas2D());
 
-  EnsureSkiaCanvas();
+  if (!skia_canvas_) {
+    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+  }
   skia_canvas_->drawPicture(std::move(last_recording));
 }
 
@@ -2162,7 +2158,10 @@ bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
   DCHECK(IsValid());
   DCHECK(!recorder_for_canvas_2d_->HasRecordedDrawOps());
 
-  EnsureSkiaCanvas();
+  if (!skia_canvas_) {
+    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+  }
 
   bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
       orig_info, pixels, row_bytes, x, y);
