@@ -26,11 +26,12 @@ struct AndroidKeyCodeToKeyboardCode {
   KeyboardCode keyboard_code;
 };
 
-constexpr std::array<AndroidKeyCodeToKeyboardCode, 22>
+constexpr std::array<AndroidKeyCodeToKeyboardCode, 23>
     kAndroidKeyCodeToKeyboardCodeMap = {
         {// Spot-check several key codes
          {AKEYCODE_DEL, KeyboardCode::VKEY_BACK},
          {AKEYCODE_SHIFT_LEFT, KeyboardCode::VKEY_LSHIFT},
+         {AKEYCODE_ALT_RIGHT, KeyboardCode::VKEY_ALTGR},
          {AKEYCODE_BACK, KeyboardCode::VKEY_BROWSER_BACK},
          {AKEYCODE_DPAD_LEFT, KeyboardCode::VKEY_LEFT},
          {AKEYCODE_0, KeyboardCode::VKEY_0},
@@ -59,11 +60,12 @@ struct KeyboardCodeToAndroidKeyCode {
   int android_key_code;
 };
 
-constexpr std::array<KeyboardCodeToAndroidKeyCode, 18>
+constexpr std::array<KeyboardCodeToAndroidKeyCode, 19>
     kKeyboardCodeToAndroidKeyCodeMap = {
         {// Spot-check several key codes
          {KeyboardCode::VKEY_BACK, AKEYCODE_DEL},
          {KeyboardCode::VKEY_LSHIFT, AKEYCODE_SHIFT_LEFT},
+         {KeyboardCode::VKEY_ALTGR, AKEYCODE_ALT_RIGHT},
          {KeyboardCode::VKEY_BROWSER_BACK, AKEYCODE_BACK},
          {KeyboardCode::VKEY_LEFT, AKEYCODE_DPAD_LEFT},
          {KeyboardCode::VKEY_0, AKEYCODE_0},

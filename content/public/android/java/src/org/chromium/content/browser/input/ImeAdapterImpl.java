@@ -649,7 +649,14 @@ public class ImeAdapterImpl
         if ((metaState & KeyEvent.META_SHIFT_ON) != 0) {
             modifiers |= WebInputEventModifier.SHIFT_KEY;
         }
-        if ((metaState & KeyEvent.META_ALT_ON) != 0) {
+        if ((metaState & KeyEvent.META_ALT_LEFT_ON) != 0) {
+            modifiers |= WebInputEventModifier.ALT_KEY;
+        }
+        if ((metaState & KeyEvent.META_ALT_RIGHT_ON) != 0) {
+            modifiers |= WebInputEventModifier.ALT_GR_KEY;
+        }
+        if ((metaState & (KeyEvent.META_ALT_LEFT_ON | KeyEvent.META_ALT_RIGHT_ON)) == 0
+                && (metaState & KeyEvent.META_ALT_ON) != 0) {
             modifiers |= WebInputEventModifier.ALT_KEY;
         }
         if ((metaState & KeyEvent.META_CTRL_ON) != 0) {

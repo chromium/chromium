@@ -22,7 +22,14 @@ EventFlags EventFlagsFromAndroidMetaState(int meta_state) {
   if ((meta_state & AMETA_CTRL_ON) != 0) {
     flags |= EF_CONTROL_DOWN;
   }
-  if ((meta_state & AMETA_ALT_ON) != 0) {
+  if ((meta_state & AMETA_ALT_LEFT_ON) != 0) {
+    flags |= EF_ALT_DOWN;
+  }
+  if ((meta_state & AMETA_ALT_RIGHT_ON) != 0) {
+    flags |= EF_ALTGR_DOWN;
+  }
+  if ((meta_state & (AMETA_ALT_LEFT_ON | AMETA_ALT_RIGHT_ON)) == 0 &&
+      (meta_state & AMETA_ALT_ON) != 0) {
     flags |= EF_ALT_DOWN;
   }
   if ((meta_state & AMETA_META_ON) != 0) {
@@ -46,6 +53,9 @@ int AndroidMetaStateFromEventFlags(EventFlags event_flags) {
   }
   if (event_flags & EF_ALT_DOWN) {
     meta_state |= AMETA_ALT_ON;
+  }
+  if (event_flags & EF_ALTGR_DOWN) {
+    meta_state |= AMETA_ALT_RIGHT_ON;
   }
   if (event_flags & EF_COMMAND_DOWN) {
     meta_state |= AMETA_META_ON;

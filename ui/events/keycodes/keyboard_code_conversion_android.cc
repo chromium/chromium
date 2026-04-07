@@ -104,8 +104,9 @@ DomKey GetDomKeyFromAndroidKeycode(int keycode) {
     case AKEYCODE_CLEAR:
       return DomKey::CLEAR;
     case AKEYCODE_ALT_LEFT:
-    case AKEYCODE_ALT_RIGHT:
       return DomKey::ALT;
+    case AKEYCODE_ALT_RIGHT:
+      return DomKey::ALT_GRAPH;
     case AKEYCODE_SHIFT_LEFT:
     case AKEYCODE_SHIFT_RIGHT:
       return DomKey::SHIFT;
@@ -683,7 +684,7 @@ KeyboardCode KeyboardCodeFromAndroidKeyCode(int keycode) {
     case AKEYCODE_ALT_LEFT:
       return VKEY_LMENU;
     case AKEYCODE_ALT_RIGHT:
-      return VKEY_RMENU;
+      return VKEY_ALTGR;
     case AKEYCODE_GRAVE:
       return VKEY_OEM_3;
     case AKEYCODE_APOSTROPHE:
@@ -920,7 +921,7 @@ int AndroidKeyCodeFromKeyboardCode(KeyboardCode key_code) {
       return AKEYCODE_MOVE_END;
     case VKEY_LMENU:
       return AKEYCODE_ALT_LEFT;
-    case VKEY_RMENU:
+    case VKEY_ALTGR:
       return AKEYCODE_ALT_RIGHT;
     case VKEY_OEM_3:
       return AKEYCODE_GRAVE;

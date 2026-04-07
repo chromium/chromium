@@ -205,6 +205,32 @@ public class ImeAdapterImplUnitTest {
         verify(mImeAdapterImplJni, never()).commitText(anyLong(), any(), any(), any(), anyInt());
         reset(mImeAdapterImplJni);
 
+        // Test ALT_RIGHT_ON (AltGr).
+        long timeAltGr = SystemClock.uptimeMillis();
+        KeyEvent eventAltGr =
+                new KeyEvent(
+                        timeAltGr,
+                        timeAltGr,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_A,
+                        0,
+                        KeyEvent.META_ALT_RIGHT_ON);
+        adapter.onKeyPreIme(eventAltGr.getKeyCode(), eventAltGr);
+        adapter.sendCompositionToNative("a", 1, true, 0);
+        verify(mImeAdapterImplJni)
+                .sendKeyEvent(
+                        anyLong(),
+                        isNotNull(),
+                        eq(EventType.KEY_DOWN),
+                        eq(WebInputEventModifier.ALT_GR_KEY),
+                        eq(timeAltGr),
+                        eq(eventAltGr.getKeyCode()),
+                        eq(eventAltGr.getScanCode()),
+                        eq(false),
+                        eq(eventAltGr.getUnicodeChar()));
+        verify(mImeAdapterImplJni, never()).commitText(anyLong(), any(), any(), any(), anyInt());
+        reset(mImeAdapterImplJni);
+
         // Ignore events that are too old or don't match with the committed text.
         long time2 = SystemClock.uptimeMillis() - 60 * 1000;
         KeyEvent event2 =
