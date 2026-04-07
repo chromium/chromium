@@ -2209,7 +2209,7 @@ class PendingNavigation {
   blink::mojom::CommonNavigationParamsPtr common_params_;
   blink::mojom::BeginNavigationParamsPtr begin_navigation_params_;
   mojo::Remote<blink::mojom::NavigationStateKeepAliveHandle>
-      opener_keep_alive_handle_;
+      initiator_navigation_state_keep_alive_handle_;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory_;
   mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client_;
   mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
@@ -2222,6 +2222,8 @@ class PendingNavigation {
       blink::mojom::BeginNavigationParamsPtr begin_navigation_params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
+      mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle>
+          initiator_navigation_state_keep_alive_handle,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
           renderer_cancellation_listener,
       mojo::PendingReceiver<
@@ -2235,6 +2237,8 @@ PendingNavigation::PendingNavigation(
     blink::mojom::BeginNavigationParamsPtr begin_navigation_params,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
+    mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle>
+        initiator_navigation_state_keep_alive_handle,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener,
     mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
@@ -2248,9 +2252,16 @@ PendingNavigation::PendingNavigation(
           std::move(renderer_cancellation_listener)),
       deferred_commit_resume_listener_(
           std::move(deferred_commit_resume_listener)) {
-  if (initiator_frame) {
+  if (initiator_navigation_state_keep_alive_handle) {
+    initiator_navigation_state_keep_alive_handle_.Bind(
+        std::move(initiator_navigation_state_keep_alive_handle));
+  } else if (initiator_frame) {
+    // TODO(500074274): It would be ideal to drop this in favor of something
+    // like `CHECK(!initiator_frame ||
+    //             initiator_navigation_state_keep_alive_handle)`.
     initiator_frame->IssueKeepAliveHandle(
-        opener_keep_alive_handle_.BindNewPipeAndPassReceiver());
+        initiator_navigation_state_keep_alive_handle_
+            .BindNewPipeAndPassReceiver());
   }
 }
 
@@ -11653,6 +11664,7 @@ void RenderFrameHostImpl::BeginNavigation(
     pending_navigate_ = std::make_unique<PendingNavigation>(
         std::move(validated_common_params), std::move(begin_params),
         std::move(blob_url_loader_factory), std::move(navigation_client),
+        std::move(initiator_navigation_state_keep_alive_handle),
         std::move(renderer_cancellation_listener),
         std::move(deferred_commit_resume_listener), initiator_frame);
     return;

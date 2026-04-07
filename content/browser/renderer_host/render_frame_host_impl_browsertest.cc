@@ -10611,4 +10611,73 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_EQ(allowlist_url, web_contents()->GetLastCommittedURL());
 }
 
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DeferredPopupNavigationPreservesInitiatorPolicies) {
+  // 1. Force WebContents in a new Shell to defer new navigations until the
+  // delegate is set.
+  shell()->set_delay_popup_contents_delegate_for_testing(true);
+
+  // 2. Load a page with an iframe.
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // 3. Navigate the iframe to a page with CSP form-action 'none'.
+  GURL iframe_url = embedded_test_server()->GetURL(
+      "a.com", "/set-header?Content-Security-Policy: form-action 'none'");
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(
+    let iframe = document.createElement('iframe');
+    iframe.id = 'initiator_iframe';
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                        iframe_url)));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  RenderFrameHostImpl* iframe_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0));
+  ASSERT_TRUE(iframe_rfh);
+
+  // 4. From the iframe, open a popup that will navigate to a same-site URL.
+  // The navigation should be deferred because of step 1.
+  GURL popup_url = embedded_test_server()->GetURL("a.com", "/title2.html");
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(iframe_rfh, JsReplace("window.open($1);", popup_url)));
+  Shell* new_shell = new_shell_observer.GetShell();
+  WebContentsImpl* new_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+
+  // The navigation in the new popup should be deferred.
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_TRUE(new_contents->GetController().IsInitialBlankNavigation());
+
+  // 5. Detach the initiator iframe.
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    let iframe = document.getElementById('initiator_iframe');
+    iframe.remove();
+  )"));
+
+  // 6. Resume the deferred navigation.
+  new_contents->SetDelegate(new_shell);
+  new_contents->ResumeLoadingCreatedWebContents();
+
+  // 7. Verify that the navigation in the popup inherits the initiator's CSP.
+  // Since form-action is 'none', a form submission should be blocked.
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_EQ(popup_url, new_contents->GetLastCommittedURL());
+
+  // Try to submit a form. It should be blocked by CSP if policies were
+  // preserved.
+  EXPECT_TRUE(ExecJs(new_contents, R"(
+    let form = document.createElement('form');
+    form.action = '/title3.html';
+    document.body.appendChild(form);
+    form.submit();
+  )"));
+
+  // If CSP form-action 'none' was preserved, the navigation to title3.html
+  // should not happen, and we should still be on popup_url (or about:blank if
+  // blocked early).
+  EXPECT_EQ(popup_url, new_contents->GetLastCommittedURL());
+}
+
 }  // namespace content
