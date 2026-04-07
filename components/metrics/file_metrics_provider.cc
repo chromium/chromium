@@ -30,6 +30,7 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/ranges_manager.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -114,30 +115,12 @@ void DeleteFileWhenPossible(const base::FilePath& path) {
                             base::File::FLAG_DELETE_ON_CLOSE);
 }
 
-// Checks whether a given path is a PMA (Persistent Memory Allocator) file.
-// TODO(crbug.com/429516571): Avoid IsDirectory() and Extension() checks by
-// using the parameters in base::FileEnumerator().
-bool IsPMAFile(const base::FilePath& file_path,
-               const base::FileEnumerator::FileInfo& file_info) {
-  if (file_info.IsDirectory()) {
-    return false;
-  }
-
-  // Check if it's temporary file
+// Checks if the file is a temporary file (starting with '.' or '_').
+bool IsTempFile(const base::FilePath& file_path) {
   base::FilePath::CharType first_character =
       file_path.BaseName().value().front();
-  if (first_character == FILE_PATH_LITERAL('.') ||
-      first_character == FILE_PATH_LITERAL('_')) {
-    return false;
-  }
-
-  // Check non-PMA extension.
-  if (file_path.Extension() !=
-      base::PersistentMemoryAllocator::kFileExtension) {
-    return false;
-  }
-
-  return true;
+  return first_character == FILE_PATH_LITERAL('.') ||
+         first_character == FILE_PATH_LITERAL('_');
 }
 
 // On iOS, clients should not delete the sources of type
@@ -165,16 +148,20 @@ void LimitAmountOfFiles(const base::FilePath& path) {
   }
   base::flat_map<base::Time, base::FilePath> found_files;
 
-  // Find all files under the directory.
+  // Find all PMA files under the directory.
+  auto pma_file_pattern =
+      base::StrCat({FILE_PATH_LITERAL("*"),
+                    base::PersistentMemoryAllocator::kFileExtension});
   base::FileEnumerator file_iter(path, /*recursive=*/false,
-                                 base::FileEnumerator::FILES);
+                                 base::FileEnumerator::FILES, pma_file_pattern);
+
   for (base::FilePath file_path = file_iter.Next(); !file_path.empty();
        file_path = file_iter.Next()) {
-    base::FileEnumerator::FileInfo file_info = file_iter.GetInfo();
-    if (!IsPMAFile(file_path, file_info)) {
+    if (IsTempFile(file_path)) {
       continue;
     }
 
+    base::FileEnumerator::FileInfo file_info = file_iter.GetInfo();
     base::Time modified_time = file_info.GetLastModifiedTime();
     found_files.emplace(modified_time, file_path);
   }
@@ -388,22 +375,28 @@ bool FileMetricsProvider::LocateNextFileInDirectory(SourceInfo* source) {
   size_t total_size_kib = 0;  // Using KiB allows 4TiB even on 32-bit builds.
   size_t file_count = 0;
 
+  auto pma_file_pattern =
+      base::StrCat({FILE_PATH_LITERAL("*"),
+                    base::PersistentMemoryAllocator::kFileExtension});
+
   base::Time now_time = base::Time::Now();
   if (!source->found_files) {
     source->found_files = std::make_unique<SourceInfo::FoundFiles>();
+    // Find all PMA files under the directory.
     base::FileEnumerator file_iter(source->directory, /*recursive=*/false,
-                                   base::FileEnumerator::FILES);
+                                   base::FileEnumerator::FILES,
+                                   pma_file_pattern);
     SourceInfo::FoundFile found_file;
 
     // Open the directory and find all the files, remembering the last-modified
     // time of each.
     for (found_file.path = file_iter.Next(); !found_file.path.empty();
          found_file.path = file_iter.Next()) {
-      found_file.info = file_iter.GetInfo();
-
-      if (!IsPMAFile(found_file.path, found_file.info)) {
+      if (IsTempFile(found_file.path)) {
         continue;
       }
+
+      found_file.info = file_iter.GetInfo();
 
       // Process real files.
       total_size_kib += found_file.info.GetSize() >> 10;
