@@ -237,6 +237,7 @@ All changes to this list should go through Blink's feature review process: http:
     grid-template-areas
     grid-template-columns
     grid-template-rows
+    hanging-punctuation
     height
     hyphenate-character
     hyphenate-limit-chars

@@ -234,6 +234,7 @@ grid-row-start: auto
 grid-template-areas: none
 grid-template-columns: none
 grid-template-rows: none
+hanging-punctuation: none
 height: auto
 hyphenate-character: auto
 hyphenate-limit-chars: auto

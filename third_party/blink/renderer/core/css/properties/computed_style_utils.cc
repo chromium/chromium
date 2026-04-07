@@ -2255,6 +2255,25 @@ CSSValue* ComputedStyleUtils::ValueForGridPosition(
   return list;
 }
 
+CSSValue* ComputedStyleUtils::ValueForHangingPunctuation(
+    HangingPunctuation hanging_punctuation) {
+  if (hanging_punctuation == HangingPunctuation::kNone) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (EnumHasFlags(hanging_punctuation, HangingPunctuation::kFirst)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kFirst));
+  }
+  if (EnumHasFlags(hanging_punctuation, HangingPunctuation::kAllowEnd)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAllowEnd));
+  }
+  if (EnumHasFlags(hanging_punctuation, HangingPunctuation::kLast)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kLast));
+  }
+  return list;
+}
+
 CSSValue* ComputedStyleUtils::ValueForFlowTolerance(
     const FlowTolerance& flow_tolerance,
     const ComputedStyle& style) {

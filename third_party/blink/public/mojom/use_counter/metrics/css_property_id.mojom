@@ -1010,6 +1010,7 @@ enum CSSSampleId {
     kRuleInsetStart = 938,
     kRuleInsetEnd = 939,
     kPathLength = 940,
+    kHangingPunctuation = 941,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

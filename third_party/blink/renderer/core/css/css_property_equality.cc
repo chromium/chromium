@@ -545,6 +545,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GridTemplateColumns() == b.GridTemplateColumns();
     case CSSPropertyID::kGridTemplateRows:
       return a.GridTemplateRows() == b.GridTemplateRows();
+    case CSSPropertyID::kHangingPunctuation:
+      return a.GetHangingPunctuation() == b.GetHangingPunctuation();
     case CSSPropertyID::kHeight:
       return a.Height() == b.Height();
     case CSSPropertyID::kInterestDelayStart:

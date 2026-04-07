@@ -718,6 +718,7 @@ bool ConsumeGapDecorationsRuleInsetStartEndShorthand(
     CSSParserLocalContext& local_context,
     CSSParserTokenStream& stream,
     CSSValue*& rule_inset_value);
+CSSValue* ConsumeHangingPunctuation(CSSParserTokenStream&);
 
 bool ConsumeGapDecorationsRuleInsetShorthand(
     bool important,

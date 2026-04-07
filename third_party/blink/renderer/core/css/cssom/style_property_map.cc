@@ -192,7 +192,8 @@ const CSSValue* StyleValueToCSSValue(
       break;
     }
     case CSSPropertyID::kTextDecorationLine:
-    case CSSPropertyID::kTextTransform: {
+    case CSSPropertyID::kTextTransform:
+    case CSSPropertyID::kHangingPunctuation: {
       // level 1 only accepts single keywords
       const auto* value = style_value.ToCSSValue();
       // only 'none' is stored as an identifier, the other keywords are

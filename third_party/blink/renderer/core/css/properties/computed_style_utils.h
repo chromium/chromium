@@ -476,6 +476,9 @@ class CORE_EXPORT ComputedStyleUtils {
   static const CSSValue* ValueForStyleAutoColor(const ComputedStyle&,
                                                 const StyleAutoColor&,
                                                 CSSValuePhase);
+
+  static CSSValue* ValueForHangingPunctuation(
+      HangingPunctuation hanging_punctuation);
   static CSSValue* ValueForIntrinsicLength(const ComputedStyle&,
                                            const StyleIntrinsicLength&);
   static CSSValue* ValueForPositionArea(const blink::PositionArea&);

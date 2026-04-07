@@ -7647,7 +7647,37 @@ CSSValue* ParseGridLanesDirection(CSSParserTokenStream& stream) {
   }
   CSSValue* second_reverse_value = css_parsing_utils::ConsumeIdent(stream);
   list->Append(*second_reverse_value);
+  return list;
+}
 
+CSSValue* ConsumeHangingPunctuation(CSSParserTokenStream& stream) {
+  if (stream.Peek().Id() == CSSValueID::kNone) {
+    return ConsumeIdent(stream);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  CSSIdentifierValue* first = nullptr;
+  CSSIdentifierValue* allow_end = nullptr;
+  CSSIdentifierValue* last = nullptr;
+
+  while (true) {
+    CSSValueID id = stream.Peek().Id();
+    if (id == CSSValueID::kFirst && !first) {
+      first = ConsumeIdent(stream);
+      list->Append(*first);
+    } else if (id == CSSValueID::kAllowEnd && !allow_end) {
+      allow_end = ConsumeIdent(stream);
+      list->Append(*allow_end);
+    } else if (id == CSSValueID::kLast && !last) {
+      last = ConsumeIdent(stream);
+      list->Append(*last);
+    } else {
+      break;
+    }
+  }
+  if (list->length() == 0) {
+    return nullptr;
+  }
   return list;
 }
 
