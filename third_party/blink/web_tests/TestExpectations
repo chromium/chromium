@@ -638,8 +638,12 @@ crbug.com/819617 [ Linux ] virtual/text-antialias/descent-clip-in-scaled-page.ht
 
 crbug.com/1196414 compositing/composited-replaced-subpixel-location.html [ Failure ]
 
-# Flaky virtual/off-main-thread-css-paint tests. Skipping whole test suite for now.
-crbug.com/355693577 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/* [ Failure Skip ]
+# virtual/off-main-thread-css-paint doesn't seem to respect imageSmoothingQuality.
+crbug.com/499079828 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-imageSmoothingQuality.med.https.html [ Failure ]
+crbug.com/499079828 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-imageSmoothingQuality.low.https.html [ Failure ]
+
+# Crashes due to marking paint worklet ready before loaded.
+crbug.com/496408113 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-018.https.html [ Pass Timeout Skip ]
 
 crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 
