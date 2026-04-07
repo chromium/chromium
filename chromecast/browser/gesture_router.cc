@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "chromecast/base/chromecast_switches.h"
 
 namespace chromecast {

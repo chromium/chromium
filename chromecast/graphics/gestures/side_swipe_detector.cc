@@ -7,6 +7,7 @@
 #include <deque>
 
 #include "base/auto_reset.h"
+#include "base/logging.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"

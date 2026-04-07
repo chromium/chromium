@@ -8,6 +8,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 

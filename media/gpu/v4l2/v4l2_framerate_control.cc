@@ -7,6 +7,7 @@
 #include <linux/videodev2.h>
 
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"

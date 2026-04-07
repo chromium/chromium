@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_BROWSER_MOJOM_VISIBILITY_MOJOM_TRAITS_H_
 #define CHROMECAST_BROWSER_MOJOM_VISIBILITY_MOJOM_TRAITS_H_
 
+#include "base/logging.h"
 #include "chromecast/browser/mojom/cast_content_window.mojom.h"
 #include "chromecast/browser/visibility_types.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
