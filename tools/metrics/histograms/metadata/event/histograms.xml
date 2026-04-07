@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.DragDrop.Tool" enum="DragAndDropToolType"
-    expires_after="2026-08-01">
+    expires_after="2026-10-04">
   <owner>mustaq@chromium.org</owner>
   <owner>gastonr@microsoft.com</owner>
   <owner>gerchiko@microsoft.com</owner>
@@ -309,7 +309,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Jank.ScrollUpdate.{ScrollSpeed}.{VsyncStatus}.FrameAboveJankyThreshold2"
-    units="ratio * 100" expires_after="2026-08-02">
+    units="ratio * 100" expires_after="2026-10-04">
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -750,7 +750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.FrameStageCalculationResult"
-    enum="ScrollJankFrameStageCalculationResult" expires_after="2026-08-02">
+    enum="ScrollJankFrameStageCalculationResult" expires_after="2026-10-04">
   <owner>petrcermak@chromium.org</owner>
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>

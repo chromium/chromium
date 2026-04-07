@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.DuplicateTabTitlesShownCount.{ContextualSearchSource}"
-    units="count" expires_after="2026-06-10">
+    units="count" expires_after="2026-10-04">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

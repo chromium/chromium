@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.Create{Mode}Transaction.NumTransactionsInDatabase"
-    units="transactions" expires_after="2026-08-02">
+    units="transactions" expires_after="2026-10-04">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.NumPendingConnections.OnCreateAbove10k"
-    units="connections" expires_after="2026-08-02">
+    units="connections" expires_after="2026-10-04">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -730,7 +730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.NumPendingConnections.RequestQueueSize"
-    units="connections" expires_after="2026-08-02">
+    units="connections" expires_after="2026-10-04">
   <owner>etienneb@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -743,7 +743,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.NumTransactionsInIDBDatabaseOnTransactionCreated.10kTransactions"
-    units="transactions" expires_after="2026-08-02">
+    units="transactions" expires_after="2026-10-04">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -929,7 +929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}CommitPending"
-    enum="Boolean" expires_after="2026-08-02">
+    enum="Boolean" expires_after="2026-10-04">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -941,7 +941,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}IsAborted"
-    enum="IDBTransactionMode" expires_after="2026-08-02">
+    enum="IDBTransactionMode" expires_after="2026-10-04">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -966,7 +966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}Mode"
-    enum="IDBTransactionMode" expires_after="2026-08-02">
+    enum="IDBTransactionMode" expires_after="2026-10-04">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -979,7 +979,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.TransactionTimeout.{TransactionCount}NumTransactionsInConnection"
-    units="transactions" expires_after="2026-08-02">
+    units="transactions" expires_after="2026-10-04">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -993,7 +993,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.TransactionTimeout.{TransactionCount}NumTransactionsInDB"
-    units="transactions" expires_after="2026-08-02">
+    units="transactions" expires_after="2026-10-04">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1006,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}TaskRunQueued"
-    enum="Boolean" expires_after="2026-08-02">
+    enum="Boolean" expires_after="2026-10-04">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

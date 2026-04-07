@@ -226,7 +226,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.h:Promo) -->
 
 <histogram name="IOS.AIHub.Action" enum="IOSAIHubAction"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-alchemy@google.com</owner>
   <summary>
@@ -2584,7 +2584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.FRE.ConsentAction" enum="IOSGeminiFREAction"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-alchemy@google.com</owner>
   <summary>
@@ -2605,7 +2605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.FRE.PromoAction" enum="IOSGeminiFREAction"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-alchemy@google.com</owner>
   <summary>
@@ -4333,7 +4333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notifications.SafetyCheck.Interaction"
-    enum="IOSSafetyCheckNotificationType" expires_after="2026-08-02">
+    enum="IOSSafetyCheckNotificationType" expires_after="2026-10-04">
   <owner>bwwilliams@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
@@ -4390,7 +4390,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Notifications.SendTab.Received"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>hiramahmood@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -4630,7 +4630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.OpenIn.MimeType" enum="IOSOpenInMimeType"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -4917,7 +4917,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.PageContext.AnnotatedPageContent.{Status}.{Config}.Latency"
-    units="ms" expires_after="2026-07-21">
+    units="ms" expires_after="2026-10-04">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -5003,7 +5003,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PartialTranslate.Outcome" enum="PartialTranslateOutcome"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>The outcome of the partial translate feature.</summary>
@@ -5267,7 +5267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PersistTabContext.ReadResult"
-    enum="IOSPersistTabContextReadResult" expires_after="2026-08-02">
+    enum="IOSPersistTabContextReadResult" expires_after="2026-10-04">
   <owner>cloutierc@google.com</owner>
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
@@ -5706,7 +5706,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToAuthorized"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2026-07-26">
+    expires_after="2026-10-04">
   <owner>danieltwhite@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <summary>
@@ -5879,7 +5879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.Distiller.Latency" units="ms"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>fernandex@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -5891,7 +5891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.Distiller.Result"
-    enum="ReaderModeDistillerOutcome" expires_after="2026-08-02">
+    enum="ReaderModeDistillerOutcome" expires_after="2026-10-04">
   <owner>fernandex@google.com</owner>
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
@@ -6143,7 +6143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SafariImport.EntryPoint{EntryPoint}.Action"
-    enum="SafariDataImportEntryPointAction" expires_after="2026-08-02">
+    enum="SafariDataImportEntryPointAction" expires_after="2026-10-04">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -6159,7 +6159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SafariImport.ExportEducationAction"
-    enum="SafariDataImportExportEducationAction" expires_after="2026-08-02">
+    enum="SafariDataImportExportEducationAction" expires_after="2026-10-04">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -7408,7 +7408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
-    enum="IOSTabSwitcherPageChangeInteraction" expires_after="2026-08-02">
+    enum="IOSTabSwitcherPageChangeInteraction" expires_after="2026-10-04">
   <owner>huitingyu@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -7538,7 +7538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TipsMagicStack.Module.DisplayedType" enum="TipIdentifier"
-    expires_after="2026-08-03">
+    expires_after="2026-10-04">
   <owner>bmcclure@google.com</owner>
   <owner>bwwilliams@google.com</owner>
   <summary>
@@ -7806,7 +7806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WelcomeBack.FeaturesClickedCount" units="count"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -8062,7 +8062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManualFallback.VisibleSuggestions.ExpandIcon.OpenAddresses"
-    units="Suggestions" expires_after="2026-07-26">
+    units="Suggestions" expires_after="2026-10-04">
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
   <summary>

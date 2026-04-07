@@ -271,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ServerHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2026-08-01">
+    enum="HttpResponseCode" expires_after="2026-10-04">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>

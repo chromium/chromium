@@ -1449,7 +1449,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram
     name="Power.ForegroundBatteryDrainPerScenario.30Seconds{Exclusive}{LoadingScenario}{InputScenario}"
-    units="uAh" expires_after="2026-08-02">
+    units="uAh" expires_after="2026-10-04">
   <owner>kraskevich@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -1681,7 +1681,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.KeyboardBacklightLevel" units="%"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the keyboard backlight as a percentage. Sampled every 30
@@ -1997,7 +1997,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.SuspendResult" enum="SuspendResult"
-    expires_after="2026-08-02">
+    expires_after="2026-10-04">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -2048,7 +2048,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
-    units="units" expires_after="2026-08-02">
+    units="units" expires_after="2026-10-04">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>

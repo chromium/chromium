@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelIssueExpanded"
-    enum="DevToolsIssuesPanelIssueExpanded" expires_after="M150">
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2026-10-04">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <component>1519296</component>

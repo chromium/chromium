@@ -1298,7 +1298,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelToBeInstalledReason.{ModelExecutionFeature}"
-    enum="OptimizationGuideOnDeviceModelStatus" expires_after="2026-08-02">
+    enum="OptimizationGuideOnDeviceModelStatus" expires_after="2026-10-04">
   <owner>holte@chromium.org</owner>
   <owner>andysjlim@chromium.org</owner>
   <summary>
@@ -1373,7 +1373,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceResponseTokensTimeToNextToken.{ModelExecutionFeature}"
-    units="ms" expires_after="2026-08-01">
+    units="ms" expires_after="2026-10-04">
   <owner>cduvall@chromium.org</owner>
   <owner>memmottt@chromium.org</owner>
   <summary>
@@ -1716,7 +1716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.OnDeviceModel.DetectedVram" units="MB"
-    expires_after="2026-08-03">
+    expires_after="2026-10-04">
   <owner>zekunjiang@google.com</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
@@ -1736,7 +1736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.OnDeviceModel.InstalledModel"
-    enum="InstalledModel" expires_after="2026-08-03">
+    enum="InstalledModel" expires_after="2026-10-04">
   <owner>zekunjiang@google.com</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
@@ -1747,7 +1747,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.OnDeviceModel.OnDeviceModelComponentInstantiated"
-    enum="Boolean" expires_after="2026-08-03">
+    enum="Boolean" expires_after="2026-10-04">
   <owner>zekunjiang@google.com</owner>
   <owner>wittman@chromium.org</owner>
   <summary>

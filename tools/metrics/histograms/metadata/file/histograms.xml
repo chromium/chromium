@@ -976,7 +976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.ODFS.FileSize.{Direction}" units="KiB"
-    expires_after="2026-07-01">
+    expires_after="2026-10-04">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1090,7 +1090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.ODFS.GraphAPI.Time.{GraphAPIMethod}"
-    units="ms" expires_after="2026-07-01">
+    units="ms" expires_after="2026-10-04">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1145,7 +1145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.ODFS.Throughput.{Direction}"
-    units="KiB/s" expires_after="2026-07-01">
+    units="KiB/s" expires_after="2026-10-04">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
