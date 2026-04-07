@@ -6,13 +6,15 @@
 #define CONTENT_BROWSER_RENDERER_HOST_FILE_UTILITIES_HOST_IMPL_H_
 
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 
 namespace content {
 
-class FileUtilitiesHostImpl : public blink::mojom::FileUtilitiesHost {
+class CONTENT_EXPORT FileUtilitiesHostImpl
+    : public blink::mojom::FileUtilitiesHost {
  public:
   explicit FileUtilitiesHostImpl(ChildProcessId process_id);
   ~FileUtilitiesHostImpl() override;

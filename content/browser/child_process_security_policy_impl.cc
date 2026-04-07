@@ -798,7 +798,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     int skip = 0;
     while (current_path != last_path) {
       base::FilePath base_name = current_path.BaseName();
-      if (base_name.value() == base::FilePath::kParentDirectory) {
+      if (base_name.ReferencesParent()) {
         ++skip;
       } else if (skip > 0) {
         if (base_name.value() != base::FilePath::kCurrentDirectory) {
