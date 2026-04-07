@@ -316,6 +316,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
       viewportZoom_: {type: Number},
       zoomBounds_: {type: Object},
+      toolbarEnabled_: {type: Boolean},
     };
   }
 
@@ -397,7 +398,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected accessor textboxState_: TextBoxState = TextBoxState.INACTIVE;
   // </if>
   protected accessor title_: string = '';
-  protected toolbarEnabled_: boolean = false;
+  protected accessor toolbarEnabled_: boolean = false;
   protected accessor twoUpViewEnabled_: boolean = false;
   // <if expr="enable_pdf_ink2">
   private accessor useSidePanelForInk_: boolean = false;

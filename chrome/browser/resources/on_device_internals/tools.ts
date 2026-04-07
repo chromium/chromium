@@ -132,6 +132,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
       audioError_: {type: String},
       performanceHint_: {type: String},
       loadedPerformanceHint_: {type: Number},
+      showPlatformModelCheckbox_: {type: Boolean},
     };
   }
 
@@ -147,7 +148,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
   private accessor modelPath_: string = '';
   protected accessor model_: OnDeviceModelRemote|null = null;
   protected accessor performanceClassText_: string = 'Loading...';
-  protected showPlatformModelCheckbox_: boolean =
+  protected accessor showPlatformModelCheckbox_: boolean =
       loadTimeData.getBoolean('useChromeOSModelService');
   protected accessor usePlatformModel_: boolean = false;
   protected accessor responses_: Response[] = [];

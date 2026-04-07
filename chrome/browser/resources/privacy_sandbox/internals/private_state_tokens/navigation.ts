@@ -24,11 +24,12 @@ export class PrivateStateTokensNavigationElement extends CrLitElement {
     return {
       data: {type: Array},
       itemToRender: {type: String},
+      metadata: {type: Object},
     };
   }
 
   accessor data: ListItem[] = [];
-  metadata: Metadata = nullMetadataObj;
+  accessor metadata: Metadata = nullMetadataObj;
   protected accessor itemToRender: ItemsToRender = ItemsToRender.ISSUER_LIST;
 }
 

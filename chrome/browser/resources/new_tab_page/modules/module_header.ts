@@ -61,7 +61,7 @@ export class ModuleHeaderElement extends CrLitElement {
   private hideDismissAction_: boolean =
       loadTimeData.getBoolean('hideDismissModules');
 
-  protected get visibleMenuItems_(): MenuItem[] {
+  protected visibleMenuItems_(): MenuItem[] {
     if (this.hideDismissAction_) {
       return this.menuItems.filter(item => item.action !== 'dismiss');
     }

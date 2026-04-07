@@ -265,6 +265,7 @@ export class AppElement extends AppElementBase {
       browserPromoLimit_: {type: Number},
       browserPromoCompletedLimit_: {type: Number},
       showBrowserPromo_: {type: Boolean},
+      caretAnimationsEnabled_: {type: Boolean},
 
       modulesShownToUser: {
         type: Boolean,
@@ -368,7 +369,7 @@ export class AppElement extends AppElementBase {
   protected accessor wasComposeboxOpened_: boolean = false;
   protected accessor showLensUploadDialog_: boolean = false;
   protected accessor showComposebox_: boolean = false;
-  protected caretAnimationsEnabled_: boolean =
+  protected accessor caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
   protected accessor logoEnabled_: boolean =
       loadTimeData.getBoolean('logoEnabled');

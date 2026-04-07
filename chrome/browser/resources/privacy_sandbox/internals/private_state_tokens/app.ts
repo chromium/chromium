@@ -49,6 +49,7 @@ export class PrivateStateTokensAppElement extends CrLitElement {
       isDrawerOpen_: {type: Boolean},
       itemToRender: {type: String},
       data: {type: Array},
+      metadata_: {type: Object},
     };
   }
 
@@ -59,7 +60,7 @@ export class PrivateStateTokensAppElement extends CrLitElement {
   accessor data: ListItem[] = [];
   accessor itemToRender: ItemsToRender = ItemsToRender.ISSUER_LIST;
 
-  protected metadata_: Metadata = nullMetadataObj;
+  protected accessor metadata_: Metadata = nullMetadataObj;
   private handleNavigationToMetadata_ =
       this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_METADATA);
   private handleNavigationToList_ =

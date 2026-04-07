@@ -295,7 +295,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     return this.shadowRoot.querySelector('cr-searchbox-dropdown')!;
   }
 
-  protected get shouldHideEntrypointButton_(): boolean {
+  protected shouldHideEntrypointButton_(): boolean {
     return this.searchboxLayoutMode_ === 'Compact';
   }
 
@@ -354,7 +354,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   private getContextualEntrypointButton_(): ContextualEntrypointButtonElement|
       null {
-    if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_) {
+    if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_()) {
       return this.shadowRoot.querySelector<ContextualEntrypointButtonElement>(
           '#context');
     }
@@ -515,7 +515,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     }
     // TODO(crbug.com/462775253): Ideally everything available for selection
     // comes from the AutocompleteResult.
-    if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_) {
+    if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_()) {
       available.push({
         line: -1,
         state: SelectionLineState.kFocusedButtonContextEntrypoint,
