@@ -234,7 +234,7 @@ class VerticalTabStripRegionView final
   void OnChildMoved();
 
   void OnExpandOnHoverEnabledChanged(bool enabled);
-  void UpdateExpandOnHoverState();
+  void UpdateExpandOnHoverState(std::optional<bool> hovered = std::nullopt);
   void AnimateExpandOnHover(bool expand);
 
   void RegisterExpandOnHoverLock(VerticalTabStripExpandOnHoverLock* lock);
