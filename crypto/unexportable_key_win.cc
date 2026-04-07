@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "crypto/unexportable_key_win.h"
 
 #include <string>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -103,7 +99,8 @@ void LogTPMOperationError(
 }
 
 std::vector<uint8_t> CBBToVector(const CBB* cbb) {
-  return std::vector<uint8_t>(CBB_data(cbb), CBB_data(cbb) + CBB_len(cbb));
+  return std::vector<uint8_t>(CBB_data(cbb),
+                              UNSAFE_TODO(CBB_data(cbb) + CBB_len(cbb)));
 }
 
 // BCryptAlgorithmFor returns the BCrypt algorithm ID for the given Chromium
@@ -210,7 +207,7 @@ std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
   if (pub_key->size() < sizeof(header)) {
     return std::nullopt;
   }
-  memcpy(&header, pub_key->data(), sizeof(header));
+  UNSAFE_TODO(memcpy(&header, pub_key->data(), sizeof(header)));
   // |cbKey| is documented[1] as "the length, in bytes, of the key". It is
   // not. For ECDSA public keys it is the length of a field element.
   if ((header.dwMagic != BCRYPT_ECDSA_PUBLIC_P256_MAGIC &&
@@ -231,15 +228,16 @@ std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
     }
 
     if (curve_name->size() != sizeof(BCRYPT_ECC_CURVE_NISTP256) ||
-        memcmp(curve_name->data(), BCRYPT_ECC_CURVE_NISTP256,
-               sizeof(BCRYPT_ECC_CURVE_NISTP256)) != 0) {
+        UNSAFE_TODO(memcmp(curve_name->data(), BCRYPT_ECC_CURVE_NISTP256,
+                           sizeof(BCRYPT_ECC_CURVE_NISTP256))) != 0) {
       return std::nullopt;
     }
   }
 
   uint8_t x962[1 + 32 + 32];
-  x962[0] = POINT_CONVERSION_UNCOMPRESSED;
-  memcpy(&x962[1], pub_key->data() + sizeof(BCRYPT_ECCKEY_BLOB), 64);
+  UNSAFE_TODO(x962[0]) = POINT_CONVERSION_UNCOMPRESSED;
+  UNSAFE_TODO(
+      memcpy(&x962[1], pub_key->data() + sizeof(BCRYPT_ECCKEY_BLOB), 64));
 
   bssl::UniquePtr<EC_GROUP> p256(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
@@ -274,7 +272,7 @@ std::optional<std::vector<uint8_t>> GetRSASPKI(NCRYPT_KEY_HANDLE key) {
   if (pub_key->size() < sizeof(header)) {
     return std::nullopt;
   }
-  memcpy(&header, pub_key->data(), sizeof(header));
+  UNSAFE_TODO(memcpy(&header, pub_key->data(), sizeof(header)));
   if (header.Magic != static_cast<ULONG>(BCRYPT_RSAPUBLIC_MAGIC)) {
     return std::nullopt;
   }
@@ -288,10 +286,11 @@ std::optional<std::vector<uint8_t>> GetRSASPKI(NCRYPT_KEY_HANDLE key) {
   }
 
   bssl::UniquePtr<BIGNUM> e(
-      BN_bin2bn(&pub_key->data()[sizeof(BCRYPT_RSAKEY_BLOB)],
+      BN_bin2bn(UNSAFE_TODO(&pub_key->data()[sizeof(BCRYPT_RSAKEY_BLOB)]),
                 header.cbPublicExp, nullptr));
   bssl::UniquePtr<BIGNUM> n(BN_bin2bn(
-      &pub_key->data()[sizeof(BCRYPT_RSAKEY_BLOB) + header.cbPublicExp],
+      UNSAFE_TODO(
+          &pub_key->data()[sizeof(BCRYPT_RSAKEY_BLOB) + header.cbPublicExp]),
       header.cbModulus, nullptr));
 
   bssl::UniquePtr<RSA> rsa(RSA_new());
@@ -328,7 +327,8 @@ base::expected<std::vector<uint8_t>, SECURITY_STATUS> SignECDSA(
   CHECK_EQ(sig.size(), sig_size);
 
   bssl::UniquePtr<BIGNUM> r(BN_bin2bn(sig.data(), 32, nullptr));
-  bssl::UniquePtr<BIGNUM> s(BN_bin2bn(sig.data() + 32, 32, nullptr));
+  bssl::UniquePtr<BIGNUM> s(
+      BN_bin2bn(UNSAFE_TODO(sig.data() + 32), 32, nullptr));
   ECDSA_SIG sig_st;
   sig_st.r = r.get();
   sig_st.s = s.get();
