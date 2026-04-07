@@ -604,9 +604,14 @@ GWSPageLoadMetricsObserver::OnCommit(
   if (!navigation_handle->IsSameDocument() &&
       navigation_handle->IsInOutermostMainFrame() &&
       navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+    const auto mode = navigation_handle->GetBeforeUnloadExecutionMode();
     base::UmaHistogramEnumeration(
-        internal::kHistogramGWSBeforeUnloadExecutionMode,
-        navigation_handle->GetBeforeUnloadExecutionMode());
+        internal::kHistogramGWSBeforeUnloadExecutionMode, mode);
+    base::UmaHistogramEnumeration(
+        base::StrCat({internal::kHistogramGWSBeforeUnloadExecutionMode,
+                      navigation_handle->IsSameOrigin() ? ".SameOrigin"
+                                                        : ".CrossOrigin"}),
+        mode);
   }
 
   return CONTINUE_OBSERVING;
