@@ -124,7 +124,8 @@ bool ExtensionsToolbarAndroid::CanShowToolbarActionPopupForAPICall(
 }
 
 void ExtensionsToolbarAndroid::ToggleExtensionsMenu() {
-  // TODO(crbug.com/461981075)
+  // On Android, the menu is tied to the extensions menu button within Java and
+  // therefore this method is not used.
   NOTIMPLEMENTED();
 }
 
