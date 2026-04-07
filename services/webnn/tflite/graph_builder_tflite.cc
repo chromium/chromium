@@ -4170,12 +4170,16 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
         output_shape[2] * input_channels * filter_size2d.height *
         filter_size2d.width;
 
+    // Check indirection buffer size.
+    const base::CheckedNumeric<int32_t> checked_indirection_buffer_size =
+        im2col_elements * base::CheckedNumeric<int32_t>(sizeof(void*));
+
     // Check against the 32-bit signed integer limit to avoid overflow in
     // TFLite.
-    if (!im2col_elements.IsValid()) {
+    if (!checked_indirection_buffer_size.IsValid()) {
       return base::unexpected(
           "Conv2d doesn't support configurations that require an internal "
-          "computation buffer exceeding INT32_MAX elements.");
+          "computation buffer exceeding the maximum size.");
     }
   }
 
@@ -4187,12 +4191,16 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
         input_size2d.width * filter_size2d.height * filter_size2d.width *
         output_channels;
 
+    // Check indirection buffer size.
+    const base::CheckedNumeric<int32_t> checked_indirection_buffer_size =
+        col2im_elements * base::CheckedNumeric<int32_t>(sizeof(void*));
+
     // Check against the 32-bit signed integer limit to avoid overflow in
     // TFLite.
-    if (!col2im_elements.IsValid()) {
+    if (!checked_indirection_buffer_size.IsValid()) {
       return base::unexpected(
           "convTranspose2d doesn't support configurations that require an "
-          "internal computation buffer exceeding INT32_MAX elements.");
+          "internal computation buffer exceeding the maximum size.");
     }
   }
 
