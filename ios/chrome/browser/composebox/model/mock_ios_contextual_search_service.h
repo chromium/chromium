@@ -43,6 +43,12 @@ class MockIOSContextualSearchService : public IOSContextualSearchService {
        contextual_search::ContextualSearchSource,
        std::optional<lens::LensOverlayInvocationSource>),
       (override));
+
+  // Sets whether tab upload should auto-succeed.
+  void SetTabUploadAutoSucceed(bool auto_succeed);
+
+ private:
+  bool tab_upload_auto_succeed_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_MODEL_MOCK_IOS_CONTEXTUAL_SEARCH_SERVICE_H_

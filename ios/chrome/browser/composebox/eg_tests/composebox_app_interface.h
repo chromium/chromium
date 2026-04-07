@@ -11,20 +11,24 @@
 @interface ComposeboxAppInterface : NSObject
 
 // Sets the return value of
-// MockIOSChromeAimEligibilityService::IsFuseboxEligible.
+// `MockIOSChromeAimEligibilityService::IsFuseboxEligible`.
 + (void)setFuseboxEligible:(BOOL)eligible;
 
 // Sets the return value of
-// MockIOSChromeAimEligibilityService::IsCreateImagesEligible.
+// `MockIOSChromeAimEligibilityService::IsCreateImagesEligible`.
 + (void)setCreateImagesEligible:(BOOL)eligible;
 
 // Sets the return value of
-// MockIOSChromeAimEligibilityService::IsAimLocallyEligible.
+// `MockIOSChromeAimEligibilityService::IsAimLocallyEligible`.
 + (void)setAimLocallyEligible:(BOOL)eligible;
 
 // Sets the return value of
-// MockIOSChromeAimEligibilityService::IsServerEligibilityEnabled.
+// `MockIOSChromeAimEligibilityService::IsServerEligibilityEnabled`.
 + (void)setServerEligibilityEnabled:(BOOL)enabled;
+
+// Sets whether tab upload should auto-succeed in
+// `MockIOSContextualSearchService`.
++ (void)setTabUploadAutoSucceed:(BOOL)autoSucceed;
 
 @end
 

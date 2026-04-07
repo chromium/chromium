@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/composebox/model/mock_ios_contextual_search_service.h"
 
+#import "base/memory/ref_counted.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/observer_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/contextual_search/mock_contextual_search_session_handle.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -13,9 +16,11 @@
 #import "ios/chrome/browser/variations/model/client/variations_client_service.h"
 #import "ios/chrome/browser/variations/model/client/variations_client_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
+#import "url/gurl.h"
 
 namespace {
 
+// A mock session handle that owns a mock controller.
 class MockSessionHandleWithController
     : public contextual_search::MockContextualSearchSessionHandle {
  public:
@@ -34,6 +39,11 @@ class MockSessionHandleWithController
 
 }  // namespace
 
+void MockIOSContextualSearchService::SetTabUploadAutoSucceed(
+    bool auto_succeed) {
+  tab_upload_auto_succeed_ = auto_succeed;
+}
+
 MockIOSContextualSearchService::MockIOSContextualSearchService(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -48,20 +58,100 @@ MockIOSContextualSearchService::MockIOSContextualSearchService(
                                  channel,
                                  locale) {
   ON_CALL(*this, CreateSession)
-      .WillByDefault(
-          [](std::unique_ptr<
-                 contextual_search::ContextualSearchContextController::
-                     ConfigParams> config,
-             contextual_search::ContextualSearchSource source,
-             std::optional<lens::LensOverlayInvocationSource>
-                 invocation_source) {
-            auto controller = std::make_unique<testing::NiceMock<
+      .WillByDefault([this](
+                         std::unique_ptr<contextual_search::
+                                             ContextualSearchContextController::
+                                                 ConfigParams> config,
+                         contextual_search::ContextualSearchSource source,
+                         std::optional<lens::LensOverlayInvocationSource>
+                             invocation_source) {
+        std::unique_ptr<testing::NiceMock<
+            contextual_search::MockContextualSearchContextController>>
+            controller = std::make_unique<testing::NiceMock<
                 contextual_search::MockContextualSearchContextController>>();
 
-            return std::make_unique<
+        if (tab_upload_auto_succeed_) {
+          // The EG test expects the upload to succeed to enable the send
+          // button.
+          using ContextUploadStatusObserverList = base::ObserverList<
+              contextual_search::ContextualSearchContextController::
+                  ContextUploadStatusObserver>;
+          scoped_refptr<base::RefCountedData<ContextUploadStatusObserverList>>
+              observers = base::MakeRefCounted<
+                  base::RefCountedData<ContextUploadStatusObserverList>>();
+
+          // Mocks observer registration to allow notifying the EG test of
+          // upload status changes.
+          ON_CALL(*controller, AddObserver(testing::_))
+              .WillByDefault(
+                  [observers](
+                      contextual_search::ContextualSearchContextController::
+                          ContextUploadStatusObserver* obs) {
+                    observers->data.AddObserver(obs);
+                  });
+          ON_CALL(*controller, RemoveObserver(testing::_))
+              .WillByDefault(
+                  [observers](
+                      contextual_search::ContextualSearchContextController::
+                          ContextUploadStatusObserver* obs) {
+                    observers->data.RemoveObserver(obs);
+                  });
+
+          // Simulates a successful upload by notifying observers
+          // immediately.
+          ON_CALL(*controller, StartFileUploadFlow)
+              .WillByDefault([observers](
+                                 const base::UnguessableToken& token,
+                                 std::unique_ptr<lens::ContextualInputData>
+                                     input_data,
+                                 std::optional<lens::ImageEncodingOptions>
+                                     image_options) {
+                for (auto& observer : observers->data) {
+                  observer.OnContextUploadStatusChanged(
+                      token,
+                      input_data->primary_content_type.value_or(
+                          lens::MimeType::kUnknown),
+                      contextual_search::ContextUploadStatus::kUploadSuccessful,
+                      std::nullopt);
+                }
+              });
+        }
+
+        std::unique_ptr<testing::NiceMock<MockSessionHandleWithController>>
+            session_handle = std::make_unique<
                 testing::NiceMock<MockSessionHandleWithController>>(
                 std::move(controller));
+
+        if (tab_upload_auto_succeed_) {
+          // Returns a valid token for the upload flow.
+          ON_CALL(*session_handle, CreateContextToken).WillByDefault([]() {
+            return base::UnguessableToken::Create();
           });
+
+          // Delegates tab upload to the controller's file upload flow.
+          ON_CALL(*session_handle, StartTabContextUploadFlow)
+              .WillByDefault(
+                  [handle = session_handle.get()](
+                      const base::UnguessableToken& token,
+                      std::unique_ptr<lens::ContextualInputData> input_data,
+                      std::optional<lens::ImageEncodingOptions> image_options) {
+                    handle->GetController()->StartFileUploadFlow(
+                        token, std::move(input_data), std::move(image_options));
+                  });
+
+          // Completes the flow by providing a placeholder search URL.
+          ON_CALL(*session_handle, CreateSearchUrl)
+              .WillByDefault(
+                  [](std::unique_ptr<
+                         contextual_search::ContextualSearchContextController::
+                             CreateSearchUrlRequestInfo> request_info,
+                     base::OnceCallback<void(GURL)> callback) {
+                    std::move(callback).Run(GURL("about:blank"));
+                  });
+        }
+
+        return session_handle;
+      });
 }
 
 MockIOSContextualSearchService::~MockIOSContextualSearchService() = default;

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_header_view.h"
 
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -115,6 +116,8 @@ const CGFloat kSymbolsPointSize = 24.0;
                    action:@selector(didTapCloseButton)
          forControlEvents:UIControlEventTouchUpInside];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _closeButton.accessibilityIdentifier =
+      kAssistantAIMCloseButtonAccessibilityIdentifier;
 
   [self addSubview:_closeButton];
 

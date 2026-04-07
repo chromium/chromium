@@ -11,6 +11,7 @@ source_set("ui") {
     "assistant_aim_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -21,4 +22,29 @@ source_set("ui") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
+}
+
+source_set("constants") {
+  sources = [
+    "assistant_aim_ui_constants.h",
+    "assistant_aim_ui_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "assistant_aim_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//components/omnibox/browser:aim_eligibility_service_features",
+    "//ios/chrome/browser/composebox/eg_tests:eg_test_support+eg2",
+    "//ios/chrome/browser/composebox/ui:ui_constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
