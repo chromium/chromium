@@ -374,6 +374,18 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void testCurrentTabButtonEnabled_withFavicon() {
+        Bitmap favicon = UiUtils.createBitmap(/* size= */ 1, Color.RED);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON, favicon);
+
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, true);
+        assertTrue(mViewHolder.popup.mAddCurrentTab.isEnabled());
+
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, false);
+        assertFalse(mViewHolder.popup.mAddCurrentTab.isEnabled());
+    }
+
+    @Test
     public void testClipboardButtonEnabled() {
         mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, true);
         assertTrue(mViewHolder.popup.mClipboardButton.isEnabled());
