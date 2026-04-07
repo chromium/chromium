@@ -2775,7 +2775,7 @@ bool BrowserView::IsUnframedModeEnabled() const {
 
 void BrowserView::ShowChromeLabs() {
   CHECK(IsChromeLabsEnabled());
-  browser_->GetFeatures().chrome_labs_coordinator()->ShowOrHide();
+  ChromeLabsCoordinator::From(browser_)->ShowOrHide();
 }
 
 views::WebView* BrowserView::GetActiveContentsWebView() {

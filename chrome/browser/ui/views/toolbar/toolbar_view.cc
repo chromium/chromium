@@ -1259,9 +1259,7 @@ bool ToolbarView::IsPositionInWindowCaption(
 }
 
 views::Button* ToolbarView::GetChromeLabsButton() const {
-  return browser_->GetFeatures()
-      .chrome_labs_coordinator()
-      ->GetChromeLabsButton();
+  return ChromeLabsCoordinator::From(browser_)->GetChromeLabsButton();
 }
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {

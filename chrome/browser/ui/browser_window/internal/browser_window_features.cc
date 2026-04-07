@@ -565,7 +565,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   if (browser->is_type_normal()) {
     if (IsChromeLabsEnabled()) {
       chrome_labs_coordinator_ =
-          std::make_unique<ChromeLabsCoordinator>(browser);
+          GetUserDataFactory().CreateInstance<ChromeLabsCoordinator>(*browser,
+                                                                     browser);
     }
 
     if (MobilePromoOnDesktopEnabled()) {

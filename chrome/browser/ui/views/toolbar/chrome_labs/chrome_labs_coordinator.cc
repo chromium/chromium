@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
@@ -29,8 +30,18 @@
 #include "chrome/browser/ash/settings/about_flags.h"
 #endif
 
+DEFINE_USER_DATA(ChromeLabsCoordinator);
+
+// static
+ChromeLabsCoordinator* ChromeLabsCoordinator::From(
+    BrowserWindowInterface* browser) {
+  return browser ? ChromeLabsCoordinator::Get(browser->GetUnownedUserDataHost())
+                 : nullptr;
+}
+
 ChromeLabsCoordinator::ChromeLabsCoordinator(Browser* browser)
-    : browser_(browser) {
+    : browser_(browser),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   pinned_actions_observation_.Observe(
       PinnedToolbarActionsModel::Get(browser->profile()));
 

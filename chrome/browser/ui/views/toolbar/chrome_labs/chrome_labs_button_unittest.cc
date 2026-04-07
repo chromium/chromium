@@ -91,7 +91,7 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
 TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
   views::Button* labs_button = browser_view()->toolbar()->GetChromeLabsButton();
   ChromeLabsCoordinator* coordinator =
-      browser_view()->browser()->GetFeatures().chrome_labs_coordinator();
+      ChromeLabsCoordinator::From(browser_view()->browser());
 
 #if BUILDFLAG(IS_CHROMEOS)
   ash::OwnerSettingsServiceAsh* service_ =
@@ -144,7 +144,7 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowEphemerallyTest) {
   EXPECT_EQ(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);
 
   ChromeLabsCoordinator* coordinator =
-      browser_view()->browser()->GetFeatures().chrome_labs_coordinator();
+      ChromeLabsCoordinator::From(browser_view()->browser());
   coordinator->Show();
 
   // Showing the bubble when the button was not previously showing should cause
@@ -165,7 +165,7 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowEphemerallyTest) {
 TEST_F(ChromeLabsButtonTest, DotIndicatorTest) {
   views::Button* labs_button = browser_view()->toolbar()->GetChromeLabsButton();
   ChromeLabsCoordinator* coordinator =
-      browser_view()->browser()->GetFeatures().chrome_labs_coordinator();
+      ChromeLabsCoordinator::From(browser_view()->browser());
   coordinator->MaybeInstallDotIndicator();
   views::DotIndicator* dot_indicator = coordinator->GetDotIndicator();
   EXPECT_TRUE(dot_indicator->GetVisible());

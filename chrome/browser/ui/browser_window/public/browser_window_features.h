@@ -270,10 +270,6 @@ class BrowserWindowFeatures {
     return mv2_disabled_dialog_controller_.get();
   }
 
-  ChromeLabsCoordinator* chrome_labs_coordinator() {
-    return chrome_labs_coordinator_.get();
-  }
-
   ImmersiveModeController* immersive_mode_controller() {
     return immersive_mode_controller_.get();
   }

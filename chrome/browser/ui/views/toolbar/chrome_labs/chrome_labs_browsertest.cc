@@ -196,9 +196,7 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
 
     // Scroll to a little after the dialog inset to ensure that scrolling does
     // not make the contents too close to the title.
-    browser()
-        ->GetFeatures()
-        .chrome_labs_coordinator()
+    ChromeLabsCoordinator::From(browser())
         ->GetChromeLabsBubbleView()
         ->GetScrollViewForTesting()
         ->ScrollByOffset(

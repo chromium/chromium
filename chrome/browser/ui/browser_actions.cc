@@ -1111,7 +1111,7 @@ void BrowserActions::InitializeChromeMenuActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  bwi->GetFeatures().chrome_labs_coordinator()->ShowOrHide();
+                  ChromeLabsCoordinator::From(bwi)->ShowOrHide();
                 },
                 bwi),
             kActionShowChromeLabs, IDS_CHROMELABS, IDS_CHROMELABS, kScienceIcon)
