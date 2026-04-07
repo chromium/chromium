@@ -68,6 +68,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
@@ -946,6 +947,7 @@ public class AutofillOptionsTest {
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
 
+        var userActionTester = new UserActionTester();
         mFragment
                 .getAutofillAiAccessibilityAnnotator()
                 .getOnPreferenceClickListener()
@@ -958,6 +960,14 @@ public class AutofillOptionsTest {
         assertEquals(
                 Uri.parse(AutofillOptionsMediator.ACCESSIBILITY_ANNOTATOR_SETTINGS_URL),
                 intent.getData());
+
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains(
+                                AutofillOptionsMediator
+                                        .HISTOGRAM_ACCESSIBILITY_ANNOTATOR_SETTINGS_LINK_ROW_CLICK));
+        userActionTester.tearDown();
     }
 
     @Test

@@ -27,6 +27,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -78,6 +79,10 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
     @VisibleForTesting
     // TODO(b/494484717): Update with the actual URL.
     static final String ACCESSIBILITY_ANNOTATOR_SETTINGS_URL = "https://chromium.org";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_ACCESSIBILITY_ANNOTATOR_SETTINGS_LINK_ROW_CLICK =
+            "Autofill.Settings.AccessibilityAnnotatorSettingsLinkRowClick";
 
     private final Profile mProfile;
     private final Runnable mRestartRunnable;
@@ -194,7 +199,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
 
     private void onAutofillAiAccessibilityAnnotatorClicked() {
         AutofillUiUtils.openLink(mContext, ACCESSIBILITY_ANNOTATOR_SETTINGS_URL);
-        // TODO(b/494136622): Implement on-click metrics.
+        RecordUserAction.record(HISTOGRAM_ACCESSIBILITY_ANNOTATOR_SETTINGS_LINK_ROW_CLICK);
     }
 
     private boolean isAutofillAiVisible(@AutofillOptionsReferrer int referrer) {
