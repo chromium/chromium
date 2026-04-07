@@ -3100,7 +3100,7 @@ crbug.com/475000031 external/wpt/webdriver/tests/bidi/emulation/set_screen_orien
 crbug.com/473917868 external/wpt/webdriver/tests/classic/new_session/invalid_capabilities.py [ Failure ]
 crbug.com/473917868 external/wpt/webdriver/tests/classic/new_session/timeouts.py [ Failure Timeout ]
 crbug.com/473580163 [ Mac ] external/wpt/css/css-scroll-anchoring/contenteditable-insert-line-at-top.tentative.html [ Timeout ]
-crbug.com/473579852 external/wpt/css/css-text/letter-spacing/letter-spacing-cursive-002.html [ Failure ]
+crbug.com/473579852 [ Linux ] external/wpt/css/css-text/letter-spacing/letter-spacing-cursive-002.html [ Failure ]
 crbug.com/473562220 external/wpt/css/filter-effects/svg-filter-filter-units-user-space.html [ Failure ]
 crbug.com/473562220 external/wpt/css/filter-effects/svg-filter-primitive-units-user-space.html [ Failure ]
 crbug.com/473562220 virtual/scalefactor200/external/wpt/css/filter-effects/svg-filter-filter-units-user-space.html [ Failure ]

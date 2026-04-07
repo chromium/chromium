@@ -116,9 +116,12 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(unsigned index,
   TextRunLayoutUnit spacing;
 
   bool has_letter_spacing = letter_spacing_;
+  // CSS Text 4 §8.2.1: letter-spacing is suppressed between cursive script
+  // characters, but still applies to word separators (spaces) within cursive
+  // script runs.
   bool apply_letter_spacing =
       RuntimeEnabledFeatures::IgnoreLetterSpacingInCursiveScriptsEnabled()
-          ? !is_cursive_script
+          ? (!is_cursive_script || treat_as_space)
           : true;
   if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character) &&
       apply_letter_spacing) {

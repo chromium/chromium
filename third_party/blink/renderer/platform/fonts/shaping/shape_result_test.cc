@@ -449,8 +449,8 @@ TEST_F(ShapeResultTest, DISABLED_ComputeInkBoundsWithNonZeroOffset) {
   EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
 }
 
-TEST_F(ShapeResultTest, LetterSpacingNotAppliedForCursiveScripts) {
-  // خطية النصية
+TEST_F(ShapeResultTest, LetterSpacingAppliedToSpacesInCursiveScripts) {
+  // خطية النصية (two Arabic words separated by a space)
   String string(
       u"\u062E\u0637\u0651\u064E\u064A\u0651\u064E\u0020"
       u"\u0627\u0644\u0646\u0651\u064E\u0635\u0651\u064E");
@@ -458,15 +458,32 @@ TEST_F(ShapeResultTest, LetterSpacingNotAppliedForCursiveScripts) {
   HarfBuzzShaper shaper(string);
   auto* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
 
-  // Letter spacing should not be applied.
+  // Letter spacing should not be applied to cursive characters, but is
+  // applied to the 'space' between words per CSS Text 4 §8.2.1.
   ShapeResultSpacing spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(Length::Fixed(5));
   font_description.SetWordSpacing(Length::Fixed(20));
   spacing.SetSpacing(font_description);
   result->ApplySpacing(spacing);
-  EXPECT_FALSE(spacing.IsLetterSpacingAppliedForTesting());
+  EXPECT_TRUE(spacing.IsLetterSpacingAppliedForTesting());
   EXPECT_TRUE(spacing.IsWordSpacingAppliedForTesting());
+}
+
+TEST_F(ShapeResultTest, LetterSpacingNotAppliedWithinCursiveWord) {
+  // خطية (single Arabic word with no spaces)
+  String string(u"\u062E\u0637\u0651\u064E\u064A\u0651\u064E");
+
+  HarfBuzzShaper shaper(string);
+  auto* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
+
+  // Letter spacing is not applied between cursive script characters.
+  ShapeResultSpacing spacing(string);
+  FontDescription font_description;
+  font_description.SetLetterSpacing(Length::Fixed(5));
+  spacing.SetSpacing(font_description);
+  result->ApplySpacing(spacing);
+  EXPECT_FALSE(spacing.IsLetterSpacingAppliedForTesting());
 }
 
 // Tests for CaretPositionForOffset
