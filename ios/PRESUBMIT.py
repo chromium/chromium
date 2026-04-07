@@ -469,9 +469,10 @@ def _CheckStyleESLint(input_api, output_api):
     return results
 
 def _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api):
-    """ Checks that UIGraphicsBeginImageContextWithOptions is not used"""
+    """ Checks that UIGraphicsBeginImageContext and
+    UIGraphicsBeginImageContextWithOptions are not used"""
     deprecated_regex = input_api.re.compile(
-        r'UIGraphicsBeginImageContextWithOptions\(')
+        r'UIGraphicsBeginImageContext(WithOptions)?\(')
 
     errors = []
     for f in input_api.AffectedFiles():
@@ -484,7 +485,8 @@ def _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api):
     if not errors:
         return []
     error_message = '\n'.join([
-        'UIGraphicsBeginImageContextWithOptions is deprecated, use '
+        'UIGraphicsBeginImageContext and '
+        'UIGraphicsBeginImageContextWithOptions are deprecated, use '
         'UIGraphicsImageRenderer instead.'
     ] + errors) + '\n'
 

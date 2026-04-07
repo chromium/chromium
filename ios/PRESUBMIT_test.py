@@ -196,9 +196,11 @@ class _CheckUIGraphicsBeginImageContextWithOptions(unittest.TestCase):
     def testFindUsesOfDeprecatedAPIs(self):
         good_lines = [
           '// Update UIGraphicsBeginImageContextWithOptions',
+          '// Update UIGraphicsBeginImageContext',
           ]
         bad_lines = [
           'UIGraphicsBeginImageContextWithOptions(',
+          'UIGraphicsBeginImageContext(',
         ]
 
         mock_input = PRESUBMIT_test_mocks.MockInputApi()
@@ -212,7 +214,9 @@ class _CheckUIGraphicsBeginImageContextWithOptions(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertEqual('error', errors[0].type)
         self.assertFalse('ios/path/deprecated.mm:1' in errors[0].message)
-        self.assertTrue('ios/path/deprecated.mm:2' in errors[0].message)
+        self.assertFalse('ios/path/deprecated.mm:2' in errors[0].message)
+        self.assertTrue('ios/path/deprecated.mm:3' in errors[0].message)
+        self.assertTrue('ios/path/deprecated.mm:4' in errors[0].message)
 
 
 class CheckNewColorIntroductionTest(unittest.TestCase):
