@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "components/device_signals/core/browser/os_signals_collector_test_base.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
@@ -27,73 +28,17 @@ using testing::ContainerEq;
 using testing::Return;
 using testing::StrictMock;
 
-namespace {
-
-constexpr char kFakeBrowserEnrollmentDomain[] = "fake.domain.google.com";
-
-}  // namespace
-
 namespace device_signals {
 
-class DesktopOsSignalsCollectorTest : public testing::Test {
+class DesktopOsSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
  protected:
   void SetUp() override {
-    auto mock_browser_cloud_policy_store =
-        std::make_unique<policy::MockCloudPolicyStore>(
-            policy::dm_protocol::GetChromeUserPolicyType());
-    mock_browser_cloud_policy_store_ = mock_browser_cloud_policy_store.get();
-    std::unique_ptr<policy::MockCloudPolicyStore>
-        mock_browser_cloud_policy_extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    mock_browser_cloud_policy_extension_install_store =
-        std::make_unique<policy::MockCloudPolicyStore>(
-            policy::dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
-#endif
-    mock_browser_cloud_policy_extension_install_store_ =
-        mock_browser_cloud_policy_extension_install_store.get();
-    mock_browser_cloud_policy_manager_ =
-        std::make_unique<policy::MockCloudPolicyManager>(
-            std::move(mock_browser_cloud_policy_store),
-            std::move(mock_browser_cloud_policy_extension_install_store),
-            task_environment_.GetMainThreadTaskRunner());
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>();
+    GenericOsSignalsCollectorTestBase::SetUp();
     signal_collector_ = std::make_unique<DesktopOsSignalsCollector>(
         mock_browser_cloud_policy_manager_.get());
   }
 
-  void TearDown() override {
-    mock_browser_cloud_policy_store_ = nullptr;
-    mock_browser_cloud_policy_extension_install_store_ = nullptr;
-  }
-
-  void SetFakeBrowserPolicyData() {
-    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
-    policy_data->set_managed_by(kFakeBrowserEnrollmentDomain);
-    mock_browser_cloud_policy_store_->set_policy_data_for_testing(
-        std::move(policy_data));
-  }
-
-  // Helper function to check a subset of signals that should or should not be
-  // collected based on permission. Not all signals are checked due to testing
-  // limitation.
-  void CheckSignalsCollected(OsSignalsResponse& response,
-                             bool can_collect_pii) {
-    EXPECT_EQ(response.device_enrollment_domain, kFakeBrowserEnrollmentDomain);
-    EXPECT_EQ(response.browser_version, version_info::GetVersionNumber());
-    EXPECT_EQ(response.operating_system, policy::GetOSPlatform());
-
-    if (can_collect_pii) {
-      EXPECT_EQ(response.display_name, policy::GetDeviceName());
-    } else {
-      EXPECT_FALSE(response.display_name);
-    }
-  }
-
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<policy::MockCloudPolicyManager>
-      mock_browser_cloud_policy_manager_;
-  raw_ptr<policy::MockCloudPolicyStore> mock_browser_cloud_policy_store_;
-  raw_ptr<policy::MockCloudPolicyStore>
-      mock_browser_cloud_policy_extension_install_store_;
   std::unique_ptr<DesktopOsSignalsCollector> signal_collector_;
 };
 
@@ -126,7 +71,7 @@ TEST_F(DesktopOsSignalsCollectorTest, GetSignal_Success) {
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_TRUE(response.os_signals_response);
   CheckSignalsCollected(response.os_signals_response.value(),
-                        /*can_collect_pii=*/true);
+                        /*can_collect_pii=*/true, policy::GetDeviceName());
 }
 
 // Tests that an unsupported signal is marked as unsupported.
@@ -161,7 +106,7 @@ TEST_F(DesktopOsSignalsCollectorTest, GetSignal_MissingConsent) {
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_TRUE(response.os_signals_response);
   CheckSignalsCollected(response.os_signals_response.value(),
-                        /*can_collect_pii=*/false);
+                        /*can_collect_pii=*/false, policy::GetDeviceName());
 }
 
 // Tests that signal collection is halted if permission is not sufficient.

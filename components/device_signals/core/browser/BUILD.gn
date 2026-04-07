@@ -121,12 +121,15 @@ static_library("test_support") {
     "mock_user_delegate.h",
     "mock_user_permission_service.cc",
     "mock_user_permission_service.h",
+    "os_signals_collector_test_base.cc",
+    "os_signals_collector_test_base.h",
   ]
 
   deps = [
     ":browser",
     "//base",
     "//components/device_signals/core/common/mojom",
+    "//components/policy/core/common:test_support",
     "//components/signin/public/identity_manager",
     "//services/network/public/cpp",
     "//testing/gmock",

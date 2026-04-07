@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/device_signals/core/browser/browser_utils.h"
+#include "components/device_signals/core/browser/os_signals_collector_test_base.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -39,7 +40,6 @@ namespace {
 using safe_browsing::HasHarmfulAppsResultStatus;
 using safe_browsing::VerifyAppsEnabledResult;
 
-constexpr char kFakeBrowserEnrollmentDomain[] = "fake.domain.google.com";
 constexpr char kHarmfulAppsResultHistogramName[] =
     "Enterprise.DeviceSignals.HarmfulApps.Result";
 constexpr char kHarmfulAppsCountHistogramName[] =
@@ -51,19 +51,11 @@ constexpr int kSampleHarmfulAppsErrorCode = 123;
 
 namespace device_signals {
 
-// TODO(446918304): This class should be sharing a base class with
-// `DesktopOsSignalsCollectorTest` to reduce code duplication.
-class AndroidOsSignalsCollectorTest : public testing::Test {
+class AndroidOsSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
  protected:
   void SetUp() override {
-    auto mock_browser_cloud_policy_store =
-        std::make_unique<policy::MockCloudPolicyStore>(
-            policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType);
-    mock_browser_cloud_policy_store_ = mock_browser_cloud_policy_store.get();
-    mock_browser_cloud_policy_manager_ =
-        std::make_unique<policy::MockCloudPolicyManager>(
-            std::move(mock_browser_cloud_policy_store),
-            task_environment_.GetMainThreadTaskRunner());
+    task_environment_ = std::make_unique<content::BrowserTaskEnvironment>();
+    GenericOsSignalsCollectorTestBase::SetUp();
     signal_collector_ = std::make_unique<AndroidOsSignalsCollector>(
         mock_browser_cloud_policy_manager_.get());
 
@@ -71,32 +63,17 @@ class AndroidOsSignalsCollectorTest : public testing::Test {
     SetHarmfulAppsResult(HasHarmfulAppsResultStatus::SUCCESS, 2);
   }
 
-  void TearDown() override { mock_browser_cloud_policy_store_ = nullptr; }
-
-  void SetFakeBrowserPolicyData() {
-    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
-    policy_data->set_managed_by(kFakeBrowserEnrollmentDomain);
-    mock_browser_cloud_policy_store_->set_policy_data_for_testing(
-        std::move(policy_data));
-  }
-
   // Helper function to check a subset of signals that should or should not be
   // collected based on permission.
-  void CheckSignalsCollected(OsSignalsResponse& response,
-                             bool can_collect_pii) {
-    if (can_collect_pii) {
-      EXPECT_EQ(response.display_name,
-                base::android::device_info::device_name());
-    } else {
-      EXPECT_EQ(response.display_name, std::nullopt);
-    }
-    EXPECT_EQ(response.operating_system, policy::GetOSPlatform());
+  void CheckAndroidSignalsCollected(OsSignalsResponse& response,
+                                    bool can_collect_pii) {
+    CheckSignalsCollected(response, can_collect_pii,
+                          base::android::device_info::device_name());
+
     EXPECT_EQ(response.os_version, base::SysInfo::OperatingSystemVersion());
-    EXPECT_EQ(response.browser_version, version_info::GetVersionNumber());
     EXPECT_EQ(response.device_model, base::android::android_info::model());
     EXPECT_EQ(response.device_manufacturer,
               base::android::android_info::manufacturer());
-    EXPECT_EQ(response.device_enrollment_domain, kFakeBrowserEnrollmentDomain);
     EXPECT_EQ(response.security_patch_ms,
               device_signals::GetSecurityPatchLevelEpoch());
     EXPECT_EQ(response.verified_apps_enabled, expected_verify_app_result_);
@@ -144,10 +121,6 @@ class AndroidOsSignalsCollectorTest : public testing::Test {
             expected_harmful_app_count_ != 0);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<policy::MockCloudPolicyManager>
-      mock_browser_cloud_policy_manager_;
-  raw_ptr<policy::MockCloudPolicyStore> mock_browser_cloud_policy_store_;
   std::unique_ptr<AndroidOsSignalsCollector> signal_collector_;
   bool expected_verify_app_result_;
   HasHarmfulAppsResultStatus expected_harmful_app_result_;
@@ -187,8 +160,8 @@ TEST_F(AndroidOsSignalsCollectorTest, GetSignal_Success) {
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_TRUE(response.os_signals_response);
-  CheckSignalsCollected(response.os_signals_response.value(),
-                        /*can_collect_pii=*/true);
+  CheckAndroidSignalsCollected(response.os_signals_response.value(),
+                               /*can_collect_pii=*/true);
 }
 
 // Tests that an unsupported signal is marked as unsupported.
@@ -222,8 +195,8 @@ TEST_F(AndroidOsSignalsCollectorTest, GetSignal_MissingConsent) {
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_TRUE(response.os_signals_response);
-  CheckSignalsCollected(response.os_signals_response.value(),
-                        /*can_collect_pii=*/false);
+  CheckAndroidSignalsCollected(response.os_signals_response.value(),
+                               /*can_collect_pii=*/false);
 }
 
 // Tests that signal collection is halted if permission is not sufficient.
