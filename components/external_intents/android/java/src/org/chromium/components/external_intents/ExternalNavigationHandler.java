@@ -2049,7 +2049,11 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
 
     private boolean allowExternalNavigationForHttpProtocols(
             boolean allowExternalNavigation, boolean shouldReturnAsResult) {
-        return allowExternalNavigation && !shouldReturnAsResult;
+        if (allowExternalNavigation && !shouldReturnAsResult) {
+            if (debug()) Log.i(TAG, "External navigation allowed for HTTP protocols.");
+            return true;
+        }
+        return false;
     }
 
     // https://crbug.com/1249964

@@ -1581,7 +1581,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.webapps") {
     "src/org/chromium/chrome/browser/webapps/WebappSplashScreenThemeColorTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/open_in_app/android:java",
+  ]
 }
 
 # This target contains test files in packages which has <= 2 test files.
