@@ -176,6 +176,8 @@ template("pkg_config") {
       }
     }
     cflags = pkgresult[1]
+    cflags_c = []
+    cflags_cc = []
 
     foreach(_path, pkgresult[0]) {
       if (_pkg_config_requires_abs_path && (use_sysroot || use_remoteexec)) {
@@ -184,7 +186,10 @@ template("pkg_config") {
 
       # We want the system include paths to use -isystem instead of -I to
       # suppress warnings in those headers.
-      cflags += [ "-isystem$_path" ]
+      # Append to both cflags_c/cflags_cc instead of cflags, so cflags
+      # take priority over them in the include paths.
+      cflags_c += [ "-isystem$_path" ]
+      cflags_cc += [ "-isystem$_path" ]
     }
 
     if (!defined(invoker.ignore_libs) || !invoker.ignore_libs) {
