@@ -39,6 +39,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   AssistantAIMHeaderView* _headerView;
   NSLayoutConstraint* _headerTopMargin;
   NSLayoutConstraint* _inputPlateBottomMargin;
+  CGRect _keyboardFrameInWindow;
 }
 
 @synthesize delegate = _delegate;
@@ -56,6 +57,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [super viewDidLayoutSubviews];
   [_inputViewController.view layoutIfNeeded];
   _fadeGradient.frame = _inputViewFade.bounds;
+  [self updateInputPlateOverlap];
 }
 
 - (void)addInputViewController:
@@ -212,6 +214,8 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
 // Called when the keyboard is hidden.
 - (void)keyboardDidHide:(NSNotification*)notification {
+  _keyboardFrameInWindow = CGRectZero;
+  [self updateInputPlateOverlap];
   [self.delegate assistantAIMViewControllerDidHideKeyboard:self];
 }
 
@@ -222,17 +226,9 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   }
   NSDictionary* userInfo = notification.userInfo;
   NSValue* rectValue = userInfo[UIKeyboardFrameEndUserInfoKey];
-  CGRect keyboardFrameInWindow = rectValue.CGRectValue;
-  CGRect keyboardFrameInView = [self.view convertRect:keyboardFrameInWindow
-                                             fromView:nil];
-  // The distance between the bottom of the view and the top of the keyboard.
-  CGFloat overlap =
-      CGRectGetMaxY(self.view.bounds) - CGRectGetMinY(keyboardFrameInView);
+  _keyboardFrameInWindow = rectValue.CGRectValue;
 
-  // The bottom margin of the input plate should be the overlap plus the margin
-  // between the input plate and the keyboard.
-  CGFloat bottomMargin = MAX(kInputPlateMargin, overlap + kInputPlateMargin);
-  _inputPlateBottomMargin.constant = -bottomMargin;
+  [self updateInputPlateOverlap];
 
   NSTimeInterval duration =
       [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
@@ -246,6 +242,20 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
                      [self.view layoutIfNeeded];
                    }
                    completion:nil];
+}
+
+// Updates the input plate's bottom margin to account for the keyboard's frame.
+- (void)updateInputPlateOverlap {
+  if (CGRectIsEmpty(_keyboardFrameInWindow)) {
+    _inputPlateBottomMargin.constant = -kInputPlateMargin;
+    return;
+  }
+  CGRect keyboardFrameInView = [self.view convertRect:_keyboardFrameInWindow
+                                             fromView:nil];
+  CGFloat overlap =
+      CGRectGetMaxY(self.view.bounds) - CGRectGetMinY(keyboardFrameInView);
+  CGFloat bottomMargin = MAX(kInputPlateMargin, overlap + kInputPlateMargin);
+  _inputPlateBottomMargin.constant = -bottomMargin;
 }
 
 // Sets up the web state view.
