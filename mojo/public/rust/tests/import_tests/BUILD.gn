@@ -5,7 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 # Files that test importing of mojom files into other files
-# FOR_RELEASE: Ideally we would re-use the tests in
+# TODO(crbug.com/499986233): Ideally we would re-use the tests in
 # mojo/public/interfaces/bindings/tests, but we don't support all the features
 # yet.
 group("import_tests") {

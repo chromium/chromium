@@ -10,17 +10,17 @@ use crate::mojo_types::declare_trappable_typed_handle;
 use mojo_ffi::data_pipe;
 use mojo_ffi::MojoResult;
 
-// FOR_RELEASE: Make these arguments to the functions instead of bitfields
 pub use data_pipe::{ReadFlags, WriteFlags};
 
 declare_trappable_typed_handle!(DataPipeProducerHandle);
 declare_trappable_typed_handle!(DataPipeConsumerHandle);
 
-// FOR_RELEASE: These impls are a fine starting point, but we can replace them
-// with more ergonomic interfaces:
+// TODO(crbug.com/498966831): These impls are a fine starting point, but we can
+// replace them with more ergonomic interfaces:
 // - Implement Read/BufRead/Write/etc instead of standalone functions.
 // - Split `read_with_flags` into multiple functions (read, peek, query,
 //   discard).
+// - Make ReadFlags/WriteFlags regular arguments instead of bitfields
 
 impl DataPipeConsumerHandle {
     pub fn read_with_flags(

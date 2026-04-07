@@ -18,11 +18,11 @@ use mojo_ffi::{MessageHandle, MojoError, MojoResult, UntypedHandle};
 /// These components can be accessed and manipulated using the message's
 /// methods.
 ///
-/// FOR_RELEASE: Messages have various conditions which determine which
-/// operations are permitted. We can probably encapsulate this using a typestate
-/// pattern. More research on the possible states is needed, but it would
-/// probably look something like `WriteableMessage` -> `SendableMessage` ->
-/// <pipe> -> `FullyReadableMessage` -> `BytesOnlyReadableMessage`.
+/// TODO(crbug.com/493265340): Messages have various conditions which determine
+/// which operations are permitted. We can probably encapsulate this using a
+/// typestate pattern. More research on the possible states is needed, but it
+/// would probably look something like `WriteableMessage` -> `SendableMessage`
+/// -> <pipe> -> `FullyReadableMessage` -> `BytesOnlyReadableMessage`.
 ///
 /// But, y'know, with better names.
 pub struct RawMojoMessage {
@@ -68,11 +68,7 @@ impl RawMojoMessage {
     /// associated handles.
     pub fn new_with_bytes(bytes: &[u8]) -> MojoResult<Self> {
         let mut msg = Self::new();
-        msg.append_bytes(bytes).map(|bytes_written| {
-            // FOR_RELEASE: Handle this more gracefully
-            assert!(bytes_written == bytes.len());
-            msg
-        })
+        msg.append_bytes(bytes).map(|_| msg)
     }
 
     /// Append the bytes in `bytes` and the handles in `handles` to the
@@ -81,9 +77,6 @@ impl RawMojoMessage {
     /// fails, any handles whose ownership was not transferred are returned to
     /// the caller.
     ///
-    /// If successful, returns the number of bytes successfully written.
-    /// FOR_RELEASE: Maybe have this write all the bytes (in a loop) instead.
-    ///
     /// # Possible Error Codes:
     /// - `ResourceExhausted`: if the additional payload size exceeds some
     ///   implementation- or embedder-defined maximum.
@@ -91,21 +84,29 @@ impl RawMojoMessage {
     pub fn append_data(
         &mut self,
         bytes: &[u8],
-        handles: Vec<UntypedHandle>,
-    ) -> Result<usize, (MojoError, Vec<UntypedHandle>)> {
-        message::MojoAppendMessageData(
-            &self.message_handle,
-            message::AppendMessageDataFlags::empty(),
-            bytes,
-            handles,
-        )
+        mut handles: Vec<UntypedHandle>,
+    ) -> Result<(), (MojoError, Vec<UntypedHandle>)> {
+        // The Mojo C API doesn't explicitly promise that it will write all of
+        // our bytes at once, so write in a loop until they're all written.
+        let mut total_bytes_written = 0;
+        while total_bytes_written < bytes.len() {
+            total_bytes_written += message::MojoAppendMessageData(
+                &self.message_handle,
+                message::AppendMessageDataFlags::empty(),
+                &bytes[total_bytes_written..],
+                handles,
+            )?;
+            // Regardless of bytes, the handles should only be written once.
+            handles = vec![];
+        }
+        Ok(())
     }
 
     /// Append bytes to the message's payload. If successful, returns the number
     /// of bytes written.
     ///
     /// See `append_data` for possible error codes.
-    pub fn append_bytes(&mut self, bytes: &[u8]) -> MojoResult<usize> {
+    pub fn append_bytes(&mut self, bytes: &[u8]) -> MojoResult<()> {
         self.append_data(bytes, Vec::new()).map_err(|(result, _)| result)
     }
 
@@ -132,9 +133,11 @@ impl RawMojoMessage {
     /// which does not have this restriction and does not prevent `read_data`
     /// function from being called later.
     ///
-    /// FOR_RELEASE: We might be able to avoid returning a MojoResult here if we
-    /// manage to handle all possible errors internally (e.g. by reporting a bad
-    /// message). If not, catalogue the possible errors.
+    /// # Possible Error Codes
+    /// - `FailedPrecondition`: If the message was not received from elsewhere
+    ///   via a message pipe.
+    /// - `NotFound`: If this function has already been called on `self`.
+    /// - `Aborted`: if the message is in an unrecoverable state.
     pub fn read_data(&self) -> MojoResult<(&[u8], Vec<UntypedHandle>)> {
         // First, query the message to see how many handles are attached.
         let num_handles = match message::MojoGetMessageData(
@@ -181,8 +184,10 @@ impl RawMojoMessage {
     ///
     /// Unlike `read_data`, this function can be called multiple times.
     ///
-    /// FOR_RELEASE: See if we can avoid returning a MojoError here by handling
-    /// error cases internally. If not, catalogue the possible errors.
+    /// # Possible Error Codes
+    /// - `FailedPrecondition`: If the message was not received from elsewhere
+    ///   via a message pipe.
+    /// - `Aborted`: if the message is in an unrecoverable state.
     pub fn read_bytes(&self) -> MojoResult<&[u8]> {
         match message::MojoGetMessageData(&self.message_handle, None) {
             // If the call succeeded, then no handles were attached, and we're done!
@@ -200,12 +205,6 @@ impl RawMojoMessage {
     }
 
     /// Mark the message as ready to be sent.
-    ///
-    /// FOR_RELEASE: Figure out and document the implications of this
-    /// (presumably you can't append more data afterwards?)
-    ///
-    /// FOR_RELEASE: Maybe use the type-state pattern here so we can't confuse
-    /// ready and unready messages.
     pub fn finalize_for_sending(&self) {
         let ret = message::MojoAppendMessageData(
             &self.message_handle,

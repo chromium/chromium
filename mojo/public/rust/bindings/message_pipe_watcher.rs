@@ -15,10 +15,7 @@ use sequenced_task_runner::SequencedTaskRunnerHandle;
 use system::message::RawMojoMessage;
 use system::message_pipe::MessageEndpoint;
 use system::mojo_types::MojoResult;
-use system::trap::{
-    HandleSignals, InitialArmingPolicy, RearmingPolicy, Trap, TrapError, TrapEvent,
-    TriggerCondition,
-};
+use system::trap::{HandleSignals, RearmingPolicy, Trap, TrapError, TrapEvent, TriggerCondition};
 
 // TODO(crbug.com/470438844): Replace some/all of the std::sync imports with
 // chromium sequenced equivalents once those are implemented (figure out which,
@@ -176,7 +173,7 @@ impl MessagePipeWatcher {
         let trigger_signals: HandleSignals = HandleSignals::READABLE;
         let trigger_condition: TriggerCondition = TriggerCondition::TriggerWhenSatisfied;
 
-        let trap = Trap::new(RearmingPolicy::Automatic).ok()?;
+        let mut trap = Trap::new(RearmingPolicy::Automatic).ok()?;
 
         // This trap only ever has one trigger active, so no need to track its id
         let _trigger_id = trap.add_trigger(
@@ -187,7 +184,7 @@ impl MessagePipeWatcher {
         );
 
         // The only way this can fail is if there aren't any triggers.
-        let _ = trap.arm(InitialArmingPolicy::RunTriggersOnBlockingEvents);
+        let _ = trap.arm();
 
         Some(Self { trap, shared_state: watcher_state })
     }
@@ -252,7 +249,7 @@ impl MessagePipeWatcher {
             return;
         };
 
-        match trap_event.result() {
+        match trap_event.result {
             Ok(()) => (),
             Err(TrapError::Cancelled) => {
                 // This indicates the trigger was cancelled, which can only

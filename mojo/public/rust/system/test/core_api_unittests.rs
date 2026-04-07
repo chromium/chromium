@@ -17,8 +17,6 @@ chromium::import! {
 #[gtest(RustSystemAPITestSuite, BasicMessageWriteAndSendTest)]
 fn test_basic_message_write_and_send() {
     // Tests a basic creation of a pipe and tries to send a message over it.
-    // FOR_RELEASE: Do we need to invoke this per-test or can it be invoked
-    // once?
     //
     // In the C API, creation of a message pipe is done by first instantiating
     // two invalid MojoHandles, passing those to MojoCreateMessagePipe,
@@ -49,24 +47,6 @@ fn test_basic_message_write_and_send() {
     // Calling read_bytes is independent of read_data and can be done many times.
     let _ = hello_msg.read_bytes().unwrap();
     let _ = hello_msg.read_bytes().unwrap();
-
-    // Additional C++ unit tests include:
-    // * core
-    // * data_pipe_drainer
-    // * data_pipe_producer
-    // * data_pipe_unittests
-    // * file_data_source
-    // * file_stream_data_source
-    // * handle_signal_tracker
-    // * handle_signals_state
-    // * invitation (I think we're ignoring these for now?)
-    // * scope_to_message_pipe
-    // * simple_watcher
-    // * string_data_source
-    // * wait_set
-    // * wait.
-
-    // FOR_RELEASE: Implement all the above.
 }
 
 #[gtest(RustSystemAPITestSuite, DataPipeWriteAndSendTest)]
@@ -97,7 +77,7 @@ fn test_trap_signal_on_readable() {
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
     // 1. Create the safe Trap.
-    let trap = system::trap::Trap::new(system::trap::RearmingPolicy::Manual)
+    let mut trap = system::trap::Trap::new(system::trap::RearmingPolicy::Manual)
         .expect("Failed to create safe Trap");
 
     // 2. We use a Mutex/Condvar to wait for the event in the main thread.
@@ -112,7 +92,7 @@ fn test_trap_signal_on_readable() {
         system::trap::HandleSignals::READABLE,
         system::trap::TriggerCondition::TriggerWhenSatisfied,
         move |event| {
-            if event.result().is_ok() {
+            if event.result.is_ok() {
                 let mut count = hit_count_clone.lock().unwrap();
                 *count += 1;
                 condvar_clone.notify_all();
@@ -128,7 +108,7 @@ fn test_trap_signal_on_readable() {
         system::trap::HandleSignals::PEER_CLOSED,
         system::trap::TriggerCondition::TriggerWhenSatisfied,
         move |event| {
-            if event.result().is_ok() {
+            if event.result.is_ok() {
                 let mut count = hit_count_clone.lock().unwrap();
                 *count += 1;
                 condvar_clone.notify_all();
@@ -136,8 +116,7 @@ fn test_trap_signal_on_readable() {
         },
     );
 
-    trap.arm(system::trap::InitialArmingPolicy::RunTriggersOnBlockingEvents)
-        .expect("Failed to arm trap");
+    trap.arm().expect("Failed to arm trap");
 
     let hello = system::message::RawMojoMessage::new_with_bytes(b"hello").unwrap();
     let write_result = endpoint_b.write(hello);
@@ -156,8 +135,7 @@ fn test_trap_signal_on_readable() {
     let _ = endpoint_a.read();
 
     // Need to re-arm since we specifeid the manual rearming policy
-    trap.arm(system::trap::InitialArmingPolicy::RunTriggersOnBlockingEvents)
-        .expect("Failed to arm trap");
+    trap.arm().expect("Failed to arm trap");
 
     drop(endpoint_a);
     {
@@ -177,7 +155,7 @@ fn test_trap_auto_rearm() {
     let endpoint_a_weak = Arc::downgrade(&endpoint_a);
 
     // 1. Create the safe Trap.
-    let trap = system::trap::Trap::new(system::trap::RearmingPolicy::Automatic)
+    let mut trap = system::trap::Trap::new(system::trap::RearmingPolicy::Automatic)
         .expect("Failed to create safe Trap");
 
     // 2. We use a Mutex/Condvar to wait for the event in the main thread.
@@ -192,7 +170,7 @@ fn test_trap_auto_rearm() {
         system::trap::HandleSignals::READABLE,
         system::trap::TriggerCondition::TriggerWhenSatisfied,
         move |event| {
-            if event.result().is_ok() {
+            if event.result.is_ok() {
                 let mut count = hit_count_clone.lock().unwrap();
                 *count += 1;
                 condvar_clone.notify_all();
@@ -201,8 +179,7 @@ fn test_trap_auto_rearm() {
         },
     );
 
-    trap.arm(system::trap::InitialArmingPolicy::RunTriggersOnBlockingEvents)
-        .expect("Failed to arm trap");
+    trap.arm().expect("Failed to arm trap");
 
     let hello = system::message::RawMojoMessage::new_with_bytes(b"hello").unwrap();
     let write_result = endpoint_b.write(hello);
@@ -247,7 +224,7 @@ fn test_close_trap_with_active_trigger() {
         system::trap::HandleSignals::READABLE,
         system::trap::TriggerCondition::TriggerWhenSatisfied,
         move |event| {
-            expect_eq!(event.result(), Err(system::trap::TrapError::Cancelled));
+            expect_eq!(event.result, Err(system::trap::TrapError::Cancelled));
         },
     );
     drop(trap);
@@ -268,7 +245,7 @@ fn test_trap_clear_triggers() {
                 system::trap::HandleSignals::READABLE,
                 system::trap::TriggerCondition::TriggerWhenSatisfied,
                 |event| {
-                    expect_eq!(event.result(), Err(system::trap::TrapError::Cancelled));
+                    expect_eq!(event.result, Err(system::trap::TrapError::Cancelled));
                 },
             )
         };
@@ -287,7 +264,7 @@ fn test_trap_clear_triggers() {
 
 #[gtest(RustSystemAPITestSuite, SafeTrapMultipleBlockingEvents)]
 fn test_trap_multiple_blocking_events() {
-    let trap = system::trap::Trap::new(system::trap::RearmingPolicy::Manual)
+    let mut trap = system::trap::Trap::new(system::trap::RearmingPolicy::Manual)
         .expect("Failed to create safe Trap");
     const NUM_TRIGGERS: usize = 20; // More than MAX_BLOCKING_EVENTS
 
@@ -307,7 +284,7 @@ fn test_trap_multiple_blocking_events() {
             system::trap::HandleSignals::READABLE,
             system::trap::TriggerCondition::TriggerWhenSatisfied,
             move |event| {
-                match event.result() {
+                match event.result {
                     Ok(()) => {
                         // Standard behavior we expect for this test.
                         // We are setting 20 triggers so we will expect it to trigger with Ok()
@@ -346,8 +323,7 @@ fn test_trap_multiple_blocking_events() {
     }
 
     // 3. Call trap.arm(). This should now handle all 20 blocking events.
-    trap.arm(system::trap::InitialArmingPolicy::RunTriggersOnBlockingEvents)
-        .expect("Trap failed to arm after processing multiple blocking events");
+    trap.arm().expect("Trap failed to arm after processing multiple blocking events");
 
     // 4. Verify that all NUM_TRIGGERS callbacks were executed.
     let final_count = *callback_count.lock().unwrap();
@@ -356,8 +332,7 @@ fn test_trap_multiple_blocking_events() {
     // 5. Verify the trap is now genuinely armed by calling arm again.
     // Since all blocking events have been handled, this call should immediately
     // return Armed.
-    trap.arm(system::trap::InitialArmingPolicy::RunTriggersOnBlockingEvents)
-        .expect("Trap failed to re-arm after clearing all blocking events");
+    trap.arm().expect("Trap failed to re-arm after clearing all blocking events");
     // Manually drop our trap to ensure teardown behavior is as expected
     // (that is, Cancelled returned harmlessly for the various triggers
     // upon removal.)

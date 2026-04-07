@@ -118,22 +118,10 @@ pub enum TrapError {
     FailedPrecondition,
 }
 
-/// This policy specifies how the trap should behave if there are blocking
-/// events when it is initially armed by the user.
-///
-/// If there are no blocking events, the trap will immediately become armed
-/// regardless of this policy.
-pub enum InitialArmingPolicy {
-    /// React to each blocking event as if it had occurred after arming, by
-    /// running the corresponding trigger's callback. Continue doing so until
-    /// no blocking events remain, at which point the trap will be armed.
-    ///
-    /// The trigger _must_ at least try to make progress on clearing the
-    /// blocking events, or else it will keep looping indefinitely.
-    RunTriggersOnBlockingEvents,
-    /// Do not arm the trap, and return a list of blocking
-    /// events for the caller to handle themselves.
-    ReturnBlockingEvents,
+pub enum TryArmResult {
+    Success,
+    BlockingEvents(Vec<TrapEvent>),
+    NoTriggers,
 }
 
 /// This policy specifies whether the trap should automatically re-arm itself
@@ -144,48 +132,35 @@ pub enum InitialArmingPolicy {
 /// The `Automatic` policy is analogous to the `RunTriggersOnBlockingEvents`
 /// initial arming policy, and has the same caveat: triggers must try to make
 /// progress on clearing blocking events, or risk looping indefinitely.
-///
-/// FOR_RELEASE: Perhaps this is similar enough to the other arming policy that
-/// they can be combined, but there are some differences. Decide on that.
 pub enum RearmingPolicy {
     Manual,
     Automatic,
 }
 
-// Represents a trap event, e.g. a triggter firing.
+// Represents a trap event, e.g. a trigger firing.
+// TODO(458499013): Replace this with a trait that we can implement for
+// RawTrapEvent, so we don't have to actually convert between the types.
 #[derive(Clone, Copy, Debug)]
 pub struct TrapEvent {
-    signals_state: SignalsState,
-    result: MojoResult<()>,
-}
-
-impl TrapEvent {
+    pub signals_state: SignalsState,
     /// Why the trigger fired:
     /// * Okay: a specified signal occurred.
     /// * FailedPrecondition: a signal can no longer happen on the handle.
     /// * Cancelled: the trigger was removed (explicitly or by closure).
-    // FOR_RELEASE: Can we just store the Result<(), TrapError> in the TrapEvent to
-    // start with?
-    pub fn result(&self) -> Result<(), TrapError> {
-        match self.result {
-            Ok(()) => Ok(()),
-            Err(MojoError::Cancelled) => Err(TrapError::Cancelled),
-            Err(MojoError::FailedPrecondition) => Err(TrapError::FailedPrecondition),
-            unhandled_result => {
-                panic!("TrapEvent received an unhandled MojoResult: {:?}", unhandled_result)
-            }
-        }
-    }
-
-    /// The handle's current and possible signals as of triggering.
-    pub fn signals_state(&self) -> SignalsState {
-        self.signals_state
-    }
+    pub result: Result<(), TrapError>,
 }
 
 impl From<&RawTrapEvent> for TrapEvent {
     fn from(raw_event: &RawTrapEvent) -> Self {
-        TrapEvent { signals_state: raw_event.signals_state(), result: raw_event.result() }
+        let result = match raw_event.result() {
+            Ok(()) => Ok(()),
+            Err(MojoError::Cancelled) => Err(TrapError::Cancelled),
+            Err(MojoError::FailedPrecondition) => Err(TrapError::FailedPrecondition),
+            bad_result => {
+                panic!("TrapEvent received an unexpected MojoResult: {:?}", bad_result)
+            }
+        };
+        TrapEvent { signals_state: raw_event.signals_state(), result }
     }
 }
 
@@ -241,7 +216,16 @@ impl Trap {
     ///
     /// This function must not be called concurrently with the same `context`
     /// value. After it is called with a `Cancelled` result, it must never be
-    /// called again with the same `context` value.
+    /// called again with the same `context` value. Note that the C Mojo API
+    /// makes both these promises, but you must still be cautious if calling
+    /// this function directly.
+    //
+    // mojo/public/c/system/trap.h:
+    // > the handler will never be entered for a trigger while another thread is
+    // > executing it for the same trigger.
+    // > ...
+    // > |MOJO_RESULT_CANCELLED|: The trigger has been removed and will never
+    // > cause another event to fire.
     extern "C" fn handle_event_from_callback(raw_event: &RawTrapEvent) {
         // Get the Arc<Trigger> from the raw context.
         // SAFETY: Same conditions as this function
@@ -262,11 +246,10 @@ impl Trap {
         // Call the user's callback, acquiring the associated lock.
         (trigger_data.callback.lock().unwrap())(&raw_event.into());
 
+        let trigger_id = trigger_data.trigger_id;
+        drop(trigger_data);
+
         if raw_event.result() == Err(MojoError::Cancelled) {
-            let trigger_id = trigger_data.trigger_id;
-            // Drop our `trigger_data` Arc *before* calling, so we don't have a
-            // strong ref on the stack during removal.
-            drop(trigger_data);
             Self::remove_cancelled_trigger(&mut owner.lock().unwrap(), trigger_id);
         }
 
@@ -280,21 +263,27 @@ impl Trap {
 
         // Re-arm the trap if the rearming policy is set to automatic
         if matches!(shared_data.rearming_policy, RearmingPolicy::Automatic) {
-            // The only way this can fail is if the trap has no triggers. This
-            // is possible if we were the last trigger and just got cancelled.
-            let _ = Self::handle_blocking_events_until_armed(&shared_data.trap_handle);
+            // The only way this can fail is if the trap has no triggers. This is
+            // possible (and fine) if we were the last trigger and just got cancelled.
+            // SAFETY: We dropped `trigger_data` already.
+            let _ = unsafe { Self::handle_blocking_events_until_armed(&shared_data.trap_handle) };
         }
     }
 
-    // # Safety consideration
-    // The callback passed in to add_trigger should be able to account for
-    // both an Ok() MojoResult (the "happy" path) and the following TrapErrors:
-    // * `Cancelled``, which is returned every time a Trap goes out of scope, and
-    // * `FailedPrecondition`, which is returned if the conditions for this trigger
-    //   ever become impossible (e.g., if one end of a pipe is closed, such that the
-    //   other end will never again become readable)
-    // You can find examples in `core_api_unittests.rs`, e.g. in
-    // `test_trap_multiple_blocking_events`
+    /// Add a trigger to the trap, which will fire when its signals become
+    /// satisfied (or unsatisfied, depending on `condition`).
+    ///
+    /// # Safety consideration
+    /// The callback passed in to add_trigger should be able to account for
+    /// both an Ok() MojoResult (the "happy" path) and the following TrapErrors:
+    /// * `Cancelled``, which is returned every time a Trap goes out of scope,
+    ///   and
+    /// * `FailedPrecondition`, which is returned if the conditions for this
+    ///   trigger ever become impossible (e.g., if one end of a pipe is closed,
+    ///   such that the other end will never again become readable)
+    ///
+    /// You can find examples in `core_api_unittests.rs`, e.g. in
+    /// `test_trap_multiple_blocking_events`
     pub fn add_trigger(
         &self,
         handle_to_trap: &impl Trappable,
@@ -370,30 +359,47 @@ impl Trap {
         }
     }
 
-    /// Attempt to arm the trap. The arming policy determines what to do if the
-    /// trap would immediately fire upon arming:
+    /// Attempt to arm the trap, handling any existing triggers immediately and
+    /// synchronously until the trap is armed.
     ///
-    /// - `RunTriggersOnBlockingEvents`: Repeatedly run the handler of each
-    ///   event until none remain. This will cause an infinite loop if the
-    ///   handler does not remove events (e.g. by reading the corresponding
-    ///   message from a pipe)!
-    /// - `ReturnBlockingEvents`: Return a list of blocking events for the
-    ///   caller to handle manually (FOR_RELEASE: implement this!)
+    /// If the trigger handler does not remove events (e.g. by reading the
+    /// corresponding message from a pipe), this will cause an infinite loop.
     ///
     /// # Possible Error Codes
     /// - `NotFound` if the trap has no triggers.
-    pub fn arm(&self, arming_policy: InitialArmingPolicy) -> MojoResult<()> {
-        match arming_policy {
-            InitialArmingPolicy::RunTriggersOnBlockingEvents => {
-                Self::handle_blocking_events_until_armed(&self.shared_data.trap_handle)
+    pub fn arm(&mut self) -> MojoResult<()> {
+        // SAFETY: `handle_blocking_events_until_armed` explicitly allows `arm`
+        // to call it.
+        unsafe { Self::handle_blocking_events_until_armed(&self.shared_data.trap_handle) }
+    }
+
+    /// Attempt to arm the trap. If it would fire immediately, it returns a
+    /// subset of the events that would it to fire; the caller must somehow
+    /// handle them before the trap can be armed.
+    pub fn try_arm(&mut self) -> TryArmResult {
+        const MAX_BLOCKING_EVENTS: usize = 16;
+        let mut buf = [const { mem::MaybeUninit::uninit() }; MAX_BLOCKING_EVENTS];
+
+        match trap::MojoArmTrap(&self.shared_data.trap_handle.handle, Some(&mut buf)) {
+            ArmResult::Armed => TryArmResult::Success,
+            ArmResult::Blocked(events) => {
+                TryArmResult::BlockingEvents(events.iter().map(Into::into).collect())
             }
-            InitialArmingPolicy::ReturnBlockingEvents => {
-                todo!()
-            }
+            ArmResult::Failed(_) => TryArmResult::NoTriggers,
         }
     }
 
-    fn handle_blocking_events_until_armed(raw_trap: &TrapHandle) -> MojoResult<()> {
+    /// Attempt to arm the trap; if there are blocking events, invoke the
+    /// handler on each of them until none remain and the trap is armed.
+    ///
+    /// The provided handler must at least attempt to make progress on clearing
+    /// the events, or this will loop forever.
+    ///
+    /// # Safety:
+    /// This function should only be called from `arm` and
+    /// `handle_event_from_callback`. In the latter case, the caller must
+    /// not hold a reference to any trigger's `TriggerData`.
+    unsafe fn handle_blocking_events_until_armed(raw_trap: &TrapHandle) -> MojoResult<()> {
         const MAX_BLOCKING_EVENTS: usize = 16;
         let mut buf = [const { mem::MaybeUninit::uninit() }; MAX_BLOCKING_EVENTS];
 
@@ -407,13 +413,17 @@ impl Trap {
                     }
                 };
             for blocking_event in blocking_events {
-                // SAFETY: Removing a trigger requires `&mut self`, so the trap won't fire a
-                // `Cancelled` event while we're doing this. It won't fire any other event
-                // because it's disarmed.
-                // FOR_RELEASE: Verify that if a trigger gets cancelled, any blocking events for
-                // it get removed from the queue. And ideally that happens immediately so
-                // there's no risk of the cancelled handler running while we're looking at
-                // these events.
+                // SAFETY:
+                //
+                // - If called from `arm`: `arm` takes `&mut self` so it can't be
+                // called concurrently.
+                // - If called from `handle_event_from_callback`: the caller
+                // promises it doesn't have a reference to `trigger_data`.
+                // - In both cases: Removing a trigger requires `&mut self`, so the
+                // trap won't fire a `Cancelled` event while we're doing this.
+                // It won't fire any other event because it's disarmed.
+                //
+                // Therefore, nobody else has a reference to `trigger_data`.
                 let trigger_data = unsafe { Self::get_trigger_data_from_event(blocking_event) };
                 // The unwraps should succeed because the trap is still alive
                 (trigger_data.unwrap().callback.lock().unwrap())(&blocking_event.into());
@@ -441,7 +451,7 @@ impl Trap {
         // SAFETY: This pointer was created by `Weak::into_raw` in `add_trigger`
         // The function's safety requirements guarantee that the pointer is still
         // valid and no other `Weak` owns its ref-count. If the result isn't
-        // `Cancelled, we'll release our hold on the ref-count when we forget this
+        // `Cancelled`, we'll release our hold on the ref-count when we forget this
         // below.
         let trigger_data_weak = unsafe { Weak::from_raw(trigger_data_ptr) };
         let trigger_data = trigger_data_weak.upgrade();
@@ -512,15 +522,10 @@ struct TriggerRegistry {
 // Thus this struct is referenced when making the necessary
 // TrapHandle calls "under the hood".
 struct Trigger {
-    // FOR_RELEASE: These Mutexes *may* be imposing an unnecessary overhead
-    // on our end users (though "traps can be called back on any thread" is
-    // a pretty tricky constraint).
-    //
-    // Revisit here once we've got end-to-end Traps working, with an eye for
-    // seeing how the C++ API works in this case to guide a potential improved
-    // design.  It may be possible to send these to a fixed sequence or
-    // the sequence the trap was armed on (once we have sequences available
-    // in Rust).
+    // TODO(crbug.com/470438844): These Mutexes *may* be imposing an unnecessary
+    // overhead on our end users (though "traps can be called back on any thread"
+    // is a pretty tricky constraint). See if we can replace some or all of them
+    // with sequenced equivalents.
     #[allow(clippy::type_complexity)]
     callback: Mutex<Box<dyn FnMut(&TrapEvent) + Send + 'static>>,
     // Trigger points back to the TriggerRegistry that "owns" it.

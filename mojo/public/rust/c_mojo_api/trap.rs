@@ -226,7 +226,7 @@ pub fn MojoCreateTrap(handler: EventHandler) -> MojoResult<UntypedHandle> {
 /// `monitored_handle` must be either a data pipe or message pipe handle.
 /// `signals` is a bitfield indicating which signals should be observed on that
 /// handle. The handler will be invoked whenever *any* observed signal
-/// becomes satisfied (if `condition` is `TriggerWhenSatisfied), or when any
+/// becomes satisfied (if `condition` is `TriggerWhenSatisfied`), or when any
 /// signal becomes unsatisfied (if `condition` is `TriggerWhenUnsatisfied`).
 ///
 /// # Safety Notes
@@ -234,8 +234,9 @@ pub fn MojoCreateTrap(handler: EventHandler) -> MojoResult<UntypedHandle> {
 /// trigger invoked it. In almost all cases it will be interpreted as an actual
 /// pointer.
 ///
-/// Therefore, this function is not itself `unsafe`, the provided handler must
-/// ensure that the value `context` points to is still alive when dereferenced.
+/// Therefore, while this function is not itself `unsafe`, the provided handler
+/// must ensure that the value `context` points to is still alive when
+/// dereferenced.
 ///
 /// ## Guarantees
 /// The given `context` will not be passed to `EventHandler` after either of

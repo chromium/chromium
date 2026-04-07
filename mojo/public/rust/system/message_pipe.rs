@@ -27,11 +27,9 @@ impl MessageEndpoint {
     ///
     /// # Possible Error Codes:
     /// - `ShouldWait`: If there's no message but the other end of the pipe is
-    ///   still open
+    ///   still open.
     /// - `FailedPrecondition`: If there's no message and the other end of the
-    ///   pipe is closed
-    // FOR_RELEASE: Maybe replace the return type  with a dedicated enum instead
-    // of a MojoResult
+    ///   pipe is closed.
     pub fn read(&self) -> MojoResult<RawMojoMessage> {
         message_pipe::MojoReadMessage(&self.handle).map(|handle| handle.into())
     }
