@@ -369,7 +369,7 @@ void HTMLSelectElement::SetSuggestedValue(const String& value) {
 }
 
 void HTMLSelectElement::SetSuggestedOption(HTMLOptionElement* option) {
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
       IsInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.
@@ -837,7 +837,7 @@ int HTMLSelectElement::SelectedListIndex() const {
 }
 
 void HTMLSelectElement::DidChangeIsCanvasOrInCanvasSubtree() {
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
       IsInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.

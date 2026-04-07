@@ -100,7 +100,8 @@ TEST_F(WebFormControlElementTest, ResetDocumentClearsEditedState) {
 }
 
 TEST_F(WebFormControlElementTest, TextControlPreviewDisabledInCanvas) {
-  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          GetDocument().GetExecutionContext())) {
     return;
   }
 
@@ -129,7 +130,8 @@ TEST_F(WebFormControlElementTest, TextControlPreviewDisabledInCanvas) {
 
 TEST_F(WebFormControlElementTest,
        TextControlPreviewDisabledWhenMovingToCanvas) {
-  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          GetDocument().GetExecutionContext())) {
     return;
   }
 
@@ -162,7 +164,8 @@ TEST_F(WebFormControlElementTest,
 }
 
 TEST_F(WebFormControlElementTest, SelectPreviewDisabledInCanvas) {
-  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          GetDocument().GetExecutionContext())) {
     return;
   }
 
@@ -189,7 +192,8 @@ TEST_F(WebFormControlElementTest, SelectPreviewDisabledInCanvas) {
 
 TEST_F(WebFormControlElementTest,
        SelectPreviewDisabledInCanvasWhenMovingToCanvas) {
-  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          GetDocument().GetExecutionContext())) {
     return;
   }
 

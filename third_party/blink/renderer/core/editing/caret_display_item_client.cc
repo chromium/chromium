@@ -227,7 +227,8 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     color_ = new_color;
   }
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          layout_block_->GetDocument().GetExecutionContext())) {
     bool was_in_canvas_subtree = is_in_canvas_subtree_;
 
     is_in_canvas_subtree_ = false;

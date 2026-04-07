@@ -603,7 +603,8 @@ PaintResult PaintLayerPainter::PaintChildren(
   bool painting_canvas_child = false;
   auto* canvas = DynamicTo<HTMLCanvasElement>(layout_object.GetNode());
   if (canvas) {
-    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+            canvas->GetExecutionContext()) &&
         canvas->layoutSubtree()) {
       // We need to paint the children for later use by drawElementImage, but
       // make sure we enforce privacy-preserving paint behavior.

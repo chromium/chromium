@@ -604,7 +604,8 @@ static bool NeedsPaintOffsetTranslation(
     return true;
   }
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          object.GetDocument().GetExecutionContext())) {
     if (const auto* canvas = DynamicTo<HTMLCanvasElement>(object.GetNode())) {
       if (canvas->layoutSubtree()) {
         return true;
@@ -2406,7 +2407,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       EffectPaintPropertyNode::FilterInfo filter_info;
       UpdateFilterEffect(object_, properties_->Filter(), filter_info);
       bool is_filter_disallowed =
-          RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+          RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+              object_.GetDocument().GetExecutionContext()) &&
           IsA<Element>(object_.GetNode()) &&
           To<Element>(object_.GetNode())->IsInCanvasSubtree() &&
           filter_info.operations.OriginTainted();
@@ -3812,7 +3814,8 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
     box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
   }
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          object_.GetDocument().GetExecutionContext())) {
     const auto* canvas = DynamicTo<HTMLCanvasElement>(object_.GetNode());
     if (canvas && canvas->layoutSubtree()) {
       // Invalidate the child's paint properties so that its cached
@@ -4578,7 +4581,8 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
     // Elements under canvas can only be rendered with `drawElementImage` and
     // need to use regular paint invalidation to ensure js is notified of
     // invalidations.
-    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+            object_.GetDocument().GetExecutionContext()) &&
         IsA<Element>(object_.GetNode()) &&
         To<Element>(object_.GetNode())->IsInCanvasSubtree()) {
       context_.painting_layer->SetNeedsRepaint();
@@ -4632,7 +4636,8 @@ bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
   // Elements under canvas can only be rendered with `drawElementImage` and need
   // to use regular paint invalidation to ensure js is notified of
   // invalidations.
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          object.GetDocument().GetExecutionContext()) &&
       IsA<Element>(object.GetNode()) &&
       To<Element>(object.GetNode())->IsInCanvasSubtree()) {
     return false;
@@ -4684,7 +4689,8 @@ bool PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
   // Elements under canvas can only be rendered with `drawElementImage` and need
   // to use regular paint invalidation to ensure js is notified of
   // invalidations.
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          object.GetDocument().GetExecutionContext()) &&
       IsA<Element>(object.GetNode()) &&
       To<Element>(object.GetNode())->IsInCanvasSubtree()) {
     return false;

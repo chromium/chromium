@@ -27,7 +27,8 @@ const LayoutResult* ReplacedLayoutAlgorithm::Layout() {
   if (Node().IsMedia()) {
     LayoutMediaChildren();
   } else if (Node().IsCanvas() &&
-             RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+             RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+                 Node().GetDocument().GetExecutionContext())) {
     LayoutCanvasChildren();
   } else if (Node().IsImageReplacement()) {
     LayoutImageReplacementChildren();

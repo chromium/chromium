@@ -586,4 +586,18 @@ TEST_P(HTMLCanvasElementTest, LayoutsubtreeInvalidation) {
   EXPECT_TRUE(canvas->NeedsStyleRecalc());
 }
 
+TEST_P(HTMLCanvasElementTest, HTMLInCanvasUseCounter) {
+  SetBodyInnerHTML(R"HTML(
+    <canvas></canvas>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kHTMLInCanvas));
+
+  SetBodyInnerHTML(R"HTML(
+    <canvas layoutsubtree></canvas>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kHTMLInCanvas));
+}
+
 }  // namespace blink

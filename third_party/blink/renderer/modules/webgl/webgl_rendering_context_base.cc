@@ -6810,7 +6810,8 @@ void WebGLRenderingContextBase::TexElementImage2DInternal(
     GLenum type,
     const V8UnionElementOrElementImage* element,
     ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+      Host()->GetTopExecutionContext()));
 
   if (isContextLost()) {
     return;
