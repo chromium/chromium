@@ -327,6 +327,9 @@ BASE_FEATURE(kComposeboxUsesChromeComposeClient, ENABLED);
 // Controls whether or not contextual composebox should display suggestions.
 BASE_FEATURE(kComposeboxAttachmentsTypedState, DISABLED);
 
+// Whether to enable Google Drive context menu option in the composebox.
+BASE_FEATURE(kComposeboxDriveContextMenuOption, DISABLED);
+
 // Whether the composebox should show a verbatim match for context in
 // zero-suggest.
 BASE_FEATURE(kComposeboxVerbatimMatchZeroSuggest, ENABLED);
