@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -2475,6 +2477,39 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinAllTogether) {
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, SidePanelToggle) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  actions::ActionId action_id = kActionSidePanelShowCustomizeChrome;
+  auto mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowCustomizeChrome;
+
+  model_->UpdatePinnedState(action_id, true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  auto is_any_side_panel_showing = [&]() {
+    for (auto type : SidePanelEntry::PanelTypes::All()) {
+      if (side_panel_ui->IsSidePanelShowing(type)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Show side panel.
+  EXPECT_TRUE(ClickPinnedButton(web_contents, mojom_action));
+  ASSERT_TRUE(base::test::RunUntil(is_any_side_panel_showing));
+
+  // Dismiss side panel.
+  EXPECT_TRUE(ClickPinnedButton(web_contents, mojom_action));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !is_any_side_panel_showing(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, InvokeActions) {
