@@ -140,16 +140,23 @@ export function getRoutineGroups(type: NetworkType): RoutineGroup[] {
       ],
       'internetConnectivityGroupLabel');
 
-  const groupsToAdd = type === NetworkType.kWiFi ?
-      [wifiGroup, internetConnectivityGroup] :
-      [internetConnectivityGroup];
+  const googleServicesGroup = new RoutineGroup(
+      [
+        createRoutine(RoutineType.kGoogleServicesConnectivity, true),
+      ],
+      'googleServicesGroupLabel');
 
-  const networkRoutineGroups = [
+  const output = [
     localNetworkGroup,
     nameResolutionGroup,
   ];
 
-  return networkRoutineGroups.concat(groupsToAdd);
+  if (type === NetworkType.kWiFi) {
+    output.push(wifiGroup);
+  }
+
+  output.push(internetConnectivityGroup, googleServicesGroup);
+  return output;
 }
 
 export function getSubnetMaskFromRoutingPrefix(prefix: number): string {
@@ -221,6 +228,8 @@ export function getRoutineFailureMessage(routineType: RoutineType): string {
       return loadTimeData.getString('arcPingFailedText');
     case RoutineType.kArcDnsResolution:
       return loadTimeData.getString('arcDnsResolutionFailedText');
+    case RoutineType.kGoogleServicesConnectivity:
+      return loadTimeData.getString('googleServicesConnectivityFailedText');
     case RoutineType.kBatteryCharge:
     case RoutineType.kBatteryDischarge:
     case RoutineType.kCpuCache:

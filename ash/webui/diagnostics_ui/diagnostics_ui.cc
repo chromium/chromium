@@ -178,6 +178,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"gatewayCanBePingedRoutineText",
        IDS_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED},
       {"gatewayRoutineText", IDS_NETWORK_DIAGNOSTICS_GATEWAY_GROUP},
+      {"googleServicesConnectivityFailedText",
+       IDS_DIAGNOSTICS_GOOGLE_SERVICES_CONNECTIVITY_FAILED_TEXT},
       {"googleServicesGroupLabel",
        IDS_NETWORK_DIAGNOSTICS_GOOGLE_SERVICES_GROUP},
       {"hasSecureWiFiConnectionFailedText",

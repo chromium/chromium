@@ -1514,6 +1514,9 @@
         <message name="IDS_DIAGNOSTICS_INTERNET_CONNECTIVITY_GROUP_LABEL" desc="The label for the group of tests related to internet connectivity.">
           Internet Connectivity
         </message>
+        <message name="IDS_DIAGNOSTICS_GOOGLE_SERVICES_CONNECTIVITY_FAILED_TEXT" desc="The text that displays when the Google Services Connectivity test fails.">
+          Can't reach Google services
+        </message>
         <message name="IDS_DIAGNOSTICS_LAN_CONNECTIVITY_FAILED_TEXT" desc="The text that displays when the `Lan Connectivity` test fails.">
           Can't contact gateway
         </message>

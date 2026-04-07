@@ -5,6 +5,7 @@
 import 'chrome://diagnostics/routine_result_entry.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
+import {getRoutineFailureMessage} from 'chrome://diagnostics/diagnostics_utils.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
@@ -250,6 +251,12 @@ suite('routineResultEntryTestSuite', function() {
           getFailedTestContainer(),
           loadTimeData.getString('lanConnectivityFailedText'));
     });
+  });
+
+  test('GoogleServicesConnectivityFailureMessage', () => {
+    assertEquals(
+        loadTimeData.getString('googleServicesConnectivityFailedText'),
+        getRoutineFailureMessage(RoutineType.kGoogleServicesConnectivity));
   });
 
   test('AnnouncesForRunningAndFailure', () => {
