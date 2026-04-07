@@ -70,23 +70,20 @@ SendTabToSelfPageHandler::SendTabToSelfPageHandler(
       content::WebContentsUserData<SendTabToSelfPageHandler>(*web_contents) {}
 
 void SendTabToSelfPageHandler::PrimaryPageChanged(content::Page& /*page*/) {
-  base::flat_map<base::Token, PendingRequest> requests =
-      std::move(pending_requests_);
-  pending_requests_.clear();
-  for (std::pair<base::Token, PendingRequest>& pair : requests) {
-    SendFinalizedRequest(std::move(pair.second),
-                         ScrollPositionGenerationOutcome::kMainFrameChanged);
-  }
+  CancelPendingRequests(ScrollPositionGenerationOutcome::kMainFrameChanged);
 }
 
 void SendTabToSelfPageHandler::WebContentsDestroyed() {
+  CancelPendingRequests(ScrollPositionGenerationOutcome::kMainFrameUnavailable);
+}
+
+void SendTabToSelfPageHandler::CancelPendingRequests(
+    ScrollPositionGenerationOutcome outcome) {
   base::flat_map<base::Token, PendingRequest> requests =
       std::move(pending_requests_);
   pending_requests_.clear();
   for (std::pair<base::Token, PendingRequest>& pair : requests) {
-    SendFinalizedRequest(
-        std::move(pair.second),
-        ScrollPositionGenerationOutcome::kMainFrameUnavailable);
+    SendFinalizedRequest(std::move(pair.second), outcome);
   }
 }
 

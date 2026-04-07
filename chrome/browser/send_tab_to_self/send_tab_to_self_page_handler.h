@@ -98,6 +98,8 @@ class SendTabToSelfPageHandler
 
   void SelectorGenerationTimedOutForRequest(base::Token request_token);
 
+  void CancelPendingRequests(ScrollPositionGenerationOutcome outcome);
+
   void RequestScrollPositionSelectorAndSendRequest(base::Token request_token,
                                                    PendingRequest request);
 
