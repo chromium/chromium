@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -47,18 +48,26 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
 
   bool Contains(AbstractRange*) const;
 
-  // HighlightSetIterable
-  class IterationSource final : public HighlightSetIterable::IterationSource {
+  // HighlightSetIterable implements live iteration following Set semantics.
+  class CORE_EXPORT IterationSource final
+      : public HighlightSetIterable::IterationSource {
    public:
-    explicit IterationSource(const Highlight& highlight);
+    explicit IterationSource(Highlight& highlight);
 
     bool FetchNextItem(ScriptState*, AbstractRange*&) override;
 
     void Trace(blink::Visitor*) const override;
 
+    // Called by Highlight before an element is removed from the set.
+    void WillRemoveItem(AbstractRange* range);
+    // Called by Highlight before the set is cleared.
+    void WillClear();
+
    private:
-    wtf_size_t index_;
-    HeapVector<Member<AbstractRange>> highlight_ranges_snapshot_;
+    Member<Highlight> highlight_;
+    // Last successfully returned range, FetchNextItem advances past it.
+    Member<AbstractRange> last_returned_ = nullptr;
+    bool finished_ = false;
   };
 
   const HeapLinkedHashSet<Member<AbstractRange>>& GetRanges() const {
@@ -73,6 +82,11 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
       ScriptState*) override;
 
   HeapLinkedHashSet<Member<AbstractRange>> highlight_ranges_;
+  // Active iteration sources that need to be notified of mutations.
+  HeapHashSet<WeakMember<IterationSource>> active_iterators_;
+  void NotifyIteratorsWillRemoveItem(AbstractRange* range);
+  void NotifyIteratorsWillClear();
+
   int32_t priority_ = 0;
   V8HighlightType type_ = V8HighlightType{V8HighlightType::Enum::kHighlight};
   // Since a Highlight can be registered many times under different names in

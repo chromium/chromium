@@ -25,6 +25,7 @@ Highlight::~Highlight() = default;
 
 void Highlight::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlight_ranges_);
+  visitor->Trace(active_iterators_);
   visitor->Trace(containing_highlight_registries_);
   ScriptWrappable::Trace(visitor);
 }
@@ -47,6 +48,7 @@ Highlight* Highlight::addForBinding(ScriptState*,
 }
 
 void Highlight::clearForBinding(ScriptState*, ExceptionState&) {
+  NotifyIteratorsWillClear();
   highlight_ranges_.clear();
   ScheduleRepaintsInContainingHighlightRegistries();
 }
@@ -56,6 +58,7 @@ bool Highlight::deleteForBinding(ScriptState*,
                                  ExceptionState&) {
   auto iterator = highlight_ranges_.find(range);
   if (iterator != highlight_ranges_.end()) {
+    NotifyIteratorsWillRemoveItem(range);
     highlight_ranges_.erase(iterator);
     ScheduleRepaintsInContainingHighlightRegistries();
     return true;
@@ -100,26 +103,80 @@ void Highlight::DeregisterFrom(HighlightRegistry* highlight_registry) {
     containing_highlight_registries_.erase(map_iterator);
 }
 
-Highlight::IterationSource::IterationSource(const Highlight& highlight)
-    : index_(0) {
-  highlight_ranges_snapshot_.ReserveInitialCapacity(
-      highlight.highlight_ranges_.size());
-  for (const auto& range : highlight.highlight_ranges_) {
-    highlight_ranges_snapshot_.push_back(range);
-  }
+Highlight::IterationSource::IterationSource(Highlight& highlight)
+    : highlight_(&highlight) {
+  highlight.active_iterators_.insert(this);
 }
 
 bool Highlight::IterationSource::FetchNextItem(ScriptState*,
                                                AbstractRange*& value) {
-  if (index_ >= highlight_ranges_snapshot_.size())
+  if (finished_) {
     return false;
-  value = highlight_ranges_snapshot_[index_++];
+  }
+
+  auto& ranges = highlight_->highlight_ranges_;
+  HeapLinkedHashSet<Member<AbstractRange>>::const_iterator range_to_return;
+  // We should return the range after the last returned one.
+  // If there is no last returned range, we should return the first one.
+  if (!last_returned_) {
+    range_to_return = ranges.begin();
+  } else {
+    range_to_return = ranges.find(last_returned_);
+    CHECK(range_to_return != ranges.end());
+    ++range_to_return;
+  }
+
+  if (range_to_return == ranges.end()) {
+    finished_ = true;
+    highlight_->active_iterators_.erase(this);
+    return false;
+  }
+
+  value = *range_to_return;
+  last_returned_ = *range_to_return;
   return true;
 }
 
+void Highlight::IterationSource::WillRemoveItem(AbstractRange* range) {
+  // If the range being removed is the last one returned, move back the cursor
+  // so that the next range returned will be the one after the removed range.
+  if (last_returned_ == range) {
+    auto& ranges = highlight_->highlight_ranges_;
+    auto it = ranges.find(range);
+    CHECK(it != ranges.end());
+    if (it == ranges.begin()) {
+      last_returned_ = nullptr;
+    } else {
+      --it;
+      last_returned_ = *it;
+    }
+  }
+}
+
+void Highlight::IterationSource::WillClear() {
+  last_returned_ = nullptr;
+}
+
 void Highlight::IterationSource::Trace(blink::Visitor* visitor) const {
-  visitor->Trace(highlight_ranges_snapshot_);
+  visitor->Trace(highlight_);
+  visitor->Trace(last_returned_);
   HighlightSetIterable::IterationSource::Trace(visitor);
+}
+
+void Highlight::NotifyIteratorsWillRemoveItem(AbstractRange* range) {
+  for (auto& iter : active_iterators_) {
+    if (iter) {
+      iter->WillRemoveItem(range);
+    }
+  }
+}
+
+void Highlight::NotifyIteratorsWillClear() {
+  for (auto& iter : active_iterators_) {
+    if (iter) {
+      iter->WillClear();
+    }
+  }
 }
 
 HighlightSetIterable::IterationSource* Highlight::CreateIterationSource(
