@@ -2,22 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BrowserProxy} from 'chrome://glic/browser_proxy.js';
 import {ZoomAction} from 'chrome://glic/glic.mojom-webui.js';
-import type {PageHandlerInterface} from 'chrome://glic/glic.mojom-webui.js';
-import type {ApiHostEmbedder} from 'chrome://glic/glic_api_impl/host/glic_api_host.js';
 import {matcherForOrigin, urlMatchesAllowedOrigin, WebviewController, WebviewPersistentState} from 'chrome://glic/webview.js';
-import type {PageType, WebviewDelegate} from 'chrome://glic/webview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {configureLoadTimeData, FakeApiHostEmbedder, FakeBrowserProxy, FakeWebviewDelegate} from './test_helpers.js';
+
 suite('WebviewTest', () => {
   setup(() => {
-    loadTimeData.resetForTesting({
-      glicAllowedOrigins: '',
-      glicGuestURL: 'https://cat.fun/',
-      devMode: false,
-    });
+    configureLoadTimeData();
   });
 
   function assertUrlMatchesAllowedOrigin(expectMatches: boolean, url: string) {
@@ -103,43 +97,11 @@ suite('WebviewZoomTest', () => {
   let controller: WebviewController;
 
   setup(() => {
-    loadTimeData.resetForTesting({
-      glicAllowedOrigins: '',
-      glicGuestURL: 'https://cat.fun/',
-      devMode: false,
-      chromeVersion: '123.0.0.0',
-      chromeChannel: 'stable',
-      glicHeaderRequestTypes: '',
-    });
+    configureLoadTimeData();
 
     // Set up mock interfaces to enable creating a WebviewController for test
     // use.
     const container = document.createElement('div');
-
-    class FakePageHandler implements Partial<PageHandlerInterface> {
-      webviewCommitted(_url: string) {}
-      prepareForClient() {
-        return Promise.resolve({result: 0});
-      }
-    }
-
-    class FakeBrowserProxy implements BrowserProxy {
-      pageHandler = new FakePageHandler() as PageHandlerInterface;
-    }
-
-    class FakeWebviewDelegate implements WebviewDelegate {
-      webviewError(_reason: string) {}
-      webviewUnresponsive() {}
-      webviewPageCommit(_pageType: PageType) {}
-      webviewDeniedByAdmin() {}
-    }
-
-    class FakeApiHostEmbedder implements ApiHostEmbedder {
-      onGuestResizeRequest(_size: {width: number, height: number}) {}
-      enableDragResize(_enabled: boolean) {}
-      webClientReady() {}
-      webClientWarmed() {}
-    }
 
     controller = new WebviewController(
         container,

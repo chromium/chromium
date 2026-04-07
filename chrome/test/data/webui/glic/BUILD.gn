@@ -101,6 +101,7 @@ build_webui_tests("build") {
     "unit_tests/glic_api_host_test.ts",
     "unit_tests/glic_api_client_test.ts",
     "unit_tests/observable_test.ts",
+    "unit_tests/test_helpers.ts",
     "unit_tests/webview_test.ts",
   ]
 
