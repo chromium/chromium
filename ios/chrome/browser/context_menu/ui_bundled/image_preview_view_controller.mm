@@ -4,12 +4,17 @@
 
 #import "ios/chrome/browser/context_menu/ui_bundled/image_preview_view_controller.h"
 
+#import <algorithm>
+
 #import "base/apple/foundation_util.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -108,12 +113,29 @@ constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
   }
   _spinnerView.hidden = YES;
 
-  UIImage* image = [UIImage imageWithData:safeImageData];
   base::UmaHistogramBoolean("IOS.ContextMenu.ImagePreviewDisplayed", !error);
   if (!error) {
-    _imageView.image = image;
-    _imageView.hidden = NO;
-    self.preferredContentSize = image.size;
+    CGSize originalPixelSize = ImageSizeFromData(safeImageData);
+    // Cap scale to 2x to reduce memory — the visual difference between
+    // 2x and 3x is negligible for a context menu preview.
+    CGFloat scale = UIScreen.mainScreen.scale == 1.0 ? 1.0 : 2.0;
+    CGFloat screenWidth = UIScreen.mainScreen.bounds.size.width;
+    CGFloat pointWidth = originalPixelSize.width / scale;
+    CGFloat aspect = originalPixelSize.height / originalPixelSize.width;
+    CGFloat fitWidth = std::min(pointWidth, screenWidth);
+    CGSize targetPointSize = CGSizeMake(fitWidth, fitWidth * aspect);
+
+    __weak ImagePreviewViewController* weakSelf = self;
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(^{
+          return DownsampledImageFromData(safeImageData, targetPointSize,
+                                          scale);
+        }),
+        base::BindOnce(^(UIImage* image) {
+          [weakSelf downsampledImageReady:image
+                        originalPixelSize:originalPixelSize];
+        }));
     return;
   }
 
@@ -167,6 +189,16 @@ constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
 - (void)imageDataReceived:(NSData*)data {
   _imageData = data;
   [self showImage];
+}
+
+// Updates the preview with the downsampled image and sets the preferred
+// content size to the original pixel dimensions to match the previous
+// full-resolution behavior.
+- (void)downsampledImageReady:(UIImage*)image
+            originalPixelSize:(CGSize)originalPixelSize {
+  _imageView.image = image;
+  _imageView.hidden = NO;
+  self.preferredContentSize = originalPixelSize;
 }
 
 // Called if the loading is too long. A spinner is presented.
