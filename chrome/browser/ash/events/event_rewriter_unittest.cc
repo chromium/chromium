@@ -36,14 +36,13 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/ash/preferences/preferences.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_member.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -633,12 +632,13 @@ namespace ash {
 
 class EventRewriterTestBase : public ChromeAshTestBase {
  public:
-  EventRewriterTestBase()
-      : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
+  EventRewriterTestBase() = default;
   ~EventRewriterTestBase() override = default;
 
   void SetUp() override {
+    user_session_manager_ = std::make_unique<ash::test::TestUserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
+
     keyboard_layout_engine_ = std::make_unique<ui::StubKeyboardLayoutEngine>();
     // Inject custom table to make this closer to en-US behavior.
     keyboard_layout_engine_->SetCustomLookupTableForTesting({
@@ -959,9 +959,7 @@ class EventRewriterTestBase : public ChromeAshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged>
-      fake_user_manager_;  // Not owned.
-  user_manager::ScopedUserManager user_manager_enabler_;
+  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
   raw_ptr<input_method::MockInputMethodManagerImpl, DanglingUntriaged>
       input_method_manager_mock_;
   testing::FakeUdevLoader fake_udev_;

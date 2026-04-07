@@ -16,9 +16,12 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -130,15 +133,27 @@ bool EventRewriterDelegateImpl::IsExtensionCommandRegistered(
   //    going to be executed.
   // Therefore, we skip converting the accelerator if an extension has
   // registered for this shortcut.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile || !extensions::ExtensionCommandsGlobalRegistry::Get(profile))
+  auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
     return false;
+  }
+  auto* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id());
+  if (!browser_context) {
+    return false;
+  }
+  auto* registry =
+      extensions::ExtensionCommandsGlobalRegistry::Get(browser_context);
+  if (!registry) {
+    return false;
+  }
 
   constexpr int kModifierMasks = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
                                  ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN;
   ui::Accelerator accelerator(key_code, flags & kModifierMasks);
-  return extensions::ExtensionCommandsGlobalRegistry::Get(profile)
-      ->IsRegistered(accelerator);
+  return registry->IsRegistered(accelerator);
 }
 
 bool EventRewriterDelegateImpl::IsSearchKeyAcceleratorReserved() const {
@@ -268,8 +283,16 @@ bool EventRewriterDelegateImpl::NotifyDeprecatedSixPackKeyRewrite(
 PrefService* EventRewriterDelegateImpl::GetPrefService() const {
   if (pref_service_for_testing_)
     return pref_service_for_testing_;
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  return profile ? profile->GetPrefs() : nullptr;
+  auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
+    return nullptr;
+  }
+
+  // Note: User for the active session must exists always.
+  return user_manager::UserManager::Get()
+      ->FindUserAndModify(active_session->account_id())
+      ->GetProfilePrefs();
 }
 
 void EventRewriterDelegateImpl::SuppressModifierKeyRewrites(
