@@ -22,6 +22,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/font-types-v0_11/src/int24.rs",
     "//third_party/rust/chromium_crates_io/vendor/font-types-v0_11/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/font-types-v0_11/src/longdatetime.rs",
+    "//third_party/rust/chromium_crates_io/vendor/font-types-v0_11/src/matrix.rs",
     "//third_party/rust/chromium_crates_io/vendor/font-types-v0_11/src/name_id.rs",
     "//third_party/rust/chromium_crates_io/vendor/font-types-v0_11/src/offset.rs",
     "//third_party/rust/chromium_crates_io/vendor/font-types-v0_11/src/point.rs",
@@ -38,7 +39,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "font-types"
   cargo_pkg_description = "Scalar types used in fonts."
   cargo_pkg_repository = "https://github.com/googlefonts/fontations"
-  cargo_pkg_version = "0.11.1"
+  cargo_pkg_version = "0.11.2"
 
   allow_unsafe = true
 
