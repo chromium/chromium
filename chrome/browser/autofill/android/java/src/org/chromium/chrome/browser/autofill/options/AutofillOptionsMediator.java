@@ -32,6 +32,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
@@ -73,6 +74,10 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
     @VisibleForTesting
     static final String HISTOGRAM_RESTART_ACCEPTED =
             "Autofill.Settings.AutofillOptionsRestartAccepted";
+
+    @VisibleForTesting
+    // TODO(b/494484717): Update with the actual URL.
+    static final String ACCESSIBILITY_ANNOTATOR_SETTINGS_URL = "https://chromium.org";
 
     private final Profile mProfile;
     private final Runnable mRestartRunnable;
@@ -188,7 +193,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
     }
 
     private void onAutofillAiAccessibilityAnnotatorClicked() {
-        // TODO(b/494484717): Implement on-click action.
+        AutofillUiUtils.openLink(mContext, ACCESSIBILITY_ANNOTATOR_SETTINGS_URL);
         // TODO(b/494136622): Implement on-click metrics.
     }
 
