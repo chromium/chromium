@@ -40,8 +40,8 @@ CSSCustomTransformFunctionInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
     ConversionCheckers&) const {
-  return MaybeConvertTransformFunction(value,
-                                       state.CssToLengthConversionData());
+  return MaybeConvertTransformFunction(
+      value, state.CssToLengthConversionData().Unzoomed());
 }
 
 const CSSValue* CSSCustomTransformFunctionInterpolationType::CreateCSSValue(
