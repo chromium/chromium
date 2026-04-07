@@ -224,6 +224,9 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   // former is set).
   void SetAcceleratorAt(size_t index, const ui::Accelerator& accelerator);
 
+  // Sets the secondary label for the item at |index|.
+  void SetSecondaryLabel(size_t index, const std::u16string& secondary_label);
+
   // Sets the minor text for the item at |index|.
   void SetMinorText(size_t index, const std::u16string& minor_text);
 
@@ -279,6 +282,7 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;
   int GetCommandIdAt(size_t index) const override;
   std::u16string GetLabelAt(size_t index) const override;
+  std::u16string GetSecondaryLabelAt(size_t index) const override;
   std::u16string GetMinorTextAt(size_t index) const override;
   bool GetMinorTextIsUrlAt(size_t index) const override;
 
@@ -329,6 +333,7 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
     ItemType type = TYPE_COMMAND;
     std::u16string label;
     ui::Accelerator accelerator;
+    std::u16string secondary_label;
     std::u16string minor_text;
     bool minor_text_is_url = false;
     ImageModel minor_icon;

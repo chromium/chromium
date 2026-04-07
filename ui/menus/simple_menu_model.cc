@@ -350,6 +350,12 @@ void SimpleMenuModel::SetAcceleratorAt(size_t index,
   MenuItemsChanged();
 }
 
+void SimpleMenuModel::SetSecondaryLabel(size_t index,
+                                        const std::u16string& secondary_label) {
+  items_[ValidateItemIndex(index)].secondary_label = secondary_label;
+  MenuItemsChanged();
+}
+
 void SimpleMenuModel::SetMinorText(size_t index,
                                    const std::u16string& minor_text) {
   items_[ValidateItemIndex(index)].minor_text = minor_text;
@@ -460,6 +466,10 @@ std::u16string SimpleMenuModel::GetLabelAt(size_t index) const {
     return delegate_->GetLabelForCommandId(GetCommandIdAt(index));
   }
   return items_[ValidateItemIndex(index)].label;
+}
+
+std::u16string SimpleMenuModel::GetSecondaryLabelAt(size_t index) const {
+  return items_[ValidateItemIndex(index)].secondary_label;
 }
 
 std::u16string SimpleMenuModel::GetMinorTextAt(size_t index) const {

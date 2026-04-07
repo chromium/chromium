@@ -49,6 +49,8 @@ enum CommandID {
   COMMAND_ROOT = -1,
 
   COMMAND_DO_SOMETHING,
+  COMMAND_SECONDARY_LABEL_DEMO,
+  COMMAND_MINOR_LABEL_DEMO,
   COMMAND_SELECT_ASCII,
   COMMAND_SELECT_UTF8,
   COMMAND_SELECT_UTF16,
@@ -221,6 +223,14 @@ void CommandExecutor::ExecuteCommand(int command_id, int event_flags) {
       PrintStatus("Done something");
       break;
     }
+    case COMMAND_SECONDARY_LABEL_DEMO: {
+      PrintStatus("Done something with secondary label");
+      break;
+    }
+    case COMMAND_MINOR_LABEL_DEMO: {
+      PrintStatus("Done something with minor label");
+      break;
+    }
 
     // Radio items.
     case COMMAND_SELECT_ASCII: {
@@ -294,6 +304,10 @@ bool CommandExecutor::IsCommandIdEnabled(int command_id) const {
 
 ExampleMenuModel::ExampleMenuModel() : ui::SimpleMenuModel(this) {
   AddItem(COMMAND_DO_SOMETHING, GetStringUTF16(IDS_MENU_DO_SOMETHING_LABEL));
+  AddItem(COMMAND_SECONDARY_LABEL_DEMO, u"Item with secondary label");
+  SetSecondaryLabel(GetItemCount() - 1, u"secondary label");
+  AddItem(COMMAND_MINOR_LABEL_DEMO, u"Item with minor label");
+  SetMinorText(GetItemCount() - 1, u"minor label");
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddRadioItem(COMMAND_SELECT_ASCII, GetStringUTF16(IDS_MENU_ASCII_LABEL),
                GROUP_MAKE_DECISION);
