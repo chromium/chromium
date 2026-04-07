@@ -959,6 +959,29 @@ const FeatureEntry::FeatureVariation kWelcomeBackVariations[] = {
     {" - Variant D: Sign-in Benefits", kWelcomeBackArm4, nullptr},
 };
 
+const FeatureEntry::FeatureParam kBackgroundRefreshRegressionTestControl[] = {
+    {"regression_test_arm", "control"}};
+const FeatureEntry::FeatureParam kBackgroundRefreshRegressionTestBaseline[] = {
+    {"regression_test_arm", "baseline"}};
+const FeatureEntry::FeatureParam
+    kBackgroundRefreshRegressionTestShortPersistenceDelay[] = {
+        {"regression_test_arm", "short-persistence-delay"}};
+const FeatureEntry::FeatureParam
+    kBackgroundRefreshRegressionTestLongRefreshInterval[] = {
+        {"regression_test_arm", "long-refresh-interval"}};
+const FeatureEntry::FeatureParam kBackgroundRefreshRegressionTestNoBeacon[] = {
+    {"regression_test_arm", "no-beacon"}};
+
+const FeatureEntry::FeatureVariation
+    kBackgroundRefreshRegressionTestVariations[] = {
+        {"Control", kBackgroundRefreshRegressionTestControl, nullptr},
+        {"Baseline", kBackgroundRefreshRegressionTestBaseline, nullptr},
+        {"Short Persistence Delay",
+         kBackgroundRefreshRegressionTestShortPersistenceDelay, nullptr},
+        {"Long Refresh Interval",
+         kBackgroundRefreshRegressionTestLongRefreshInterval, nullptr},
+        {"No Beacon", kBackgroundRefreshRegressionTestNoBeacon, nullptr}};
+
 const FeatureEntry::FeatureParam kBestOfAppFREArm1[] = {{"variant", "1"}};
 const FeatureEntry::FeatureParam kBestOfAppFREArm2[] = {{"variant", "2"}};
 const FeatureEntry::FeatureParam kBestOfAppFREArm4[] = {{"variant", "4"}};
@@ -1772,6 +1795,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"app-background-refresh-ios", flag_descriptions::kAppBackgroundRefreshName,
      flag_descriptions::kAppBackgroundRefreshDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableAppBackgroundRefresh)},
+    {"background-refresh-regression-test",
+     flag_descriptions::kBackgroundRefreshRegressionTestName,
+     flag_descriptions::kBackgroundRefreshRegressionTestDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kBackgroundRefreshRegressionTest,
+                                    kBackgroundRefreshRegressionTestVariations,
+                                    "BackgroundRefreshRegressionTest")},
     {"autofill-support-date-input",
      flag_descriptions::kAutofillSupportDateInputName,
      flag_descriptions::kAutofillSupportDateInputDescription, flags_ui::kOsIos,

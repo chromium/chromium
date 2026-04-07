@@ -1,4 +1,3 @@
-
 // vim: set ft=json5:
 // This file lists metadata for chrome://flags entries. This metadata is used to
 // automatically expire flags, as part of the review process, and to clean up
@@ -1088,6 +1087,11 @@
       "baseos-perf@google.com"
     ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "background-refresh-regression-test",
+    "owners": [ "marq@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "background-resource-fetch",

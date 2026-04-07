@@ -268,6 +268,12 @@ const char kBWGPromoConsentDescription[] =
     "Whether the promo consent flow is composed of a single or a double screen "
     "view.";
 
+const char kBackgroundRefreshRegressionTestName[] =
+    "Background Refresh Regression Test";
+const char kBackgroundRefreshRegressionTestDescription[] =
+    "Enables the Background Refresh Regression Test with multiple arms "
+    "to test various refresh and persistence parameters.";
+
 const char kBestFeaturesScreenInFirstRunName[] =
     "Display Best Features screen in the FRE";
 const char kBestFeaturesScreenInFirstRunDescription[] =

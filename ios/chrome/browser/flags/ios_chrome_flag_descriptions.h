@@ -170,6 +170,9 @@ extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
 extern const char kBWGPromoConsentName[];
 extern const char kBWGPromoConsentDescription[];
 
+extern const char kBackgroundRefreshRegressionTestName[];
+extern const char kBackgroundRefreshRegressionTestDescription[];
+
 extern const char kBestFeaturesScreenInFirstRunName[];
 extern const char kBestFeaturesScreenInFirstRunDescription[];
 
