@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/pref_names.h"

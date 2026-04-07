@@ -7,6 +7,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
