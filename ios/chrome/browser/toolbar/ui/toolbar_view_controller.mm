@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
@@ -163,8 +164,7 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
-  /// TODO(crbug.com/472279443): Use real color.
-  self.view.backgroundColor = UIColor.greenColor;
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.view.accessibilityIdentifier = kToolbarViewIdentifier;
 
   [self createView];
