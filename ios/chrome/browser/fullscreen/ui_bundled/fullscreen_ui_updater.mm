@@ -7,14 +7,17 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 FullscreenUIUpdater::FullscreenUIUpdater(FullscreenController* controller,
                                          id<FullscreenUIElement> ui_element)
     : controller_(controller),
       forwarder_(this, ui_element),
       observation_(&forwarder_) {
-  DCHECK(controller_);
-  observation_.Observe(controller_.get());
+  if (!IsFullscreenRefactoringEnabled()) {
+    DCHECK(controller_);
+    observation_.Observe(controller_.get());
+  }
 }
 
 FullscreenUIUpdater::~FullscreenUIUpdater() = default;

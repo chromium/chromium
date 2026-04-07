@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/types/pass_key.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observer_bridge.h"
@@ -44,6 +45,7 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
 
 @interface FullscreenMediator () <CRWWebStateObserver,
                                   CRWWebViewScrollViewProxyObserver,
+                                  FullscreenBrowserAgentObserving,
                                   OmniboxPositionBrowserAgentObserving,
                                   WebStateListObserving,
                                   WebViewProxyTabHelperObserving>
@@ -62,11 +64,13 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebViewProxyTabHelperObserverBridge> _webViewProxyObserver;
+  std::unique_ptr<FullscreenBrowserAgentObserverBridge> _browserAgentObserver;
   std::unique_ptr<OmniboxPositionBrowserAgentObserverBridge>
       _omniboxPositionObserver;
   std::unique_ptr<ScopedFullscreenDisabler> _voiceOverDisabler;
   CGFloat _lastContentOffset;
   BOOL _isBottomOmnibox;
+  BOOL _updatingInsets;
   // Indicates whether the inset ranges have been initialized on startup.
   BOOL _hasInitializedInsets;
   // Scroll distance since the start of the drag, or since the scroll direction
@@ -91,6 +95,9 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webViewProxyObserver =
         std::make_unique<WebViewProxyTabHelperObserverBridge>(self);
+    _browserAgentObserver =
+        std::make_unique<FullscreenBrowserAgentObserverBridge>(self,
+                                                               browserAgent);
     _omniboxPositionObserver =
         std::make_unique<OmniboxPositionBrowserAgentObserverBridge>(
             self, omniboxPositionBrowserAgent);
@@ -129,6 +136,7 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   }
   self.webState = nullptr;
   _webStateObserver = nullptr;
+  _browserAgentObserver = nullptr;
   _webViewProxyObserver = nullptr;
   _omniboxPositionObserver = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -235,6 +243,10 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   CGFloat delta = currentContentOffset - _lastContentOffset;
   _lastContentOffset = currentContentOffset;
 
+  if (_updatingInsets) {
+    return;
+  }
+
   if (delta != 0) {
     // If the direction changed, reset the _scrollTotal.
     if ((delta > 0 && _scrollTotal < 0) || (delta < 0 && _scrollTotal > 0)) {
@@ -316,7 +328,48 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   [self exitFullscreenWithAnimation:NO];
 }
 
+#pragma mark - FullscreenBrowserAgentObserving
+
+- (void)fullscreenDidUpdateState:(FullscreenBrowserAgent*)agent {
+  [self updateViewportInsets:agent->insets()];
+}
+
+- (void)fullscreenDidUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
+  if (!self.webState) {
+    return;
+  }
+  id<CRWWebViewProxy> webViewProxy =
+      WebViewProxyTabHelper::FromWebState(self.webState)->GetWebViewProxy();
+  [webViewProxy setMinimumViewportInset:agent->min_insets()
+                   maximumViewportInset:agent->max_insets()];
+}
+
 #pragma mark - Private
+
+// Updates the WebView's obscuredContentInset and the scroll view's
+// contentInset to adjust for the current position and size of
+// the toolbars.
+- (void)updateViewportInsets:(UIEdgeInsets)insets {
+  if (!self.webState) {
+    return;
+  }
+
+  id<CRWWebViewProxy> webView =
+      WebViewProxyTabHelper::FromWebState(self.webState)->GetWebViewProxy();
+  CRWWebViewScrollViewProxy* scrollView = webView.scrollViewProxy;
+
+  if (UIEdgeInsetsEqualToEdgeInsets(insets, scrollView.contentInset) &&
+      UIEdgeInsetsEqualToEdgeInsets(insets, webView.obscuredInsets)) {
+    return;
+  }
+
+  _updatingInsets = YES;
+  scrollView.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentNever;
+  scrollView.contentInset = insets;
+  webView.obscuredInsets = insets;
+  _updatingInsets = NO;
+}
 
 // Snaps the fullscreen progress to 0.0 or 1.0.
 - (void)snap {
