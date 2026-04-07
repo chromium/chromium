@@ -6,7 +6,6 @@ package org.chromium.content_public.browser;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.services.media_session.MediaImage;
 import org.chromium.services.media_session.MediaMetadata;
 import org.chromium.services.media_session.MediaPosition;
@@ -21,18 +20,11 @@ import java.util.Set;
  */
 @NullMarked
 public abstract class MediaSessionObserver {
-    private @Nullable MediaSessionImpl mMediaSession;
+    private @Nullable MediaSession mMediaSession;
 
     /** Construct a MediaSessionObserver and start observing |mediaSession|. */
     protected MediaSessionObserver(MediaSession mediaSession) {
-        // In tests, the MediaSession might be a mocked object which is not instance of
-        // MediaSessionImpl.
-        //
-        // TODO(mlamouri): move addObserver()/removeObserver() methods to the {@link MediaSession}
-        // class so that we don't need this type check?
-        if (!(mediaSession instanceof MediaSessionImpl)) return;
-
-        mMediaSession = (MediaSessionImpl) mediaSession;
+        mMediaSession = mediaSession;
         mMediaSession.addObserver(this);
     }
 

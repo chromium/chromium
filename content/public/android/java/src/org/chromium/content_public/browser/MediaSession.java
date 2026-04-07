@@ -55,4 +55,10 @@ public abstract class MediaSession {
 
     /** Returns whether the media session can be resumed/suspended. */
     public abstract boolean isControllable();
+
+    /** Adds an observer to this media session. */
+    public abstract void addObserver(MediaSessionObserver observer);
+
+    /** Removes an observer from this media session. */
+    public abstract void removeObserver(MediaSessionObserver observer);
 }
