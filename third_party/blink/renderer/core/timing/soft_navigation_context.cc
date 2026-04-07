@@ -344,7 +344,8 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
           TimeOrigin()),
       /*render_time=*/paint_timing_info.presentation_time, paint_size,
       performance->MonotonicTimeToDOMHighResTimeStamp(load_time), id, url,
-      element, window_, navigation_id_, initial_event_timing_->interactionId());
+      element, window_, performance->NavigationId(),
+      initial_event_timing_->interactionId());
   entry->SetPaintTimingInfo(paint_timing_info);
   performance->OnInteractionContentfulPaintUpdated(entry);
 
