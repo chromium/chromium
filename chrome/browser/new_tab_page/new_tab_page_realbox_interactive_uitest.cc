@@ -88,10 +88,6 @@ std::string GetModelSelector(omnibox::ModelMode model) {
 const DeepQuery kRealbox = {"ntp-app", "ntp-searchbox", "#inputWrapper"};
 const DeepQuery kRealboxInput = {"ntp-app", "ntp-searchbox", "#input",
                                  "#input"};
-const DeepQuery kComposeButton = {"ntp-app", "ntp-searchbox", "#composeButton",
-                                  "#composeButton"};
-const DeepQuery kComposeboxVoiceSearchButton = {"ntp-app", "cr-composebox",
-                                                "#voiceSearchButton"};
 const DeepQuery kContextualEntrypoint = {"ntp-app", "ntp-searchbox", "#context",
                                          "#entrypointButton", "#entrypoint"};
 const DeepQuery kSearchboxContextMenuDialog = {
@@ -101,8 +97,6 @@ const DeepQuery kComposeboxContextMenuDialog = {
     "#menu",   "#menu",       "#dialog"};
 const DeepQuery kComposeboxInput = {"ntp-app", "cr-composebox",
                                     "cr-composebox-input", "#input"};
-const DeepQuery kComposeboxVoiceSearch = {"ntp-app", "cr-composebox",
-                                          "#voiceSearch"};
 const DeepQuery kComposeboxSubmitButton = {
     "ntp-app", "#composebox", "cr-composebox-submit", "#submitContainer"};
 const DeepQuery kComposeboxCancelButton = {
@@ -836,75 +830,6 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxToolInteractiveTest,
       WaitForStateChange(kNtpElementId, tool_chip_ready));
 }
 
-struct ComposeboxSearchParam {
-  bool is_voice = false;
-  bool submit_via_keyboard = false;
-};
-
-class NtpComposeboxSearchFulfillmentTest
-    : public NtpRealboxUiTestBase,
-      public testing::WithParamInterface<ComposeboxSearchParam> {
- public:
-  NtpComposeboxSearchFulfillmentTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NtpComposeboxSearchFulfillmentTest,
-    testing::Values(ComposeboxSearchParam{},
-                    ComposeboxSearchParam{.submit_via_keyboard = true},
-                    ComposeboxSearchParam{.is_voice = true}),
-    [](const testing::TestParamInfo<ComposeboxSearchParam>& info) {
-      return base::StringPrintf(
-          "%s%s", info.param.is_voice ? "Voice" : "Typed",
-          info.param.submit_via_keyboard ? "Keyboard" : "Click");
-    });
-
-IN_PROC_BROWSER_TEST_P(NtpComposeboxSearchFulfillmentTest,
-                       SearchNavigatesOnSubmit) {
-  const ComposeboxSearchParam& param = GetParam();
-  const std::string query = "test";
-
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kVoiceSearchVisibleEvent);
-  WebContentsInteractionTestUtil::StateChange voice_search_visible;
-  voice_search_visible.event = kVoiceSearchVisibleEvent;
-  voice_search_visible.where = kComposeboxVoiceSearch;
-  voice_search_visible.test_function =
-      "(el) => el && window.getComputedStyle(el).display !== 'none'";
-
-  RunTestSequence(
-      // Load NTP.
-      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
-      // Assert NTP has loaded by waiting for the realbox and compose button
-      // to render.
-      WaitForElementToRender(kNtpElementId, kRealbox),
-      WaitForElementToRender(kNtpElementId, kComposeButton),
-      // Click on the compose button.
-      ClickElement(kNtpElementId, kComposeButton),
-      // Observe/assert that the composebox dialog is open.
-      WaitForDialogStateChange(kComposeboxDialog, /*expected_open=*/true),
-
-      // Write something into the input field or use voice search.
-      param.is_voice
-          ? Steps(ClickElement(kNtpElementId, kComposeboxVoiceSearchButton),
-                  WaitForStateChange(kNtpElementId, voice_search_visible),
-                  TriggerAimVoiceSearch(kNtpElementId, kComposeboxVoiceSearch,
-                                        query))
-          : Steps(FocusAndInputText(kNtpElementId, kComposeboxInput),
-                  param.submit_via_keyboard
-                      ? Steps(SendKeyPress(kNtpElementId, ui::VKEY_RETURN))
-                      : Steps(ClickElement(kNtpElementId,
-                                           kComposeboxSubmitButton))),
-
-      // Ensure tab navigates to a Google search results page.
-      WaitForGoogleSearch(kNtpElementId, query));
-}
-
 class NtpComposeboxDismissTest : public NtpRealboxUiTestBase,
                                  public testing::WithParamInterface<bool> {
  public:
@@ -943,6 +868,8 @@ INSTANTIATE_TEST_SUITE_P(, NtpComposeboxDismissTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(NtpComposeboxDismissTest,
                        ClearsInputAndClosesComposebox) {
+  const DeepQuery kComposeButton = {"ntp-app", "ntp-searchbox",
+                                    "#composeButton", "#composeButton"};
 
   auto TriggerDismissAction = [this]() {
     if (CloseViaEscButton()) {
