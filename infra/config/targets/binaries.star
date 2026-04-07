@@ -582,6 +582,14 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "chrome_public_bundle_smoke_test",
+    label = "//chrome/android:chrome_public_bundle_smoke_test",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    module_scheme = "junit",
+)
+
+targets.binaries.console_test_launcher(
     name = "chrome_public_smoke_test",
     label = "//chrome/android:chrome_public_smoke_test",
     # All references have been moved to starlark
@@ -2343,14 +2351,6 @@ targets.binaries.script(
         "--adb-path",
         "src/third_party/android_sdk/public/platform-tools/adb",
     ],
-)
-
-targets.binaries.console_test_launcher(
-    name = "trichrome_chrome_bundle_smoke_test",
-    label = "//chrome/android:trichrome_chrome_bundle_smoke_test",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(

@@ -2152,7 +2152,6 @@ if (_is_default_toolchain) {
 
       # Deps for DFMs.
       "//chrome/android/modules/stack_unwinder/provider:java",
-      "//chrome/browser/test_dummy/internal:base_module_java",
 
       # Deps to pull services into base module.
       # TODO(crbug.com/40148088): Consider moving these to the chrome module to
@@ -2485,8 +2484,13 @@ if (_is_default_toolchain) {
   }
 
   _common_smoke_test_args = [
-    "--enable-breakpad-dump",
+    # Make extra args be passed through to the bundle under test (see below).
     "--use-apk-under-test-flags-file",
+
+    # Enable breakpad dumps in order to detect Chrome crashes (because the
+    # test intentionally does not set <instrumentation android:targetPackage> to
+    # the bundle under test.)
+    "--enable-breakpad-dump",
 
     # FRE is too flakey on some old devices https://crbug.com/1289733
     "--disable-fre",
@@ -2496,53 +2500,22 @@ if (_is_default_toolchain) {
     apk_under_test = ":chrome_public_apk"
     android_test_apk = ":chrome_smoke_test_apk"
     additional_apks = [ "//net/android:net_test_support_apk" ]
+    extra_args = _common_smoke_test_args
     if (!is_java_debug) {
       proguard_mapping_path = "$root_build_dir/apks/ChromePublic.apk.mapping"
     }
+  }
 
+  instrumentation_test_runner("chrome_public_bundle_smoke_test") {
+    apk_under_test = "//chrome/android:chrome_public_bundle_apks"
+    android_test_apk = ":chrome_smoke_test_apk"
     extra_args = _common_smoke_test_args
-  }
-
-  android_test_apk("chrome_bundle_smoke_test_apk") {
-    apk_name = "ChromeBundleSmokeTest"
-    android_manifest = "javatests/src/org/chromium/chrome/test/smoke/AndroidManifest_bundle.xml"
-    testonly = true
-    sources = [
-      "javatests/src/org/chromium/chrome/test/smoke/ChromeBundleSmokeTest.java",
-    ]
-
-    # Used as test_apk for bundle smoke tests, which are also never_incremental.
-    # The test_runner_script target does not support incremental test_apk when
-    # the parent target is never_incremental.
+    additional_apks = [ "//net/android:net_test_support_apk" ]
     never_incremental = true
-    deps = [
-      "//base:base_java_test_support",
-      "//chrome/test/android:chrome_java_test_pagecontroller",
-      "//content/public/test/android:content_java_test_support",
-      "//third_party/androidx:androidx_test_core_java",
-      "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
-      "//third_party/junit",
-    ]
+    if (!is_java_debug) {
+      proguard_mapping_path = "$root_build_dir/apks/ChromePublic.aab.mapping"
+    }
   }
-
-  _bundle_smoke_test_extra_args = [
-    # Make extra args be passed through to the bundle under test (see below).
-    "--use-apk-under-test-flags-file",
-
-    # Enable breakpad dumps in order to detect Chrome crashes (because the
-    # test intentionally does not set <instrumentation android:targetPackage> to
-    # the bundle under test.)
-    "--enable-breakpad-dump",
-
-    # Chrome crashes at startup if strict mode is turned on.
-    "--strict-mode=off",
-
-    # These args are passed through to the bundle under test.
-    "--enable-test-dummy-module",
-    "--disable-fre",
-  ]
 
   _verify_32bit_static_initializers =
       defined(expected_static_initializer_32bit_count) &&
@@ -2597,38 +2570,6 @@ if (_is_default_toolchain) {
           rebase_path(outputs[0], root_build_dir),
           rebase_path(inputs[0], root_build_dir),
         ]
-      }
-    }
-  }
-
-  instrumentation_test_runner("trichrome_chrome_bundle_smoke_test") {
-    android_test_apk = ":chrome_bundle_smoke_test_apk"
-    never_incremental = true
-    modules = [ "test_dummy" ]
-    extra_args = _bundle_smoke_test_extra_args
-    if (android_64bit_target_cpu) {
-      if (!defined(android_app_secondary_abi)) {
-        apk_under_test = "//chrome/android:trichrome_chrome_64_bundle_apks"
-        additional_apks = [ "//chrome/android:trichrome_library_64_apk" ]
-        if (!is_java_debug) {
-          proguard_mapping_path =
-              "$root_build_dir/apks/TrichromeChrome64.aab.mapping"
-        }
-      } else {
-        apk_under_test = "//chrome/android:trichrome_chrome_64_32_bundle_apks"
-        additional_apks = [ "//chrome/android:trichrome_library_64_32_apk" ]
-        if (!is_java_debug) {
-          proguard_mapping_path =
-              "$root_build_dir/apks/TrichromeChrome6432.aab.mapping"
-        }
-      }
-    } else {
-      apk_under_test = "//chrome/android:trichrome_chrome_bundle_apks"
-      additional_apks =
-          [ "//chrome/android:$_main_trichrome_library_apk_target" ]
-      if (!is_java_debug) {
-        proguard_mapping_path =
-            "$root_build_dir/apks/TrichromeChrome.aab.mapping"
       }
     }
   }

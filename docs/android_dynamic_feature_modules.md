@@ -95,14 +95,6 @@ instance of `foo`/`Foo`/`FOO` with `your_feature_name`/`YourFeatureName`/
 `YOUR_FEATURE_NAME`.
 ***
 
-### Reference DFM
-
-In addition to this guide, the
-[Test Dummy](https://cs.chromium.org/chromium/src/chrome/android/modules/test_dummy/test_dummy_module.gni)
-module serves as an actively-maintained reference DFM. Test Dummy is used in
-automated bundle testing, and covers both Java and native code and resource
-usage.
-
 ### Create DFM target
 
 DFMs are APKs. They have a manifest and can contain Java and native code as well

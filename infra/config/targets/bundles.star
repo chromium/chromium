@@ -19,9 +19,9 @@ targets.bundle(
     name = "android_10_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_public_bundle_smoke_test",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
@@ -53,7 +53,7 @@ targets.bundle(
     name = "android_10_rel_gtests",
     targets = [
         "android_ar_gtests",
-        "android_trichrome_smoke_tests",
+        "chrome_public_bundle_smoke_test",
         "vr_android_specific_chromium_tests",
     ],
 )
@@ -69,9 +69,9 @@ targets.bundle(
 targets.bundle(
     name = "android_11_emulator_gtests",
     targets = [
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_public_bundle_smoke_test",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
@@ -90,7 +90,7 @@ targets.bundle(
 targets.bundle(
     name = "android_12_dbg_emulator_gtests",
     targets = [
-        "android_trichrome_smoke_tests",
+        "chrome_public_bundle_smoke_test",
     ],
 )
 
@@ -99,11 +99,11 @@ targets.bundle(
     targets = [
         "android_ci_only_fieldtrial_webview_tests",
         "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
         # Already includes gl_gtests.
         "android_specific_chromium_gtests",
         "chrome_profile_generator_tests",
+        "chrome_public_bundle_smoke_test",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "fieldtrial_android_tests",
@@ -141,9 +141,9 @@ targets.bundle(
     targets = [
         "android_ci_only_fieldtrial_webview_tests",
         "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_public_bundle_smoke_test",
         "chrome_profile_generator_tests",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
@@ -166,9 +166,9 @@ targets.bundle(
 targets.bundle(
     name = "android_14_automotive_landscape_emulator_gtests",
     targets = [
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_emulator_specific_chrome_public_tests",
+        "chrome_public_bundle_smoke_test",
     ],
     mixins = [
         "force-main-user",
@@ -198,8 +198,8 @@ targets.bundle(
     targets = [
         "android_hardware_specific_gtests",
         "android_limited_capacity_gtests",
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
+        "chrome_public_bundle_smoke_test",
         "chrome_public_tests",
     ],
 )
@@ -208,9 +208,9 @@ targets.bundle(
     name = "android_14_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_public_bundle_smoke_test",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
@@ -230,9 +230,9 @@ targets.bundle(
 targets.bundle(
     name = "android_14_tablet_gtests",
     targets = [
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_public_bundle_smoke_test",
         "chrome_public_tests",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
@@ -256,9 +256,9 @@ targets.bundle(
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
         "chromium_gtests",
         "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "chrome_profile_generator_tests",
+        "chrome_public_bundle_smoke_test",
         "chromium_gtests_for_devices_with_graphical_output",
         "fieldtrial_android_tests",
         "jni_zero_sample_apk_test",
@@ -298,8 +298,8 @@ targets.bundle(
         "chrome_profile_generator_tests",
         "chromium_gtests",
         "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
+        "chrome_public_bundle_smoke_test",
         "chromium_gtests_for_devices_with_graphical_output",
         "fieldtrial_android_tests",
         "jni_zero_sample_apk_test",
@@ -395,7 +395,7 @@ targets.bundle(
     targets = [
         "android_browsertests",
         "android_smoke_tests",
-        "android_trichrome_smoke_tests",
+        "chrome_public_bundle_smoke_test",
         "chrome_public_test_apk",
     ],
     mixins = [
@@ -528,8 +528,8 @@ targets.bundle(
         "chrome_profile_generator_tests",
         "chromium_gtests",
         "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
+        "chrome_public_bundle_smoke_test",
         "chromium_gtests_for_devices_with_graphical_output",
         "fieldtrial_android_tests",
         "jni_zero_sample_apk_test",
@@ -652,9 +652,9 @@ targets.bundle(
     name = "android_lff_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
-        "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_public_bundle_smoke_test",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
@@ -985,13 +985,6 @@ targets.bundle(
             ),
         ),
     },
-)
-
-targets.bundle(
-    name = "android_trichrome_smoke_tests",
-    targets = [
-        "trichrome_chrome_bundle_smoke_test",
-    ],
 )
 
 targets.bundle(

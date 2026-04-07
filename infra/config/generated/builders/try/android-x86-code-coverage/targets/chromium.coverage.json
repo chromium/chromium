@@ -825,6 +825,56 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "chrome_public_bundle_smoke_test"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "module_name": "//chrome/android:chrome_public_bundle_smoke_test",
+        "module_scheme": "junit",
+        "name": "chrome_public_bundle_smoke_test",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "retry_only_failed_tests": true,
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_29_google_apis_x86"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_public_bundle_smoke_test",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_bundle_smoke_test/"
+      },
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_29_google_apis_x86",
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "chrome_public_smoke_test"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -3057,56 +3107,6 @@
         },
         "test": "cc_unittests",
         "test_id_prefix": "ninja://cc:cc_unittests/"
-      },
-      {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "description": "Run with android_29_google_apis_x86",
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "trichrome_chrome_bundle_smoke_test"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "module_name": "//chrome/android:trichrome_chrome_bundle_smoke_test",
-        "module_scheme": "junit",
-        "name": "trichrome_chrome_bundle_smoke_test",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "retry_only_failed_tests": true,
-        "swarming": {
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "trichrome_chrome_bundle_smoke_test",
-        "test_id_prefix": "ninja://chrome/android:trichrome_chrome_bundle_smoke_test/"
       },
       {
         "args": [

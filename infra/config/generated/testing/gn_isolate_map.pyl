@@ -585,6 +585,12 @@
     "module_scheme": "junit",
     "skip_usage_check": True,
   },
+  "chrome_public_bundle_smoke_test": {
+    "label": "//chrome/android:chrome_public_bundle_smoke_test",
+    "type": "console_test_launcher",
+    "module_scheme": "junit",
+    "skip_usage_check": True,
+  },
   "chrome_public_smoke_test": {
     "label": "//chrome/android:chrome_public_smoke_test",
     "type": "console_test_launcher",
@@ -2064,12 +2070,6 @@
   "traffic_annotation_proto": {
     "label": "//chrome/browser/privacy:traffic_annotation_proto",
     "type": "additional_compile_target",
-  },
-  "trichrome_chrome_bundle_smoke_test": {
-    "label": "//chrome/android:trichrome_chrome_bundle_smoke_test",
-    "type": "console_test_launcher",
-    "module_scheme": "junit",
-    "skip_usage_check": True,
   },
   "trichrome_webview_wpt_64": {
     "label": "//android_webview/test:trichrome_webview_wpt_64",

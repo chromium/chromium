@@ -1,8 +1,0 @@
-monorail: {
-  component: "Mobile>FeatureModules"
-}
-team_email: "clank-lego@chromium.org"
-os: ANDROID
-buganizer_public: {
-  component_id: 1457149
-}

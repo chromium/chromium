@@ -405,14 +405,6 @@
         android:launchMode="singleInstance"
         android:theme="@style/Theme.Chromium.Activity">
     </activity>  # DIFF-ANCHOR: 6e34d703
-    <activity  # DIFF-ANCHOR: 43bfa5de
-        android:name="org.chromium.chrome.browser.test_dummy.TestDummyActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:excludeFromRecents="true"
-        android:exported="true"
-        android:noHistory="true"
-        android:theme="@style/Theme.Material3Expressive.DayNight">
-    </activity>  # DIFF-ANCHOR: 43bfa5de
     <activity  # DIFF-ANCHOR: 9bb1f409
         android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
         android:exported="true"

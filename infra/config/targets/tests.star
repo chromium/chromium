@@ -597,6 +597,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "chrome_public_bundle_smoke_test",
+)
+
+targets.tests.gtest_test(
     name = "chrome_public_smoke_test",
 )
 
@@ -2651,10 +2655,6 @@ targets.tests.gpu_telemetry_test(
         "has_native_resultdb_integration",
     ],
     module_scheme = "flat",
-)
-
-targets.tests.gtest_test(
-    name = "trichrome_chrome_bundle_smoke_test",
 )
 
 targets.tests.gtest_test(

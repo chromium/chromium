@@ -13,13 +13,13 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "trichrome_chrome_bundle_smoke_test"
+            "chrome_public_bundle_smoke_test"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//chrome/android:trichrome_chrome_bundle_smoke_test",
+        "module_name": "//chrome/android:chrome_public_bundle_smoke_test",
         "module_scheme": "junit",
-        "name": "trichrome_chrome_bundle_smoke_test",
+        "name": "chrome_public_bundle_smoke_test",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -46,8 +46,8 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "trichrome_chrome_bundle_smoke_test",
-        "test_id_prefix": "ninja://chrome/android:trichrome_chrome_bundle_smoke_test/"
+        "test": "chrome_public_bundle_smoke_test",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_bundle_smoke_test/"
       }
     ]
   },
