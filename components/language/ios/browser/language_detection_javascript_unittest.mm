@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
+#include "base/compiler_specific.h"
 #import "base/test/ios/wait_util.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "ios/web/public/test/javascript_test.h"
@@ -24,7 +20,7 @@ const char kExpectedLanguage[] = "Foo";
 // Returns an NSString filled with the char 'a' of length `length`.
 NSString* GetLongString(NSUInteger length) {
   NSMutableData* data = [[NSMutableData alloc] initWithLength:length];
-  memset([data mutableBytes], 'a', length);
+  UNSAFE_TODO(memset([data mutableBytes], 'a', length));
   NSString* long_string = [[NSString alloc] initWithData:data
                                                 encoding:NSASCIIStringEncoding];
   return long_string;
