@@ -309,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssueCreated" enum="DevToolsIssueCreated"
-    expires_after="2026-08-23">
+    expires_after="M160">
   <owner>yangguo@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <component>1519296</component>
@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelIssueExpanded"
-    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2026-10-04">
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <component>1519296</component>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelOpenedFrom"
-    enum="DevToolsIssuesPanelOpenedFrom" expires_after="M150">
+    enum="DevToolsIssuesPanelOpenedFrom" expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <component>1519296</component>
@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelResourceOpened"
-    enum="DevToolsIssuesPanelResourceOpened" expires_after="M150">
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <component>1519296</component>
@@ -350,7 +350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.KeybindSetSettingChanged" enum="DevToolsKeybindSets"
-    expires_after="M150">
+    expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>jalyn@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
@@ -361,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.KeyboardShortcutFired"
-    enum="DevToolsKeyboardShortcutAction" expires_after="2026-09-06">
+    enum="DevToolsKeyboardShortcutAction" expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>jalyn@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
@@ -372,7 +372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Language" enum="DevToolsLanguage"
-    expires_after="M150">
+    expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>szuend@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Launch{DevToolsLaunchPanels}" units="ms"
-    expires_after="2026-09-06">
+    expires_after="M160">
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>
@@ -513,7 +513,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SourcesPanelFileDebugged" enum="DevToolsMediaType"
-    expires_after="M150">
+    expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>szuend@google.com</owner>
   <component>1456920</component>
@@ -525,7 +525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SourcesPanelFileOpened" enum="DevToolsMediaType"
-    expires_after="M150">
+    expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>szuend@google.com</owner>
   <component>1456920</component>
@@ -535,16 +535,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SwatchActivated" enum="DevToolsSwatchActivated"
-    expires_after="2026-06-21">
-  <owner>ergunsh@google.com</owner>
-  <owner>changhaohan@google.com</owner>
+    expires_after="M160">
+  <owner>pfaffe@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>Records the swatch usages in the Styles pane.</summary>
 </histogram>
 
 <histogram name="DevTools.SyncSetting" enum="DevToolsSyncSetting"
-    expires_after="M150">
-  <owner>bmeurer@google.com</owner>
+    expires_after="M160">
   <owner>szuend@google.com</owner>
   <owner>yangguo@google.com</owner>
   <summary>
@@ -585,7 +583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Workspaces.NumberOfDirectoriesTraversed"
-    units="count" expires_after="M150">
+    units="count" expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>hablich@google.com</owner>
   <component>1456920</component>
@@ -596,7 +594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Workspaces.NumberOfFilesLoaded" units="count"
-    expires_after="M150">
+    expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>hablich@google.com</owner>
   <component>1456920</component>
@@ -607,7 +605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Workspaces.PopulateWallClockTime" units="ms"
-    expires_after="M150">
+    expires_after="M160">
   <owner>bmeurer@google.com</owner>
   <owner>hablich@google.com</owner>
   <component>1456920</component>
