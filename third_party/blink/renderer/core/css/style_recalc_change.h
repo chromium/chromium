@@ -161,6 +161,9 @@ class CORE_EXPORT StyleRecalcChange {
     return {propagate_,
             static_cast<Flags>(flags_ | kRecalcDescendantAnchoredContainers)};
   }
+  StyleRecalcChange ForceRecalcDescendantContainers() const {
+    return {propagate_, static_cast<Flags>(flags_ | kRecalcContainerFlags)};
+  }
   StyleRecalcChange ForceRecalcDescendantContentVisibility() const {
     return {propagate_,
             static_cast<Flags>(flags_ | kRecalcDescendantContentVisibility)};

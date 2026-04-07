@@ -112,6 +112,14 @@ class CORE_EXPORT ContainerSelector {
             SelectsStyleContainers() || SelectsScrollStateContainers() ||
             SelectsAnchoredContainers());
   }
+  bool SelectsNameOnlyContainers() const {
+    return !HasUnknownFeature() && SelectsNamedContainers() &&
+           !SelectsSizeContainers() && !SelectsStyleContainers() &&
+           !SelectsScrollStateContainers() && !SelectsAnchoredContainers();
+  }
+  bool SelectsStyleOrNameOnlyContainers() const {
+    return SelectsStyleContainers() || SelectsNameOnlyContainers();
+  }
 
   PhysicalAxes GetPhysicalAxes() const { return physical_axes_; }
   LogicalAxes GetLogicalAxes() const { return logical_axes_; }

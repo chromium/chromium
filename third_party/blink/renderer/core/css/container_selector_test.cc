@@ -45,4 +45,30 @@ TEST_F(ContainerSelectorTest, ContainerSelectorHashing) {
          "select different type of containers";
 }
 
+TEST_F(ContainerSelectorTest, NameOnlyContainerSelector) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+
+  ContainerSelectorCache cache;
+  ContainerQuery* query = ParseContainerQuery(*document, "--foo");
+  ASSERT_TRUE(query);
+  EXPECT_TRUE(query->Selector().SelectsNamedContainers());
+  EXPECT_FALSE(query->Selector().SelectsStyleContainers());
+  EXPECT_TRUE(query->Selector().SelectsStyleOrNameOnlyContainers());
+
+  query = ParseContainerQuery(*document, "style(--foo: bar)");
+  ASSERT_TRUE(query);
+  EXPECT_FALSE(query->Selector().SelectsNamedContainers());
+  EXPECT_TRUE(query->Selector().SelectsStyleContainers());
+  EXPECT_TRUE(query->Selector().SelectsStyleOrNameOnlyContainers());
+
+  query = ParseContainerQuery(*document, "--foo style(--foo: bar)");
+  ASSERT_TRUE(query);
+  EXPECT_TRUE(query->Selector().SelectsNamedContainers());
+  EXPECT_TRUE(query->Selector().SelectsStyleContainers());
+  EXPECT_TRUE(query->Selector().SelectsStyleOrNameOnlyContainers());
+}
+
 }  // namespace blink

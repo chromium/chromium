@@ -5705,6 +5705,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
       }
     }
     child_change = ApplyComputedStyleDiff(child_change, diff);
+    if (ComputedStyle::DiffAffectsContainerQueries(old_style, new_style)) {
+      child_change = child_change.ForceRecalcDescendantContainers();
+    }
     UpdateCallbackSelectors(old_style, new_style);
     NotifyIfMatchedDocumentRulesSelectorsChanged(old_style, new_style);
   }

@@ -4673,6 +4673,51 @@ TEST_F(StyleEngineContainerQueryTest,
   EXPECT_EQ(6u, GetStyleEngine().StyleForElementCount() - start_count);
 }
 
+TEST_F(StyleEngineContainerQueryTest,
+       UpdateStyleAndLayoutTreeForContainerNameChange) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container {
+        container-type: size;
+        width: 100px;
+        height: 100px;
+      }
+      @container --foo (width = 100px) {
+        .affected { background-color: green; }
+      }
+      .foo { container-name: --foo; }
+    </style>
+    <div id="container">
+      <span class="affected"></span>
+      <div>
+        <span class="affected"></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span class="affected"></span>
+        <span>
+          <span></span>
+          <span class="affected"></span></span>
+          <span></span>
+        </span>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  ASSERT_TRUE(container);
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+
+  container->setAttribute(html_names::kClassAttr, AtomicString("foo"));
+  UpdateAllLifecyclePhases();
+
+  // Recalc the four  .affected elements + #container
+  EXPECT_EQ(5u, GetStyleEngine().StyleForElementCount() - start_count);
+}
+
 TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

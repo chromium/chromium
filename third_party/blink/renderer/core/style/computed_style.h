@@ -420,6 +420,11 @@ class ComputedStyle final : public ComputedStyleBase {
       const ComputedStyle* old_style,
       const ComputedStyle* new_style);
 
+  // Returns true if the style difference needs a StyleRecalcChange for the
+  // descendants which invalidates all elements affected by container queries.
+  static bool DiffAffectsContainerQueries(const ComputedStyle* old_style,
+                                          const ComputedStyle* new_style);
+
   // Returns true if the ComputedStyle change requires a LayoutObject re-attach.
   static bool NeedsReattachLayoutTree(const Element& element,
                                       const ComputedStyle* old_style,

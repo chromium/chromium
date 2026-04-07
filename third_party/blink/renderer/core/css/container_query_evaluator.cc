@@ -209,7 +209,7 @@ void ContainerQueryEvaluator::SetDependencyFlags(const ContainerQuery& query,
   if (selector.SelectsSizeContainers()) {
     match_result.SetDependsOnSizeContainerQueries();
   }
-  if (selector.SelectsStyleContainers()) {
+  if (selector.SelectsStyleOrNameOnlyContainers()) {
     match_result.SetDependsOnStyleContainerQueries();
   }
   if (selector.SelectsScrollStateContainers()) {
@@ -303,7 +303,7 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
     depends_on_size_ = query.Selector().SelectsSizeContainers();
   }
   if (!depends_on_style_) {
-    depends_on_style_ = query.Selector().SelectsStyleContainers();
+    depends_on_style_ = query.Selector().SelectsStyleOrNameOnlyContainers();
   }
   if (!depends_on_stuck_) {
     depends_on_stuck_ = query.Selector().SelectsStickyContainers();
@@ -759,7 +759,7 @@ void ContainerQueryEvaluator::ClearResults(Change change,
          (container_type == kAnchoredContainer &&
           pair.key->Selector().SelectsAnchoredContainers()) ||
          (container_type == kStyleContainer &&
-          pair.key->Selector().SelectsStyleContainers()))) {
+          pair.key->Selector().SelectsStyleOrNameOnlyContainers()))) {
       continue;
     }
     new_results.Set(pair.key, pair.value);
@@ -792,7 +792,7 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeStyleChange()
 
   for (const auto& result : results_) {
     const ContainerQuery& query = *result.key;
-    if (!query.Selector().SelectsStyleContainers()) {
+    if (!query.Selector().SelectsStyleOrNameOnlyContainers()) {
       continue;
     }
     if (Eval(query).value == result.value.value) {
