@@ -3192,7 +3192,10 @@ static_library("ui") {
         "webui/signin/batch_upload_ui.h",
       ]
 
-      deps += [ "webui/signin/batch_upload:mojo_bindings" ]
+      deps += [
+        "webui/signin/batch_upload:mojo_bindings",
+        "//chrome/browser/ui/webui/feature_showcase",
+      ]
     }
   }
 

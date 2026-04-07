@@ -76,6 +76,9 @@ static const char* const kChromeUrls[] = {
     "chrome://extensions-internals",
     "chrome://extensions-zero-state",
     "chrome://family-link-user-internals",
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    "chrome://feature-showcase",
+#endif
     "chrome://flags",
     "chrome://gcm-internals",
     "chrome://gpu",

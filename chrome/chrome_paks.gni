@@ -602,9 +602,11 @@ template("chrome_extra_paks") {
     if (enable_dice_support) {
       sources += [
         "$root_gen_dir/chrome/batch_upload_resources.pak",
+        "$root_gen_dir/chrome/feature_showcase_resources.pak",
         "$root_gen_dir/chrome/signin_signout_confirmation_resources.pak",
       ]
       deps += [
+        "//chrome/browser/resources/feature_showcase:resources",
         "//chrome/browser/resources/signin/batch_upload:resources",
         "//chrome/browser/resources/signin/signout_confirmation:resources",
       ]

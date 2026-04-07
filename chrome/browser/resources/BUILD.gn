@@ -158,6 +158,7 @@ group("resources") {
 
   if (enable_dice_support) {
     public_deps += [
+      "feature_showcase:resources",
       "intro:resources",
       "signin/batch_upload:resources",
       "signin/signout_confirmation:resources",

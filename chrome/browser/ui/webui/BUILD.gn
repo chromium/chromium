@@ -138,7 +138,10 @@ source_set("configs") {
   }
 
   if (enable_dice_support) {
-    deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
+    deps += [
+      "//chrome/browser/ui/webui/feature_showcase",
+      "//chrome/browser/ui/webui/signin/signout_confirmation",
+    ]
   }
 
   if (enable_session_service) {

@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+
+assert(enable_dice_support)
+
+source_set("feature_showcase") {
+  sources = [
+    "feature_showcase_ui.cc",
+    "feature_showcase_ui.h",
+  ]
+
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/feature_showcase:resources",
+    "//components/signin/public/base:signin_switches",
+    "//ui/webui",
+  ]
+}

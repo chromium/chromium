@@ -15,6 +15,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -61,7 +62,14 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
 
   enabled_features.push_back(features::kTabsFromOtherDevicesSidePanel);
 
-  feature_list_.InitWithFeatures(enabled_features, {});
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  enabled_features.push_back(switches::kFirstRunDesktopRevamp);
+#endif
+
+  const std::vector<base::test::FeatureRef> disabled_features = {
+      privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation};
+
+  feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 WebUIAllUrlsBrowserTest::~WebUIAllUrlsBrowserTest() = default;

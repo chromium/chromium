@@ -7,7 +7,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "build/branding_buildflags.h"
@@ -23,7 +22,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_data_source.h"
@@ -170,11 +168,6 @@ static constexpr const char* const kSlowChromeUrls[] = {
 class ChromeURLDataManagerWebUITrustedTypesTest
     : public WebUIAllUrlsBrowserTest {
  public:
-  ChromeURLDataManagerWebUITrustedTypesTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
-  }
-
   void CheckNoTrustedTypesViolation(std::string_view url) {
     std::unique_ptr<base::test::ScopedRunLoopTimeout> timeout;
     if (std::ranges::contains(kSlowChromeUrls, url)) {
@@ -230,7 +223,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   static base::TimeDelta GetSlowTestTimeout() {
     return TestTimeouts::test_launcher_timeout();
   }
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that there's no Trusted Types violation in any `kChromeUrls`.

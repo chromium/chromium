@@ -373,6 +373,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".extended-updates-dialog"/>
   <variant name=".extensions"/>
   <variant name=".extensions-zero-state"/>
+  <variant name=".feature-showcase"/>
   <variant name=".feedback"/>
   <variant name=".file-manager"/>
   <variant name=".files-internals"/>
