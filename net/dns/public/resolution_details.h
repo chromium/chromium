@@ -5,6 +5,9 @@
 #ifndef NET_DNS_PUBLIC_RESOLUTION_DETAILS_H_
 #define NET_DNS_PUBLIC_RESOLUTION_DETAILS_H_
 
+#include <optional>
+
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -33,8 +36,23 @@ enum class ResolutionSource {
 
 // Details about how the host resolution was performed. Should be only used
 // for logging and recording histograms.
+// TODO(crbug.com/485672648): This struct exposes internal implementation
+// details so it should be removed in the future.
 struct NET_EXPORT ResolutionDetails {
   ResolutionSource source = ResolutionSource::kUnknown;
+
+  // The time spent executing the resolver task that successfully completed the
+  // request. This is set only when an async task (such as DNS, mDNS, or
+  // system resolution) is executed and completes successfully. It remains
+  // std::nullopt for cache hits or local synchronous resolutions. If multiple
+  // tasks were attempted and fallback occurred, this represents the duration of
+  // the single task that ultimately succeeded.
+  std::optional<base::TimeDelta> task_completion_delay;
+
+  // True if a Secure DNS (DoH) task was attempted as part of this request. This
+  // is set to true regardless of whether the DoH query ultimately succeeded,
+  // timed out, or failed and fell back to insecure DNS/system resolution.
+  bool secure_dns_attempted = false;
 
   bool operator==(const ResolutionDetails& other) const = default;
 };

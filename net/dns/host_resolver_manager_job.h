@@ -285,11 +285,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void OnServiceEndpointsUpdated() override;
 
   void StartMdnsTask();
-  void OnMdnsTaskComplete();
+  void OnMdnsTaskComplete(base::TimeTicks start_time);
   void OnMdnsImmediateFailure(int rv);
 
   void StartNat64Task();
-  void OnNat64TaskComplete(std::unique_ptr<HostResolverInternalResult> result);
+  void OnNat64TaskComplete(base::TimeTicks start_time,
+                           std::unique_ptr<HostResolverInternalResult> result);
 
   void RecordJobHistograms(const HostCache::Entry& results,
                            std::optional<TaskType> task_type);
@@ -305,16 +306,19 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // If not |allow_cache|, result will not be stored in the host cache, even if
   // result would otherwise allow doing so. Update the key to reflect |secure|,
   // which indicates whether or not the result was obtained securely.
-  void CompleteRequests(const HostCache::Entry& results,
-                        base::TimeDelta ttl,
-                        bool allow_cache,
-                        bool secure,
-                        std::optional<TaskType> task_type);
+  void CompleteRequests(
+      const HostCache::Entry& results,
+      base::TimeDelta ttl,
+      bool allow_cache,
+      bool secure,
+      std::optional<TaskType> task_type,
+      std::optional<base::TimeDelta> task_completion_delay = std::nullopt);
 
   void CompleteRequestsWithoutCache(
       const HostCache::Entry& results,
       std::optional<HostCache::EntryStaleness> stale_info,
-      TaskType task_type);
+      TaskType task_type,
+      std::optional<base::TimeDelta> task_completion_delay = std::nullopt);
 
   // Convenience wrapper for CompleteRequests in case of failure.
   void CompleteRequestsWithError(int net_error,
@@ -377,6 +381,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks start_time_;
+
+  bool secure_dns_attempted_ = false;
 
   HostResolver::HttpsSvcbOptions https_svcb_options_;
 

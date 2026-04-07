@@ -731,7 +731,7 @@ void HostResolverManager::Job::OnSystemTaskComplete(
           net_error,
           net_error == OK ? addr_list.endpoints() : std::vector<IPEndPoint>(),
           std::move(aliases), HostCache::Entry::SOURCE_UNKNOWN),
-      ttl, /*allow_cache=*/true, /*secure=*/false, TaskType::SYSTEM);
+      ttl, /*allow_cache=*/true, /*secure=*/false, TaskType::SYSTEM, duration);
 }
 
 void HostResolverManager::Job::InsecureCacheLookup() {
@@ -768,6 +768,9 @@ void HostResolverManager::Job::StartDnsTask(
       key_.secure_dns_mode, this, net_log_, tick_clock_,
       !tasks_.empty() /* fallback_available */, https_svcb_options_);
   dns_task_executed_ = true;
+  if (secure) {
+    secure_dns_attempted_ = true;
+  }
   if (resolver_->IsHappyEyeballsV3Enabled()) {
     dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
         this, key_.host, key_.query_types, net_log_);
@@ -885,7 +888,7 @@ void HostResolverManager::Job::OnDnsTaskComplete(
   }
 
   CompleteRequests(legacy_results, bounded_ttl, true /* allow_cache */, secure,
-                   AttemptModeToTaskType(attempt_mode));
+                   AttemptModeToTaskType(attempt_mode), duration);
 }
 
 void HostResolverManager::Job::OnIntermediateTransactionsComplete(
@@ -963,8 +966,9 @@ void HostResolverManager::Job::StartMdnsTask() {
       key_.query_types);
 
   if (rv == OK) {
-    mdns_task_->Start(
-        base::BindOnce(&Job::OnMdnsTaskComplete, base::Unretained(this)));
+    mdns_task_->Start(base::BindOnce(&Job::OnMdnsTaskComplete,
+                                     base::Unretained(this),
+                                     tick_clock_->NowTicks()));
   } else {
     // Could not create an mDNS client. Since we cannot complete synchronously
     // from here, post a failure without starting the task.
@@ -974,7 +978,7 @@ void HostResolverManager::Job::StartMdnsTask() {
   }
 }
 
-void HostResolverManager::Job::OnMdnsTaskComplete() {
+void HostResolverManager::Job::OnMdnsTaskComplete(base::TimeTicks start_time) {
   DCHECK(mdns_task_);
   // TODO(crbug.com/40577881): Consider adding MDNS-specific logging.
 
@@ -988,10 +992,12 @@ void HostResolverManager::Job::OnMdnsTaskComplete() {
     CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION, TaskType::MDNS);
     return;
   }
+
   // MDNS uses a separate cache, so skip saving result to cache.
   // TODO(crbug.com/40611558): Consider merging caches.
   CompleteRequestsWithoutCache(legacy_results, /*stale_info=*/std::nullopt,
-                               TaskType::MDNS);
+                               TaskType::MDNS,
+                               tick_clock_->NowTicks() - start_time);
 }
 
 void HostResolverManager::Job::OnMdnsImmediateFailure(int rv) {
@@ -1007,10 +1013,12 @@ void HostResolverManager::Job::StartNat64Task() {
       key_.host.GetHostnameWithoutBrackets(), key_.network_anonymization_key,
       net_log_, &*key_.resolve_context, resolver_);
   nat64_task_->Start(base::BindOnce(&Job::OnNat64TaskComplete,
-                                    weak_ptr_factory_.GetWeakPtr()));
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    tick_clock_->NowTicks()));
 }
 
 void HostResolverManager::Job::OnNat64TaskComplete(
+    base::TimeTicks start_time,
     std::unique_ptr<HostResolverInternalResult> result) {
   CHECK(nat64_task_);
   CHECK(result);
@@ -1022,7 +1030,8 @@ void HostResolverManager::Job::OnNat64TaskComplete(
                                   HostCache::Entry::SOURCE_UNKNOWN);
 
   CompleteRequestsWithoutCache(legacy_results, /*stale_info=*/std::nullopt,
-                               TaskType::NAT64);
+                               TaskType::NAT64,
+                               tick_clock_->NowTicks() - start_time);
 }
 
 void HostResolverManager::Job::RecordJobHistograms(
@@ -1125,7 +1134,8 @@ void HostResolverManager::Job::CompleteRequests(
     base::TimeDelta ttl,
     bool allow_cache,
     bool secure,
-    std::optional<TaskType> task_type) {
+    std::optional<TaskType> task_type,
+    std::optional<base::TimeDelta> task_completion_delay) {
   CHECK(resolver_.get());
 
   ResolutionDetails resolution_details;
@@ -1158,6 +1168,10 @@ void HostResolverManager::Job::CompleteRequests(
   if (task_type) {
     resolution_details.source = to_resolution_source(*task_type);
   }
+  if (results.error() == OK) {
+    resolution_details.task_completion_delay = task_completion_delay;
+  }
+  resolution_details.secure_dns_attempted = secure_dns_attempted_;
 
   // This job must be removed from resolver's |jobs_| now to make room for a
   // new job with the same key in case one of the OnComplete callbacks decides
@@ -1232,7 +1246,8 @@ void HostResolverManager::Job::CompleteRequests(
 void HostResolverManager::Job::CompleteRequestsWithoutCache(
     const HostCache::Entry& results,
     std::optional<HostCache::EntryStaleness> stale_info,
-    TaskType task_type) {
+    TaskType task_type,
+    std::optional<base::TimeDelta> task_completion_delay) {
   // Record the stale_info for all non-speculative requests, if it exists.
   if (stale_info) {
     for (auto* node = requests_.head(); node != requests_.end();
@@ -1243,7 +1258,7 @@ void HostResolverManager::Job::CompleteRequestsWithoutCache(
     }
   }
   CompleteRequests(results, base::TimeDelta(), false /* allow_cache */,
-                   false /* secure */, task_type);
+                   false /* secure */, task_type, task_completion_delay);
 }
 
 void HostResolverManager::Job::CompleteRequestsWithError(
