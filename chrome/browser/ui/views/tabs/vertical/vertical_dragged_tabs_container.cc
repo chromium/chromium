@@ -192,7 +192,7 @@ void VerticalDraggedTabsContainer::InitializeDragState(
   tab_strip_padding_ = GetLayoutConstant(
       GetTabStripCollapseState() !=
               tabs::VerticalTabStripCollapseState::kExpanded
-          ? LayoutConstant::kVerticalTabStripCollapsedPadding
+          ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
           : LayoutConstant::kVerticalTabStripUncollapsedPadding);
 
   const auto& session_data = controller.GetSessionData();

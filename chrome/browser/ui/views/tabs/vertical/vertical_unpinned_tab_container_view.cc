@@ -117,7 +117,7 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   // including collapsing state.
   const int horizontal_padding = GetLayoutConstant(
       collapse_state != tabs::VerticalTabStripCollapseState::kExpanded
-          ? LayoutConstant::kVerticalTabStripCollapsedPadding
+          ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
           : LayoutConstant::kVerticalTabStripUncollapsedPadding);
   const std::vector<views::View*> children =
       collection_node_ ? collection_node_->GetDirectChildren()
