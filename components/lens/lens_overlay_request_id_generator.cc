@@ -141,14 +141,20 @@ LensOverlayRequestIdGenerator::CreateNextRequestIdForUpdate(
     // kMultiContextUploadRequest is only used for the initial request in a
     // multi-context upload flow, so reset all ids to their initial values.
     request_id->set_uuid(base::RandUint64());
-    request_id->set_image_sequence_id(1);
-    request_id->set_sequence_id(1);
-    // All media types other than image-only should set long-context-id to 1.
-    request_id->set_long_context_id(
+    // The image sequence should be 1 if the request has an image, and 0
+    // otherwise.
+    bool media_type_is_image = previous_request_id->media_type() ==
+                               LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE;
+    bool media_type_has_image =
+        media_type_is_image ||
         previous_request_id->media_type() ==
-                LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
-            ? 0
-            : 1);
+            LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE ||
+        previous_request_id->media_type() ==
+            LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE;
+    request_id->set_image_sequence_id(media_type_has_image ? 1 : 0);
+    request_id->set_sequence_id(1);
+    // The long context id should be 1 unless the request is image-only.
+    request_id->set_long_context_id(media_type_is_image ? 0 : 1);
   } else {
     bool increment_image_sequence =
         update_mode == RequestIdUpdateMode::kFullImageRequest ||
