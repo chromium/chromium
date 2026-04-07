@@ -80,13 +80,32 @@ def get_git_command_name():
   return 'git'
 
 
-def get_tracked_files(directory, globroot, repository_root_relative, verbose):
+def get_tracked_files_internal(directory, globroot, verbose):
   try:
     if os.getcwd().startswith('/google/cog/cloud'):
       files = []
-      for root, _, filenames in os.walk(directory):
-        files.extend([os.path.join(root, f) for f in filenames])
+      # Directory is relative to globroot, potentially with '//' prefix.
+      # os.path.join needs a path without the leading '//'.
+      start_dir = os.path.join(globroot, directory.lstrip('/'))
+
+      if not os.path.isdir(start_dir):
+        if verbose:
+          print_error(
+              f'Could not gather a list of tracked files in {directory}',
+              f'Cog mode: Directory not found, skipping walk: {start_dir}')
+        return set()
+
+      for root, _, filenames in os.walk(start_dir):
+        for f in filenames:
+          full_path = os.path.join(root, f)
+          # Make the path relative to globroot for comparison.
+          relative_path = os.path.relpath(full_path, globroot)
+          # Ensure consistent path separators.
+          relative_path = relative_path.replace('\\', '/')
+          files.append(relative_path)
+
       return set(files)
+
     cmd = [get_git_command_name(), 'ls-files', '--error-unmatch', directory]
     with subprocess.Popen(cmd,
                           stdout=subprocess.PIPE,
@@ -102,12 +121,6 @@ def get_tracked_files(directory, globroot, repository_root_relative, verbose):
 
       files = [f.decode('utf-8') for f in output[0].splitlines()]
 
-      # Need paths to be relative to directory in order to match expansions.
-      # This should happen naturally due to cwd above, but we need to take
-      # special care if relative to the repository root.
-      if repository_root_relative:
-        files = ['//' + f for f in files]
-
       # Handle Windows backslashes
       files = [f.replace('\\', '/') for f in files]
 
@@ -118,6 +131,15 @@ def get_tracked_files(directory, globroot, repository_root_relative, verbose):
       print_error(f'Could not gather a list of tracked files in {directory}',
                   f'{type(e)}: {e}')
     return set()
+
+
+def get_tracked_files(directory, globroot, repository_root_relative, verbose):
+  files = get_tracked_files_internal(directory, globroot, verbose)
+  # Add the '//' prefix *if* the original glob pattern was root-relative.
+  # This makes the path format match the output of parse_and_expand_globlist.
+  if repository_root_relative:
+    files = set('//' + f for f in files)
+  return files
 
 
 def combine_potentially_repository_root_relative_paths(a, b):
