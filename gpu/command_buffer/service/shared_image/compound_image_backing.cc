@@ -1602,6 +1602,15 @@ const std::vector<SkPixmap>& CompoundImageBacking::GetSharedMemoryPixmaps() {
   auto* shm_backing = GetShmElement().GetBacking();
   DCHECK(shm_backing);
 
+  // SECURITY: When kUseCompoundImageBackingAsDefault is on, WrapExternalBacking
+  // wraps arbitrary backing types and gives them AccessStreamSet::All()
+  // (including kMemory). GetShmElement() then returns that wrapped backing
+  // here regardless of its actual type. Guard against the resulting type
+  // confusion in the static_cast below. Note marking a backing to support all
+  // access stream is expected behavior wheres ::GetSharedMemoryPixmaps should
+  // only be invoked on SharedImageBackingType::kSharedMemory currently.
+  CHECK_EQ(shm_backing->GetType(), SharedImageBackingType::kSharedMemory);
+
   return static_cast<SharedMemoryImageBacking*>(shm_backing)->pixmaps();
 }
 

@@ -161,6 +161,23 @@ class CompoundImageBackingTest : public testing::Test {
     return false;
   }
 
+  // Construct a CompoundImageBacking via the WrapExternalBacking constructor
+  // (private). This mirrors CompoundImageBacking::WrapExternalBacking exactly,
+  // minus the SharedImageFactory consultation.
+  std::unique_ptr<CompoundImageBacking> WrapExternal(
+      std::unique_ptr<SharedImageBacking> backing) {
+    backing->SetNotRefCounted();
+    return std::unique_ptr<CompoundImageBacking>(new CompoundImageBacking(
+        /*is_thread_safe=*/false,
+        /*buffer_usage=*/std::nullopt, std::move(backing), copy_manager_,
+        /*shared_image_factory=*/base::WeakPtr<SharedImageFactory>()));
+  }
+
+  const std::vector<SkPixmap>& CallGetSharedMemoryPixmaps(
+      CompoundImageBacking* backing) {
+    return backing->GetSharedMemoryPixmaps();
+  }
+
   // Create a compound backing containing shared memory + GPU backing.
   std::unique_ptr<SharedImageBacking> CreateCompoundBacking(
       SharedImageUsageSet usage) {
@@ -440,6 +457,24 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
   // The backing factory to create GPU backing should be reset to avoid logging
   // about destroyed image multiple times.
   EXPECT_FALSE(HasGpuCreateBackingCallback(compound_backing));
+}
+
+TEST_F(CompoundImageBackingTest,
+       GetSharedMemoryPixmaps_ChecksOnWrongBackingType) {
+  auto tiny = std::make_unique<TestImageBacking>(
+      Mailbox::Generate(), viz::SinglePlaneFormat::kRGBA_8888,
+      gfx::Size(10, 10), gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+      kOpaque_SkAlphaType,
+      SharedImageUsageSet({SHARED_IMAGE_USAGE_DISPLAY_READ}), kTestBackingSize);
+
+  // WrapExternalBacking constructor sets elements_[0].access_streams =
+  // AccessStreamSet::All(), which includes kMemory. GetSharedMemoryPixmaps()
+  // then performs an unchecked static_cast to SharedMemoryImageBacking*.
+  auto compound = WrapExternal(std::move(tiny));
+
+  // Verify that the security fix correctly triggers a CHECK failure when
+  // the backing is not of type SharedMemoryImageBacking.
+  EXPECT_DEATH(CallGetSharedMemoryPixmaps(compound.get()), "");
 }
 
 TEST_F(CompoundImageBackingTest, Multiplanar) {
