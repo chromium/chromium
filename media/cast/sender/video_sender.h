@@ -66,6 +66,11 @@ class VideoSender : public FrameSender::Client {
 
   void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay);
   base::TimeDelta GetTargetPlayoutDelay() const;
+  virtual int GetEncoderBitrate() const;
+  virtual double GetEncoderUtilization() const;
+  virtual double GetLossiness() const;
+  virtual int GetFramesInserted() const;
+  virtual int GetFramesDropped() const;
 
   base::WeakPtr<VideoSender> AsWeakPtr();
 

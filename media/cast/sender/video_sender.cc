@@ -297,6 +297,26 @@ base::TimeDelta VideoSender::GetTargetPlayoutDelay() const {
   return frame_sender_->GetTargetPlayoutDelay();
 }
 
+int VideoSender::GetEncoderBitrate() const {
+  return last_bitrate_;
+}
+
+double VideoSender::GetEncoderUtilization() const {
+  return last_reported_encoder_utilization_;
+}
+
+double VideoSender::GetLossiness() const {
+  return last_reported_lossiness_;
+}
+
+int VideoSender::GetFramesInserted() const {
+  return number_of_frames_inserted_;
+}
+
+int VideoSender::GetFramesDropped() const {
+  return number_of_frames_dropped_;
+}
+
 base::WeakPtr<VideoSender> VideoSender::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

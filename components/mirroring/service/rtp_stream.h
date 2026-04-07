@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "media/base/audio_bus.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/constants.h"
@@ -77,6 +78,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream final {
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
   base::TimeDelta GetTargetPlayoutDelay() const;
 
+  base::DictValue GetStats() const;
+
   base::WeakPtr<VideoRtpStream> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -131,6 +134,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream final {
   // Get the real time encoder bitrate usage. Note that not all encoders support
   // changing the bitrate in realtime.
   int GetEncoderBitrate() const;
+
+  base::DictValue GetStats() const;
 
   base::WeakPtr<AudioRtpStream> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

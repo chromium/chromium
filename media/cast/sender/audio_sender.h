@@ -54,7 +54,9 @@ class AudioSender : public FrameSender::Client {
 
   void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay);
   base::TimeDelta GetTargetPlayoutDelay() const;
-  int GetEncoderBitrate() const;
+  virtual int GetEncoderBitrate() const;
+  virtual int GetFramesInserted() const;
+  virtual int GetFramesDropped() const;
 
   base::WeakPtr<AudioSender> AsWeakPtr();
 

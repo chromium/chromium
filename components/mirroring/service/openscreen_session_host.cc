@@ -1282,7 +1282,18 @@ network::mojom::NetworkContext* OpenscreenSessionHost::GetNetworkContext() {
 
 base::DictValue OpenscreenSessionHost::GetMirroringStats() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return stats_client_ ? stats_client_->GetStats() : base::DictValue();
+  base::DictValue stats =
+      stats_client_ ? stats_client_->GetStats() : base::DictValue();
+
+  if (video_stream_) {
+    stats.EnsureDict("video")->Merge(video_stream_->GetStats());
+  }
+
+  if (audio_stream_) {
+    stats.EnsureDict("audio")->Merge(audio_stream_->GetStats());
+  }
+
+  return stats;
 }
 
 void OpenscreenSessionHost::SetSenderStatsForTest(

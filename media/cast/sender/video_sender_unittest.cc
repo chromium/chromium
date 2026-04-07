@@ -391,6 +391,25 @@ TEST_P(VideoSenderTest, ExternalEncoderInitFails) {
   RunTasksAndAdvanceClock();
 }
 
+TEST_P(VideoSenderTest, GettersReturnValidValues) {
+  CreateSender(EncoderType::kSoftware);
+  ASSERT_EQ(STATUS_INITIALIZED, status_changes().front());
+
+  // They should have some default values or zeroes
+  EXPECT_GE(video_sender().GetEncoderBitrate(), 0);
+  EXPECT_GE(video_sender().GetEncoderUtilization(), -1.0);  // Defaults to -1.0
+  EXPECT_GE(video_sender().GetLossiness(), -1.0);           // Defaults to -1.0
+  EXPECT_GE(video_sender().GetFramesInserted(), 0);
+  EXPECT_GE(video_sender().GetFramesDropped(), 0);
+
+  // Send a frame to update metrics
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  RunTasksAndAdvanceClock();
+
+  EXPECT_EQ(video_sender().GetFramesInserted(), 1);
+  EXPECT_GE(video_sender().GetEncoderBitrate(), 0);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          VideoSenderTest,
                          ::testing::Bool(),

@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/fake_single_thread_task_runner.h"
@@ -36,13 +37,6 @@ using testing::_;
 namespace media::cast {
 
 namespace {
-
-void SaveOperationalStatus(OperationalStatus* out_status,
-                           OperationalStatus in_status) {
-  DVLOG(1) << "OperationalStatus transitioning from " << *out_status << " to "
-           << in_status;
-  *out_status = in_status;
-}
 
 }  // namespace
 
@@ -68,13 +62,11 @@ class AudioSenderTest : public TestWithCastEnvironment {
             audio_config_));
     openscreen_audio_sender_ = test_senders_->audio_sender.get();
 
-    OperationalStatus operational_status = STATUS_UNINITIALIZED;
+    base::test::TestFuture<OperationalStatus> operational_status;
     audio_sender_ = std::make_unique<AudioSender>(
-        cast_environment(), audio_config_,
-        base::BindOnce(&SaveOperationalStatus, &operational_status),
+        cast_environment(), audio_config_, operational_status.GetCallback(),
         std::move(test_senders_->audio_sender));
-    RunUntilIdle();
-    CHECK_EQ(STATUS_INITIALIZED, operational_status);
+    CHECK_EQ(STATUS_INITIALIZED, operational_status.Get());
   }
 
   ~AudioSenderTest() override = default;
@@ -93,11 +85,48 @@ TEST_F(AudioSenderTest, Encode20ms) {
                           TestAudioBusFactory::kMiddleANoteFreq, 0.5f)
           .NextAudioBus(kDuration));
 
-  EXPECT_CALL(*test_senders_->environment, SendPacket(_, _)).Times(3);
+  base::test::TestFuture<void> packets_future;
+  int packets_sent = 0;
+  EXPECT_CALL(*test_senders_->environment, SendPacket(_, _))
+      .Times(3)
+      .WillRepeatedly([&](openscreen::ByteView packet,
+                          openscreen::cast::PacketMetadata metadata) {
+        if (++packets_sent == 3) {
+          packets_future.SetValue();
+        }
+      });
 
   audio_sender_->InsertAudio(std::move(bus), NowTicks());
-  RunUntilIdle();
+  ASSERT_TRUE(packets_future.Wait());
   EXPECT_EQ(2, openscreen_audio_sender_->GetInFlightFrameCount());
+}
+
+TEST_F(AudioSenderTest, GettersReturnValidValues) {
+  EXPECT_GE(audio_sender_->GetEncoderBitrate(), 0);
+  EXPECT_GE(audio_sender_->GetFramesInserted(), 0);
+  EXPECT_GE(audio_sender_->GetFramesDropped(), 0);
+
+  const base::TimeDelta kDuration = base::Milliseconds(20);
+  std::unique_ptr<AudioBus> bus(
+      TestAudioBusFactory(audio_config_.channels, audio_config_.rtp_timebase,
+                          TestAudioBusFactory::kMiddleANoteFreq, 0.5f)
+          .NextAudioBus(kDuration));
+
+  base::test::TestFuture<void> packet_future;
+  int packets_sent = 0;
+  EXPECT_CALL(*test_senders_->environment, SendPacket(_, _))
+      .Times(3)
+      .WillRepeatedly([&](openscreen::ByteView packet,
+                          openscreen::cast::PacketMetadata metadata) {
+        if (++packets_sent == 3) {
+          packet_future.SetValue();
+        }
+      });
+
+  audio_sender_->InsertAudio(std::move(bus), NowTicks());
+  ASSERT_TRUE(packet_future.Wait());
+
+  EXPECT_EQ(audio_sender_->GetFramesInserted(), 1);
 }
 
 }  // namespace media::cast

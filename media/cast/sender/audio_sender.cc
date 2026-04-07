@@ -107,6 +107,14 @@ int AudioSender::GetEncoderBitrate() const {
   return audio_encoder_->GetBitrate();
 }
 
+int AudioSender::GetFramesInserted() const {
+  return number_of_frames_inserted_;
+}
+
+int AudioSender::GetFramesDropped() const {
+  return number_of_frames_dropped_;
+}
+
 base::WeakPtr<AudioSender> AudioSender::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
