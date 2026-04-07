@@ -594,7 +594,6 @@ cronet_impl_native_java_deps_to_package = [
   "//base:bundle_utils_java",
   "//base:wrapped_class_loader_java",
   "//base:build_info_java",
-  "//third_party/jni_zero:generate_jni_java",
   "//third_party/jni_zero:jni_zero_java",
   "//net/android:net_java",
   "//url:url_java",

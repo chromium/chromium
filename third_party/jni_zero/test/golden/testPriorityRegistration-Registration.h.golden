@@ -22,7 +22,7 @@ extern const int64_t kJniZeroHashPriority = 4128442159926458844LL;
 #ifndef org_jni_1zero_SampleProxyEdgeCases_clazz_defined
 #define org_jni_1zero_SampleProxyEdgeCases_clazz_defined
 inline jclass org_jni_1zero_SampleProxyEdgeCases_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org.jni_zero.SampleProxyEdgeCases";
+  static const char kClassName[] = "org/jni_zero/SampleProxyEdgeCases";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }

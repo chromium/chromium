@@ -9,11 +9,10 @@
 #include <cassert>
 #include <type_traits>
 
-#include "third_party/jni_zero/generate_jni/JniZero_jni.h"
+#include "third_party/jni_zero/generate_jni/JniInit_jni.h"
 #include "third_party/jni_zero/jni_methods.h"
 #include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/logging.h"
-#include "third_party/jni_zero/system_jni/ClassLoader_jni.h"
 
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
@@ -39,56 +38,50 @@ static_assert(std::is_same<jdouble, double>::value);
 
 namespace jni_zero {
 namespace {
-
-const size_t kMaxClassNameLen = 256;
-
 // Until we fully migrate base's jni_android, we will maintain a copy of this
 // global here and will have base set this variable when it sets its own.
 JavaVM* g_jvm = nullptr;
 
-jclass (*g_class_resolver)(JNIEnv*, const char*) = nullptr;
-
-LeakedJavaGlobalRef<JClassLoader> g_class_loader = nullptr;
+jclass (*g_class_resolver)(JNIEnv*, const char*, const char*) = nullptr;
 
 void (*g_exception_handler_callback)(JNIEnv*) = nullptr;
 
-jclass DefaultClassResolver(JNIEnv* env, const char* class_name) {
-  JNI_ZERO_DCHECK(g_class_loader);
-  auto j_class_name =
-      ScopedJavaLocalRef<jstring>::Adopt(env, env->NewStringUTF(class_name));
-  return g_class_loader->loadClass(env, j_class_name).Release();
+jclass GetClassInternal(JNIEnv* env,
+                        const char* class_name,
+                        const char* split_name) {
+  jclass clazz;
+  if (g_class_resolver != nullptr) {
+    clazz = g_class_resolver(env, class_name, split_name);
+  } else {
+    clazz = env->FindClass(class_name);
+  }
+  if (ClearException(env) || !clazz) {
+    JNI_ZERO_FLOG("Failed to find class %s", class_name);
+  }
+  return clazz;
 }
 
-jclass GetClassInternal(JNIEnv* env, const char* class_name) {
-  if (g_class_resolver != nullptr) {
-    return g_class_resolver(env, class_name);
+jclass LazyGetClassInternal(JNIEnv* env,
+                            const char* class_name,
+                            const char* split_name,
+                            std::atomic<jclass>* atomic_class_id) {
+  jclass ret = nullptr;
+  auto local_ref = ScopedJavaLocalRef<jclass>::Adopt(
+      env, GetClassInternal(env, class_name, split_name));
+  jclass global_ref = static_cast<jclass>(env->NewGlobalRef(local_ref.obj()));
+  if (atomic_class_id->compare_exchange_strong(ret, global_ref,
+                                               std::memory_order_acq_rel)) {
+    // We intentionally leak the global ref since we are now storing it as a raw
+    // pointer in |atomic_class_id|.
+    ret = global_ref;
+  } else {
+    env->DeleteGlobalRef(global_ref);
   }
-
-  // This code should be hit only before (or during) InitVM().
-  size_t bufsize = strlen(class_name) + 1;
-  if (bufsize > kMaxClassNameLen) {
-    JNI_ZERO_FLOG("Class name too long: %s", class_name);
-  }
-
-  char slash_name[kMaxClassNameLen];
-  for (size_t i = 0; i < bufsize; ++i) {
-    char c = class_name[i];
-    if (c == '.') {
-      c = '/';
-    }
-    slash_name[i] = c;
-  }
-  return env->FindClass(slash_name);
+  return ret;
 }
 
 jclass GetSystemClassGlobalRef(JNIEnv* env, const char* class_name) {
   return static_cast<jclass>(env->NewGlobalRef(env->FindClass(class_name)));
-}
-
-void JNI_JniZero_SetJniClassLoader(
-    JNIEnv* env,
-    const jni_zero::JavaRef<JClassLoader>& classLoader) {
-  SetClassLoader(env, classLoader);
 }
 
 }  // namespace
@@ -164,33 +157,19 @@ void InitVM(JavaVM* vm) {
   g_empty_string.Reset(
       env, ScopedJavaLocalRef<jstring>::Adopt(env, env->NewString(nullptr, 0)));
 #if defined(JNI_ZERO_MULTIPLEXING_ENABLED)
-  JniZeroJni::crashIfMultiplexingMisaligned(env, kJniZeroHashWhole,
-                                            kJniZeroHashPriority);
+  Java_JniInit_crashIfMultiplexingMisaligned(env, kJniZeroHashWhole,
+                                             kJniZeroHashPriority);
 #else
   // Mark as used when multiplexing not enabled.
-  (void)&Java_JniZero_crashIfMultiplexingMisaligned;
+  (void)&Java_JniInit_crashIfMultiplexingMisaligned;
 #endif
-  ScopedJavaLocalRef<jobjectArray> globals = JniZeroJni::init(env);
+  ScopedJavaLocalRef<jobjectArray> globals = Java_JniInit_init(env);
   g_empty_list.Reset(env,
                      ScopedJavaLocalRef<jobject>::Adopt(
                          env, env->GetObjectArrayElement(globals.obj(), 0)));
   g_empty_map.Reset(env,
                     ScopedJavaLocalRef<jobject>::Adopt(
                         env, env->GetObjectArrayElement(globals.obj(), 1)));
-  if (!g_class_resolver) {
-    // Use ClassLoader.loadClass() rather than env->FindClass() because
-    // env->FindClass() uses the bootstrap classloader for threads created by
-    // native code (which leads to classes not being able to be found).
-    if (!g_class_loader) {
-      g_class_loader.Reset(
-          env, ScopedJavaLocalRef<JClassLoader>::Adopt(
-                   env, env->GetObjectArrayElement(globals.obj(), 2)));
-    }
-    // Ensure jclass for ClassLoader is cached before trying to use it to load
-    // jclasses.
-    java_lang_ClassLoader_clazz(env);
-    g_class_resolver = &DefaultClassResolver;
-  }
 }
 
 void DisableJvmForTesting() {
@@ -234,18 +213,20 @@ void CheckException(JNIEnv* env) {
   JNI_ZERO_FLOG("jni_zero crashing due to uncaught Java exception");
 }
 
-void SetClassResolver(jclass (*resolver)(JNIEnv*, const char*)) {
+void SetClassResolver(jclass (*resolver)(JNIEnv*, const char*, const char*)) {
   g_class_resolver = resolver;
 }
 
-void SetClassLoader(JNIEnv* env, const JavaRef<jobject>& class_loader) {
-  JNI_ZERO_DCHECK(class_loader);
-  g_class_loader.Reset(env, class_loader);
+ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
+                                    const char* class_name,
+                                    const char* split_name) {
+  return ScopedJavaLocalRef<jclass>::Adopt(
+      env, GetClassInternal(env, class_name, split_name));
 }
 
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* class_name) {
-  return ScopedJavaLocalRef<jclass>::Adopt(env,
-                                           GetClassInternal(env, class_name));
+  return ScopedJavaLocalRef<jclass>::Adopt(
+      env, GetClassInternal(env, class_name, ""));
 }
 
 template <MethodID::Type type>
@@ -369,20 +350,21 @@ template jfieldID FieldID::LazyGet<FieldID::TYPE_INSTANCE>(
 
 jclass LazyGetClass(JNIEnv* env,
                     const char* class_name,
+                    const char* split_name,
                     std::atomic<jclass>* atomic_class_id) {
   jclass ret = atomic_class_id->load(std::memory_order_acquire);
   if (ret == nullptr) {
-    auto local_ref = ScopedJavaLocalRef<jclass>::Adopt(
-        env, GetClassInternal(env, class_name));
-    jclass global_ref = static_cast<jclass>(env->NewGlobalRef(local_ref.obj()));
-    if (atomic_class_id->compare_exchange_strong(ret, global_ref,
-                                                 std::memory_order_acq_rel)) {
-      // We intentionally leak the global ref since we are now storing it as a
-      // raw pointer in |atomic_class_id|.
-      ret = global_ref;
-    } else {
-      env->DeleteGlobalRef(global_ref);
-    }
+    ret = LazyGetClassInternal(env, class_name, split_name, atomic_class_id);
+  }
+  return ret;
+}
+
+jclass LazyGetClass(JNIEnv* env,
+                    const char* class_name,
+                    std::atomic<jclass>* atomic_class_id) {
+  jclass ret = atomic_class_id->load(std::memory_order_acquire);
+  if (ret == nullptr) {
+    ret = LazyGetClassInternal(env, class_name, "", atomic_class_id);
   }
   return ret;
 }
@@ -390,4 +372,4 @@ jclass LazyGetClass(JNIEnv* env,
 }  // namespace internal
 }  // namespace jni_zero
 
-DEFINE_JNI(JniZero)
+DEFINE_JNI(JniInit)

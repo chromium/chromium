@@ -140,10 +140,6 @@ class JavaClass:
     return self.package_with_slashes.replace('/', '_')
 
   @property
-  def full_name(self):
-    return self._fqn.replace('/', '.')
-
-  @property
   def full_name_with_slashes(self):
     return self._fqn
 

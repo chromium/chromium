@@ -892,7 +892,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForAnnotationProcessor() {}
 #ifndef org_jni_1zero_SampleForAnnotationProcessor_clazz_defined
 #define org_jni_1zero_SampleForAnnotationProcessor_clazz_defined
 inline jclass org_jni_1zero_SampleForAnnotationProcessor_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org.jni_zero.SampleForAnnotationProcessor";
+  static const char kClassName[] = "org/jni_zero/SampleForAnnotationProcessor";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
@@ -901,7 +901,7 @@ inline jclass org_jni_1zero_SampleForAnnotationProcessor_clazz(JNIEnv* env) {
 #ifndef org_jni_1zero_SampleForAnnotationProcessor_00024MultiLine_clazz_defined
 #define org_jni_1zero_SampleForAnnotationProcessor_00024MultiLine_clazz_defined
 inline jclass org_jni_1zero_SampleForAnnotationProcessor_00024MultiLine_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org.jni_zero.SampleForAnnotationProcessor$MultiLine";
+  static const char kClassName[] = "org/jni_zero/SampleForAnnotationProcessor$MultiLine";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }

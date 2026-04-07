@@ -150,7 +150,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleUniqueAnnotations() {}
 #ifndef org_jni_1zero_SampleUniqueAnnotations_clazz_defined
 #define org_jni_1zero_SampleUniqueAnnotations_clazz_defined
 inline jclass org_jni_1zero_SampleUniqueAnnotations_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org.jni_zero.SampleUniqueAnnotations";
+  static const char kClassName[] = "org/jni_zero/SampleUniqueAnnotations";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }

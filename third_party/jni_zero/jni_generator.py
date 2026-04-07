@@ -477,7 +477,7 @@ def _generate_headers(jni_mode,
   java_classes = jni_obj.CollectClassesThatRequireAccessors()
   if java_classes:
     with sb.section('Class Accessors'):
-      header_common.class_accessors(sb, java_classes)
+      header_common.class_accessors(sb, java_classes, jni_obj.module_name)
 
   has_field_getters = any(f.NeedsAccessor() for f in jni_obj.IterFields())
   if has_field_getters:

@@ -21,7 +21,7 @@
 #ifndef java_util_List_clazz_defined
 #define java_util_List_clazz_defined
 inline jclass java_util_List_clazz(JNIEnv* env) {
-  static const char kClassName[] = "java.util.List";
+  static const char kClassName[] = "java/util/List";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }

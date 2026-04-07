@@ -687,7 +687,7 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForTests() {}
 #ifndef org_jni_1zero_SampleForTests_clazz_defined
 #define org_jni_1zero_SampleForTests_clazz_defined
 inline jclass org_jni_1zero_SampleForTests_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org.jni_zero.SampleForTests";
+  static const char kClassName[] = "org/jni_zero/SampleForTests";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
@@ -696,7 +696,7 @@ inline jclass org_jni_1zero_SampleForTests_clazz(JNIEnv* env) {
 #ifndef org_jni_1zero_SampleForTests_00024InnerStructA_clazz_defined
 #define org_jni_1zero_SampleForTests_00024InnerStructA_clazz_defined
 inline jclass org_jni_1zero_SampleForTests_00024InnerStructA_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org.jni_zero.SampleForTests$InnerStructA";
+  static const char kClassName[] = "org/jni_zero/SampleForTests$InnerStructA";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
@@ -705,7 +705,7 @@ inline jclass org_jni_1zero_SampleForTests_00024InnerStructA_clazz(JNIEnv* env) 
 #ifndef org_jni_1zero_SampleForTests_00024InnerStructB_clazz_defined
 #define org_jni_1zero_SampleForTests_00024InnerStructB_clazz_defined
 inline jclass org_jni_1zero_SampleForTests_00024InnerStructB_clazz(JNIEnv* env) {
-  static const char kClassName[] = "org.jni_zero.SampleForTests$InnerStructB";
+  static const char kClassName[] = "org/jni_zero/SampleForTests$InnerStructB";
   static std::atomic<jclass> cached_class;
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
