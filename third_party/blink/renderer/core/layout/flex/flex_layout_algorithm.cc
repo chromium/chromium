@@ -1739,9 +1739,9 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   } else if (cross_axis_free_space >= LayoutUnit() &&
              is_align_content_stretch) {
     // Stretch lines in a multi-line flexbox to the available free-space.
-    const LayoutUnit delta = cross_axis_free_space / num_lines;
+    LayoutUnitDiffuser extra(cross_axis_free_space, num_lines);
     for (FlexLine& line : *flex_lines) {
-      line.line_cross_size += delta;
+      line.line_cross_size += extra.Next();
     }
     cross_axis_free_space = LayoutUnit();
   }
