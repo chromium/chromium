@@ -934,7 +934,8 @@ const base::FeatureParam<std::string> kGlicWebActuationAllowedTiers{
 
 // If enabled, show web actuation settings toggle if
 // kGlicWebActuationAllowedTiers is populated.
-BASE_FEATURE(kGlicWebActuationSettingsToggle, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicWebActuationSettingsToggle,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicMetricsSession, base::FEATURE_ENABLED_BY_DEFAULT);
 // The duration of inactivity after which a session is considered ended.
