@@ -575,5 +575,24 @@ export function getMessageSerializationTestCases(
       chrome.test.succeed();
     },
 
+    // Tests that a complex object with a circular reference correctly
+    // serializes and deserializes when structured cloning is enabled.
+    async function structuredCloneCircularObject() {
+      if (!structuredCloneFeatureEnabled) {
+        chrome.test.succeed();
+        return;
+      }
+
+      const obj = {a: 1};
+      obj.self = obj;
+
+      const response = await sendMessage(obj);
+      chrome.test.assertTrue(typeof response === 'object');
+      chrome.test.assertEq(response.a, 1);
+      chrome.test.assertTrue(response.self === response);
+
+      chrome.test.succeed();
+    },
+
   ];
 }
