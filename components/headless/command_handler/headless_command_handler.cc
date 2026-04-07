@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -372,7 +373,8 @@ void HeadlessCommandHandler::OnDevToolsProtocolExposed(base::DictValue) {
   commands.Set("targetUrl", target_url_.spec());
 
   std::string json_commands = base::WriteJson(commands).value_or("");
-  std::string script = "executeCommands(JSON.parse('" + json_commands + "'))";
+  std::string script = "executeCommands(JSON.parse(" +
+                       base::GetQuotedJSONString(json_commands) + "))";
 
   base::DictValue params;
   params.Set("expression", script);
