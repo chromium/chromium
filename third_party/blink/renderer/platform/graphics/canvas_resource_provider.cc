@@ -957,20 +957,12 @@ CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource() {
   return resource_;
 }
 
-bool CanvasResourceProviderSharedImage::IsSoftwareSharedImageGpuChannelLost()
-    const {
-  if (!is_software_) {
-    return false;
-  }
-
-  return !shared_image_interface_provider_ ||
-         !shared_image_interface_provider_->SharedImageInterface();
-}
-
 bool Canvas2DResourceProviderSharedImage::IsValid() const {
   if (is_software_) {
     // Software compositing (which always uses software raster).
-    return !IsSoftwareSharedImageGpuChannelLost() && GetSkSurface();
+    return shared_image_interface_provider_ &&
+           shared_image_interface_provider_->SharedImageInterface() &&
+           GetSkSurface();
   }
 
   if (is_accelerated_) {
@@ -984,7 +976,9 @@ bool Canvas2DResourceProviderSharedImage::IsValid() const {
 
 bool CanvasNon2DResourceProviderSharedImage::IsValid() const {
   if (is_software_) {
-    return !IsSoftwareSharedImageGpuChannelLost() && GetSkSurface();
+    return shared_image_interface_provider_ &&
+           shared_image_interface_provider_->SharedImageInterface() &&
+           GetSkSurface();
   }
 
   return !IsGpuContextLost();
