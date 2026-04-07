@@ -29,14 +29,14 @@ template <typename K, typename V>
 class Map_Data;
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-ArrayIndexError MakeMessageWithArrayIndex(const char* message,
-                                          size_t size,
-                                          size_t index);
+std::string MakeMessageWithArrayIndex(const char* message,
+                                      size_t size,
+                                      size_t index);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-ArrayExpectedSizeError MakeMessageWithExpectedArraySize(const char* message,
-                                                        size_t size,
-                                                        size_t expected_size);
+std::string MakeMessageWithExpectedArraySize(const char* message,
+                                             size_t size,
+                                             size_t expected_size);
 
 template <typename T>
 struct ArrayDataTraits {
@@ -377,7 +377,8 @@ struct ArraySerializationHelper<T, false, true> {
             MakeMessageWithArrayIndex(
                 "invalid handle or interface ID in array expecting valid "
                 "handles or interface IDs",
-                header->num_elements, i));
+                header->num_elements, i)
+                .c_str());
         return false;
       }
       if (!ValidateHandleOrInterface(UNSAFE_TODO(elements[i]),
@@ -403,7 +404,8 @@ struct ArraySerializationHelper<Pointer<T>, false, false> {
         ReportValidationError(
             validation_context, VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
             MakeMessageWithArrayIndex("null in array expecting valid pointers",
-                                      header->num_elements, i));
+                                      header->num_elements, i)
+                .c_str());
         return false;
       }
       if (!ValidateCaller<T>::Run(UNSAFE_TODO(elements[i]), validation_context,
@@ -453,7 +455,8 @@ struct ArraySerializationHelper<U, true, false> {
         ReportValidationError(
             validation_context, VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
             MakeMessageWithArrayIndex("null in array expecting valid unions",
-                                      header->num_elements, i));
+                                      header->num_elements, i)
+                .c_str());
         return false;
       }
       if (!ValidateInlinedUnion(UNSAFE_TODO(elements[i]), validation_context)) {
@@ -509,7 +512,8 @@ class Array_Data {
           validation_context, VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,
           MakeMessageWithExpectedArraySize(
               "fixed-size array has wrong number of elements",
-              header->num_elements, validate_params->expected_num_elements));
+              header->num_elements, validate_params->expected_num_elements)
+              .c_str());
       return false;
     }
     if (!validation_context->ClaimMemory(data, header->num_bytes)) {
