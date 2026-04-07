@@ -67,7 +67,7 @@ dictionary LanguageModelToolResultContent {
 // Represents a tool call requested by the language model.
 [
   Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
-  RuntimeEnabled=AIPromptAPI,
+  RuntimeEnabled=AIPromptAPIToolUse,
   SecureContext
 ]
 interface LanguageModelToolCall {
@@ -86,7 +86,7 @@ dictionary LanguageModelToolCallInit {
 // Successful tool execution result.
 [
   Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
-  RuntimeEnabled=AIPromptAPI,
+  RuntimeEnabled=AIPromptAPIToolUse,
   SecureContext
 ]
 interface LanguageModelToolSuccess {
@@ -105,7 +105,7 @@ dictionary LanguageModelToolSuccessInit {
 // Failed tool execution result.
 [
   Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
-  RuntimeEnabled=AIPromptAPI,
+  RuntimeEnabled=AIPromptAPIToolUse,
   SecureContext
 ]
 interface LanguageModelToolError {
@@ -144,6 +144,7 @@ dictionary LanguageModelCreateCoreOptions {
   sequence<LanguageModelExpected> expectedOutputs;
 
   // Tools that the language model can use.
+  [RuntimeEnabled=AIPromptAPIToolUse]
   sequence<LanguageModelToolDeclaration> tools;
 };
 
