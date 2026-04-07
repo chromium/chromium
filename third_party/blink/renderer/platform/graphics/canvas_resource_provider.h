@@ -428,9 +428,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // rate.
   bool IsSingleBuffered() const;
 
-  // WebGraphicsContext3DProvider::DestructionObserver implementation.
-  void OnContextDestroyed() override;
-
  protected:
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
@@ -465,6 +462,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool is_software_ = false;
   bool is_cleared_ = false;
 
+  // If this instance is single-buffered or |resource_recycling_enabled_| is
+  // false, |image_pool_| will not rescycle resources.
+  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
+
   // `raster_context_provider_` holds a reference on the shared
   // `RasterContextProvider`, to keep it alive until it notifies us after the
   // GPU context is lost. Without this, no `CanvasResourceProvider` would get
@@ -497,9 +498,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // BitmapGpuChannelLostObserver:
   void OnGpuChannelLost() final;
 
-  // If this instance is single-buffered or |resource_recycling_enabled_| is
-  // false, |image_pool_| will not rescycle resources.
-  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
 
@@ -556,6 +554,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                                       WebGraphicsSharedImageInterfaceProvider*,
                                       Delegate*);
   ~Canvas2DResourceProviderSharedImage() override = default;
+
+  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
+  void OnContextDestroyed() override;
 
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
@@ -665,6 +666,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       WebGraphicsSharedImageInterfaceProvider*,
       Delegate*);
   ~CanvasNon2DResourceProviderSharedImage() override = default;
+
+  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
+  void OnContextDestroyed() override;
 
   scoped_refptr<CanvasResource> ProduceCanvasResource();
 

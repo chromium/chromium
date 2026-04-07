@@ -382,16 +382,6 @@ ScopedRasterTimer CanvasResourceProviderSharedImage::CreateScopedRasterTimer() {
                            always_enable_raster_timers_for_testing_);
 }
 
-void CanvasResourceProviderSharedImage::OnContextDestroyed() {
-  if (skia_canvas_) {
-    skia_canvas_->reset_image_provider();
-  }
-  canvas_image_provider_.reset();
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
-}
-
 base::WeakPtr<CanvasResourceProviderSharedImage>
 CanvasResourceProviderSharedImage::CreateWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -887,6 +877,16 @@ base::ByteSize CanvasResourceProviderSharedImage::EstimatedSizeInBytes() const {
   return result;
 }
 
+void Canvas2DResourceProviderSharedImage::OnContextDestroyed() {
+  if (skia_canvas_) {
+    skia_canvas_->reset_image_provider();
+  }
+  canvas_image_provider_.reset();
+  if (image_pool_) {
+    image_pool_->Clear();
+  }
+}
+
 scoped_refptr<CanvasResource>
 Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   TRACE_EVENT0("blink",
@@ -920,6 +920,16 @@ Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   EndWriteAccess();
 
   return resource_;
+}
+
+void CanvasNon2DResourceProviderSharedImage::OnContextDestroyed() {
+  if (skia_canvas_) {
+    skia_canvas_->reset_image_provider();
+  }
+  canvas_image_provider_.reset();
+  if (image_pool_) {
+    image_pool_->Clear();
+  }
 }
 
 scoped_refptr<CanvasResource>
