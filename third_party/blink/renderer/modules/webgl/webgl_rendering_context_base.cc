@@ -155,6 +155,11 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/size.h"
 
+// Killswitch guarding WebGL creating its CanvasResourceProvider with the size
+// of its DrawingBuffer rather than the size of its Host.
+BASE_FEATURE(kWebGLCanvasResourceProviderDrawingBufferSize,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Populates parameters from texImage2D except for border, width, height, and
 // depth (which are not present for all texImage2D functions).
 #define POPULATE_TEX_IMAGE_2D_PARAMS(params, src_type) \
@@ -2018,9 +2023,19 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
     return nullptr;
   }
 
+  if (base::FeatureList::IsEnabled(
+          kWebGLCanvasResourceProviderDrawingBufferSize) &&
+      !GetDrawingBuffer()) {
+    return nullptr;
+  }
+
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
+  const gfx::Size size = base::FeatureList::IsEnabled(
+                             kWebGLCanvasResourceProviderDrawingBufferSize)
+                             ? GetDrawingBuffer()->Size()
+                             : Host()->Size();
   // Note: We must not initialize the CRP using Skia. The CRP can have bottom
   // left origin in which case Skia Graphite won't be able to render into it,
   // and WebGL is responsible for clearing the CRP when it renders anyway and
@@ -2033,13 +2048,13 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     resource_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
-        Host()->Size(), format, alpha_type, color_space,
+        size, format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags,
         Host());
   } else {
     resource_provider_ =
         CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
-            Host()->Size(), format, alpha_type, color_space,
+            size, format, alpha_type, color_space,
             SharedGpuContext::SharedImageInterfaceProvider(), Host());
   }
   Host()->UpdateMemoryUsage();
