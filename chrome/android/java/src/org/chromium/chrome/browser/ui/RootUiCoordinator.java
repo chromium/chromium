@@ -786,6 +786,7 @@ public class RootUiCoordinator
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
     public ToolbarManager getToolbarManager() {
+        assert mToolbarManager != null;
         return mToolbarManager;
     }
 
@@ -1327,7 +1328,7 @@ public class RootUiCoordinator
                 assertNonNull(getBottomSheetController()),
                 mCompositorViewHolderSupplier.get(),
                 toolbarHeightDp,
-                mToolbarManager,
+                assertNonNull(mToolbarManager),
                 canContextualSearchPromoteToNewTab(),
                 mIntentRequestTracker,
                 getDesktopWindowStateManager(),
@@ -1846,8 +1847,10 @@ public class RootUiCoordinator
                     mBookmarkModelSupplier,
                     mReadAloudControllerSupplier,
                     mShareDelegateSupplier,
-                    /* onShareRunnable= */ () ->
-                            mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS),
+                    /* onShareRunnable= */ () -> {
+                        assumeNonNull(mToolbarManager);
+                        mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+                    },
                     mWindowAndroid,
                     mActivityResultTracker,
                     assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
@@ -1991,7 +1994,7 @@ public class RootUiCoordinator
         }
 
         mAdaptiveToolbarUiCoordinator.addVoiceSearchAdaptiveButton(
-                () -> mToolbarManager.getVoiceRecognitionHandler(), trackerSupplier);
+                () -> assumeNonNull(mToolbarManager).getVoiceRecognitionHandler(), trackerSupplier);
     }
 
     /**
