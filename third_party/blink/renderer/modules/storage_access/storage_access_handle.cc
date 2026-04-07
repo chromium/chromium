@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/storage_access/storage_access_handle.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
@@ -77,8 +77,8 @@ namespace {
 
 void EstimateImplAfterRemoteEstimate(
     ScriptPromiseResolver<StorageEstimate>* resolver,
-    base::ByteCount current_usage,
-    base::ByteCount current_quota,
+    base::ByteSize current_usage,
+    base::ByteSize current_quota,
     bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
@@ -94,8 +94,8 @@ void EstimateImplAfterRemoteEstimate(
   }
 
   StorageEstimate* estimate = StorageEstimate::Create();
-  estimate->setUsage(current_usage.InBytesUnsigned());
-  estimate->setQuota(current_quota.InBytesUnsigned());
+  estimate->setUsage(current_usage.InBytes());
+  estimate->setQuota(current_quota.InBytes());
   estimate->setUsageDetails(StorageUsageDetails::Create());
   resolver->Resolve(estimate);
 }
