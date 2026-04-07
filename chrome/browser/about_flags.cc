@@ -7148,6 +7148,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpMicrosoftAuthenticationModule)},
 
+    {"ntp-shortcuts-redesign", flag_descriptions::kNtpShortcutsRedesignName,
+     flag_descriptions::kNtpShortcutsRedesignDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsRedesign)},
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

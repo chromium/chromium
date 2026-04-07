@@ -234,6 +234,9 @@ BASE_FEATURE(kNtpAnimatedCaret, base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, adds a Whats New Page Edition for Next Features.
 BASE_FEATURE(kLightningTakeoverEdition, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the shortcuts will be redesigned.
+BASE_FEATURE(kNtpShortcutsRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =

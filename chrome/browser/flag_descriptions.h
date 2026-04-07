@@ -6471,6 +6471,10 @@ inline constexpr char
         "attestation statement from a security key when creating a Web "
         "Authentication credential.";
 
+inline constexpr char kNtpShortcutsRedesignName[] = "NTP Shortcuts Redesign";
+inline constexpr char kNtpShortcutsRedesignDescription[] =
+    "Enables the redesigned shortcuts on the New Tab Page.";
+
 // Windows ---------------------------------------------------------------------
 
 inline constexpr char kArabicIndicDigitInputName[] = "Arabic-Indic Digit Input";

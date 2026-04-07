@@ -6740,6 +6740,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "ntp-shortcuts-redesign",
+    "owners": [ "bofengchen@google.com", "rtatum@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-simplification",
     "owners": ["yyanting@google.com", "hanxi@chromium.org", "clank-start@google.com"],
     "expiry_milestone": 160
