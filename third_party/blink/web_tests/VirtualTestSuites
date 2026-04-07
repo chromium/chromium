@@ -1945,27 +1945,6 @@
     ]
   },
   {
-    "prefix": "lcpp-fetched-fonts",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "http/tests/lcpp_fetched_fonts"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=LCPPFontURLPredictor"
-    ],
-    "expires": "Apr 1, 2026",
-    "owners": [
-      "yyanagisawa@chromium.org",
-      "kouhei@chromium.org",
-      "yoichio@chromium.org"
-    ]
-  },
-  {
     "prefix": "lcpp-timing-predictor",
     "platforms": [
       "Linux",
