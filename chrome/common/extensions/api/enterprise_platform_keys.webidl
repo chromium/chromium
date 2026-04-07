@@ -5,13 +5,13 @@
 [instanceOf=SubtleCrypto]
 typedef object SubtleCrypto;
 
-dictionary Token {
+[nocompile] dictionary Token {
   // Uniquely identifies this <code>Token</code>.
   // <p>Static IDs are <code>"user"</code> and <code>"system"</code>,
   // referring to the platform's user-specific and the system-wide hardware
   // token, respectively. Any other tokens (with other identifiers) might be
   // returned by $(ref:enterprise.platformKeys.getTokens).</p>
-  [nocompile] required DOMString id;
+  required DOMString id;
 
   // Implements the WebCrypto's
   // <a href="http://www.w3.org/TR/WebCryptoAPI/#subtlecrypto-interface">SubtleCrypto</a>
@@ -28,7 +28,7 @@ dictionary Token {
   // <code>window.crypto.subtle</code>. Equally, <code>Key</code> objects
   // created with <code>window.crypto.subtle</code> cannot be used with this
   // interface.</p>
-  [nocompile] required SubtleCrypto subtleCrypto;
+  required SubtleCrypto subtleCrypto;
 
   // Implements the WebCrypto's
   // <a href="http://www.w3.org/TR/WebCryptoAPI/#subtlecrypto-interface">SubtleCrypto</a>
@@ -47,7 +47,7 @@ dictionary Token {
   // <code>window.crypto.subtle</code>. Equally, <code>Key</code> objects
   // created with <code>window.crypto.subtle</code> cannot be used with this
   // interface.</p>
-  [nocompile] required SubtleCrypto softwareBackedSubtleCrypto;
+  required SubtleCrypto softwareBackedSubtleCrypto;
 };
 
 // Whether to use the Enterprise User Key or the Enterprise Machine Key.
