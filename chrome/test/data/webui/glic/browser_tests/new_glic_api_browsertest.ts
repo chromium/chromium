@@ -156,6 +156,8 @@ class FaviconTest extends ApiTests {
     // We should see the generic globe icon. Just assert there is a change.
     await faviconColors.waitFor((colors) => colors !== '#00ff');
   }
+
+  async testWebClientReadyOnFullLoad() {}
 }
 
 class FaviconOmittedTest extends FaviconTest {

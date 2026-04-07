@@ -12,7 +12,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -805,15 +804,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                       mojom::InvocationSource::kTopChromeButton),
                   WaitForGlicOpen());
   ExecuteJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
-                       testWebClientReadyOnFullLoad) {
-  // Opening the glic window will trigger the bootstrap, which should transition
-  // the WebUI state to kReady.
-  NavigateTabAndOpenGlic();
-  ExecuteJsTest();
-  WaitForWebUiState(mojom::WebUiState::kReady);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,

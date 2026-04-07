@@ -65,8 +65,6 @@ class ApiTests extends ApiTestFixtureBase {
         panelOpenData.invocationSource, InvocationSource.TOP_CHROME_BUTTON);
   }
 
-  async testWebClientReadyOnFullLoad() {}
-
   async testWebClientReadyOnPreload() {}
 
   // This test should fail even if the ApiTestError is captured in a try-catch

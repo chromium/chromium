@@ -324,6 +324,26 @@ class GlicBrowserTestMixin : public T {
     return new_tab;
   }
 
+  [[nodiscard]] testing::AssertionResult WaitForWebUiState(
+      mojom::WebUiState state) {
+    auto state_to_string = [](mojom::WebUiState state) -> std::string {
+      std::stringstream ss;
+      ss << state;
+      return ss.str();
+    };
+    return RunUntilEqual(
+        [&]() -> std::string {
+          GlicInstanceImpl* instance = GetOnlyGlicInstance();
+          if (!instance) {
+            return "no instance";
+          }
+          return state_to_string(instance->host().GetPrimaryWebUiState());
+        },
+        state_to_string(state));
+  }
+
+  GlicKeyedService* service() { return GlicKeyedService::Get(T::GetProfile()); }
+
   // Returns a simple URL for testing that is guaranteed to load properly via
   // the embedded test server.
   GURL GetSimpleTestUrl() { return GetTestUrl("page.html"); }
