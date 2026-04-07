@@ -71,7 +71,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     try {
       const mergedArgument: PanelOpeningData&PanelState = Object.assign(
           {}, payload.panelOpeningData, payload.panelOpeningData.panelState);
+      const completedPromise = this.host.notifyPanelWillOpenCompleted;
       const result = await this.webClient.notifyPanelWillOpen?.(mergedArgument);
+      completedPromise.resolve();
+
       if (result) {
         openPanelInfo = result;
       }
@@ -83,6 +86,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
 
   async glicWebClientNotifyPanelWasClosed(): Promise<void> {
     try {
+      this.host.notifyPanelWillOpenCompleted = Promise.withResolvers<void>();
       await this.webClient.notifyPanelWasClosed?.();
     } catch (e) {
       console.warn(e);
@@ -148,6 +152,8 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       Promise<void> {
     try {
       const options = convertInvokeOptionsFromPrivate(payload.options);
+      // Wait until notifyPanelWillOpen has resolved before invoking.
+      await this.host.notifyPanelWillOpenCompleted.promise;
       await this.webClient.invoke?.(options);
     } catch (e) {
       console.warn(e);
@@ -614,6 +620,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       new Subject<SelectAutofillSuggestionsDialogRequest>();
   getTabByIdObservableSet: ObservableSetByTabId<TabData>;
   getTabFaviconByIdObservableSet: ObservableSetByTabId<Blob|undefined>;
+  notifyPanelWillOpenCompleted = Promise.withResolvers<void>();
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
