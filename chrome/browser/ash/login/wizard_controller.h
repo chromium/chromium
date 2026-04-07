@@ -107,6 +107,7 @@ namespace ash {
 class BaseScreen;
 class DemoSetupController;
 class ErrorScreen;
+class FjordImageDownloader;
 struct Geoposition;
 class KioskApp;
 class SystemLocationProvider;
@@ -525,6 +526,7 @@ class WizardController : public OobeUI::Observer {
   void OnFjordImageSelectionScreenExit(
       FjordImageSelectionScreen::Result result);
   void OnFjordImageDownloadScreenExit();
+  void OnFjordImageDownloadCompleted(bool success);
   void OnFjordTouchControllerScreenExit();
   void OnFjordStationSetupScreenExit();
   void OnFjordFwUpdateScreenExit();
@@ -683,6 +685,9 @@ class WizardController : public OobeUI::Observer {
   // Controller of the demo mode setup. It has the lifetime of the single demo
   // mode setup flow.
   std::unique_ptr<DemoSetupController> demo_setup_controller_;
+
+  // Runs the dissidia program for image download during Fjord OOBE.
+  std::unique_ptr<FjordImageDownloader> fjord_image_downloader_;
 
   // Tests check result of timezone resolve.
   bool timezone_resolved_ = false;

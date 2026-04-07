@@ -46,6 +46,7 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/fjord_oobe/fjord_image_downloader.h"
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_state_manager.h"
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
 #include "chrome/browser/ash/login/fjord_oobe/proto/fjord_oobe_state.pb.h"
@@ -509,6 +510,10 @@ void WizardController::Init(OobeScreenId first_screen) {
 
   MaybeNotifyFjordOobeStateManager(
       fjord_oobe_state::proto::FjordOobeStateInfo::FJORD_OOBE_STATE_START);
+  if (fjord_util::ShouldShowFjordOobe() &&
+      fjord_util::ShouldShowFjordOobeImageSwitch()) {
+    fjord_image_downloader_ = std::make_unique<FjordImageDownloader>();
+  }
 
   // This is a hacky way to check for local state corruption, because
   // it depends on the fact that the local state is loaded
@@ -3125,6 +3130,23 @@ void WizardController::OnFjordImageSelectionScreenExit(
     ShowAutoEnrollmentCheckScreen();
   } else {
     ShowFjordImageDownloadScreen();
+    // Map the selection result to the dissidia image type and start download.
+    FjordImageDownloader::ImageType image_type =
+        FjordImageDownloader::ImageType::kUnknown;
+    switch (result) {
+      case FjordImageSelectionScreen::Result::kCuttlefish:
+        image_type = FjordImageDownloader::ImageType::kNoctis;
+        break;
+      case FjordImageSelectionScreen::Result::kSquid:
+        image_type = FjordImageDownloader::ImageType::kSelphie;
+        break;
+      default:
+        NOTREACHED();
+    }
+    fjord_image_downloader_->RunDissidia(
+        image_type,
+        base::BindOnce(&WizardController::OnFjordImageDownloadCompleted,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -3132,6 +3154,16 @@ void WizardController::OnFjordImageDownloadScreenExit() {
   // Image download screen is a terminal state because the image install will
   // reboot the device.
   OnScreenExit(FjordImageDownloadScreenView::kScreenId, kDefaultExitReason);
+}
+
+void WizardController::OnFjordImageDownloadCompleted(bool success) {
+  if (success) {
+    VLOG(1) << "Fjord image download (dissidia) completed successfully.";
+  } else {
+    LOG(ERROR) << "Fjord image download (dissidia) failed.";
+    // TODO(b/499112422): Surface the error message from the download.
+    ShowFjordImageSelectionScreen();
+  }
 }
 
 bool WizardController::ExitFjordTouchControllerScreen() {
