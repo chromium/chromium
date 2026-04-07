@@ -3989,6 +3989,11 @@ test("base_unittests") {
     "//testing/buildbot/filters:base_unittests_filters",
   ]
 
+  if (is_win || is_linux) {
+    data_deps += [ "//base/allocator:system_allocator_test_helper" ]
+    sources += [ "allocator/system_allocator_unittest.cc" ]
+  }
+
   if (is_asan) {
     sources += [ "memory/raw_ptr_asan_unittest.cc" ]
   }

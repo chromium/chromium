@@ -31,3 +31,30 @@ if (is_apple) {
     ]
   }
 }
+
+import("//build/toolchain/toolchain.gni")
+
+if (is_win || is_linux) {
+  if (current_toolchain == default_system_allocator_toolchain) {
+    executable("system_allocator_test_helper") {
+      testonly = true
+      sources = [ "system_allocator_test_helper.cc" ]
+      deps = [ "//base" ]
+    }
+  } else {
+    copy("system_allocator_test_helper") {
+      testonly = true
+      _toolchain = default_system_allocator_toolchain
+      _label = ":system_allocator_test_helper($_toolchain)"
+      _dir = get_label_info(_label, "root_out_dir")
+      _name = get_label_info(_label, "name")
+      sources = [ "$_dir/$_name" ]
+      if (target_os == "win") {
+        sources[0] += ".exe"
+        sources += [ "$_dir/$_name.exe.pdb" ]
+      }
+      outputs = [ "$root_out_dir/{{source_file_part}}" ]
+      deps = [ _label ]
+    }
+  }
+}
