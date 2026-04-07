@@ -353,12 +353,14 @@ public class CastWebContentsActivity extends Activity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mRootSessionId = CastWebContentsIntentUtils.getSessionId(getIntent());
-
-        Log.d(TAG, "Activity created: rootSessionId=%s", mRootSessionId);
-
         mCreatedState.set(Unit.unit());
-        mGotIntentState.set(getIntent());
+        Intent intent = getIntent();
+        if (intent != null) {
+            mRootSessionId = CastWebContentsIntentUtils.getSessionId(intent);
+            Log.d(TAG, "Activity created: rootSessionId=%s", mRootSessionId);
+        }
+        // This is a no-op if `intent` is null.
+        mGotIntentState.set(intent);
 
         // Whenever our app is visible, volume controls should modify the music stream.
         // For more information read:
