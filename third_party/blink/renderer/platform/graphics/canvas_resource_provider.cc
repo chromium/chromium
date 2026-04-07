@@ -1148,6 +1148,39 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
   return cached_snapshot_;
 }
 
+CanvasResourceProvider::CanvasImageProvider*
+Canvas2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
+  if (!IsAccelerated()) {
+    return GetOrCreateSWCanvasImageProvider();
+  }
+
+  if (canvas_image_provider_) {
+    return canvas_image_provider_.get();
+  }
+
+  // Callsites are responsible for checking this before invoking this
+  // method.
+  CHECK(context_provider_wrapper_);
+
+  // Create an ImageDecodeCache for half float images only if the canvas is
+  // using half float back storage.
+  cc::ImageDecodeCache* cache_f16 = nullptr;
+  if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+    cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+        kRGBA_F16_SkColorType);
+  }
+
+  cc::ImageDecodeCache* cache_rgba8 =
+      context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+          kN32_SkColorType);
+
+  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+      cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+      cc::PlaybackImageProvider::RasterMode::kGpu);
+
+  return canvas_image_provider_.get();
+}
+
 void Canvas2DResourceProviderSharedImage::RasterRecordForCanvas2D(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
@@ -1809,39 +1842,6 @@ CanvasResourceProvider::GetOrCreateSWCanvasImageProvider() {
   return canvas_image_provider_.get();
 }
 
-CanvasResourceProvider::CanvasImageProvider*
-CanvasResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
-  if (!IsAccelerated()) {
-    return GetOrCreateSWCanvasImageProvider();
-  }
-
-  if (canvas_image_provider_) {
-    return canvas_image_provider_.get();
-  }
-
-  // Callsites are responsible for checking this before invoking this
-  // method.
-  CHECK(context_provider_wrapper_);
-
-  // Create an ImageDecodeCache for half float images only if the canvas is
-  // using half float back storage.
-  cc::ImageDecodeCache* cache_f16 = nullptr;
-  if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-    cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-        kRGBA_F16_SkColorType);
-  }
-
-  cc::ImageDecodeCache* cache_rgba8 =
-      context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-          kN32_SkColorType);
-
-  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-      cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-      cc::PlaybackImageProvider::RasterMode::kGpu);
-
-  return canvas_image_provider_.get();
-}
-
 void CanvasResourceProvider::InitializeForRecording(
     cc::PaintCanvas* canvas) const {
   if (delegate_) {
@@ -1921,6 +1921,39 @@ SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
 ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimer() {
   return ScopedRasterTimer(nullptr, *this,
                            always_enable_raster_timers_for_testing_);
+}
+
+CanvasResourceProvider::CanvasImageProvider*
+CanvasNon2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
+  if (!IsAccelerated()) {
+    return GetOrCreateSWCanvasImageProvider();
+  }
+
+  if (canvas_image_provider_) {
+    return canvas_image_provider_.get();
+  }
+
+  // Callsites are responsible for checking this before invoking this
+  // method.
+  CHECK(context_provider_wrapper_);
+
+  // Create an ImageDecodeCache for half float images only if the canvas is
+  // using half float back storage.
+  cc::ImageDecodeCache* cache_f16 = nullptr;
+  if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+    cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+        kRGBA_F16_SkColorType);
+  }
+
+  cc::ImageDecodeCache* cache_rgba8 =
+      context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+          kN32_SkColorType);
+
+  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+      cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+      cc::PlaybackImageProvider::RasterMode::kGpu);
+
+  return canvas_image_provider_.get();
 }
 
 void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {

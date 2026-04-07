@@ -446,8 +446,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void EnsureWriteAccess();
   void EndWriteAccess();
 
-  CanvasImageProvider* GetOrCreateCanvasImageProvider();
-
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
   bool IsResourceUsable(CanvasResourceSharedImage* resource);
   bool ShouldReplaceTargetBuffer(
@@ -603,6 +601,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
 
  private:
+  CanvasImageProvider* GetOrCreateCanvasImageProvider();
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
   // Notifies before any unaccelerated drawing will be done on the resource used
@@ -740,6 +739,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
  private:
+  CanvasImageProvider* GetOrCreateCanvasImageProvider();
   void FlushCanvas(bool is_overwrite);
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
