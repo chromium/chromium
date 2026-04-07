@@ -23,6 +23,11 @@
 // Tests loading a page and checking that the URL is displayed in the location
 // bar.
 - (void)testLoadPage {
+  // TODO(crbug.com/500400378): Test is failing on iOS 18.2.
+  if (!@available(iOS 26.0, *)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS < 26.");
+  }
+
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL pageURL = self.testServer->GetURL("/echo");
 
