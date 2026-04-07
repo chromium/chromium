@@ -332,6 +332,11 @@ tabs::TabInterface* TabModelJniBridge::CreateTab(
     int index,
     TabLaunchType type,
     bool should_pin) {
+  // It is not possible to create a new tab in a non-standard tab model.
+  if (GetTabModelType() != TabModelType::kStandard) {
+    return nullptr;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
