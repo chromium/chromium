@@ -252,8 +252,7 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
       return {String(), WhitespaceMode::kNotAllWhitespace};
     }
     if (length == start - end_) {  // It's all whitespace.
-      return {String(characters_.Substring(start, start - end_)),
-              whitespace_mode};
+      return {String(characters_.substr(start, start - end_)), whitespace_mode};
     }
 
     // All HTML spaces are ASCII.

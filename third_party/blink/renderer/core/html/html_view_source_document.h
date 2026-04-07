@@ -71,11 +71,11 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
   void AddText(const StringView& text,
                const AtomicString& class_name,
                const Link* link = nullptr);
-  int AddRange(const String& source,
-               int start,
-               int end,
-               const AtomicString& class_name,
-               const Link* link = nullptr);
+  string_size_t AddRange(const String& source,
+                         string_size_t start,
+                         string_size_t end,
+                         const AtomicString& class_name,
+                         const Link* link = nullptr);
   int AddSrcset(const String& source, int start, int end);
 
   Element* AddLink(const Link& link);

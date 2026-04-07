@@ -387,17 +387,16 @@ void HTMLViewSourceDocument::AddText(const StringView& text,
   }
 }
 
-int HTMLViewSourceDocument::AddRange(const String& source,
-                                     int start,
-                                     int end,
-                                     const AtomicString& class_name,
-                                     const Link* link) {
+string_size_t HTMLViewSourceDocument::AddRange(const String& source,
+                                               string_size_t start,
+                                               string_size_t end,
+                                               const AtomicString& class_name,
+                                               const Link* link) {
   DCHECK_LE(start, end);
   if (start == end)
     return start;
 
-  String text = source.Substring(start, end - start);
-  AddText(text, class_name, link);
+  AddText(source.subview(start, end - start), class_name, link);
   if (!class_name.empty() && current_ != tbody_)
     current_ = To<Element>(current_->parentNode());
   return end;

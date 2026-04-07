@@ -133,7 +133,7 @@ void AppendText(const String& value,
   constexpr wtf_size_t kTextChunkSize = 8192u;
   for (wtf_size_t i = start; i < limit; i += kTextChunkSize) {
     container.AppendChild(Text::Create(
-        doc, value.Substring(i, std::min(limit - i, kTextChunkSize))));
+        doc, value.substr(i, std::min(limit - i, kTextChunkSize))));
   }
 }
 

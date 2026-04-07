@@ -304,7 +304,7 @@ FileList* FileInputType::CreateFileList(ExecutionContext& context,
   // |base_dir|.
   if (size && !base_dir.empty()) {
     base::FilePath root_path = base_dir.DirName();
-    int root_length = FilePathToString(root_path).length();
+    string_size_t root_length = FilePathToString(root_path).length();
     DCHECK(root_length);
     if (!root_path.EndsWithSeparator())
       root_length += 1;
@@ -340,7 +340,7 @@ FileList* FileInputType::CreateFileList(ExecutionContext& context,
             string_path.StartsWithIgnoringAsciiCase(FilePathToString(base_dir)))
             << "A path in a FileChooserFileInfo " << string_path
             << " should start with " << FilePathToString(base_dir);
-        relative_path = string_path.Substring(root_length).Replace('\\', '/');
+        relative_path = string_path.substr(root_length).Replace('\\', '/');
       }
       file_list->Append(File::CreateWithRelativePath(
           &context, string_path, display_name, relative_path));

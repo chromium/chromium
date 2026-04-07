@@ -255,7 +255,7 @@ void NumberInputType::HandleBeforeTextInsertedEvent(
   // Get left and right of cursor
   String original_value = GetElement().InnerEditorValue();
   String left_half = original_value.substr(0, GetElement().selectionStart());
-  String right_half = original_value.Substring(GetElement().selectionEnd());
+  String right_half = original_value.substr(GetElement().selectionEnd());
 
   // Process 1 char at a time
   unsigned len = updated_event_text.length();
