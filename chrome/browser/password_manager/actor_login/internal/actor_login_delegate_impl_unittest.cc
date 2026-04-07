@@ -309,9 +309,12 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<ActorLoginDelegateImpl> delegate_ = nullptr;
   NiceMock<MockPasswordManager> mock_password_manager_;
   NiceMock<MockPasswordFormCache> mock_form_cache_;
+  // Needs to be declared before `form_managers_` to avoid use-after-free.
+  // `form_managers_` holds a vector of `PasswordFormManager` instances, which
+  // hold a pointer to `form_fetcher_`.
+  FakeFormFetcher form_fetcher_;
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
   NiceMock<MockPasswordManagerDriver> mock_driver_;
-  FakeFormFetcher form_fetcher_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
       {.disable_server_communication = true}};
   NiceMock<MockActorLoginQualityLogger> mock_mqls_logger;
