@@ -142,7 +142,12 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
               .then(label => label.replace('$1', this.item.name));
 
       if (this.passwordUploadUiUpdate_) {
-        this.tooltipText_ = this.i18n('movePasswordToAccountIconTooltip');
+        this.tooltipText_ =
+            await PluralStringProxyImpl.getInstance()
+                .getPluralString(
+                    'movePasswordToAccountIconTooltip',
+                    this.getCredentialsOnDevice_().length)
+                .then((label: string) => label.replace('$1', this.item.name));
         return;
       }
 

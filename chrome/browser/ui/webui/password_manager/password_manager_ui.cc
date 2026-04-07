@@ -500,8 +500,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_TITLE},
       {"movePasswordsDialogSaveButton",
        IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_SAVE_BUTTON},
-      {"movePasswordToAccountIconTooltip",
-       IDS_PASSWORD_MANAGER_UI_MOVE_TO_ACCOUNT_ICON_TOOLTIP},
       {"movePasswordsToAccountDetailsCardSubtitle",
        IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_DESCRIPTION},
 #if BUILDFLAG(IS_MAC)
@@ -750,6 +748,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
       "weakPasswords", IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT);
   plural_string_handler->AddLocalizedString(
       "searchResults", IDS_PASSWORD_MANAGER_UI_SEARCH_RESULT);
+  plural_string_handler->AddLocalizedString(
+      "movePasswordToAccountIconTooltip",
+      IDS_PASSWORD_MANAGER_UI_MOVE_TO_ACCOUNT_ICON_TOOLTIP);
   plural_string_handler->AddLocalizedString(
       "movePasswords", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_TO_ACCOUNT);
   plural_string_handler->AddLocalizedString(

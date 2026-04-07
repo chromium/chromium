@@ -650,19 +650,23 @@ suite('PasswordsSectionTest', function() {
       }),
     ];
 
+    pluralString.text = 'Save $1 password in your Google Account';
+
     const section = await createPasswordsSection();
     const listEntry =
         section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
     assertTrue(!!listEntry);
 
+    await flushTasks();
+
     assertEquals(
+        'Save bar.com password in your Google Account',
         listEntry.shadowRoot!.querySelector<HTMLElement>(
-                                 'cr-tooltip')!.innerHTML,
-        'Save in your Google Account');
+                                 'cr-tooltip')!.innerHTML.trim());
     assertEquals(
+        'Save bar.com password in your Google Account',
         listEntry.shadowRoot!.querySelector<HTMLElement>(
-                                 '#cloudUploadButton')!.ariaLabel,
-        'Save in your Google Account');
+                                 '#cloudUploadButton')!.ariaLabel);
   });
 
   test('Dialog closes when account storage is disabled', async function() {
