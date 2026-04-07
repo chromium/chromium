@@ -1297,9 +1297,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       ShouldIncludeScrollbarGutter = kIncludeScrollbarGutter) const;
 
-  LayoutUnit ContainingBlockLogicalHeightForPositioned(
-      const LayoutBoxModelObject* containing_block) const;
-
   PhysicalOffset OffsetFromContainerInternal(
       const LayoutObject*,
       MapCoordinatesFlags mode) const override;

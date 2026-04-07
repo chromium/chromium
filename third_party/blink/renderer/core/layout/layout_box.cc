@@ -2495,11 +2495,27 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForRelPositioned() const {
   NOT_DESTROYED();
   DCHECK(IsRelPositioned());
 
+  const auto* container = To<LayoutBoxModelObject>(Container());
+
+  if (const auto* box = DynamicTo<LayoutBox>(container)) {
+    return box->ContentLogicalHeight();
+  }
+
   // TODO(ikilpatrick): This is resolving percentages against incorrectly if
   // the container is an inline.
-  auto* cb = To<LayoutBoxModelObject>(Container());
-  return ContainingBlockLogicalHeightForPositioned(cb) -
-         cb->PaddingLogicalHeight();
+  const auto* layout_inline = To<LayoutInline>(container);
+
+  // If the containing block is empty, return a height of 0.
+  if (!layout_inline->HasInlineFragments()) {
+    return LayoutUnit();
+  }
+
+  const LayoutUnit block_size =
+      ToLogicalSize(layout_inline->PhysicalLinesBoundingBox().size,
+                    layout_inline->StyleRef().GetWritingMode())
+          .block_size;
+  return (block_size - layout_inline->BorderAndPaddingBlockSize())
+      .ClampNegativeToZero();
 }
 
 LayoutUnit LayoutBox::ContainingBlockLogicalWidthForContent() const {
@@ -3103,48 +3119,6 @@ void LayoutBox::InflateVisualRectForFilter(
       transform_state.LastPlanarQuad().BoundingBox());
   transform_state.SetQuad(
       gfx::QuadF(gfx::RectF(Layer()->MapRectForFilter(rect))));
-}
-
-LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
-    const LayoutBoxModelObject* containing_block) const {
-  NOT_DESTROYED();
-
-  // Use viewport as container for top-level fixed-position elements.
-  const auto* view = DynamicTo<LayoutView>(containing_block);
-  if (StyleRef().GetPosition() == EPosition::kFixed && view &&
-      !GetDocument().Printing()) {
-    if (LocalFrameView* frame_view = view->GetFrameView()) {
-      // Don't use visibleContentRect since the PaintLayer's size has not been
-      // set yet.
-      gfx::Size viewport_size =
-          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size());
-      return LayoutUnit(containing_block->IsHorizontalWritingMode()
-                            ? viewport_size.height()
-                            : viewport_size.width());
-    }
-  }
-
-  if (containing_block->IsBox())
-    return To<LayoutBox>(containing_block)->ClientLogicalHeight();
-
-  DCHECK(containing_block->IsLayoutInline());
-  DCHECK(containing_block->CanContainOutOfFlowPositionedElement(
-      StyleRef().GetPosition()));
-
-  const auto* flow = To<LayoutInline>(containing_block);
-  // If the containing block is empty, return a height of 0.
-  if (!flow->HasInlineFragments())
-    return LayoutUnit();
-
-  LayoutUnit height_result;
-  auto bounding_box_size = flow->PhysicalLinesBoundingBox().size;
-  if (containing_block->IsHorizontalWritingMode())
-    height_result = bounding_box_size.height;
-  else
-    height_result = bounding_box_size.width;
-  height_result -= (containing_block->BorderBlockStart() +
-                    containing_block->BorderBlockEnd());
-  return height_result;
 }
 
 PhysicalRect LayoutBox::LocalCaretRect(int caret_offset,

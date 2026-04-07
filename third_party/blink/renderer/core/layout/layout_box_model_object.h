@@ -328,12 +328,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return BorderInlineEnd() + PaddingInlineEnd();
   }
 
-  LayoutUnit PaddingLogicalHeight() const {
-    NOT_DESTROYED();
-    const auto logical_padding = PhysicalPaddingToLogical();
-    return logical_padding.BlockStart() + logical_padding.BlockEnd();
-  }
-
   virtual LayoutUnit MarginTop() const = 0;
   virtual LayoutUnit MarginBottom() const = 0;
   virtual LayoutUnit MarginLeft() const = 0;
