@@ -7,7 +7,6 @@ bundle_data("animation_files") {
     "locked_incognito_tabs.json",
     "locked_incognito_tabs_darkmode.json",
     "password_sharing.json",
-    "password_sharing_darkmode.json",
     "price_tracking.json",
     "tab_groups.json",
   ]

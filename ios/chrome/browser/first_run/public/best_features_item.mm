@@ -61,6 +61,17 @@ NSDictionary<NSString*, UIColor*>* TabGroupsColorProvider(
   };
 }
 
+NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
+  return @{
+    @"secondary_background_color" :
+        [UIColor colorNamed:kSecondaryBackgroundColor],
+    @"primary_background_color" : [UIColor colorNamed:kPrimaryBackgroundColor],
+    @"blue_color" : [UIColor colorNamed:kBlueColor],
+    @"Share Your Passwords" : [UIColor colorNamed:kTextPrimaryColor],
+    @"Share your passwords" : [UIColor colorNamed:kInvertedTextPrimaryColor],
+  };
+}
+
 }  // namespace
 
 @implementation BestFeaturesItem
@@ -310,8 +321,9 @@ NSDictionary<NSString*, UIColor*>* TabGroupsColorProvider(
       return TabGroupsColorProvider(0xFFFFFF, 0xE8EAED);
     case BestFeaturesItemType::kPriceTrackingAndInsights:
       return PriceTrackingColorProvider(0xF1F3F480);
-    case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
     case BestFeaturesItemType::kSharePasswordsWithFamily:
+      return SharePasswordsColorProvider();
+    case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
       return nil;
   }
 }
@@ -327,8 +339,9 @@ NSDictionary<NSString*, UIColor*>* TabGroupsColorProvider(
       return TabGroupsColorProvider(0x5F6368, 0x5F6368);
     case BestFeaturesItemType::kPriceTrackingAndInsights:
       return PriceTrackingColorProvider(0x20212480);
-    case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
     case BestFeaturesItemType::kSharePasswordsWithFamily:
+      return SharePasswordsColorProvider();
+    case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
       return nil;
   }
 }
