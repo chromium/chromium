@@ -172,6 +172,9 @@ void TabStripComboButton::OnTabSearchBubbleShown() {
         feature_engagement::kIPHTabSearchComboButtonFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
+
+  base::RecordAction(
+      base::UserMetricsAction("TabStripComboButton.TabSearch.BubbleShown"));
 }
 
 void TabStripComboButton::SetOrientation(views::LayoutOrientation orientation) {

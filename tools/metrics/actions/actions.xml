@@ -51925,6 +51925,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabStripComboButton.TabSearch.BubbleShown">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>Recorded when the tab search bubble is shown.</description>
+</action>
+
 <action name="TabStripComboButton.TabSearch.Pinned">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
