@@ -25,6 +25,26 @@ NSDictionary<NSString*, UIColor*>* LensColorProvider(
   };
 }
 
+// Returns the color provider for the Price Tracking animation.
+NSDictionary<NSString*, UIColor*>* PriceTrackingColorProvider(
+    int gradient_grouped_primary_background_color) {
+  return @{
+    @"grouped_primary_background_color" :
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor],
+    @"grouped_secondary_background_color" :
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor],
+    @"blue_color" : [UIColor colorNamed:kBlueColor],
+    @"separator_color" : [UIColor colorNamed:kSeparatorColor],
+    @"tertiary_background_color" :
+        [UIColor colorNamed:kTertiaryBackgroundColor],
+    @"gradient_grouped_primary_background_color" :
+        UIColorFromRGB(gradient_grouped_primary_background_color),
+    @"Smart Watch" : [UIColor colorNamed:kTextPrimaryColor],
+    @"Price $100-$180" : [UIColor colorNamed:kTextSecondaryColor],
+    @"Track Price" : [UIColor colorNamed:kInvertedTextPrimaryColor],
+  };
+}
+
 }  // namespace
 
 @implementation BestFeaturesItem
@@ -142,7 +162,7 @@ NSDictionary<NSString*, UIColor*>* LensColorProvider(
       return @{
         @"Smart Watch" : l10n_util::GetNSString(
             IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_1),
-        @"Price $100 - $180" : l10n_util::GetNSString(
+        @"Price $100-$180" : l10n_util::GetNSString(
             IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_2),
         @"Track Price" : l10n_util::GetNSString(
             IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_3),
@@ -272,6 +292,7 @@ NSDictionary<NSString*, UIColor*>* LensColorProvider(
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
     case BestFeaturesItemType::kTabGroups:
     case BestFeaturesItemType::kPriceTrackingAndInsights:
+      return PriceTrackingColorProvider(0xF1F3F480);
     case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
     case BestFeaturesItemType::kSharePasswordsWithFamily:
       return nil;
@@ -287,6 +308,7 @@ NSDictionary<NSString*, UIColor*>* LensColorProvider(
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
     case BestFeaturesItemType::kTabGroups:
     case BestFeaturesItemType::kPriceTrackingAndInsights:
+      return PriceTrackingColorProvider(0x20212480);
     case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
     case BestFeaturesItemType::kSharePasswordsWithFamily:
       return nil;
