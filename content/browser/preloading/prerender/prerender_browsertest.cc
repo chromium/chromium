@@ -141,6 +141,10 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 using ::testing::Exactly;
 
 namespace content {
@@ -2880,6 +2884,13 @@ IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTest, Metrics) {
 
 IN_PROC_BROWSER_TEST_P(AutoSpeculationRulesPrerenderBrowserTestWithHoldback,
                        Metrics) {
+#if BUILDFLAG(IS_MAC)
+  // See https://crbug.com/496991016
+  if (base::mac::MacOSMajorVersion() >= 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe and later.";
+  }
+#endif
+
   const GURL kInitialUrl = GetInitialUrl();
   const GURL kPrerenderingUrl = GetPrerenderedUrl();
 
