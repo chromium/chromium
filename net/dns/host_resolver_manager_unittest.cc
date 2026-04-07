@@ -5137,6 +5137,8 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
       HostPortPair("nx_ipv4", 80), NetworkAnonymizationKey(),
       NetLogWithSource(), std::nullopt, resolve_context_.get()));
   EXPECT_THAT(response_ipv4.result_error(), IsOk());
+  EXPECT_EQ(response_ipv4.request()->GetResolutionDetails()->source,
+            ResolutionSource::kLocal);
   EXPECT_THAT(response_ipv4.request()->GetAddressResults(),
               testing::ElementsAre(CreateExpected("127.0.0.1", 80)));
   EXPECT_THAT(response_ipv4.request()->GetEndpointResults(),
@@ -5149,6 +5151,8 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
       HostPortPair("nx_ipv6", 80), NetworkAnonymizationKey(),
       NetLogWithSource(), std::nullopt, resolve_context_.get()));
   EXPECT_THAT(response_ipv6.result_error(), IsOk());
+  EXPECT_EQ(response_ipv6.request()->GetResolutionDetails()->source,
+            ResolutionSource::kLocal);
   EXPECT_THAT(response_ipv6.request()->GetAddressResults(),
               testing::ElementsAre(CreateExpected("::1", 80)));
   EXPECT_THAT(response_ipv6.request()->GetEndpointResults(),
@@ -5161,6 +5165,8 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
       HostPortPair("nx_both", 80), NetworkAnonymizationKey(),
       NetLogWithSource(), std::nullopt, resolve_context_.get()));
   EXPECT_THAT(response_both.result_error(), IsOk());
+  EXPECT_EQ(response_both.request()->GetResolutionDetails()->source,
+            ResolutionSource::kLocal);
   EXPECT_THAT(response_both.request()->GetAddressResults(),
               testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
                                             CreateExpected("::1", 80)));
