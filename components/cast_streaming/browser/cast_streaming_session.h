@@ -167,6 +167,9 @@ class CastStreamingSession {
     std::optional<mojo::ScopedDataPipeConsumerHandle> InitializeVideoConsumer(
         const StreamingInitializationInfo& initialization_info);
 
+    // Resets the timeout timer for the data channel.
+    void ResetDataTimeout();
+
     // Called upon completion of a Flush call initiated by this class.
     void OnFlushComplete();
 

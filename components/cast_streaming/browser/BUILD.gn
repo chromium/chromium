@@ -95,7 +95,10 @@ source_set("unit_tests") {
   ]
 
   if (!is_win) {
-    sources += [ "cast_message_port_impl_unittest.cc" ]
+    sources += [
+      "cast_message_port_impl_unittest.cc",
+      "cast_streaming_session_unittest.cc",
+    ]
     deps += [
       "//base/test:test_support",
       "//components/cast/message_port",

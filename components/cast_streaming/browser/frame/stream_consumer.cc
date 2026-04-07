@@ -98,6 +98,7 @@ void StreamConsumer::OnPipeWritable(MojoResult result) {
 }
 
 void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
+  on_new_frame_.Run();
   MaybeSendNextFrame();
 }
 
