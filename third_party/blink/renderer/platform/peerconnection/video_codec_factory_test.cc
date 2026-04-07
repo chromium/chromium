@@ -14,6 +14,7 @@
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/environment/environment_factory.h"
@@ -130,5 +131,47 @@ INSTANTIATE_TEST_SUITE_P(
         // no supported profile.
         webrtc::SdpVideoFormat("bogus"),
     }));
+
+class VideoDecoderFactoryTest : public testing::Test {
+ public:
+  VideoDecoderFactoryTest() = default;
+  ~VideoDecoderFactoryTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
+
+#if BUILDFLAG(RTC_USE_H264)
+TEST_F(VideoDecoderFactoryTest, CreateSoftwareDecoderForH264HighProfile) {
+  testing::NiceMock<media::MockGpuVideoAcceleratorFactories> mock_gpu_factories{
+      nullptr};
+  ON_CALL(mock_gpu_factories, GetTaskRunner())
+      .WillByDefault(Return(base::SequencedTaskRunner::GetCurrentDefault()));
+  ON_CALL(mock_gpu_factories, IsDecoderSupportKnown())
+      .WillByDefault(Return(true));
+
+  // Hardware support is unavailable, so this exercises the software decoder
+  // path.
+  EXPECT_CALL(mock_gpu_factories, IsDecoderConfigSupported(testing::_))
+      .WillRepeatedly(
+          Return(media::GpuVideoAcceleratorFactories::Supported::kFalse));
+
+  std::unique_ptr<webrtc::VideoDecoderFactory> decoder_factory =
+      CreateWebrtcVideoDecoderFactory(&mock_gpu_factories, gfx::ColorSpace(),
+                                      base::NullCallback());
+  ASSERT_TRUE(decoder_factory);
+
+  webrtc::EnvironmentFactory environment_factory;
+  webrtc::SdpVideoFormat high_profile_format = webrtc::CreateH264Format(
+      webrtc::H264Profile::kProfileHigh, webrtc::H264Level::kLevel1,
+      /*packetization_mode=*/"1");
+
+  // Creation succeeds because the software decoder's QueryCodecSupport()
+  // allows H.264 High via subset matching.
+  EXPECT_NE(decoder_factory->Create(environment_factory.Create(),
+                                    high_profile_format),
+            nullptr);
+}
+#endif
 
 }  // namespace blink

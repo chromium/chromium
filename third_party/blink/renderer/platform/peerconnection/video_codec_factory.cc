@@ -57,8 +57,9 @@ std::unique_ptr<webrtc::VideoDecoder> CreateDecoder(
     webrtc::VideoDecoderFactory* factory,
     const webrtc::Environment& env,
     const webrtc::SdpVideoFormat& format) {
-  if (!IsFormatSupported(factory, format))
+  if (!factory || !factory->QueryCodecSupport(format, false).is_supported) {
     return nullptr;
+  }
   return factory->Create(env, format);
 }
 
