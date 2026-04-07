@@ -6435,9 +6435,11 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     if (!media_video_frame->HasSharedImage() &&
         video_renderer->CopyVideoFrameYUVDataToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,
-            params.target, texture->Object(), adjusted_internalformat,
-            params.format, params.type, params.level,
-            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
+            video_renderer->GetRGBSharedImageCache(),
+            video_renderer->GetYUVSharedImageCache(), params.target,
+            texture->Object(), adjusted_internalformat, params.format,
+            params.type, params.level, params.GetDestinationAlphaType(),
+            params.GetDestinationOrigin())) {
       return;
     }
 

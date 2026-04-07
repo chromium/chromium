@@ -1363,9 +1363,10 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   destination_gl->BindTexture(target, texture);
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl, cropped_frame(), target, texture,
-      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
-      kTopLeft_GrSurfaceOrigin);
+      media_context_.get(), destination_gl, cropped_frame(),
+      renderer_.GetRGBSharedImageCache(), renderer_.GetYUVSharedImageCache(),
+      target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+      kUnpremul_SkAlphaType, kTopLeft_GrSurfaceOrigin);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 
@@ -1395,9 +1396,10 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
   destination_gl->BindTexture(target, texture);
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl, cropped_frame(), target, texture,
-      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
-      kBottomLeft_GrSurfaceOrigin);
+      media_context_.get(), destination_gl, cropped_frame(),
+      renderer_.GetRGBSharedImageCache(), renderer_.GetYUVSharedImageCache(),
+      target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+      kUnpremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 

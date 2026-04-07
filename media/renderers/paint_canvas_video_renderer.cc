@@ -1479,10 +1479,19 @@ VideoFrameSharedImageCache* PaintCanvasVideoRenderer::GetRGBSharedImageCache() {
   return rgb_shared_image_cache_.get();
 }
 
+VideoFrameSharedImageCache* PaintCanvasVideoRenderer::GetYUVSharedImageCache() {
+  if (!yuv_shared_image_cache_) {
+    yuv_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
+  }
+  return yuv_shared_image_cache_.get();
+}
+
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
     scoped_refptr<VideoFrame> video_frame,
+    VideoFrameSharedImageCache* rgb_si_cache,
+    VideoFrameSharedImageCache* yuv_si_cache,
     unsigned int target,
     unsigned int texture,
     unsigned int internal_format,
@@ -1535,18 +1544,13 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   gpu::SharedImageUsageSet src_usage =
       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
-  // Recreate both the caches if not set.
-  if (!rgb_shared_image_cache_) {
-    rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
-  }
-  if (!yuv_shared_image_cache_) {
-    yuv_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
-  }
+  CHECK(rgb_si_cache);
+  CHECK(yuv_si_cache);
 
   // We need a shared image to receive the intermediate RGB result. Try to reuse
   // one if compatible, otherwise create a new one.
   auto [rgb_shared_image, rgb_sync_token, status] =
-      rgb_shared_image_cache_->GetOrCreateSharedImage(
+      rgb_si_cache->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
           SHARED_IMAGE_FORMAT, kPremul_SkAlphaType,
           video_frame->CompatRGBColorSpace());
@@ -1557,7 +1561,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // tasks.
   gpu::SyncToken post_conversion_sync_token = CopyVideoFrameToSharedImage(
       raster_context_provider, video_frame, rgb_shared_image, rgb_sync_token,
-      /*use_visible_rect=*/false, yuv_shared_image_cache_.get());
+      /*use_visible_rect=*/false, yuv_si_cache);
 
   // On the destination GL context, do a copy (with cropping) into the
   // destination texture.
@@ -1568,7 +1572,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
 
   // Update the rgb sync token to be waited upon based on gles tasks performed
   // earlier.
-  rgb_shared_image_cache_->UpdateSyncToken(rgb_sync_token);
+  rgb_si_cache->UpdateSyncToken(rgb_sync_token);
 
   // video_frame->UpdateReleaseSyncToken is not necessary since the video frame
   // data we used was CPU-side to begin with. If there were any textures, we
