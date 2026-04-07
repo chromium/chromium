@@ -126,12 +126,16 @@ class DiceHeaderHelperTest : public testing::Test {
   scoped_refptr<HostContentSettingsMap> settings_map_;
 };
 
-TEST_F(DiceHeaderHelperTest, TestDiceInvalidResponseParams) {
+TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_Invalid) {
   DiceResponseParams params =
       DiceHeaderHelper::BuildDiceSigninResponseParams("blah");
   EXPECT_FALSE(params.IsValid());
   EXPECT_EQ(DiceAction::NONE, params.user_intention());
-  params = DiceHeaderHelper::BuildDiceSignoutResponseParams("blah");
+}
+
+TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams_Invalid) {
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSignoutResponseParams("blah");
   EXPECT_FALSE(params.IsValid());
   EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention());
 }
@@ -268,78 +272,64 @@ TEST_F(DiceHeaderHelperTest,
 }
 
 TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams) {
-  const char kEmail[] = "foo@example.com";
-  const GaiaId kGaiaID("gaia_id");
-  const int kSessionIndex = 42;
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSignoutResponseParams(
+      base::StringPrintf("email=%s, sessionindex=%i, obfuscatedid=%s", kEmail,
+                         kSessionIndex, kGaiaID.ToString().c_str()));
+  ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention());
+  const auto* signout_info = params.signout_info();
+  ASSERT_TRUE(signout_info);
+  EXPECT_EQ(1u, signout_info->account_infos.size());
+  EXPECT_EQ(kGaiaID, signout_info->account_infos[0].gaia_id);
+  EXPECT_EQ(kEmail, signout_info->account_infos[0].email);
+  EXPECT_EQ(kSessionIndex, signout_info->account_infos[0].session_index);
+}
 
-  {
-    // SIGNOUT response.
-    DiceResponseParams params =
-        DiceHeaderHelper::BuildDiceSignoutResponseParams(base::StringPrintf(
-            "email=%s, sessionindex=%i, obfuscatedid=%s", kEmail, kSessionIndex,
-            kGaiaID.ToString().c_str()));
-    ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention());
-    const auto* signout_info = params.signout_info();
-    ASSERT_TRUE(signout_info);
-    EXPECT_EQ(1u, signout_info->account_infos.size());
-    EXPECT_EQ(kGaiaID, signout_info->account_infos[0].gaia_id);
-    EXPECT_EQ(kEmail, signout_info->account_infos[0].email);
-    EXPECT_EQ(kSessionIndex, signout_info->account_infos[0].session_index);
-  }
+TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams_MultipleAccounts) {
+  // some fields are wrapped in quotes.
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSignoutResponseParams(
+      base::StringPrintf("email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\"",
+                         kEmail, kSessionIndex, kGaiaID.ToString().c_str()));
+  ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention());
+  const auto* signout_info = params.signout_info();
+  ASSERT_TRUE(signout_info);
+  EXPECT_EQ(1u, signout_info->account_infos.size());
+  EXPECT_EQ(kGaiaID, signout_info->account_infos[0].gaia_id);
+  EXPECT_EQ(kEmail, signout_info->account_infos[0].email);
+  EXPECT_EQ(kSessionIndex, signout_info->account_infos[0].session_index);
+}
 
-  {
-    // SIGNOUT response with multiple accounts.
-    // some fields are wrapped in quotes.
-    DiceResponseParams params =
-        DiceHeaderHelper::BuildDiceSignoutResponseParams(base::StringPrintf(
-            "email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\"", kEmail,
-            kSessionIndex, kGaiaID.ToString().c_str()));
-    ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention());
-    const auto* signout_info = params.signout_info();
-    ASSERT_TRUE(signout_info);
-    EXPECT_EQ(1u, signout_info->account_infos.size());
-    EXPECT_EQ(kGaiaID, signout_info->account_infos[0].gaia_id);
-    EXPECT_EQ(kEmail, signout_info->account_infos[0].email);
-    EXPECT_EQ(kSessionIndex, signout_info->account_infos[0].session_index);
-  }
+TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams_MultiSignout) {
+  const char kEmail2[] = "bar@example.com";
+  const GaiaId kGaiaID2("gaia_id_2");
+  const int kSessionIndex2 = 2;
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSignoutResponseParams(
+      base::StringPrintf("email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\", "
+                         "email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\"",
+                         kEmail, kSessionIndex, kGaiaID.ToString().c_str(),
+                         kEmail2, kSessionIndex2, kGaiaID2.ToString().c_str()));
+  ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention());
+  const auto* signout_info = params.signout_info();
+  ASSERT_TRUE(signout_info);
+  EXPECT_EQ(2u, signout_info->account_infos.size());
+  EXPECT_EQ(kGaiaID, signout_info->account_infos[0].gaia_id);
+  EXPECT_EQ(kEmail, signout_info->account_infos[0].email);
+  EXPECT_EQ(kSessionIndex, signout_info->account_infos[0].session_index);
+  EXPECT_EQ(kGaiaID2, signout_info->account_infos[1].gaia_id);
+  EXPECT_EQ(kEmail2, signout_info->account_infos[1].email);
+  EXPECT_EQ(kSessionIndex2, signout_info->account_infos[1].session_index);
+}
 
-  {
-    // Multi-Signout response.
-    const char kEmail2[] = "bar@example.com";
-    const GaiaId kGaiaID2("gaia_id_2");
-    const int kSessionIndex2 = 2;
-    DiceResponseParams params =
-        DiceHeaderHelper::BuildDiceSignoutResponseParams(base::StringPrintf(
-            "email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\", "
-            "email=\"%s\", sessionindex=%i, obfuscatedid=\"%s\"",
-            kEmail, kSessionIndex, kGaiaID.ToString().c_str(), kEmail2,
-            kSessionIndex2, kGaiaID2.ToString().c_str()));
-    ASSERT_EQ(DiceAction::SIGNOUT, params.user_intention());
-    const auto* signout_info = params.signout_info();
-    ASSERT_TRUE(signout_info);
-    EXPECT_EQ(2u, signout_info->account_infos.size());
-    EXPECT_EQ(kGaiaID, signout_info->account_infos[0].gaia_id);
-    EXPECT_EQ(kEmail, signout_info->account_infos[0].email);
-    EXPECT_EQ(kSessionIndex, signout_info->account_infos[0].session_index);
-    EXPECT_EQ(kGaiaID2, signout_info->account_infos[1].gaia_id);
-    EXPECT_EQ(kEmail2, signout_info->account_infos[1].email);
-    EXPECT_EQ(kSessionIndex2, signout_info->account_infos[1].session_index);
-  }
-
-  {
-    // Missing email in signout.
-    DiceResponseParams params =
-        DiceHeaderHelper::BuildDiceSignoutResponseParams(base::StringPrintf(
-            "email=%s, sessionindex=%i, obfuscatedid=%s, "
-            "sessionindex=2, obfuscatedid=bar",
-            kEmail, kSessionIndex, kGaiaID.ToString().c_str()));
-    EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention());
-    EXPECT_FALSE(params.IsValid());
-  }
+TEST_F(DiceHeaderHelperTest, BuildDiceSignoutResponseParams_MissingEmail) {
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSignoutResponseParams(
+      base::StringPrintf("email=%s, sessionindex=%i, obfuscatedid=%s, "
+                         "sessionindex=2, obfuscatedid=bar",
+                         kEmail, kSessionIndex, kGaiaID.ToString().c_str()));
+  EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention());
+  EXPECT_FALSE(params.IsValid());
 }
 
 TEST_F(DiceHeaderHelperTest,
-       BuildDiceSigninResponseParamsNotEligibleForTokenBinding) {
+       BuildDiceSigninResponseParams_NotEligibleForTokenBinding) {
   const char kAuthorizationCode[] = "authorization_code";
   const char kEmail[] = "foo@example.com";
   const GaiaId kGaiaID("gaia_id");
@@ -359,7 +349,7 @@ TEST_F(DiceHeaderHelperTest,
                   ->supported_algorithms_for_token_binding.empty());
 }
 
-TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
+TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_MixedOrderComma) {
   DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
       base::StringPrintf("id=%s,action=SIGNIN,authuser=%i,eligible_for_token_"
                          "binding=%s,email=%s,authorization_code=%s",
@@ -378,28 +368,28 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
                         kAuthorizationCode, /*expected_no_auth_code=*/false,
                         kSupportedTokenBindingAlgorithms);
   }
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParams_MixedOrderSemicolon) {
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "id=%s;action=SIGNIN;authuser=%i;eligible_for_token_binding=%s;"
+          "email=%s;authorization_code=%s",
+          kGaiaID.ToString().c_str(), kSessionIndex,
+          kSupportedTokenBindingAlgorithms.c_str(), kEmail.c_str(),
+          kAuthorizationCode.c_str()));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto* account = signin_info->GetInitiator();
+  ASSERT_TRUE(account);
 
   {
-    // Semicolon delimiter.
-    DiceResponseParams params_grouped =
-        DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
-            "id=%s;action=SIGNIN;authuser=%i;eligible_for_token_binding=%s;"
-            "email=%s;authorization_code=%s",
-            kGaiaID.ToString().c_str(), kSessionIndex,
-            kSupportedTokenBindingAlgorithms.c_str(), kEmail.c_str(),
-            kAuthorizationCode.c_str()));
-    EXPECT_EQ(DiceAction::SIGNIN, params_grouped.user_intention());
-    const auto* signin_info_grouped = params_grouped.signin_info();
-    ASSERT_TRUE(signin_info_grouped);
-    const auto* account_grouped = signin_info_grouped->GetInitiator();
-    ASSERT_TRUE(account_grouped);
-
-    {
-      SCOPED_TRACE("Verifying Mixed Order Semicolon Account");
-      VerifySigninAccount(*account_grouped, kGaiaID, kEmail, kSessionIndex,
-                          kAuthorizationCode, /*expected_no_auth_code=*/false,
-                          kSupportedTokenBindingAlgorithms);
-    }
+    SCOPED_TRACE("Verifying Mixed Order Semicolon Account");
+    VerifySigninAccount(*account, kGaiaID, kEmail, kSessionIndex,
+                        kAuthorizationCode, /*expected_no_auth_code=*/false,
+                        kSupportedTokenBindingAlgorithms);
   }
 }
 
@@ -689,101 +679,106 @@ TEST_F(DiceHeaderHelperTest,
   EXPECT_TRUE(params.IsValid());
 }
 
-TEST_F(DiceHeaderHelperTest, ParseLinkedAccountsMetadata) {
-  {
-    // Valid header.
-    std::string header_value =
-        "initiator_id=initiator_gaia_id;primary_is_connected=1";
-    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-                  .primary_is_connected = Tribool::kTrue,
-                  .initiator_id = GaiaId("initiator_gaia_id")}),
-              metadata);
-    EXPECT_TRUE(metadata.IsValid());
-  }
-
-  {
-    // primary_is_connected=0
-    std::string header_value =
-        "initiator_id=initiator_gaia_id;primary_is_connected=0";
-    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-                  .primary_is_connected = Tribool::kFalse,
-                  .initiator_id = GaiaId("initiator_gaia_id")}),
-              metadata);
-    EXPECT_TRUE(metadata.IsValid());
-  }
-
-  {
-    // Missing primary_is_connected -> Partial info.
-    std::string header_value = "initiator_id=initiator_gaia_id";
-    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-                  .primary_is_connected = Tribool::kUnknown,
-                  .initiator_id = GaiaId("initiator_gaia_id")}),
-              metadata);
-    EXPECT_FALSE(metadata.IsValid());
-  }
-
-  {
-    // Missing initiator_id -> Partial info.
-    std::string header_value = "primary_is_connected=1";
-    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
-    EXPECT_EQ(
-        (DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-            .primary_is_connected = Tribool::kTrue, .initiator_id = GaiaId()}),
-        metadata);
-    EXPECT_FALSE(metadata.IsValid());
-  }
-
-  {
-    // Empty header -> Default metadata.
-    std::string header_value = "";
-    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-                  .primary_is_connected = Tribool::kUnknown,
-                  .initiator_id = GaiaId()}),
-              metadata);
-    EXPECT_FALSE(metadata.IsValid());
-  }
-
-  {
-    // Garbage header -> Default metadata.
-    std::string header_value = "garbage";
-    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-                  .primary_is_connected = Tribool::kUnknown,
-                  .initiator_id = GaiaId()}),
-              metadata);
-    EXPECT_FALSE(metadata.IsValid());
-  }
-
-  {
-    // Escaped values.
-    std::string header_value = "initiator_id=gaia%3Aid;primary_is_connected=1";
-    DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
-        DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
-    EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
-                  .primary_is_connected = Tribool::kTrue,
-                  .initiator_id = GaiaId("gaia:id")}),
-              metadata);
-    EXPECT_TRUE(metadata.IsValid());
-  }
+TEST_F(DiceHeaderHelperTest, ParseLinkedAccountsMetadata_ValidHeader) {
+  std::string header_value =
+      "initiator_id=initiator_gaia_id;primary_is_connected=1";
+  DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+      DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+  EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
+                .primary_is_connected = Tribool::kTrue,
+                .initiator_id = GaiaId("initiator_gaia_id")}),
+            metadata);
+  EXPECT_TRUE(metadata.IsValid());
 }
-TEST_F(DiceHeaderHelperTest, TestDiceRequest) {
+
+TEST_F(DiceHeaderHelperTest, ParseLinkedAccountsMetadata_PrimaryNotConnected) {
+  std::string header_value =
+      "initiator_id=initiator_gaia_id;primary_is_connected=0";
+  DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+      DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+  EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
+                .primary_is_connected = Tribool::kFalse,
+                .initiator_id = GaiaId("initiator_gaia_id")}),
+            metadata);
+  EXPECT_TRUE(metadata.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest,
+       ParseLinkedAccountsMetadata_MissingPrimaryIsConnected) {
+  // Missing primary_is_connected -> Partial info.
+  std::string header_value = "initiator_id=initiator_gaia_id";
+  DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+      DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+  EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
+                .primary_is_connected = Tribool::kUnknown,
+                .initiator_id = GaiaId("initiator_gaia_id")}),
+            metadata);
+  EXPECT_FALSE(metadata.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest, ParseLinkedAccountsMetadata_MissingInitiatorId) {
+  // Missing initiator_id -> Partial info.
+  std::string header_value = "primary_is_connected=1";
+  DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+      DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+  EXPECT_EQ(
+      (DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
+          .primary_is_connected = Tribool::kTrue, .initiator_id = GaiaId()}),
+      metadata);
+  EXPECT_FALSE(metadata.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest, ParseLinkedAccountsMetadata_EmptyHeader) {
+  // Empty header -> Default metadata.
+  std::string header_value = "";
+  DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+      DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+  EXPECT_EQ(
+      (DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
+          .primary_is_connected = Tribool::kUnknown, .initiator_id = GaiaId()}),
+      metadata);
+  EXPECT_FALSE(metadata.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest, ParseLinkedAccountsMetadata_GarbageHeader) {
+  // Garbage header -> Default metadata.
+  std::string header_value = "garbage";
+  DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+      DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+  EXPECT_EQ(
+      (DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
+          .primary_is_connected = Tribool::kUnknown, .initiator_id = GaiaId()}),
+      metadata);
+  EXPECT_FALSE(metadata.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest,
+       ParseLinkedAccountsMetadata_EscapedValuesInHeader) {
+  std::string header_value = "initiator_id=gaia%3Aid;primary_is_connected=1";
+  DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata =
+      DiceHeaderHelper::ParseLinkedAccountsMetadata(header_value);
+  EXPECT_EQ((DiceResponseParams::SigninInfo::LinkedAccountsMetadata{
+                .primary_is_connected = Tribool::kTrue,
+                .initiator_id = GaiaId("gaia:id")}),
+            metadata);
+  EXPECT_TRUE(metadata.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_NoDiceForNonGaia) {
   account_consistency_ = AccountConsistencyMethod::kDice;
   // No Dice for Docs URLs.
   CheckDiceHeaderRequest(GURL("https://docs.google.com"), GaiaId("0123456789"),
                          /*expected_dice_request=*/"");
 
-  // Only Dice header for Gaia URLs.
-  // Sync disabled.
+  // No Dice for other URLs.
+  CheckDiceHeaderRequest(GURL("https://www.google.com"), GaiaId("0123456789"),
+                         /*expected_dice_request=*/"");
+}
+
+TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_GaiaSyncDisabled) {
+  account_consistency_ = AccountConsistencyMethod::kDice;
+  sync_enabled_ = false;
+
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   ASSERT_FALSE(client_id.empty());
   CheckDiceHeaderRequest(
@@ -791,23 +786,24 @@ TEST_F(DiceHeaderHelperTest, TestDiceRequest) {
       base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,signin_"
                          "mode=all_accounts,signout_mode=show_confirmation",
                          kDiceProtocolVersion, client_id.c_str()));
-  // Sync enabled: check that the Dice header has the Sync account ID.
+}
+
+TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_GaiaSyncEnabled) {
+  account_consistency_ = AccountConsistencyMethod::kDice;
   sync_enabled_ = true;
+
+  std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
+  ASSERT_FALSE(client_id.empty());
   CheckDiceHeaderRequest(
       GURL("https://accounts.google.com"), GaiaId("0123456789"),
       base::StringPrintf(
           "version=%s,client_id=%s,device_id=DeviceID,sync_account_id="
           "0123456789,signin_mode=all_accounts,signout_mode=show_confirmation",
           kDiceProtocolVersion, client_id.c_str()));
-  sync_enabled_ = false;
-
-  // No Dice for other URLs.
-  CheckDiceHeaderRequest(GURL("https://www.google.com"), GaiaId("0123456789"),
-                         /*expected_dice_request=*/"");
 }
 
 // When cookies are blocked, the Dice header is still sent.
-TEST_F(DiceHeaderHelperTest, DiceCookiesBlocked) {
+TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_CookiesBlocked) {
   account_consistency_ = AccountConsistencyMethod::kDice;
   settings_map_->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                           CONTENT_SETTING_BLOCK);
@@ -821,14 +817,14 @@ TEST_F(DiceHeaderHelperTest, DiceCookiesBlocked) {
                          kDiceProtocolVersion, client_id.c_str()));
 }
 
-TEST_F(DiceHeaderHelperTest, TestNoDiceRequestWhenDisabled) {
+TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_DiceDisabled) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   const GURL url("https://accounts.google.com");
   CheckDiceHeaderRequest(url, GaiaId("0123456789"),
                          /*expected_dice_request=*/"");
 }
 
-TEST_F(DiceHeaderHelperTest, TestDiceEmptyDeviceID) {
+TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_EmptyDeviceID) {
   account_consistency_ = AccountConsistencyMethod::kDice;
   device_id_ = std::string();
   const GURL url("https://accounts.google.com");
