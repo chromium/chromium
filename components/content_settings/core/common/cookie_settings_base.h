@@ -419,12 +419,6 @@ class CookieSettingsBase {
       net::CookieSettingOverrides overrides,
       SettingInfo* info) const;
 
-  // Returns true iff the query for third-party cookie access should consider
-  // grants awarded by the global allowlist.
-  bool ShouldConsider3pcdMetadataGrantsSettings(
-      const GURL& first_party_url,
-      net::CookieSettingOverrides overrides) const;
-
   // The cookie behavior that may result from a cookie settings modifier
   // (`CookieSettingOverrides`).
   enum class ModifierMode {
@@ -487,11 +481,6 @@ class CookieSettingsBase {
                                const GURL& first_party_url,
                                net::CookieSettingOverrides overrides) const;
 
-  IsAllowedWithMetadata IsAllowedBy3pcdMetadataGrantsSettings(
-      const GURL& url,
-      const GURL& first_party_url,
-      net::CookieSettingOverrides overrides) const;
-
   // TODO(https://crbug.com/378872426): remove `storage_access_permissions` when
   // `API.TopLevelStorageAccess.AllowedByStorageAccessType` is no longer being
   // collected. Evaluation of if the metric should be removed should occur no
@@ -528,11 +517,6 @@ class CookieSettingsBase {
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const = 0;
 
-  // Returns whether Third Party Cookie Deprecation mitigations should take
-  // effect. True when mitigations are enabled for
-  // 3PCD.
-  bool ShouldConsiderMitigationsFor3pcd(
-      net::CookieSettingOverrides overrides) const;
   // Returns whether Third Party Cookie Deprecation mitigations are enabled,
   // which requires that we are not blocking or allowing all 3PC and that either
   // 3PCD is enabled or that ForceThirdPartyCookieBlocking is enabled.

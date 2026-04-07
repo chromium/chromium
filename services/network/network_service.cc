@@ -1275,11 +1275,6 @@ NetworkService* NetworkService::GetNetworkServiceForTesting() {
   return g_network_service;
 }
 
-void NetworkService::SetTpcdMetadataGrants(
-    const std::vector<ContentSettingPatternSource>& settings) {
-  tpcd_metadata_manager_->SetGrants(settings);
-}
-
 void NetworkService::AddDurableMessageCollector(
     mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver) {
   if (!durable_message_collector_manager_) {

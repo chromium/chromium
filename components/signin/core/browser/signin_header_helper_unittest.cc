@@ -78,7 +78,7 @@ class SigninHeaderHelperTest : public testing::Test {
     cookie_settings_ = new content_settings::CookieSettings(
         settings_map_.get(), &prefs_, false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
-        /*tpcd_metadata_manager=*/nullptr, "");
+        "");
   }
 
   void TearDown() override { settings_map_->ShutdownOnUIThread(); }

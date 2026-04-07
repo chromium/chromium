@@ -364,12 +364,10 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
     CAPTURED_SURFACE_CONTROL = 'captured_surface_control',
     COOKIES = 'cookies',
     POPUPS = 'popups',
-    TPCD_METADATA_GRANTS = 'tpcd_metadata_grants',
   }
 
   setup(async function() {
     const browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
-    browserProxy.setShouldShowTpcdMetadataGrants(true);
     PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
 
     Router.resetInstanceForTesting();
@@ -563,50 +561,6 @@ suite('InternalsPageTest', function() {
     assertTrue(
         !!secondPrefGroupElement,
         'A <pref-display> element should be displayed for 3PCD Experiment Prefs.');
-  });
-});
-
-// Tests the <internals-page> element's display of the TPCD tab based on feature
-// flag status.
-suite('PSInternalsPageTpcdTabLoadingTest', function() {
-  let internalsPage: InternalsPage;
-  let browserProxy: TestPrivacySandboxInternalsBrowserProxy;
-
-  function setShouldShowTpcdMetadataGrants(isEnabled: boolean) {
-    browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
-    browserProxy.setShouldShowTpcdMetadataGrants(isEnabled);
-    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    internalsPage = document.createElement('internals-page');
-    document.body.appendChild(internalsPage);
-  }
-
-  async function findTpcdTab() {
-    const tabBox = await waitForElement(internalsPage.shadowRoot!, '#ps-page');
-    if (!tabBox) {
-      return false;
-    }
-
-    const tabs = tabBox.querySelectorAll<HTMLElement>('div[slot="tab"]');
-    const foundTab = Array.from(tabs).find(
-        (tab: HTMLElement) =>
-            tab.textContent?.trim() === 'TPCD_METADATA_GRANTS');
-
-    return foundTab;
-  }
-
-  test('hidesTpcdMetadataGrantsTab', async () => {
-    setShouldShowTpcdMetadataGrants(false);
-    const tpcdTab = await findTpcdTab();
-    assertFalse(
-        !!tpcdTab, 'The TPCD tab should not exist when its flag is disabled.');
-  });
-
-  test('rendersTpcdMetadataGrantsTab', async () => {
-    setShouldShowTpcdMetadataGrants(true);
-    const tpcdTab = await findTpcdTab();
-    assertTrue(
-        !!tpcdTab, 'The TPCD tab should exist when its flag is enabled.');
   });
 });
 

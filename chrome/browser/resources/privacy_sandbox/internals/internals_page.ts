@@ -340,9 +340,6 @@ export class InternalsPage extends CustomElement implements RouteObserver {
 
   // Creates the layout for content settings pages without populating them.
   private createContentSettingsPageLayout() {
-    const shouldShowTpcdMetadataGrants =
-        this.browserProxy_.shouldShowTpcdMetadataGrants();
-
     const addHeaderToTabBox = (name: string, className: string) => {
       const headerTab = document.createElement('div');
       headerTab.innerText = name;
@@ -356,11 +353,6 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     };
 
     const addContentSettingPanel = (setting: ContentSettingsType) => {
-      // Controls the visibility of the TPCD_METADATA_GRANTS tab.
-      if (setting === ContentSettingsType.TPCD_METADATA_GRANTS &&
-          !shouldShowTpcdMetadataGrants) {
-        return;
-      }
       if (setting === ContentSettingsType.DEFAULT) {
         return;
       }
@@ -434,18 +426,8 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     }
 
     const handler = this.browserProxy_.handler;
-    const shouldShowTpcdMetadataGrants =
-        this.browserProxy_.shouldShowTpcdMetadataGrants();
-    let mojoResponse;
 
-    if (setting === ContentSettingsType.TPCD_METADATA_GRANTS) {
-      if (!shouldShowTpcdMetadataGrants) {
-        return;
-      }
-      mojoResponse = await handler.getTpcdMetadataGrants();
-    } else {
-      mojoResponse = await handler.readContentSettings(setting);
-    }
+    const mojoResponse = await handler.readContentSettings(setting);
 
     if (!this.cachedItems_.has(pageName)) {
       this.cachedItems_.set(pageName, []);

@@ -30,10 +30,6 @@ namespace net {
 class SiteForCookies;
 }  // namespace net
 
-namespace tpcd::metadata {
-class Manager;
-}  // namespace tpcd::metadata
-
 namespace content_settings {
 
 // This enum is used in prefs, do not change values.
@@ -82,7 +78,6 @@ class CookieSettings
       PrefService* prefs,
       bool is_incognito,
       ComputeFedCmSharingPermissionsCallback compute_fedcm_sharing_permissions,
-      tpcd::metadata::Manager* tpcd_metadata_manager,
       const char* extension_scheme = kDummyExtensionScheme);
 
   CookieSettings(const CookieSettings&) = delete;
@@ -114,37 +109,11 @@ class CookieSettings
   // This should only be called on the UI thread.
   void SetCookieSetting(const GURL& primary_url, ContentSetting setting);
 
-  // Returns whether a cookie access is allowed for the `TPCD_METADATA_GRANTS`
-  // content settings type, scoped on the provided `url` and `first_party_url`.
-  // Also updates `out_info` with the `SettingInfo`.
-  //
-  // This may be called on any thread.
-  bool IsAllowedByTpcdMetadataGrant(const GURL& url,
-                                    const GURL& first_party_url,
-                                    SettingInfo* out_info = nullptr) const;
-
-  // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`url`,
-  // `first_party_url`) pair, for the provided `ttl`. By default, the patterns
-  // are generated from `ContentSettingsPattern::FromURLToSchemefulSitePattern`
-  // that keeps the scheme and host. If `use_schemeless_pattern` is set, the
-  // patterns will be generated from
-  // `ContentSettingsPattern::ToHostOnlyPattern(FromURLToSchemefulSitePattern)',
-  // which also maps HTTP URLs onto a wildcard scheme.
-  //
-  // This should only be called on the UI thread.
-  void SetTemporaryCookieGrantForHeuristic(
-      const GURL& url,
-      const GURL& first_party_url,
-      base::TimeDelta ttl,
-      bool use_schemeless_patterns = false);
-
   // Represents the TTL of each User Bypass entries.
   static constexpr base::TimeDelta kUserBypassEntriesTTL = base::Days(90);
 
   // Sets the cookie setting to allow for the |first_party_url|.
   void SetCookieSettingForUserBypass(const GURL& first_party_url);
-
-  ContentSettingsForOneType GetTpcdMetadataGrants() const;
 
   // Resets the cookie setting for the given url.
   //
@@ -267,10 +236,6 @@ class CookieSettings
       content_settings_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   const bool is_incognito_;
-
-  // Not owned by `this` as the lifetime of `tpcd::metadata::Manager` (lives
-  // "forever" as a singleton) will exceed that of `this`.
-  raw_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
 
   const char* extension_scheme_;  // Weak.
 

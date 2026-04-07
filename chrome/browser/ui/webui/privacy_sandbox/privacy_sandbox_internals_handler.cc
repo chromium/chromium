@@ -89,13 +89,6 @@ void PrivacySandboxInternalsHandler::ReadContentSettings(
   std::move(callback).Run(map->GetSettingsForOneType(type));
 }
 
-void PrivacySandboxInternalsHandler::GetTpcdMetadataGrants(
-    GetTpcdMetadataGrantsCallback callback) {
-  content_settings::CookieSettings* cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile_).get();
-  std::move(callback).Run(cookie_settings->GetTpcdMetadataGrants());
-}
-
 void PrivacySandboxInternalsHandler::ContentSettingsPatternToString(
     const ContentSettingsPattern& pattern,
     ContentSettingsPatternToStringCallback callback) {

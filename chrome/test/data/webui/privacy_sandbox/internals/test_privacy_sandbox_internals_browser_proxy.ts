@@ -13,7 +13,6 @@ export class TestPrivacySandboxInternalsPageHandler extends TestBrowserProxy {
     super([
       'readPrefsWithPrefixes',
       'readContentSettings',
-      'getTpcdMetadataGrants',
     ]);
   }
 
@@ -30,29 +29,15 @@ export class TestPrivacySandboxInternalsPageHandler extends TestBrowserProxy {
     this.methodCalled('readContentSettings');
     return Promise.resolve({contentSettings: []});
   }
-
-  getTpcdMetadataGrants() {
-    this.methodCalled('getTpcdMetadataGrants');
-    return Promise.resolve({contentSettings: []});
-  }
 }
 
 export class TestPrivacySandboxInternalsBrowserProxy implements
     PrivacySandboxInternalsBrowserProxy {
   handler: PageHandlerRemote;
   testHandler: TestPrivacySandboxInternalsPageHandler;
-  private shouldShowDevUi_: boolean = false;
 
   constructor() {
     this.testHandler = new TestPrivacySandboxInternalsPageHandler();
     this.handler = this.testHandler as unknown as PageHandlerRemote;
-  }
-
-  setShouldShowTpcdMetadataGrants(isEnabled: boolean) {
-    this.shouldShowDevUi_ = isEnabled;
-  }
-
-  shouldShowTpcdMetadataGrants(): boolean {
-    return this.shouldShowDevUi_;
   }
 }

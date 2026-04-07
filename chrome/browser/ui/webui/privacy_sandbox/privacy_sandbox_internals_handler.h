@@ -43,8 +43,6 @@ class PrivacySandboxInternalsHandler
       const std::string& s,
       StringToContentSettingsPatternCallback callback) override;
 
-  void GetTpcdMetadataGrants(GetTpcdMetadataGrantsCallback callback) override;
-
  private:
   raw_ptr<Profile, DanglingUntriaged> profile_;
   // It seems like the handler is supposed to retain ownership even though we

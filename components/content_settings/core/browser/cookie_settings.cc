@@ -30,7 +30,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/tpcd/metadata/browser/manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -46,11 +45,9 @@ CookieSettings::CookieSettings(
     PrefService* prefs,
     bool is_incognito,
     ComputeFedCmSharingPermissionsCallback compute_fedcm_sharing_permissions,
-    tpcd::metadata::Manager* tpcd_metadata_manager,
     const char* extension_scheme)
     : host_content_settings_map_(host_content_settings_map),
       is_incognito_(is_incognito),
-      tpcd_metadata_manager_(tpcd_metadata_manager),
       extension_scheme_(extension_scheme),
       block_third_party_cookies_(
           net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()),
@@ -98,60 +95,6 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
   DCHECK(IsValidSetting(setting));
   host_content_settings_map_->SetContentSettingDefaultScope(
       primary_url, GURL(), ContentSettingsType::COOKIES, setting);
-}
-
-bool CookieSettings::IsAllowedByTpcdMetadataGrant(const GURL& url,
-                                                  const GURL& first_party_url,
-                                                  SettingInfo* out_info) const {
-  if (!tpcd_metadata_manager_) {
-    return false;
-  }
-
-  return tpcd_metadata_manager_->IsAllowed(url, first_party_url, out_info);
-}
-
-void CookieSettings::SetTemporaryCookieGrantForHeuristic(
-    const GURL& url,
-    const GURL& first_party_url,
-    base::TimeDelta ttl,
-    bool use_schemeless_patterns) {
-  if (url.is_empty() || first_party_url.is_empty()) {
-    return;
-  }
-
-  // If the new grant has an earlier TTL than the existing setting, keep the
-  // existing TTL.
-  SettingInfo info;
-  ContentSetting current_setting =
-      host_content_settings_map_->GetContentSetting(
-          url, first_party_url, ContentSettingsType::TPCD_HEURISTICS_GRANTS,
-          &info);
-  if (IsAllowed(current_setting) && !info.metadata.expiration().is_null() &&
-      info.metadata.expiration() > base::Time::Now() + ttl) {
-    return;
-  }
-
-  ContentSettingConstraints constraints;
-  constraints.set_lifetime(ttl);
-
-  if (use_schemeless_patterns) {
-    ContentSettingsPattern url_pattern =
-        ContentSettingsPattern::ToHostOnlyPattern(
-            ContentSettingsPattern::FromURLToSchemefulSitePattern(url));
-    ContentSettingsPattern first_party_url_pattern =
-        ContentSettingsPattern::ToHostOnlyPattern(
-            ContentSettingsPattern::FromURLToSchemefulSitePattern(
-                first_party_url));
-
-    host_content_settings_map_->SetContentSettingCustomScope(
-        url_pattern, first_party_url_pattern,
-        ContentSettingsType::TPCD_HEURISTICS_GRANTS, CONTENT_SETTING_ALLOW,
-        constraints);
-  } else {
-    host_content_settings_map_->SetContentSettingDefaultScope(
-        url, first_party_url, ContentSettingsType::TPCD_HEURISTICS_GRANTS,
-        CONTENT_SETTING_ALLOW, constraints);
-  }
 }
 
 void CookieSettings::SetCookieSettingForUserBypass(
@@ -299,12 +242,6 @@ ContentSetting CookieSettings::GetContentSetting(
     const GURL& secondary_url,
     ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
-  if (content_type == ContentSettingsType::TPCD_METADATA_GRANTS) {
-    return IsAllowedByTpcdMetadataGrant(primary_url, secondary_url, info)
-               ? CONTENT_SETTING_ALLOW
-               : CONTENT_SETTING_BLOCK;
-  }
-
   if (content_type == ContentSettingsType::FEDERATED_IDENTITY_SHARING) {
     return HasFedCmSharingPermission(primary_url, secondary_url)
                ? ContentSetting::CONTENT_SETTING_ALLOW
@@ -458,11 +395,6 @@ bool CookieSettings::HasFedCmSharingPermission(
 
   return entry && content_settings::ValueToContentSetting(
                       entry->second.value) == CONTENT_SETTING_ALLOW;
-}
-
-ContentSettingsForOneType CookieSettings::GetTpcdMetadataGrants() const {
-  return tpcd_metadata_manager_ ? tpcd_metadata_manager_->GetGrants()
-                                : ContentSettingsForOneType();
 }
 
 }  // namespace content_settings

@@ -420,11 +420,6 @@ interface NetworkService {
   SetNetworkAnnotationMonitor(
       pending_remote<network.mojom.NetworkAnnotationMonitor> remote);
 
-  // SetTpcdMetadataGrants syncs the TPCD Metadata Grants copy of the network
-  // service with that of the browser.
-  SetTpcdMetadataGrants(
-      array<content_settings.mojom.ContentSettingPatternSource> settings);
-
   // Set up a content decoding interceptor for an existing URLLoader connection.
   // This is typically used by the browser process when client-side decoding was
   // initially requested, but the final consumer of the response body resides in

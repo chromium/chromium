@@ -233,9 +233,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
   void SetFirstPartySets(net::GlobalFirstPartySets sets) override;
 
-  void SetTpcdMetadataGrants(
-      const std::vector<ContentSettingPatternSource>& settings) override;
-
   void SetExplicitlyAllowedPorts(const std::vector<uint16_t>& ports) override;
 #if BUILDFLAG(IS_LINUX)
   void SetGssapiLibraryLoadObserver(

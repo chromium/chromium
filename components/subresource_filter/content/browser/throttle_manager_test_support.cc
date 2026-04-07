@@ -27,7 +27,7 @@ ThrottleManagerTestSupport::ThrottleManagerTestSupport(
       settings_map_.get(), &prefs_,
       /*is_incognito=*/false,
       content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
-      /*tpcd_metadata_manager=*/nullptr, "");
+      "");
   profile_context_ = std::make_unique<SubresourceFilterProfileContext>(
       settings_map_.get(), cookie_settings_.get());
 

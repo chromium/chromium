@@ -35,7 +35,6 @@ export const contentSettingGroups:
           ContentSettingsType.STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
           ContentSettingsType.TOP_LEVEL_STORAGE_ACCESS,
           ContentSettingsType.TPCD_HEURISTICS_GRANTS,
-          ContentSettingsType.TPCD_METADATA_GRANTS,
         ],
       },
       {

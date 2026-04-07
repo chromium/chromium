@@ -277,32 +277,6 @@ CookieSettingsBase::AllowMechanismToMetadataSourceType(
   }
 }
 
-// static
-ThirdPartyCookieAllowMechanism
-CookieSettingsBase::TpcdMetadataSourceToAllowMechanism(
-    const mojom::TpcdMetadataRuleSource& source) {
-  using TpcdMetadataRuleSource = mojom::TpcdMetadataRuleSource;
-  using AllowMechanism = ThirdPartyCookieAllowMechanism;
-  switch (source) {
-    case TpcdMetadataRuleSource::SOURCE_1P_DT:
-      return AllowMechanism::kAllowBy3PCDMetadataSource1pDt;
-    case TpcdMetadataRuleSource::SOURCE_3P_DT:
-      return AllowMechanism::kAllowBy3PCDMetadataSource3pDt;
-    case TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
-      return AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified;
-    case TpcdMetadataRuleSource::SOURCE_TEST:
-      return AllowMechanism::kAllowBy3PCDMetadataSourceTest;
-    case TpcdMetadataRuleSource::SOURCE_DOGFOOD:
-      return AllowMechanism::kAllowBy3PCDMetadataSourceDogFood;
-    case TpcdMetadataRuleSource::SOURCE_CRITICAL_SECTOR:
-      return AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector;
-    case TpcdMetadataRuleSource::SOURCE_CUJ:
-      return AllowMechanism::kAllowBy3PCDMetadataSourceCuj;
-    case TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD:
-      return AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld;
-  }
-}
-
 bool CookieSettingsBase::ShouldDeleteCookieOnExit(
     const ContentSettingsForOneType& cookie_settings,
     std::string_view domain,
@@ -442,18 +416,6 @@ net::CookieScopeSemantics CookieSettingsBase::GetCookieScopeSemanticsForDomain(
   }
 }
 
-bool CookieSettingsBase::ShouldConsiderMitigationsFor3pcd(
-    net::CookieSettingOverrides overrides) const {
-  // Mitigations should take effect if they are enabled (through means such as
-  // 3PCD or forced 3PC phaseout) or if third-party cookies are not blocked
-  // globally and the origin trial for third-party cookie deprecation is enabled
-  // under `first_party_url` .
-  return overrides.Has(net::CookieSettingOverride::
-                           kForceEnableThirdPartyCookieMitigations) ||
-         MitigationsEnabledFor3pcd();
-}
-
-
 CookieSettingsBase::ModifierMode CookieSettingsBase::GetModifierMode(
     base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides) const {
@@ -486,28 +448,6 @@ std::optional<bool> CookieSettingsBase::MaybeBlockThirdPartyCookiesPerModifiers(
     case ModifierMode::kUndefined:
       return std::nullopt;
   }
-}
-
-bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings(
-    const GURL& first_party_url,
-    net::CookieSettingOverrides overrides) const {
-  return base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants) &&
-         !overrides.Has(net::CookieSettingOverride::kSkipTPCDMetadataGrant) &&
-         ShouldConsiderMitigationsFor3pcd(overrides);
-}
-
-CookieSettingsBase::IsAllowedWithMetadata
-CookieSettingsBase::IsAllowedBy3pcdMetadataGrantsSettings(
-    const GURL& url,
-    const GURL& first_party_url,
-    net::CookieSettingOverrides overrides) const {
-  SettingInfo info;
-  bool allowed =
-      ShouldConsider3pcdMetadataGrantsSettings(first_party_url, overrides) &&
-      IsAllowed(GetContentSetting(url, first_party_url,
-                                  ContentSettingsType::TPCD_METADATA_GRANTS,
-                                  &info));
-  return {allowed, std::move(info)};
 }
 
 bool CookieSettingsBase::IsAllowedByTopLevelStorageAccessGrant(
@@ -589,15 +529,6 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   if (is_explicit_setting && setting_info.source == SettingSource::kPolicy) {
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::
                                kAllowByEnterprisePolicyCookieAllowedForUrls};
-  }
-
-  // Chrome controlled mechanisms (ex. 3PCD Metadata Grants):
-  if (IsAllowedWithMetadata tpcd_metadata_info =
-          IsAllowedBy3pcdMetadataGrantsSettings(url, first_party_url,
-                                                overrides);
-      tpcd_metadata_info.allowed) {
-    return AllowAllCookies{TpcdMetadataSourceToAllowMechanism(
-        tpcd_metadata_info.info.metadata.tpcd_metadata_rule_source())};
   }
 
   if (is_explicit_setting) {

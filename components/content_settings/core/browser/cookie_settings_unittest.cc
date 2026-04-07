@@ -33,9 +33,8 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/tpcd/metadata/browser/manager.h"
-#include "components/tpcd/metadata/browser/parser.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -81,24 +80,12 @@ enum GrantSource {
   kStorageAccessGrantsEligibleViaAPI,
   // Eligible for TopLevelStorageAccess grants.
   kTopLevelStorageAccessGrantsEligible,
-  // Whether `net::features::kTpcdMetadataGrants` is enabled.
-  kTpcdMetadataGrantsEligible,
   // Can use Storage Access permission grants via an HTTP response header.
   kStorageAccessGrantsEligibleViaHeader,
 
   kGrantSourceCount
 };
 
-class TestTpcdManagerDelegate : public tpcd::metadata::Manager::Delegate {
- public:
-  void SetTpcdMetadataGrants(const ContentSettingsForOneType& grants) override {
-  }
-
-  TestingPrefServiceSimple& GetLocalState() override { return local_state_; }
-
- private:
-  TestingPrefServiceSimple local_state_;
-};
 
 }  // namespace
 
@@ -179,16 +166,12 @@ class CookieSettingsTestBase : public testing::Test {
     auto has_fedcm_sharing_permission =
         CookieSettings::NoFedCmSharingPermissionsCallback();
 
-    tpcd_metadata_manager_ = std::make_unique<tpcd::metadata::Manager>(
-        tpcd::metadata::Parser::GetInstance(),
-        test_tpcd_metadata_manager_delegate_);
-
-    cookie_settings_ = new CookieSettings(
-        settings_map_.get(), &prefs_, false, has_fedcm_sharing_permission,
-        tpcd_metadata_manager_.get(), "chrome-extension");
-    cookie_settings_incognito_ = new CookieSettings(
-        settings_map_.get(), &prefs_, true, has_fedcm_sharing_permission,
-        /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
+    cookie_settings_ =
+        new CookieSettings(settings_map_.get(), &prefs_, false,
+                           has_fedcm_sharing_permission, "chrome-extension");
+    cookie_settings_incognito_ =
+        new CookieSettings(settings_map_.get(), &prefs_, true,
+                           has_fedcm_sharing_permission, "chrome-extension");
   }
 
   void FastForwardTime(base::TimeDelta delta) {
@@ -225,8 +208,6 @@ class CookieSettingsTestBase : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  TestTpcdManagerDelegate test_tpcd_metadata_manager_delegate_;
-  std::unique_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   scoped_refptr<CookieSettings> cookie_settings_;
   scoped_refptr<CookieSettings> cookie_settings_incognito_;
@@ -279,19 +260,10 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
   }
 
   std::vector<base::test::FeatureRefAndParams> EnabledFeatures() const {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    if (Is3pcdMetadataGrantEligible()) {
-      enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
-    }
-    return enabled_features;
+    return {};
   }
 
-  std::vector<base::test::FeatureRef> DisabledFeatures() const {
-    if (Is3pcdMetadataGrantEligible()) {
-      return {};
-    }
-    return {net::features::kTpcdMetadataGrants};
-  }
+  std::vector<base::test::FeatureRef> DisabledFeatures() const { return {}; }
 
   bool IsStorageAccessGrantEligibleViaAPI() const {
     return grant_source() == GrantSource::kStorageAccessGrantsEligibleViaAPI;
@@ -305,9 +277,6 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
     return grant_source() == GrantSource::kTopLevelStorageAccessGrantsEligible;
   }
 
-  bool Is3pcdMetadataGrantEligible() const {
-    return grant_source() == GrantSource::kTpcdMetadataGrantsEligible;
-  }
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
@@ -349,13 +318,6 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
                                                   : CONTENT_SETTING_BLOCK;
   }
 
-  // Assumes that cookie access would be blocked if not for a
-  // `net::features::kThirdPartyStoragePartitioning` enablement.
-  ContentSetting SettingWith3pcdMetadataGrantEligibleOverride() const {
-    return Is3pcdMetadataGrantEligible() ? CONTENT_SETTING_ALLOW
-                                         : CONTENT_SETTING_BLOCK;
-  }
-
   // The cookie access result would be blocked if not for a Storage Access API
   // grant.
   net::cookie_util::StorageAccessResult
@@ -387,17 +349,6 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
     if (IsTopLevelStorageAccessGrantEligible()) {
       return net::cookie_util::StorageAccessResult::
           ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
-    }
-    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
-  }
-
-  // The storage access result would be blocked if not for a
-  // `net::features::kTpcdMetadataGrants` enablement.
-  net::cookie_util::StorageAccessResult
-  BlockedStorageAccessResultWith3pcdMetadataGrantOverride() const {
-    if (Is3pcdMetadataGrantEligible()) {
-      return net::cookie_util::StorageAccessResult::
-          ACCESS_ALLOWED_3PCD_METADATA_GRANT;
     }
     return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
@@ -695,10 +646,9 @@ TEST_F(CookieSettingsTest, TestThirdPartyCookiePhaseout) {
 
   // Build new CookieSettings since `cookie_settings_` was created before
   // ForceThirdPartyCookieBlocking was enabled.
-  scoped_refptr<CookieSettings> cookie_settings =
-      new CookieSettings(settings_map_.get(), &prefs_, false,
-                         CookieSettings::NoFedCmSharingPermissionsCallback(),
-                         /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
+  scoped_refptr<CookieSettings> cookie_settings = new CookieSettings(
+      settings_map_.get(), &prefs_, false,
+      CookieSettings::NoFedCmSharingPermissionsCallback(), "chrome-extension");
 
   EXPECT_EQ(kSupports3pcBlocking,
             cookie_settings->ShouldBlockThirdPartyCookies());
@@ -1325,7 +1275,7 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAViaFedCM) {
                 ProviderType::kNone, /*incognito=*/false),
         };
       }),
-      /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
+      "chrome-extension");
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, net::SiteForCookies(), top_level_url,
@@ -1507,76 +1457,6 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAExpiredGrant) {
             CONTENT_SETTING_BLOCK);
 }
 
-class CookieSettings3pcdTestP : public CookieSettingsTestP {
- public:
-  void SetUp() override {
-    auto enabled_features = EnabledFeatures();
-    enabled_features.push_back(
-        {content_settings::features::kTrackingProtection3pcd, {}});
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                DisabledFeatures());
-    CookieSettingsTestBase::SetUp();
-  }
-};
-
-TEST_P(CookieSettings3pcdTestP, GetCookieSetting3pcdMetadataGrants) {
-  const GURL top_level_url(kFirstPartySite);
-  const GURL url(kAllowedSite);
-  const GURL third_url(kBlockedSite);
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
-
-  ContentSettingsForOneType tpcd_metadata_grants;
-  tpcd_metadata_grants.emplace_back(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
-      content_settings::ProviderType::kNone, false);
-  tpcd_metadata_manager_->SetGrantsForTesting(tpcd_metadata_grants);
-
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(
-                url, net::SiteForCookies(), top_level_url,
-                GetCookieSettingOverrides(), nullptr),
-            SettingWith3pcdMetadataGrantEligibleOverride());
-
-  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
-  histogram_tester.ExpectBucketCount(
-      kAllowedRequestsHistogram,
-      static_cast<int>(
-          BlockedStorageAccessResultWith3pcdMetadataGrantOverride()),
-      1);
-
-  // Check override metadata grant.
-  auto overrides = GetCookieSettingOverrides();
-  overrides.Put(net::CookieSettingOverride::kSkipTPCDMetadataGrant);
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(
-                url, net::SiteForCookies(), top_level_url, overrides, nullptr),
-            CONTENT_SETTING_BLOCK);
-
-  // Invalid pair the |top_level_url| granting access to |url| is now being
-  // loaded under |url| as the top level url.
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(
-                top_level_url, net::SiteForCookies(), url,
-                GetCookieSettingOverrides(), nullptr),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_FALSE(
-      cookie_settings_->IsAllowedByTpcdMetadataGrant(top_level_url, url));
-
-  // Invalid pairs where a |third_url| is used.
-  EXPECT_EQ(
-      cookie_settings_->GetCookieSetting(url, net::SiteForCookies(), third_url,
-                                         GetCookieSettingOverrides(), nullptr),
-      CONTENT_SETTING_BLOCK);
-  EXPECT_FALSE(cookie_settings_->IsAllowedByTpcdMetadataGrant(third_url, url));
-
-  EXPECT_EQ(cookie_settings_->GetCookieSetting(
-                third_url, net::SiteForCookies(), top_level_url,
-                GetCookieSettingOverrides(), nullptr),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_FALSE(
-      cookie_settings_->IsAllowedByTpcdMetadataGrant(top_level_url, third_url));
-}
 
 #endif
 
@@ -1982,12 +1862,5 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
     CustomTestName);
 
-#if !BUILDFLAG(IS_IOS)
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    CookieSettings3pcdTestP,
-    testing::Range(GrantSource::kNoneGranted, GrantSource::kGrantSourceCount),
-    CustomTestName);
-#endif
 
 }  // namespace content_settings

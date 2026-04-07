@@ -115,7 +115,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
     cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
         host_content_settings_map_.get(), &prefs_, false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
-        /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
+        "chrome-extension");
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
     privacy_sandbox_delegate->SetUpIsPrivacySandboxRestrictedResponse(

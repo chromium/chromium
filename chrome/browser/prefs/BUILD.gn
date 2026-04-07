@@ -168,7 +168,6 @@ source_set("impl") {
     "//components/sync_preferences",
     "//components/sync_preferences/cross_device_pref_tracker/prefs",
     "//components/sync_sessions",
-    "//components/tpcd/metadata/browser:prefs",
     "//components/ukm",
     "//components/update_client",
     "//components/variations/service",

@@ -13,7 +13,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
-#include "components/tpcd/metadata/browser/parser.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -98,60 +97,6 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxInternalsContentSettingsMojoTest,
   // May or may not have a default value, but the read should succeed either
   // way.
   EXPECT_THAT(content_settings_cb_data_, SizeIs(Ge(0u)));
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdMetadataGrants) {
-  const auto primary_pattern =
-      ContentSettingsPattern::FromString("[*.]example.com");
-  const auto secondary_pattern = ContentSettingsPattern::FromString("*");
-
-  tpcd::metadata::Metadata metadata;
-  tpcd::metadata::helpers::AddEntryToMetadata(
-      metadata, primary_pattern.ToString(), secondary_pattern.ToString(),
-      tpcd::metadata::Parser::kSourceTest, /*dtrp=*/0);
-  EXPECT_EQ(metadata.metadata_entries_size(), 1);
-
-  auto* tpcd_metadata_parser = tpcd::metadata::Parser::GetInstance();
-  tpcd_metadata_parser->ParseMetadata(metadata.SerializeAsString());
-
-  content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
-
-  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
-      future;
-  // TODO: TPCD_METADATA_GRANTS are special and don't show up if read with the
-  // regular method.
-  remote_->GetTpcdMetadataGrants(future.GetCallback());
-  auto& content_settings_cb_data_ = future.Get();
-  EXPECT_THAT(content_settings_cb_data_,
-              AllOf(SizeIs(1), UnorderedElementsAreArray(
-                                   settings->GetTpcdMetadataGrants())));
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
-                       GetTpcdHeuristicGrants) {
-  content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
-  settings->SetTemporaryCookieGrantForHeuristic(
-      GURL("https://accounts.google.com"), GURL("https://example.com"),
-      base::Microseconds(1e10));
-  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
-      future;
-  remote_->ReadContentSettings(ContentSettingsType::TPCD_HEURISTICS_GRANTS,
-                               future.GetCallback());
-  auto& content_settings_cb_data_ = future.Get();
-  EXPECT_THAT(
-      content_settings_cb_data_,
-      AllOf(SizeIs(Ge(1u)),
-            Contains(
-                AllOf(Field(&ContentSettingPatternSource::primary_pattern,
-                            ContentSettingsPattern::FromString(
-                                "https://[*.]google.com")),
-                      Field(&ContentSettingPatternSource::secondary_pattern,
-                            ContentSettingsPattern::FromString(
-                                "https://[*.]example.com")),
-                      Field(&ContentSettingPatternSource::source,
-                            content_settings::ProviderType::kPrefProvider)))));
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,

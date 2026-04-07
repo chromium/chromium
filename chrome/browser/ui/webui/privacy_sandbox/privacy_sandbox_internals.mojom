@@ -28,11 +28,6 @@ interface PageHandler {
   ReadContentSettings(content_settings.mojom.ContentSettingsType type) => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
-  // Return a list of TPCD_METADATA_GRANTS ContentSettings for the current
-  // profile.
-  GetTpcdMetadataGrants() => (
-    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
-
   // Return a string representation of a ContentSettingsPattern.
   ContentSettingsPatternToString(
     content_settings.mojom.ContentSettingsPattern pattern) => (string s);

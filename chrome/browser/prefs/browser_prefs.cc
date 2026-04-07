@@ -195,7 +195,6 @@
 #include "components/sync_preferences/cross_device_pref_tracker/prefs/cross_device_pref_registry.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_prefs.h"
-#include "components/tpcd/metadata/browser/prefs.h"
 #include "components/tracing/common/pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/update_client/update_client.h"
@@ -976,6 +975,9 @@ constexpr char kSafeBrowsingModuleLastCooldownStartAt[] =
 constexpr char kSafeBrowsingModuleOpened[] =
     "safebrowsing.ntp.user_opened_module";
 
+// Deprecated 04/2026.
+constexpr char kTpcdMetadataCohorts[] = "tpcd.metadata.cohorts";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1083,6 +1085,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 02/2026.
   registry->RegisterListPref(kProfilesDeletedOld);
+
+  // Deprecated 04/2026.
+  registry->RegisterDictionaryPref(kTpcdMetadataCohorts);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1419,7 +1424,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   subresource_filter::IndexedRulesetVersion::RegisterPrefs(
       registry, subresource_filter::kSafeBrowsingRulesetConfig.filter_tag);
   SystemNetworkContextManager::RegisterPrefs(registry);
-  tpcd::metadata::RegisterLocalStatePrefs(registry);
   tracing::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
@@ -2342,6 +2346,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 03/2026.
   local_state->ClearPref(kGlicMultiInstanceEnabledBySubscriptionTier);
+
+  // Added 04/2026.
+  local_state->ClearPref(kTpcdMetadataCohorts);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
