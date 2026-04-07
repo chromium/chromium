@@ -239,7 +239,7 @@ class VideoCaptureManagerTest : public testing::Test {
   VideoCaptureManagerTest() {
 #if BUILDFLAG(IS_ANDROID)
     scoped_feature_list_.InitAndDisableFeature(
-        features::kAndroidEnableBackgroundMediaCapturing);
+        media::kAndroidEnableBackgroundMediaCapturing);
 #endif
   }
 

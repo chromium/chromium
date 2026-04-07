@@ -30,7 +30,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAbortNavigationsFromTabClosures);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidCaptureKeyEvents);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidCaretBrowsing);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDevToolsFrontend);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidEnableBackgroundMediaCapturing);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAndroidEnableBackgroundMediaLargeFormFactors);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidFallbackToNextSlot);

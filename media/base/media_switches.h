@@ -371,6 +371,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kResolutionBasedDecoderPriority);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMatchSourceAudioChannelLayout);
 
 #if BUILDFLAG(IS_ANDROID)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAndroidEnableBackgroundMediaCapturing);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowDelayedAudioFocusGainAndroid);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowEnhancedPipTransition);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaCodecSoftwareDecoder);

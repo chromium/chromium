@@ -164,7 +164,7 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors. Currently we have no conclusion whether to enable this on mobile
   // phones yet.
   feature_overrides.EnableFeature(
-      features::kAndroidEnableBackgroundMediaCapturing);
+      media::kAndroidEnableBackgroundMediaCapturing);
   // TODO(crbug.com/465596248): Remove when experiment is complete.
   feature_overrides.EnableFeature(chrome::android::kProtectRecentlyVisibleTab);
   // TODO(crbug.com/422903297): Remove when tablet rollout is complete.

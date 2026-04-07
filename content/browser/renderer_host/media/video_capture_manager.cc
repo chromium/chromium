@@ -135,7 +135,7 @@ void VideoCaptureManager::RegisterListener(
   // track foreground/background state if this feature is DISABLED,
   // ensuring that capture is stopped when the app is no longer active.
   if (!base::FeatureList::IsEnabled(
-          features::kAndroidEnableBackgroundMediaCapturing)) {
+          media::kAndroidEnableBackgroundMediaCapturing)) {
     application_state_has_running_activities_ = true;
     app_status_listener_ =
         base::android::ApplicationStatusListener::New(base::BindRepeating(
