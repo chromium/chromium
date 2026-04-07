@@ -11,10 +11,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -39,6 +39,7 @@ import org.chromium.net.UrlResponseInfo;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 /** Test functionality of CronetAdaptiveNetworkBidirectionalStream interface. */
 @Batch(Batch.PER_CLASS)
@@ -54,7 +55,21 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
     @Before
     public void setUp() throws Exception {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mMockScheduledExecutorService = mock(ScheduledExecutorService.class);
+        when(mMockScheduledExecutorService.schedule(
+                        any(Runnable.class),
+                        any(Long.class),
+                        any(java.util.concurrent.TimeUnit.class)))
+                .thenReturn(mock(ScheduledFuture.class));
+        doAnswer(
+                        invocation -> {
+                            ((Runnable) invocation.getArgument(0)).run();
+                            return null;
+                        })
+                .when(mMockScheduledExecutorService)
+                .execute(any(Runnable.class));
         mMockCallback = mock(BidirectionalStream.Callback.class);
         mPrimaryStream = mock(CronetBidirectionalStream.class);
         mFallbackStream = mock(CronetBidirectionalStream.class);
@@ -70,6 +85,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                         mMockScheduledExecutorService,
                         mMockAdaptiveRequestContext,
                         TEST_URL);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
     }
 
     @Test
@@ -82,23 +98,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
     @Test
     @SmallTest
-    public void start_startsPrimaryStream() {
+    public void start_startsPrimaryStreamAndSchedulesFailover() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.start();
-
-        verify(mPrimaryStream).start();
-        verifyNoInteractions(mMockScheduledExecutorService);
-    }
-
-    @Test
-    @SmallTest
-    public void start_withFallback_schedulesFailover() {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
         mAdaptiveStream.start();
 
         verify(mPrimaryStream).start();
@@ -112,7 +115,6 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
 
         ArgumentCaptor<Runnable> failoverRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         mAdaptiveStream.start();
@@ -130,7 +132,6 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
 
         ArgumentCaptor<Runnable> failoverRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         mAdaptiveStream.start();
@@ -140,21 +141,21 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // Primary becomes ready
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
 
-        // Trigger failover
-        failoverRunnableCaptor.getValue().run();
+        // Failover is cancelled when primary becomes ready, so we shouldn't trigger it.
         verify(mFallbackStream, never()).start();
     }
 
     @Test
     @SmallTest
-    public void onStreamReady_onPrimary_callsCallbackAndDoesNotCancelPrimary() {
+    public void onStreamReady_onPrimary_callsCallbackAndCancelsFallback() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
 
         verify(mMockCallback).onStreamReady(mAdaptiveStream);
-        verify(mPrimaryStream, never()).cancel();
+        verify(mFallbackStream).cancel();
     }
 
     @Test
@@ -163,7 +164,6 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
 
         mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
         // The primary stream was implicitly cancelled when the fallback stream became ready.
@@ -180,32 +180,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
     @Test
     @SmallTest
-    public void onStreamReady_onPrimary_switchesActiveStreamAndCancelsFallback() {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
-
-        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
-        // The fallback stream was implicitly cancelled when the primary stream became ready.
-        verify(mFallbackStream).cancel();
-
-        verify(mMockCallback).onStreamReady(mAdaptiveStream);
-
-        // Verify forwarding now goes to primary stream
-        ByteBuffer buffer = ByteBuffer.allocate(100);
-        mAdaptiveStream.read(buffer);
-        verify(mPrimaryStream).read(buffer);
-        verify(mFallbackStream, never()).read(any());
-    }
-
-    @Test
-    @SmallTest
     public void onStreamReady_onFallback_reportsFallbackUsed() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
 
         long networkHandle = 123456789L;
         when(mFallbackStream.getTargetNetworkHandle()).thenReturn(networkHandle);
@@ -221,6 +199,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
         mAdaptiveStream.getCallback().onResponseHeadersReceived(mPrimaryStream, info);
@@ -234,6 +214,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         ByteBuffer buffer = ByteBuffer.allocate(100);
 
@@ -248,6 +230,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         ByteBuffer buffer = ByteBuffer.allocate(100);
 
@@ -262,6 +246,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         UrlResponseInfo.HeaderBlock trailers = mock(UrlResponseInfo.HeaderBlock.class);
 
@@ -276,6 +262,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
         mAdaptiveStream.getCallback().onSucceeded(mPrimaryStream, info);
@@ -289,6 +277,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         CronetException error = mock(CronetException.class);
@@ -306,7 +295,6 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
         mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         CronetException error = mock(CronetException.class);
@@ -322,7 +310,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
+        mAdaptiveStream.start();
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
@@ -339,7 +327,6 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
         mAdaptiveStream.getCallback().onCanceled(mPrimaryStream, info);
@@ -355,7 +342,6 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
         mAdaptiveStream.getCallback().onCanceled(mFallbackStream, info);
@@ -373,8 +359,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
         mAdaptiveStream.getCallback().onCanceled(mFallbackStream, info);
@@ -390,6 +376,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         ByteBuffer buffer = ByteBuffer.allocate(100);
         mAdaptiveStream.read(buffer);
@@ -402,6 +389,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         ByteBuffer buffer = ByteBuffer.allocate(100);
         mAdaptiveStream.write(buffer, true);
@@ -414,6 +402,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         mAdaptiveStream.flush();
         verify(mPrimaryStream).flush();
@@ -421,11 +410,11 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
     @Test
     @SmallTest
-    public void cancel_forwardsToActiveStream() {
+    public void cancel_forwardsToBothStreams() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
+        mAdaptiveStream.start();
         mAdaptiveStream.cancel();
         verify(mPrimaryStream).cancel();
         when(mPrimaryStream.isDone()).thenReturn(true);
@@ -440,6 +429,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         when(mPrimaryStream.isDone()).thenReturn(true);
         assertEquals(true, mAdaptiveStream.isDone());
@@ -457,27 +447,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
     @Test
     @SmallTest
-    public void failsWithoutActiveStreamNoFallback_signalsFailed() {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-
-        UrlResponseInfo info = mock(UrlResponseInfo.class);
-        CronetException error = mock(CronetException.class);
-        mAdaptiveStream.getCallback().onFailed(mPrimaryStream, info, error);
-        when(mPrimaryStream.isDone()).thenReturn(true);
-        // This is a final failure.
-        verify(mMockCallback).onFailed(mAdaptiveStream, info, error);
-        assertTrue(mAdaptiveStream.isDone());
-    }
-
-    @Test
-    @SmallTest
     public void failsWithoutActiveStreamFallbackNotStarted_isNoOp() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
 
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         CronetException error = mock(CronetException.class);
@@ -493,7 +466,6 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
 
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         CronetException error = mock(CronetException.class);
@@ -513,7 +485,6 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
-        mAdaptiveStream.setFallbackStream(mFallbackStream);
         mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
 
         UrlResponseInfo info = mock(UrlResponseInfo.class);
@@ -583,5 +554,86 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
         assertEquals(
                 alternativeHandle, (long) adaptiveRequestContext.computeAlternativeNetworkHandle());
+    }
+
+    @Test
+    @SmallTest
+    public void cancel_beforeFailoverRuns_cancelsFutureAndDoesNotStartFallback() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+
+        ArgumentCaptor<Runnable> failoverRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
+        when(mMockScheduledExecutorService.schedule(
+                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
+                .thenReturn(mockFuture);
+
+        mAdaptiveStream.start();
+        verify(mMockScheduledExecutorService)
+                .schedule(failoverRunnableCaptor.capture(), eq(3000L), eq(MILLISECONDS));
+
+        // Cancel the adaptive stream
+        CronetBidirectionalStream primary = mAdaptiveStream.mPrimaryStream;
+        CronetBidirectionalStream fallback = mAdaptiveStream.mFallbackStream;
+
+        mAdaptiveStream.cancel();
+
+        verify(primary).cancel();
+        verify(fallback).cancel();
+        verify(mockFuture).cancel(false);
+
+        // Failover is cancelled when adaptive stream is cancelled, so we shouldn't trigger it.
+        verify(mFallbackStream, never()).start();
+    }
+
+    @Test
+    @SmallTest
+    public void onStreamReady_beforeFailoverRuns_cancelsFutureAndDoesNotStartFallback() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+
+        ArgumentCaptor<Runnable> failoverRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
+        when(mMockScheduledExecutorService.schedule(
+                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
+                .thenReturn(mockFuture);
+
+        mAdaptiveStream.start();
+        verify(mMockScheduledExecutorService)
+                .schedule(failoverRunnableCaptor.capture(), eq(3000L), eq(MILLISECONDS));
+
+        // Primary becomes ready
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
+        verify(mockFuture).cancel(false);
+
+        // Failover is cancelled when primary becomes ready, so we shouldn't trigger it.
+        verify(mFallbackStream, never()).start();
+    }
+
+    @Test
+    @SmallTest
+    public void cancel_whenFutureCannotBeCancelled_schedulesFallbackCancel() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+
+        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
+        when(mMockScheduledExecutorService.schedule(
+                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
+                .thenReturn(mockFuture);
+        // Simulate that the future cannot be cancelled (e.g., it's already running).
+        when(mockFuture.cancel(false)).thenReturn(false);
+
+        mAdaptiveStream.start();
+
+        // Cancel the adaptive stream
+        mAdaptiveStream.cancel();
+
+        verify(mockFuture).cancel(false);
+        // verify(mMockScheduledExecutorService).execute(any(Runnable.class)) is implicit because
+        // the setUp() mock calls run() immediately.
+        verify(mFallbackStream).cancel();
     }
 }

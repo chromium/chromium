@@ -6,7 +6,7 @@ package org.chromium.net.impl;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetException;
@@ -16,6 +16,7 @@ import org.chromium.net.UrlResponseInfo;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,12 +25,14 @@ import java.util.concurrent.atomic.AtomicReference;
  * primary stream is not ready within a certain timeout.
  */
 final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirectionalStream {
-    private CronetBidirectionalStream mPrimaryStream;
+    @VisibleForTesting CronetBidirectionalStream mPrimaryStream;
     private final AtomicBoolean mOnlyOneStreamRemains;
-    private @Nullable CronetBidirectionalStream mFallbackStream;
+    @VisibleForTesting CronetBidirectionalStream mFallbackStream;
 
     private final ScheduledExecutorService mExecutor;
     private final AtomicReference<BidirectionalStream> mActiveStream = new AtomicReference<>(null);
+
+    private final AtomicReference<ScheduledFuture<?>> mFailoverFuture = new AtomicReference<>();
 
     /** The developer facing callback. */
     private final BidirectionalStream.Callback mBackendCallback;
@@ -55,10 +58,9 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                             if (networkHandle != CronetEngineBase.DEFAULT_NETWORK_HANDLE) {
                                 mAdaptiveRequestContext.reportFallbackUsed(mUrl, networkHandle);
                             }
-                        } else if (mFallbackStream != null) {
-                            // We have a fallback stream, but it's not needed.
-                            // Explicitly cancel it to avoid it being used later.
-                            mFallbackStream.cancel();
+                        } else {
+                            // Cancel the failover stream.
+                            cancelFailover();
                         }
                         mBackendCallback.onStreamReady(
                                 CronetAdaptiveNetworkBidirectionalStream.this);
@@ -128,10 +130,9 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                                 CronetAdaptiveNetworkBidirectionalStream.this, info, error);
                         return;
                     }
-                    // Either the primary stream just failed and we have no fallback
-                    // or we are the second stream to fail.
+                    // Either the primary stream just failed or we are the second stream to fail.
                     // Time to give up and signal failure.
-                    if (mFallbackStream == null || mOnlyOneStreamRemains.getAndSet(true)) {
+                    if (mOnlyOneStreamRemains.getAndSet(true)) {
                         mBackendCallback.onFailed(
                                 CronetAdaptiveNetworkBidirectionalStream.this, info, error);
                         return;
@@ -147,10 +148,9 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                                 CronetAdaptiveNetworkBidirectionalStream.this, info);
                         return;
                     }
-                    // Either the primary stream just cancelled and we have no fallback
-                    // or we are the second stream to cancel.
-                    // Signal the cancel.
-                    if (mFallbackStream == null || mOnlyOneStreamRemains.getAndSet(true)) {
+                    // Either the primary stream just cancelled or we are the second stream to
+                    // cancel. Signal the cancel.
+                    if (mOnlyOneStreamRemains.getAndSet(true)) {
                         mBackendCallback.onCanceled(
                                 CronetAdaptiveNetworkBidirectionalStream.this, info);
                         return;
@@ -181,20 +181,24 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     @Override
     public void start() {
-        Objects.requireNonNull(mPrimaryStream).start();
-        // If a fallback stream was created, schedule a potential future switch to it.
-        if (mFallbackStream != null) {
-            mExecutor.schedule(
-                    () -> maybeScheduleFastFailover(),
-                    mAdaptiveRequestContext.getReadyFailoverMs(),
-                    MILLISECONDS);
-        }
+        Objects.requireNonNull(mPrimaryStream, "Primary stream is required before starting.")
+                .start();
+        Objects.requireNonNull(mFallbackStream, "Fallback stream is required before starting.");
+        mFailoverFuture.set(
+                mExecutor.schedule(
+                        this::maybeScheduleFastFailover,
+                        mAdaptiveRequestContext.getReadyFailoverMs(),
+                        MILLISECONDS));
     }
 
     private void maybeScheduleFastFailover() {
-        // TODO(b/474048542): What happens if we cancel() and then this method runs?
         if (mActiveStream.get() == null) {
             mFallbackStream.start();
+        }
+        // Clear the mFailoverFuture.
+        if (mFailoverFuture.getAndSet(null) == null) {
+            throw new AssertionError(
+                    "maybeScheduleFastFailover called without active failover future.");
         }
     }
 
@@ -215,10 +219,8 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     @Override
     public void cancel() {
+        cancelFailover();
         Objects.requireNonNull(mPrimaryStream).cancel();
-        if (mFallbackStream != null) {
-            mFallbackStream.cancel();
-        }
     }
 
     @Override
@@ -226,8 +228,36 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
         if (mActiveStream.get() != null) {
             return mActiveStream.get().isDone();
         }
-        boolean fallbackIsDone = mFallbackStream == null ? true : mFallbackStream.isDone();
-        return mPrimaryStream.isDone() && fallbackIsDone;
+        return mPrimaryStream.isDone() && mFallbackStream.isDone();
+    }
+
+    private void cancelFailover() {
+        ScheduledFuture<?> future = mFailoverFuture.get();
+        if (future == null) {
+            // Either this#start has not been called yet OR maybeScheduleFastFailover has reached
+            // the point
+            // of clearing the mFailoverFuture (so mFallbackStream#start has been called).
+            // In both scenarios it's fine to just forward the call
+            // to the underlying fallback stream (this is what would happen in a
+            // regular BidirectionalStream).
+            Objects.requireNonNull(mFallbackStream, "Cancel attempted without fallback stream set")
+                    .cancel();
+            return;
+        }
+        // this#start has been called and the mFailoverFuture set.
+        // We have to either:
+        // 1. If mFallbackStream#start has not been called yet, guarantee we will never call
+        // it by canceling the future.
+        if (!future.cancel(/* mayInterruptIfRunning= */ false)) {
+            // 2. OR if we cannot cancel the future (because it's running), ensure that
+            // mFallbackStream#cancel is called after mFallbackStream#start by posting the cancel on
+            // the executor that runs
+            // the mFailoverFuture.
+            mExecutor.execute(
+                    () -> {
+                        mFallbackStream.cancel();
+                    });
+        }
     }
 
     BidirectionalStream.Callback getCallback() {
