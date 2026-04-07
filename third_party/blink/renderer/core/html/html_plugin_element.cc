@@ -263,6 +263,7 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
 }
 
 void HTMLPlugInElement::NaturalSizingInfoChanged() {
+  HTMLFrameOwnerElement::NaturalSizingInfoChanged();
   if (auto* embedded_object = GetLayoutEmbeddedObject())
     embedded_object->NaturalSizeChanged();
 }

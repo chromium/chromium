@@ -430,6 +430,14 @@ void HTMLFrameOwnerElement::DisposePluginSoon(WebPluginContainerImpl* plugin) {
     plugin->Dispose();
 }
 
+void HTMLFrameOwnerElement::NaturalSizingInfoChanged() {
+  if (auto* frame_view = DynamicTo<FrameView>(OwnedEmbeddedContentView())) {
+    if (auto info = frame_view->GetNaturalDimensions()) {
+      last_natural_sizing_info_ = info;
+    }
+  }
+}
+
 void HTMLFrameOwnerElement::UpdateContainerPolicy() {
   frame_policy_.container_policy = ConstructContainerPolicy();
   DidChangeContainerPolicy();

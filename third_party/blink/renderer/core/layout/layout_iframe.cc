@@ -73,28 +73,38 @@ PhysicalNaturalSizingInfo LayoutIFrame::GetNaturalDimensions() const {
   const ComputedStyle& style = StyleRef();
   if (style.IsResponsivelySized()) {
     DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
-    if (FrameView* frame_view = ChildFrameView()) {
+    std::optional<NaturalSizingInfo> sizing_info;
+    if (const FrameView* frame_view = ChildFrameView()) {
       // Use the natural size received from the child frame if it exists.
-      if (std::optional<NaturalSizingInfo> sizing_info =
-              frame_view->GetNaturalDimensions()) {
-        switch (PhysicalFrameSizing(style)) {
-          case EFrameSizing::kContentWidth:
-            sizing_info->has_height = false;
-            break;
-          case EFrameSizing::kContentHeight:
-            sizing_info->has_width = false;
-            break;
-          case EFrameSizing::kAuto:
-          case EFrameSizing::kContentInlineSize:
-          case EFrameSizing::kContentBlockSize:
-            NOTREACHED();
-        }
+      sizing_info = frame_view->GetNaturalDimensions();
+    }
 
-        // Scale based on our zoom as the embedded document doesn't have that
-        // info.
-        sizing_info->size.Scale(style.EffectiveZoom());
-        return PhysicalNaturalSizingInfo::FromSizingInfo(*sizing_info);
+    if (!sizing_info) {
+      // Check if this `<iframe>` element has received natural sizes from old
+      // `ChildFrameView`s.
+      if (const HTMLFrameOwnerElement* owner = GetFrameOwnerElement()) {
+        sizing_info = owner->LastNaturalSizingInfo();
       }
+    }
+
+    if (sizing_info) {
+      switch (PhysicalFrameSizing(style)) {
+        case EFrameSizing::kContentWidth:
+          sizing_info->has_height = false;
+          break;
+        case EFrameSizing::kContentHeight:
+          sizing_info->has_width = false;
+          break;
+        case EFrameSizing::kAuto:
+        case EFrameSizing::kContentInlineSize:
+        case EFrameSizing::kContentBlockSize:
+          NOTREACHED();
+      }
+
+      // Scale based on our zoom as the embedded document doesn't have that
+      // info.
+      sizing_info->size.Scale(style.EffectiveZoom());
+      return PhysicalNaturalSizingInfo::FromSizingInfo(*sizing_info);
     }
   }
 

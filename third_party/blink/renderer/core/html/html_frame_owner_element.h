@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -80,6 +81,12 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
     return embedded_content_view_.Get();
   }
 
+  // The last `NaturalSizingInfo` received from the embedded content.
+  // This persists across the lifetime of the embedded content.
+  const std::optional<NaturalSizingInfo>& LastNaturalSizingInfo() const {
+    return last_natural_sizing_info_;
+  }
+
   void SetColorScheme(mojom::blink::ColorScheme);
   void SetPreferredColorScheme(mojom::blink::PreferredColorScheme);
 
@@ -118,7 +125,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) final;
   void DispatchLoad() final;
   const FramePolicy& GetFramePolicy() const final { return frame_policy_; }
-  void NaturalSizingInfoChanged() override {}
+  void NaturalSizingInfoChanged() override;
   void SetNeedsOcclusionTracking(bool) override {}
   AtomicString BrowsingContextContainerName() const override {
     return FastGetAttribute(html_names::kNameAttr);
@@ -255,6 +262,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   Member<LazyLoadFrameObserver> lazy_load_frame_observer_;
   mojom::blink::ResourceTimingInfoPtr fallback_timing_info_;
+  std::optional<NaturalSizingInfo> last_natural_sizing_info_;
   bool should_lazy_load_children_;
   bool is_swapping_frames_{false};
   mojom::blink::PreferredColorScheme preferred_color_scheme_;
