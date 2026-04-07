@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_paint_callback.h"
@@ -154,9 +155,10 @@ void CSSPaintDefinition::ApplyAnimatedPropertyOverrides(
   auto& style_map_data = style_map->StyleMapData();
   for (const auto& [key, value] : animated_property_values) {
     DCHECK(value.has_value());
-    String property_name(key.custom_property_name.value().c_str());
+    String property_name =
+        String::FromUtf8(key.custom_property_name.value().c_str());
     auto it = style_map_data.find(property_name);
-    DCHECK_NE(it, style_map_data.end());
+    CHECK_NE(it, style_map_data.end());
     DCHECK(it->value);
     it->value = CreateUpdatedStyleValue(value, *it->value);
   }
