@@ -914,7 +914,9 @@ TEST_P(GcpGaiaCredentialBasePermittedAccountTest, PermittedAccounts) {
   ASSERT_EQ(S_OK, cred.As(&test));
 
   std::wstring email = L"user@test.com";
-  std::wstring email_domain = email.substr(email.find(L"@") + 1);
+  size_t at_pos = email.find(L"@");
+  std::wstring email_domain =
+      at_pos != std::wstring::npos ? email.substr(at_pos + 1) : L"";
 
   ASSERT_EQ(S_OK, test->SetGlsEmailAddress(base::WideToUTF8(email)));
 
@@ -948,6 +950,29 @@ INSTANTIATE_TEST_SUITE_P(
                           L"other@test.com",
                           L"other@test.com,user@test.com"),
         ::testing::Values(L"test.com", L"best.com", L"test.com,best.com")));
+
+TEST_F(GcpGaiaCredentialBaseTest, InvalidEmailMissingAt) {
+  ASSERT_EQ(S_OK,
+            SetGlobalFlagForTesting(L"domains_allowed_to_login", L"test.com"));
+
+  // Create provider and start logon.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred.As(&test));
+
+  // Set an email that doesn't have an '@' but matches an allowed domain.
+  // This would have bypassed the domain check before the fix.
+  std::wstring email = L"test.com";
+  ASSERT_EQ(S_OK, test->SetGlsEmailAddress(base::WideToUTF8(email)));
+
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  // Logon process should fail because the email is invalid.
+  std::wstring expected_error_msg =
+      GetStringResource(IDS_INVALID_EMAIL_DOMAIN_BASE);
+  ASSERT_EQ(S_OK, FinishLogonProcess(false, false, expected_error_msg));
+}
 
 TEST_F(GcpGaiaCredentialBaseTest, StripEmailTLD) {
   USES_CONVERSION;
