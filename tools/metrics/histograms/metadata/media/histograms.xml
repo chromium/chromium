@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Autoplay" enum="AutoplaySource"
-    expires_after="2026-10-04">
+    expires_after="2027-04-07">
   <owner>evliu@google.com</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -5824,7 +5824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaPlaybackWhileNotVisible.InterruptionType"
-    enum="MediaPlaybackInterruptionType" expires_after="2026-06-21">
+    enum="MediaPlaybackInterruptionType" expires_after="2027-04-07">
   <owner>dalecurtis@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
