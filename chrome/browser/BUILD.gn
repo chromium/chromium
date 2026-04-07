@@ -1584,7 +1584,6 @@ static_library("browser") {
     "//chrome/browser/profiles:profiles_extra_parts",
     "//chrome/browser/profiles:profiles_extra_parts_impl",
     "//chrome/browser/profiles/keep_alive",
-    "//chrome/browser/profiles/keep_alive:impl",
     "//chrome/browser/profiling_host",
     "//chrome/browser/reading_list",
     "//chrome/browser/reduce_accept_language",
