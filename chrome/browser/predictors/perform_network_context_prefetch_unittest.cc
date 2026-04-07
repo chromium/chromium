@@ -269,7 +269,13 @@ TEST_P(PerformNetworkContextPrefetchRecorderTest, NonSSLPage) {
   ExpectNoRequest();
 }
 
-TEST_P(PerformNetworkContextPrefetchRecorderTest, NonSSLResource) {
+// TODO(crbug.com/500217595): Re-enable this test on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NonSSLResource DISABLED_NonSSLResource
+#else
+#define MAYBE_NonSSLResource NonSSLResource
+#endif
+TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_NonSSLResource) {
   InsecureTestServer insecure(GetFutureCallback());
   {
     StrictMock<base::test::MockLog> log;
