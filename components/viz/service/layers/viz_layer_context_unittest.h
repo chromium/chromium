@@ -28,6 +28,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace cc {
+class FakePictureLayerImpl;
+}
+
 namespace viz {
 
 class FakeLayerContext : public mojom::LayerContext {
@@ -35,7 +39,7 @@ class FakeLayerContext : public mojom::LayerContext {
   FakeLayerContext();
   ~FakeLayerContext() override;
 
-  void Bind(mojo::PendingAssociatedReceiver<mojom::LayerContext> receiver);
+  void Bind(mojom::PendingLayerContextPtr context);
 
   // mojom::LayerContext:
   void SetVisible(bool visible) override;
@@ -46,6 +50,10 @@ class FakeLayerContext : public mojom::LayerContext {
 
   mojom::LayerTreeUpdatePtr last_update_;
   base::OnceClosure on_update_display_tree_;
+  mojom::TilingPtr last_tiling_;
+  base::OnceClosure on_update_display_tiling_;
+
+  mojo::AssociatedRemote<mojom::LayerContextClient> client_;
 
  private:
   mojo::AssociatedReceiver<mojom::LayerContext> receiver_{this};
@@ -92,6 +100,7 @@ class VizLayerContextTest : public testing::Test {
   void SetUp() override;
 
   cc::LayerImpl* SetupRootLayer();
+  cc::FakePictureLayerImpl* SetupPictureLayer();
 
   void UpdateDisplayTreeAndWait();
 

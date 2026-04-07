@@ -8,20 +8,27 @@
 
 #include "base/unguessable_token.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/picture_layer_impl.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
+#include "cc/test/fake_picture_layer_impl.h"
+#include "cc/test/fake_raster_source.h"
 #include "cc/test/property_tree_test_utils.h"
+#include "cc/tiles/picture_layer_tiling.h"
+#include "cc/tiles/tile.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 
 namespace viz {
 
 FakeLayerContext::FakeLayerContext() = default;
 FakeLayerContext::~FakeLayerContext() = default;
 
-void FakeLayerContext::Bind(
-    mojo::PendingAssociatedReceiver<mojom::LayerContext> receiver) {
-  receiver.EnableUnassociatedUsage();
-  receiver_.Bind(std::move(receiver));
+void FakeLayerContext::Bind(mojom::PendingLayerContextPtr context) {
+  context->receiver.EnableUnassociatedUsage();
+  context->client.EnableUnassociatedUsage();
+  receiver_.Bind(std::move(context->receiver));
+  client_.Bind(std::move(context->client));
 }
 
 void FakeLayerContext::SetVisible(bool visible) {}
@@ -33,8 +40,12 @@ void FakeLayerContext::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
   }
 }
 
-// TODO(b/492322546): Add tests for UpdateDisplayTiling in the future.
-void FakeLayerContext::UpdateDisplayTiling(mojom::TilingPtr tiling) {}
+void FakeLayerContext::UpdateDisplayTiling(mojom::TilingPtr tiling) {
+  last_tiling_ = std::move(tiling);
+  if (on_update_display_tiling_) {
+    std::move(on_update_display_tiling_).Run();
+  }
+}
 
 void FakeLayerContext::SetTargetLocalSurfaceId(
     const LocalSurfaceId& target_local_surface_id) {}
@@ -48,7 +59,7 @@ FakeCompositorFrameSink::~FakeCompositorFrameSink() = default;
 void FakeCompositorFrameSink::BindLayerContext(
     mojom::PendingLayerContextPtr context,
     mojom::LayerContextSettingsPtr settings) {
-  layer_context_->Bind(std::move(context->receiver));
+  layer_context_->Bind(std::move(context));
 }
 
 VizLayerContextTest::VizLayerContextTest()
@@ -85,6 +96,35 @@ cc::LayerImpl* VizLayerContextTest::SetupRootLayer() {
   host_impl_->active_tree()->property_trees()->clear();
   cc::SetupRootProperties(root_layer);
   return root_layer;
+}
+
+cc::FakePictureLayerImpl* VizLayerContextTest::SetupPictureLayer() {
+  constexpr gfx::Size kSize(100, 100);
+  SetupRootLayer();
+
+  host_impl_->CreatePendingTree();
+  host_impl_->pending_tree()->SetRootLayerForTesting(cc::LayerImpl::Create(
+      host_impl_->pending_tree(), VizLayerContextTest::kRootLayerId));
+  auto* pending_root = host_impl_->pending_tree()->root_layer();
+  cc::SetupRootProperties(pending_root);
+
+  // Create a PictureLayerImpl and add it to the pending tree.
+  auto picture_layer = cc::FakePictureLayerImpl::Create(
+      host_impl_->pending_tree(), VizLayerContextTest::kChildLayerId,
+      cc::FakeRasterSource::CreateFilled(kSize));
+  picture_layer->SetBounds(kSize);
+  picture_layer->SetDrawsContent(true);
+
+  // Setup properties for the layer.
+  auto* pending_layer_ptr = picture_layer.get();
+  cc::CopyProperties(pending_root, pending_layer_ptr);
+  host_impl_->pending_tree()->AddLayer(std::move(picture_layer));
+  host_impl_->pending_tree()->AddLayerShouldPushProperties(pending_layer_ptr);
+
+  // Activate the pending tree.
+  host_impl_->ActivateSyncTree();
+  return static_cast<cc::FakePictureLayerImpl*>(
+      host_impl_->active_tree()->LayerById(VizLayerContextTest::kChildLayerId));
 }
 
 void VizLayerContextTest::UpdateDisplayTreeAndWait() {
@@ -155,6 +195,62 @@ TEST_F(VizLayerContextTest, UpdateLayerProperty) {
   EXPECT_EQ(update2->layers.size(), 1u);
   EXPECT_EQ(update2->layers[0]->id, VizLayerContextTest::kRootLayerId);
   EXPECT_EQ(update2->layers[0]->general_properties->bounds, kNewBounds);
+}
+
+TEST_F(VizLayerContextTest, UpdateDisplayTile) {
+  auto* layer_ptr = SetupPictureLayer();
+
+  // Add a tiling to the layer.
+  constexpr float kScale = 1.0f;
+  auto* pending_tiling =
+      layer_ptr->AddTiling(gfx::AxisTransform2d(kScale, gfx::Vector2dF()));
+  pending_tiling->set_resolution(cc::HIGH_RESOLUTION);
+
+  cc::PictureLayerTiling* tiling =
+      layer_ptr->picture_layer_tiling_set()->tiling_at(0);
+
+  // Sync the display tree initially.
+  UpdateDisplayTreeAndWait();
+
+  // Create a tile in the tiling.
+  layer_ptr->CreateAllTiles();
+  cc::Tile* tile = tiling->TileAt(0, 0);
+  ASSERT_NE(tile, nullptr);
+
+  // Update the display tile and wait for the tiling update in FakeLayerContext.
+  viz_layer_context_->UpdateDisplayTile(*layer_ptr, *tile,
+                                        *host_impl_->resource_provider(),
+                                        /*shared_image_interface=*/nullptr,
+                                        /*update_damage=*/true);
+
+  base::RunLoop run_loop;
+  fake_layer_context_.on_update_display_tiling_ = run_loop.QuitClosure();
+  run_loop.Run();
+
+  ASSERT_TRUE(fake_layer_context_.last_tiling_);
+  EXPECT_EQ(fake_layer_context_.last_tiling_->layer_id,
+            VizLayerContextTest::kChildLayerId);
+  EXPECT_EQ(fake_layer_context_.last_tiling_->tiles.size(), 1u);
+  EXPECT_EQ(fake_layer_context_.last_tiling_->tiles[0]->column_index, 0u);
+  EXPECT_EQ(fake_layer_context_.last_tiling_->tiles[0]->row_index, 0u);
+}
+
+TEST_F(VizLayerContextTest, OnTilingsReadyForCleanup) {
+  auto* layer_ptr = SetupPictureLayer();
+
+  // Add a tiling to the layer.
+  constexpr float kScale = 1.0f;
+  layer_ptr->AddTiling(gfx::AxisTransform2d(kScale, gfx::Vector2dF()));
+  ASSERT_EQ(layer_ptr->picture_layer_tiling_set()->num_tilings(), 1u);
+
+  // Trigger tiling cleanup from the service side.
+  std::vector<float> scales = {kScale};
+  fake_layer_context_.client_->OnTilingsReadyForCleanup(
+      VizLayerContextTest::kChildLayerId, scales);
+  fake_layer_context_.client_.FlushForTesting();
+
+  // The tiling should be removed.
+  EXPECT_EQ(layer_ptr->picture_layer_tiling_set()->num_tilings(), 0u);
 }
 
 }  // namespace viz
