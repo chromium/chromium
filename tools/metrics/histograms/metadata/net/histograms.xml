@@ -3789,17 +3789,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpRequestStsState" enum="HttpRequestStsState"
-    expires_after="2026-04-05">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    The HSTS status of top-frame HTTP/WS requests made by UrlRequestHttpJob.
-    Requests with kProtectedHttp are immediately internally redirected to a
-    secure request.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpResponseCode" enum="HttpResponseCode"
     expires_after="never">
 <!-- expires-never: Core network stack health metric -->

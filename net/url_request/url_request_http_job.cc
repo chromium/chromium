@@ -264,16 +264,6 @@ ContentEncodingType ToContentEncodingType(SourceStreamType type) {
   }
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class HttpRequestStsState {
-  kUnknown = 0,
-  kUnprotectedHttps = 1,
-  kProtectedHttps = 2,
-  kUnprotectedHttp = 3,
-  kProtectedHttp = 4,
-  kMaxValue = kProtectedHttp,
-};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -325,16 +315,6 @@ void RecordSTSHistograms(SSLUpgradeDecision upgrade_decision,
   if (!(load_flags & LOAD_MAIN_FRAME_DEPRECATED)) {
     return;
   }
-  const bool sts_enabled = upgrade_decision != SSLUpgradeDecision::kNoUpgrade;
-  HttpRequestStsState sts_state = HttpRequestStsState::kUnknown;
-  if (is_secure) {
-    sts_state = (sts_enabled ? HttpRequestStsState::kProtectedHttps
-                             : HttpRequestStsState::kUnprotectedHttps);
-  } else {
-    sts_state = (sts_enabled ? HttpRequestStsState::kProtectedHttp
-                             : HttpRequestStsState::kUnprotectedHttp);
-  }
-  UMA_HISTOGRAM_ENUMERATION("Net.HttpRequestStsState", sts_state);
 
   UMA_HISTOGRAM_ENUMERATION(
       "Net.HttpRequestSSLUpgradeDecision",

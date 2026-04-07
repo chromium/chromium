@@ -606,26 +606,6 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="QuicProtocolError"/>
 </enum>
 
-<enum name="HttpRequestStsState">
-  <summary>
-    Tracks whether main frame requests are protected by HSTS, which maps closely
-    to whether they're vulnerable to a downgrade attack.
-  </summary>
-  <int value="0" label="kUnknown">Unknown state</int>
-  <int value="1" label="kUnprotectedHttps">
-    The request used HTTPS, but was not protected by HSTS.
-  </int>
-  <int value="2" label="kProtectedHttps">
-    The request used HTTPS and was protected by HSTS.
-  </int>
-  <int value="3" label="kUnprotectedHttp">
-    The request used HTTP and was unprotected by HSTS.
-  </int>
-  <int value="4" label="kProtectedHttp">
-    The request used HTTP and was redirected due to HSTS.
-  </int>
-</enum>
-
 <!-- LINT.IfChange(HttpsNotAttemptedReason) -->
 
 <enum name="HttpsNotAttemptedReason">
