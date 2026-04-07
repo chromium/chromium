@@ -81,8 +81,7 @@ PermissionsAiv4ModelMetadata BuildMetadataFromValues(
 passage_embeddings::Embedding GetDummyEmbeddings(
     int input_size = kTestTextInputSize) {
   std::vector<float> data(input_size, 42.f);
-  return passage_embeddings::Embedding(data,
-                                       /*passage_word_count=*/42);
+  return passage_embeddings::Embedding(data);
 }
 
 class PermissionsAiv4ExecutorFake : public PermissionsAiv4Executor {

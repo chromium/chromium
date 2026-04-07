@@ -16,10 +16,8 @@ namespace {
 inline constexpr uint32_t kEmbeddingsModelInputWindowSize = 256u;
 
 Embedding ComputeEmbeddingForPassage(size_t embeddings_model_output_size) {
-  constexpr size_t kMockPassageWordCount = 10;
   Embedding embedding(std::vector<float>(embeddings_model_output_size, 1.0f));
   embedding.Normalize();
-  embedding.SetPassageWordCount(kMockPassageWordCount);
   return embedding;
 }
 

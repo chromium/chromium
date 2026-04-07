@@ -419,7 +419,7 @@ void HistoryEmbeddingsService::SendQualityLog(
         passage_data->set_score(scored_url_row.scores[passage_index]);
         const std::vector<float>& embedding =
             scored_url_row.passages_embeddings.embeddings[passage_index]
-                .GetData();
+                .embedding.GetData();
         passage_data->mutable_embedding()
             ->mutable_floats()
             ->mutable_values()
@@ -557,8 +557,8 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
   CHECK_EQ(url_data.passages.passages_size(),
            static_cast<int>(url_data.embeddings.size()));
   for (int i = 0; i < url_data.passages.passages_size(); i++) {
-    url_data.embeddings[i].SetPassageWordCount(
-        CountWords(url_data.passages.passages(i)));
+    url_data.embeddings[i].word_count =
+        CountWords(url_data.passages.passages(i));
   }
 
   // Store all embeddings and passages.
@@ -633,7 +633,7 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
     for (size_t i = 0; i < n; i++) {
       SearchInfo discard_recount;
       scored_url_row.scores.push_back(query_embedding.ScoreWith(
-          scored_url_row.passages_embeddings.embeddings[i]));
+          scored_url_row.passages_embeddings.embeddings[i].embedding));
     }
   };
   for (ScoredUrl& scored_url : search_info.scored_urls) {
@@ -716,7 +716,8 @@ void HistoryEmbeddingsService::StorePassageEmbeddings(
   for (const page_content_annotations::PassageEmbedding& passage_embedding :
        passage_embeddings) {
     url_data.passages.add_passages(std::move(passage_embedding.passage.first));
-    url_data.embeddings.emplace_back(std::move(passage_embedding.embedding));
+    url_data.embeddings.emplace_back(std::move(passage_embedding.embedding),
+                                     /*word_count=*/0);
   }
 
   storage_.AsyncCall(&Storage::ProcessAndStorePassages)
@@ -736,9 +737,9 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
 
   // Merge the new and the existing embeddings.
   size_t embeddings_index = 0;
-  for (auto& embedding : url_passages.embeddings) {
-    if (embedding.Dimensions() == 0) {
-      embedding = embeddings[embeddings_index++];
+  for (auto& passage_embedding : url_passages.embeddings) {
+    if (passage_embedding.embedding.Dimensions() == 0) {
+      passage_embedding.embedding = std::move(embeddings[embeddings_index++]);
     }
   }
   // Make sure all the new embeddings are accounted for.
@@ -1033,9 +1034,10 @@ void HistoryEmbeddingsService::RebuildAbsentEmbeddings(
             << " with " << passages.size() << " passages";
 
     // Reserve room for the embeddings to be filled in once computed.
-    url_passages.embeddings = std::vector<passage_embeddings::Embedding>(
+    url_passages.embeddings = std::vector<PassageEmbedding>(
         url_passages.passages.passages_size(),
-        passage_embeddings::Embedding(std::vector<float>{}));
+        PassageEmbedding{passage_embeddings::Embedding(std::vector<float>{}),
+                         /*word_count=*/0});
 
     // TODO(crbug.com/390241271): Move this inside Embedder implementations once
     //  they are no longer wrapped inside the SchedulingEmbedder.

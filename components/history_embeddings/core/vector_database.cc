@@ -122,6 +122,10 @@ SearchInfo::~SearchInfo() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+bool PassageEmbedding::operator==(const PassageEmbedding& other) const {
+  return word_count == other.word_count && embedding == other.embedding;
+}
+
 UrlData::UrlData(history::URLID url_id,
                  history::VisitID visit_id,
                  base::Time visit_time)
@@ -168,7 +172,7 @@ UrlScore UrlData::BestScoreWith(
   std::string modified_passage;
   const std::string* passage = nullptr;
   for (size_t i = 0; i < embeddings.size(); i++) {
-    const passage_embeddings::Embedding& embedding = embeddings[i];
+    const PassageEmbedding& passage_embedding = embeddings[i];
     passage = &passages.passages(i);
 
     // Skip non-ASCII strings to avoid scoring problems with the model.
@@ -200,10 +204,10 @@ UrlScore UrlData::BestScoreWith(
       }
     }
 
-    float score = skip_similarity_scoring || embedding.GetPassageWordCount() <
-                                                 min_passage_word_count
+    float score = skip_similarity_scoring ||
+                          passage_embedding.word_count < min_passage_word_count
                       ? 0.0f
-                      : query_embedding.ScoreWith(embedding);
+                      : query_embedding.ScoreWith(passage_embedding.embedding);
 
     if (score >= word_match_required_score || skip_similarity_scoring) {
       // Since the ASCII check above processed the whole passage string, it is
@@ -371,18 +375,20 @@ void VectorDatabaseInMemory::SaveTo(VectorDatabase* database) {
 }
 
 size_t VectorDatabaseInMemory::GetEmbeddingDimensions() const {
-  return data_.empty() ? 0 : data_[0].embeddings[0].Dimensions();
+  return data_.empty() ? 0 : data_[0].embeddings[0].embedding.Dimensions();
 }
 
 bool VectorDatabaseInMemory::AddUrlData(UrlData url_data) {
   CHECK_EQ(static_cast<size_t>(url_data.passages.passages_size()),
            url_data.embeddings.size());
   if (!data_.empty()) {
-    for (const passage_embeddings::Embedding& embedding : url_data.embeddings) {
+    for (const PassageEmbedding& passage_embedding : url_data.embeddings) {
       // All embeddings in the database must have equal dimensions.
-      CHECK_EQ(embedding.Dimensions(), data_[0].embeddings[0].Dimensions());
+      CHECK_EQ(passage_embedding.embedding.Dimensions(),
+               data_[0].embeddings[0].embedding.Dimensions());
       // All embeddings in the database are expected to be normalized.
-      CHECK_LT(std::abs(embedding.Magnitude() - kUnitLength), kEpsilon);
+      CHECK_LT(std::abs(passage_embedding.embedding.Magnitude() - kUnitLength),
+               kEpsilon);
     }
   }
 

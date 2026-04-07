@@ -303,11 +303,9 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
   }
 
   passage_embeddings::Embedding CreateFakeEmbedding(float value) {
-    constexpr size_t kMockPassageWordCount = 10;
     passage_embeddings::Embedding embedding(std::vector<float>(
         passage_embeddings::kEmbeddingsModelOutputSize, value));
     embedding.Normalize();
-    embedding.SetPassageWordCount(kMockPassageWordCount);
     return embedding;
   }
 

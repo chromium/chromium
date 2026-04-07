@@ -10,10 +10,6 @@ namespace passage_embeddings {
 
 Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {}
 Embedding::Embedding() = default;
-Embedding::Embedding(std::vector<float> data, size_t passage_word_count)
-    : Embedding(data) {
-  passage_word_count_ = passage_word_count;
-}
 Embedding::~Embedding() = default;
 Embedding::Embedding(const Embedding&) = default;
 Embedding& Embedding::operator=(const Embedding&) = default;

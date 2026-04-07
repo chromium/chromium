@@ -138,6 +138,14 @@ struct UrlScore {
   float word_match_score;
 };
 
+// A single embedding and its associated metadata.
+struct PassageEmbedding {
+  bool operator==(const PassageEmbedding&) const;
+
+  passage_embeddings::Embedding embedding;
+  size_t word_count = 0;
+};
+
 struct UrlData {
   UrlData(history::URLID url_id,
           history::VisitID visit_id,
@@ -162,7 +170,7 @@ struct UrlData {
   history::VisitID visit_id;
   base::Time visit_time;
   proto::PassagesValue passages;
-  std::vector<passage_embeddings::Embedding> embeddings;
+  std::vector<PassageEmbedding> embeddings;
 };
 
 // This base class decouples storage classes and inverts the dependency so that
