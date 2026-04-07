@@ -15,8 +15,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -54,6 +56,9 @@ bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
     return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
   }
 #endif
+  if (command_id == IDC_TAB_SEARCH_TOGGLE_PIN) {
+    return base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton);
+  }
   // Disable the glic toggle pin if it is showing and glic is not enabled.
   if (command_id == IDC_GLIC_TOGGLE_PIN) {
     return glic::GlicEnabling::IsEnabledForProfile(browser_->profile());
@@ -76,6 +81,9 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
     return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
   }
 #endif
+  if (command_id == IDC_TAB_SEARCH_TOGGLE_PIN) {
+    return base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton);
+  }
   if (command_id == IDC_GLIC_TOGGLE_PIN) {
     return glic::GlicEnabling::IsEnabledForProfile(browser_->profile());
   }
@@ -89,8 +97,8 @@ bool SystemMenuModelDelegate::GetAcceleratorForCommandId(
 }
 
 bool SystemMenuModelDelegate::IsItemForCommandIdDynamic(int command_id) const {
-  return std::set{IDC_RESTORE_TAB, IDC_GLIC_TOGGLE_PIN,
-                  IDC_TOGGLE_VERTICAL_TABS,
+  return std::set{IDC_RESTORE_TAB, IDC_TAB_SEARCH_TOGGLE_PIN,
+                  IDC_GLIC_TOGGLE_PIN, IDC_TOGGLE_VERTICAL_TABS,
                   IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER}
       .contains(command_id);
 }
@@ -135,6 +143,12 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
                       : IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER;
       break;
     }
+    case IDC_TAB_SEARCH_TOGGLE_PIN:
+      string_id = browser_->profile()->GetPrefs()->GetBoolean(
+                      prefs::kTabSearchPinnedToTabstrip)
+                      ? IDS_TAB_STRIP_UNPIN_TAB_SEARCH
+                      : IDS_TAB_STRIP_PIN_TAB_SEARCH;
+      break;
     case IDC_GLIC_TOGGLE_PIN:
       string_id = browser_->profile()->GetPrefs()->GetBoolean(
                       glic::prefs::kGlicPinnedToTabstrip)
@@ -174,6 +188,21 @@ void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {
         const bool is_vertical = !controller->ShouldDisplayVerticalTabs();
         tabs::RecordVerticalTabStripModeChanged(
             is_vertical, tabs::VerticalTabStripEntryPoint::kSystemContextMenu);
+      }
+      break;
+    }
+    case IDC_TAB_SEARCH_TOGGLE_PIN: {
+      if (base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)) {
+        PrefService* prefs = browser_->profile()->GetPrefs();
+        const bool is_pinned =
+            prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
+        base::RecordAction(base::UserMetricsAction(
+            is_pinned ? "SystemContextMenu_TabSearch_Unpinned"
+                      : "SystemContextMenu_TabSearch_Pinned"));
+        base::RecordAction(base::UserMetricsAction(
+            is_pinned ? "TabStripComboButton.TabSearch.Unpinned"
+                      : "TabStripComboButton.TabSearch.Pinned"));
+        prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, !is_pinned);
       }
       break;
     }

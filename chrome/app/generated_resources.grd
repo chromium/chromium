@@ -10442,6 +10442,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OPEN_AI_MODE_THREAD_ACCESSIBILITY_LABEL" desc="Screenreader label for a button that opens an AI Mode thread." is_accessibility_with_no_ui="true">
         Open "<ph name="THREAD_NAME">$1<ex>Compact SUV Comparison</ex></ph>" in AI Mode
       </message>
+      <if expr="use_titlecase">
+        <message name="IDS_TAB_STRIP_UNPIN_TAB_SEARCH" desc="In Title Case: Name of the tab strip system menu item for unpinning tab search.">
+          Unpin Tab Search
+        </message>
+        <message name="IDS_TAB_STRIP_PIN_TAB_SEARCH" desc="In Title Case: Name of the tab strip system menu item for pinning tab search.">
+          Pin Tab Search
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TAB_STRIP_UNPIN_TAB_SEARCH" desc="Name of the tab strip system menu item for unpinning tab search.">
+          Unpin tab search
+        </message>
+        <message name="IDS_TAB_STRIP_PIN_TAB_SEARCH" desc="Name of the tab strip system menu item for pinning tab search.">
+          Pin tab search
+        </message>
+      </if>
       <message name="IDS_TAB_SEARCH_BUTTON_CXMENU_UNPIN" desc="Name of the tab search button context menu item for unpinning tab search.">
         Unpin
       </message>
