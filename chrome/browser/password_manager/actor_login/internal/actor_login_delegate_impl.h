@@ -97,12 +97,23 @@ class ActorLoginDelegateImpl
   void OnAttemptLoginCompleted(
       base::expected<LoginStatusResult, ActorLoginError> result);
 
+  // Called when `OnAttemptLoginCompleted` is invoked with a result for
+  // a federated credential login.
+  void ProcessFederatedResult(
+      base::expected<LoginStatusResult, ActorLoginError> result);
+
   void OnActorTaskStateChanged(actor::ActorTask& task);
 
   void OnActionSequenceEnded(bool success);
 
   bool ShouldCleanUpConflictingPermissions(
       const password_manager::PasswordForm& form) const;
+
+  // Calls the permissions cleaning service to clean up conflicting permissions.
+  // If the login attempt was performed with a password credential,
+  // `signon_realm`, is used to identify it, so that we don't clean the
+  // permission granted after disambiguation.
+  void ClearConflictingPermissions(std::optional<std::string> signon_realm);
 
   // Helper methods for recording metrics.
   void RecordGetCredentialsMetricsAndResetHelper(
