@@ -393,10 +393,11 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
 
   Browser* browser =
-      self.sceneState.browserProviderInterface.currentBrowserProvider.browser;
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
 
-  // Do not show if in IncognitoMode
-  if (browser->type() != Browser::Type::kRegular) {
+  // Do not show if the regular browser is not the current one.
+  if (browser !=
+      self.sceneState.browserProviderInterface.currentBrowserProvider.browser) {
     return;
   }
 
