@@ -19,6 +19,23 @@ class ReportingEventRouter;
 // for files.
 class FilesRequestHandlerBase : public RequestHandlerBase {
  public:
+  // File information used as an input to event report functions.
+  struct FileInfo {
+    FileInfo();
+    FileInfo(FileInfo&& other);
+    ~FileInfo();
+
+    // Hex-encoded SHA256 hash for the given file, or a callback to register a
+    // function to be called with the hash as an argument.
+    HashCallbackVariant sha256_or_cb;
+
+    // File size in bytes. 0 represents an unknown size.
+    uint64_t size = 0;
+
+    // File mime type.
+    std::string mime_type;
+  };
+
   // Delegate interface to be implemented by child classes to handle the
   // specifics of different types of file requests. Methods with an `index`
   // parameter are intended to support multiple files on other platforms

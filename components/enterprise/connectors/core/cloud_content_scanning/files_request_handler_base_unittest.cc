@@ -48,7 +48,10 @@ class MockFilesRequestHandlerBaseDelegate
               GetPath,
               (size_t index),
               (const, override));
-  MOCK_METHOD(const FileInfo&, GetFileInfo, (size_t index), (override));
+  MOCK_METHOD(const FilesRequestHandlerBase::FileInfo&,
+              GetFileInfo,
+              (size_t index),
+              (override));
   MOCK_METHOD(ReportingEventRouter*, GetReportingEventRouter, (), (override));
   MOCK_METHOD(void, MaybeCompleteScanRequest, (), (override));
   MOCK_METHOD(std::string, GetSource, (), (override));
@@ -268,7 +271,7 @@ TEST_F(FilesRequestHandlerBaseTest, FileRequestCallback) {
   auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
   auto* delegate = delegate_ptr.get();
 
-  FileInfo file_info;
+  FilesRequestHandlerBase::FileInfo file_info;
   EXPECT_CALL(content_analysis_info_, settings())
       .WillRepeatedly(testing::ReturnRef(settings_));
   EXPECT_CALL(*delegate, UpdateRequestHandlerResult(0, testing::_, testing::_))

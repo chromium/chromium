@@ -55,23 +55,6 @@ enum class ScanRequestUploadResult {
   kMaxValue = kIncompleteResponse,
 };
 
-// File information used as an input to event report functions.
-struct FileInfo {
-  FileInfo();
-  FileInfo(FileInfo&& other);
-  ~FileInfo();
-
-  // Hex-encoded SHA256 hash for the given file, or a callback to register a
-  // function to be called with the hash as an argument.
-  HashCallbackVariant sha256_or_cb;
-
-  // File size in bytes. 0 represents an unknown size.
-  uint64_t size = 0;
-
-  // File mime type.
-  std::string mime_type;
-};
-
 std::string ScanRequestUploadResultToString(ScanRequestUploadResult result);
 
 }  // namespace enterprise_connectors

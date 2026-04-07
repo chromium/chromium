@@ -17,6 +17,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_opening_job.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
 #include "components/file_access/scoped_file_access.h"
 
@@ -145,7 +146,7 @@ class FilesRequestHandler : public RequestHandlerBase {
   scoped_refptr<safe_browsing::FileOpeningJob> file_opening_job_;
 
   std::vector<base::FilePath> paths_;
-  std::vector<FileInfo> file_info_;
+  std::vector<FilesRequestHandlerBase::FileInfo> file_info_;
 
   // The number of file scans that have completed. If more than one file is
   // requested for scanning in `data_`, each is scanned in parallel with
