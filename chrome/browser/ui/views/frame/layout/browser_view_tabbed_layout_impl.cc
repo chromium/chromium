@@ -945,13 +945,17 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       // bar.
       const int additional_offset =
           show_shadow_overlay ? 0 : delegate().GetExtraInfobarOffset();
+      const int infobar_height =
+          views().infobar_container->GetPreferredSize().height();
+      // The content starts below the infobar, but is not affected by the
+      // extra offset from the toolbar reveal animation. The infobar slides
+      // down to stay visible below the revealed toolbar, while the content
+      // stays in place. See https://crbug.com/1473068.
       infobar_bounds =
           gfx::Rect(params.visual_client_area.x(),
                     params.visual_client_area.y() + additional_offset,
-                    params.visual_client_area.width(),
-                    // This returns zero for empty infobar.
-                    views().infobar_container->GetPreferredSize().height());
-      params.SetTop(infobar_bounds.bottom());
+                    params.visual_client_area.width(), infobar_height);
+      params.SetTop(params.visual_client_area.y() + infobar_height);
     }
     layout.AddChild(views().infobar_container, infobar_bounds, infobar_visible);
   }
