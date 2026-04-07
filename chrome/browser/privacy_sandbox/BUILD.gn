@@ -74,6 +74,7 @@ if (!is_android) {
     deps = [
       "//base/test:test_support",
       "//chrome/browser:browser_process",
+      "//chrome/browser/component_updater",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/component_updater:component_updater_paths",
@@ -158,6 +159,7 @@ if (!is_android) {
     deps = [
       "//base/test:test_support",
       "//chrome/browser:browser_process",
+      "//chrome/browser/component_updater",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui_android",
       "//components/component_updater:component_updater_paths",

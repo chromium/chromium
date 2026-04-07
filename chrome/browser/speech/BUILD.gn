@@ -93,6 +93,7 @@ source_set("impl") {
     ":speech",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/component_updater",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/services/speech/buildflags",

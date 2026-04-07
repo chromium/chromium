@@ -1,0 +1,279 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//components/on_device_translation/buildflags/features.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//media/media_options.gni")
+import("//net/features.gni")
+import("//third_party/blink/public/public_features.gni")
+import("//third_party/widevine/cdm/widevine.gni")
+
+# Header-only target. Only .h files; no sources.
+source_set("component_updater") {
+  public = [
+    "captcha_provider_component_installer.h",
+    "chrome_component_updater_configurator.h",
+    "chrome_origin_trials_component_installer.h",
+    "commerce_heuristics_component_installer.h",
+    "component_installer_errors.h",
+    "component_updater_prefs.h",
+    "component_updater_utils.h",
+    "crl_set_component_installer.h",
+    "crowd_deny_component_installer.h",
+    "first_party_sets_component_installer.h",
+    "indigo_component_installer.h",
+    "mei_preload_component_installer.h",
+    "pki_metadata_component_installer.h",
+    "pki_metadata_component_installer_policy.h",
+    "privacy_sandbox_attestations_component_installer.h",
+    "recovery_improved_component_installer.h",
+    "registration.h",
+    "ssl_error_assistant_component_installer.h",
+    "subresource_filter_component_installer.h",
+    "trust_token_key_commitments_component_installer.h",
+    "wasm_tts_engine_component_installer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/component_updater",
+    "//components/component_updater/installer_policies",
+    "//components/crx_file",
+    "//components/prefs",
+    "//components/update_client",
+    "//mojo/public/cpp/base:protobuf_support",
+    "//net",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+
+  if (safe_browsing_mode == 2) {
+    public += [ "real_time_url_checks_allowlist_component_installer.h" ]
+  }
+
+  if (!is_android) {
+    public += [
+      "iwa_key_distribution_component_installer.h",
+      "soda_component_installer.h",
+      "soda_language_pack_component_installer.h",
+      "zxcvbn_data_component_installer.h",
+    ]
+    public_deps += [
+      "//components/soda",
+      "//components/soda:constants",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    public += [ "screen_ai_component_installer.h" ]
+  }
+
+  if (use_minikin_hyphenation) {
+    public += [ "hyphenation_component_installer.h" ]
+  }
+
+  if (is_chromeos) {
+    public += [
+      "app_provisioning_component_installer.h",
+      "chrome_apps_deprecation_allowlist_component_installer.h",
+      "cros_component_installer_chromeos.h",
+      "metadata_table_chromeos.h",
+      "smart_dim_component_installer.h",
+    ]
+    public_deps += [ "//components/component_updater/ash" ]
+  }
+
+  if (is_mac || is_win) {
+    public += [ "updater_state.h" ]
+  }
+
+  if (is_win && enable_media_foundation_widevine_cdm) {
+    public += [ "media_foundation_widevine_cdm_component_installer.h" ]
+  }
+
+  if (enable_library_cdms && enable_widevine && enable_widevine_cdm_component) {
+    public += [ "widevine_cdm_component_installer.h" ]
+  }
+
+  if (chrome_root_store_supported) {
+    public += [ "pki_metadata_fastpush_component_installer_policy.h" ]
+  }
+
+  if (safe_browsing_mode != 0) {
+    public += [ "file_type_policies_component_installer.h" ]
+  }
+}
+
+# Implementation target. Only .cc/.mm files.
+source_set("impl") {
+  sources = [
+    "captcha_provider_component_installer.cc",
+    "chrome_component_updater_configurator.cc",
+    "chrome_origin_trials_component_installer.cc",
+    "commerce_heuristics_component_installer.cc",
+    "component_updater_prefs.cc",
+    "component_updater_utils.cc",
+    "crl_set_component_installer.cc",
+    "crowd_deny_component_installer.cc",
+    "first_party_sets_component_installer.cc",
+    "indigo_component_installer.cc",
+    "mei_preload_component_installer.cc",
+    "pki_metadata_component_installer.cc",
+    "pki_metadata_component_installer_policy.cc",
+    "privacy_sandbox_attestations_component_installer.cc",
+    "recovery_improved_component_installer.cc",
+    "registration.cc",
+    "ssl_error_assistant_component_installer.cc",
+    "subresource_filter_component_installer.cc",
+    "trust_token_key_commitments_component_installer.cc",
+    "wasm_tts_engine_component_installer.cc",
+  ]
+
+  public_deps = [ ":component_updater" ]
+
+  deps = [
+    "//chrome/browser:browser_features",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/actor:impl",
+    "//chrome/browser/history_embeddings",
+    "//chrome/browser/permissions",
+    "//chrome/browser/update_client",
+    "//chrome/common",
+    "//components/certificate_transparency",
+    "//components/certificate_transparency:proto_gen",
+    "//components/commerce/core:commerce_heuristics_data",
+    "//components/commerce/core:feature_list",
+    "//components/embedder_support/origin_trials",
+    "//components/permissions",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox/privacy_sandbox_attestations",
+    "//components/safe_browsing/core/common:features",
+    "//components/search",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/services/patch/content",
+    "//components/services/unzip/content",
+    "//components/startup_metric_utils",
+    "//components/subresource_filter/content/browser",
+    "//components/subresource_filter/core/browser",
+    "//components/update_client:network_impl",
+    "//components/update_client:patch_impl",
+    "//components/update_client:unzip_impl",
+    "//components/version_info",
+    "//content/public/browser",
+    "//content/public/common",
+    "//crypto",
+    "//media",
+    "//services/cert_verifier/public/mojom",
+    "//services/network/public/cpp",
+  ]
+
+  if (safe_browsing_mode == 2) {
+    sources += [ "real_time_url_checks_allowlist_component_installer.cc" ]
+    deps +=
+        [ "//components/safe_browsing/android:real_time_url_checks_allowlist" ]
+  }
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "iwa_key_distribution_component_installer.cc",
+      "soda_component_installer.cc",
+      "soda_language_pack_component_installer.cc",
+      "zxcvbn_data_component_installer.cc",
+    ]
+    deps += [
+      "//chrome/browser/actor:impl",
+      "//chrome/browser/ui/read_anything",
+      "//chrome/browser/web_applications/isolated_web_apps/key_distribution",
+      "//components/live_caption:constants",
+      "//components/live_caption:utils",
+      "//components/soda:constants",
+      "//third_party/zxcvbn-cpp",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [ "screen_ai_component_installer.cc" ]
+    deps += [
+      "//chrome/browser/screen_ai:screen_ai_install_state",
+      "//services/screen_ai/public/cpp:utilities",
+    ]
+  }
+
+  if (use_minikin_hyphenation) {
+    sources += [ "hyphenation_component_installer.cc" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "app_provisioning_component_installer.cc",
+      "chrome_apps_deprecation_allowlist_component_installer.cc",
+      "cros_component_installer_chromeos.cc",
+      "metadata_table_chromeos.cc",
+      "smart_dim_component_installer.cc",
+    ]
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ash/power/ml/smart_dim",
+      "//chromeos/ash/components/dbus",
+      "//chromeos/ash/components/dbus/image_loader",
+      "//chromeos/ash/components/settings",
+      "//chromeos/constants",
+    ]
+  }
+
+  if (is_mac || is_win) {
+    sources += [ "updater_state.cc" ]
+    deps += [ "//chrome/updater:public_sources" ]
+  }
+
+  if (is_win) {
+    sources += [ "updater_state_win.cc" ]
+    if (is_chrome_branded) {
+      sources += [ "recovery_improved_component_installer_win.cc" ]
+    }
+    deps += [
+      "//chrome/elevation_service:public_headers",
+      "//chrome/installer/util:with_no_strings",
+    ]
+  }
+
+  if (is_win && enable_media_foundation_widevine_cdm) {
+    sources += [ "media_foundation_widevine_cdm_component_installer.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "updater_state_mac.mm" ]
+    if (is_chrome_branded) {
+      sources += [ "recovery_improved_component_installer_mac.cc" ]
+    }
+    deps += [ "//chrome/installer/util:with_no_strings" ]
+  }
+
+  if (enable_library_cdms && enable_widevine && enable_widevine_cdm_component) {
+    sources += [ "widevine_cdm_component_installer.cc" ]
+    deps += [
+      "//components/cdm/common",
+      "//media/cdm:cdm_paths",
+      "//third_party/widevine/cdm:headers",
+    ]
+  }
+
+  if (enable_on_device_translation) {
+    deps += [ "//chrome/browser/on_device_translation" ]
+  }
+
+  if (chrome_root_store_supported) {
+    sources += [ "pki_metadata_fastpush_component_installer_policy.cc" ]
+  }
+
+  if (safe_browsing_mode != 0) {
+    sources += [ "file_type_policies_component_installer.cc" ]
+  }
+}

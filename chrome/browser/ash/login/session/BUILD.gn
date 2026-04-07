@@ -71,6 +71,7 @@ static_library("session") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/tpm",
+    "//chrome/browser/component_updater",
     "//chrome/browser/google",
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
