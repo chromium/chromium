@@ -56,15 +56,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"  // nogncheck
-#include "chrome/browser/extensions/test_extension_system.h"
-#include "extensions/browser/extension_registrar.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_builder.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
