@@ -10,14 +10,11 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
@@ -42,12 +39,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ListMenuItemViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ViewGroup mListItemView;
-    @Mock private LinearLayout mInnerLayout;
+    @Mock private View mListItemView;
     @Mock private TextView mTextView;
     @Mock private ImageView mStartIcon;
     @Mock private ImageView mEndIcon;
-    @Mock private ImageView mSubmenuArrow;
     @Mock private TextView mSubtitleView;
 
     private Context mContext;
@@ -59,28 +54,8 @@ public class ListMenuItemViewBinderUnitTest {
         when(mListItemView.getResources()).thenReturn(mContext.getResources());
         when(mListItemView.findViewById(R.id.menu_item_text)).thenReturn(mTextView);
         when(mListItemView.findViewById(R.id.menu_item_icon)).thenReturn(mStartIcon);
-        when(mListItemView.findViewById(R.id.submenu_arrow)).thenReturn(mSubmenuArrow);
         when(mListItemView.findViewById(R.id.menu_item_end_icon)).thenReturn(mEndIcon);
         when(mListItemView.findViewById(R.id.menu_item_subtitle)).thenReturn(mSubtitleView);
-
-        // Required for ListMenuUtils.applyTintToAllIcons recursion to find icons.
-        // Hierarchy from list_menu_item.xml:
-        // mListItemView (LinearLayout)
-        //   - mStartIcon (ImageView)
-        //   - mInnerLayout (LinearLayout)
-        //      - mTextView (TextView)
-        //      - mSubtitleView (TextView)
-        //   - mEndIcon (ImageView)
-        //   - mSubmenuArrow (ImageView)
-        when(mListItemView.getChildCount()).thenReturn(4);
-        when(mListItemView.getChildAt(0)).thenReturn(mStartIcon);
-        when(mListItemView.getChildAt(1)).thenReturn(mInnerLayout);
-        when(mListItemView.getChildAt(2)).thenReturn(mEndIcon);
-        when(mListItemView.getChildAt(3)).thenReturn(mSubmenuArrow);
-
-        when(mInnerLayout.getChildCount()).thenReturn(2);
-        when(mInnerLayout.getChildAt(0)).thenReturn(mTextView);
-        when(mInnerLayout.getChildAt(1)).thenReturn(mSubtitleView);
     }
 
     @Test
@@ -187,14 +162,12 @@ public class ListMenuItemViewBinderUnitTest {
 
         verify(mStartIcon).setImageTintList(any(ColorStateList.class));
         verify(mEndIcon).setImageTintList(any(ColorStateList.class));
-        verify(mSubmenuArrow).setImageTintList(any(ColorStateList.class));
 
-        propertyModel.set(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID, Resources.ID_NULL);
+        propertyModel.set(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID, 0);
         ListMenuItemViewBinder.binder(
                 propertyModel, mListItemView, ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
         verify(mStartIcon).setImageTintList(null);
         verify(mEndIcon).setImageTintList(null);
-        verify(mSubmenuArrow).setImageTintList(null);
     }
 
     @Test
@@ -223,31 +196,5 @@ public class ListMenuItemViewBinderUnitTest {
         verify(mEndIcon).setImageDrawable(any(Drawable.class));
         verify(mEndIcon).setVisibility(View.VISIBLE);
         verify(mStartIcon).setVisibility(View.GONE);
-    }
-
-    @Test
-    @SmallTest
-    public void testSubmenuHeaderIconTint() {
-        PropertyModel propertyModel =
-                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
-                        .with(
-                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
-                                R.color.default_text_color_link_baseline)
-                        .build();
-
-        // Verifies that ListMenuSubmenuHeaderViewBinder correctly tints all icons in the view.
-        ListMenuSubmenuHeaderViewBinder.bind(
-                propertyModel, mListItemView, ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
-
-        verify(mStartIcon).setImageTintList(any(ColorStateList.class));
-        verify(mEndIcon).setImageTintList(any(ColorStateList.class));
-        verify(mSubmenuArrow).setImageTintList(any(ColorStateList.class));
-
-        propertyModel.set(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID, Resources.ID_NULL);
-        ListMenuSubmenuHeaderViewBinder.bind(
-                propertyModel, mListItemView, ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
-        verify(mStartIcon).setImageTintList(null);
-        verify(mEndIcon).setImageTintList(null);
-        verify(mSubmenuArrow).setImageTintList(null);
     }
 }

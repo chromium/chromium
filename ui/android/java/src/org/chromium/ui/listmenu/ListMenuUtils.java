@@ -15,21 +15,12 @@ import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.IS_EXPANDED
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.annotation.AttrRes;
-import androidx.annotation.ColorRes;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.widget.CompoundButtonCompat;
-import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -89,7 +80,7 @@ public class ListMenuUtils {
         adapter.registerType(
                 ListItemType.DIVIDER,
                 new LayoutViewBuilder(R.layout.list_section_divider),
-                ListSectionDividerViewBinder::bind);
+                (m, v, p) -> {});
         adapter.registerType(
                 ListItemType.MENU_ITEM,
                 new LayoutViewBuilder(R.layout.list_menu_item),
@@ -253,39 +244,5 @@ public class ListMenuUtils {
         public WritableBooleanPropertyKey getIsExpandedKey() {
             return IS_EXPANDED;
         }
-    }
-
-    /**
-     * Iterates through the view hierarchy and applies the specified tint to all ImageViews.
-     *
-     * @param view The root view to start the iteration from.
-     * @param tintList The tint color state list to apply.
-     */
-    public static void applyTintToAllIcons(View view, @Nullable ColorStateList tintList) {
-        if (view instanceof ImageView imageView) {
-            // General icons and submenu arrows are usually ImageViews.
-            ImageViewCompat.setImageTintList(imageView, tintList);
-        } else if (view instanceof CompoundButton compoundButton) {
-            // Checkboxes and radio buttons are CompoundButtons.
-            CompoundButtonCompat.setButtonTintList(compoundButton, tintList);
-        } else if (view instanceof ViewGroup viewGroup) {
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                applyTintToAllIcons(viewGroup.getChildAt(i), tintList);
-            }
-        }
-    }
-
-    /**
-     * Resolves the color resource ID to a ColorStateList and applies it to all icons in the view.
-     *
-     * @param view The root view.
-     * @param colorResId The color resource ID.
-     */
-    public static void applyTintToAllIcons(View view, @ColorRes int colorResId) {
-        ColorStateList tintList =
-                colorResId != Resources.ID_NULL
-                        ? AppCompatResources.getColorStateList(view.getContext(), colorResId)
-                        : null;
-        applyTintToAllIcons(view, tintList);
     }
 }

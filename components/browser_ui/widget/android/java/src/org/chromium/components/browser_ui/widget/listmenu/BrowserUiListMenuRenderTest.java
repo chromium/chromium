@@ -7,7 +7,10 @@ package org.chromium.components.browser_ui.widget.listmenu;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.app.Activity;
 import android.view.View;
@@ -40,9 +43,11 @@ import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
@@ -58,9 +63,6 @@ import java.util.List;
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
 public class BrowserUiListMenuRenderTest {
-
-    private static final String LABEL = "test_label";
-
     /** Used to run a test only with night mode. */
     public static class NightModeOnlyParameterProvider implements ParameterProvider {
 
@@ -209,10 +211,13 @@ public class BrowserUiListMenuRenderTest {
                     ModelList data = new ModelList();
                     List<ListItem> listItems = getListItems(incognito);
                     data.add(
-                            new ListItemBuilder()
-                                    .withTitle(LABEL)
-                                    .withSubmenuItems(listItems)
-                                    .build());
+                            new ListItem(
+                                    MENU_ITEM_WITH_SUBMENU,
+                                    new PropertyModel.Builder(
+                                                    ListMenuSubmenuItemProperties.ALL_KEYS)
+                                            .with(TITLE, "test_label")
+                                            .with(SUBMENU_ITEMS, listItems)
+                                            .build()));
                     return data;
                 });
     }
