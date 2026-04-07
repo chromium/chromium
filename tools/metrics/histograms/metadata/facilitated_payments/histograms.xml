@@ -528,7 +528,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.PayflowExitedReason"
-    enum="FacilitatedPayments.PixFlowExitedReason" expires_after="2026-08-02">
+    enum="FacilitatedPayments.PixFlowExitedReason" expires_after="2026-10-04">
   <owner>siashah@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

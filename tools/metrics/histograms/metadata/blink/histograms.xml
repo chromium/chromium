@@ -6054,7 +6054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.XMLParsing.NonXsltXmlParsingTime.{Backend}" units="ms"
-    expires_after="2026-08-01">
+    expires_after="2026-10-04">
   <owner>drott@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
