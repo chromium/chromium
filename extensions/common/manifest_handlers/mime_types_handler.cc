@@ -69,10 +69,6 @@ void MimeTypesHandler::AddMIMEType(const std::string& mime_type) {
   mime_type_set_.insert(mime_type);
 }
 
-bool MimeTypesHandler::CanHandleMIMEType(const std::string& mime_type) const {
-  return mime_type_set_.contains(mime_type);
-}
-
 bool MimeTypesHandler::HasPlugin() const {
   return !handler_url_.empty();
 }

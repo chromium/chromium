@@ -32,8 +32,6 @@ class MimeTypesHandler {
 
   // Adds a MIME type filter to the handler.
   void AddMIMEType(const std::string& mime_type);
-  // Tests if the handler has registered a filter for the MIME type.
-  bool CanHandleMIMEType(const std::string& mime_type) const;
 
   // Set the URL that will be used to handle MIME type requests.
   void set_handler_url(const std::string& handler_url) {
