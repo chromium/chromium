@@ -8461,7 +8461,7 @@ be describing additional metrics about the same event.
 
 <event name="DevTools.Opened">
   <owner>skrakowi@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records that the DevTools were opened by the user.
   </summary>
@@ -19197,7 +19197,7 @@ be describing additional metrics about the same event.
 
 <event name="PermissionUsage.NotificationShown">
   <owner>skrakowi@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded when the notification content detection model is ran on
     notification contents, which happens on a request to display a persistent
@@ -20562,7 +20562,7 @@ be describing additional metrics about the same event.
 
 <event name="SafeBrowsingInterstitial">
   <owner>skrakowi@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records that the user encountered a Safe Browsing interstitial and whether
     they proceeded past the interstitial, bypassing the warning.
@@ -20599,7 +20599,7 @@ be describing additional metrics about the same event.
 
 <event name="SafetyHub.AbusiveNotificationPermissionRevocation.Interactions">
   <owner>skrakowi@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded when the user takes a Safety Hub action after an abusive
     notification is auto-revoked.
@@ -22532,7 +22532,7 @@ be describing additional metrics about the same event.
 
 <event name="SiteFamiliarityHeuristicResult">
   <owner>pkotwicz@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded when a toplevel page navigates. This records which
     user-page-familiarity-heuristics would trigger for a given site, if any.
@@ -23016,7 +23016,7 @@ be describing additional metrics about the same event.
 
 <event name="SuspiciousNotificationInteraction">
   <owner>skrakowi@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded when the user takes an action on a suspicious notification whose
     contents were replaced by a warning.

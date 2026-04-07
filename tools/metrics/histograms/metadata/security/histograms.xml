@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.EnhancedBundle.IsEnhancedSelected"
     enum="BooleanEnabled" expires_after="2026-08-01">
   <owner>awado@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Whether the enhanced-security settings bundle is selected. Recorded for all
     uma log at upload time by the BundleSettingsMetricsProvider for the main
@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
     name="Security.EnhancedBundle.JavascriptOptimizerSetting.WasModifiedFromDefault"
     enum="Boolean" expires_after="2026-08-01">
   <owner>awado@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the user has changed the javascript optimizer setting from
     the default for the enhanced-security bundle. Recorded for all uma logs at
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
     name="Security.EnhancedBundle.SafeBrowsingSetting.WasModifiedFromDefault"
     enum="Boolean" expires_after="2026-08-01">
   <owner>awado@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the user has changed the safe browsing setting from the
     default for the enhanced-security bundle. Recorded for all uma logs at
@@ -1058,7 +1058,7 @@ chromium-metrics-reviews@google.com.
     name="Security.StandardBundle.JavascriptOptimizerSetting.WasModifiedFromDefault"
     enum="Boolean" expires_after="2026-08-01">
   <owner>awado@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the user has changed the javascript optimizer setting from
     the default for the standard bundle. Recorded for all uma logs at upload
@@ -1070,7 +1070,7 @@ chromium-metrics-reviews@google.com.
     name="Security.StandardBundle.SafeBrowsingSetting.WasModifiedFromDefault"
     enum="Boolean" expires_after="2026-08-01">
   <owner>awado@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the user has changed the safe browsing setting from the
     default for the standard bundle. Recorded for all uma logs at upload time by

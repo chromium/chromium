@@ -979,7 +979,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.EsbDownloadRowPromo.Outcome"
     enum="SafeBrowsingEsbDownloadRowPromoOutcome" expires_after="2026-08-23">
   <owner>awado@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the outcome of showing an ESB promotion on a download item on the
     chrome://downloads page. Promotions are only shown on downloads that have
@@ -992,7 +992,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.EsbPromotionFlow.IphShown"
     enum="SafeBrowsingReferralMethod" expires_after="2026-09-20">
   <owner>awado@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the amount of times the In-Product-Help (IPH) bubble is triggered on
     the Chrome security settings page from one of the three Enhanced Safe
@@ -3291,7 +3291,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic"
     enum="SiteFamiliarityHeuristicName" expires_after="2026-08-01">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logged after each non-incognito page navigation. Logs the matching
     user-familiarity heuristics for the site. If the site satisifies multiple
@@ -3304,7 +3304,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     name="SafeBrowsing.SiteProtection.FamiliarityHeuristic.Engagement15OrVisitedBeforeTodayOrHighConfidence"
     enum="BooleanMatched" expires_after="2026-10-05">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logged after each non-off-the-record page navigation. Logs whether the site
     matches a heuristic which requires - The page to be on the safe browsing
@@ -3316,7 +3316,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic.OffTheRecord"
     enum="SiteFamiliarityHeuristicName" expires_after="2026-08-01">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logged after each off-the-record page navigation. Logs the matching
     user-familiarity heuristics for the site. If the site satisifies multiple
@@ -3329,7 +3329,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     name="SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration"
     units="ms" expires_after="2026-06-07">
   <owner>pkotwicz@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logged when SiteProtectionMetricsObserver has finished asynchronously
     fetching data from local databases in order to compute the user-familiarity
@@ -3343,7 +3343,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     name="SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchDuration.OffTheRecord"
     units="ms" expires_after="2026-06-07">
   <owner>pkotwicz@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logged when SiteProtectionMetricsObserver has finished asynchronously
     fetching data from local databases in order to compute the user-familiarity
@@ -3356,7 +3356,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchStart"
     enum="BooleanHit" expires_after="2026-08-01">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logged as a result of a page navigation when SiteProtectionMetricsObserver
     starts fetching data.
@@ -3366,7 +3366,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.SuspiciousNotificationWarning.Interactions"
     enum="SuspiciousNotificationWarningInteractions" expires_after="2026-09-13">
   <owner>skrakowi@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records user interactions with the warning shown for suspicious
     notifications. Logged when a warning is shown and when a user performs a
@@ -3378,7 +3378,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     name="SafeBrowsing.SuspiciousNotificationWarning.ShowOriginalNotifications.SuspiciousNotificationCount"
     units="count" expires_after="2026-09-06">
   <owner>skrakowi@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of suspicious notifications, displayed on a warning
     notification, which have been suspended until the user taps to show the
@@ -3391,7 +3391,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     name="SafeBrowsing.SuspiciousNotificationWarning.ShowOriginalNotifications.SuspiciousNotificationsDroppedCount"
     units="count" expires_after="2026-09-06">
   <owner>skrakowi@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of suspicious notifications that were suspended behind a
     warning notification and despite the user tapping to show the original
@@ -3405,7 +3405,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.SyncedEsbDialogDisabledMessageOutcome"
     enum="SyncedEsbOutcome" expires_after="2026-09-20">
   <owner>zackhan@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the outcome of the dialog when the ESB setting is synced. This
     dialog appears on Android when the ESB setting is synced, and it presents
@@ -3418,7 +3418,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.SyncedEsbDialogEnabledMessageDismissReason"
     enum="MessageDismissReason" expires_after="2026-08-09">
   <owner>zackhan@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the dismiss reason of the message for ESB as a synced setting flow.
     This dialog appears on Android when the ESB setting is synced, and it
@@ -3429,7 +3429,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.SyncedEsbDialogEnabledMessageOutcome"
     enum="SyncedEsbOutcome" expires_after="2026-09-20">
   <owner>zackhan@chromium.org</owner>
-  <owner>chrome-counter-abuse-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the outcome of the dialog when the ESB setting is synced. This
     dialog appears on Android when the ESB setting is synced, and it presents
@@ -3443,7 +3443,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2026-09-27">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the result of displaying the Chrome enhanced protection
     opt-in/disabled dialog to sync users. It is logged once each time Chrome is
@@ -3455,7 +3455,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogEnabledOutcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2026-09-20">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the result of displaying the Chrome enhanced protection
     opt-in/enabled dialog to sync users. It is logged once each time Chrome is
@@ -3466,7 +3466,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram name="SafeBrowsing.TailoredSecurity.IsRecoveryTriggered"
     enum="Boolean" expires_after="2026-08-22">
   <owner>awado@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the observer-based retry mechanism for the
     ChromeTailoredSecurityService has been triggered or not which is logged on
@@ -4266,7 +4266,7 @@ failing to fetch the updates which puts users' security at risk. -->
     name="SafeBrowsing.V8Optimizer.DeferNavigationToComputeSiteFamiliarity"
     enum="BooleanOccurred" expires_after="2026-09-06">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded during NavigationRequest::OnResponseStarted(). Records whether the
     navigation was delayed due to computing whether to disable v8-optimizations
@@ -4278,7 +4278,7 @@ failing to fetch the updates which puts users' security at risk. -->
     name="SafeBrowsing.V8Optimizer.DifferentRendererProcess.SameSite.IframeState"
     enum="V8IframeState" expires_after="2026-09-06">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded when a navigation finishes. Records the v8-optimizer state of the
     frame whose navigation just finished as well as the v8-optimizer state of
@@ -4293,7 +4293,7 @@ failing to fetch the updates which puts users' security at risk. -->
 <histogram name="SafeBrowsing.V8Optimizer.IframeState" enum="V8IframeState"
     expires_after="2026-09-06">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Recorded when a navigation finishes. Records the v8-optimizer state of the
     frame whose navigation just finished as well as the v8-optimizer state of

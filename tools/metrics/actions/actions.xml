@@ -12946,7 +12946,7 @@ should be able to be added at any place in this file.
 
 <action name="DownloadNotification.Button_Review">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User pushes &quot;Review&quot; button on download notification to trigger
     the enterprise download review dialog.
@@ -34092,7 +34092,7 @@ should be able to be added at any place in this file.
 <action name="NewTabPage.Promo.EnhancedProtectionPromo.Accepted">
   <obsolete>Removed from code in 2021-12.</obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     The Safe Browsing Enhanced Protection promo is accepted.
   </description>
@@ -34101,7 +34101,7 @@ should be able to be added at any place in this file.
 <action name="NewTabPage.Promo.EnhancedProtectionPromo.Dismissed">
   <obsolete>Removed from code in 2021-12.</obsolete>
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     The Safe Browsing Enhanced Protection promo is dismissed.
   </description>
@@ -34153,7 +34153,7 @@ should be able to be added at any place in this file.
 
 <action name="NewTabPage_Promos_EnhancedProtection">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-core@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     Recorded when the user clicks a Enhanced Protection promotion on the New Tab
     Page on desktop.
@@ -36649,7 +36649,7 @@ should be able to be added at any place in this file.
 
 <action name="Options_ShowSafeBrowsingEnhancedProtection">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>Settings: Safe Browsing enhanced protection</description>
 </action>
 
@@ -37913,7 +37913,7 @@ should be able to be added at any place in this file.
 
 <action name="PasswordProtection.Interstitial.ResetPassword">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     Reported when the user clicks on the reset password button on the
     interstitial.
@@ -37922,7 +37922,7 @@ should be able to be added at any place in this file.
 
 <action name="PasswordProtection.ModalWarning.ChangePasswordButtonClicked">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     Reported when the user clicked on the change password button on the password
     protection modal warning.
@@ -37931,7 +37931,7 @@ should be able to be added at any place in this file.
 
 <action name="PasswordProtection.ModalWarning.CloseWarning">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     Reported when the user closed the password protection modal warning.
   </description>
@@ -37939,7 +37939,7 @@ should be able to be added at any place in this file.
 
 <action name="PasswordProtection.ModalWarning.IgnoreButtonClicked">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     Reported when the user clicked on the ignore button on the password
     protection modal warning.
@@ -37965,7 +37965,7 @@ should be able to be added at any place in this file.
 
 <action name="PasswordProtection.PageInfo.ChangePasswordButtonClicked">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     Reported when the user clicks on the change password button on the page info
     bubble.
@@ -37974,7 +37974,7 @@ should be able to be added at any place in this file.
 
 <action name="PasswordProtection.PageInfo.MarkSiteAsLegitimate">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     Reported when the user clicks on the mark site as legitimate button on the
     page info bubble.
@@ -39841,13 +39841,13 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.AccountIntegration.DisabledDialog.Dismissed">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>The ESB disabled dialog was dismissed.</description>
 </action>
 
 <action name="SafeBrowsing.AccountIntegration.DisabledDialog.OkButtonClicked">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the OK button on the ESB disabled dialog.
   </description>
@@ -39856,7 +39856,7 @@ should be able to be added at any place in this file.
 <action
     name="SafeBrowsing.AccountIntegration.DisabledDialog.SettingsButtonClicked">
   <owner>awado@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the settings button on the ESB disabled dialog.
   </description>
@@ -39865,19 +39865,19 @@ should be able to be added at any place in this file.
 <action name="SafeBrowsing.AccountIntegration.DisabledDialog.Shown"
     not_user_triggered="true">
   <owner>awado@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>The ESB disabled dialog was shown to the user.</description>
 </action>
 
 <action name="SafeBrowsing.AccountIntegration.EnabledDialog.Dismissed">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>The ESB enabled dialog was dismissed.</description>
 </action>
 
 <action name="SafeBrowsing.AccountIntegration.EnabledDialog.OkButtonClicked">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the OK button on the ESB enabled dialog.
   </description>
@@ -39886,7 +39886,7 @@ should be able to be added at any place in this file.
 <action
     name="SafeBrowsing.AccountIntegration.EnabledDialog.SettingsButtonClicked">
   <owner>awado@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the settings button on the ESB enabled dialog.
   </description>
@@ -39895,25 +39895,25 @@ should be able to be added at any place in this file.
 <action name="SafeBrowsing.AccountIntegration.EnabledDialog.Shown"
     not_user_triggered="true">
   <owner>jacastro@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>The ESB enabled dialog was shown to the user.</description>
 </action>
 
 <action name="SafeBrowsing.Download.WarningBypassed">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>User bypasses a download warning.</description>
 </action>
 
 <action name="SafeBrowsing.Download.WarningShown" not_user_triggered="true">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>A download warning is shown.</description>
 </action>
 
 <action name="SafeBrowsing.EsbDownloadRowPromo.Click">
   <owner>awado@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks on the Enhanced Safe Browsing (ESB) download row promotion on
     chrome://downloads.
@@ -39922,7 +39922,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.DisableSafeBrowsingClicked">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the disable Safe Browsing button in the Safe Browsing setting
     page.
@@ -39931,7 +39931,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.DisableSafeBrowsingDialogConfirmed">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the confirmed button on the disable Safe Browsing dialog in the
     Safe Browsing setting page.
@@ -39940,7 +39940,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.DisableSafeBrowsingDialogDenied">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the denied button on the disable Safe Browsing dialog in the
     Safe Browsing setting page.
@@ -39949,7 +39949,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.EnhancedProtectionClicked">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the exhanced protection button in the Safe Browsing setting
     page.
@@ -39968,7 +39968,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the enhanced protection expand arrow in the Safe Browsing
     setting page.
@@ -39978,7 +39978,7 @@ should be able to be added at any place in this file.
 <action name="SafeBrowsing.Settings.SafeBrowsingRowClicked">
   <obsolete>Renamed to Settings.SafeBrowsingRowExpanded.</obsolete>
   <owner>yawfrempong@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the safe browsing row expand arrow in the
     chrome://settings/security page.
@@ -39987,7 +39987,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.SafeBrowsingRowExpanded">
   <owner>yawfrempong@google.com</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the safe browsing row expand arrow in the
     chrome://settings/security page. This user action is the same as
@@ -39997,7 +39997,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.ShowedFromDefault">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     The Safe Browsing setting page is shown to the user. The user reaches the
     page from the default route.
@@ -40006,7 +40006,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.ShowedFromParentSettings">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     The Safe Browsing setting page is shown to the user. The user reaches the
     page from the parent settings.
@@ -40015,7 +40015,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.ShowedFromSafetyCheck">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     The Safe Browsing setting page is shown to the user. The user reaches the
     page from SafetyCheck.
@@ -40024,7 +40024,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.ShowedFromSecurityInterstitial">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     The Safe Browsing setting page is shown to the user. The user reaches the
     page from the security interstitial.
@@ -40033,7 +40033,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.ShowedFromSurfaceExplorerPromoSlinger">
   <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     The Safe Browsing setting page is shown to the user. The user reaches the
     page from Surface Explorer on NTP on Android.
@@ -40052,7 +40052,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.StandardProtectionClicked">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the standard protection button in the Safe Browsing setting
     page.
@@ -40061,7 +40061,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.Settings.StandardProtectionExpandArrowClicked">
   <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks the standard protection expand arrow in the Safe Browsing
     setting page.
@@ -40070,7 +40070,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.SyncedEsbDialog.OkButtonClicked">
   <owner>zackhan@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicked the ok button on the ESB synced to enabled dialog.
   </description>
@@ -40078,7 +40078,7 @@ should be able to be added at any place in this file.
 
 <action name="SafeBrowsing.SyncedEsbDialog.TurnOnButtonClicked">
   <owner>zackhan@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicked the turn on button to turn on ESB on the ESB synced to disabled
     dialog.

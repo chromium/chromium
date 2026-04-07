@@ -8103,7 +8103,7 @@
   },
   {
     "name": "report-unsafe-site",
-    "owners": [ "nwokedi@google.com", "chrome-counter-abuse-core@google.com" ],
+    "owners": [ "nwokedi@google.com", "chrome-counter-abuse-alerts@google.com" ],
     "expiry_milestone": 155
   },
   {
