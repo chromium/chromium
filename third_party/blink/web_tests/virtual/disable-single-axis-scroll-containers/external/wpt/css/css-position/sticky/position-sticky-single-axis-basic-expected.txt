@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Constraints apply independently across nested single-axis scrollers
+  assert_equals: Top constraint applies to outer scroller expected 10 but got -50
+[FAIL] Constraints correctly skip axes that are overflow: clip
+  assert_equals: Top constraint skips clip and applies to outer expected 10 but got -50
+Harness: the test ran to completion.
+

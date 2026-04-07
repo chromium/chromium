@@ -6378,15 +6378,12 @@
     "expires": "Dec 31, 2026"
   },
   {
-    "prefix": "single-axis-scroll-containers",
+    "prefix": "disable-single-axis-scroll-containers",
     "platforms": ["Linux", "Mac", "Win", "Android"],
     "bases": [
-      "external/wpt/css/css-position/sticky/position-sticky-single-axis-basic.html",
-      "external/wpt/css/css-position/sticky/position-sticky-single-axis-dynamic.html",
-      "external/wpt/css/css-position/sticky/position-sticky-single-axis-nested.html"
+      "external/wpt/css/css-position/sticky/"
     ],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-blink-features=SingleAxisScrollContainers"],
+    "args": ["--disable-blink-features=SingleAxisScrollContainers"],
     "owners": [
       "freedebreuil@google.com"
     ],

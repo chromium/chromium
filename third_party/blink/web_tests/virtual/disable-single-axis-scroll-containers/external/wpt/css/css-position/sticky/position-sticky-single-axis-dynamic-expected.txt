@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Sequential scrolling and dynamic constraint updates merge and remove correctly
+  assert_equals: Sticky top is applied after Y scroll expected 10 but got -50
+Harness: the test ran to completion.
+
