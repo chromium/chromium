@@ -58,6 +58,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchSource) -->
 
+<variants name="PopupType">
+  <variant name="AimPopup" summary="Context menu opened from aim popup"/>
+  <variant name="ClassicPopup"
+      summary="Context menu opened from classic popup"/>
+</variants>
+
 <histogram
     name="ContextualSearch.ActiveTabsCountOnContextMenuOpen.{ContextualSearchSource}"
     units="count" expires_after="2026-08-09">
@@ -897,6 +903,42 @@ chromium-metrics-reviews@google.com.
     false otherwise.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="{ContextualSearchSource}.AimEntrypoint.{PopupType}.ContextualElement.Clicked"
+    enum="ContextType" expires_after="2026-11-12">
+  <owner>mfacey@chromium.org</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the user opens the context menu in a WebUI searchbox (omnibox,
+    realbox, etc.) and selects a menu item. The file and image upload is
+    recorded when the user uploads a file or image with the file selector.
+
+    This metric logs which context menu item type is clicked.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+  <token key="PopupType" variants="PopupType"/>
+</histogram>
+
+<histogram
+    name="{ContextualSearchSource}.AimEntrypoint.{PopupType}.ContextualElement.Shown"
+    enum="ContextType" expires_after="2026-11-12">
+  <owner>mfacey@chromium.org</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the user opens the context menu in a WebUI searchbox (omnibox,
+    realbox, etc.).
+
+    This metric logs which context menu item types are shown when the context
+    menu is opened.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+  <token key="PopupType" variants="PopupType"/>
 </histogram>
 
 </histograms>

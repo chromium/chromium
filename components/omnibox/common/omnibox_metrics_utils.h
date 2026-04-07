@@ -30,7 +30,8 @@ enum class ContextType {
   kUnknown = 10,
   kMaxValue = kUnknown,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ContextType,//tools/metrics/histograms/metadata/omnibox/histograms.xml:ContextType)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextType,
+// //ui/webui/resources/cr_components/composebox/common.ts:ContextType)
 
 std::string GetToolModeString(omnibox::ToolMode mode);
 

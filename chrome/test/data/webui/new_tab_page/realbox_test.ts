@@ -6,6 +6,7 @@ import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {NtpSearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {ContextType} from 'chrome://resources/cr_components/composebox/common.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
@@ -567,5 +568,145 @@ suite('NewTabPageRealboxNextTest', () => {
     end = realbox.$.input.inputElement.selectionEnd!;
     assertEquals(start, end);
     assertEquals('goo'.length, start);
+  });
+
+  test('metrics are recorded for ToolMode clicks', async () => {
+    loadTimeData.overrideValues({
+      composeboxSource: 'TestSource',
+    });
+    realbox = createAndAppendRealbox({
+      composeButtonEnabled: true,
+      composeboxEnabled: true,
+      ntpRealboxNextEnabled: true,
+    });
+    await microtasksFinished();
+
+    const entrypointAndMenu = realbox.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
+      detail: {toolMode: ToolMode.kDeepSearch},
+    }));
+
+    const metricName =
+        'TestSource.AimEntrypoint.ClassicPopup.ContextualElement.Clicked';
+    assertEquals(1, metrics.count(metricName, ContextType.DEEP_RESEARCH));
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
+      detail: {toolMode: ToolMode.kImageGen},
+    }));
+    assertEquals(1, metrics.count(metricName, ContextType.IMAGE_GEN));
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
+      detail: {toolMode: ToolMode.kCanvas},
+    }));
+    assertEquals(1, metrics.count(metricName, ContextType.CANVAS));
+  });
+
+  test('metrics are recorded for ModelMode clicks', async () => {
+    loadTimeData.overrideValues({
+      composeboxSource: 'TestSource',
+    });
+    realbox = createAndAppendRealbox({
+      composeButtonEnabled: true,
+      composeboxEnabled: true,
+      ntpRealboxNextEnabled: true,
+    });
+    await microtasksFinished();
+
+    const entrypointAndMenu = realbox.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+
+    const metricName =
+        'TestSource.AimEntrypoint.ClassicPopup.ContextualElement.Clicked';
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+      detail: {model: ModelMode.kGeminiProAutoroute},
+    }));
+    assertEquals(1, metrics.count(metricName, ContextType.AUTO_MODEL));
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+      detail: {model: ModelMode.kGeminiPro},
+    }));
+    assertEquals(1, metrics.count(metricName, ContextType.THINKING_MODEL));
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+      detail: {model: ModelMode.kGeminiRegular},
+    }));
+    assertEquals(1, metrics.count(metricName, ContextType.REGULAR_MODEL));
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
+      detail: {model: ModelMode.kGeminiProNoGenUi},
+    }));
+    assertEquals(1, metrics.count(metricName, ContextType.PRO_NO_GEN_UI_MODEL));
+  });
+
+  test('metrics are recorded for file uploads', async () => {
+    loadTimeData.overrideValues({
+      composeboxSource: 'TestSource',
+    });
+    realbox = createAndAppendRealbox({
+      composeButtonEnabled: true,
+      composeboxEnabled: true,
+      ntpRealboxNextEnabled: true,
+    });
+    await microtasksFinished();
+
+    const fileInputs =
+        realbox.shadowRoot.querySelector('cr-composebox-file-inputs');
+    assertTrue(!!fileInputs);
+
+    const metricName =
+        'TestSource.AimEntrypoint.ClassicPopup.ContextualElement.Clicked';
+
+    const dataTransferImage = new DataTransfer();
+    dataTransferImage.items.add(
+        new File([''], 'test.png', {type: 'image/png'}));
+
+    fileInputs.dispatchEvent(new CustomEvent('file-change', {
+      detail: {files: dataTransferImage.files},
+    }));
+    assertEquals(1, metrics.count(metricName, ContextType.IMAGE));
+
+    const dataTransferFile = new DataTransfer();
+    dataTransferFile.items.add(
+        new File([''], 'test.pdf', {type: 'application/pdf'}));
+
+    fileInputs.dispatchEvent(new CustomEvent('file-change', {
+      detail: {files: dataTransferFile.files},
+    }));
+    assertEquals(1, metrics.count(metricName, ContextType.FILE));
+  });
+
+  test('metrics are recorded for tab additions', async () => {
+    loadTimeData.overrideValues({
+      composeboxSource: 'TestSource',
+    });
+    realbox = createAndAppendRealbox({
+      composeButtonEnabled: true,
+      composeboxEnabled: true,
+      ntpRealboxNextEnabled: true,
+    });
+    await microtasksFinished();
+
+    const entrypointAndMenu = realbox.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+
+    const metricName =
+        'TestSource.AimEntrypoint.ClassicPopup.ContextualElement.Clicked';
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('add-tab-context', {
+      detail: {
+        id: 1,
+        title: 'Title',
+        url: {url: 'http://test.com'},
+        delayUpload: false,
+        origin: 0,
+      },
+    }));
+    assertEquals(1, metrics.count(metricName, ContextType.TAB));
   });
 });
