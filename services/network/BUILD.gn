@@ -621,7 +621,6 @@ source_set("tests") {
     "//net:quic_test_tools",
     "//net:simple_quic_tools",
     "//net:test_support",
-    "//net/http:transport_security_state_unittest_data_default",
     "//services/network/attribution",
     "//services/network/attribution:tests",
     "//services/network/first_party_sets:first_party_sets_manager",
