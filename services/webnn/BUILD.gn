@@ -142,6 +142,8 @@ component("webnn_service") {
       "tflite/buffer_content_tflite.h",
       "tflite/context_impl_tflite.cc",
       "tflite/context_impl_tflite.h",
+      "tflite/context_provider_tflite.cc",
+      "tflite/context_provider_tflite.h",
       "tflite/graph_builder_tflite.cc",
       "tflite/graph_builder_tflite.h",
       "tflite/graph_impl_tflite.cc",

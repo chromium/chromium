@@ -70,7 +70,7 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
       context_->scheduler_task_runner(), std::move(callback));
 
   // Call ReadTensorImpl() implemented by a backend.
-  context_->gpu_sequence()->ScheduleGpuTask(base::BindOnce(
+  auto task = base::BindOnce(
       [](WebNNTensorImpl* self, ReadTensorCallback callback,
          ScopedTrace scoped_trace,
          mojo::ReportBadMessageCallback bad_message_cb) {
@@ -82,7 +82,16 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
         self->ReadTensorImpl(std::move(callback));
       },
       base::RetainedRef(this), std::move(mojo_callback_wrapper),
-      std::move(scoped_trace), GetMojoReceiver().GetBadMessageCallback()));
+      std::move(scoped_trace), GetMojoReceiver().GetBadMessageCallback());
+
+  if (context_->gpu_sequence()) {
+    context_->gpu_sequence()->ScheduleGpuTask(std::move(task));
+  } else {
+    // ReadTensor is bound to `owning_task_runner_` so the task runs directly
+    // on the current sequence.
+    DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+    std::move(task).Run();
+  }
 }
 
 void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
@@ -103,7 +112,7 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
   }
 
   // Call WriteTensorImpl() implemented by a backend.
-  context_->gpu_sequence()->ScheduleGpuTask(base::BindOnce(
+  auto task = base::BindOnce(
       [](WebNNTensorImpl* self, mojo_base::BigBuffer src_buffer,
          ScopedTrace scoped_trace,
          mojo::ReportBadMessageCallback bad_message_cb) {
@@ -115,7 +124,16 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
         self->WriteTensorImpl(std::move(src_buffer));
       },
       base::RetainedRef(this), std::move(src_buffer), std::move(scoped_trace),
-      GetMojoReceiver().GetBadMessageCallback()));
+      GetMojoReceiver().GetBadMessageCallback());
+
+  if (context_->gpu_sequence()) {
+    context_->gpu_sequence()->ScheduleGpuTask(std::move(task));
+  } else {
+    // WriteTensor is bound to `owning_task_runner_` so the task runs directly
+    // on the current sequence.
+    DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+    std::move(task).Run();
+  }
 }
 
 void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
@@ -123,6 +141,11 @@ void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
   ScopedTrace scoped_trace("WebNNTensorImpl::ImportTensor");
 
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  if (!context_->gpu_sequence()) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
@@ -161,6 +184,11 @@ void WebNNTensorImpl::ExportTensor(uint64_t flow_id,
   ScopedTrace scoped_trace("WebNNTensorImpl::ExportTensor");
 
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  if (!context_->gpu_sequence()) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }

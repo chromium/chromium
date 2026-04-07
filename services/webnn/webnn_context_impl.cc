@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "services/webnn/error.h"
@@ -33,6 +35,10 @@
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/tflite/buildflags.h"
+
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+#include "services/webnn/tflite/context_provider_tflite.h"
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 #include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
@@ -74,9 +80,37 @@ WebNNContextImpl::WebNNContextImpl(
       main_task_runner_(std::move(main_task_runner)),
       owning_task_runner_(std::move(owning_task_runner)),
       tracing_id_(g_next_webnn_context_tracing_id.GetNext()) {
+  InitializeContext(backend_uma);
+}
+
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+WebNNContextImpl::WebNNContextImpl(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    base::WeakPtr<tflite::ContextProviderTflite> tflite_context_provider,
+    WebNNContextImpl::ContextBackendUma backend_uma,
+    ContextProperties properties,
+    mojom::CreateContextOptionsPtr options,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+    : WebNNObjectBase<mojom::WebNNContext,
+                      blink::WebNNContextToken,
+                      mojo::Receiver<mojom::WebNNContext>>(std::move(receiver),
+                                                           owning_task_runner),
+      tflite_context_provider_(std::move(tflite_context_provider)),
+      is_tflite_context_provider_(true),
+      properties_(IntersectWithBaseProperties(std::move(properties))),
+      options_(std::move(options)),
+      memory_type_tracker_(base::MakeRefCounted<gpu::MemoryTracker>()),
+      main_task_runner_(std::move(main_task_runner)),
+      owning_task_runner_(std::move(owning_task_runner)),
+      tracing_id_(g_next_webnn_context_tracing_id.GetNext()) {
+  InitializeContext(backend_uma);
+}
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+
+void WebNNContextImpl::InitializeContext(ContextBackendUma backend_uma) {
   RecordContextBackendUma(backend_uma);
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  // Initialize XNNPACK
   const xnn_status status = xnn_initialize(/*allocator=*/nullptr);
   CHECK_EQ(status, xnn_status_success);
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
@@ -113,15 +147,26 @@ void WebNNContextImpl::RecordContextBackendUma(ContextBackendUma backend_uma) {
 }
 
 void WebNNContextImpl::OnDisconnect() {
-  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
+  base::OnceClosure remove_task;
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+  if (is_tflite_context_provider_) {
+    remove_task =
+        base::BindOnce(&tflite::ContextProviderTflite::RemoveWebNNContextImpl,
+                       tflite_context_provider_, handle());
+  }
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+
+  if (!remove_task) {
+    remove_task =
         base::BindOnce(&WebNNContextProviderImpl::RemoveWebNNContextImpl,
-                       context_provider_, handle()));
-    return;
+                       context_provider_, handle());
   }
 
-  context_provider_->RemoveWebNNContextImpl(handle());
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(FROM_HERE, std::move(remove_task));
+  } else {
+    std::move(remove_task).Run();
+  }
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -141,16 +186,27 @@ void WebNNContextImpl::DestroyAllContextsAndKillGpuProcess() {
 
 void WebNNContextImpl::CreateWeightsFile(
     base::OnceCallback<void(base::File)> callback) {
-  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &WebNNContextProviderImpl::CreateWeightsFile, context_provider_,
-            base::BindPostTaskToCurrentDefault(std::move(callback))));
-    return;
+  base::OnceClosure create_task;
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+  if (is_tflite_context_provider_) {
+    create_task =
+        base::BindOnce(&tflite::ContextProviderTflite::CreateWeightsFile,
+                       tflite_context_provider_,
+                       base::BindPostTaskToCurrentDefault(std::move(callback)));
+  }
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+
+  if (!create_task) {
+    create_task = base::BindOnce(
+        &WebNNContextProviderImpl::CreateWeightsFile, context_provider_,
+        base::BindPostTaskToCurrentDefault(std::move(callback)));
   }
 
-  context_provider_->CreateWeightsFile(std::move(callback));
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(FROM_HERE, std::move(create_task));
+  } else {
+    std::move(create_task).Run();
+  }
 }
 
 void WebNNContextImpl::ReportBadGraphBuilderMessage(
@@ -246,9 +302,12 @@ void WebNNContextImpl::CreateTensor(
   tensor_impls_.emplace(*std::move(result));
 }
 
-const scoped_refptr<gpu::SchedulerTaskRunner>&
+scoped_refptr<base::SequencedTaskRunner>
 WebNNContextImpl::scheduler_task_runner() const {
-  return gpu_sequence_->scheduler_task_runner();
+  if (gpu_sequence_) {
+    return gpu_sequence_->scheduler_task_runner();
+  }
+  return owning_task_runner_;
 }
 
 ScopedGpuSequence* WebNNContextImpl::gpu_sequence() const {
@@ -310,6 +369,22 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   // WebNN graph constants cannot be shared since they may not be readable.
   if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  // SharedImageManager is not available when running without GPU
+  // dependencies. WebGPU interop requires GPU process resources.
+  if (!shared_image_manager_) {
+    std::move(callback).Run(ToError<mojom::CreateTensorResult>(
+        mojom::Error::Code::kNotSupportedError,
+        "WebGPU interop is not supported in this context."));
+    return;
+  }
+
+  if (!gpu_sequence_) {
+    std::move(callback).Run(ToError<mojom::CreateTensorResult>(
+        mojom::Error::Code::kNotSupportedError,
+        "WebGPU interop is not supported without a GPU sequence."));
     return;
   }
 
@@ -397,13 +472,20 @@ void WebNNContextImpl::RemoveWebNNGraphImpl(
 }
 
 void WebNNContextImpl::OnLost(const std::string& reason) {
-  ScheduleGpuTaskWithThisContext(base::BindOnce(
+  auto task = base::BindOnce(
       [](const std::string& reason, WebNNContextImpl& self) {
         self.GetMojoReceiver().ResetWithReason(
             /*custom_reason_code=*/0, reason);
         self.OnDisconnect();
       },
-      reason));
+      reason);
+
+  if (gpu_sequence_) {
+    ScheduleGpuTaskWithThisContext(std::move(task));
+  } else {
+    // Run directly on the current sequence when there is no GPU sequence.
+    std::move(task).Run(*this);
+  }
 }
 
 void WebNNContextImpl::ScheduleGpuTaskWithThisContext(

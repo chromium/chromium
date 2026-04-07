@@ -185,41 +185,49 @@ void WebNNGraphImpl::Dispatch(
   }
 
   // Call DispatchImpl() implemented by an `mojom::WebNNGraph` backend.
-  context_->gpu_sequence()->ScheduleGpuTask(
-      base::BindOnce(
-          [](WebNNGraphImpl* self,
-             base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
-                 name_to_input_tensor_map,
-             base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
-                 name_to_output_tensor_map,
-             ScopedTrace scoped_trace,
-             mojo::ReportBadMessageCallback bad_message_cb) {
-            for (auto& [name, tensor] : name_to_input_tensor_map) {
-              if (tensor->is_exported()) {
-                LOG(ERROR)
-                    << "[WebNN] Invalid to dispatch graph when input tensor (" +
-                           name + ") is exported.";
-                std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
-                return;
-              }
-            }
+  auto task = base::BindOnce(
+      [](WebNNGraphImpl* self,
+         base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+             name_to_input_tensor_map,
+         base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+             name_to_output_tensor_map,
+         ScopedTrace scoped_trace,
+         mojo::ReportBadMessageCallback bad_message_cb) {
+        for (auto& [name, tensor] : name_to_input_tensor_map) {
+          if (tensor->is_exported()) {
+            LOG(ERROR)
+                << "[WebNN] Invalid to dispatch graph when input tensor (" +
+                       name + ") is exported.";
+            std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+            return;
+          }
+        }
 
-            for (auto& [name, tensor] : name_to_output_tensor_map) {
-              if (tensor->is_exported()) {
-                LOG(ERROR) << "[WebNN] Invalid to dispatch graph when output "
-                              "tensor (" +
-                                  name + ") is exported.";
-                std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
-                return;
-              }
-            }
+        for (auto& [name, tensor] : name_to_output_tensor_map) {
+          if (tensor->is_exported()) {
+            LOG(ERROR) << "[WebNN] Invalid to dispatch graph when output "
+                          "tensor (" +
+                              name + ") is exported.";
+            std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+            return;
+          }
+        }
 
-            self->DispatchImpl(std::move(name_to_input_tensor_map),
-                               std::move(name_to_output_tensor_map));
-          },
-          base::RetainedRef(this), std::move(name_to_input_tensor_map),
-          std::move(name_to_output_tensor_map), std::move(scoped_trace),
-          GetMojoReceiver().GetBadMessageCallback()));
+        self->DispatchImpl(std::move(name_to_input_tensor_map),
+                           std::move(name_to_output_tensor_map));
+      },
+      base::RetainedRef(this), std::move(name_to_input_tensor_map),
+      std::move(name_to_output_tensor_map), std::move(scoped_trace),
+      GetMojoReceiver().GetBadMessageCallback());
+
+  if (context_->gpu_sequence()) {
+    context_->gpu_sequence()->ScheduleGpuTask(std::move(task));
+  } else {
+    // Dispatch is bound to `owning_task_runner_` so the task runs directly
+    // on the current sequence.
+    DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+    std::move(task).Run();
+  }
 }
 
 }  // namespace webnn

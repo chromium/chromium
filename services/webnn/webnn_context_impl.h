@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
+#include "services/webnn/buildflags.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
@@ -43,6 +44,12 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
+
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+namespace tflite {
+class ContextProviderTflite;
+}
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 class WebNNContextProviderImpl;
 class WebNNGraphBuilderImpl;
@@ -96,6 +103,19 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+  // Constructor for running without GPU dependencies (e.g., TFLite in the
+  // renderer process).
+  WebNNContextImpl(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      base::WeakPtr<tflite::ContextProviderTflite> tflite_context_provider,
+      WebNNContextImpl::ContextBackendUma backend_uma,
+      ContextProperties properties,
+      mojom::CreateContextOptionsPtr options,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
@@ -161,12 +181,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   // Exposes a SequencedTaskRunner which can be used to schedule tasks in
   // sequence with this WebNNContext -- that is, on the same gpu::Scheduler
-  // sequence. Does not support nested loops or delayed tasks.
-  const scoped_refptr<gpu::SchedulerTaskRunner>& scheduler_task_runner() const;
+  // sequence. When running without a GPU sequence, returns the owning task
+  // runner. Does not support nested loops or delayed tasks.
+  scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner() const;
 
   // Exposes the ScopedGpuSequence which can be used to schedule tasks
   // in sequence with this WebNNContext -- that is, on the same gpu::Scheduler
-  // sequence.
+  // sequence. May be null when running without GPU dependencies.
   ScopedGpuSequence* gpu_sequence() const;
 
   // Returns true if the data pipe consumer handle for WriteTensor() is valid.
@@ -273,6 +294,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // `context_provider_->main_thread_task_runner()` runs tasks.
   base::WeakPtr<WebNNContextProviderImpl> context_provider_;
 
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+  // For tflite renderer process. Only dereference on main_task_runner_.
+  base::WeakPtr<tflite::ContextProviderTflite> tflite_context_provider_;
+
+  // True when this context is owned by a ContextProviderTflite (renderer
+  // process). This flag is thread-safe to read since it is set at construction
+  // and never modified.
+  const bool is_tflite_context_provider_ = false;
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+
   // Context properties reported to the renderer process.
   const ContextProperties properties_;
 
@@ -298,6 +329,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
  private:
   friend class base::DeleteHelper<WebNNContextImpl>;
+
+  // Common initialization shared by both constructors.
+  void InitializeContext(ContextBackendUma backend_uma);
 
   void OnDisconnect() override;
 
@@ -327,6 +361,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   mojo::ScopedDataPipeProducerHandle read_tensor_producer_;
 
   // The SharedImageManager is used for creating tensors from shared images.
+  // May be null when running without GPU dependencies.
+  //
   // It is provided by the provider but stored per context, because only the
   // SharedImageManager is thread-safe.
   //
@@ -334,13 +370,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // provider and cannot outlive it, while the SharedImageManager is managed by
   // the GPU service and destroyed after the provider, ensuring the raw pointer
   // remains valid.
-  const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
+  const raw_ptr<gpu::SharedImageManager> shared_image_manager_ = nullptr;
 
   // Task runner used to remove this context from its provider.
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
-  // The owning_task_runner is the underlying single-thread runner for the GPU
-  // sequence.
+  // The owning_task_runner is the underlying task runner for the context.
   scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner_;
 
   // A process-unique ID used for disambiguating memory dumps from different
