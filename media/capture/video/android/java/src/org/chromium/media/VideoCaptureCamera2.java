@@ -4,7 +4,10 @@
 
 package org.chromium.media;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.hardware.HardwareBuffer;
@@ -1725,6 +1728,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
+    private @Nullable BroadcastReceiver mInteractiveStateReceiver;
+
     VideoCaptureCamera2(int id, long nativeVideoCaptureDeviceAndroid) {
         super(id, nativeVideoCaptureDeviceAndroid);
 
@@ -1757,7 +1762,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
             int height,
             int frameRate,
             boolean enableFaceDetection,
-            boolean useHardwareBuffers) {
+            boolean useHardwareBuffers,
+            boolean enableBackgroundMediaCapturing) {
         Log.d(TAG, "allocate: requested (%d x %d) @%dfps", width, height, frameRate);
         dCheckCurrentlyOnIncomingTaskRunner();
         synchronized (mCameraStateLock) {
@@ -1829,12 +1835,39 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
         mEnableFaceDetection = enableFaceDetection;
         mUseHardwareBuffers = useHardwareBuffers;
+
+        if (enableBackgroundMediaCapturing && mInteractiveStateReceiver == null) {
+            mInteractiveStateReceiver =
+                    new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                                onInteractiveStateChanged(false);
+                            } else if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
+                                onInteractiveStateChanged(true);
+                            }
+                        }
+                    };
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            filter.addAction(Intent.ACTION_SCREEN_ON);
+            ContextUtils.registerProtectedBroadcastReceiver(
+                    ContextUtils.getApplicationContext(), mInteractiveStateReceiver, filter);
+        }
+
         return true;
     }
 
     @Override
     public boolean startCaptureMaybeAsync() {
         dCheckCurrentlyOnIncomingTaskRunner();
+
+        synchronized (mCameraStateLock) {
+            if (mCameraState != CameraState.STOPPED) {
+                Log.d(TAG, "startCaptureMaybeAsync: Camera is not stopped, ignoring.");
+                return true;
+            }
+        }
 
         changeCameraStateAndNotify(CameraState.OPENING);
         final CameraManager manager =
@@ -1949,6 +1982,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
     @Override
     public void deallocateInternal() {
+        dCheckCurrentlyOnIncomingTaskRunner();
+        if (mInteractiveStateReceiver != null) {
+            ContextUtils.getApplicationContext().unregisterReceiver(mInteractiveStateReceiver);
+            mInteractiveStateReceiver = null;
+        }
         Log.d(TAG, "deallocate");
     }
 }

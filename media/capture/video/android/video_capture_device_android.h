@@ -147,11 +147,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
                     int64_t callback_id,
                     const base::android::JavaRef<jbyteArray>& data);
 
-  // Implement org.chromium.media.VideoCapture.nativeOnStarted.
+  // Implement org.chromium.media.VideoCapture.Natives.onStarted.
   void OnStarted(JNIEnv* env);
 
   // Implement
-  // org.chromium.media.VideoCapture.nativeDCheckCurrentlyOnIncomingTaskRunner.
+  // org.chromium.media.VideoCapture.Natives.onInteractiveStateChanged.
+  void OnInteractiveStateChanged(JNIEnv* env, bool is_interactive);
+
+  // Implement
+  // org.chromium.media.VideoCapture.Natives.dCheckCurrentlyOnIncomingTaskRunner.
   void DCheckCurrentlyOnIncomingTaskRunner(JNIEnv* env);
 
   void ConfigureForTesting();
@@ -186,6 +190,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   void SetErrorState(media::VideoCaptureError error,
                      const base::Location& from_here,
                      const std::string& reason);
+
+  void OnInteractiveStateChangedOnMainThread(bool is_interactive);
 
   void DoGetPhotoState(GetPhotoStateCallback callback);
   void DoSetPhotoOptions(mojom::PhotoSettingsPtr settings,

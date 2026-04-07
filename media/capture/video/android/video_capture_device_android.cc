@@ -20,10 +20,12 @@
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -170,13 +172,15 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
 
   bool enable_hardware_buffer_capture =
       media::IsAndroidZeroCopyVideoCaptureEnabled(gpu_workarounds_);
+  bool enable_background_media_capturing = base::FeatureList::IsEnabled(
+      media::kAndroidEnableBackgroundMediaCapturing);
 
   JNIEnv* env = AttachCurrentThread();
   bool ret = Java_VideoCapture_allocate(
       env, j_capture_, params.requested_format.frame_size.width(),
       params.requested_format.frame_size.height(),
       params.requested_format.frame_rate, params.enable_face_detection,
-      enable_hardware_buffer_capture);
+      enable_hardware_buffer_capture, enable_background_media_capturing);
   if (!ret) {
     SetErrorState(media::VideoCaptureError::kAndroidFailedToAllocate, FROM_HERE,
                   "failed to allocate");
@@ -745,6 +749,27 @@ void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
       data, length, capture_format_, color_space, rotation, false /* flip_y */,
       reference_time, timestamp,
       /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
+}
+
+void VideoCaptureDeviceAndroid::OnInteractiveStateChanged(JNIEnv* env,
+                                                          bool is_interactive) {
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &VideoCaptureDeviceAndroid::OnInteractiveStateChangedOnMainThread,
+          weak_ptr_factory_.GetWeakPtr(), is_interactive));
+}
+
+void VideoCaptureDeviceAndroid::OnInteractiveStateChangedOnMainThread(
+    bool is_interactive) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  JNIEnv* env = AttachCurrentThread();
+  if (is_interactive) {
+    Java_VideoCapture_startCaptureMaybeAsync(env, j_capture_);
+  } else {
+    Java_VideoCapture_stopCaptureAndBlockUntilStopped(env, j_capture_);
+  }
 }
 
 VideoPixelFormat VideoCaptureDeviceAndroid::GetPixelFormat() {
