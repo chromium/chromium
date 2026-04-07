@@ -49,7 +49,7 @@ class PLATFORM_EXPORT DistanceEffect final {
   // used
   double Gain(double distance);
 
-  ModelType Model() { return model_; }
+  ModelType Model() const { return model_; }
 
   void SetModel(ModelType model) { model_ = model; }
 

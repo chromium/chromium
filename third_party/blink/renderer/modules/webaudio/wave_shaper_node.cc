@@ -140,8 +140,7 @@ void WaveShaperNode::setOversample(const V8OverSampleType& type) {
 }
 
 V8OverSampleType WaveShaperNode::oversample() const {
-  return V8OverSampleType(
-      const_cast<WaveShaperNode*>(this)->GetWaveShaperHandler().Oversample());
+  return V8OverSampleType(GetWaveShaperHandler().Oversample());
 }
 
 void WaveShaperNode::ReportDidCreate() {

@@ -403,7 +403,7 @@ bool PannerHandler::SetPanningModel(Panner::PanningModel model) {
 }
 
 V8DistanceModelType::Enum PannerHandler::DistanceModel() const {
-  switch (const_cast<PannerHandler*>(this)->distance_effect_.Model()) {
+  switch (distance_effect_.Model()) {
     case DistanceEffect::kModelLinear:
       return V8DistanceModelType::Enum::kLinear;
     case DistanceEffect::kModelInverse:
