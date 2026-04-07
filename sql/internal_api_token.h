@@ -5,6 +5,8 @@
 #ifndef SQL_INTERNAL_API_TOKEN_H_
 #define SQL_INTERNAL_API_TOKEN_H_
 
+#include "base/gtest_prod_util.h"
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -30,6 +32,8 @@ class InternalApiToken {
   friend class Transaction;
   friend struct test::ColumnInfo;
   friend bool test::CorruptSizeInHeader(const base::FilePath&);
+
+  FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
 };
 
 }  // namespace sql

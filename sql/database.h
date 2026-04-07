@@ -50,10 +50,6 @@ struct sqlite3;
 struct sqlite3_file;
 struct sqlite3_stmt;
 
-namespace base::trace_event {
-class ProcessMemoryDump;
-}  // namespace base::trace_event
-
 namespace perfetto {
 class NamedTrack;
 }
@@ -493,7 +489,10 @@ class COMPONENT_EXPORT(SQL) Database {
   bool UseWALMode() const;
 
   // Opt out of memory-mapped file I/O.
-  void set_mmap_disabled() { mmap_disabled_ = true; }
+  void set_mmap_disabled() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    mmap_disabled_ = true;
+  }
 
   // Set an error-handling callback.  On errors, the error number (and
   // statement, if available) will be passed to the callback.
@@ -511,13 +510,20 @@ class COMPONENT_EXPORT(SQL) Database {
   // The callback will never be called after the Database instance is destroyed.
   using ErrorCallback = base::RepeatingCallback<void(int, Statement*)>;
   void set_error_callback(ErrorCallback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!callback.is_null()) << "Use reset_error_callback() explicitly";
     DCHECK(error_callback_.is_null())
         << "Overwriting previously set error callback";
     error_callback_ = std::move(callback);
   }
-  void reset_error_callback() { error_callback_.Reset(); }
-  bool has_error_callback() const { return !error_callback_.is_null(); }
+  void reset_error_callback() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    error_callback_.Reset();
+  }
+  bool has_error_callback() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return !error_callback_.is_null();
+  }
 
   const std::string& histogram_tag() const { return histogram_tag_; }
 
@@ -541,10 +547,6 @@ class COMPONENT_EXPORT(SQL) Database {
   std::string GetDiagnosticInfo(int extended_error,
                                 Statement* statement,
                                 DatabaseDiagnostics* diagnostics = nullptr);
-
-  // Reports memory usage into provided memory dump with the given name.
-  bool ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
-                         const std::string& dump_name);
 
   // Initialization ------------------------------------------------------------
 
@@ -671,6 +673,7 @@ class COMPONENT_EXPORT(SQL) Database {
   void RollbackAllTransactions();
 
   bool HasActiveTransactions() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_GE(transaction_nesting_, 0);
     return is_open() && transaction_nesting_ > 0;
   }
@@ -679,7 +682,10 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // Returns the current transaction nesting, which will be 0 if there are
   // no open transactions.
-  int transaction_nesting() const { return transaction_nesting_; }
+  int transaction_nesting() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return transaction_nesting_;
+  }
 
   // Attached databases---------------------------------------------------------
 
@@ -900,8 +906,14 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Internal state accessed by other classes in //sql.
   base::WeakPtr<Database> GetWeakPtr(InternalApiToken);
-  sqlite3* db(InternalApiToken) const { return db_; }
-  base::FilePath DbPath(InternalApiToken) const { return DbPath(); }
+  sqlite3* db(InternalApiToken) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return db_;
+  }
+  base::FilePath DbPath(InternalApiToken) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return DbPath();
+  }
 
   // Interface with sql::test::ScopedErrorExpecter.
   using ScopedErrorExpecterCallback = base::RepeatingCallback<bool(int)>;
@@ -919,7 +931,6 @@ class COMPONENT_EXPORT(SQL) Database {
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, CollectDiagnosticInfo);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, OnMemoryDump);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, RegisterIntentToUpload);
-  FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
 
   // A scoped utility to setup error reporting during the `Open()` operation
@@ -941,17 +952,20 @@ class COMPONENT_EXPORT(SQL) Database {
   };
 
   // Invoke `open_error_reporting_callback_` if it's set.
-  void MaybeReportErrorDuringOpen(SqliteResultCode code);
+  void MaybeReportErrorDuringOpen(SqliteResultCode code)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Implements Open(), OpenInMemory().
   //
   // `db_file_path` is a UTF-8 path to the file storing the database pages. If
   // `file_name` is the SQLite magic memory path :memory:, the database will be
   // opened in-memory.
-  bool OpenInternal(const std::string& file_name);
+  bool OpenInternal(const std::string& file_name)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Requests the operating system to preload the pages on disk into memory.
-  void PreloadInternal(const base::FilePath& path);
+  void PreloadInternal(const base::FilePath& path)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Configures the underlying sqlite3* object via sqlite3_db_config().
   //
@@ -959,16 +973,18 @@ class COMPONENT_EXPORT(SQL) Database {
   // this method must be called right after the underlying sqlite3* object is
   // obtained from sqlite3_open*(), before any other sqlite3_*() methods are
   // called on the object.
-  void ConfigureSqliteDatabaseObject();
+  void ConfigureSqliteDatabaseObject()
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Internal close function used by Close() and RazeAndPoison().
   // |forced| indicates that orderly-shutdown checks should not apply.
-  void CloseInternal(bool forced);
+  void CloseInternal(bool forced) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Called when a blob opened with `GetStreamingBlob()` is closed. `result` may
   // or may not be an error; if it is, `error_source` identifies which sqlite3
   // call caused the error.
-  void OnStreamingBlobClosed(SqliteResultCode result, const char* error_source);
+  void OnStreamingBlobClosed(SqliteResultCode result, const char* error_source)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Construct a ScopedBlockingCall to annotate IO calls, but only if
   // database wasn't open in memory. ScopedBlockingCall uses |from_here| to
@@ -976,12 +992,14 @@ class COMPONENT_EXPORT(SQL) Database {
   void InitScopedBlockingCall(
       const base::Location& from_here,
       std::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!in_memory_)
       scoped_blocking_call->emplace(from_here, base::BlockingType::MAY_BLOCK);
   }
 
   // Internal helper for Does*Exist() functions.
-  bool DoesSchemaItemExist(std::string_view name, std::string_view type);
+  bool DoesSchemaItemExist(std::string_view name, std::string_view type)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // A function registered with SQLite that is called each time data is
   // committed to a database in WAL mode; see
@@ -990,7 +1008,8 @@ class COMPONENT_EXPORT(SQL) Database {
                            sqlite3* db_handle,
                            const char* db_name,
                            int pages);
-  void OnWalDataCommit(base::cstring_view db_name, int pages);
+  void OnWalDataCommit(base::cstring_view db_name, int pages)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Checkpoints `db_name` ("main" in the general case). `is_auto_checkpoint`
   // indicates whether this initiates from the WAL commit hook (true) or a call
@@ -1106,12 +1125,14 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Executes a rollback statement, ignoring all transaction state. Used
   // internally in the transaction management code.
-  void DoRollback();
+  void DoRollback() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Called by a StatementRef when it's being created or destroyed. See
   // open_statements_ below.
-  void StatementRefCreated(StatementRef* ref);
-  void StatementRefDeleted(StatementRef* ref);
+  void StatementRefCreated(StatementRef* ref)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void StatementRefDeleted(StatementRef* ref)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Used by sql:: internals to report a SQLite error related to this database.
   //
@@ -1129,7 +1150,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Raze the database to the ground. This is the internal version called by
   // Raze(...).
-  bool RazeInternal();
+  bool RazeInternal() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Like Execute(), but returns a SQLite result code.
   //
@@ -1139,15 +1160,17 @@ class COMPONENT_EXPORT(SQL) Database {
   // This method is only exposed to the Database implementation. Code that uses
   // sql::Database should not be concerned with SQLite result codes.
   [[nodiscard]] SqliteResultCode ExecuteAndReturnResultCode(
-      base::cstring_view sql);
+      base::cstring_view sql) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Like |Execute()|, but retries if the database is locked.
   [[nodiscard]] bool ExecuteWithTimeout(base::cstring_view sql,
-                                        base::TimeDelta ms_timeout);
+                                        base::TimeDelta ms_timeout)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Implementation helper for GetUniqueStatement() and GetCachedStatement().
   scoped_refptr<StatementRef> GetStatementImpl(base::cstring_view sql,
-                                               bool is_readonly);
+                                               bool is_readonly)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Release page-cache memory if memory-mapped I/O is enabled and the database
   // was changed.  Passing true for |implicit_change_performed| allows
@@ -1175,7 +1198,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // the case for in-memory databases.
   //
   // This method must only be called while the database is successfully opened.
-  sqlite3_file* GetSqliteVfsFile();
+  sqlite3_file* GetSqliteVfsFile() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Records a histogram named `name_prefix` suffixed with this database's
   // histogram tag. For instance, `RecordTimingHistogram("Foo.", ...)` called on
@@ -1187,14 +1210,14 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Returns the name of the track in which to record this database's events
   // based on its histogram tag.
-  perfetto::NamedTrack GetTracingNamedTrack() const;
+  perfetto::NamedTrack GetTracingNamedTrack() const
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Will eventually be checked on all methods. See https://crbug.com/1306694
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The actual sqlite database. Will be null before Init has been called or if
   // Init resulted in an error.
-  raw_ptr<sqlite3> db_ = nullptr;
+  raw_ptr<sqlite3> db_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Immutable options for the database.
   const DatabaseOptions options_;
@@ -1204,47 +1227,50 @@ class COMPONENT_EXPORT(SQL) Database {
   // flat_map is appropriate here because the codebase has ~400 cached
   // statements, and each statement is at most one insertion in the map
   // throughout a process' lifetime.
-  base::flat_map<StatementID, scoped_refptr<StatementRef>> statement_cache_;
+  base::flat_map<StatementID, scoped_refptr<StatementRef>> statement_cache_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A list of all StatementRefs we've given out. Each ref must register with
   // us when it's created or destroyed. This allows us to potentially close
   // any open statements when we encounter an error.
-  absl::flat_hash_set<raw_ptr<StatementRef>> open_statements_;
+  absl::flat_hash_set<raw_ptr<StatementRef>> open_statements_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The number of blobs open for streaming, tracked for debugging purposes.
-  size_t outstanding_blob_count_ = 0;
+  size_t outstanding_blob_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // When non-zero, indicates that `this` is inside `OnSqliteError()`.
-  size_t handling_error_nesting_ = 0;
+  size_t handling_error_nesting_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // Number of currently-nested transactions.
-  int transaction_nesting_ = 0;
+  int transaction_nesting_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // True if any of the currently nested transactions have been rolled back.
   // When we get to the outermost transaction, this will determine if we do
   // a rollback instead of a commit.
-  bool needs_rollback_ = false;
+  bool needs_rollback_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // True if database is open with OpenInMemory(), False if database is open
   // with Open().
-  bool in_memory_ = false;
+  bool in_memory_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // |true| if the Database was closed using RazeAndPoison().  Used
   // to enable diagnostics to distinguish calls to never-opened
   // databases (incorrect use of the API) from calls to once-valid
   // databases.
-  bool poisoned_ = false;
+  bool poisoned_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // |true| if SQLite memory-mapped I/O is not desired for this database.
-  bool mmap_disabled_;
+  bool mmap_disabled_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // |true| if SQLite memory-mapped I/O was enabled for this database.
   // Used by ReleaseCacheMemoryIfNeeded().
-  bool mmap_enabled_ = false;
+  bool mmap_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Used by ReleaseCacheMemoryIfNeeded() to track if new changes have happened
   // since memory was last released.
-  int64_t total_changes_at_last_release_ = 0;
+  int64_t total_changes_at_last_release_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      0;
 
   // Called when a SQLite error occurs.
   //
@@ -1255,30 +1281,33 @@ class COMPONENT_EXPORT(SQL) Database {
   // a straight-forward way to guarantee that this callback will not be called
   // after the Database instance goes out of scope. set_error_callback() makes
   // this guarantee.
-  ErrorCallback error_callback_;
+  ErrorCallback error_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Developer-friendly database ID used in logging output and memory dumps.
-  std::string histogram_tag_;
+  const std::string histogram_tag_;
 
   // Persist the track name as a member since perfetto needs the original string
   // for the name to remain alive (without taking ownership of it).
-  std::string tracing_track_name_;
+  const std::string tracing_track_name_;
 
   // Stores the dump provider object when db is open.
-  std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;
+  std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If set, this callback will be invoked when an sqlite error is triggered
   // during `OpenInternal` or `Execute`s triggered from `Open`.
-  base::RepeatingCallback<void(SqliteResultCode)>
-      open_error_reporting_callback_;
+  base::RepeatingCallback<void(SqliteResultCode)> open_error_reporting_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Weak factory for tracking lifetime of `this` (as opposed to
   // `weak_factory_`, which will also invalidate pointers if the database is
   // closed).
-  base::WeakPtrFactory<Database> weak_factory_lifetime_tracker_{this};
+  base::WeakPtrFactory<Database> weak_factory_lifetime_tracker_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   // Vends WeakPtr<Database> for internal scoping helpers.
-  base::WeakPtrFactory<Database> weak_factory_{this};
+  base::WeakPtrFactory<Database> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace sql

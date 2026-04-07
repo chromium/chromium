@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_HISTORY_TEST_UTIL_H_
 #define COMPONENTS_OMNIBOX_BROWSER_HISTORY_TEST_UTIL_H_
 
+#include "base/containers/span.h"
+
 namespace history {
 
-class HistoryDatabase;
+class HistoryService;
 class URLRow;
 
-void AddFakeURLToHistoryDB(HistoryDatabase* history_db, const URLRow& url_row);
+void AddFakeURLsToHistoryService(HistoryService* history_service,
+                                 base::span<const URLRow> url_rows);
 
 }  // namespace history
 

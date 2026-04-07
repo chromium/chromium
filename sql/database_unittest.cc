@@ -1904,6 +1904,7 @@ TEST_P(SQLDatabaseTest, OnMemoryDump) {
   base::trace_event::MemoryDumpArgs args = {
       base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
   base::trace_event::ProcessMemoryDump pmd(args);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(db_->sequence_checker_);
   ASSERT_TRUE(db_->memory_dump_provider_->OnMemoryDump(args, &pmd));
   EXPECT_GE(pmd.allocator_dumps().size(), 1u);
 }

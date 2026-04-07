@@ -423,11 +423,21 @@ bool LimitedInMemoryURLIndexTest::InitializeInMemoryURLIndexInSetUp() const {
 TEST_F(LimitedInMemoryURLIndexTest, Initialization) {
   // Verify that the database contains the expected number of items, which is
   // the pre-filtered count, i.e. all the items.
-  sql::Statement statement(GetDB().GetUniqueStatement("SELECT * FROM urls;"));
-  ASSERT_TRUE(statement.is_valid());
   uint64_t row_count = 0;
-  while (statement.Step())
-    ++row_count;
+  history_service_->ScheduleDBTaskForUI(base::BindLambdaForTesting(
+      [&](history::HistoryBackend* backend, history::URLDatabase* url_db) {
+        if (!url_db) {
+          return;
+        }
+        history::URLDatabase::URLEnumerator enumerator;
+        if (url_db->InitURLEnumeratorForEverything(&enumerator)) {
+          history::URLRow row;
+          while (enumerator.GetNextURL(&row)) {
+            ++row_count;
+          }
+        }
+      }));
+  BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   EXPECT_EQ(1U, row_count);
 
   InitializeInMemoryURLIndex();

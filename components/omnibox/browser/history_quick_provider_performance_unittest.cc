@@ -160,8 +160,13 @@ void HQPPerfTestOnePopularURL::PrepareData() {
                 "not be accurate.";
   constexpr size_t kSimilarUrlCount = 100;
 #endif
-  for (size_t i = 0; i < kSimilarUrlCount; ++i)
-    AddFakeURLToHistoryDB(history_backend()->db(), GeneratePopularURLRow());
+  std::vector<history::URLRow> rows;
+  rows.reserve(kSimilarUrlCount);
+  for (size_t i = 0; i < kSimilarUrlCount; ++i) {
+    rows.push_back(GeneratePopularURLRow());
+  }
+
+  history::AddFakeURLsToHistoryService(client_->GetHistoryService(), rows);
 }
 
 void HQPPerfTestOnePopularURL::PrintMeasurements(

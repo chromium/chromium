@@ -303,6 +303,7 @@ HistoryQuickProviderTest::GetTestData() {
 }
 
 void HistoryQuickProviderTest::FillData() {
+  std::vector<history::URLRow> rows;
   for (const auto& info : GetTestData()) {
     history::URLRow row{GURL(info.url)};
     ASSERT_TRUE(row.url().is_valid());
@@ -311,8 +312,10 @@ void HistoryQuickProviderTest::FillData() {
     row.set_typed_count(info.typed_count);
     row.set_last_visit(base::Time::Now() - base::Days(info.days_from_now));
 
-    AddFakeURLToHistoryDB(history_backend()->db(), row);
+    rows.push_back(row);
   }
+
+  history::AddFakeURLsToHistoryService(client_->GetHistoryService(), rows);
 }
 
 HistoryQuickProviderTest::SetShouldContain::SetShouldContain(
