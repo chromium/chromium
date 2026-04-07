@@ -57,7 +57,6 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
@@ -187,11 +186,10 @@ public class FeedSurfaceMediator
     public static void setPrefForTest(
             PrefChangeRegistrar prefChangeRegistrar, PrefService prefService) {
         sTestPrefChangeRegistar = prefChangeRegistrar;
-        sPrefServiceForTest = prefService;
+        FeedFeatures.setFakePrefsForTest(prefService);
     }
 
     private static @Nullable PrefChangeRegistrar sTestPrefChangeRegistar;
-    private static @Nullable PrefService sPrefServiceForTest;
     private static final int SPAN_COUNT_SMALL_WIDTH = 1;
     private static final int SPAN_COUNT_LARGE_WIDTH = 2;
     private static final int SMALL_WIDTH_DP = 700;
@@ -814,10 +812,8 @@ public class FeedSurfaceMediator
         return mTouchEnabled;
     }
 
-    // TODO(carlosk): replace with FeedFeatures.getPrefService().
     private PrefService getPrefService() {
-        if (sPrefServiceForTest != null) return sPrefServiceForTest;
-        return UserPrefs.get(mProfile);
+        return FeedFeatures.getPrefService(mProfile);
     }
 
     // TouchEnabledDelegate interface.
