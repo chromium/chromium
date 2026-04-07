@@ -177,7 +177,8 @@ int PacFileFetcherImpl::Fetch(
   // leading to a deadlock: fetching a PAC file might trigger a DBSC
   // session refresh, which in turn might require another PAC fetch
   // to resolve the proxy for the refresh request (crbug.com/483088603).
-  cur_request_->set_allows_device_bound_sessions(false);
+  cur_request_->set_device_bound_session_mode(
+      net::DeviceBoundSessionMode::kDisabled);
 
   cur_request_->set_isolation_info(isolation_info());
 

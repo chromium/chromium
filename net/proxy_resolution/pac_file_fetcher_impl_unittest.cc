@@ -44,6 +44,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/device_bound_session_mode.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_test_util.h"
@@ -101,7 +102,8 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
                          CompletionOnceCallback callback,
                          GURL* new_url) override {
     EXPECT_TRUE(request->load_flags() & LOAD_DISABLE_CERT_NETWORK_FETCHES);
-    EXPECT_FALSE(request->allows_device_bound_sessions());
+    EXPECT_EQ(request->device_bound_session_mode(),
+              DeviceBoundSessionMode::kDisabled);
     return OK;
   }
 };

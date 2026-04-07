@@ -1166,6 +1166,7 @@ component("net") {
     "storage_access_api/status.h",
     "url_request/clear_site_data.cc",
     "url_request/clear_site_data.h",
+    "url_request/device_bound_session_mode.h",
     "url_request/redirect_info.cc",
     "url_request/redirect_info.h",
     "url_request/redirect_util.cc",

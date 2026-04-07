@@ -58,6 +58,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/device_bound_session_mode.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -1366,7 +1367,8 @@ class URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest
     request_ = context_->CreateRequest(GURL("https://www.example.com"),
                                        DEFAULT_PRIORITY, &delegate_,
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
-    request_->set_allows_device_bound_sessions(true);
+    request_->set_device_bound_session_mode(
+        net::DeviceBoundSessionMode::kAllowed);
   }
 
   device_bound_sessions::SessionServiceMock& GetMockService() {
@@ -1766,7 +1768,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       GURL("wss://www.example.com"), DEFAULT_PRIORITY, &delegate_,
       TRAFFIC_ANNOTATION_FOR_TESTS, /*is_for_websockets=*/true);
-  request->set_allows_device_bound_sessions(true);
+  request->set_device_bound_session_mode(net::DeviceBoundSessionMode::kAllowed);
   HttpRequestHeaders headers = WebSocketCommonTestHeaders();
   request->SetExtraRequestHeaders(headers);
 

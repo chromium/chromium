@@ -4,6 +4,8 @@
 
 #include "net/device_bound_sessions/url_fetcher.h"
 
+#include "base/feature_list.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/url_request/url_request_context.h"
@@ -51,14 +53,23 @@ constexpr int kBufferSize = 4096;
 
 URLFetcher::URLFetcher(const URLRequestContext* context,
                        GURL url,
-                       std::optional<net::NetLogSource> net_log_source)
+                       std::optional<net::NetLogSource> net_log_source,
+                       bool is_refresh)
     : request_(context->CreateRequest(url,
                                       IDLE,
                                       this,
                                       kRegistrationTrafficAnnotation,
                                       /*is_for_websockets=*/false,
                                       net_log_source)),
-      buf_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)) {}
+      buf_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)) {
+  if (is_refresh &&
+      base::FeatureList::IsEnabled(
+          net::features::
+              kDeviceBoundSessionsBypassDeferralsForRefreshRequests)) {
+    request_->set_device_bound_session_mode(
+        net::DeviceBoundSessionMode::kBypassDeferral);
+  }
+}
 
 URLFetcher::~URLFetcher() = default;
 

@@ -243,8 +243,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       }
     }
 
-    url_fetcher_ = std::make_unique<URLFetcher>(context_, fetcher_endpoint_,
-                                                net_log_source_);
+    url_fetcher_ = std::make_unique<URLFetcher>(
+        context_, fetcher_endpoint_, net_log_source_, IsForRefreshRequest());
     ConfigureRequest(url_fetcher_->request());
     // `this` owns `url_fetcher_`, so it's safe to use
     // `base::Unretained`
@@ -310,8 +310,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     GURL::Replacements replacements;
     replacements.SetPathStr("/.well-known/device-bound-sessions");
     GURL well_known_url = provider_url_.ReplaceComponents(replacements);
-    url_fetcher_ =
-        std::make_unique<URLFetcher>(context_, well_known_url, net_log_source_);
+    // TODO(crbug.com/495096658): Assert that `IsForRefreshRequest()` is false
+    // once the tests are fixed.
+    url_fetcher_ = std::make_unique<URLFetcher>(
+        context_, well_known_url, net_log_source_, IsForRefreshRequest());
     url_fetcher_->request().set_method("GET");
     url_fetcher_->request().set_disallow_credentials();
     url_fetcher_->request().set_site_for_cookies(
@@ -360,8 +362,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     GURL::Replacements replacements;
     replacements.SetPathStr("/.well-known/device-bound-sessions");
     GURL well_known_url = fetcher_endpoint_.ReplaceComponents(replacements);
-    url_fetcher_ =
-        std::make_unique<URLFetcher>(context_, well_known_url, net_log_source_);
+    url_fetcher_ = std::make_unique<URLFetcher>(
+        context_, well_known_url, net_log_source_, IsForRefreshRequest());
     url_fetcher_->request().set_method("GET");
     url_fetcher_->request().set_disallow_credentials();
     url_fetcher_->request().set_site_for_cookies(
@@ -523,8 +525,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    url_fetcher_ = std::make_unique<URLFetcher>(context_, fetcher_endpoint_,
-                                                net_log_source_);
+    url_fetcher_ = std::make_unique<URLFetcher>(
+        context_, fetcher_endpoint_, net_log_source_, IsForRefreshRequest());
     ConfigureRequest(url_fetcher_->request());
     url_fetcher_->request().SetExtraRequestHeaderByName(
         kJwtSessionHeaderName, registration_token.value(),
@@ -719,8 +721,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       replacements.SetHostStr(session->origin().host());
       GURL well_known_url =
           fetcher_endpoint_.ReplaceComponents(std::move(replacements));
-      url_fetcher_ = std::make_unique<URLFetcher>(context_, well_known_url,
-                                                  net_log_source_);
+      url_fetcher_ = std::make_unique<URLFetcher>(
+          context_, well_known_url, net_log_source_, /*is_refresh=*/false);
       url_fetcher_->request().set_method("GET");
       url_fetcher_->request().set_disallow_credentials();
       url_fetcher_->request().set_site_for_cookies(

@@ -63,6 +63,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/device_bound_session_mode.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/storage_access_status_cache.h"
@@ -964,11 +965,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Whether this request is allowed to belong to a device bound session. This
   // includes registering a new session, accepting challenges, or deferring the
   // request until a session is refreshed.
-  bool allows_device_bound_sessions() const {
-    return allows_device_bound_sessions_;
+  DeviceBoundSessionMode device_bound_session_mode() const {
+    return device_bound_session_mode_;
   }
-  void set_allows_device_bound_sessions(bool allows_device_bound_sessions) {
-    allows_device_bound_sessions_ = allows_device_bound_sessions;
+  void set_device_bound_session_mode(DeviceBoundSessionMode mode) {
+    device_bound_session_mode_ = mode;
   }
 
   // Whether this request was in the scope of any device-bound session for this
@@ -1291,8 +1292,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
       device_bound_session_access_callback_;
 
-  // Whether the request is allowed to belong to a device bound session.
-  bool allows_device_bound_sessions_ = true;
+  // The mode for device bound sessions.
+  DeviceBoundSessionMode device_bound_session_mode_ =
+      DeviceBoundSessionMode::kAllowed;
   // How existing device-bound sessions for the request's site interacted with
   // this request.
   base::flat_map<device_bound_sessions::SessionKey,

@@ -18,6 +18,7 @@
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_usage.h"
+#include "net/url_request/device_bound_session_mode.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -67,7 +68,7 @@ class NET_EXPORT DbscRequest {
   bool ignore_unsafe_method_for_same_site_lax() const;
   const CookieAccessResultList& maybe_sent_cookies() const;
   NetworkDelegate* network_delegate() const;
-  bool allows_device_bound_sessions() const;
+  net::DeviceBoundSessionMode device_bound_session_mode() const;
   int load_flags() const;
 
   // Methods that need to do WebSocket normalization:

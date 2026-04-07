@@ -68,6 +68,7 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
   DeviceBoundSessionBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {net::features::kDeviceBoundSessions,
+         net::features::kDeviceBoundSessionsBypassDeferralsForRefreshRequests,
          unexportable_keys::
              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting},
         {});
@@ -507,12 +508,8 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
   ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
 }
 
-// This test is added for illustrative purposes to show how two DBSC sessions on
-// the same domain may run into deadlock.
-// TODO(crbug.com/495096658): Enable this test once the deadlock problem is
-// resolved.
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
-                       DISABLED_InterlockedDeviceBoundSessions) {
+                       InterlockedDeviceBoundSessions) {
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
 

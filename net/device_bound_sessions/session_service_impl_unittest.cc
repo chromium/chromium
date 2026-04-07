@@ -40,6 +40,7 @@
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 #include "net/log/test_net_log.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/url_request/device_bound_session_mode.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,6 +53,7 @@ using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
@@ -2390,14 +2392,18 @@ TEST_F(SessionServiceImplTest, SessionUsage) {
             SessionUsage::kDeferred);
 }
 
-TEST_F(SessionServiceImplTest, ShouldDeferRespectsAllowsDeviceBoundSessions) {
+class SessionServiceImplRequestModeTest
+    : public SessionServiceImplTest,
+      public ::testing::WithParamInterface<net::DeviceBoundSessionMode> {};
+
+TEST_P(SessionServiceImplRequestModeTest, ShouldDefer) {
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  request->set_allows_device_bound_sessions(false);
+  request->set_device_bound_session_mode(GetParam());
 
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
@@ -2405,15 +2411,18 @@ TEST_F(SessionServiceImplTest, ShouldDeferRespectsAllowsDeviceBoundSessions) {
       service().ShouldDefer(dbsc_request, &extra_headers,
                             FirstPartySetMetadata());
 
-  EXPECT_FALSE(deferral.has_value());
+  if (GetParam() == net::DeviceBoundSessionMode::kAllowed) {
+    EXPECT_TRUE(deferral.has_value());
+  } else {
+    EXPECT_FALSE(deferral.has_value());
+  }
 }
 
-TEST_F(SessionServiceImplTest,
-       HandleRegistrationHeaderRespectsAllowsDeviceBoundSessions) {
+TEST_P(SessionServiceImplRequestModeTest, HandleRegistrationHeader) {
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
-  request->set_allows_device_bound_sessions(false);
+  request->set_device_bound_session_mode(GetParam());
 
   auto headers = base::MakeRefCounted<HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   headers->AddHeader("Secure-Session-Registration",
@@ -2427,15 +2436,18 @@ TEST_F(SessionServiceImplTest,
   service().HandleResponseHeaders(dbsc_request, headers.get(),
                                   FirstPartySetMetadata());
 
-  // Registration should NOT be triggered.
   base::test::TestFuture<std::vector<SessionKey>> future;
   service().GetAllSessionsAsync(
       future.GetCallback<const std::vector<SessionKey>&>());
-  EXPECT_THAT(future.Get(), IsEmpty());
+
+  if (GetParam() == net::DeviceBoundSessionMode::kDisabled) {
+    EXPECT_THAT(future.Get(), IsEmpty());
+  } else {
+    EXPECT_THAT(future.Get(), Not(IsEmpty()));
+  }
 }
 
-TEST_F(SessionServiceImplTest,
-       HandleChallengeHeaderRespectsAllowsDeviceBoundSessions) {
+TEST_P(SessionServiceImplRequestModeTest, HandleChallengeHeader) {
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   SessionKey session_key{SchemefulSite(GURL(kOrigin)), Session::Id(kSessionId)};
   Session* session = service().GetSession(session_key);
@@ -2446,7 +2458,7 @@ TEST_F(SessionServiceImplTest,
   std::unique_ptr<URLRequest> request =
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  request->set_allows_device_bound_sessions(false);
+  request->set_device_bound_session_mode(GetParam());
 
   auto headers = base::MakeRefCounted<HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   headers->AddHeader("Secure-Session-Challenge",
@@ -2456,9 +2468,19 @@ TEST_F(SessionServiceImplTest,
   service().HandleResponseHeaders(dbsc_request, headers.get(),
                                   FirstPartySetMetadata());
 
-  // Challenge should NOT be stored.
-  EXPECT_FALSE(session->cached_challenge().has_value());
+  if (GetParam() == net::DeviceBoundSessionMode::kDisabled) {
+    EXPECT_FALSE(session->cached_challenge().has_value());
+  } else {
+    EXPECT_TRUE(session->cached_challenge().has_value());
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SessionServiceImplRequestModeTest,
+    ::testing::Values(net::DeviceBoundSessionMode::kDisabled,
+                      net::DeviceBoundSessionMode::kBypassDeferral,
+                      net::DeviceBoundSessionMode::kAllowed));
 
 }  // namespace
 

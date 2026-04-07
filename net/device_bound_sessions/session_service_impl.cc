@@ -473,7 +473,10 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
     DbscRequest& request,
     HttpRequestHeaders* extra_headers,
     const FirstPartySetMetadata& first_party_set_metadata) {
-  if (!request.allows_device_bound_sessions()) {
+  if (request.device_bound_session_mode() ==
+          net::DeviceBoundSessionMode::kDisabled ||
+      request.device_bound_session_mode() ==
+          net::DeviceBoundSessionMode::kBypassDeferral) {
     return std::nullopt;
   }
 
@@ -1452,9 +1455,8 @@ void SessionServiceImpl::HandleResponseHeaders(
     DbscRequest& request,
     HttpResponseHeaders* headers,
     const FirstPartySetMetadata& first_party_set_metadata) {
-  // Only process device bound session headers if the request allows device
-  // bound sessions.
-  if (!request.allows_device_bound_sessions()) {
+  if (request.device_bound_session_mode() ==
+      net::DeviceBoundSessionMode::kDisabled) {
     return;
   }
 

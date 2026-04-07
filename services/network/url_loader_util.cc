@@ -574,8 +574,10 @@ void ConfigureUrlRequest(const ResourceRequest& request,
     url_request.set_socket_tag(request.socket_tag);
   }
 
-  url_request.set_allows_device_bound_sessions(
-      request.allows_device_bound_sessions);
+  url_request.set_device_bound_session_mode(
+      request.allows_device_bound_sessions
+          ? net::DeviceBoundSessionMode::kAllowed
+          : net::DeviceBoundSessionMode::kDisabled);
 
   if (base::FeatureList::IsEnabled(features::kSendSameSiteLaxForFedCM) &&
       (request.destination == mojom::RequestDestination::kWebIdentity ||

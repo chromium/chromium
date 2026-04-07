@@ -441,6 +441,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessions);
 // across restarts. This feature is only valid if `kDeviceBoundSessions` is
 // enabled.
 NET_EXPORT BASE_DECLARE_FEATURE(kPersistDeviceBoundSessions);
+// This feature prevents deadlocks from recursive DBSC token refresh requests
+// by setting `device_bound_session_mode` to `kBypassDeferral` on DBSC refresh
+// requests.
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kDeviceBoundSessionsBypassDeferralsForRefreshRequests);
 // This feature enables the Device Bound Session Credentials refresh quota.
 // This behavior is expected by default; disabling it should only be for
 // testing purposes.
