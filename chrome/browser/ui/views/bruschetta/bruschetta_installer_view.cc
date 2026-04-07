@@ -505,8 +505,6 @@ void BruschettaInstallerView::OnStateUpdated() {
   if (progress_bar_visible) {
     progress_bar_->GetViewAccessibility().SetDescription(
         *secondary_message_label_);
-    progress_bar_->NotifyAccessibilityEventDeprecated(
-        ax::mojom::Event::kTextChanged, true);
   }
 
   DialogModelChanged();
@@ -525,15 +523,11 @@ void BruschettaInstallerView::OnColorModeChanged(bool dark_mode_enabled) {
 void BruschettaInstallerView::SetPrimaryMessageLabel() {
   primary_message_label_->SetText(GetPrimaryMessage());
   primary_message_label_->SetVisible(true);
-  primary_message_label_->NotifyAccessibilityEventDeprecated(
-      ax::mojom::Event::kTextChanged, true);
 }
 
 void BruschettaInstallerView::SetSecondaryMessageLabel() {
   secondary_message_label_->SetText(GetSecondaryMessage());
   secondary_message_label_->SetVisible(true);
-  secondary_message_label_->NotifyAccessibilityEventDeprecated(
-      ax::mojom::Event::kTextChanged, true);
 }
 
 void BruschettaInstallerView::CleanupPartialInstall() {
