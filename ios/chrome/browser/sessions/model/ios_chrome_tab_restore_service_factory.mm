@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 
-#include "base/functional/bind.h"
-#include "base/no_destructor.h"
-#include "components/sessions/core/tab_restore_service_impl.h"
-#include "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_client.h"
-#include "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "base/functional/bind.h"
+#import "base/no_destructor.h"
+#import "components/sessions/core/tab_restore_service_impl.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_client.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 
@@ -19,7 +20,7 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(ProfileIOS* profile) {
       std::make_unique<IOSChromeTabRestoreServiceClient>(
           profile->GetStatePath(), BrowserListFactory::GetForProfile(profile)),
       profile->GetPrefs(), /*time_factory=*/nullptr,
-      /*os_crypt_async=*/nullptr);
+      GetApplicationContext()->GetOSCryptAsync());
 }
 
 }  // namespace

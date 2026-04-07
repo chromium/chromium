@@ -1284,15 +1284,18 @@ std::string TestParamNameGenerator(
   return base::JoinString({session_type_name, encryption_name}, "_");
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    CommandStorageBackendParamTest,
-    ::testing::Values(TestParams(SessionType::kAppRestore, false),
-                      TestParams(SessionType::kAppRestore, true),
-                      TestParams(SessionType::kSessionRestore, false),
-                      TestParams(SessionType::kSessionRestore, true),
-                      TestParams(SessionType::kTabRestore, false),
-                      TestParams(SessionType::kTabRestore, true)),
-    TestParamNameGenerator);
+INSTANTIATE_TEST_SUITE_P(All,
+                         CommandStorageBackendParamTest,
+                         ::testing::Values(
+// On iOS, SessionRestore and AppRestore do not use CommandStorageBackend.
+#if !BUILDFLAG(IS_IOS)
+                             TestParams(SessionType::kAppRestore, false),
+                             TestParams(SessionType::kAppRestore, true),
+                             TestParams(SessionType::kSessionRestore, false),
+                             TestParams(SessionType::kSessionRestore, true),
+#endif  // !BUILDFLAG(IS_IOS)
+                             TestParams(SessionType::kTabRestore, false),
+                             TestParams(SessionType::kTabRestore, true)),
+                         TestParamNameGenerator);
 
 }  // namespace sessions

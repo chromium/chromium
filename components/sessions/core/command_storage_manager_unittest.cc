@@ -27,9 +27,7 @@ class CommandStorageManagerTest : public testing::Test {
     path_ = temp_dir_.GetPath();
     backend_task_runner_ =
         CommandStorageManager::CreateDefaultBackendTaskRunner();
-#if !BUILDFLAG(IS_IOS)
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(true);
-#endif
   }
 
   base::FilePath path_;

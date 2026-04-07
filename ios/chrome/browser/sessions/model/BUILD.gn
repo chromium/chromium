@@ -8,8 +8,8 @@ source_set("model") {
     "ios_chrome_tab_restore_browser_agent.mm",
     "ios_chrome_tab_restore_service_client.h",
     "ios_chrome_tab_restore_service_client.mm",
-    "ios_chrome_tab_restore_service_factory.cc",
     "ios_chrome_tab_restore_service_factory.h",
+    "ios_chrome_tab_restore_service_factory.mm",
     "live_tab_context_browser_agent.h",
     "live_tab_context_browser_agent.mm",
   ]
@@ -24,6 +24,7 @@ source_set("model") {
     ":session_util",
     "//base",
     "//components/tab_groups",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
