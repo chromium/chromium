@@ -123,6 +123,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/reading_list/core",
     "//components/reading_list/core:test_support",
+    "//components/send_tab_to_self:features",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",

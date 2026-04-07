@@ -2224,7 +2224,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (ActionRanking)basePageActions {
   ActionRanking actions;
 
-  if (send_tab_to_self::AreIOSTabRemindersEnabled()) {
+  if (send_tab_to_self::AreIOSTabRemindersEnabled() && !self.incognito) {
     actions.push_back(overflow_menu::ActionType::SetTabReminder);
   }
 
@@ -2309,9 +2309,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::AIPrototype:
       return self.AIPrototypeAction;
     case overflow_menu::ActionType::SetTabReminder:
-      return send_tab_to_self::AreIOSTabRemindersEnabled()
-                 ? self.setTabReminderAction
-                 : nil;
+      return (self.incognito || !send_tab_to_self::AreIOSTabRemindersEnabled())
+                 ? nil
+                 : self.setTabReminderAction;
     case overflow_menu::ActionType::ReaderMode:
       return self.readerModeAction;
     case overflow_menu::ActionType::AskBWG:

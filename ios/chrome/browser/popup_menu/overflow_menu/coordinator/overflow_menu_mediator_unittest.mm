@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/default_clock.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
@@ -30,6 +31,7 @@
 #import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -508,12 +510,19 @@ TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
 // Tests that the mediator is returning the right number of items and sections
 // for the Tools Menu type.
 TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(send_tab_to_self::kIOSTabReminders);
+
   CreateMediator(/*incognito=*/NO);
   mediator_.model = model_;
 
   NSUInteger number_of_action_items = 7;
 
   if (ios::provider::IsTextZoomEnabled()) {
+    number_of_action_items++;
+  }
+
+  if (send_tab_to_self::AreIOSTabRemindersEnabled() && !mediator_.incognito) {
     number_of_action_items++;
   }
 
@@ -561,6 +570,40 @@ TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnWebPage) {
 
   EXPECT_TRUE(HasItem(kToolsMenuNewTabId, /*enabled=*/YES));
   EXPECT_TRUE(HasItem(kToolsMenuSiteInformation, /*enabled=*/YES));
+}
+
+// Tests that the "Set Reminder" action is visible in regular mode.
+TEST_F(OverflowMenuMediatorTest, SetReminderIsVisibleInRegularMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(send_tab_to_self::kIOSTabReminders);
+
+  const GURL kUrl("https://chromium.test");
+  web_state_->SetCurrentURL(kUrl);
+  CreateMediator(/*incognito=*/NO);
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  EXPECT_TRUE(HasItem(kToolsMenuSetTabReminder, /*enabled=*/YES));
+}
+
+// Tests that the "Set Reminder" action is hidden in incognito mode.
+TEST_F(OverflowMenuMediatorTest, SetReminderIsHiddenInIncognitoMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(send_tab_to_self::kIOSTabReminders);
+
+  const GURL kUrl("https://chromium.test");
+  web_state_->SetCurrentURL(kUrl);
+  CreateMediator(/*incognito=*/YES);
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  EXPECT_FALSE(HasItem(kToolsMenuSetTabReminder, /*enabled=*/YES));
 }
 
 // Tests that the items returned by the mediator are correctly enabled on the
