@@ -59,19 +59,6 @@ interface LensPageHandlerFactory {
                     pending_remote<LensPage> page);
 };
 
-// Dynamic theme colors.
-struct OverlayTheme {
-  skia.mojom.SkColor primary;
-  skia.mojom.SkColor shader_layer_1;
-  skia.mojom.SkColor shader_layer_2;
-  skia.mojom.SkColor shader_layer_3;
-  skia.mojom.SkColor shader_layer_4;
-  skia.mojom.SkColor shader_layer_5;
-  skia.mojom.SkColor scrim;
-  skia.mojom.SkColor surface_container_highest_light;
-  skia.mojom.SkColor surface_container_highest_dark;
-  skia.mojom.SkColor selection_element;
-};
 
 // Browser-side handler for requests from WebUI page. (TypeScript -> C++)
 interface LensPageHandler {
@@ -261,8 +248,6 @@ interface LensPage {
   // cropped from the page screenshot.
   RegionTextReceived(Text text, bool is_injected_image);
 
-  // Passes the dynamic theme to WebUI.
-  ThemeReceived(OverlayTheme theme);
 
   // Sets whether the contextual searchbox should be shown to the user.
   ShouldShowContextualSearchBox(bool should_show);

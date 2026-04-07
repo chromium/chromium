@@ -7,9 +7,8 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getFallbackTheme, getShaderLayerColorRgbas, modifyRgbaTransparency} from './color_utils.js';
+import {getShaderLayerColorRgbas, modifyRgbaTransparency} from './color_utils.js';
 import {CubicBezier} from './cubic_bezier.js';
-import type {OverlayTheme} from './lens.mojom-webui.js';
 import {getTemplate} from './overlay_shimmer_canvas.html.js';
 import {SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
 import type {OverlayShimmerFocusedRegion, OverlayShimmerUnfocusRegion, Point} from './selection_utils.js';
@@ -263,11 +262,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       canvasWidth: Number,
       shaderLayerRgbaColors: {
         type: Array,
-        computed: 'computeShaderLayerColorRgbas(theme)',
-      },
-      theme: {
-        type: Object,
-        value: () => getFallbackTheme(),
+        computed: 'computeShaderLayerColorRgbas()',
       },
     };
   }
@@ -279,8 +274,6 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
   declare private canvasWidth: number;
   // Shader rgba colors.
   declare private shaderLayerRgbaColors: string[];
-  // The overlay theme.
-  declare private theme: OverlayTheme;
 
   // The properties of circles currently being rendered.
   private circles: ShimmerCircle[] = [];
@@ -458,7 +451,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
   }
 
   private computeShaderLayerColorRgbas() {
-    return getShaderLayerColorRgbas(this.theme);
+    return getShaderLayerColorRgbas();
   }
 
   private stepAnimation(timeMs: number) {

@@ -19,21 +19,17 @@ import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/c
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
-import {skColorToHexColor} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LensSearchboxElement} from '/lens/shared/searchbox/lens_searchbox.js';
 import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loader.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
-import {getFallbackTheme} from './color_utils.js';
 import type {CursorTooltipData, CursorTooltipElement} from './cursor_tooltip.js';
 import {CursorTooltipType} from './cursor_tooltip.js';
 import type {InitialGradientElement} from './initial_gradient.js';
-import type {OverlayTheme} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
@@ -164,10 +160,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         readOnly: true,
         value: () => loadTimeData.getBoolean('isRoutingToContextualTasks'),
       },
-      theme: {
-        type: Object,
-        value: getFallbackTheme,
-      },
       darkMode: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('darkMode'),
@@ -294,8 +286,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // Whether the button containers should be faded out.
   declare private shouldFadeOutButtons: boolean;
   declare private darkMode: boolean;
-  // The overlay theme.
-  declare private theme: OverlayTheme;
   // Whether the contextual searchbox feature is enabled.
   declare private isLensOverlayContextualSearchboxEnabled: boolean;
   // Whether the contextual searchbox is visible to the user.
@@ -373,7 +363,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
     const callbackRouter = this.browserProxy.callbackRouter;
     this.listenerIds = [
-      callbackRouter.themeReceived.addListener(this.themeReceived.bind(this)),
       callbackRouter.shouldShowContextualSearchBox.addListener(
           this.shouldShowContextualSearchBox.bind(this)),
       callbackRouter.notifyHandshakeComplete.addListener(
@@ -701,9 +690,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.sidePanelOpened = true;
   }
 
-  private themeReceived(theme: OverlayTheme) {
-    this.theme = theme;
-  }
 
   private shouldShowContextualSearchBox(shouldShow: boolean) {
     this.isLensOverlayContextualSearchboxVisible =
@@ -839,18 +825,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     });
   }
 
-  private skColorToHex_(skColor: SkColor): string {
-    return skColorToHexColor(skColor);
-  }
-
-  private skColorToRgb_(skColor: SkColor): string {
-    const hex = skColorToHexColor(skColor);
-    assert(/^#[0-9a-fA-F]{6}$/.test(hex));
-    const r = parseInt(hex.substring(1, 3), 16);
-    const g = parseInt(hex.substring(3, 5), 16);
-    const b = parseInt(hex.substring(5, 7), 16);
-    return `${r}, ${g}, ${b}`;
-  }
 
   private getSearchboxAriaDescription(): string {
     // Get the the text from the ghost loader to add to the searchbox aria

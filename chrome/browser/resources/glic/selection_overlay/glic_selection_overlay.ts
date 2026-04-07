@@ -13,7 +13,6 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {getFallbackTheme} from '/lens/color_utils.js';
 import type {OverlayBorderGlowElement} from '/lens/overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from '/lens/overlay_shimmer_canvas.js';
 import type {PostSelectionRendererElement} from '/lens/post_selection_renderer.js';
@@ -81,7 +80,6 @@ export class SelectionOverlayElementElement extends
 
   constructor() {
     super();
-    this.theme = getFallbackTheme();
   }
 
   override get selectionElements() {
@@ -99,9 +97,6 @@ export class SelectionOverlayElementElement extends
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('theme' as any)) {
-      this.updateThemeColors();
-    }
   }
 
   override firstUpdated() {

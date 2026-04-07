@@ -551,17 +551,17 @@
     on-pointerleave="handlePointerLeave"
     on-escape-searchbox="handleEscapeSearchbox"
     style="
-    --color-primary: [[skColorToHex_(theme.primary)]];
-    --color-shader-layer-1: [[skColorToHex_(theme.shaderLayer1)]];
-    --color-shader-layer-2: [[skColorToHex_(theme.shaderLayer2)]];
-    --color-shader-layer-3: [[skColorToHex_(theme.shaderLayer3)]];
-    --color-shader-layer-4: [[skColorToHex_(theme.shaderLayer4)]];
-    --color-shader-layer-5: [[skColorToHex_(theme.shaderLayer5)]];
-    --color-scrim: [[skColorToHex_(theme.scrim)]];
-    --color-scrim-rgb: [[skColorToRgb_(theme.scrim)]];
-    --color-surface-container-highest-light: [[skColorToHex_(theme.surfaceContainerHighestLight)]];
-    --color-surface-container-highest-dark: [[skColorToHex_(theme.surfaceContainerHighestDark)]];
-    --color-selection-element: [[skColorToHex_(theme.selectionElement)]];
+    --color-primary: #181C22;
+    --color-shader-layer-1: #5B5E66;
+    --color-shader-layer-2: #8E9199;
+    --color-shader-layer-3: #A6C8FF;
+    --color-shader-layer-4: #EEF0F9;
+    --color-shader-layer-5: #A8ABB3;
+    --color-scrim: #181C22;
+    --color-scrim-rgb: 24, 28, 34;
+    --color-surface-container-highest-light: #E0E2EB;
+    --color-surface-container-highest-dark: #43474E;
+    --color-selection-element: #EEF0F9;
     --color-overlay-icon: white;
     --color-overlay-button-label: white;
     --color-text-highlight: white;
@@ -593,7 +593,7 @@
       </div>
     </div>
   </template>
-  <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
+  <lens-selection-overlay id="selectionOverlay"
       is-searchbox-focused="[[isSearchboxFocused]]"
       are-language-pickers-open="[[areLanguagePickersOpen]]"
       on-pointerenter="handlePointerEnterSelectionOverlay"

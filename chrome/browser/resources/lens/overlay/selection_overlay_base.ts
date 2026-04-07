@@ -18,8 +18,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getFallbackTheme} from './color_utils.js';
-import type {OverlayTheme} from './lens.mojom-webui.js';
 import type {OverlayBorderGlowElement} from './overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
 import type {PostSelectionBoundingBox, PostSelectionRendererElement} from './post_selection_renderer.js';
@@ -124,10 +122,6 @@ export abstract class SelectionOverlayBaseElement extends
         reflectToAttribute: true,
         value: false,
       },
-      theme: {
-        type: Object,
-        value: getFallbackTheme,
-      },
       selectionOverlayRect: Object,
       hideBackgroundImageCanvas: {
         type: Boolean,
@@ -206,7 +200,6 @@ export abstract class SelectionOverlayBaseElement extends
   private onPointerMoveRequestId?: number;
   private handleResizeRequestId?: number;
 
-  declare private theme: OverlayTheme;
 
   override connectedCallback() {
     super.connectedCallback();

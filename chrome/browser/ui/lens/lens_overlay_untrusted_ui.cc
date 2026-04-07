@@ -177,30 +177,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "tabToContinue", IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE);
 
-  // Add default theme colors.
-  const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
-  html_source->AddInteger("colorFallbackPrimary",
-                          palette.at(lens::ColorId::kPrimary));
-  html_source->AddInteger("colorFallbackShaderLayer1",
-                          palette.at(lens::ColorId::kShaderLayer1));
-  html_source->AddInteger("colorFallbackShaderLayer2",
-                          palette.at(lens::ColorId::kShaderLayer2));
-  html_source->AddInteger("colorFallbackShaderLayer3",
-                          palette.at(lens::ColorId::kShaderLayer3));
-  html_source->AddInteger("colorFallbackShaderLayer4",
-                          palette.at(lens::ColorId::kShaderLayer4));
-  html_source->AddInteger("colorFallbackShaderLayer5",
-                          palette.at(lens::ColorId::kShaderLayer5));
-  html_source->AddInteger("colorFallbackScrim",
-                          palette.at(lens::ColorId::kScrim));
-  html_source->AddInteger(
-      "colorFallbackSurfaceContainerHighestLight",
-      palette.at(lens::ColorId::kSurfaceContainerHighestLight));
-  html_source->AddInteger(
-      "colorFallbackSurfaceContainerHighestDark",
-      palette.at(lens::ColorId::kSurfaceContainerHighestDark));
-  html_source->AddInteger("colorFallbackSelectionElement",
-                          palette.at(lens::ColorId::kSelectionElement));
 
   // Add finch flags
   html_source->AddBoolean("enableDebuggingMode",

@@ -592,19 +592,6 @@ extern bool IsOmniboxEntrypointAlwaysVisible();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseBrowserDarkModeSettingForLensOverlay();
 
-// Returns whether dynamic theme detection based on the screenshot is enabled.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsDynamicThemeDetectionEnabled();
-
-// Returns the min threshold for the fraction of the pixels with the extracted
-// vibrant or dynamic color out of the total number of pixels in the screenshot.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern double DynamicThemeMinPopulationPct();
-
-// Returns the min threshold for the chroma of the extracted vibrant or dynamic
-// color to be considered for matching to a set of candidate color palettes.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern double DynamicThemeMinChroma();
 
 // Returns whether or not to send the visual search interaction param with
 // Lens text selection queries.

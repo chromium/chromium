@@ -21,7 +21,7 @@ export function getHtml(this: SelectionOverlayElementElement) {
         <div id="extraScrim" ?hidden="${!this.darkenExtraScrim}"></div>
         <overlay-shimmer-canvas id="overlayShimmerCanvas"
             ?hidden="${this.disableShimmer || this.enableBorderGlow}"
-            .theme="${this.theme}">
+            >
         </overlay-shimmer-canvas>
         ${this.enableBorderGlow ? html`
           <overlay-border-glow id="overlayBorderGlow"
@@ -35,7 +35,7 @@ export function getHtml(this: SelectionOverlayElementElement) {
             @activate-region="${this.onActivateRegion}"
             background-gradient-hidden>
         </post-selection-renderer>
-        <region-selection id="regionSelectionLayer" .theme="${this.theme}"
+        <region-selection id="regionSelectionLayer"
             .screenshotDataUri="${this.screenshotDataUri}"
             .selectionOverlayRect="${this.selectionOverlayRect}"
             .borderGlowEnabled="${this.enableBorderGlow}"

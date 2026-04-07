@@ -71,38 +71,6 @@ lens::mojom::CenterRotatedBoxPtr GetCenterRotatedBoxFromTabViewAndImageBounds(
     const gfx::Rect& view_bounds,
     gfx::Rect image_bounds);
 
-// Returns the extracted color from the given image. If the extraction fails,
-// the returned color is transparent. The returned color should be
-// representative of min_population_pct [0.0, 1.0] of the total number of pixels
-// in the image.
-SkColor ExtractVibrantOrDominantColorFromImage(const SkBitmap& image,
-                                               float min_population_pct);
-
-// Returns the hue angle of the given color in LAB space, in radians [-π, π],
-// or null_opt if achromatic.
-std::optional<float> CalculateHueAngle(
-    const std::tuple<float, float, float>& lab_color);
-
-// Returns the chroma distance (from 0) of the given color in LAB space.
-float CalculateChroma(const std::tuple<float, float, float>& lab_color);
-
-// Returns the hue angle distance of the 2 given colors [0, 2π).
-std::optional<float> CalculateHueAngleDistance(
-    const std::tuple<float, float, float>& lab_color1,
-    const std::tuple<float, float, float>& lab_color2);
-
-// Returns std::tuple<int> of given color in CIELAB color space.
-std::tuple<float, float, float> ConvertColorToLab(SkColor color);
-
-// Returns the best matched color theme item in the given
-// map of candidates, matching on the closest in hue angle distance to the
-// given seed color. If seed_color is invalid, or does not have
-// enough chroma, given by min_chroma, or no good matches can be found,
-// returns SK_ColorTransparent.
-SkColor FindBestMatchedColorOrTransparent(
-    const std::vector<SkColor>& candidate_colors,
-    SkColor seed_color,
-    float min_chroma);
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_IMAGE_HELPER_H_

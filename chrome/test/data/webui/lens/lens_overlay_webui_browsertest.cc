@@ -144,10 +144,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayScreenshot) {
   RunOverlayTest("lens/overlay/overlay_screenshot_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayTheme) {
-  RunOverlayTest("lens/overlay/overlay_theme_test.js", "mocha.run()");
-}
-
 // TODO(crbug.com/414207670): Test is failing on Linux and Win bot.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ManualRegionSelection DISABLED_ManualRegionSelection

@@ -4,14 +4,11 @@
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
-import {skColorToHexColor} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getFallbackTheme} from './color_utils.js';
-import type {OverlayTheme} from './lens.mojom-webui.js';
 import type {OverlayBorderGlowElement} from './overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
 import type {PostSelectionBoundingBox, PostSelectionRendererElement} from './post_selection_renderer.js';
@@ -92,7 +89,6 @@ export abstract class SelectionOverlayBaseLitElement extends
         type: Boolean,
         reflect: true,
       },
-      theme: {type: Object},
       selectionOverlayRect: {type: Object},
       hideBackgroundImageCanvas: {
         type: Boolean,
@@ -143,7 +139,6 @@ export abstract class SelectionOverlayBaseLitElement extends
 
   protected accessor isPointerInside: boolean = false;
 
-  protected accessor theme: OverlayTheme = getFallbackTheme();
   accessor activeRegionId: string = '';
 
   protected eventTracker_: EventTracker = new EventTracker();
@@ -173,19 +168,11 @@ export abstract class SelectionOverlayBaseLitElement extends
   private handleResizeRequestId?: number;
 
   getSelectionElementColor(): string {
-    const theme = this.theme;
-    if (!theme?.selectionElement) {
-      return '';
-    }
-    return skColorToHexColor(theme.selectionElement);
+    return '#EEF0F9';
   }
 
   getPrimaryColor(): string {
-    const theme = this.theme;
-    if (!theme?.primary) {
-      return '';
-    }
-    return skColorToHexColor(theme.primary);
+    return '#181C22';
   }
 
   abstract get selectionElements(): {
