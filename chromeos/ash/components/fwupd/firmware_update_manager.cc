@@ -1196,16 +1196,25 @@ void FirmwareUpdateManager::TriggerDownloadOfFirmwareFile(
     RefreshRemoteComplete(MethodResult::kFailedToGetFirmwareFilename);
     return;
   }
-  FIRMWARE_LOG(DEBUG) << "Got firmware filename: " << firmware_filename;
+
   const base::FilePath cache_path = GetCacheDirPath();
+  const base::FilePath firmware_path(firmware_filename);
+  if (firmware_path.ReferencesParent() || firmware_path.IsAbsolute()) {
+    FIRMWARE_LOG(ERROR) << "Path traversal detected: " << firmware_filename;
+    RefreshRemoteComplete(MethodResult::kFailedToGetFirmwareFilename);
+    return;
+  }
+  const base::FilePath appended_path = cache_path.Append(firmware_path);
+
+  FIRMWARE_LOG(DEBUG) << "Got firmware filename: " << firmware_filename;
+
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](const base::FilePath& path) { return CreateDirIfNotExists(path); },
           cache_path),
       base::BindOnce(&FirmwareUpdateManager::CreateTempFileAndDownload,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     cache_path.Append(firmware_filename),
+                     weak_ptr_factory_.GetWeakPtr(), appended_path,
                      std::move(firmware_filename),
                      base::BindOnce(&FirmwareUpdateManager::UpdateMetadata,
                                     weak_ptr_factory_.GetWeakPtr())));
