@@ -276,7 +276,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     this.searchboxListenerIds = [
       this.searchboxCallbackRouter_.autocompleteResultChanged.addListener(
-          this.onAutocompleteResultChanged_.bind(this)),
+          this.onAutocompleteResultChanged.bind(this)),
       this.searchboxCallbackRouter_.onContextualInputStatusChanged.addListener(
           this.onContextualInputStatusChanged.bind(this)),
       this.searchboxCallbackRouter_.onTabStripChanged.addListener(
@@ -753,7 +753,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
 
-
+  // TODO(crbug.com/486707842): Move this to contextual tasks composebox.
   injectInput(
       title: string, thumbnail: string, fileToken: UnguessableToken,
       supportsUnimodal: boolean, iconName?: string) {
@@ -764,6 +764,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.onFileContextAdded(attachment);
   }
 
+  // TODO(crbug.com/486707842): Move this to contextual tasks composebox.
   private updateAutoSuggestedTabContext_(tab: TabInfo|null) {
     const shouldDeleteAutomaticActiveTab = this.automaticActiveTab_ &&
         (!tab || this.automaticActiveTab_.url !== tab.url);
@@ -1140,6 +1141,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
+  // TODO(crbug.com/486707998): Move this to omnibox composebox.
   addSearchContext(context: SearchContext|null) {
     if (context) {
       if (context.input.length > 0) {
@@ -1201,7 +1203,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  private onAutocompleteResultChanged_(result: AutocompleteResult) {
+  // TODO(crbug.com/486706573): Refactor this function and move the common logic
+  // to the mixin class. Move embedder specific logic to the embedder class.
+  override onAutocompleteResultChanged(result: AutocompleteResult) {
     if (this.lastQueriedInput === null ||
         this.lastQueriedInput.trimStart() !== result.input) {
       return;
@@ -1310,7 +1314,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.shouldShowVoiceSearch_();
   }
 
-
+  // TODO(crbug.com/486707998): Move this to omnibox composebox.
   private addFileFromAttachment_(fileAttachment: FileAttachment) {
     if (!this.isFileAllowed(fileAttachment.mimeType)) {
       this.handleProcessFilesError(ProcessFilesError.INVALID_TYPE);
@@ -1325,6 +1329,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.onFileContextAdded(composeboxFile);
   }
 
+  // TODO(crbug.com/486707998): Move this to omnibox composebox.
   private addTabFromAttachment_(tabAttachment: TabAttachment) {
     this.addTabContextHandleCallback_({
       tabId: tabAttachment.tabId,
@@ -1352,10 +1357,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.onFileContextAdded(file);
   }
 
+  // TODO(crbug.com/486707842): Move this to contextual tasks composebox.
   setAutomaticActiveTabForTesting(file: ComposeboxFile) {
     this.automaticActiveTab_ = file;
   }
 
+  // TODO(crbug.com/486707842): Move this to contextual tasks composebox.
   updateAutoSuggestedTabContextForTesting(tab: TabInfo|null) {
     this.updateAutoSuggestedTabContext_(tab);
   }
