@@ -27,7 +27,7 @@ DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentWidth);
 
 SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
     const {
-  static constexpr int kDefaultAnimationMs = 350;
+  const int kDefaultAnimationMs = features::kSidePanelFlyoverDurationMs.Get();
   const bool use_flyover = features::UseSidePanelFlyoverAnimation();
   const int content_height_duration_ms =
       use_flyover ? kDefaultAnimationMs : 450;

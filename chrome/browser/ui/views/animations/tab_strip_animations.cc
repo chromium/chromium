@@ -22,7 +22,9 @@ DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(TabStripAnimations, kTopCorner);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(TabStripAnimations, kBottomCorner);
 
 TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
-  const int duration_ms = features::UseSidePanelFlyoverAnimation() ? 350 : 450;
+  const int duration_ms = features::UseSidePanelFlyoverAnimation()
+                              ? features::kSidePanelFlyoverDurationMs.Get()
+                              : 450;
   const gfx::Tween::Type expand_collapse_tween =
       features::UseSidePanelFlyoverAnimation()
           ? gfx::Tween::ACCEL_30_DECEL_20_85

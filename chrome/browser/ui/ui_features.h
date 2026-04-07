@@ -240,6 +240,8 @@ BASE_DECLARE_FEATURE(kToolbarHeightSidePanel);
 BASE_DECLARE_FEATURE(kSidePanelFlyoverAnimation);
 bool UseSidePanelFlyoverAnimation();
 
+BASE_DECLARE_FEATURE_PARAM(int, kSidePanelFlyoverDurationMs);
+
 // TODO(crbug.com/460764864): Cleanup all the enterprise badging feature flags.
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);
 BASE_DECLARE_FEATURE(kNTPFooterBadgingPolicies);
