@@ -1235,8 +1235,9 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
     // Log everything for now.
     cmd_line.AppendSwitch(installer::switches::kVerboseLogging);
     // This will make the updater append
-    // <prev_windows_version>-<new_windows_version> to the upgrade commandline.
-    cmd_line.AppendArg("%1");
+    // --os-upgrade-versions=<prev_windows_version>-<new_windows_version> to the
+    // upgrade commandline.
+    cmd_line.AppendSwitchASCII(installer::switches::kOsUpgradeVersions, "%1");
 
     // `GetCommandLineStringWithUnsafeInsertSequences` should be safe to use
     // because the updater will do the substitution, not the Windows shell.

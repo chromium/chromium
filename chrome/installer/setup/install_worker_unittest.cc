@@ -329,11 +329,12 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
               AddCreateRegKeyWorkItem(kRegRoot, update_handler_command_key,
                                       KEY_WOW64_32KEY))
       .WillOnce(Return(create_reg_key_work_item.get()));
-  const std::wstring command_line =
-      base::StrCat({L"\"", installer_state->target_path().value(), L"\\",
-                    base::ASCIIToWide(new_version_->GetString()),
-                    L"\\Installer\\setup.exe\" --on-os-upgrade --system-level "
-                    L"--verbose-logging %1"});
+  const std::wstring command_line = base::StrCat(
+      {L"\"", installer_state->target_path().value(), L"\\",
+       base::ASCIIToWide(new_version_->GetString()),
+       L"\\Installer\\setup.exe\" --on-os-upgrade --system-level "
+       L"--verbose-logging --",
+       base::ASCIIToWide(installer::switches::kOsUpgradeVersions), L"=%1"});
   EXPECT_CALL(work_item_list,
               AddSetRegStringValueWorkItem(
                   kRegRoot, update_handler_command_key, KEY_WOW64_32KEY,

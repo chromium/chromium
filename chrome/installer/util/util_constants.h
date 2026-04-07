@@ -182,6 +182,7 @@ extern const char kMsi[];
 extern const char kNewSetupExe[];
 extern const char kNonce[];
 extern const char kOnOsUpgrade[];
+extern const char kOsUpgradeVersions[];
 extern const char kPreviousVersion[];
 extern const char kReenableAutoupdates[];
 extern const char kRegisterChromeBrowser[];

@@ -299,8 +299,10 @@ std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
     const InstallerState& installer_state,
     const std::wstring& installed_version,
     const base::CommandLine& command_line) {
+  const auto upgrade_versions =
+      command_line.GetSwitchValueASCII(switches::kOsUpgradeVersions);
   const auto args = command_line.GetArgs();
-  if (args.size() != 1) {
+  if (args.size() != 0 || upgrade_versions.empty()) {
     return std::nullopt;
   }
   // Use the Windows version update string set by Omaha on the command line
@@ -309,8 +311,7 @@ std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
                                               .Append(installed_version)
                                               .Append(kOsUpdateHandlerExe));
   InstallUtil::AppendModeAndChannelSwitches(&os_update_handler_cmd);
-  // args[0] has the form "<prev_windows_version>-<new_windows_version>".
-  os_update_handler_cmd.AppendArgNative(args[0]);
+  os_update_handler_cmd.AppendArg(upgrade_versions);
 
   if (installer_state.system_install()) {
     os_update_handler_cmd.AppendSwitch(installer::switches::kSystemLevel);

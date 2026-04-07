@@ -103,6 +103,9 @@ const char kNonce[] = "nonce";
 // Notify the installer that the OS has been upgraded.
 const char kOnOsUpgrade[] = "on-os-upgrade";
 
+// Tells the updater the previous and new Windows versions.
+const char kOsUpgradeVersions[] = "os-upgrade-versions";
+
 // Requests that setup attempt to reenable autoupdates for Chrome.
 const char kReenableAutoupdates[] = "reenable-autoupdates";
 
