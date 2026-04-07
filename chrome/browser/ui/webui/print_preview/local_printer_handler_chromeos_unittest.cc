@@ -625,12 +625,12 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Duplex) {
 
   EXPECT_EQ(*managed_print_options_dict.FindDict(kManagedPrintOptions_Duplex)
                  ->FindInt(kManagedPrintOptions_DefaultValue),
-            static_cast<int>(crosapi::mojom::DuplexType::kOneSided));
+            static_cast<int>(chromeos::Printer::DuplexType::kOneSided));
   EXPECT_THAT(
       *managed_print_options_dict.FindDict(kManagedPrintOptions_Duplex)
            ->FindList(kManagedPrintOptions_AllowedValues),
-      ElementsAre(static_cast<int>(crosapi::mojom::DuplexType::kOneSided),
-                  static_cast<int>(crosapi::mojom::DuplexType::kShortEdge)));
+      ElementsAre(static_cast<int>(chromeos::Printer::DuplexType::kOneSided),
+                  static_cast<int>(chromeos::Printer::DuplexType::kShortEdge)));
 }
 
 TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Color) {
@@ -682,12 +682,12 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Quality) {
 
   EXPECT_EQ(*managed_print_options_dict.FindDict(kManagedPrintOptions_Quality)
                  ->FindInt(kManagedPrintOptions_DefaultValue),
-            static_cast<int>(crosapi::mojom::QualityType::kDraft));
+            static_cast<int>(chromeos::Printer::QualityType::kDraft));
   EXPECT_THAT(
       *managed_print_options_dict.FindDict(kManagedPrintOptions_Quality)
            ->FindList(kManagedPrintOptions_AllowedValues),
-      ElementsAre(static_cast<int>(crosapi::mojom::QualityType::kDraft),
-                  static_cast<int>(crosapi::mojom::QualityType::kHigh)));
+      ElementsAre(static_cast<int>(chromeos::Printer::QualityType::kDraft),
+                  static_cast<int>(chromeos::Printer::QualityType::kHigh)));
 }
 
 TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_PrintAsImage) {

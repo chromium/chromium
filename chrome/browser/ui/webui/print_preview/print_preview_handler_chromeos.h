@@ -129,10 +129,6 @@ class PrintPreviewHandlerChromeOS
 
   void HandleObserveLocalPrinters(const base::ListValue& args);
 
-  // Callback for `HandleGetShowManagePrinters()`.
-  void OnHandleObserveLocalPrinters(
-      const std::string& callback_id,
-      std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers);
 
   void SetInitiatorForTesting(content::WebContents* test_initiator);
 

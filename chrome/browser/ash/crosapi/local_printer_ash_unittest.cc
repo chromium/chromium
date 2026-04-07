@@ -76,39 +76,6 @@ using testing::Return;
 
 namespace printing {
 
-namespace {
-
-using LocalPrintersCallback = base::OnceCallback<void(
-    std::vector<crosapi::mojom::LocalDestinationInfoPtr>)>;
-using printing::mojom::IppClientInfoPtr;
-
-constexpr char kPrinterUri[] = "http://localhost:80";
-const AccountId kAffiliatedUserAccountId =
-    AccountId::FromUserEmail("user@example.com");
-const AccountId kUnaffiliatedUserAccountId =
-    AccountId::FromUserEmail("user@gmail.com");
-
-Printer CreateTestPrinter(const std::string& id,
-                          const std::string& name,
-                          const std::string& description) {
-  Printer printer;
-  printer.SetUri(kPrinterUri);
-  printer.set_id(id);
-  printer.set_display_name(name);
-  printer.set_description(description);
-  return printer;
-}
-
-Printer CreateEnterprisePrinter(const std::string& id,
-                                const std::string& name,
-                                const std::string& description) {
-  Printer printer = CreateTestPrinter(id, name, description);
-  printer.set_source(Printer::SRC_POLICY);
-  return printer;
-}
-
-}  // namespace
-
 // Fake `PpdProvider` backend. This fake `PpdProvider` is used to fake fetching
 // the PPD EULA license of a destination. If `effective_make_and_model` is
 // empty, it will return with NOT_FOUND and an empty string. Otherwise, it will
@@ -142,41 +109,6 @@ class FakePpdProvider : public chromeos::PpdProvider {
   ~FakePpdProvider() override = default;
 };
 
-class FakeLocalPrintersObserver : public crosapi::mojom::LocalPrintersObserver {
- public:
-  FakeLocalPrintersObserver() = default;
-  ~FakeLocalPrintersObserver() override = default;
-
-  mojo::PendingRemote<crosapi::mojom::LocalPrintersObserver> GenerateRemote() {
-    mojo::PendingRemote<crosapi::mojom::LocalPrintersObserver> remote;
-    receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
-    return remote;
-  }
-
-  // crosapi::mojom::LocalPrintersObserver:
-  void OnLocalPrintersUpdated(
-      std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) override {
-    for (const auto& printer : printers) {
-      crosapi::mojom::LocalDestinationInfoPtr local_printer =
-          crosapi::mojom::LocalDestinationInfo::New();
-      local_printer->id = printer->id;
-      local_printers_.push_back(std::move(local_printer));
-    }
-
-    if (local_printers_callback_) {
-      std::move(local_printers_callback_).Run(mojo::Clone(local_printers_));
-    }
-  }
-
-  void GetLocalPrinters(LocalPrintersCallback callback) {
-    local_printers_callback_ = std::move(callback);
-  }
-
- private:
-  LocalPrintersCallback local_printers_callback_;
-  std::vector<crosapi::mojom::LocalDestinationInfoPtr> local_printers_;
-  mojo::Receiver<crosapi::mojom::LocalPrintersObserver> receiver_{this};
-};
 
 class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
  public:
@@ -375,9 +307,6 @@ class LocalPrinterAshTestBase : public testing::Test {
   ash::FakeChromeUserManager* fake_user_manager() {
     return fake_user_manager_.Get();
   }
-
- protected:
-  FakeLocalPrintersObserver fake_local_printers_observer_;
 
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
@@ -602,36 +531,6 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Pin) {
             policies->default_pin_mode);
 }
 
-// Verify the LocalPrintersObserver receives the full set of local printers
-// when added or triggered.
-TEST_F(LocalPrinterAshTest, LocalPrintersObserver) {
-  Printer saved_printer =
-      CreateTestPrinter("printer1", "saved", "description1");
-  Printer enterprise_printer =
-      CreateEnterprisePrinter("printer2", "enterprise", "description2");
-  Printer automatic_printer =
-      CreateTestPrinter("printer3", "automatic", "description3");
-
-  printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
-  printers_manager().AddPrinter(enterprise_printer, PrinterClass::kEnterprise);
-  printers_manager().AddPrinter(automatic_printer, PrinterClass::kAutomatic);
-
-  // Starting observation should return the 3 added printers.
-  local_printer_ash()->AddLocalPrintersObserver(
-      fake_local_printers_observer_.GenerateRemote(),
-      base::BindLambdaForTesting(
-          [&](std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) {
-            EXPECT_EQ(3u, printers.size());
-          }));
-
-  base::test::TestFuture<std::vector<crosapi::mojom::LocalDestinationInfoPtr>>
-      printers_future;
-  fake_local_printers_observer_.GetLocalPrinters(printers_future.GetCallback());
-
-  local_printer_ash()->OnLocalPrintersUpdated();
-  EXPECT_EQ(3u, printers_future.Get().size());
-}
-
 TEST(LocalPrinterAsh, ConfigToMojom) {
   ash::PrintServersConfig config;
   config.fetching_mode = crosapi::mojom::PrintServersConfig::
@@ -649,57 +548,5 @@ TEST(LocalPrinterAsh, ConfigToMojom) {
   EXPECT_EQ("name", mojom->print_servers[0]->name);
 }
 
-TEST(LocalPrinterAsh, PrinterToMojom) {
-  // Status
-  chromeos::CupsPrinterStatus status("id");
-  status.AddStatusReason(crosapi::mojom::StatusReason::Reason::kOutOfInk,
-                         crosapi::mojom::StatusReason::Severity::kWarning);
-  // Managed print options
-  chromeos::Printer::ManagedPrintOptions print_options;
-  chromeos::Printer::PrintOption<bool> color_option;
-  color_option.default_value = true;
-  color_option.allowed_values = std::vector<bool>{false, true};
-
-  Printer printer("id");
-  printer.set_display_name("name");
-  printer.set_description("description");
-  printer.set_printer_status(status);
-  printer.set_print_job_options(print_options);
-  crosapi::mojom::LocalDestinationInfoPtr mojom =
-      printing::PrinterToMojom(printer);
-  ASSERT_TRUE(mojom);
-  EXPECT_EQ("id", mojom->id);
-  EXPECT_EQ("name", mojom->name);
-  EXPECT_EQ("description", mojom->description);
-  EXPECT_FALSE(mojom->configured_via_policy);
-  EXPECT_EQ(printing::StatusToMojom(status), mojom->printer_status);
-  EXPECT_EQ(printing::ManagedPrintOptionsToMojom(print_options),
-            mojom->managed_print_options);
-}
-
-TEST(LocalPrinterAsh, PrinterToMojom_ConfiguredViaPolicy) {
-  Printer printer("id");
-  printer.set_source(Printer::SRC_POLICY);
-  crosapi::mojom::LocalDestinationInfoPtr mojom =
-      printing::PrinterToMojom(printer);
-  ASSERT_TRUE(mojom);
-  EXPECT_EQ("id", mojom->id);
-  EXPECT_TRUE(mojom->configured_via_policy);
-}
-
-TEST(LocalPrinterAsh, StatusToMojom) {
-  chromeos::CupsPrinterStatus status("id");
-  status.AddStatusReason(crosapi::mojom::StatusReason::Reason::kOutOfInk,
-                         crosapi::mojom::StatusReason::Severity::kWarning);
-  crosapi::mojom::PrinterStatusPtr mojom = printing::StatusToMojom(status);
-  ASSERT_TRUE(mojom);
-  EXPECT_EQ("id", mojom->printer_id);
-  EXPECT_EQ(status.GetTimestamp(), mojom->timestamp);
-  ASSERT_EQ(1u, mojom->status_reasons.size());
-  EXPECT_EQ(crosapi::mojom::StatusReason::Reason::kOutOfInk,
-            mojom->status_reasons[0]->reason);
-  EXPECT_EQ(crosapi::mojom::StatusReason::Severity::kWarning,
-            mojom->status_reasons[0]->severity);
-}
 
 }  // namespace printing

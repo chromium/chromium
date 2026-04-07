@@ -55,11 +55,3 @@ void FakeLocalPrinter::AddPrintJobObserver(
     AddPrintJobObserverCallback callback) {
   FAIL();
 }
-
-void FakeLocalPrinter::AddLocalPrintersObserver(
-    mojo::PendingRemote<crosapi::mojom::LocalPrintersObserver> remote,
-    AddLocalPrintersObserverCallback callback) {
-  FAIL();
-}
-
-

@@ -270,15 +270,4 @@ ConstructPrinterCapabilities() {
   return capabilities;
 }
 
-std::vector<crosapi::mojom::LocalDestinationInfoPtr>
-ConstructGetPrintersResponse(const std::string& printer_id,
-                             const std::string& printer_name) {
-  chromeos::Printer printer;
-  printer.set_id(printer_id);
-  printer.set_display_name(printer_name);
-  std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers;
-  printers.push_back(printing::PrinterToMojom(printer));
-  return printers;
-}
-
 }  // namespace extensions

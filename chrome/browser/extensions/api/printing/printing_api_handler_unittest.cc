@@ -408,9 +408,6 @@ class PrintingAPIHandlerUnittest : public testing::Test {
 
   void SetCaps(const std::string& id,
                std::optional<printing::PrinterSemanticCapsAndDefaults> caps) {
-    auto mojo_caps = crosapi::mojom::CapabilitiesResponse::New();
-    mojo_caps->basic_info = crosapi::mojom::LocalDestinationInfo::New();
-    mojo_caps->capabilities = caps;
     local_printer_.SetCaps(id, std::move(caps));
   }
 
@@ -717,8 +714,6 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
       printing::PrinterStatus::PrinterReason::Reason::kMediaEmpty,
       printing::PrinterStatus::PrinterReason::Severity::kWarning};
   cups_wrapper_->SetPrinterStatus(kPrinterId, reason);
-
-  std::map<std::string, crosapi::mojom::PrinterStatusPtr> status_map_;
 
   GetPrinterInfoFuture printer_info_future;
   printing_api_handler_->GetPrinterInfo(kPrinterId,

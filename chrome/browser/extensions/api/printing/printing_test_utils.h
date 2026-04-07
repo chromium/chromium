@@ -122,11 +122,6 @@ std::unique_ptr<TestExtensionDir> CreatePrintingExtension(ExtensionType type);
 std::unique_ptr<printing::PrinterSemanticCapsAndDefaults>
 ConstructPrinterCapabilities();
 
-// Constructs a response to LocalPrinter::GetPrinters() with a single printer.
-std::vector<crosapi::mojom::LocalDestinationInfoPtr>
-ConstructGetPrintersResponse(const std::string& printer_id,
-                             const std::string& printer_name);
-
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINTING_TEST_UTILS_H_

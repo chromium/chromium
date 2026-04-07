@@ -30,10 +30,6 @@ class InProgressJobsStorageChromeOS
   void Cancel() override;
 
   // crosapi::mojom::PrintJobObserver:
-  void OnPrintJobUpdateDeprecated(
-      const std::string& printer_id,
-      uint32_t job_id,
-      crosapi::mojom::PrintJobStatus status) override;
   void OnPrintJobUpdate(const std::string& printer_id,
                         uint32_t job_id,
                         crosapi::mojom::PrintJobUpdatePtr update) override;

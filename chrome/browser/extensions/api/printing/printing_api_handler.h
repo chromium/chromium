@@ -104,10 +104,6 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   static PrintingAPIHandler* Get(content::BrowserContext* browser_context);
 
   // crosapi::mojom::PrintJobObserver:
-  void OnPrintJobUpdateDeprecated(
-      const std::string& printer_id,
-      unsigned int job_id,
-      crosapi::mojom::PrintJobStatus status) override;
   void OnPrintJobUpdate(const std::string& printer_id,
                         unsigned int job_id,
                         crosapi::mojom::PrintJobUpdatePtr update) override;

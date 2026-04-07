@@ -66,41 +66,6 @@
 
 namespace crosapi {
 
-namespace {
-
-
-std::vector<chromeos::Printer> GetLocalPrinters(Profile* profile) {
-  CHECK(profile);
-  std::vector<chromeos::PrinterClass> printer_classes_to_fetch = {
-      chromeos::PrinterClass::kSaved, chromeos::PrinterClass::kEnterprise,
-      chromeos::PrinterClass::kAutomatic, chromeos::PrinterClass::kDiscovered};
-  // Printing is not allowed during OOBE.
-  DCHECK(!ash::ProfileHelper::IsSigninProfile(profile));
-  ash::CupsPrintersManager* printers_manager =
-      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
-  std::vector<chromeos::Printer> printers;
-  for (chromeos::PrinterClass pc : printer_classes_to_fetch) {
-    for (const chromeos::Printer& p : printers_manager->GetPrinters(pc)) {
-      VLOG(1) << "Found printer " << p.display_name() << " with device name "
-              << p.id();
-      printers.push_back(p);
-    }
-  }
-
-  return printers;
-}
-
-std::vector<mojom::LocalDestinationInfoPtr> ConvertPrintersToMojom(
-    const std::vector<chromeos::Printer>& printers) {
-  std::vector<mojom::LocalDestinationInfoPtr> mojom_printers;
-  for (const auto& printer : printers) {
-    mojom_printers.push_back(printing::PrinterToMojom(printer));
-  }
-  return mojom_printers;
-}
-
-}  // namespace
-
 LocalPrinterAsh::LocalPrinterAsh() {
   auto* profile_manager = g_browser_process->profile_manager();
   if (profile_manager) {
@@ -239,17 +204,6 @@ void LocalPrinterAsh::OnServerPrintersChanged(
     remote->OnServerPrintersChanged();
   }
 }
-
-void LocalPrinterAsh::OnLocalPrintersUpdated() {
-  Profile* profile = GetProfile();
-  DCHECK(profile);
-  const std::vector<mojom::LocalDestinationInfoPtr> printers =
-      ConvertPrintersToMojom(GetLocalPrinters(profile));
-  for (const auto& remote : local_printers_observer_remotes_) {
-    remote->OnLocalPrintersUpdated(mojo::Clone(printers));
-  }
-}
-
 
 void LocalPrinterAsh::ShowSystemPrintSettings(
     ShowSystemPrintSettingsCallback callback) {
@@ -463,19 +417,6 @@ void LocalPrinterAsh::AddPrintJobObserver(
       break;
   }
   std::move(callback).Run();
-}
-
-void LocalPrinterAsh::AddLocalPrintersObserver(
-    mojo::PendingRemote<mojom::LocalPrintersObserver> remote,
-    AddLocalPrintersObserverCallback callback) {
-  Profile* profile = GetProfile();
-  DCHECK(profile);
-  ash::CupsPrintersManager* printers_manager =
-      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
-  printers_manager->AddLocalPrintersObserver(this);
-
-  local_printers_observer_remotes_.Add(std::move(remote));
-  std::move(callback).Run(ConvertPrintersToMojom(GetLocalPrinters(profile)));
 }
 
 scoped_refptr<chromeos::PpdProvider> LocalPrinterAsh::CreatePpdProvider(

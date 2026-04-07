@@ -40,8 +40,7 @@ namespace crosapi {
 class LocalPrinterAsh : public mojom::LocalPrinter,
                         public ProfileManagerObserver,
                         public ash::CupsPrintJobManager::Observer,
-                        public ash::PrintServersManager::Observer,
-                        public ash::CupsPrintersManager::LocalPrintersObserver {
+                        public ash::PrintServersManager::Observer {
  public:
   LocalPrinterAsh();
   LocalPrinterAsh(const LocalPrinterAsh&) = delete;
@@ -80,8 +79,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   void OnServerPrintersChanged(
       const std::vector<ash::PrinterDetector::DetectedPrinter>&) override;
 
-  // CupsPrintersManager::LocalPrintersObserver:
-  void OnLocalPrintersUpdated() override;
 
   // crosapi::mojom::LocalPrinter:
   void ShowSystemPrintSettings(
@@ -102,9 +99,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   void AddPrintJobObserver(mojo::PendingRemote<mojom::PrintJobObserver> remote,
                            mojom::PrintJobSource source,
                            AddPrintJobObserverCallback callback) override;
-  void AddLocalPrintersObserver(
-      mojo::PendingRemote<mojom::LocalPrintersObserver> remote,
-      AddLocalPrintersObserverCallback callback) override;
 
  private:
   void NotifyPrintJobUpdate(base::WeakPtr<ash::CupsPrintJob> job,
@@ -135,10 +129,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
 
   // Remotes which observe only IWA print jobs.
   mojo::RemoteSet<mojom::PrintJobObserver> iwa_print_job_remotes_;
-
-  // Remotes which observe local printer updates.
-  mojo::RemoteSet<mojom::LocalPrintersObserver>
-      local_printers_observer_remotes_;
 };
 
 }  // namespace crosapi

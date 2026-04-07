@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "printing/backend/print_backend.h"
 
 namespace content {
 class WebContents;

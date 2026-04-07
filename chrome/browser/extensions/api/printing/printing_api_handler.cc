@@ -348,13 +348,6 @@ void PrintingAPIHandler::MaybeEvictFinishedPrintJobs() {
   }
 }
 
-void PrintingAPIHandler::OnPrintJobUpdateDeprecated(
-    const std::string& printer_id,
-    unsigned int job_id,
-    crosapi::mojom::PrintJobStatus status) {
-  NOTREACHED();
-}
-
 base::expected<api::printing::JobStatus, std::string>
 PrintingAPIHandler::GetJobStatus(const std::string& extension_id,
                                  const std::string& job_id) {
