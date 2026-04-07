@@ -4,6 +4,8 @@
 
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 
+#include <jni.h>
+
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "chrome/browser/android/tab_android.h"
@@ -22,11 +24,26 @@ using base::android::AttachCurrentThread;
 
 namespace context_sharing {
 
-void JNI_TabBottomSheetNativeInterface_OnClose(
+void JNI_TabBottomSheetNativeInterface_OnClosed(
     JNIEnv* env,
     int64_t native_tab_bottom_sheet_bridge) {
   reinterpret_cast<TabBottomSheetBridge*>(native_tab_bottom_sheet_bridge)
-      ->OnClose(env);
+      ->OnClosed(env);
+}
+
+void JNI_TabBottomSheetNativeInterface_OnSupressed(
+    JNIEnv* env,
+    int64_t native_tab_bottom_sheet_bridge) {
+  reinterpret_cast<TabBottomSheetBridge*>(native_tab_bottom_sheet_bridge)
+      ->OnSuppressed(env);
+}
+
+void JNI_TabBottomSheetNativeInterface_OnOpened(
+    JNIEnv* env,
+    int64_t native_tab_bottom_sheet_bridge,
+    bool is_expanded) {
+  reinterpret_cast<TabBottomSheetBridge*>(native_tab_bottom_sheet_bridge)
+      ->OnOpened(env, is_expanded);
 }
 
 TabBottomSheetBridge::TabBottomSheetBridge(Observer* observer,
@@ -73,8 +90,16 @@ void TabBottomSheetBridge::Close() {
   Java_TabBottomSheetNativeInterface_close(AttachCurrentThread(), java_bridge_);
 }
 
-void TabBottomSheetBridge::OnClose(JNIEnv* env) {
-  observer_->OnClose();
+void TabBottomSheetBridge::OnClosed(JNIEnv* env) {
+  observer_->OnClosed();
+}
+
+void TabBottomSheetBridge::OnSuppressed(JNIEnv* env) {
+  observer_->OnSuppressed();
+}
+
+void TabBottomSheetBridge::OnOpened(JNIEnv* env, bool is_expanded) {
+  observer_->OnOpened(is_expanded);
 }
 
 void TabBottomSheetBridge::CreateCoBrowseViews(

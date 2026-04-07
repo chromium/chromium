@@ -140,11 +140,19 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
   bridge_->Close();
 }
 
-void GlicSidePanelCoordinatorAndroid::OnClose() {
+void GlicSidePanelCoordinatorAndroid::OnClosed() {
   if (state_ == State::kBackgrounded) {
     return;
   }
   SetState(State::kClosed);
+}
+
+void GlicSidePanelCoordinatorAndroid::OnSuppressed() {
+  SetState(State::kBackgrounded);
+}
+
+void GlicSidePanelCoordinatorAndroid::OnOpened(bool is_expanded) {
+  SetState(State::kShown);
 }
 
 }  // namespace glic
