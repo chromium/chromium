@@ -611,10 +611,6 @@
       (_tabGridState.tabGridVisible && isIncognitoPage);
   if (isIncognitoContentVisible) {
     enableButtons = enableButtons && !_incognitoState.authenticationRequired;
-    if (IsIOSSoftLockEnabled()) {
-      // TODO(crbug.com/484000564): Hide background if authentication is
-      // required.
-    }
   }
   [self.consumer setButtonsEnabled:enableButtons];
   [self.consumer setIncognito:isIncognitoContentVisible];
