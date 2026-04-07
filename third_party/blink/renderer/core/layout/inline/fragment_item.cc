@@ -598,13 +598,19 @@ StringView FragmentItem::Text(const FragmentItems& items) const {
 
 TextFragmentPaintInfo FragmentItem::TextPaintInfo(
     const FragmentItems& items) const {
+  const auto fit_text_scale = GetFitTextScale();
   if (Type() == kText) {
-    return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
-            text_.text_offset.end, text_.shape_result.Get()};
+    return {items.Text(UsesFirstLineStyle()),
+            text_.text_offset.start,
+            text_.text_offset.end,
+            text_.shape_result.Get(),
+            fit_text_scale.first,
+            fit_text_scale.second};
   }
   if (Type() == kGeneratedText) {
-    return {generated_text_.text, 0, generated_text_.text.length(),
-            generated_text_.shape_result.Get()};
+    return {generated_text_.text,          0,
+            generated_text_.text.length(), generated_text_.shape_result.Get(),
+            fit_text_scale.first,          fit_text_scale.second};
   }
   NOTREACHED();
 }

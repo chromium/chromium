@@ -358,6 +358,8 @@ void HighlightPainter::SelectionPaintState::PaintSelectedText(
     const TextPaintStyle& text_style,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
+  std::optional<GraphicsContextStateSaver> fit_text_state_saver;
+  text_painter.ApplyTextFitScale(fragment_paint_info, &fit_text_state_saver);
   text_painter.PaintSelectedText(
       fragment_paint_info, selection_status_.start, selection_status_.end,
       text_style, selection_style_.style, LineRelativeSelectionRect(), node_id,
@@ -373,6 +375,8 @@ void HighlightPainter::SelectionPaintState::
         const TextPaintStyle& text_style,
         DOMNodeId node_id,
         const AutoDarkMode& auto_dark_mode) {
+  std::optional<GraphicsContextStateSaver> fit_text_state_saver;
+  text_painter.ApplyTextFitScale(fragment_paint_info, &fit_text_state_saver);
   // First paint the shadows for the whole range.
   if (text_style.shadow) {
     text_painter.Paint(fragment_paint_info, text_style, node_id, auto_dark_mode,
@@ -584,6 +588,9 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
               *To<LayoutSVGInlineText>(fragment_item_->GetLayoutObject()),
               originating_style_, text_style.fill_color);
         }
+
+        std::optional<GraphicsContextStateSaver> state_saver;
+        text_painter_.ApplyTextFitScale(fragment_paint_info_, &state_saver);
         text_painter_.Paint(
             fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
             text_style, kInvalidDOMNodeId, foreground_auto_dark_mode_);
@@ -800,6 +807,8 @@ void HighlightPainter::PaintOriginatingShadow(const TextPaintStyle& text_style,
                                               DOMNodeId node_id) {
   // Paint the shadows for the whole range.
   if (text_style.shadow) {
+    std::optional<GraphicsContextStateSaver> state_saver;
+    text_painter_.ApplyTextFitScale(fragment_paint_info_, &state_saver);
     text_painter_.Paint(fragment_paint_info_, text_style, node_id,
                         foreground_auto_dark_mode_, TextPainter::kShadowsOnly);
   }
@@ -903,6 +912,9 @@ void HighlightPainter::PaintHighlightOverlays(
           TextPaintStyle text_shadow_style{};
           text_shadow_style.shadow = layer.text_style.style.shadow;
           text_shadow_style.current_color = merged.inner.current_color;
+
+          std::optional<GraphicsContextStateSaver> state_saver;
+          text_painter_.ApplyTextFitScale(fragment_paint_info_, &state_saver);
           text_painter_.Paint(
               fragment_paint_info_.Slice(merged.from, merged.to),
               text_shadow_style, node_id, foreground_auto_dark_mode_,
@@ -970,6 +982,7 @@ void HighlightPainter::PaintHighlightOverlays(
       fragment_paint_info_.shape_result->ExpandRangeToIncludePartialGlyphs(
           &start, &end);
 
+      text_painter_.ApplyTextFitScale(fragment_paint_info_, nullptr);
       text_painter_.Paint(fragment_paint_info_.Slice(start, end), part.style,
                           node_id, foreground_auto_dark_mode_,
                           TextPainter::kTextProperOnly);

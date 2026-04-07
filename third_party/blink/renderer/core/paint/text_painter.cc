@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -354,6 +355,25 @@ void DrawPaintOrderPasses(const OrderedPaints& ordered_paints,
     }
     pass(*paint);
   }
+}
+
+AffineTransform ComputeTextFitTransform(float scaling_factor,
+                                        bool is_scaled_inline_only,
+                                        const LineRelativeOffset& text_origin) {
+  if (is_scaled_inline_only) {
+    return {scaling_factor,
+            0,
+            0,
+            1,
+            text_origin.line_left - scaling_factor * text_origin.line_left,
+            0};
+  }
+  return {scaling_factor,
+          0,
+          0,
+          scaling_factor,
+          text_origin.line_left - scaling_factor * text_origin.line_left,
+          text_origin.line_over - scaling_factor * text_origin.line_over};
 }
 
 }  // namespace
@@ -767,6 +787,23 @@ AffineTransform& TextPainter::SvgTextPaintState::EnsureShaderTransform() {
 const AffineTransform* TextPainter::SvgTextPaintState::GetShaderTransform()
     const {
   return base::OptionalToPtr(shader_transform_);
+}
+
+void TextPainter::ApplyTextFitScale(
+    const TextFragmentPaintInfo& paint_info,
+    std::optional<GraphicsContextStateSaver>* state_saver) {
+  if (!RuntimeEnabledFeatures::CssFitWidthTextEnabled() ||
+      paint_info.text_fit_scaling_factor == 1.0f) {
+    return;
+  }
+
+  if (state_saver) {
+    state_saver->emplace(graphics_context_);
+  }
+
+  graphics_context_.ConcatCTM(
+      ComputeTextFitTransform(paint_info.text_fit_scaling_factor,
+                              paint_info.is_scaled_inline_only, text_origin_));
 }
 
 }  // namespace blink

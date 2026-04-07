@@ -11,7 +11,10 @@ TextFragmentPaintInfo TextFragmentPaintInfo::Slice(unsigned slice_from,
   DCHECK_LE(from, slice_from);
   DCHECK_LE(slice_from, slice_to);
   DCHECK_LE(slice_to, to);
-  return {text, slice_from, slice_to, shape_result};
+  TextFragmentPaintInfo result = *this;
+  result.from = slice_from;
+  result.to = slice_to;
+  return result;
 }
 
 TextFragmentPaintInfo TextFragmentPaintInfo::WithStartOffset(

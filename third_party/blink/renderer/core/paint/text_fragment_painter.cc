@@ -487,27 +487,10 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     }
   }
 
-  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() && !svg_inline_text &&
-      scaling_factor != 1.0f) {
-    state_saver.SaveIfNeeded();
-    AffineTransform t;
-    if (is_scaled_inline_only) {
-      t.SetMatrix(
-          scaling_factor, 0, 0, 1,
-          text_origin.line_left - scaling_factor * text_origin.line_left, 0);
-    } else {
-      t.SetMatrix(
-          scaling_factor, 0, 0, scaling_factor,
-          text_origin.line_left - scaling_factor * text_origin.line_left,
-          text_origin.line_over - scaling_factor * text_origin.line_over);
-    }
-    context.ConcatCTM(t);
-  }
-
   if (highlight_painter.Selection()) [[unlikely]] {
     PhysicalRect physical_selection =
         highlight_painter.Selection()->PhysicalSelectionRect();
-    if (scaling_factor != 1.0f) {
+    if (svg_inline_text && scaling_factor != 1.0f) {
       physical_selection.offset.Scale(1 / scaling_factor);
       physical_selection.size.Scale(1 / scaling_factor);
     }
@@ -552,10 +535,15 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       }
       decoration_painter.Begin(text_item, TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
-      text_painter.Paint(
-          fragment_paint_info, text_style, node_id, auto_dark_mode,
-          paint_shadows_first ? TextPainter::kTextProperOnly
-                              : TextPainter::kBothShadowsAndTextProper);
+      {
+        std::optional<GraphicsContextStateSaver> fit_text_state_saver;
+        text_painter.ApplyTextFitScale(fragment_paint_info,
+                                       &fit_text_state_saver);
+        text_painter.Paint(
+            fragment_paint_info, text_style, node_id, auto_dark_mode,
+            paint_shadows_first ? TextPainter::kTextProperOnly
+                                : TextPainter::kBothShadowsAndTextProper);
+      }
       decoration_painter.PaintOnlyLineThrough();
       if (highlight_case == HighlightPainter::kFastSpellingGrammar) {
         highlight_painter.FastPaintSpellingGrammarDecorations();
