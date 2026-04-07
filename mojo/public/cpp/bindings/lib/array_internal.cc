@@ -7,26 +7,19 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <sstream>
-
 namespace mojo {
 namespace internal {
 
-std::string MakeMessageWithArrayIndex(const char* message,
-                                      size_t size,
-                                      size_t index) {
-  std::ostringstream stream;
-  stream << message << ": array size - " << size << "; index - " << index;
-  return stream.str();
+ArrayIndexError MakeMessageWithArrayIndex(const char* message,
+                                          size_t size,
+                                          size_t index) {
+  return {message, size, index};
 }
 
-std::string MakeMessageWithExpectedArraySize(const char* message,
-                                             size_t size,
-                                             size_t expected_size) {
-  std::ostringstream stream;
-  stream << message << ": array size - " << size << "; expected size - "
-         << expected_size;
-  return stream.str();
+ArrayExpectedSizeError MakeMessageWithExpectedArraySize(const char* message,
+                                                        size_t size,
+                                                        size_t expected_size) {
+  return {message, size, expected_size};
 }
 
 ArrayDataTraits<bool>::BitRef::~BitRef() {}
