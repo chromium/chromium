@@ -69,10 +69,10 @@ message ContextualCueingResponse {
 }
 
 message AnchoredMessageCue {
-  // The message to show to the user.
+  // The button text to show to the user.
   string action_text = 1 [features = { field_presence: EXPLICIT }];
 
-  // The button text to show to the user.
+  // The message to show to the user.
   string anchored_message_text = 2 [features = { field_presence: EXPLICIT }];
 }
 

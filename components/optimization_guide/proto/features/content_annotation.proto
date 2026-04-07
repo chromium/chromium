@@ -50,6 +50,9 @@ message ContentAnnotationResponse {
 }
 
 // Structured content annotation result from the LLM.
+// Max length of arrays is 100 items. Max length of strings is 1000 characters,
+// unless it holds a numerical string value, e.g. tracking number, which has a
+// maximum length of 100 characters.
 message ContentAnnotation {
   // A brief summary of the annotation.
   string description = 1 [features = { field_presence: EXPLICIT }];
@@ -57,9 +60,10 @@ message ContentAnnotation {
   Status status = 2 [features = { field_presence: EXPLICIT }];
 
   // The structured, validated extracted data for supported verticals.
+  // One of structured_data or supplemental_data must be set.
   StructuredData structured_data = 3 [features = { field_presence: EXPLICIT }];
 
-  // Free schema JSON data from the page containing user insights/context.
+  // Free schema data from the page containing user insights/context.
   string supplemental_data = 4 [features = { field_presence: EXPLICIT }];
 
   // The validation status: 'confirmed' or 'pending'.
@@ -90,16 +94,23 @@ message Order {
 
   repeated Product products = 2;
 
-  // ISO 8601 format YYYY-MM-DD
-  string order_date = 3 [features = { field_presence: EXPLICIT }];
+  Date order_date = 3 [features = { field_presence: EXPLICIT }];
 
-  float grand_total = 4 [features = { field_presence: EXPLICIT }];
+  double grand_total = 4 [features = { field_presence: EXPLICIT }];
 }
 
 message Product {
   string name = 1 [features = { field_presence: EXPLICIT }];
 
   int32 quantity = 2 [features = { field_presence: EXPLICIT }];
+}
+
+message Date {
+  int32 year = 1 [features = { field_presence: EXPLICIT }];
+
+  int32 month = 2 [features = { field_presence: EXPLICIT }];
+
+  int32 day = 3 [features = { field_presence: EXPLICIT }];
 }
 
 message Shipment {
@@ -115,34 +126,31 @@ message Shipment {
 message FlightReservation {
   string confirmation_code = 1 [features = { field_presence: EXPLICIT }];
 
-  float grand_total = 2 [features = { field_presence: EXPLICIT }];
+  double grand_total = 2 [features = { field_presence: EXPLICIT }];
 
   string flight_number = 3 [features = { field_presence: EXPLICIT }];
 
   string passenger_name = 4 [features = { field_presence: EXPLICIT }];
 
-  // 3-letter IATA
+  // IATA airport code
   string departure_airport = 5 [features = { field_presence: EXPLICIT }];
 
-  // 3-letter IATA
+  // IATA airport code
   string arrival_airport = 6 [features = { field_presence: EXPLICIT }];
 
-  // ISO 8601 format YYYY-MM-DD
-  string departure_date = 7 [features = { field_presence: EXPLICIT }];
+  Date departure_date = 7 [features = { field_presence: EXPLICIT }];
 }
 
 message HotelBooking {
   string confirmation_code = 1 [features = { field_presence: EXPLICIT }];
 
-  float grand_total = 2 [features = { field_presence: EXPLICIT }];
+  double grand_total = 2 [features = { field_presence: EXPLICIT }];
 
   string property_name = 3 [features = { field_presence: EXPLICIT }];
 
-  // ISO 8601 format YYYY-MM-DD
-  string check_in_date = 4 [features = { field_presence: EXPLICIT }];
+  Date check_in_date = 4 [features = { field_presence: EXPLICIT }];
 
-  // ISO 8601 format YYYY-MM-DD
-  string check_out_date = 5 [features = { field_presence: EXPLICIT }];
+  Date check_out_date = 5 [features = { field_presence: EXPLICIT }];
 
   string city = 6 [features = { field_presence: EXPLICIT }];
 
@@ -154,7 +162,7 @@ message HotelBooking {
 message CarRental {
   string confirmation_code = 1 [features = { field_presence: EXPLICIT }];
 
-  float grand_total = 2 [features = { field_presence: EXPLICIT }];
+  double grand_total = 2 [features = { field_presence: EXPLICIT }];
 
   string car_model = 3 [features = { field_presence: EXPLICIT }];
 
@@ -164,11 +172,9 @@ message CarRental {
 
   string dropoff_location_name = 6 [features = { field_presence: EXPLICIT }];
 
-  // ISO 8601 format YYYY-MM-DD
-  string pickup_date = 7 [features = { field_presence: EXPLICIT }];
+  Date pickup_date = 7 [features = { field_presence: EXPLICIT }];
 
-  // ISO 8601 format YYYY-MM-DD
-  string dropoff_date = 8 [features = { field_presence: EXPLICIT }];
+  Date dropoff_date = 8 [features = { field_presence: EXPLICIT }];
 
   string merchant = 9 [features = { field_presence: EXPLICIT }];
 }
