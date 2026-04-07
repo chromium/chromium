@@ -120,8 +120,6 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // On navigation or page destruction, hide the dialog.
   void DismissDialog();
 
-  void DestroyJavaDelegate() { java_delegate_.reset(); }
-
   // WebContentsObserver:
   void PrimaryPageChanged(content::Page&) override;
   void WebContentsDestroyed() override;
