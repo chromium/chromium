@@ -50,11 +50,14 @@ const auto QuietBubbleAllowElementId =
     views::DialogClientView::kOkButtonElementId;
 const auto QuietBubbleElementId = ContentSettingBubbleContents::kMainElementId;
 const auto InfobarElementId = ConfirmInfoBar::kInfoBarElementId;
+using ::base::test::ScopedFeatureList;
 using ::testing::ValuesIn;
 
 class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
  public:
   QuietPromptInteractiveUITest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        tabs::kHorizontalTabStripComboButton);
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -161,6 +164,7 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
+  ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };

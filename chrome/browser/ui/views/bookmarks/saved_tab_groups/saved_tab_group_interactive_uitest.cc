@@ -221,14 +221,14 @@ class SavedTabGroupInteractiveTest
            features::kBookmarkTabGroupConversion,
            data_sharing::features::kDataSharingFeature},
           {data_sharing::features::kDataSharingJoinOnly,
-           tab_groups::kProjectsPanel});
+           tab_groups::kProjectsPanel, tabs::kHorizontalTabStripComboButton});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {features::kTabGroupMenuMoreEntryPoints,
            features::kBookmarkTabGroupConversion},
           {data_sharing::features::kDataSharingFeature,
            data_sharing::features::kDataSharingJoinOnly,
-           tab_groups::kProjectsPanel});
+           tab_groups::kProjectsPanel, tabs::kHorizontalTabStripComboButton});
     }
 
     SavedTabGroupInteractiveTestBase::SetUp();
@@ -1171,7 +1171,8 @@ class SavedTabGroupEverythingMenuMoreEntryPointsFeature
  public:
   SavedTabGroupEverythingMenuMoreEntryPointsFeature() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupMenuMoreEntryPoints}, {tab_groups::kProjectsPanel});
+        {features::kTabGroupMenuMoreEntryPoints},
+        {tab_groups::kProjectsPanel, tabs::kHorizontalTabStripComboButton});
   }
 
  private:
@@ -1204,7 +1205,7 @@ class SavedTabGroupsCreateNewTabGroupAppMenu
   SavedTabGroupsCreateNewTabGroupAppMenu() {
     scoped_feature_list_.InitWithFeatures(
         {features::kCreateNewTabGroupAppMenuTopLevel},
-        {tab_groups::kProjectsPanel});
+        {tab_groups::kProjectsPanel, tabs::kHorizontalTabStripComboButton});
   }
 
  private:
@@ -1248,7 +1249,8 @@ class TabGroupShortcutsInteractiveTest
     : public SavedTabGroupInteractiveTestBase {
  public:
   TabGroupShortcutsInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures({}, {tab_groups::kProjectsPanel});
+    scoped_feature_list_.InitWithFeatures(
+        {}, {tab_groups::kProjectsPanel, tabs::kHorizontalTabStripComboButton});
   }
   ~TabGroupShortcutsInteractiveTest() override = default;
 
@@ -1501,7 +1503,8 @@ class SavedTabGroupFocusInteractiveTestNonSubmenu
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kTabGroupsFocusing,
           {{"tab_groups_focusing_default_to_focused", "true"}}}},
-        {features::kTabGroupMenuMoreEntryPoints, tab_groups::kProjectsPanel});
+        {features::kTabGroupMenuMoreEntryPoints, tab_groups::kProjectsPanel,
+         tabs::kHorizontalTabStripComboButton});
     SavedTabGroupInteractiveTestBase::SetUp();
   }
 
@@ -1517,7 +1520,7 @@ class SavedTabGroupFocusInteractiveTestSubmenu
         {{features::kTabGroupsFocusing,
           {{"tab_groups_focusing_default_to_focused", "true"}}},
          {features::kTabGroupMenuMoreEntryPoints, {}}},
-        {tab_groups::kProjectsPanel});
+        {tab_groups::kProjectsPanel, tabs::kHorizontalTabStripComboButton});
     SavedTabGroupInteractiveTestBase::SetUp();
   }
 

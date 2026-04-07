@@ -44,7 +44,8 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
-        {content_settings::features::kLeftHandSideActivityIndicators}, {});
+        {content_settings::features::kLeftHandSideActivityIndicators},
+        {tabs::kHorizontalTabStripComboButton});
   }
 
   ~DashboardKombuchaInteractiveUITest() override = default;

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
+#include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,15 +32,16 @@
 class TabSearchButtonBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchButtonBrowserTest() {
-    feature_list_.InitWithFeatures({}, {features::kGlic});
+    feature_list_.InitWithFeatures(
+        {}, {features::kGlic, tabs::kHorizontalTabStripComboButton});
   }
 
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
-  views::LabelButton* tab_search_button() {
-    return BrowserElementsViews::From(browser())->GetViewAs<views::LabelButton>(
+  TabSearchButton* tab_search_button() {
+    return BrowserElementsViews::From(browser())->GetViewAs<TabSearchButton>(
         kTabSearchButtonElementId);
   }
 
@@ -78,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, ButtonClickCreatesBubble) {
 class TabSearchButtonBrowserUITest : public DialogBrowserTest {
  public:
   TabSearchButtonBrowserUITest() {
-    feature_list_.InitWithFeatures({}, {features::kGlic});
+    feature_list_.InitWithFeatures(
+        {}, {features::kGlic, tabs::kHorizontalTabStripComboButton});
   }
 
   // DialogBrowserTest:
@@ -87,7 +90,7 @@ class TabSearchButtonBrowserUITest : public DialogBrowserTest {
     AppendTab(chrome::kChromeUIHistoryURL);
     AppendTab(chrome::kChromeUIBookmarksURL);
     auto* tab_search_button =
-        BrowserElementsViews::From(browser())->GetViewAs<views::LabelButton>(
+        BrowserElementsViews::From(browser())->GetViewAs<TabSearchButton>(
             kTabSearchButtonElementId);
     views::test::ButtonTestApi(tab_search_button).NotifyDefaultMouseClick();
   }

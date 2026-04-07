@@ -77,7 +77,8 @@ class IntentChipButtonBrowserTest
          {{::features::kPageActionsMigrationIntentPicker.name,
            IsMigrationEnabled() ? "true" : "false"}}});
 
-    scoped_feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        features_to_enable, {tabs::kHorizontalTabStripComboButton});
   }
 
   bool LinkCapturingEnabledByDefault() const {
@@ -309,7 +310,8 @@ class IntentChipButtonBrowserUiTest
          {{::features::kPageActionsMigrationIntentPicker.name,
            IsMigrationEnabled() ? "true" : "false"}}});
 
-    scoped_feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        features_to_enable, {tabs::kHorizontalTabStripComboButton});
   }
 
   // UiBrowserTest:

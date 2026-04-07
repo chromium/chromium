@@ -68,7 +68,7 @@ class SharedTabGroupInteractiveUiTest
         {features::kTabGroupMenuMoreEntryPoints, {}}};
 
     std::vector<base::test::FeatureRef> disabled_features = {
-        tab_groups::kProjectsPanel};
+        tab_groups::kProjectsPanel, tabs::kHorizontalTabStripComboButton};
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
