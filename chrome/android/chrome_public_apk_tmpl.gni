@@ -592,26 +592,17 @@ template("chrome_common_apk_or_module_tmpl") {
     }
 
     # TODO(agrieve): Use Crashpad trampoline in chrome_public_apk.
-    if (!_is_trichrome) {
+    if (!_is_bundle) {
       deps +=
           [ "//components/crash/core/app:chrome_crashpad_handler_named_as_so" ]
       loadable_modules += [ "$root_out_dir/libchrome_crashpad_handler.so" ]
       library_always_compress += [ "libchrome_crashpad_handler.so" ]
     } else if (!_is_trichrome) {
-      # Crashpad trampoline lives in TrichromeLibrary.apk.
       # https://chromium.googlesource.com/chromium/src/+/main/docs/android_native_libraries.md#Crashpad-Packaging
-      if (_include_primary_abi) {
-        deps += [
-          "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
-        ]
-        loadable_modules +=
-            [ "$root_out_dir/libcrashpad_handler_trampoline.so" ]
-      }
-      if (_include_secondary_abi) {
-        deps += [ "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline($android_secondary_abi_toolchain)" ]
-        secondary_abi_loadable_modules +=
-            [ "$_secondary_out_dir/libcrashpad_handler_trampoline.so" ]
-      }
+      deps += [
+        "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
+      ]
+      loadable_modules += [ "$root_out_dir/libcrashpad_handler_trampoline.so" ]
     }
 
     # The Chromium Linker depends on ASharedMemory_create() introduced in O.
