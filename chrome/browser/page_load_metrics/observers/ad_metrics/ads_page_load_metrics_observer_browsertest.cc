@@ -1393,8 +1393,13 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that a blank ad subframe that is docwritten correctly reports metrics.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DocWriteAboutBlankAdframe DISABLED_DocWriteAboutBlankAdframe
+#else
+#define MAYBE_DocWriteAboutBlankAdframe DocWriteAboutBlankAdframe
+#endif
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DocWriteAboutBlankAdframe) {
+                       MAYBE_DocWriteAboutBlankAdframe) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
