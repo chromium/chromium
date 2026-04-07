@@ -14,6 +14,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 
 namespace autofill {
 
@@ -96,6 +97,12 @@ void AutofillPopupHideHelper::OnZoomControllerDestroyed(
 
 void AutofillPopupHideHelper::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
+  // The ZoomController broadcasts OnZoomChanged on every navigation (including
+  // same-document URL changes). To prevent closing the popup when the content
+  // hasn't actually moved, ignore events where the zoom level is unchanged.
+  if (blink::ZoomValuesEqual(data.old_zoom_level, data.new_zoom_level)) {
+    return;
+  }
   hiding_callback_.Run(SuggestionHidingReason::kContentAreaMoved);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
