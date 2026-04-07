@@ -5653,6 +5653,12 @@
       status: "stable",
     },
     {
+      // Remove <table>'s explicit `border-color: gray` UA stylesheet rule,
+      // since it is non-standard. See crbug.com/494554835.
+      name: "TableDefaultBorderColorCurrentColor",
+      status: "experimental",
+    },
+    {
       name: "TableIsAutoFixedLayout",
       status: "test",
     },
