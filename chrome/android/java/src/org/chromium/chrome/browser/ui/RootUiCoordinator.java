@@ -677,13 +677,16 @@ public class RootUiCoordinator
 
                             @Override
                             public BrowserContextHandle getBrowserContextHandle() {
-                                return mProfileSupplier.get().getOriginalProfile();
+                                Profile profile = mProfileSupplier.get();
+                                assumeNonNull(profile);
+                                return profile.getOriginalProfile();
                             }
 
                             @Override
                             public void addZoomEventsObserver(ZoomEventsObserver observer) {
-                                HostZoomListenerFactory.getForProfile(
-                                                mProfileSupplier.get().getOriginalProfile())
+                                Profile profile = mProfileSupplier.get();
+                                assumeNonNull(profile);
+                                HostZoomListenerFactory.getForProfile(profile.getOriginalProfile())
                                         .addObserver(observer);
                             }
 
@@ -692,9 +695,10 @@ public class RootUiCoordinator
                                 // HostZoomListenerFactory stores each HostZoomListener object in a
                                 // ProfileKeyedMap. When the profile is destroyed, each
                                 // HostZoomFactory will be destroyed, removing all observers stored.
-                                if (mProfileSupplier.get() != null) {
+                                Profile profile = mProfileSupplier.get();
+                                if (profile != null) {
                                     HostZoomListenerFactory.getForProfile(
-                                                    mProfileSupplier.get().getOriginalProfile())
+                                                    profile.getOriginalProfile())
                                             .removeObserver(observer);
                                 }
                             }
@@ -1546,7 +1550,7 @@ public class RootUiCoordinator
      */
     protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory(
             Profile profile) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     private void initMerchantTrustSignals(Profile profile) {
@@ -1876,23 +1880,24 @@ public class RootUiCoordinator
                             () -> {
                                 PasswordManagerLauncher.showPasswordSettings(
                                         mActivity,
-                                        mProfileSupplier.get(),
+                                        mProfileSupplier.asNonNull().get(),
                                         ManagePasswordsReferrer.CHROME_SETTINGS,
                                         mModalDialogManagerSupplier.get(),
                                         /* managePasskeys= */ false);
                             },
                             // Open Quick Delete Dialog callback:
                             () -> {
+                                Profile profile = mProfileSupplier.asNonNull().get();
                                 TabModelSelectorBase tabModelSelector =
-                                        ArchivedTabModelOrchestrator.getForProfile(
-                                                        mProfileSupplier.get())
+                                        ArchivedTabModelOrchestrator.getForProfile(profile)
                                                 .getTabModelSelector();
                                 assert tabModelSelector != null;
                                 QuickDeleteController quickDeleteController =
                                         new QuickDeleteController(
                                                 mActivity,
                                                 new QuickDeleteDelegateImpl(
-                                                        mProfileSupplier, mTabSwitcherSupplier),
+                                                        profile.getOriginalProfile(),
+                                                        mTabSwitcherSupplier),
                                                 mModalDialogManagerSupplier.get(),
                                                 assertNonNull(mSnackbarManagerSupplier.get()),
                                                 mLayoutManager,

@@ -4293,15 +4293,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private QuickDeleteController getQuickDeleteController() {
+        Profile profile = mTabModelProfileSupplier.get();
         return new QuickDeleteController(
                 this,
-                new QuickDeleteDelegateImpl(mTabModelProfileSupplier, mTabSwitcherSupplier),
+                new QuickDeleteDelegateImpl(profile.getOriginalProfile(), mTabSwitcherSupplier),
                 getModalDialogManager(),
                 getSnackbarManager(),
                 getLayoutManager(),
                 mTabModelSelector,
-                ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
-                        .getTabModelSelector());
+                ArchivedTabModelOrchestrator.getForProfile(profile).getTabModelSelector());
     }
 
     private boolean isTabNtp(Tab tab) {

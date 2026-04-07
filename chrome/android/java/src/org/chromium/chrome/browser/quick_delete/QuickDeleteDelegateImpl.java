@@ -24,25 +24,24 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
-    private final Supplier<Profile> mProfileSupplier;
+    private final Profile mProfile;
     private final Supplier<@Nullable TabSwitcher> mTabSwitcherSupplier;
 
     /**
-     * @param profileSupplier A supplier for {@link Profile} that owns the data being deleted.
+     * @param profile The original {@link Profile} that owns the data being deleted.
      * @param tabSwitcherSupplier A supplier for {@link TabSwitcher} interface that will be used to
      *     trigger the Quick Delete animation.
      */
     public QuickDeleteDelegateImpl(
-            Supplier<Profile> profileSupplier,
-            Supplier<@Nullable TabSwitcher> tabSwitcherSupplier) {
-        mProfileSupplier = profileSupplier;
+            Profile profile, Supplier<@Nullable TabSwitcher> tabSwitcherSupplier) {
+        assert !profile.isOffTheRecord();
+        mProfile = profile;
         mTabSwitcherSupplier = tabSwitcherSupplier;
     }
 
     @Override
     public void performQuickDelete(Runnable onDeleteFinished, @TimePeriod int timePeriod) {
-        Profile profile = mProfileSupplier.get().getOriginalProfile();
-        BrowsingDataBridge.getForProfile(profile)
+        BrowsingDataBridge.getForProfile(mProfile)
                 .clearBrowsingData(
                         onDeleteFinished::run,
                         new int[] {
