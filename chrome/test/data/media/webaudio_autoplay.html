@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- Test that WebAudio autoplay is allowed without user gesture when explicitly allowed by content settings. -->
+<html>
+<body>
+<script>
+const audioContext = new AudioContext();
+
+function isPlaybackRunning() {
+  return audioContext.state === 'running';
+}
+
+// Asynchronous check (Negative): Use this when we EXPECT playback to be BLOCKED.
+// It waits for a grace period to ensure the state doesn't transition to 'running'
+// due to an unexpected asynchronous task.
+function verifyBlocked() {
+  return new Promise(resolve => {
+    if (audioContext.state === 'running') {
+      return resolve(false); // Test failed: it is running
+    }
+
+    const stateListener = () => {
+      if (audioContext.state === 'running') {
+        audioContext.removeEventListener('statechange', stateListener);
+        resolve(false); // Test failed: it transitioned to running
+      }
+    };
+
+    audioContext.addEventListener('statechange', stateListener);
+
+    // If it stays suspended throughout the grace period, it was properly blocked.
+    setTimeout(() => {
+      audioContext.removeEventListener('statechange', stateListener);
+      resolve(audioContext.state === 'suspended');
+    }, 500);
+  });
+}
+</script>
+</body>
+</html>

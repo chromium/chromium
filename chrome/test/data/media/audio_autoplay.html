@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!-- Test that audio playback is allowed without user gesture when explicitly allowed by content settings. -->
+<html>
+<body>
+<audio id="audio">
+  <source src="pink_noise_140ms.wav" type="audio/wav" />
+</audio>
+<script>
+function tryPlayback() {
+  const audio = document.getElementById('audio');
+  return audio.play().then(() => {
+    return true;
+  }, (e) => {
+    return false;
+  });
+}
+</script>
+</body>
+</html>

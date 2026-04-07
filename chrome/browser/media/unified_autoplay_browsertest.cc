@@ -6,6 +6,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -19,6 +20,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
@@ -450,6 +452,7 @@ class UnifiedAutoplaySettingBrowserTest : public UnifiedAutoplayBrowserTest {
 
   void SetUpOnMainThread() override {
     UnifiedAutoplayBrowserTest::SetUpOnMainThread();
+    TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   }
 
   bool AutoplayAllowed(const content::ToRenderFrameHost& adapter) {
@@ -513,6 +516,66 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, DISABLED_Allow) {
 
   EXPECT_TRUE(AutoplayAllowed(main_frame()));
   EXPECT_TRUE(AutoplayAllowed(first_child()));
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, Allow_Audio) {
+  GURL main_url(embedded_test_server()->GetURL("example.com",
+                                               "/media/audio_autoplay.html"));
+
+  GetSettingsMap()->SetContentSettingDefaultScope(
+      main_url, main_url, ContentSettingsType::SOUND, CONTENT_SETTING_ALLOW);
+
+  NavigateFrameAndWait(main_frame(), main_url);
+
+  EXPECT_TRUE(AutoplayAllowed(main_frame()));
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest,
+                       Allow_SpeechSynthesis) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "example.com", "/media/speech_synthesis_autoplay.html"));
+
+  GetSettingsMap()->SetContentSettingDefaultScope(
+      main_url, main_url, ContentSettingsType::SOUND, CONTENT_SETTING_ALLOW);
+
+  NavigateFrameAndWait(main_frame(), main_url);
+
+  EXPECT_TRUE(content::EvalJs(main_frame(), "tryPlayback();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, Allow_WebAudio) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "example.com", "/media/webaudio_autoplay.html"));
+
+  GetSettingsMap()->SetContentSettingDefaultScope(
+      main_url, main_url, ContentSettingsType::SOUND, CONTENT_SETTING_ALLOW);
+
+  NavigateFrameAndWait(main_frame(), main_url);
+
+  EXPECT_TRUE(content::EvalJs(main_frame(), "isPlaybackRunning();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest,
+                       Allow_Sound_DefersMutedVideo) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "example.com", "/media/muted_video_autoplay.html"));
+
+  GetSettingsMap()->SetContentSettingDefaultScope(
+      main_url, main_url, ContentSettingsType::SOUND, CONTENT_SETTING_ALLOW);
+
+  NavigateFrameAndWait(main_frame(), main_url);
+
+  // Muted video should be deferred until visible. It should be paused.
+  EXPECT_EQ(false, content::EvalJs(main_frame(), "isPlaying();").ExtractBool());
+
+  // Scroll the video into view and wait for it to start playing.
+  EXPECT_TRUE(
+      content::EvalJs(main_frame(), "scrollToVideo(); waitUntilPlaying();")
+          .ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, Allow_Wildcard) {
@@ -594,4 +657,92 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest,
 
   EXPECT_FALSE(AutoplayAllowed(main_frame()));
   EXPECT_FALSE(AutoplayAllowed(first_child()));
+}
+
+class UnifiedAutoplayPrerenderBrowserTest
+    : public UnifiedAutoplaySettingBrowserTest {
+ public:
+  UnifiedAutoplayPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &UnifiedAutoplayPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+
+  void SetUp() override {
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
+    UnifiedAutoplaySettingBrowserTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplayPrerenderBrowserTest,
+                       Allow_WebAudio_Prerendering) {
+  GURL initial_url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateFrameAndWait(main_frame(), initial_url);
+
+  GURL prerender_url(embedded_test_server()->GetURL(
+      "example.com", "/media/webaudio_autoplay.html"));
+
+  GetSettingsMap()->SetContentSettingDefaultScope(prerender_url, prerender_url,
+                                                  ContentSettingsType::SOUND,
+                                                  CONTENT_SETTING_ALLOW);
+
+  content::PrerenderHostId host_id =
+      prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+
+  // The WebAudio context should be suspended while prerendering.
+  EXPECT_FALSE(content::EvalJs(prerender_rfh, "isPlaybackRunning();",
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                   .ExtractBool());
+
+  // Activate the prerender.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  // After activation, the WebAudio context should automatically resume.
+  EXPECT_TRUE(content::EvalJs(main_frame(), "isPlaybackRunning();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(UnifiedAutoplayPrerenderBrowserTest,
+                       Block_WebAudio_Prerendering) {
+  GURL initial_url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateFrameAndWait(main_frame(), initial_url);
+
+  GURL prerender_url(embedded_test_server()->GetURL(
+      "example.com", "/media/webaudio_autoplay.html"));
+
+  // Make sure we DON'T set the allow setting.
+
+  content::PrerenderHostId host_id =
+      prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+
+  // The WebAudio context should be suspended while prerendering.
+  EXPECT_TRUE(content::EvalJs(prerender_rfh, "verifyBlocked();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .ExtractBool());
+
+  // Activate the prerender.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  // After activation, the WebAudio context should REMAIN suspended because it
+  // lacks user gesture!
+  EXPECT_FALSE(content::EvalJs(main_frame(), "isPlaybackRunning();",
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                   .ExtractBool());
 }

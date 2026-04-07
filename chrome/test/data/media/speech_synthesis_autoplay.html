@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!-- Test that speech synthesis is allowed without user gesture when explicitly allowed by content settings. -->
+<html>
+<body>
+<script>
+function isPlaybackRunning() {
+  const utterance = new SpeechSynthesisUtterance('test');
+  speechSynthesis.speak(utterance);
+  return speechSynthesis.speaking;
+}
+
+function tryPlayback() {
+  return new Promise(resolve => {
+    const utterance = new SpeechSynthesisUtterance('test');
+    utterance.onstart = () => resolve(true);
+    utterance.onerror = (e) => {
+      // If autoplay blocks it, the error is 'not-allowed'.
+      // If it fails because the platform has no TTS engine (like in tests),
+      // it means autoplay allowed the attempt, so we consider it a pass.
+      if (e.error === 'not-allowed') {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+    };
+    speechSynthesis.speak(utterance);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!-- Test that muted video autoplay is deferred until visible, even when sound is explicitly allowed by content settings. -->
+<html>
+<body>
+<!-- Place video far offscreen so it's not visible -->
+<div style="height: 2000px;"></div>
+<video id="video" muted autoplay loop>
+  <source src="bigbuck.webm" type="video/webm" />
+</video>
+<script>
+function isPlaying() {
+  const video = document.getElementById('video');
+  return !video.paused;
+}
+
+function waitUntilPlaying() {
+  const video = document.getElementById('video');
+  if (!video.paused) return Promise.resolve(true);
+  return new Promise(resolve => {
+    video.addEventListener('play', () => resolve(true), {once: true});
+  });
+}
+
+function scrollToVideo() {
+  document.getElementById('video').scrollIntoView();
+}
+</script>
+</body>
+</html>
