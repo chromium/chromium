@@ -10,7 +10,9 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -36,6 +38,7 @@
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/progress_reporter.h"
@@ -49,6 +52,66 @@ using testing::AtLeast;
 namespace gpu {
 
 namespace {
+
+struct IOSurfacePlaneInfo {
+  int width;
+  int height;
+  int bytes_per_row = 0;
+};
+
+gfx::ScopedIOSurface CreateIOSurfaceWithPlanes(
+    gfx::Size size,
+    uint32_t format,
+    const std::vector<IOSurfacePlaneInfo>& planes) {
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> properties(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+  int32_t width = size.width();
+  int32_t height = size.height();
+  int32_t pixel_format = format;
+  base::apple::ScopedCFTypeRef<CFNumberRef> width_num(
+      CFNumberCreate(nullptr, kCFNumberSInt32Type, &width));
+  base::apple::ScopedCFTypeRef<CFNumberRef> height_num(
+      CFNumberCreate(nullptr, kCFNumberSInt32Type, &height));
+  base::apple::ScopedCFTypeRef<CFNumberRef> pixel_format_num(
+      CFNumberCreate(nullptr, kCFNumberSInt32Type, &pixel_format));
+  CFDictionaryAddValue(properties.get(), kIOSurfaceWidth, width_num.get());
+  CFDictionaryAddValue(properties.get(), kIOSurfaceHeight, height_num.get());
+  CFDictionaryAddValue(properties.get(), kIOSurfacePixelFormat,
+                       pixel_format_num.get());
+
+  if (!planes.empty()) {
+    base::apple::ScopedCFTypeRef<CFMutableArrayRef> planes_array(
+        CFArrayCreateMutable(kCFAllocatorDefault, planes.size(),
+                             &kCFTypeArrayCallBacks));
+    for (const auto& plane : planes) {
+      base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> plane_dict(
+          CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                    &kCFTypeDictionaryKeyCallBacks,
+                                    &kCFTypeDictionaryValueCallBacks));
+      base::apple::ScopedCFTypeRef<CFNumberRef> plane_width_num(
+          CFNumberCreate(nullptr, kCFNumberSInt32Type, &plane.width));
+      base::apple::ScopedCFTypeRef<CFNumberRef> plane_height_num(
+          CFNumberCreate(nullptr, kCFNumberSInt32Type, &plane.height));
+      CFDictionaryAddValue(plane_dict.get(), kIOSurfacePlaneWidth,
+                           plane_width_num.get());
+      CFDictionaryAddValue(plane_dict.get(), kIOSurfacePlaneHeight,
+                           plane_height_num.get());
+      if (plane.bytes_per_row > 0) {
+        base::apple::ScopedCFTypeRef<CFNumberRef> plane_bytes_per_row_num(
+            CFNumberCreate(nullptr, kCFNumberSInt32Type, &plane.bytes_per_row));
+        CFDictionaryAddValue(plane_dict.get(), kIOSurfacePlaneBytesPerRow,
+                             plane_bytes_per_row_num.get());
+      }
+      CFArrayAppendValue(planes_array.get(), plane_dict.get());
+    }
+    CFDictionaryAddValue(properties.get(), kIOSurfacePlaneInfo,
+                         planes_array.get());
+  }
+
+  return gfx::ScopedIOSurface(IOSurfaceCreate(properties.get()));
+}
 
 class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
  public:
@@ -1404,6 +1467,65 @@ class IOSurfaceImageBackingFactoryGMBTest
                                           &memory_type_tracker_);
   }
 };
+
+// Tests that CreateSharedImage rejects an IOSurface if its plane dimensions
+// do not match the expected dimensions for the requested SharedImageFormat.
+TEST_P(IOSurfaceImageBackingFactoryGMBTest, InconsistentPlaneSize) {
+  auto mailbox = Mailbox::Generate();
+  auto format = viz::MultiPlaneFormat::kNV12;
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_GLES2_READ};
+
+  // Create an IOSurface with inconsistent plane height. For NV12, the UV plane
+  // (Plane 1) must be half the height of the Y plane (Plane 0).
+  std::vector<IOSurfacePlaneInfo> planes = {{.width = 256, .height = 256},
+                                            {.width = 128, .height = 1}};
+  gfx::ScopedIOSurface io_surface =
+      CreateIOSurfaceWithPlanes(size, '420v', planes);
+  ASSERT_TRUE(io_surface);
+
+  gfx::GpuMemoryBufferHandle handle(io_surface);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", /*is_thread_safe=*/false, std::move(handle));
+
+  // Should fail because Plane 1 height is incorrect.
+  EXPECT_FALSE(backing);
+}
+
+// Tests that CreateSharedImage rejects an IOSurface if its plane stride
+// (bytes per row) is smaller than the minimum required for the plane.
+TEST_P(IOSurfaceImageBackingFactoryGMBTest, InconsistentPlaneStride) {
+  auto mailbox = Mailbox::Generate();
+  auto format = viz::MultiPlaneFormat::kNV12;
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_GLES2_READ};
+
+  // Create an IOSurface with correct plane dimensions but an explicitly
+  // small bytes per row for one of the planes.
+  std::vector<IOSurfacePlaneInfo> planes = {
+      {.width = 256, .height = 256, .bytes_per_row = 256},
+      {.width = 128, .height = 128, .bytes_per_row = 128}};
+  gfx::ScopedIOSurface io_surface =
+      CreateIOSurfaceWithPlanes(size, '420v', planes);
+  ASSERT_TRUE(io_surface);
+
+  gfx::GpuMemoryBufferHandle handle(io_surface);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", /*is_thread_safe=*/false, std::move(handle));
+
+  // Should fail because Plane 1 stride is too small.
+  EXPECT_FALSE(backing);
+}
 
 TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
   auto format = get_format();
