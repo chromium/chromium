@@ -150,6 +150,18 @@ public class FakeIdentityManager implements IdentityManager {
                 });
     }
 
+    /** Removes all accounts from the fake IdentityManager. */
+    public void removeAllAccounts() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<CoreAccountId> accountIds =
+                            new ArrayList<>(mExtendedAccountInfos.keySet());
+                    for (CoreAccountId accountId : accountIds) {
+                        removeAccount(accountId);
+                    }
+                });
+    }
+
     public void setAreRefreshTokensLoaded(boolean areRefreshTokensLoaded) {
         mAreRefreshTokensLoaded = areRefreshTokensLoaded;
         if (mAreRefreshTokensLoaded) {

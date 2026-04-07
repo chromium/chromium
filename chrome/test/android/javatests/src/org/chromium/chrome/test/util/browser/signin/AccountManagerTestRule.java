@@ -10,6 +10,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
@@ -96,6 +97,15 @@ public class AccountManagerTestRule implements TestRule {
     public void removeAccount(CoreAccountId accountId) {
         mFakeAccountManagerFacade.removeAccount(accountId);
         mFakeIdentityManager.removeAccount(accountId);
+    }
+
+    /** Removes all accounts. */
+    public void removeAllAccounts() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFakeAccountManagerFacade.removeAllAccounts();
+                    mFakeIdentityManager.removeAllAccounts();
+                });
     }
 
     public void setAccountFetchFailed() {

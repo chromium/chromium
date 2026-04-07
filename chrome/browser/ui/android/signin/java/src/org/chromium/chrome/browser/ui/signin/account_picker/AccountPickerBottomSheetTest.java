@@ -288,8 +288,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testCollapsedSheetWithZeroAccount() {
-        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAllAccounts();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -316,8 +315,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testExpandedSheetAtLaunchWithZeroAccount() {
-        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAllAccounts();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -503,8 +501,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testAccountDisappearedOnCollapsedSheet() {
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
-        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAllAccounts();
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -521,8 +518,7 @@ public class AccountPickerBottomSheetTest {
     public void testAccountDisappearedOnExpandedSheet() {
         buildAndShowCollapsedThenExpandedBottomSheet();
 
-        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAllAccounts();
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -539,8 +535,7 @@ public class AccountPickerBottomSheetTest {
     public void testAccountDisappearedOnInitialExpandedSheet() {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
 
-        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAllAccounts();
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -555,8 +550,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testAccountReappearedOnCollapsedSheet() {
-        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAllAccounts();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
@@ -1118,8 +1112,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @LargeTest
     public void testZeroAccountThenAddAccount() {
-        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-        mAccountManagerTestRule.removeAccount(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
+        mAccountManagerTestRule.removeAllAccounts();
 
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()

@@ -521,6 +521,12 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                 });
     }
 
+    /** Removes all accounts from the fake AccountManagerFacade. */
+    @MainThread
+    public void removeAllAccounts() {
+        setAccounts(Collections.emptyList());
+    }
+
     /** Converts an email to a fake gaia Id. */
     public static GaiaId toGaiaId(String email) {
         return new GaiaId("gaia-id-" + email.replace("@", "_at_"));
