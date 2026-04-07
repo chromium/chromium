@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsServiceF
 public class GroupSuggestionsButtonControllerFactory {
 
     private static final ProfileKeyedMap<GroupSuggestionsButtonController> sProfileMap =
-            new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+            new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
     private static @Nullable GroupSuggestionsButtonController sButtonControllerForTesting;
 
     private GroupSuggestionsButtonControllerFactory() {}

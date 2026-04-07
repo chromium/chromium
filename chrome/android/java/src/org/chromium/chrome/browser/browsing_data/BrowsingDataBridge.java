@@ -76,7 +76,7 @@ public final class BrowsingDataBridge {
     public static BrowsingDataBridge getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (sProfileMap == null) {
-            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         return sProfileMap.getForProfile(profile, BrowsingDataBridge::new);
     }

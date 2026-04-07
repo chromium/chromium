@@ -89,7 +89,7 @@ public class ShoppingPersistedTabDataService {
         }
         if (sProfileToPriceDropService == null) {
             sProfileToPriceDropService =
-                    new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+                    new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         return sProfileToPriceDropService.getForProfile(
                 profile, (unused) -> new ShoppingPersistedTabDataService());

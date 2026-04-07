@@ -52,7 +52,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
 
         if (sProfileToLauncherMap == null) {
             sProfileToLauncherMap =
-                    new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+                    new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         return sProfileToLauncherMap.getForProfile(profile, HelpAndFeedbackLauncherImpl::new);
     }

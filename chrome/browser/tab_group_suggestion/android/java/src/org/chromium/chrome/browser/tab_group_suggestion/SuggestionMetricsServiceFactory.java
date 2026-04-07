@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 @NullMarked
 public class SuggestionMetricsServiceFactory {
     private static final ProfileKeyedMap<SuggestionMetricsService> sProfileMap =
-            new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+            new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
     private static @Nullable SuggestionMetricsService sServiceForTesting;
 
     private SuggestionMetricsServiceFactory() {}

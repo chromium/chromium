@@ -29,7 +29,7 @@ public class NotificationPermissionReviewBridge {
 
     static NotificationPermissionReviewBridge getForProfile(Profile profile) {
         if (sProfileMap == null) {
-            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         return sProfileMap.getForProfile(profile, NotificationPermissionReviewBridge::new);
     }

@@ -40,7 +40,7 @@ public final class InstantMessageDelegateFactory {
         }
 
         if (sProfileMap == null) {
-            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
 
         return sProfileMap.getForProfile(profile, InstantMessageDelegateFactory::buildForProfile);

@@ -84,7 +84,7 @@ public class UpdateMenuItemHelper {
         synchronized (UpdateMenuItemHelper.sGetInstanceLock) {
             if (sInstanceForTesting != null) return sInstanceForTesting;
             if (sProfileMap == null) {
-                sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+                sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
             }
             return sProfileMap.getForProfile(profile, UpdateMenuItemHelper::new);
         }

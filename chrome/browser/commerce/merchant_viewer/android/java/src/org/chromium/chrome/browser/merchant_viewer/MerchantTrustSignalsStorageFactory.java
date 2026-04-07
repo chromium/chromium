@@ -32,7 +32,7 @@ class MerchantTrustSignalsStorageFactory {
             //     destroyed, which is infrequent given the single profile app behavior. To fix
             //     this, add a cleanup/destroy method to MerchantTrustSignalsEventStorage and
             //     switch to the ProfileKeyedMap variant that handles proper cleanup.
-            sProfileToStorage = new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+            sProfileToStorage = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         mProfileSupplier = profileSupplier;
     }

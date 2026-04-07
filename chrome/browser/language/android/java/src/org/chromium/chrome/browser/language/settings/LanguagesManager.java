@@ -410,7 +410,7 @@ public class LanguagesManager {
             sProfileMap =
                     new ProfileKeyedMap<>(
                             ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
-                            ProfileKeyedMap.noRequiredCleanupAction());
+                            ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         return sProfileMap.getForProfile(profile, LanguagesManager::new);
     }
