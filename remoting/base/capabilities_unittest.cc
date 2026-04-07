@@ -71,8 +71,8 @@ TEST(CapabilitiesTest, HasCapability) {
         base::SplitStringPiece(data[i].capabilities, " ", base::KEEP_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);
     do {
-      EXPECT_EQ(data[i].result,
-                HasCapability(base::JoinString(caps, " "), data[i].key));
+      EXPECT_EQ(HasCapability(base::JoinString(caps, " "), data[i].key),
+                data[i].result);
     } while (std::next_permutation(caps.begin(), caps.end()));
   }
 }
@@ -102,9 +102,9 @@ TEST(CapabilitiesTest, Intersect) {
     std::vector<std::string_view> caps = base::SplitStringPiece(
         data[i].left, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     do {
-      EXPECT_EQ(data[i].result,
-                IntersectCapabilities(base::JoinString(caps, " "),
-                                      data[i].right));
+      EXPECT_EQ(
+          IntersectCapabilities(base::JoinString(caps, " "), data[i].right),
+          data[i].result);
     } while (std::next_permutation(caps.begin(), caps.end()));
   }
 }

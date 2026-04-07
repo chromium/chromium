@@ -103,7 +103,7 @@ class BufferedSocketWriterTest : public testing::Test {
         net::AddressList(), net::NetLog::Get(), &socket_data_provider_);
     socket_data_provider_.set_connect_data(
         net::MockConnect(net::SYNCHRONOUS, net::OK));
-    ASSERT_EQ(net::OK, socket_->Connect(net::CompletionOnceCallback()));
+    ASSERT_EQ(socket_->Connect(net::CompletionOnceCallback()), net::OK);
 
     writer_ = std::make_unique<BufferedSocketWriter>();
     InitializeTestBuffer(test_buffer_, kTestBufferSize);
@@ -128,7 +128,7 @@ class BufferedSocketWriterTest : public testing::Test {
     const auto written_bytes = socket_data_provider_.written_bytes();
     const size_t expected_size = test_buffer_->size() + test_buffer_2_->size();
 
-    ASSERT_EQ(expected_size, written_bytes.size());
+    ASSERT_EQ(written_bytes.size(), expected_size);
     const auto buffer1_bytes = base::as_byte_span(test_buffer_->span());
     const auto buffer2_bytes = base::as_byte_span(test_buffer_2_->span());
     const auto first_segment = written_bytes.first(buffer1_bytes.size());
@@ -238,9 +238,9 @@ TEST_F(BufferedSocketWriterTest, TestWriteErrorSync) {
                  TRAFFIC_ANNOTATION_FOR_TESTS);
   socket_data_provider_.set_async_write(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(net::ERR_FAILED, write_error_);
-  EXPECT_EQ(static_cast<size_t>(test_buffer_->size()),
-            socket_data_provider_.written_bytes().size());
+  EXPECT_EQ(write_error_, net::ERR_FAILED);
+  EXPECT_EQ(socket_data_provider_.written_bytes().size(),
+            static_cast<size_t>(test_buffer_->size()));
 }
 
 // Verify that it stops writing after the first error.
@@ -256,9 +256,9 @@ TEST_F(BufferedSocketWriterTest, TestWriteErrorAsync) {
                                 base::Unretained(this)),
                  TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(net::ERR_FAILED, write_error_);
-  EXPECT_EQ(static_cast<size_t>(test_buffer_->size()),
-            socket_data_provider_.written_bytes().size());
+  EXPECT_EQ(write_error_, net::ERR_FAILED);
+  EXPECT_EQ(socket_data_provider_.written_bytes().size(),
+            static_cast<size_t>(test_buffer_->size()));
 }
 
 TEST_F(BufferedSocketWriterTest, WriteBeforeStart) {

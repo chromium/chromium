@@ -229,7 +229,7 @@ void InstanceIdentityTokenGetterImplTest::OnTokenRetrieved(
   // If the callback has been run previously, make sure each callback receives
   // the same value.
   if (token_.has_value()) {
-    EXPECT_EQ(*token_, token);
+    EXPECT_EQ(token, *token_);
   } else {
     token_ = token;
   }

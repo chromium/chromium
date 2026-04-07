@@ -114,7 +114,7 @@ TEST(EcdhKeyExchangeTest, PublicKeyBase64ReturnsValidBase64) {
   std::optional<std::vector<uint8_t>> decoded_key =
       base::Base64Decode(public_key);
   ASSERT_TRUE(decoded_key.has_value());
-  ASSERT_EQ(key_exchange.public_key_bytes(), decoded_key.value());
+  ASSERT_EQ(*decoded_key, key_exchange.public_key_bytes());
 }
 
 }  // namespace remoting

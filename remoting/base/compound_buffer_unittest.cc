@@ -152,7 +152,7 @@ class CompoundBufferTest : public testing::Test {
     auto buffer = base::HeapArray<char>::Uninit(str.size() + 1);
     buffer[str.size()] = '\0';
     EXPECT_EQ(ReadFromInput(input, buffer.data(), str.size()), str.size());
-    EXPECT_STREQ(str.data(), buffer.data());
+    EXPECT_STREQ(buffer.data(), str.data());
   }
 
   // Construct and prepare data in the |buffer|.

@@ -185,7 +185,7 @@ void OAuthTokenGetterProxyTest::TestCallWithTokenOnMainThread(
 }
 
 void OAuthTokenGetterProxyTest::ExpectInvalidateCache() {
-  ASSERT_NE(nullptr, token_getter_.get());
+  ASSERT_NE(token_getter_.get(), nullptr);
   runner_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeOAuthTokenGetter::ExpectInvalidateCache,
@@ -221,9 +221,9 @@ void OAuthTokenGetterProxyTest::OnTokenReceived(
     OAuthTokenGetter::Status status,
     const OAuthTokenInfo& token_info) {
   ASSERT_TRUE(expected_callback_result_);
-  EXPECT_EQ(expected_callback_result_->status, status);
-  EXPECT_EQ(expected_callback_result_->user_email, token_info.user_email());
-  EXPECT_EQ(expected_callback_result_->access_token, token_info.access_token());
+  EXPECT_EQ(status, expected_callback_result_->status);
+  EXPECT_EQ(token_info.user_email(), expected_callback_result_->user_email);
+  EXPECT_EQ(token_info.access_token(), expected_callback_result_->access_token);
   expected_callback_result_.reset();
   std::move(on_done).Run();
 }

@@ -60,8 +60,8 @@ TEST_F(RsaKeyPairTest, FromString) {
   scoped_refptr<RsaKeyPair> key_pair2 = RsaKeyPair::FromString(key_string);
   ASSERT_TRUE(key_pair2.get());
 
-  ASSERT_EQ(key_string, key_pair2->ToString());
-  ASSERT_EQ(key_pair->GetPublicKey(), key_pair2->GetPublicKey());
+  ASSERT_EQ(key_pair2->ToString(), key_string);
+  ASSERT_EQ(key_pair2->GetPublicKey(), key_pair->GetPublicKey());
 
   // Test that signing with the new key works.
   std::string data = "data";

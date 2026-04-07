@@ -104,7 +104,7 @@ TEST_F(QueuedTaskPosterTest, TestTaskOrder) {
   poster_->AddTask(AssertExecutionOrderClosure(5));
 
   RunUntilPosterDone();
-  EXPECT_EQ(5, current_execution_order_);
+  EXPECT_EQ(current_execution_order_, 5);
 }
 
 TEST_F(QueuedTaskPosterTest, TestTaskSequenceNotInterfered) {
@@ -125,7 +125,7 @@ TEST_F(QueuedTaskPosterTest, TestTaskSequenceNotInterfered) {
   target_task_runner_->PostTask(FROM_HERE, AssertSequenceNotStartedClosure());
 
   RunUntilPosterDone();
-  EXPECT_EQ(5, current_execution_order_);
+  EXPECT_EQ(current_execution_order_, 5);
 }
 
 TEST_F(QueuedTaskPosterTest, TestUsingPosterInMultipleTasks) {
@@ -134,14 +134,14 @@ TEST_F(QueuedTaskPosterTest, TestUsingPosterInMultipleTasks) {
   poster_->AddTask(AssertExecutionOrderClosure(3));
 
   RunUntilPosterDone();
-  EXPECT_EQ(3, current_execution_order_);
+  EXPECT_EQ(current_execution_order_, 3);
 
   poster_->AddTask(AssertExecutionOrderClosure(4));
   poster_->AddTask(AssertExecutionOrderClosure(5));
   poster_->AddTask(AssertExecutionOrderClosure(6));
 
   RunUntilPosterDone();
-  EXPECT_EQ(6, current_execution_order_);
+  EXPECT_EQ(current_execution_order_, 6);
 }
 
 }  // namespace remoting

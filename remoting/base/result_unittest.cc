@@ -21,7 +21,7 @@ TEST(Result, DefaultConstruction) {
 
   Result<DefaultConstruct, int> result;
   ASSERT_TRUE(result.is_success());
-  EXPECT_EQ("value1", result.success().value);
+  EXPECT_EQ(result.success().value, "value1");
 }
 
 namespace {
@@ -38,14 +38,14 @@ TEST(Result, TaggedSuccessConstruction) {
   Result<std::string, int> result(kSuccessTag, 5, 'a');
   ASSERT_TRUE(result.is_success());
   ASSERT_FALSE(result.is_error());
-  EXPECT_EQ("aaaaa", result.success());
+  EXPECT_EQ(result.success(), "aaaaa");
 }
 
 TEST(Result, TaggedErrorConstruction) {
   Result<std::string, int> result(kErrorTag, 2);
   ASSERT_FALSE(result.is_success());
   ASSERT_TRUE(result.is_error());
-  EXPECT_EQ(2, result.error());
+  EXPECT_EQ(result.error(), 2);
 }
 
 static_assert(
@@ -55,13 +55,13 @@ static_assert(
 TEST(Result, ImplicitSuccessConstruction) {
   Result<std::string, int> result = "value3";
   ASSERT_TRUE(result.is_success());
-  EXPECT_EQ("value3", result.success());
+  EXPECT_EQ(result.success(), "value3");
 }
 
 TEST(Result, ImplicitErrorConstruction) {
   Result<std::string, int> result = 3;
   ASSERT_TRUE(result.is_error());
-  EXPECT_EQ(3, result.error());
+  EXPECT_EQ(result.error(), 3);
 }
 
 static_assert(!std::is_constructible<Result<int, float>, int>::value,
@@ -71,18 +71,18 @@ TEST(Result, SuccessCopyConstruction) {
   Result<std::string, int> result1 = "value4";
   Result<std::string, int> result2 = result1;
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value4", result2.success());
+  EXPECT_EQ(result2.success(), "value4");
   // Ensure result1 wasn't modified.
-  EXPECT_EQ("value4", result1.success());
+  EXPECT_EQ(result1.success(), "value4");
 }
 
 TEST(Result, ErrorCopyConstruction) {
   Result<int, std::string> result1 = "value5";
   Result<int, std::string> result2 = result1;
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ("value5", result2.error());
+  EXPECT_EQ(result2.error(), "value5");
   // Ensure result1 wasn't modified.
-  EXPECT_EQ("value5", result1.error());
+  EXPECT_EQ(result1.error(), "value5");
 }
 
 static_assert(
@@ -95,7 +95,7 @@ TEST(Result, SuccessMoveConstruction) {
       std::make_unique<std::string>("value6");
   Result<std::unique_ptr<std::string>, int> result2 = std::move(result1);
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value6", *result2.success());
+  EXPECT_EQ(*result2.success(), "value6");
   EXPECT_TRUE(result1.is_success());
   EXPECT_FALSE(result1.success());
 }
@@ -105,7 +105,7 @@ TEST(Result, ErrorMoveConstruction) {
       std::make_unique<std::string>("value7");
   Result<int, std::unique_ptr<std::string>> result2 = std::move(result1);
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ("value7", *result2.error());
+  EXPECT_EQ(*result2.error(), "value7");
   EXPECT_TRUE(result1.is_error());
   EXPECT_FALSE(result1.error());
 }
@@ -115,8 +115,8 @@ TEST(Result, SuccessCopyConversion) {
   Result<const char*, int> result1 = value;
   Result<std::string, int> result2 = result1;
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value8", result2.success());
-  EXPECT_EQ(value, result1.success());
+  EXPECT_EQ(result2.success(), "value8");
+  EXPECT_EQ(result1.success(), value);
 }
 
 TEST(Result, ErrorCopyConversion) {
@@ -124,8 +124,8 @@ TEST(Result, ErrorCopyConversion) {
   Result<int, const char*> result1 = value;
   Result<int, std::string> result2 = result1;
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ("value9", result2.error());
-  EXPECT_EQ(value, result1.error());
+  EXPECT_EQ(result2.error(), "value9");
+  EXPECT_EQ(result1.error(), value);
 }
 
 TEST(Result, SuccessMoveConversion) {
@@ -138,7 +138,7 @@ TEST(Result, SuccessMoveConversion) {
       std::make_unique<std::string>("value10");
   Result<std::unique_ptr<void, Deleter>, int> result2 = std::move(result1);
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value10", *static_cast<std::string*>(result2.success().get()));
+  EXPECT_EQ(*static_cast<std::string*>(result2.success().get()), "value10");
 }
 
 TEST(Result, ErrorMoveConversion) {
@@ -151,7 +151,7 @@ TEST(Result, ErrorMoveConversion) {
       std::make_unique<std::string>("value11");
   Result<int, std::unique_ptr<void, Deleter>> result2 = std::move(result1);
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ("value11", *static_cast<std::string*>(result2.error().get()));
+  EXPECT_EQ(*static_cast<std::string*>(result2.error().get()), "value11");
 }
 
 TEST(Result, Destruction) {
@@ -170,12 +170,12 @@ TEST(Result, Destruction) {
   int error_count = 0;
 
   Result<DestructIncrement, int>(kSuccessTag, &success_count);
-  EXPECT_EQ(1, success_count);
-  EXPECT_EQ(0, error_count);
+  EXPECT_EQ(success_count, 1);
+  EXPECT_EQ(error_count, 0);
 
   Result<int, DestructIncrement>(kErrorTag, &error_count);
-  EXPECT_EQ(1, success_count);
-  EXPECT_EQ(1, error_count);
+  EXPECT_EQ(success_count, 1);
+  EXPECT_EQ(error_count, 1);
 }
 
 TEST(Result, CopyAssignment) {
@@ -183,7 +183,7 @@ TEST(Result, CopyAssignment) {
   Result<std::string, int> result2 = 0;
   result2 = result1;
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value12", result2.success());
+  EXPECT_EQ(result2.success(), "value12");
 
   static_assert(
       !std::is_copy_assignable<Result<std::unique_ptr<int>, int>>::value &&
@@ -197,7 +197,7 @@ TEST(Result, MoveAssignment) {
   Result<std::unique_ptr<std::string>, int> result2 = 0;
   result2 = std::move(result1);
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value13", *result2.success());
+  EXPECT_EQ(*result2.success(), "value13");
 }
 
 TEST(Result, CopyConversionAssignment) {
@@ -206,7 +206,7 @@ TEST(Result, CopyConversionAssignment) {
   Result<std::string, int> result2 = 0;
   result2 = result1;
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value14", result2.success());
+  EXPECT_EQ(result2.success(), "value14");
 }
 
 TEST(Result, MoveConversionAssignment) {
@@ -220,21 +220,21 @@ TEST(Result, MoveConversionAssignment) {
   Result<std::unique_ptr<void, Deleter>, int> result2 = 0;
   result2 = std::move(result1);
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value15", *static_cast<std::string*>(result2.success().get()));
+  EXPECT_EQ(*static_cast<std::string*>(result2.success().get()), "value15");
 }
 
 TEST(Result, EmplaceSuccess) {
   Result<std::string, int> result = 0;
   result.EmplaceSuccess(5, 'p');
   ASSERT_TRUE(result.is_success());
-  EXPECT_EQ("ppppp", result.success());
+  EXPECT_EQ(result.success(), "ppppp");
 }
 
 TEST(Result, EmplaceError) {
   Result<std::string, int> result;
   result.EmplaceError(17);
   ASSERT_TRUE(result.is_error());
-  EXPECT_EQ(17, result.error());
+  EXPECT_EQ(result.error(), 17);
 }
 
 TEST(Result, MapLvalue) {
@@ -254,7 +254,7 @@ TEST(Result, MapRvalue) {
       std::is_same<decltype(result2), Result<std::string, int>>::value,
       "Incorrect type inferred.");
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value19", result2.success());
+  EXPECT_EQ(result2.success(), "value19");
 }
 
 TEST(Result, MapPassesErrorThrough) {
@@ -262,7 +262,7 @@ TEST(Result, MapPassesErrorThrough) {
   Result<const char*, int> result2 =
       result1.Map([](const std::string& value) { return value.c_str(); });
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ(20, result2.error());
+  EXPECT_EQ(result2.error(), 20);
 }
 
 TEST(Result, MapErrorLvalue) {
@@ -270,7 +270,7 @@ TEST(Result, MapErrorLvalue) {
   Result<std::string, int> result2 =
       result1.MapError([](int value) { return value + 1; });
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ(22, result2.error());
+  EXPECT_EQ(result2.error(), 22);
 }
 
 TEST(Result, MapErrorRvalue) {
@@ -284,7 +284,7 @@ TEST(Result, MapErrorRvalue) {
                              Result<int, std::unique_ptr<std::size_t>>>::value,
                 "Incorrect type inferred.");
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ(7UL, *result2.error());
+  EXPECT_EQ(*result2.error(), 7UL);
 }
 
 TEST(Result, MapErrorPassesSuccessThrough) {
@@ -292,7 +292,7 @@ TEST(Result, MapErrorPassesSuccessThrough) {
   Result<std::string, float> result2 =
       result1.MapError([](int value) { return value * 2.0; });
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value24", result2.success());
+  EXPECT_EQ(result2.success(), "value24");
 }
 
 TEST(Result, AndThenLvalue) {
@@ -303,7 +303,7 @@ TEST(Result, AndThenLvalue) {
       std::is_same<decltype(result2), Result<const char*, int>>::value,
       "Error type should stay the same.");
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ(26, result2.error());
+  EXPECT_EQ(result2.error(), 26);
 }
 
 TEST(Result, AndThenRvalue) {
@@ -317,7 +317,7 @@ TEST(Result, AndThenRvalue) {
       std::is_same<decltype(result2), Result<std::string, int>>::value,
       "Incorrect type inferred.");
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value27", result2.success());
+  EXPECT_EQ(result2.success(), "value27");
 }
 
 TEST(Result, AndThenPassesErrorThrough) {
@@ -325,7 +325,7 @@ TEST(Result, AndThenPassesErrorThrough) {
   Result<int, int> result2 = result1.AndThen(
       [](const std::string&) { return Result<int, int>(kSuccessTag, 29); });
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ(28, result2.error());
+  EXPECT_EQ(result2.error(), 28);
 }
 
 TEST(Result, OrElseLvalue) {
@@ -333,7 +333,7 @@ TEST(Result, OrElseLvalue) {
   Result<std::string, int> result2 =
       result1.OrElse([](int) -> Result<std::string, int> { return "value31"; });
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value31", result2.success());
+  EXPECT_EQ(result2.success(), "value31");
 }
 
 TEST(Result, OrElseRvalue) {
@@ -344,7 +344,7 @@ TEST(Result, OrElseRvalue) {
         return Result<int, std::string>("value33");
       });
   ASSERT_TRUE(result2.is_error());
-  EXPECT_EQ("value33", result2.error());
+  EXPECT_EQ(result2.error(), "value33");
 }
 
 TEST(Result, OrElsePassesSuccessThrough) {
@@ -352,33 +352,33 @@ TEST(Result, OrElsePassesSuccessThrough) {
   Result<std::string, float> result2 = result1.OrElse(
       [](int value) -> Result<std::string, float> { return value * 2.0; });
   ASSERT_TRUE(result2.is_success());
-  EXPECT_EQ("value34", result2.success());
+  EXPECT_EQ(result2.success(), "value34");
 }
 
 TEST(Result, Visit) {
   struct Visitor {
     char success(const std::string& value) {
-      EXPECT_EQ("value35", value);
+      EXPECT_EQ(value, "value35");
       return '\1';
     }
     bool success(std::string& value) {
-      EXPECT_EQ("value35", value);
+      EXPECT_EQ(value, "value35");
       return true;
     }
     int success(std::string&& value) {
-      EXPECT_EQ("value35", value);
+      EXPECT_EQ(value, "value35");
       return 1;
     }
     char error(const std::wstring& value) {
-      EXPECT_EQ(L"value36", value);
+      EXPECT_EQ(value, L"value36");
       return '\0';
     }
     bool error(std::wstring& value) {
-      EXPECT_EQ(L"value36", value);
+      EXPECT_EQ(value, L"value36");
       return false;
     }
     int error(std::wstring&& value) {
-      EXPECT_EQ(L"value36", value);
+      EXPECT_EQ(value, L"value36");
       return 0;
     }
   };
@@ -391,25 +391,25 @@ TEST(Result, Visit) {
           Visitor());
   static_assert(std::is_same<char, decltype(success1)>::value,
                 "Return type should be char.");
-  EXPECT_EQ('\1', success1);
+  EXPECT_EQ(success1, '\1');
   auto success2 = result.Visit(Visitor());
   static_assert(std::is_same<bool, decltype(success2)>::value,
                 "Return type should be bool.");
-  EXPECT_EQ(true, success2);
+  EXPECT_EQ(success2, true);
   auto success3 = std::move(result).Visit(Visitor());
   static_assert(std::is_same<int, decltype(success3)>::value,
                 "Return type should be int.");
-  EXPECT_EQ(1, success3);
+  EXPECT_EQ(success3, 1);
 
   result.EmplaceError(L"value36");
   auto error1 =
       const_cast<const Result<std::string, std::wstring>&>(result).Visit(
           Visitor());
-  EXPECT_EQ('\0', error1);
+  EXPECT_EQ(error1, '\0');
   auto error2 = result.Visit(Visitor());
-  EXPECT_EQ(false, error2);
+  EXPECT_EQ(error2, false);
   auto error3 = std::move(result).Visit(Visitor());
-  EXPECT_EQ(0, error3);
+  EXPECT_EQ(error3, 0);
 }
 
 }  // namespace remoting

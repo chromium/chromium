@@ -15,13 +15,13 @@
 namespace remoting {
 
 TEST(ReplaceLfByCrLfTest, Basic) {
-  EXPECT_EQ("ab", ReplaceLfByCrLf("ab"));
-  EXPECT_EQ("\r\nab", ReplaceLfByCrLf("\nab"));
-  EXPECT_EQ("\r\nab\r\n", ReplaceLfByCrLf("\nab\n"));
-  EXPECT_EQ("\r\nab\r\ncd", ReplaceLfByCrLf("\nab\ncd"));
-  EXPECT_EQ("\r\nab\r\ncd\r\n", ReplaceLfByCrLf("\nab\ncd\n"));
-  EXPECT_EQ("\r\n\r\nab\r\n\r\ncd\r\n\r\n",
-            ReplaceLfByCrLf("\n\nab\n\ncd\n\n"));
+  EXPECT_EQ(ReplaceLfByCrLf("ab"), "ab");
+  EXPECT_EQ(ReplaceLfByCrLf("\nab"), "\r\nab");
+  EXPECT_EQ(ReplaceLfByCrLf("\nab\n"), "\r\nab\r\n");
+  EXPECT_EQ(ReplaceLfByCrLf("\nab\ncd"), "\r\nab\r\ncd");
+  EXPECT_EQ(ReplaceLfByCrLf("\nab\ncd\n"), "\r\nab\r\ncd\r\n");
+  EXPECT_EQ(ReplaceLfByCrLf("\n\nab\n\ncd\n\n"),
+            "\r\n\r\nab\r\n\r\ncd\r\n\r\n");
 }
 
 TEST(ReplaceLfByCrLfTest, Speed) {
@@ -44,24 +44,24 @@ TEST(ReplaceLfByCrLfTest, Speed) {
   for (size_t i = 0; i < kLineNum; ++i) {
     auto line_content = view.substr(0, kLineSize - 1);
     for (char c : line_content) {
-      EXPECT_EQ('a', c);
+      EXPECT_EQ(c, 'a');
     }
     view.remove_prefix(kLineSize - 1);
-    EXPECT_EQ('\r', view[0]);
-    EXPECT_EQ('\n', view[1]);
+    EXPECT_EQ(view[0], '\r');
+    EXPECT_EQ(view[1], '\n');
     view.remove_prefix(2);
   }
 }
 
 TEST(ReplaceCrLfByLfTest, Basic) {
-  EXPECT_EQ("ab", ReplaceCrLfByLf("ab"));
-  EXPECT_EQ("\nab", ReplaceCrLfByLf("\r\nab"));
-  EXPECT_EQ("\nab\n", ReplaceCrLfByLf("\r\nab\r\n"));
-  EXPECT_EQ("\nab\ncd", ReplaceCrLfByLf("\r\nab\r\ncd"));
-  EXPECT_EQ("\nab\ncd\n", ReplaceCrLfByLf("\r\nab\r\ncd\n"));
-  EXPECT_EQ("\n\nab\n\ncd\n\n",
-            ReplaceCrLfByLf("\r\n\r\nab\r\n\r\ncd\r\n\r\n"));
-  EXPECT_EQ("\rab\rcd\r", ReplaceCrLfByLf("\rab\rcd\r"));
+  EXPECT_EQ(ReplaceCrLfByLf("ab"), "ab");
+  EXPECT_EQ(ReplaceCrLfByLf("\r\nab"), "\nab");
+  EXPECT_EQ(ReplaceCrLfByLf("\r\nab\r\n"), "\nab\n");
+  EXPECT_EQ(ReplaceCrLfByLf("\r\nab\r\ncd"), "\nab\ncd");
+  EXPECT_EQ(ReplaceCrLfByLf("\r\nab\r\ncd\n"), "\nab\ncd\n");
+  EXPECT_EQ(ReplaceCrLfByLf("\r\n\r\nab\r\n\r\ncd\r\n\r\n"),
+            "\n\nab\n\ncd\n\n");
+  EXPECT_EQ(ReplaceCrLfByLf("\rab\rcd\r"), "\rab\rcd\r");
 }
 
 TEST(ReplaceCrLfByLfTest, Speed) {
@@ -85,10 +85,10 @@ TEST(ReplaceCrLfByLfTest, Speed) {
   for (size_t i = 0; i < kLineNum; ++i) {
     auto line_content = view.substr(0, kLineSize - 2);
     for (char c : line_content) {
-      EXPECT_EQ('a', c);
+      EXPECT_EQ(c, 'a');
     }
     view.remove_prefix(kLineSize - 2);
-    EXPECT_EQ('\n', view[0]);
+    EXPECT_EQ(view[0], '\n');
     view.remove_prefix(1);
   }
 }

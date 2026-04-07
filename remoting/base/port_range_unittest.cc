@@ -23,18 +23,18 @@ TEST(PortRange, ParseValid) {
 
   EXPECT_TRUE(PortRange::Parse("1-65535", &port_range));
   EXPECT_FALSE(port_range.is_null());
-  EXPECT_EQ(1u, port_range.min_port);
-  EXPECT_EQ(65535u, port_range.max_port);
+  EXPECT_EQ(port_range.min_port, 1u);
+  EXPECT_EQ(port_range.max_port, 65535u);
 
   EXPECT_TRUE(PortRange::Parse(" 1 - 65535 ", &port_range));
   EXPECT_FALSE(port_range.is_null());
-  EXPECT_EQ(1u, port_range.min_port);
-  EXPECT_EQ(65535u, port_range.max_port);
+  EXPECT_EQ(port_range.min_port, 1u);
+  EXPECT_EQ(port_range.max_port, 65535u);
 
   EXPECT_TRUE(PortRange::Parse("12400-12400", &port_range));
   EXPECT_FALSE(port_range.is_null());
-  EXPECT_EQ(12400u, port_range.min_port);
-  EXPECT_EQ(12400u, port_range.max_port);
+  EXPECT_EQ(port_range.min_port, 12400u);
+  EXPECT_EQ(port_range.max_port, 12400u);
 }
 
 TEST(PortRange, ParseInvalid) {
@@ -55,8 +55,8 @@ TEST(PortRange, ParseInvalid) {
   EXPECT_FALSE(PortRange::Parse("1foo-2bar", &port_range));
 
   // Unsuccessful parses should NOT modify their output.
-  EXPECT_EQ(123, port_range.min_port);
-  EXPECT_EQ(456, port_range.max_port);
+  EXPECT_EQ(port_range.min_port, 123);
+  EXPECT_EQ(port_range.max_port, 456);
 }
 
 TEST(PortRange, Output) {

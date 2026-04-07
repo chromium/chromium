@@ -21,7 +21,7 @@ TEST(WeightedSamplesTest, CalculateWeightedAverage) {
   WeightedSamples samples(kWeightFactor);
   for (size_t i = 0; i < std::size(kExpected); i++) {
     samples.Record(i + 1);
-    EXPECT_DOUBLE_EQ(kExpected[i], samples.WeightedAverage());
+    EXPECT_DOUBLE_EQ(samples.WeightedAverage(), kExpected[i]);
   }
 }
 

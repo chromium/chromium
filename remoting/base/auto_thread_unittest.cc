@@ -151,8 +151,8 @@ TEST_F(AutoThreadTest, ThreadWithComMta) {
   task_runner.reset();
   RunMessageLoop();
 
-  EXPECT_EQ(S_OK, hresult);
-  EXPECT_EQ(APTTYPE_MTA, apt_type);
+  EXPECT_EQ(hresult, S_OK);
+  EXPECT_EQ(apt_type, APTTYPE_MTA);
 }
 
 TEST_F(AutoThreadTest, ThreadWithComSta) {
@@ -171,7 +171,7 @@ TEST_F(AutoThreadTest, ThreadWithComSta) {
   task_runner.reset();
   RunMessageLoop();
 
-  EXPECT_EQ(S_OK, hresult);
+  EXPECT_EQ(hresult, S_OK);
   // Whether the thread is the "main" STA apartment depends upon previous
   // COM activity in this test process, so allow both types here.
   EXPECT_TRUE(apt_type == APTTYPE_MAINSTA || apt_type == APTTYPE_STA);

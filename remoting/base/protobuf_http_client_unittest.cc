@@ -188,7 +188,7 @@ TEST_F(ProtobufHttpClientTest, SendRequestAndDecodeResponse) {
 
   // Verify request.
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_THAT(
       pending_request->request.headers.GetHeader(kAuthorizationHeaderKey),
@@ -200,7 +200,7 @@ TEST_F(ProtobufHttpClientTest, SendRequestAndDecodeResponse) {
       data_element.As<network::DataElementBytes>().AsStringPiece());
   EchoRequest request_message;
   ASSERT_TRUE(request_message.ParseFromString(request_body_data));
-  ASSERT_EQ(kRequestText, request_message.text());
+  ASSERT_EQ(request_message.text(), kRequestText);
 
   // Respond.
   test_url_loader_factory_.AddResponse(kTestFullUrl,
@@ -221,7 +221,7 @@ TEST_F(ProtobufHttpClientTest,
 
   // Verify that the request is sent with no auth header.
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_FALSE(
       pending_request->request.headers.HasHeader(kAuthorizationHeaderKey));
@@ -371,7 +371,7 @@ TEST_F(ProtobufHttpClientTest,
 
   // Respond.
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   client_.CancelPendingRequests();
   test_url_loader_factory_.AddResponse(kTestFullUrl,
                                        CreateSerializedEchoResponse());
@@ -396,7 +396,7 @@ TEST_F(ProtobufHttpClientTest, RequestTimeout_ReturnsDeadlineExceeded) {
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   task_environment_.FastForwardBy(base::Seconds(16));
 
@@ -472,7 +472,7 @@ TEST_F(ProtobufHttpClientTest,
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   test_url_loader_factory_.AddResponse(
       kTestFullUrl, "", net::HttpStatusCode::HTTP_SERVICE_UNAVAILABLE);
@@ -511,7 +511,7 @@ TEST_F(ProtobufHttpClientTest,
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   Status status_message;
   status_message.set_code(static_cast<int>(HttpStatus::Code::UNAVAILABLE));
@@ -555,7 +555,7 @@ TEST_F(ProtobufHttpClientTest,
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   test_url_loader_factory_.AddResponse(
       kTestFullUrl, "", net::HttpStatusCode::HTTP_SERVICE_UNAVAILABLE);
@@ -649,7 +649,7 @@ TEST_F(ProtobufHttpClientTest, StartStreamRequestAndDecodeMessages) {
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   // TestURLLoaderFactory can't simulate streaming, so we invoke the request
   // directly.
@@ -685,7 +685,7 @@ TEST_F(ProtobufHttpClientTest, InvalidStreamData_Ignored) {
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   test_url_loader_factory_.AddResponse(kTestFullUrl, "Invalid stream data",
                                        net::HttpStatusCode::HTTP_OK);
   run_loop.Run();
@@ -712,7 +712,7 @@ TEST_F(ProtobufHttpClientTest, SendHttpStatusOnly_StreamClosesWithHttpStatus) {
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   test_url_loader_factory_.AddResponse(kTestFullUrl, /* response_body= */ "",
                                        net::HttpStatusCode::HTTP_UNAUTHORIZED);
   run_loop.Run();
@@ -740,7 +740,7 @@ TEST_F(ProtobufHttpClientTest, SendStreamStatusAndHttpStatus_StreamStatusWins) {
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   test_url_loader_factory_.AddResponse(
       kTestFullUrl,
       CreateSerializedStreamBodyWithStatusCode(HttpStatus::Code::CANCELLED),
@@ -770,7 +770,7 @@ TEST_F(ProtobufHttpClientTest, StreamReadyTimeout) {
 
   ASSERT_TRUE(client_.HasPendingRequests());
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   task_environment_.FastForwardBy(
       ProtobufHttpStreamRequest::kStreamReadyTimeoutDuration +
