@@ -263,10 +263,6 @@ export const ComposeboxEmbedderMixin =
           });
         }
 
-        onAutocompleteResultChanged(_result: AutocompleteResult) {
-          assertNotReached();
-        }
-
         onContextualInputStatusChanged(
             token: UnguessableToken, status: ContextUploadStatus,
             errorType: ContextUploadErrorType|null) {
@@ -1144,7 +1140,6 @@ export interface ComposeboxEmbedderMixinInterface extends
   onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
   onMatchFocusin(e: CustomEvent<{index: number}>): void;
   onInputStateChanged(inputState: InputState): void;
-  onAutocompleteResultChanged(_result: AutocompleteResult): void;
   onContextualInputStatusChanged(
       token: UnguessableToken, status: ContextUploadStatus,
       errorType: ContextUploadErrorType|null): void;
