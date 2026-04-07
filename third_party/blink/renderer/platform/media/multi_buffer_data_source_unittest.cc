@@ -491,6 +491,17 @@ class MultiBufferDataSourceTest : public testing::Test {
     is_client_audio_element_ = value;
   }
 
+  media::DataSource::Preload GetPreload(MultiBufferDataSource* source) {
+    return source->preload_;
+  }
+  bool GetIsClientAudioElement(MultiBufferDataSource* source) {
+    return source->is_client_audio_element_;
+  }
+  void CallOnRedirected(MultiBufferDataSource* source,
+                        const scoped_refptr<UrlData>& data) {
+    source->OnRedirected(data);
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   MultiBufferDataSource::Preload preload_;

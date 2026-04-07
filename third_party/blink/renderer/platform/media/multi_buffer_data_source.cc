@@ -263,8 +263,9 @@ void MultiBufferDataSource::OnRedirected(
   // existing UrlData instance.
   UpdateProgress();
 
-  if (redirect_cb_)
-    redirect_cb_.Run();
+  if (notify_tainted_cb_ && WouldTaintOrigin()) {
+    std::move(notify_tainted_cb_).Run(this);
+  }
 }
 
 void MultiBufferDataSource::SetPreload(media::DataSource::Preload preload) {
@@ -274,15 +275,9 @@ void MultiBufferDataSource::SetPreload(media::DataSource::Preload preload) {
   UpdateBufferSizes();
 }
 
-bool MultiBufferDataSource::HasSingleOrigin() const {
-  DCHECK(render_task_runner_->BelongsToCurrentThread());
-  // Before initialization completes there is no risk of leaking data. Callers
-  // are required to order checks such that this isn't a race.
-  return single_origin_;
-}
-
-void MultiBufferDataSource::OnRedirect(RedirectCB callback) {
-  redirect_cb_ = std::move(callback);
+void MultiBufferDataSource::SetTaintedCallback(
+    media::DataSource::EventCb callback) {
+  notify_tainted_cb_ = std::move(callback);
 }
 
 bool MultiBufferDataSource::PassedTimingAllowOriginCheck() {
@@ -293,8 +288,9 @@ bool MultiBufferDataSource::WouldTaintOrigin() const {
   // When the resource is redirected to another origin we think of it as
   // tainted. This is actually not specified, and is under discussion.
   // See https://github.com/whatwg/fetch/issues/737.
-  if (!HasSingleOrigin() && cors_mode() == UrlData::CORS_UNSPECIFIED)
+  if (!single_origin_ && cors_mode() == UrlData::CORS_UNSPECIFIED) {
     return true;
+  }
   return url_data_->is_cors_cross_origin();
 }
 
@@ -636,6 +632,10 @@ void MultiBufferDataSource::StartCallback() {
         single_origin_);
     media_log_->SetProperty<media::MediaLogProperty::kIsRangeHeaderSupported>(
         url_data_->range_supported());
+
+    if (notify_tainted_cb_ && WouldTaintOrigin()) {
+      std::move(notify_tainted_cb_).Run(this);
+    }
   }
 
   PostCrossThreadTask(*render_task_runner_, FROM_HERE,
