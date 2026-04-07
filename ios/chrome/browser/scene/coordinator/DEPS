@@ -4,6 +4,8 @@ include_rules = [
   "+ios/chrome/browser/app_bar/coordinator",
   "+ios/chrome/browser/assistant/coordinator",
   "+ios/chrome/browser/authentication/account_menu",
+  "+ios/chrome/browser/authentication/enterprise/managed_profile_creation/coordinator",
+  "+ios/chrome/browser/authentication/enterprise/public",
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/cobrowse/coordinator",
   "+ios/chrome/browser/cobrowse/model/cobrowse_context.h",

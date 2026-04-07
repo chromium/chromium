@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_learn_more_view_controller.h"
+#import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/ui/managed_profile_learn_more_view_controller.h"
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"

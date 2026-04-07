@@ -1,0 +1,29 @@
+source_set("coordinator") {
+  sources = [
+    "managed_profile_creation_coordinator.h",
+    "managed_profile_creation_coordinator.mm",
+    "managed_profile_creation_mediator.h",
+    "managed_profile_creation_mediator.mm",
+    "managed_profile_learn_more_coordinator.h",
+    "managed_profile_learn_more_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/enterprise/managed_profile_creation/ui",
+    "//ios/chrome/browser/authentication/enterprise/public:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+  ]
+}
