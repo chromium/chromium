@@ -35,6 +35,20 @@ source_set("ui") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android && !is_ios) {
+    sources += [ "filter_ui_controller_test_api.h" ]
+    deps += [
+      ":ui",
+      "//base",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = []

@@ -23,6 +23,8 @@ class TabInterface;
 
 namespace multistep_filter {
 
+class FilterUiControllerTestApi;
+
 // Manages the UI lifecycle and user interactions for multistep filter
 // suggestions within a tab.
 class FilterUiController : public tabs::ContentsObservingTabFeature {
@@ -82,6 +84,8 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   base::OnceClosure GetOnDismissedCallback(const GURL& url);
 
  private:
+  friend class FilterUiControllerTestApi;
+
   void OnSuggestionDismissed(const GURL& url);
 
   ui::ScopedUnownedUserData<FilterUiController> scoped_unowned_user_data_;
