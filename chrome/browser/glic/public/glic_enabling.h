@@ -185,6 +185,9 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // should be used in most cases.
   static bool IsMultiInstanceEnabled();
 
+  // Whether the live mode and floaty window are enabled by flags.
+  static bool IsLiveAndFloatyEnabledByFlags();
+
   struct ProfileEnablement {
     ProfileEnablement();
     ProfileEnablement(ProfileEnablement&&);

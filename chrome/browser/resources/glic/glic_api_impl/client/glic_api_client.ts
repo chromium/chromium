@@ -912,6 +912,9 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 
   detachPanel?(): void {
+    if (this.hostCapabilities.has(HostCapability.NO_LIVE_MODE)) {
+      throw new Error('NO_LIVE_MODE: detachPanel not supported');
+    }
     this.sender.requestNoResponse('glicBrowserDetachPanel', undefined);
   }
 

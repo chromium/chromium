@@ -309,6 +309,17 @@ class ApiTests extends ApiTestFixtureBase {
     //    PanelStateKind.ATTACHED);
   }
 
+  async testDetachPanelNoFloatyOrLiveMode() {
+    assertDefined(this.host.getPanelState);
+    // getPanelState and notifyPanelWillOpen should signal the ATTACHED state.
+    const panelStates = observeSequence(this.host.getPanelState());
+    await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
+
+    assertRejects((async () => {
+      this.host.detachPanel?.();
+    })());
+  }
+
   async testCanAttachPanelSidePanel() {
     assertDefined(this.host.getPanelState);
     assertDefined(this.host.canAttachPanel);

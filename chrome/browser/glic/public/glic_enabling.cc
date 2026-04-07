@@ -699,6 +699,11 @@ bool GlicEnabling::IsMultiInstanceEnabledByFlags() {
   return true;
 }
 
+bool GlicEnabling::IsLiveAndFloatyEnabledByFlags() {
+  // Despite the name, when off, this disables live mode and floaty.
+  return base::FeatureList::IsEnabled(features::kGlicLiveMode);
+}
+
 bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
   auto enablement = EnablementForProfile(profile);
   return enablement.IsEnabled() && enablement.EligibleForShareImage() &&

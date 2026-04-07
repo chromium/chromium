@@ -958,7 +958,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(
           mojom::HostCapability::kShareAdditionalImageContext);
     }
-    if (!base::FeatureList::IsEnabled(features::kGlicLiveMode)) {
+    if (!GlicEnabling::IsLiveAndFloatyEnabledByFlags()) {
       state->host_capabilities.push_back(mojom::HostCapability::kNoLiveMode);
     }
     if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {

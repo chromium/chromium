@@ -41,6 +41,7 @@ BASE_FEATURE(kGlicInvoke, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicCreateTabAdjacent, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When off, disables both live mode and the glic floating panel.
 BASE_FEATURE(kGlicLiveMode,
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
              base::FEATURE_DISABLED_BY_DEFAULT

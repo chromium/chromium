@@ -399,6 +399,8 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 }
 
 void GlicInstanceImpl::Detach(tabs::TabInterface& tab) {
+  CHECK(GlicEnabling::IsLiveAndFloatyEnabledByFlags())
+      << "Detach called when floaty is disabled by flags.";
   instance_metrics_.OnDetach();
   auto show_options =
       ShowOptions::ForFloating(tab.GetHandle(), interaction_mode_);
@@ -932,6 +934,8 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(
                        return CreateActiveEmbedderForSidePanel(opts);
                      },
                      [&](const FloatingShowOptions& opts) {
+                       CHECK(base::FeatureList::IsEnabled(
+                           features::kGlicLiveMode));
                        return CreateActiveEmbedderForFloaty(opts.initial_bounds,
                                                             opts.source_tab);
                      }},
@@ -950,6 +954,7 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForSidePanel(
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
     const gfx::Rect& initial_bounds,
     tabs::TabInterface::Handle source_tab) {
+  CHECK(GlicEnabling::IsLiveAndFloatyEnabledByFlags());
   if (coordinator_delegate_) {
     coordinator_delegate_->OnWillCreateFloaty();
   }

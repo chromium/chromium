@@ -35,12 +35,19 @@
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_list.h"
+#endif
 
 namespace glic {
 
@@ -265,9 +272,20 @@ void GlicInstanceCoordinatorImpl::Toggle(
     bool deprecated_auto_send,
     std::optional<std::string> deprecated_conversation_id) {
   if (!browser) {
-    CHECK(!deprecated_conversation_id || deprecated_conversation_id->empty());
-    ToggleFloaty(prevent_close, source, deprecated_prompt_suggestion);
-    return;
+    if (!GlicEnabling::IsLiveAndFloatyEnabledByFlags()) {
+#if !BUILDFLAG(IS_ANDROID)
+      browser = chrome::OpenEmptyWindow(profile_);
+#endif
+      if (!browser) {
+        LOG(ERROR)
+            << "Could not find or create a browser window for Glic side panel.";
+        return;
+      }
+    } else {
+      CHECK(!deprecated_conversation_id || deprecated_conversation_id->empty());
+      ToggleFloaty(prevent_close, source, deprecated_prompt_suggestion);
+      return;
+    }
   }
 
   ToggleSidePanel(browser, prevent_close, source, deprecated_prompt_suggestion,
@@ -700,6 +718,7 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty(
     bool prevent_close,
     glic::mojom::InvocationSource source,
     std::optional<std::string> prompt_suggestion) {
+  CHECK(GlicEnabling::IsLiveAndFloatyEnabledByFlags());
   GetOrCreateInstanceImplForFloaty()->Toggle(
       ShowOptions::ForFloating(/*source_tab=*/tabs::TabHandle::Null()),
       prevent_close, source, prompt_suggestion, /*auto_send=*/false);
