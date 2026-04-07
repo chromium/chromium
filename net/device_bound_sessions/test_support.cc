@@ -108,12 +108,32 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
                                  .value_or("session_id");
     std::string cookie_name = GetQueryParameter(request.GetURL(), "cookie_name")
                                   .value_or("auth_cookie");
+    bool is_refresh = request.relative_url.starts_with("/dbsc_refresh_session");
+    std::optional<std::string> trigger_challenge =
+        GetQueryParameter(request.GetURL(), "trigger_challenge");
+    bool has_secure_session_response =
+        request.headers.contains("Secure-Session-Response");
+
+    if (is_refresh && trigger_challenge.has_value() &&
+        !has_secure_session_response) {
+      response->AddCustomHeader(
+          "Secure-Session-Challenge",
+          base::StringPrintf("\"%s\";id=\"%s\"", *trigger_challenge,
+                             session_id));
+      response->set_code(net::HTTP_FORBIDDEN);
+      return response;
+    }
+
     response->AddCustomHeader(
         "Set-Cookie", base::StringPrintf("%s=abcdef0123;SameSite=Strict;Secure",
                                          cookie_name));
-    std::string query_params = request.GetURL().GetQuery();
+
     std::string refresh_path =
-        base::StringPrintf("/dbsc_refresh_session?%s", query_params);
+        GetQueryParameter(request.GetURL(), "refresh_path")
+            .value_or("/dbsc_refresh_session");
+    if (std::string query = request.GetURL().GetQuery(); !query.empty()) {
+      base::StrAppend(&refresh_path, {"?", query});
+    }
 
     const auto registration_response =
         base::DictValue()
