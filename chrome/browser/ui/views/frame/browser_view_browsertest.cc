@@ -596,8 +596,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
 #endif
 
   // There is no dialog, but the browser UI should be visible. So we expect the
-  // browser's reload button and no "OK" button from a dialog.
-  EXPECT_NE(ui::AXPlatformNodeTestHelper::FindChildByName(ax_node, "Reload"),
+  // browser's app menu button and no "OK" button from a dialog.
+  EXPECT_NE(ui::AXPlatformNodeTestHelper::FindChildByName(
+                ax_node, l10n_util::GetStringUTF8(IDS_ACCNAME_APP)),
             nullptr);
   EXPECT_EQ(ui::AXPlatformNodeTestHelper::FindChildByName(ax_node, "OK"),
             nullptr);
@@ -619,8 +620,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
   focus_waiter.Wait();
 
   // The tab modal dialog should be in the accessibility tree; everything else
-  // should be hidden. So we expect an "OK" button and no reload button.
-  EXPECT_EQ(ui::AXPlatformNodeTestHelper::FindChildByName(ax_node, "Reload"),
+  // should be hidden. So we expect an "OK" button and no app menu button.
+  EXPECT_EQ(ui::AXPlatformNodeTestHelper::FindChildByName(
+                ax_node, l10n_util::GetStringUTF8(IDS_ACCNAME_APP)),
             nullptr);
   EXPECT_NE(ui::AXPlatformNodeTestHelper::FindChildByName(ax_node, "OK"),
             nullptr);
