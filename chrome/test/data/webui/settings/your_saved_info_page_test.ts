@@ -8,7 +8,7 @@ import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, EntityDataManagerProxy
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement, SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
 import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, Router, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -56,6 +56,7 @@ suite('YourSavedInfoPage', function() {
       enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
+      enableYourSavedInfoShoppingPage: true,
     });
   });
 
@@ -101,6 +102,17 @@ suite('YourSavedInfoPage', function() {
     assertTrue(!!yourSavedInfoPageTitleElement);
   });
 
+  test('ShoppingCategoryHiddenWhenFlagDisabled', async function() {
+    await setupPage({
+      enableYourSavedInfoShoppingPage: false,
+    });
+
+    const shoppingCard =
+        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+            '#shoppingManagerButton');
+    assertFalse(!!shoppingCard);
+  });
+
   test('CardsRenderCorrectly', function() {
     const cards = yourSavedInfoPage.shadowRoot!.querySelectorAll(
         'category-reference-card');
@@ -110,6 +122,7 @@ suite('YourSavedInfoPage', function() {
       loadTimeData.getString('contactInfoTitle'),
       loadTimeData.getString('identityDocsCardTitle'),
       loadTimeData.getString('travelCardTitle'),
+      loadTimeData.getString('shoppingCardTitle'),
     ];
 
     assertEquals(expectedCardTitles.length, cards.length);
@@ -162,6 +175,11 @@ suite('YourSavedInfoPage', function() {
      cardTitle: 'travelCardTitle',
      expectedRoute: '/travel',
      expectedCategory: YourSavedInfoDataCategory.TRAVEL,
+   },
+   {
+     cardTitle: 'shoppingCardTitle',
+     expectedRoute: '/shopping',
+     expectedCategory: YourSavedInfoDataCategory.SHOPPING,
    },
   ].forEach(({cardTitle, expectedRoute, expectedCategory}) => {
     test(`${cardTitle} card navigates to the correct route`, async function() {

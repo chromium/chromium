@@ -409,7 +409,8 @@ export enum YourSavedInfoDataCategory {
   CONTACT_INFO = 2,
   IDENTITY_DOCS = 3,
   TRAVEL = 4,
-  MAX_VALUE = 5,
+  SHOPPING = 5,
+  MAX_VALUE = 6,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:YourSavedInfoDataCategory)
 
@@ -437,7 +438,9 @@ export enum YourSavedInfoDataChip {
   FLIGHT_RESERVATIONS = 10,
   TRAVEL_INFO = 11,
   VEHICLES = 12,
-  MAX_VALUE = 13,
+  SHIPMENTS = 13,
+  ORDERS = 14,
+  MAX_VALUE = 15,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:YourSavedInfoDataChip)
 

@@ -102,6 +102,10 @@ export class SettingsYourSavedInfoPageIndexElement extends
           SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
               DataManagementSurvey.TRAVEL, isFromHomePage);
           break;
+        case routes.YOUR_SAVED_INFO_SHOPPING:
+          this.$.viewManager.switchView(
+              'shopping', 'no-animation', 'no-animation');
+          break;
         default:
           // Nothing to do. Other parent elements are responsible for updating
           // the displayed contents.

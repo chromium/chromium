@@ -58,6 +58,7 @@ interface DataTypeHierarchy {
   contactInfo: DataCategory;
   identityDocs: DataCategory;
   travel: DataCategory;
+  shopping: DataCategory;
 }
 
 interface DataCategory {
@@ -100,11 +101,19 @@ export class SettingsYourSavedInfoPageElement extends
       hierarchy_: {
         type: Object,
       },
+
+      enableYourSavedInfoShoppingPage_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableYourSavedInfoShoppingPage');
+        },
+      },
     };
   }
 
   declare prefs: {[key: string]: any};
   declare private hierarchy_: DataTypeHierarchy;
+  declare private enableYourSavedInfoShoppingPage_: boolean;
 
   private dataChipIdToChip_: Map<YourSavedInfoDataChip, DataChip> = new Map();
   private dataChipIdToCategory_: Map<YourSavedInfoDataChip, DataCategory> =
@@ -247,6 +256,25 @@ export class SettingsYourSavedInfoPageElement extends
           },
         ],
       },
+      shopping: {
+        id: YourSavedInfoDataCategory.SHOPPING,
+        chips: [
+          {
+            id: YourSavedInfoDataChip.ORDERS,
+            label: this.i18n('yourSavedInfoOrdersChip'),
+            icon: 'settings20:orders',
+            computeAvailability: () =>
+                this.availableAutofillAiTypes_.has(EntityTypeName.kOrder),
+          },
+          {
+            id: YourSavedInfoDataChip.SHIPMENTS,
+            label: this.i18n('yourSavedInfoShipmentsChip'),
+            icon: 'settings20:local-shipping',
+            computeAvailability: () =>
+                this.availableAutofillAiTypes_.has(EntityTypeName.kShipment),
+          },
+        ],
+      },
     };
 
     for (const [categoryName, category] of Object.entries(this.hierarchy_)) {
@@ -326,6 +354,7 @@ export class SettingsYourSavedInfoPageElement extends
           }
           this.notifyPath('hierarchy_.identityDocs.chips');
           this.notifyPath('hierarchy_.travel.chips');
+          this.notifyPath('hierarchy_.shopping.chips');
         });
 
     // Wallet: Loyalty cards count.
@@ -363,6 +392,12 @@ export class SettingsYourSavedInfoPageElement extends
     this.setChipCount_(
         YourSavedInfoDataChip.FLIGHT_RESERVATIONS,
         entityCounts.get(EntityTypeName.kFlightReservation) ?? 0);
+    this.setChipCount_(
+        YourSavedInfoDataChip.ORDERS,
+        entityCounts.get(EntityTypeName.kOrder) ?? 0);
+    this.setChipCount_(
+        YourSavedInfoDataChip.SHIPMENTS,
+        entityCounts.get(EntityTypeName.kShipment) ?? 0);
   }
 
   override disconnectedCallback() {
@@ -398,6 +433,9 @@ export class SettingsYourSavedInfoPageElement extends
     if (routes.YOUR_SAVED_INFO_TRAVEL) {
       map.set(routes.YOUR_SAVED_INFO_TRAVEL.path, '#travelManagerButton');
     }
+    if (routes.YOUR_SAVED_INFO_SHOPPING) {
+      map.set(routes.YOUR_SAVED_INFO_SHOPPING.path, '#shoppingManagerButton');
+    }
     return map;
   }
 
@@ -421,6 +459,9 @@ export class SettingsYourSavedInfoPageElement extends
         break;
       case 'travel':
         triggerId = 'travelManagerButton';
+        break;
+      case 'shopping':
+        triggerId = 'shoppingManagerButton';
         break;
       default:
         assertNotReached(`Unrecognized child view ID: ${childViewId}`);
@@ -483,6 +524,9 @@ export class SettingsYourSavedInfoPageElement extends
         break;
       case YourSavedInfoDataCategory.TRAVEL:
         Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_TRAVEL);
+        break;
+      case YourSavedInfoDataCategory.SHOPPING:
+        Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_SHOPPING);
         break;
       case YourSavedInfoDataCategory.MAX_VALUE:
         assertNotReached();

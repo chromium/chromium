@@ -264,6 +264,7 @@ build_webui("build") {
     "your_saved_info_page/category_reference_card.ts",
     "your_saved_info_page/collapsible_autofill_settings_card.ts",
     "your_saved_info_page/identity_docs_page.ts",
+    "your_saved_info_page/shopping_page.ts",
     "your_saved_info_page/travel_page.ts",
     "your_saved_info_page/your_saved_info_page.ts",
     "your_saved_info_page/your_saved_info_page_index.ts",

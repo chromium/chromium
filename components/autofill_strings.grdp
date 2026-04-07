@@ -714,6 +714,12 @@
   <message name="IDS_AUTOFILL_TRAVEL_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved travel info. Sentence-Cased." formatter_data="android_java">
     Travel
   </message>
+  <!-- TODO(crbug.com/498115758): Make Shopping strings translatable and add to Android and iOS. -->
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_AUTOFILL_SHOPPING_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved shopping info. Sentence-Cased." formatter_data="android_java" translateable="false">
+      Shopping
+    </message>
+  </if>
 
   <!-- Autofill and passwords entry point summaries - mobile only -->
   <if expr="is_android">
@@ -858,6 +864,12 @@
     </message>
     <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for travel-related data types. Sentence-Cased." formatter_data="android_java">
       Includes information such as flight bookings and vehicle info
+    </message>
+    <message name="IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for shopping-related data types. Sentence-Cased." formatter_data="android_java" translateable="false">
+      Fill shopping info
+    </message>
+    <message name="IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for shopping-related data types. Sentence-Cased." formatter_data="android_java" translateable="false">
+      Includes information such as orders and shipments
     </message>
   </if>
 

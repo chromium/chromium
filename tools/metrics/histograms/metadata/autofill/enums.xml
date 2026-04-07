@@ -5780,6 +5780,7 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Contact info"/>
   <int value="3" label="Identity docs"/>
   <int value="4" label="Travel"/>
+  <int value="5" label="Shopping"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/resources/settings/metrics_browser_proxy.ts:YourSavedInfoDataCategory) -->
@@ -5800,6 +5801,8 @@ Called by update_autofill_enums.py.-->
   <int value="10" label="Flight reservations"/>
   <int value="11" label="Travel info"/>
   <int value="12" label="Vehicles"/>
+  <int value="13" label="Shipments"/>
+  <int value="14" label="Orders"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/resources/settings/metrics_browser_proxy.ts:YourSavedInfoDataChip) -->

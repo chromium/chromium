@@ -427,6 +427,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           autofill::features::
               kYourSavedInfoPolicyAndExtentionToggleIndicators));
 
+  html_source->AddBoolean(
+      "enableYourSavedInfoShoppingPage",
+      base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoSettingsPageShoppingIntegration));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 

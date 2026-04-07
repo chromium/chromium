@@ -118,6 +118,7 @@ import './reset_page/reset_page.js';
 import './system_page/system_page.js';
 // </if>
 import './your_saved_info_page/identity_docs_page.js';
+import './your_saved_info_page/shopping_page.js';
 import './your_saved_info_page/travel_page.js';
 
 // <if expr="not is_chromeos">
@@ -346,4 +347,5 @@ export {SystemPageBrowserProxyImpl} from './system_page/system_page_browser_prox
 export type {SystemPageBrowserProxy} from './system_page/system_page_browser_proxy.js';
 // </if>
 export {SettingsIdentityDocsPageElement} from './your_saved_info_page/identity_docs_page.js';
+export {SettingsShoppingPageElement} from './your_saved_info_page/shopping_page.js';
 export {SettingsTravelPageElement} from './your_saved_info_page/travel_page.js';

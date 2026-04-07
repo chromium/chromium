@@ -72,6 +72,13 @@
       category-id="[[hierarchy_.travel.id]]"
       chips="[[getVisibleChips_(hierarchy_.travel.chips)]]">
   </category-reference-card>
+  <template is="dom-if" if="[[enableYourSavedInfoShoppingPage_]]">
+    <category-reference-card id="shoppingManagerButton"
+        card-title="$i18n{shoppingCardTitle}"
+        category-id="[[hierarchy_.shopping.id]]"
+        chips="[[getVisibleChips_(hierarchy_.shopping.chips)]]">
+    </category-reference-card>
+  </template>
 </div>
 
 <settings-section page-title="$i18n{yourSavedInfoAutofillSettingsLabel}">

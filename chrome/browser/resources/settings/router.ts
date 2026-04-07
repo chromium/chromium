@@ -119,6 +119,7 @@ export interface SettingsRoutes {
   YOUR_SAVED_INFO_CONTACT_INFO: Route;
   YOUR_SAVED_INFO_IDENTITY_DOCS: Route;
   YOUR_SAVED_INFO_TRAVEL: Route;
+  YOUR_SAVED_INFO_SHOPPING: Route;
 
   // <if expr="not is_chromeos">
   ACCOUNT: Route;
