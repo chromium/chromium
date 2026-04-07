@@ -7,16 +7,19 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/auto_reset.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
 #include "content/browser/indexed_db/instance/mock_file_system_access_context.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -72,6 +75,27 @@ class IndexedDBTestBase : public testing::Test {
 
   storage::BucketInitParams BucketParamsForStorageKey(
       const blink::StorageKey& storage_key);
+
+  base::FilePath GetFilePathForTesting(
+      const storage::BucketLocator& bucket_locator);
+
+  // Creates a new database, commits the versionchange transaction, and waits
+  // for success. Fails if UpgradeNeeded is not received (i.e. the database
+  // already exists). Returns the open connection.
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> CreateDatabase(
+      mojo::Remote<blink::mojom::IDBFactory>& factory_remote,
+      const std::u16string& name,
+      int64_t transaction_id,
+      blink::mojom::IDBDataLoss expected_data_loss =
+          blink::mojom::IDBDataLoss::None,
+      int64_t version = 1);
+
+  // Opens an existing database and waits for success. Fails if UpgradeNeeded is
+  // received (i.e. the database doesn't exist). Returns the open connection.
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> OpenDatabase(
+      mojo::Remote<blink::mojom::IDBFactory>& factory_remote,
+      const std::u16string& name,
+      int64_t transaction_id);
 
  protected:
   base::AutoReset<std::optional<bool>> sqlite_override_;

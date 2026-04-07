@@ -329,7 +329,7 @@ class CONTENT_EXPORT BucketContext
   friend class DatabaseTest;
   friend class IndexedDBTest;
   friend class IndexedDBTestBase;
-  friend class IndexedDBTestForSqliteMigration;
+  friend class SqliteBackingStoreRolloutStageTest;
   friend class TransactionTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);

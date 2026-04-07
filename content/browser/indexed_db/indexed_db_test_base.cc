@@ -14,12 +14,18 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/indexed_db/instance/leveldb/indexed_db_leveldb_operations.h"
+#include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
+#include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
 namespace content::indexed_db {
@@ -175,6 +181,91 @@ BucketContext* IndexedDBTestBase::GetBucketContext(storage::BucketId id) {
   sequence_bound->AsyncCall(&BucketContext::GetReferenceForTesting)
       .Then(future.GetCallback());
   return future.Get();
+}
+
+base::FilePath IndexedDBTestBase::GetFilePathForTesting(
+    const storage::BucketLocator& bucket_locator) {
+  return context()->GetFilePathForTesting(bucket_locator,
+                                          IsSqliteBackingStoreEnabled());
+}
+
+namespace {
+
+MATCHER_P(IsAssociatedInterfacePtrInfoValid,
+          tf,
+          std::string(negation ? "isn't" : "is") + " " +
+              std::string(tf ? "valid" : "invalid")) {
+  return tf == arg->is_valid();
+}
+
+ACTION_TEMPLATE(MoveArgPointee,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(pointer)) {
+  *pointer = std::move(*std::get<k>(args));
+}
+
+}  // namespace
+
+mojo::AssociatedRemote<blink::mojom::IDBDatabase>
+IndexedDBTestBase::CreateDatabase(
+    mojo::Remote<blink::mojom::IDBFactory>& factory_remote,
+    const std::u16string& name,
+    int64_t transaction_id,
+    blink::mojom::IDBDataLoss expected_data_loss,
+    int64_t version) {
+  MockMojoFactoryClient client;
+  MockMojoDatabaseCallbacks database_callbacks;
+  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+  EXPECT_CALL(client, Error).Times(0);
+  EXPECT_CALL(client,
+              MockedUpgradeNeeded(IsAssociatedInterfacePtrInfoValid(true),
+                                  blink::IndexedDBDatabaseMetadata::NO_VERSION,
+                                  expected_data_loss, testing::_, testing::_))
+      .WillOnce(MoveArgPointee<0>(&pending_database));
+  factory_remote->Open(client.CreateInterfacePtrAndBind(),
+                       database_callbacks.CreateInterfacePtrAndBind(), name,
+                       version,
+                       transaction_remote.BindNewEndpointAndPassReceiver(),
+                       transaction_id, /*priority=*/0);
+
+  transaction_remote->Commit(0);
+  EXPECT_CALL(database_callbacks, Complete(transaction_id)).Times(1);
+
+  base::RunLoop success_run_loop;
+  EXPECT_CALL(client, MockedOpenSuccess)
+      .WillOnce(::base::test::RunClosure(success_run_loop.QuitClosure()));
+  success_run_loop.Run();
+
+  EXPECT_TRUE(pending_database.is_valid()) << "UpgradeNeeded was not called";
+  return mojo::AssociatedRemote<blink::mojom::IDBDatabase>(
+      std::move(pending_database));
+}
+
+mojo::AssociatedRemote<blink::mojom::IDBDatabase>
+IndexedDBTestBase::OpenDatabase(
+    mojo::Remote<blink::mojom::IDBFactory>& factory_remote,
+    const std::u16string& name,
+    int64_t transaction_id) {
+  MockMojoFactoryClient client;
+  MockMojoDatabaseCallbacks database_callbacks;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+  base::RunLoop run_loop;
+  EXPECT_CALL(client, MockedUpgradeNeeded).Times(0);
+  EXPECT_CALL(client, MockedOpenSuccess)
+      .WillOnce(
+          testing::DoAll(MoveArgPointee<0>(&pending_database),
+                         ::base::test::RunClosure(run_loop.QuitClosure())));
+  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+  factory_remote->Open(client.CreateInterfacePtrAndBind(),
+                       database_callbacks.CreateInterfacePtrAndBind(), name,
+                       /*version=*/1,
+                       transaction_remote.BindNewEndpointAndPassReceiver(),
+                       transaction_id, /*priority=*/0);
+  run_loop.Run();
+
+  return mojo::AssociatedRemote<blink::mojom::IDBDatabase>(
+      std::move(pending_database));
 }
 
 }  // namespace content::indexed_db
