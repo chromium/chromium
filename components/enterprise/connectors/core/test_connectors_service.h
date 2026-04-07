@@ -17,10 +17,10 @@ class TestConnectorsService : public ConnectorsServiceBase {
   ~TestConnectorsService() override;
 
   // Set the machine dm token if needed.
-  void set_machine_dm_token();
+  void set_machine_dm_token(const char* dm_token);
 
   // Set the profile dm token if needed.
-  void set_profile_dm_token();
+  void set_profile_dm_token(const char* dm_token);
 
   // Set the specific analysis connectors to be enabled.
   void set_connectors_enabled(bool enabled);

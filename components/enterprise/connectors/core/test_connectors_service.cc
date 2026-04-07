@@ -13,9 +13,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kMachineDMToken[] = "machine_dm_token";
-constexpr char kProfileDMToken[] = "profile_dm_token";
-
 class AnalysisServiceSettings : public AnalysisServiceSettingsBase {
  public:
   AnalysisServiceSettings(const base::Value& settings_value,
@@ -60,14 +57,14 @@ TestConnectorsService::TestConnectorsService(TestingPrefServiceSimple* prefs)
 
 TestConnectorsService::~TestConnectorsService() = default;
 
-void TestConnectorsService::set_machine_dm_token() {
-  machine_dm_token_ = ConnectorsServiceBase::DmToken(
-      kMachineDMToken, policy::POLICY_SCOPE_MACHINE);
+void TestConnectorsService::set_machine_dm_token(const char* dm_token) {
+  machine_dm_token_ =
+      ConnectorsServiceBase::DmToken(dm_token, policy::POLICY_SCOPE_MACHINE);
 }
 
-void TestConnectorsService::set_profile_dm_token() {
-  profile_dm_token_ = ConnectorsServiceBase::DmToken(kProfileDMToken,
-                                                     policy::POLICY_SCOPE_USER);
+void TestConnectorsService::set_profile_dm_token(const char* dm_token) {
+  profile_dm_token_ =
+      ConnectorsServiceBase::DmToken(dm_token, policy::POLICY_SCOPE_USER);
 }
 
 void TestConnectorsService::set_connectors_enabled(bool enabled) {

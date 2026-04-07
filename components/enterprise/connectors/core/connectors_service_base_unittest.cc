@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "components/enterprise/connectors/core/connectors_manager_base.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/connectors/core/test_connectors_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,79 +24,6 @@ constexpr char kNormalReportingSettingsPref[] = R"([
     "service_provider": "google"
   }
 ])";
-
-class ConnectorsManager : public ConnectorsManagerBase {
- public:
-  using ConnectorsManagerBase::ConnectorsManagerBase;
-
-  void CacheAnalysisConnectorPolicy(
-      AnalysisConnector connector) const override {
-    // do nothing
-  }
-
-  DataRegion GetDataRegion(AnalysisConnector connector) const override {
-    return DataRegion::NO_PREFERENCE;
-  }
-};
-
-class TestConnectorsService : public ConnectorsServiceBase {
- public:
-  explicit TestConnectorsService(TestingPrefServiceSimple* prefs)
-      : ConnectorsServiceBase(
-            std::make_unique<ConnectorsManager>(prefs,
-                                                GetServiceProviderConfig())),
-        prefs_(prefs) {
-    RegisterProfilePrefs(prefs_->registry());
-  }
-
-  void set_machine_dm_token() {
-    machine_dm_token_ = ConnectorsServiceBase::DmToken(
-        kMachineDMToken, policy::POLICY_SCOPE_MACHINE);
-  }
-
-  void set_profile_dm_token() {
-    profile_dm_token_ = ConnectorsServiceBase::DmToken(
-        kProfileDMToken, policy::POLICY_SCOPE_USER);
-  }
-
-  void set_connectors_enabled(bool enabled) { connectors_enabled_ = enabled; }
-
-  std::optional<DmToken> GetDmToken(const char* scope_pref) const override {
-    switch (prefs_->GetInteger(kEnterpriseRealTimeUrlCheckScope)) {
-      case policy::POLICY_SCOPE_MACHINE:
-        return machine_dm_token_;
-      case policy::POLICY_SCOPE_USER:
-        return profile_dm_token_;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  std::optional<std::string> GetBrowserDmToken() const override {
-    return std::nullopt;
-  }
-
-  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud) override {
-    return nullptr;
-  }
-
-  bool ConnectorsEnabled() const override { return connectors_enabled_; }
-
-  PrefService* GetPrefs() override { return prefs_; }
-  const PrefService* GetPrefs() const override { return prefs_; }
-
-  policy::CloudPolicyManager* GetManagedUserCloudPolicyManager()
-      const override {
-    NOTREACHED();
-    // return nullptr;
-  }
-
- private:
-  bool connectors_enabled_ = false;
-  std::optional<DmToken> machine_dm_token_;
-  std::optional<DmToken> profile_dm_token_;
-  raw_ptr<TestingPrefServiceSimple> prefs_;
-};
 
 }  // namespace
 
@@ -141,7 +69,7 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_InvalidProfilePolicy) {
       ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::kNoDmToken);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
-  service.set_machine_dm_token();
+  service.set_machine_dm_token(kMachineDMToken);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(
@@ -173,7 +101,7 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_InvalidMachinePolicy) {
       ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::kNoDmToken);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
-  service.set_profile_dm_token();
+  service.set_profile_dm_token(kProfileDMToken);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(
@@ -187,7 +115,7 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_ValidProfilePolicy) {
   TestConnectorsService service(&prefs);
 
   service.set_connectors_enabled(true);
-  service.set_profile_dm_token();
+  service.set_profile_dm_token(kProfileDMToken);
   service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckMode,
                                  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
   service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
@@ -204,7 +132,7 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_ValidMachinePolicy) {
   TestConnectorsService service(&prefs);
 
   service.set_connectors_enabled(true);
-  service.set_machine_dm_token();
+  service.set_machine_dm_token(kMachineDMToken);
   service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckMode,
                                  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
   service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,

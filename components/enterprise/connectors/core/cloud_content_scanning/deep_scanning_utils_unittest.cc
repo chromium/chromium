@@ -52,6 +52,8 @@ constexpr char16_t kTestUnescapedHtmlMessage[] = u"<>&\"'";
 constexpr size_t kRuleMessageOffset = 26;
 constexpr char kTestLinkedMessage[] = "Learn More";
 constexpr char16_t kU16TestLinkedMessage[] = u"Learn More";
+constexpr char kProfileDMToken[] = "profile_dm_token";
+constexpr char kMachineDMToken[] = "machine_dm_token";
 
 ContentAnalysisResponse CreateContentAnalysisResponse(
     const std::vector<CustomMessageTestCase>& triggered_rules,
@@ -85,8 +87,8 @@ class BaseTest : public testing::Test {
     // Settings can't be returned if no DM token exists.
     connectors_service_ = std::make_unique<TestConnectorsService>(&prefs_);
     connectors_service_->set_connectors_enabled(true);
-    connectors_service_->set_profile_dm_token();
-    connectors_service_->set_machine_dm_token();
+    connectors_service_->set_profile_dm_token(kProfileDMToken);
+    connectors_service_->set_machine_dm_token(kMachineDMToken);
   }
 
   void TearDown() override { connectors_service_ = nullptr; }
