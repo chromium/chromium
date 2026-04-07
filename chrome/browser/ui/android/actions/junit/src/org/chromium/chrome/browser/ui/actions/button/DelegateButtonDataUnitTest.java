@@ -115,7 +115,7 @@ public class DelegateButtonDataUnitTest {
                                 .setOnPress(callback1)
                                 .setOnLongPress(longCallback2)
                                 .build()));
-        assertTrue(
+        assertFalse(
                 buttonData.buttonDataEquals(new DelegateButtonData.Builder(displayData1).build()));
     }
 
@@ -139,17 +139,17 @@ public class DelegateButtonDataUnitTest {
 
     @Test
     @SmallTest
-    public void testButtonDataEquals_differentTransparency() {
+    public void testButtonDataEquals_differentIsEnabled() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData =
                 new DrawableButtonData(
                         R.string.button_new_tab, R.string.button_new_incognito_tab, drawable);
 
         DelegateButtonData buttonData = new DelegateButtonData.Builder(displayData).build();
-        DelegateButtonData transparentButtonData =
-                new DelegateButtonData.Builder(displayData).setIsTransparent(true).build();
+        DelegateButtonData enabledButtonData =
+                new DelegateButtonData.Builder(displayData).setOnPress(mCallback).build();
 
-        assertFalse(buttonData.buttonDataEquals(transparentButtonData));
+        assertFalse(buttonData.buttonDataEquals(enabledButtonData));
     }
 
     @Test
@@ -195,6 +195,26 @@ public class DelegateButtonDataUnitTest {
 
     @Test
     @SmallTest
+    public void testButtonDataEquals_differentButtonState_sameIsEnabled() {
+        Drawable drawable = createBitmapDrawable();
+        DisplayButtonData displayData =
+                new DrawableButtonData(
+                        R.string.button_new_tab, R.string.button_new_incognito_tab, drawable);
+
+        DelegateButtonData buttonData1 =
+                new DelegateButtonData.Builder(displayData)
+                        .setButtonState(ButtonState.UNCLICKABLE)
+                        .build();
+        DelegateButtonData buttonData2 =
+                new DelegateButtonData.Builder(displayData)
+                        .setButtonState(ButtonState.INVISIBLE_AND_CLICKABLE)
+                        .build();
+
+        assertTrue(buttonData1.buttonDataEquals(buttonData2));
+    }
+
+    @Test
+    @SmallTest
     public void testButtonDataEquals_sameObject() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData =
@@ -208,19 +228,32 @@ public class DelegateButtonDataUnitTest {
 
     @Test
     @SmallTest
-    public void testTransparency() {
-        DelegateButtonData buttonData = new DelegateButtonData.Builder(mDisplayButtonData).build();
+    public void testButtonState() {
+        DelegateButtonData buttonData =
+                new DelegateButtonData.Builder(mDisplayButtonData).setOnPress(mCallback).build();
 
         // Default state.
-        assertFalse(buttonData.isTransparent());
+        assertEquals(ButtonState.DEFAULT, buttonData.getButtonState());
+        assertTrue(buttonData.canPress());
+        assertTrue(buttonData.isEnabled());
 
-        // Make it transparent.
-        buttonData.setIsTransparent(true);
-        assertTrue(buttonData.isTransparent());
+        // Change state to UNCLICKABLE.
+        buttonData.setButtonState(ButtonState.UNCLICKABLE);
+        assertEquals(ButtonState.UNCLICKABLE, buttonData.getButtonState());
+        assertFalse(buttonData.canPress());
+        assertTrue(buttonData.isEnabled()); // Remains enabled to avoid grey-out blink
 
-        // Make it opaque again.
-        buttonData.setIsTransparent(false);
-        assertFalse(buttonData.isTransparent());
+        // Change to INVISIBLE_AND_CLICKABLE.
+        buttonData.setButtonState(ButtonState.INVISIBLE_AND_CLICKABLE);
+        assertEquals(ButtonState.INVISIBLE_AND_CLICKABLE, buttonData.getButtonState());
+        assertTrue(buttonData.canPress());
+        assertTrue(buttonData.isEnabled()); // Remains enabled to avoid grey-out blink
+
+        // Change back to DEFAULT.
+        buttonData.setButtonState(ButtonState.DEFAULT);
+        assertEquals(ButtonState.DEFAULT, buttonData.getButtonState());
+        assertTrue(buttonData.canPress());
+        assertTrue(buttonData.isEnabled());
     }
 
     @Test

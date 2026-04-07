@@ -21,7 +21,7 @@ public class DelegateButtonData implements ActionButtonData {
     private final DisplayButtonData mDelegateButtonData;
     private final @Nullable Callback<View> mOnPress;
     private final @Nullable Callback<View> mOnLongPress;
-    private boolean mIsTransparent;
+    private @ButtonState int mButtonState;
     private boolean mIsToggled;
 
     /** Builder class for {@link DelegateButtonData}. */
@@ -29,7 +29,7 @@ public class DelegateButtonData implements ActionButtonData {
         private final DisplayButtonData mDelegateButtonData;
         private @Nullable Callback<View> mOnPress;
         private @Nullable Callback<View> mOnLongPress;
-        private boolean mIsTransparent;
+        private @ButtonState int mButtonState = ButtonState.DEFAULT;
         private boolean mIsToggled;
 
         /**
@@ -53,22 +53,22 @@ public class DelegateButtonData implements ActionButtonData {
             return this;
         }
 
-        /** Sets whether the button should be transparent. */
-        public Builder setIsTransparent(boolean isTransparent) {
-            mIsTransparent = isTransparent;
-            return this;
-        }
-
         /** Sets whether the button should be in a toggled state. */
         public Builder setIsToggled(boolean isToggled) {
             mIsToggled = isToggled;
             return this;
         }
 
+        /** Sets the {@link ButtonState} of the button. */
+        public Builder setButtonState(@ButtonState int buttonState) {
+            mButtonState = buttonState;
+            return this;
+        }
+
         /** Builds the {@link DelegateButtonData}. */
         public DelegateButtonData build() {
             return new DelegateButtonData(
-                    mDelegateButtonData, mOnPress, mOnLongPress, mIsTransparent, mIsToggled);
+                    mDelegateButtonData, mOnPress, mOnLongPress, mIsToggled, mButtonState);
         }
     }
 
@@ -76,22 +76,13 @@ public class DelegateButtonData implements ActionButtonData {
             DisplayButtonData delegateButtonData,
             @Nullable Callback<View> onPress,
             @Nullable Callback<View> onLongPress,
-            boolean isTransparent,
-            boolean isToggled) {
+            boolean isToggled,
+            @ButtonState int buttonState) {
         mDelegateButtonData = delegateButtonData;
         mOnPress = onPress;
         mOnLongPress = onLongPress;
-        mIsTransparent = isTransparent;
         mIsToggled = isToggled;
-    }
-
-    /**
-     * Sets whether the button should be transparent.
-     *
-     * @param isTransparent true if the button should be transparent, false otherwise.
-     */
-    public void setIsTransparent(boolean isTransparent) {
-        mIsTransparent = isTransparent;
+        mButtonState = buttonState;
     }
 
     /**
@@ -103,14 +94,23 @@ public class DelegateButtonData implements ActionButtonData {
         mIsToggled = isToggled;
     }
 
-    @Override
-    public boolean isTransparent() {
-        return mIsTransparent;
+    /**
+     * Sets the {@link ButtonState} of the button.
+     *
+     * @param buttonState the {@link ButtonState} to set.
+     */
+    public void setButtonState(@ButtonState int buttonState) {
+        mButtonState = buttonState;
     }
 
     @Override
     public boolean isToggled() {
         return mIsToggled;
+    }
+
+    @Override
+    public @ButtonState int getButtonState() {
+        return mButtonState;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class DelegateButtonData implements ActionButtonData {
         if (o instanceof DelegateButtonData that) {
             return mDelegateButtonData.equals(that.mDelegateButtonData)
                     && mIsToggled == that.mIsToggled
-                    && mIsTransparent == that.mIsTransparent;
+                    && isEnabled() == that.isEnabled();
         }
         return false;
     }

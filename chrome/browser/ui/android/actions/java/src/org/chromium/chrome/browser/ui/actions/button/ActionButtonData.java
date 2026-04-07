@@ -6,16 +6,12 @@ package org.chromium.chrome.browser.ui.actions.button;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Specialized version of {@link FullButtonData} that includes toggle and transparent states. */
+/** Specialized version of {@link FullButtonData} that includes toggle and other visual states. */
 @NullMarked
 public interface ActionButtonData extends FullButtonData {
-    /**
-     * Returns true if the button should be transparent (alpha 0) instead of View.INVISIBLE. This
-     * allows the button to remain clickable even when it is not visually seen. Useful for the new
-     * background tab animation where two tab switcher buttons are present but only one is seen.
-     */
-    default boolean isTransparent() {
-        return false;
+    @Override
+    default boolean canPress() {
+        return getOnPress() != null && getButtonState() != ButtonState.UNCLICKABLE;
     }
 
     /**
@@ -24,5 +20,19 @@ public interface ActionButtonData extends FullButtonData {
      */
     default boolean isToggled() {
         return false;
+    }
+
+    /** Returns the {@link ButtonState} of the button. */
+    default @ButtonState int getButtonState() {
+        return ButtonState.DEFAULT;
+    }
+
+    /**
+     * Helper to determine whether the button should be visually enabled. True if there is a
+     * Callback, or if the state is UNCLICKABLE or INVISIBLE_AND_CLICKABLE (which keeps it visually
+     * enabled/unchanged).
+     */
+    default boolean isEnabled() {
+        return canPress() || getButtonState() != ButtonState.DEFAULT;
     }
 }
