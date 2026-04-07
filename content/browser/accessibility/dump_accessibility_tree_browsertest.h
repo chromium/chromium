@@ -16,6 +16,7 @@ namespace content {
 
 constexpr const char kAccName[]{"accname"};
 constexpr const char kAria[]{"aria"};
+constexpr const char kApgPattern[]{"aria/apg-patterns"};
 constexpr const char kCSS[]{"css"};
 constexpr const char kCrash[]{"crash"};
 constexpr const char kFormControls[]{"form-controls"};
@@ -64,6 +65,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   }
   TEST_TYPE(AccName)
   TEST_TYPE(Aria)
+  TEST_TYPE(ApgPattern)
   TEST_TYPE(CSS)
   TEST_TYPE(Crash)
   TEST_TYPE(Html)

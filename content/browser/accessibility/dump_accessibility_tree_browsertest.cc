@@ -770,12 +770,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaAlert) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaAccordion) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-accordion.html"));
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-accordion.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaAlertDialog) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-alertdialog.html"));
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-alertdialog.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaBlockquote) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaBreadcrumb) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-breadcrumb.html"));
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-breadcrumb.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -838,12 +838,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaCarouselButtons) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-carousel-buttons.html"));
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-carousel-buttons.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaCarouselTabs) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-carousel-tabs.html"));
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-carousel-tabs.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaCaption) {
@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaListBox) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaListboxGrouped) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-listbox-grouped.html"));
+  RunApgPatternTest(FILE_PATH_LITERAL("aria-listbox-grouped.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -1930,14 +1930,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaTreeGrid) {
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
     AccessibilityAriaTreeviewFileDirectoryComputedProperties) {
-  RunAriaTest(FILE_PATH_LITERAL(
+  RunApgPatternTest(FILE_PATH_LITERAL(
       "aria-treeview-file-directory-computed-properties.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
     AccessibilityAriaTreeviewFileDirectoryDeclaredProperties) {
-  RunAriaTest(FILE_PATH_LITERAL(
+  RunApgPatternTest(FILE_PATH_LITERAL(
       "aria-treeview-file-directory-declared-properties.html"));
 }
 

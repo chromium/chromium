@@ -52,6 +52,8 @@ public class WebContentsAccessibilityTreeTest {
     // File path that holds all the relevant tests.
     private static final String BASE_ACCNAME_FILE_PATH = "content/test/data/accessibility/accname/";
     private static final String BASE_ARIA_FILE_PATH = "content/test/data/accessibility/aria/";
+    private static final String BASE_APG_PATTERN_FILE_PATH =
+            "content/test/data/accessibility/aria/apg-patterns/";
     private static final String BASE_CSS_FILE_PATH = "content/test/data/accessibility/css/";
     private static final String BASE_HTML_FILE_PATH = "content/test/data/accessibility/html/";
     private static final String DEFAULT_FILE_SUFFIX = "-expected-android-external.txt";
@@ -177,6 +179,15 @@ public class WebContentsAccessibilityTreeTest {
         performTest(inputFile, expectationFile, BASE_ARIA_FILE_PATH);
     }
 
+    private void performApgPatternTest(String input) {
+        // Remove the '.html' from the input file, and append the standard suffix.
+        performApgPatternTest(input, input.substring(0, input.length() - 5));
+    }
+
+    private void performApgPatternTest(String inputFile, String expectationFile) {
+        performTest(inputFile, expectationFile, BASE_APG_PATTERN_FILE_PATH);
+    }
+
     private void performCssTest(String input) {
         // Remove the '.html' from the input file, and append the standard suffix.
         performCssTest(input, input.substring(0, input.length() - 5));
@@ -252,18 +263,6 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_ariaAccordion() {
-        performAriaTest("aria-accordion.html");
-    }
-
-    @Test
-    @SmallTest
-    public void test_ariaAlertdialog() {
-        performAriaTest("aria-alertdialog.html");
-    }
-
-    @Test
-    @SmallTest
     public void test_ariaAlert() {
         performAriaTest("aria-alert.html");
     }
@@ -300,12 +299,6 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_ariaBreadcrumb() {
-        performAriaTest("aria-breadcrumb.html");
-    }
-
-    @Test
-    @SmallTest
     public void test_ariaBrailleLabel() {
         performAriaTest("aria-braillelabel.html");
     }
@@ -326,18 +319,6 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaButton() {
         performAriaTest("aria-button.html");
-    }
-
-    @Test
-    @SmallTest
-    public void test_ariaCarouselButtons() {
-        performAriaTest("aria-carousel-buttons.html");
-    }
-
-    @Test
-    @SmallTest
-    public void test_ariaCarouselTabs() {
-        performAriaTest("aria-carousel-tabs.html");
     }
 
     @Test
@@ -675,12 +656,6 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaListbox() {
         performAriaTest("aria-listbox.html");
-    }
-
-    @Test
-    @SmallTest
-    public void test_ariaListboxGrouped() {
-        performAriaTest("aria-listbox-grouped.html");
     }
 
     @Test
@@ -1190,18 +1165,6 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_ariaTreeviewFileDirectoryComputedProperties() {
-        performAriaTest("aria-treeview-file-directory-computed-properties.html");
-    }
-
-    @Test
-    @SmallTest
-    public void test_ariaTreeviewFileDirectoryDeclaredProperties() {
-        performAriaTest("aria-treeview-file-directory-declared-properties.html");
-    }
-
-    @Test
-    @SmallTest
     public void test_ariaTree() {
         performAriaTest("aria-tree.html");
     }
@@ -1340,6 +1303,56 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_toggleButtonExpandCollapse() {
         performAriaTest("toggle-button-expand-collapse.html");
+    }
+
+    // ------------------ ARIA PATTERNS TESTS ------------------ //
+
+    @Test
+    @SmallTest
+    public void test_ariaAccordion() {
+        performApgPatternTest("aria-accordion.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaAlertdialog() {
+        performApgPatternTest("aria-alertdialog.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaBreadcrumb() {
+        performApgPatternTest("aria-breadcrumb.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaCarouselButtons() {
+        performApgPatternTest("aria-carousel-buttons.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaCarouselTabs() {
+        performApgPatternTest("aria-carousel-tabs.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaListboxGrouped() {
+        performApgPatternTest("aria-listbox-grouped.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTreeviewFileDirectoryComputedProperties() {
+        performApgPatternTest("aria-treeview-file-directory-computed-properties.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTreeviewFileDirectoryDeclaredProperties() {
+        performApgPatternTest("aria-treeview-file-directory-declared-properties.html");
     }
 
     // ------------------ CSS TESTS ------------------ //
