@@ -8,9 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/test/fake_task.h"
-#include "base/task/sequence_manager/test/sequence_manager_for_test.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,6 +15,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/recording_task_time_observer.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 
 using testing::ElementsAreArray;
 
@@ -104,6 +102,10 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
     on_microtask_checkpoint_ = std::move(cb);
   }
 
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() {
+    return DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType();
+  }
+
  private:
   bool CanEnterLongIdlePeriod(
       base::TimeTicks now,
@@ -134,26 +136,46 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
   base::OnceClosure on_microtask_checkpoint_;
 };
 
-class WorkerThreadSchedulerTest : public testing::Test {
+class TaskEnvironmentWithWorkerThreadScheduler
+    : public base::test::TaskEnvironment {
  public:
-  WorkerThreadSchedulerTest()
-      : task_environment_(
+  explicit TaskEnvironmentWithWorkerThreadScheduler(Vector<String>* timeline)
+      : base::test::TaskEnvironment(CreateTaskEnvironmentWithPriorities(
+            blink::scheduler::CreatePrioritySettings(),
+            SubclassCreatesDefaultTaskRunner{},
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
-        sequence_manager_(
-            base::sequence_manager::SequenceManagerForTest::Create(
-                nullptr,
-                task_environment_.GetMainThreadTaskRunner(),
-                task_environment_.GetMockTickClock(),
-                base::sequence_manager::SequenceManager::Settings::Builder()
-                    .SetPrioritySettings(CreatePrioritySettings())
-                    .Build())),
-        scheduler_(new WorkerThreadSchedulerForTest(
-            sequence_manager_.get(),
-            task_environment_.GetMockTickClock(),
-            &timeline_)) {
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED)),
+        timeline_(timeline) {
+    scheduler_ = std::make_unique<WorkerThreadSchedulerForTest>(
+        sequence_manager(), GetMockTickClock(), timeline_);
     scheduler_->Init();
     scheduler_->AttachToCurrentThread();
+    DeferredInitFromSubclass(scheduler_->DefaultTaskRunner());
+  }
+
+  ~TaskEnvironmentWithWorkerThreadScheduler() override {
+    if (scheduler_) {
+      scheduler_->Shutdown();
+    }
+  }
+
+  WorkerThreadSchedulerForTest* GetThreadScheduler() {
+    return scheduler_.get();
+  }
+
+ private:
+  // Needs to be initialized immediately after |task_environment_|, specifically
+  // before |scheduler_|.
+  ScopedSaveStartTicks save_start_ticks_{NowTicks()};
+  std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
+  raw_ptr<Vector<String>> timeline_;  // Not owned.
+};
+
+class WorkerThreadSchedulerTest : public testing::Test {
+ public:
+  WorkerThreadSchedulerTest() : task_environment_(&timeline_) {
+    scheduler_ = task_environment_.GetThreadScheduler();
+
     default_task_queue_ =
         scheduler_->CreateTaskQueue(base::sequence_manager::QueueName::TEST_TQ);
     default_task_runner_ =
@@ -213,14 +235,9 @@ class WorkerThreadSchedulerTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
-  // Needs to be initialized immediately after |task_environment_|, specifically
-  // before |scheduler_|.
-  ScopedSaveStartTicks save_start_ticks_{task_environment_.NowTicks()};
-  std::unique_ptr<base::sequence_manager::SequenceManagerForTest>
-      sequence_manager_;
   Vector<String> timeline_;
-  std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
+  TaskEnvironmentWithWorkerThreadScheduler task_environment_;
+  raw_ptr<WorkerThreadSchedulerForTest> scheduler_;
   scoped_refptr<NonMainThreadTaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;

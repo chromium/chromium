@@ -8,7 +8,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/test/fake_task.h"
-#include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -16,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 
 using base::sequence_manager::TaskQueue;
 using base::sequence_manager::FakeTask;
@@ -43,20 +43,13 @@ class MainThreadMetricsHelperTest : public testing::Test {
 
   void SetUp() override {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-    auto settings = base::sequence_manager::SequenceManager::Settings::Builder()
-                        .SetPrioritySettings(CreatePrioritySettings())
-                        .Build();
-    scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
-        base::sequence_manager::SequenceManagerForTest::Create(
-            nullptr, task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMockTickClock(), std::move(settings)));
-    metrics_helper_ = &scheduler_->main_thread_only().metrics_helper;
+    metrics_helper_ = &task_environment_.GetMainThreadScheduler()
+                           ->main_thread_only()
+                           .metrics_helper;
   }
 
   void TearDown() override {
     metrics_helper_ = nullptr;
-    scheduler_->Shutdown();
-    scheduler_.reset();
   }
 
   base::TimeTicks Now() {
@@ -77,8 +70,9 @@ class MainThreadMetricsHelperTest : public testing::Test {
     FastForwardTo(end_time);
     scoped_refptr<MainThreadTaskQueue> queue;
     if (queue_type != MainThreadTaskQueue::QueueType::kDetached) {
-      queue = scheduler_->GetHelper().NewTaskQueue(
-          MainThreadTaskQueue::QueueCreationParams(queue_type));
+      queue =
+          task_environment_.GetMainThreadScheduler()->GetHelper().NewTaskQueue(
+              MainThreadTaskQueue::QueueCreationParams(queue_type));
     }
 
     FakeTask task;
@@ -87,8 +81,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
                                        FakeTaskTiming(start_time, end_time));
   }
 
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
+  blink::test::TaskEnvironmentWithMainThreadScheduler task_environment_;
   raw_ptr<MainThreadMetricsHelper> metrics_helper_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };

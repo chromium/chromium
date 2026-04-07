@@ -14,10 +14,10 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
-#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink::scheduler {
@@ -43,17 +43,15 @@ class TestObject {
 class BlinkSchedulerSingleThreadTaskRunnerTest : public testing::Test {
  public:
   BlinkSchedulerSingleThreadTaskRunnerTest()
-      : task_environment_(TaskEnvironment::TimeSource::MOCK_TIME,
-                          TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {
-    sequence_manager_ = base::sequence_manager::SequenceManagerForTest::Create(
-        nullptr, task_environment_.GetMainThreadTaskRunner(),
-        task_environment_.GetMockTickClock());
+      : task_environment_(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {
     backup_task_queue_ =
-        sequence_manager_->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
+        task_environment_.CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
     backup_task_runner_ = backup_task_queue_->CreateTaskRunner(
         static_cast<int>(TaskType::kInternalTest));
     test_task_queue_ =
-        sequence_manager_->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
+        task_environment_.CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
     test_task_runner_ = test_task_queue_->CreateTaskRunner(
         static_cast<int>(TaskType::kInternalTest));
   }
@@ -67,7 +65,6 @@ class BlinkSchedulerSingleThreadTaskRunnerTest : public testing::Test {
   void TearDown() override {
     ShutDownTestTaskQueue();
     ShutDownBackupTaskQueue();
-    sequence_manager_.reset();
   }
 
  protected:
@@ -93,12 +90,9 @@ class BlinkSchedulerSingleThreadTaskRunnerTest : public testing::Test {
     backup_task_queue_.reset();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  blink::test::TaskEnvironmentWithPrioritySettings task_environment_;
 
  private:
-  std::unique_ptr<base::sequence_manager::SequenceManagerForTest>
-      sequence_manager_;
-
   base::sequence_manager::TaskQueue::Handle backup_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> backup_task_runner_;
 

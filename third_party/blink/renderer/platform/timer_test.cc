@@ -37,7 +37,7 @@ class TimerTest : public testing::Test {
   TimerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_refptr<MainThreadTaskQueue> task_queue =
-        task_environment_.main_thread_scheduler()->NewTaskQueue(
+        task_environment_.GetMainThreadScheduler()->NewTaskQueue(
             MainThreadTaskQueue::QueueCreationParams(
                 MainThreadTaskQueue::QueueType::kTest));
     task_runner_ = task_queue->CreateTaskRunner(TaskType::kInternalTest);
@@ -68,7 +68,7 @@ class TimerTest : public testing::Test {
   // fire.
   bool TimeTillNextDelayedTask(base::TimeDelta* time) const {
     base::LazyNow lazy_now(task_environment_.NowTicks());
-    auto* scheduler_helper = task_environment_.main_thread_scheduler()
+    auto* scheduler_helper = task_environment_.GetMainThreadScheduler()
                                  ->GetSchedulerHelperForTesting();
     scheduler_helper->ReclaimMemory();
     auto wake_up = scheduler_helper->GetNextWakeUp();
@@ -586,7 +586,7 @@ class TimerForTest : public TaskRunnerTimer<TimerFiredClass> {
 
 TEST_F(TimerTest, UserSuppliedTaskRunner) {
   scoped_refptr<MainThreadTaskQueue> task_queue(
-      task_environment_.main_thread_scheduler()
+      task_environment_.GetMainThreadScheduler()
           ->NewThrottleableTaskQueueForTest(nullptr));
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       task_queue->CreateTaskRunner(TaskType::kInternalTest);
@@ -685,7 +685,7 @@ TEST_F(TimerTest, MoveToNewTaskRunnerOneShot) {
   Vector<scoped_refptr<base::SingleThreadTaskRunner>> run_order;
 
   scoped_refptr<MainThreadTaskQueue> task_queue1(
-      task_environment_.main_thread_scheduler()
+      task_environment_.GetMainThreadScheduler()
           ->NewThrottleableTaskQueueForTest(nullptr));
   scoped_refptr<base::SingleThreadTaskRunner> task_runner1 =
       task_queue1->CreateTaskRunner(TaskType::kInternalTest);
@@ -693,7 +693,7 @@ TEST_F(TimerTest, MoveToNewTaskRunnerOneShot) {
   task_queue1->AddTaskObserver(&task_observer1);
 
   scoped_refptr<MainThreadTaskQueue> task_queue2(
-      task_environment_.main_thread_scheduler()
+      task_environment_.GetMainThreadScheduler()
           ->NewThrottleableTaskQueueForTest(nullptr));
   scoped_refptr<base::SingleThreadTaskRunner> task_runner2 =
       task_queue2->CreateTaskRunner(TaskType::kInternalTest);
@@ -724,7 +724,7 @@ TEST_F(TimerTest, MoveToNewTaskRunnerRepeating) {
   Vector<scoped_refptr<base::SingleThreadTaskRunner>> run_order;
 
   scoped_refptr<MainThreadTaskQueue> task_queue1(
-      task_environment_.main_thread_scheduler()
+      task_environment_.GetMainThreadScheduler()
           ->NewThrottleableTaskQueueForTest(nullptr));
   scoped_refptr<base::SingleThreadTaskRunner> task_runner1 =
       task_queue1->CreateTaskRunner(TaskType::kInternalTest);
@@ -732,7 +732,7 @@ TEST_F(TimerTest, MoveToNewTaskRunnerRepeating) {
   task_queue1->AddTaskObserver(&task_observer1);
 
   scoped_refptr<MainThreadTaskQueue> task_queue2(
-      task_environment_.main_thread_scheduler()
+      task_environment_.GetMainThreadScheduler()
           ->NewThrottleableTaskQueueForTest(nullptr));
   scoped_refptr<base::SingleThreadTaskRunner> task_runner2 =
       task_queue2->CreateTaskRunner(TaskType::kInternalTest);
@@ -767,13 +767,13 @@ TEST_F(TimerTest, MoveToNewTaskRunnerRepeating) {
 // runner it isn't activated.
 TEST_F(TimerTest, MoveToNewTaskRunnerWithoutTasks) {
   scoped_refptr<MainThreadTaskQueue> task_queue1(
-      task_environment_.main_thread_scheduler()
+      task_environment_.GetMainThreadScheduler()
           ->NewThrottleableTaskQueueForTest(nullptr));
   scoped_refptr<base::SingleThreadTaskRunner> task_runner1 =
       task_queue1->CreateTaskRunner(TaskType::kInternalTest);
 
   scoped_refptr<MainThreadTaskQueue> task_queue2(
-      task_environment_.main_thread_scheduler()
+      task_environment_.GetMainThreadScheduler()
           ->NewThrottleableTaskQueueForTest(nullptr));
   scoped_refptr<base::SingleThreadTaskRunner> task_runner2 =
       task_queue2->CreateTaskRunner(TaskType::kInternalTest);

@@ -19,14 +19,11 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/task/common/task_annotator.h"
-#include "base/task/sequence_manager/test/sequence_manager_for_test.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,6 +43,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 #include "third_party/blink/renderer/platform/scheduler/test/web_scheduling_test_helper.h"
 
 using base::sequence_manager::TaskQueue;
@@ -242,6 +240,19 @@ MATCHER(BlockingDetailsIsEmpty, "BlockingDetails is empty.") {
       arg.sticky_features_and_js_locations->details_list.empty();
   return non_sticky_vector_empty && sticky_vector_empty;
 }
+
+class MockMainThreadScheduler : public MainThreadSchedulerImpl {
+ public:
+  explicit MockMainThreadScheduler(
+      base::sequence_manager::SequenceManager* manager)
+      : MainThreadSchedulerImpl(manager) {}
+
+  MOCK_METHOD(void, OnMainFramePaint, ());
+};
+
+using TaskEnvironmentWithMockMainThreadScheduler =
+    test::TaskEnvironmentWithMainThreadSchedulerBase<MockMainThreadScheduler>;
+
 class FrameSchedulerImplTest : public testing::Test {
  public:
   FrameSchedulerImplTest()
@@ -272,16 +283,11 @@ class FrameSchedulerImplTest : public testing::Test {
   ~FrameSchedulerImplTest() override = default;
 
   void SetUp() override {
-    scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
-        base::sequence_manager::SequenceManagerForTest::Create(
-            nullptr, task_environment_.GetMainThreadTaskRunner(),
-            task_environment_.GetMockTickClock(),
-            base::sequence_manager::SequenceManager::Settings::Builder()
-                .SetPrioritySettings(CreatePrioritySettings())
-                .Build()));
-    agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
+    agent_group_scheduler_ =
+        task_environment_.GetMainThreadScheduler()->CreateAgentGroupScheduler();
     page_scheduler_ =
-        CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
+        CreatePageScheduler(nullptr, task_environment_.GetMainThreadScheduler(),
+                            *agent_group_scheduler_);
     frame_scheduler_delegate_ = std::make_unique<
         testing::StrictMock<FrameSchedulerDelegateForTesting>>();
     frame_scheduler_ = CreateFrameScheduler(
@@ -318,8 +324,6 @@ class FrameSchedulerImplTest : public testing::Test {
     frame_scheduler_.reset();
     page_scheduler_.reset();
     agent_group_scheduler_ = nullptr;
-    scheduler_->Shutdown();
-    scheduler_.reset();
     frame_scheduler_delegate_.reset();
   }
 
@@ -607,8 +611,7 @@ class FrameSchedulerImplTest : public testing::Test {
 
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::ScopedFeatureList feature_list_;
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
+  TaskEnvironmentWithMockMainThreadScheduler task_environment_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
   std::unique_ptr<PageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_;
@@ -694,8 +697,10 @@ class FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase
   using Super = FrameSchedulerImplTest;
 
   FrameSchedulerImplTestWithIntensiveWakeUpThrottlingBase()
-      : FrameSchedulerImplTest({features::kIntensiveWakeUpThrottling},
-                               {features::kStopInBackground}) {}
+      : FrameSchedulerImplTest(
+            std::vector<base::test::FeatureRef>{
+                features::kIntensiveWakeUpThrottling},
+            std::vector<base::test::FeatureRef>{features::kStopInBackground}) {}
 
   void SetUp() override {
     Super::SetUp();
@@ -2186,81 +2191,51 @@ TEST_F(FrameSchedulerImplTest, ThrottledJSTimerTasksRunTime) {
   }
 }
 
-namespace {
-class MockMainThreadScheduler : public MainThreadSchedulerImpl {
- public:
-  explicit MockMainThreadScheduler(
-      base::test::TaskEnvironment& task_environment)
-      : MainThreadSchedulerImpl(
-            base::sequence_manager::SequenceManagerForTest::Create(
-                nullptr,
-                task_environment.GetMainThreadTaskRunner(),
-                task_environment.GetMockTickClock(),
-                base::sequence_manager::SequenceManager::Settings::Builder()
-                    .SetPrioritySettings(CreatePrioritySettings())
-                    .Build())) {}
-
-  MOCK_METHOD(void, OnMainFramePaint, ());
-};
-}  // namespace
-
 TEST_F(FrameSchedulerImplTest, ReportFMPAndFCPForMainFrames) {
-  MockMainThreadScheduler mock_main_thread_scheduler{task_environment_};
-  AgentGroupScheduler* agent_group_scheduler =
-      mock_main_thread_scheduler.CreateAgentGroupScheduler();
-  std::unique_ptr<PageSchedulerImpl> page_scheduler = CreatePageScheduler(
-      nullptr, &mock_main_thread_scheduler, *agent_group_scheduler);
-
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler.get(), nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kMainFrame);
 
-  EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(2);
+  EXPECT_CALL(*task_environment_.GetMainThreadScheduler(), OnMainFramePaint)
+      .Times(2);
 
   main_frame_scheduler->OnFirstMeaningfulPaint();
   main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
 
   main_frame_scheduler = nullptr;
-  page_scheduler = nullptr;
-  agent_group_scheduler = nullptr;
-  mock_main_thread_scheduler.Shutdown();
 }
 
 TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
-  MockMainThreadScheduler mock_main_thread_scheduler{task_environment_};
-  AgentGroupScheduler* agent_group_scheduler =
-      mock_main_thread_scheduler.CreateAgentGroupScheduler();
-  std::unique_ptr<PageSchedulerImpl> page_scheduler = CreatePageScheduler(
-      nullptr, &mock_main_thread_scheduler, *agent_group_scheduler);
-
   // Test for direct subframes.
   {
     std::unique_ptr<FrameSchedulerImpl> subframe_scheduler =
-        CreateFrameScheduler(page_scheduler.get(), nullptr,
+        CreateFrameScheduler(page_scheduler_.get(), nullptr,
                              /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kSubframe);
 
-    EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(0);
+    EXPECT_CALL(*task_environment_.GetMainThreadScheduler(), OnMainFramePaint)
+        .Times(0);
 
     subframe_scheduler->OnFirstMeaningfulPaint();
+
+    subframe_scheduler = nullptr;
   }
 
   // Now test for embedded main frames.
   {
     std::unique_ptr<FrameSchedulerImpl> subframe_scheduler =
-        CreateFrameScheduler(page_scheduler.get(), nullptr,
+        CreateFrameScheduler(page_scheduler_.get(), nullptr,
                              /*is_in_embedded_frame_tree=*/true,
                              FrameScheduler::FrameType::kMainFrame);
 
-    EXPECT_CALL(mock_main_thread_scheduler, OnMainFramePaint).Times(0);
+    EXPECT_CALL(*task_environment_.GetMainThreadScheduler(), OnMainFramePaint)
+        .Times(0);
 
     subframe_scheduler->OnFirstMeaningfulPaint();
-  }
 
-  page_scheduler = nullptr;
-  agent_group_scheduler = nullptr;
-  mock_main_thread_scheduler.Shutdown();
+    subframe_scheduler = nullptr;
+  }
 }
 
 // Verify that tasks run at the expected time in a frame that is same-origin
@@ -3168,8 +3143,9 @@ class FrameSchedulerImplNoThrottlingVisibleAgentTest
     FrameSchedulerImplTest::SetUp();
 
     if (IsOtherFrameOnDifferentPage()) {
-      other_page_scheduler_ = CreatePageScheduler(nullptr, scheduler_.get(),
-                                                  *agent_group_scheduler_);
+      other_page_scheduler_ = CreatePageScheduler(
+          nullptr, task_environment_.GetMainThreadScheduler(),
+          *agent_group_scheduler_);
       EXPECT_TRUE(other_page_scheduler_->IsPageVisible());
     }
 

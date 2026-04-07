@@ -15,6 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -53,16 +54,8 @@ class SchedulerHelperTest : public testing::Test {
       : task_environment_(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {
-    auto settings = base::sequence_manager::SequenceManager::Settings::Builder()
-                        .SetPrioritySettings(CreatePrioritySettings())
-                        .Build();
-    sequence_manager_ = base::sequence_manager::SequenceManagerForTest::Create(
-        nullptr, task_environment_.GetMainThreadTaskRunner(),
-        task_environment_.GetMockTickClock(), std::move(settings));
-    scheduler_helper_ = std::make_unique<NonMainThreadSchedulerHelper>(
-        sequence_manager_.get(), nullptr, TaskType::kInternalTest);
-    scheduler_helper_->AttachToCurrentThread();
-    default_task_runner_ = scheduler_helper_->DefaultTaskRunner();
+    default_task_runner_ = task_environment_.GetNonMainThreadSchedulerHelper()
+                               ->DefaultTaskRunner();
   }
 
   SchedulerHelperTest(const SchedulerHelperTest&) = delete;
@@ -86,10 +79,8 @@ class SchedulerHelperTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<base::sequence_manager::SequenceManagerForTest>
-      sequence_manager_;
-  std::unique_ptr<NonMainThreadSchedulerHelper> scheduler_helper_;
+  blink::test::TaskEnvironmentWithNonMainThreadSchedulerHelper
+      task_environment_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 };
 
@@ -121,25 +112,32 @@ TEST_F(SchedulerHelperTest, TestRentrantTask) {
 }
 
 TEST_F(SchedulerHelperTest, IsShutdown) {
-  EXPECT_FALSE(scheduler_helper_->IsShutdown());
+  EXPECT_FALSE(
+      task_environment_.GetNonMainThreadSchedulerHelper()->IsShutdown());
 
-  scheduler_helper_->Shutdown();
-  EXPECT_TRUE(scheduler_helper_->IsShutdown());
+  task_environment_.GetNonMainThreadSchedulerHelper()->Shutdown();
+  EXPECT_TRUE(
+      task_environment_.GetNonMainThreadSchedulerHelper()->IsShutdown());
 }
 
 TEST_F(SchedulerHelperTest, GetNumberOfPendingTasks) {
   Vector<String> run_order;
-  scheduler_helper_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&AppendToVectorTestTask, &run_order, "D1"));
-  scheduler_helper_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&AppendToVectorTestTask, &run_order, "D2"));
-  scheduler_helper_->ControlNonMainThreadTaskQueue()
+  task_environment_.GetNonMainThreadSchedulerHelper()
+      ->DefaultTaskRunner()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&AppendToVectorTestTask, &run_order, "D1"));
+  task_environment_.GetNonMainThreadSchedulerHelper()
+      ->DefaultTaskRunner()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&AppendToVectorTestTask, &run_order, "D2"));
+  task_environment_.GetNonMainThreadSchedulerHelper()
+      ->ControlNonMainThreadTaskQueue()
       ->GetTaskRunnerWithDefaultTaskType()
       ->PostTask(FROM_HERE,
                  base::BindOnce(&AppendToVectorTestTask, &run_order, "C1"));
-  EXPECT_EQ(3U, sequence_manager_->PendingTasksCount());
+  EXPECT_EQ(3U, task_environment_.GetPendingMainThreadTaskCount());
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(0U, sequence_manager_->PendingTasksCount());
+  EXPECT_EQ(0U, task_environment_.GetPendingMainThreadTaskCount());
 }
 
 namespace {
@@ -156,27 +154,35 @@ void NopTask() {}
 
 TEST_F(SchedulerHelperTest, ObserversNotifiedFor_DefaultTaskRunner) {
   MockTaskObserver observer;
-  scheduler_helper_->AddTaskObserver(&observer);
+  task_environment_.GetNonMainThreadSchedulerHelper()->AddTaskObserver(
+      &observer);
 
-  scheduler_helper_->DefaultTaskRunner()->PostTask(FROM_HERE,
-                                                   base::BindOnce(&NopTask));
+  task_environment_.GetNonMainThreadSchedulerHelper()
+      ->DefaultTaskRunner()
+      ->PostTask(FROM_HERE, base::BindOnce(&NopTask));
 
   EXPECT_CALL(observer, WillProcessTask(_, _)).Times(1);
   EXPECT_CALL(observer, DidProcessTask(_)).Times(1);
   task_environment_.RunUntilIdle();
+  task_environment_.GetNonMainThreadSchedulerHelper()->RemoveTaskObserver(
+      &observer);
 }
 
 TEST_F(SchedulerHelperTest, ObserversNotNotifiedFor_ControlTaskQueue) {
   MockTaskObserver observer;
-  scheduler_helper_->AddTaskObserver(&observer);
+  task_environment_.GetNonMainThreadSchedulerHelper()->AddTaskObserver(
+      &observer);
 
-  scheduler_helper_->ControlNonMainThreadTaskQueue()
+  task_environment_.GetNonMainThreadSchedulerHelper()
+      ->ControlNonMainThreadTaskQueue()
       ->GetTaskRunnerWithDefaultTaskType()
       ->PostTask(FROM_HERE, base::BindOnce(&NopTask));
 
   EXPECT_CALL(observer, WillProcessTask(_, _)).Times(0);
   EXPECT_CALL(observer, DidProcessTask(_)).Times(0);
   task_environment_.RunUntilIdle();
+  task_environment_.GetNonMainThreadSchedulerHelper()->RemoveTaskObserver(
+      &observer);
 }
 
 }  // namespace scheduler_helper_unittest

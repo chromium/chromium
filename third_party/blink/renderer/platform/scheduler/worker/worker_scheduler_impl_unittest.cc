@@ -9,11 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_tick_clock.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +22,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 #include "third_party/blink/renderer/platform/scheduler/test/web_scheduling_test_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -46,11 +44,11 @@ void AppendToVectorTestTask(Vector<String>* vector, String value) {
 void RunChainedTask(scoped_refptr<NonMainThreadTaskQueue> task_queue,
                     int count,
                     base::TimeDelta duration,
-                    scoped_refptr<base::TestMockTimeTaskRunner> environment,
+                    base::test::TaskEnvironment* environment,
                     Vector<base::TimeTicks>* tasks) {
   tasks->push_back(environment->GetMockTickClock()->NowTicks());
 
-  environment->AdvanceMockTickClock(duration);
+  environment->AdvanceClock(duration);
 
   if (count == 1)
     return;
@@ -93,6 +91,10 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
     return GetWorkerSchedulersForTesting();
   }
 
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() {
+    return DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType();
+  }
+
   using WorkerThreadScheduler::CreateBudgetPools;
   using WorkerThreadScheduler::SetCPUTimeBudgetPoolForTesting;
 };
@@ -107,23 +109,51 @@ class WorkerSchedulerForTest : public WorkerSchedulerImpl {
   using WorkerSchedulerImpl::UnpausableTaskQueue;
 };
 
+class TaskEnvironmentWithWorkerThreadScheduler
+    : public base::test::TaskEnvironment {
+ public:
+  using ValidTraits = base::test::TaskEnvironment::ValidTraits;
+
+  template <typename... Traits>
+    requires base::trait_helpers::AreValidTraits<ValidTraits, Traits...>
+  explicit TaskEnvironmentWithWorkerThreadScheduler(Traits... traits)
+      : TaskEnvironmentWithWorkerThreadScheduler(
+            CreateTaskEnvironmentWithPriorities(
+                blink::scheduler::CreatePrioritySettings(),
+                SubclassCreatesDefaultTaskRunner{},
+                traits...)) {}
+
+  ~TaskEnvironmentWithWorkerThreadScheduler() override {
+    if (scheduler_) {
+      scheduler_->Shutdown();
+    }
+  }
+
+  WorkerThreadSchedulerForTest* GetThreadScheduler() {
+    return scheduler_.get();
+  }
+
+ private:
+  explicit TaskEnvironmentWithWorkerThreadScheduler(
+      base::test::TaskEnvironment&& scoped_task_environment)
+      : base::test::TaskEnvironment(std::move(scoped_task_environment)) {
+    scheduler_ = std::make_unique<WorkerThreadSchedulerForTest>(
+        ThreadType::kTestThread, sequence_manager(), nullptr /* proxy */);
+    scheduler_->Init();
+    scheduler_->AttachToCurrentThread();
+    DeferredInitFromSubclass(scheduler_->DefaultTaskRunner());
+  }
+
+  std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
+};
+
 class WorkerSchedulerImplTest : public testing::Test {
  public:
-  WorkerSchedulerImplTest()
-      : mock_task_runner_(new base::TestMockTimeTaskRunner()),
-        sequence_manager_(
-            base::sequence_manager::SequenceManagerForTest::Create(
-                nullptr,
-                mock_task_runner_,
-                mock_task_runner_->GetMockTickClock(),
-                base::sequence_manager::SequenceManager::Settings::Builder()
-                    .SetPrioritySettings(CreatePrioritySettings())
-                    .Build())),
-        scheduler_(new WorkerThreadSchedulerForTest(ThreadType::kTestThread,
-                                                    sequence_manager_.get(),
-                                                    nullptr /* proxy */)) {
-    mock_task_runner_->AdvanceMockTickClock(base::Microseconds(5000));
-    start_time_ = mock_task_runner_->NowTicks();
+  WorkerSchedulerImplTest() {
+    auto now = base::TimeTicks::Now();
+    task_environment_.AdvanceClock(
+        now.SnappedToNextTick(base::TimeTicks(), base::Seconds(1)) - now);
+    start_time_ = task_environment_.NowTicks();
   }
 
   WorkerSchedulerImplTest(const WorkerSchedulerImplTest&) = delete;
@@ -131,8 +161,7 @@ class WorkerSchedulerImplTest : public testing::Test {
   ~WorkerSchedulerImplTest() override = default;
 
   void SetUp() override {
-    scheduler_->Init();
-    scheduler_->AttachToCurrentThread();
+    scheduler_ = task_environment_.GetThreadScheduler();
     worker_scheduler_ =
         std::make_unique<WorkerSchedulerForTest>(scheduler_.get());
   }
@@ -142,13 +171,14 @@ class WorkerSchedulerImplTest : public testing::Test {
       worker_scheduler_->Dispose();
       worker_scheduler_.reset();
     }
+    scheduler_ = nullptr;
   }
 
   const base::TickClock* GetClock() {
-    return mock_task_runner_->GetMockTickClock();
+    return task_environment_.GetMockTickClock();
   }
 
-  void RunUntilIdle() { mock_task_runner_->FastForwardUntilNoTasksRemain(); }
+  void RunUntilIdle() { task_environment_.FastForwardUntilNoTasksRemain(); }
 
   // Helper for posting a task.
   void PostTestTask(Vector<String>* run_order,
@@ -167,10 +197,10 @@ class WorkerSchedulerImplTest : public testing::Test {
   }
 
  protected:
-  scoped_refptr<base::TestMockTimeTaskRunner> mock_task_runner_;
-  std::unique_ptr<base::sequence_manager::SequenceManagerForTest>
-      sequence_manager_;
-  std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
+  TaskEnvironmentWithWorkerThreadScheduler task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+      base::test::TaskEnvironment::ThreadingMode::MAIN_THREAD_ONLY};
+  raw_ptr<WorkerThreadSchedulerForTest> scheduler_;
   std::unique_ptr<WorkerSchedulerForTest> worker_scheduler_;
   base::TimeTicks start_time_;
   base::test::ScopedFeatureList feature_list_;
@@ -198,7 +228,7 @@ TEST_F(WorkerSchedulerImplTest, TestPostTasks) {
   RunUntilIdle();
   EXPECT_TRUE(run_order.empty());
 
-  worker_scheduler_.reset();
+  worker_scheduler_ = nullptr;
 }
 
 TEST_F(WorkerSchedulerImplTest, RegisterWorkerSchedulers) {
@@ -213,7 +243,7 @@ TEST_F(WorkerSchedulerImplTest, RegisterWorkerSchedulers) {
                                             worker_scheduler2.get()));
 
   worker_scheduler_->Dispose();
-  worker_scheduler_.reset();
+  worker_scheduler_ = nullptr;
 
   EXPECT_THAT(scheduler_->worker_schedulers(),
               testing::ElementsAre(worker_scheduler2.get()));
@@ -275,16 +305,15 @@ TEST_F(WorkerSchedulerImplTest, ThrottleWorkerScheduler_RunThrottledTasks) {
       ->PostTask(FROM_HERE,
                  base::BindOnce(&RunChainedTask,
                                 worker_scheduler_->ThrottleableTaskQueue(), 5,
-                                base::TimeDelta(), mock_task_runner_,
+                                base::TimeDelta(), &task_environment_,
                                 base::Unretained(&tasks)));
 
   RunUntilIdle();
 
-  EXPECT_THAT(tasks, ElementsAre(base::TimeTicks() + base::Seconds(1),
-                                 base::TimeTicks() + base::Seconds(2),
-                                 base::TimeTicks() + base::Seconds(3),
-                                 base::TimeTicks() + base::Seconds(4),
-                                 base::TimeTicks() + base::Seconds(5)));
+  EXPECT_THAT(tasks, ElementsAre(start_time_, start_time_ + base::Seconds(1),
+                                 start_time_ + base::Seconds(2),
+                                 start_time_ + base::Seconds(3),
+                                 start_time_ + base::Seconds(4)));
 }
 
 TEST_F(WorkerSchedulerImplTest,
@@ -308,13 +337,12 @@ TEST_F(WorkerSchedulerImplTest,
       ->PostTask(FROM_HERE,
                  base::BindOnce(&RunChainedTask,
                                 worker_scheduler_->ThrottleableTaskQueue(), 5,
-                                base::Milliseconds(100), mock_task_runner_,
+                                base::Milliseconds(100), &task_environment_,
                                 base::Unretained(&tasks)));
 
   RunUntilIdle();
 
-  EXPECT_THAT(tasks, ElementsAre(base::TimeTicks() + base::Seconds(1),
-                                 start_time_ + base::Seconds(10),
+  EXPECT_THAT(tasks, ElementsAre(start_time_, start_time_ + base::Seconds(10),
                                  start_time_ + base::Seconds(20),
                                  start_time_ + base::Seconds(30),
                                  start_time_ + base::Seconds(40)));
@@ -699,7 +727,7 @@ TEST_F(WorkerSchedulerImplTest, DeleteSoonAfterDispose) {
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
   worker_scheduler_->Dispose();
-  worker_scheduler_.reset();
+  worker_scheduler_ = nullptr;
 
   // No more tasks should run after worker scheduler disposal.
   EXPECT_EQ(counter, 1);
