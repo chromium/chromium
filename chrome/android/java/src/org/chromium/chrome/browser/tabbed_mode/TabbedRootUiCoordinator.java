@@ -1179,7 +1179,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (ChromeFeatureList.sGlic.isEnabled()) {
             mActorControlCoordinator =
                     new ActorControlCoordinator(
-                            mActivity, (v) -> {}, (v) -> {}, mTabBottomSheetManager);
+                            mActivity,
+                            (v) -> {},
+                            (v) -> {},
+                            mActivityTabProvider.asObservable(),
+                            mTabBottomSheetManager);
         }
 
         mForcedSigninController =

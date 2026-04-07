@@ -151,6 +151,32 @@ public class TabBottomSheetCoordinator {
         mCoBrowseViews.attachPeekView(peekView);
     }
 
+    /**
+     * Shows the peek view and hides the expanded content.
+     *
+     * @return Whether the peek view was successfully shown.
+     */
+    boolean showPeekViewAndHideExpandedContent() {
+        if (!mCoBrowseViews.hasPeekView()) {
+            return false;
+        }
+        mMediator.onSheetStateChanged(SheetState.PEEK, mCoBrowseViews.hasPeekView());
+        return true;
+    }
+
+    /**
+     * Hides the peek view and shows the expanded content.
+     *
+     * @return Whether the peek view was successfully hidden.
+     */
+    boolean hidePeekViewAndShowExpandedContent() {
+        if (!mCoBrowseViews.hasPeekView()) {
+            return false;
+        }
+        mMediator.onSheetStateChanged(SheetState.FULL, mCoBrowseViews.hasPeekView());
+        return true;
+    }
+
     void closeBottomSheet() {
         if (!mIsShowingTabBottomSheet) {
             return;

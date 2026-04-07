@@ -205,6 +205,30 @@ public class TabBottomSheetManager implements Destroyable {
         }
     }
 
+    /**
+     * Shows the peek view from the bottom sheet.
+     *
+     * @return Whether the peek view was successfully shown.
+     */
+    public boolean showPeekView() {
+        if (mTabBottomSheetCoordinator != null) {
+            return mTabBottomSheetCoordinator.showPeekViewAndHideExpandedContent();
+        }
+        return false;
+    }
+
+    /**
+     * Hides the peek view from the bottom sheet.
+     *
+     * @return Whether the peek view was successfully hidden.
+     */
+    public boolean hidePeekView() {
+        if (mTabBottomSheetCoordinator != null) {
+            return mTabBottomSheetCoordinator.hidePeekViewAndShowExpandedContent();
+        }
+        return false;
+    }
+
     public boolean isSheetInitialized() {
         return mTabBottomSheetCoordinator != null;
     }
