@@ -8,14 +8,13 @@
 #import "ios/web/common/crw_viewport_adjustment.h"
 #import "ios/web/web_state/ui/crw_content_view.h"
 
-@protocol CRWObscuredInsetsController;
+@protocol CRWViewportController;
 
 // Wraps a web vew in a CRWContentView.
 @interface CRWWebViewContentView : CRWContentView <CRWViewportAdjustment>
 
 // The webView passed to `-initWithWebView`.
-@property(nonatomic, strong, readonly)
-    UIView<CRWObscuredInsetsController>* webView;
+@property(nonatomic, strong, readonly) UIView<CRWViewportController>* webView;
 
 // The fullscreen state of this view
 @property(nonatomic, readonly) CrFullscreenState fullscreenState;
@@ -23,7 +22,7 @@
 // Initializes the CRWWebViewContentView to display `webView` and passes state
 // of fullscreen mode. This should pass in a default value of
 // CrFullscreenState (e.g., kNotInFullScreen).
-- (instancetype)initWithWebView:(UIView<CRWObscuredInsetsController>*)webView
+- (instancetype)initWithWebView:(UIView<CRWViewportController>*)webView
                      scrollView:(UIScrollView*)scrollView
                 fullscreenState:(CrFullscreenState)fullscreenState
     NS_DESIGNATED_INITIALIZER;

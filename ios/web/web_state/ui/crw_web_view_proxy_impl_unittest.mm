@@ -28,6 +28,10 @@
   return YES;
 }
 
+- (void)setMinimumViewportInset:(UIEdgeInsets)minInset
+           maximumViewportInset:(UIEdgeInsets)maxInset {
+}
+
 @end
 
 namespace {

@@ -22,6 +22,10 @@
 // Web view's obscured insets.
 @property(nonatomic, assign) UIEdgeInsets obscuredInsets;
 
+// Sets the web view's min and max viewport insets.
+- (void)setMinimumViewportInset:(UIEdgeInsets)minInset
+           maximumViewportInset:(UIEdgeInsets)maxInset;
+
 // Adds an offset to the scrollable content's frame.
 @property(nonatomic, assign) CGPoint contentOffset;
 

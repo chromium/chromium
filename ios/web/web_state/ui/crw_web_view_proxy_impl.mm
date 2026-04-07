@@ -8,6 +8,7 @@
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/web_state/ui/crw_content_view.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
+#import "ios/web/web_state/ui/crw_web_view_content_view.h"
 
 namespace {
 
@@ -210,6 +211,11 @@ UIView* GetFirstResponderSubview(UIView* view) {
 
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
   [_contentView setObscuredInsets:obscuredInsets];
+}
+
+- (void)setMinimumViewportInset:(UIEdgeInsets)minInset
+           maximumViewportInset:(UIEdgeInsets)maxInset {
+  [_contentView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
 }
 
 @end

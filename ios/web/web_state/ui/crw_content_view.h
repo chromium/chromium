@@ -46,6 +46,11 @@ enum class CrFullscreenState {
 // supports the `obscuredContentInsets` property.
 @property(nonatomic, assign) UIEdgeInsets obscuredInsets;
 
+// Sets the minimum and maximum viewport insets. This forwards these values to
+// the underlying WKWebView.
+- (void)setMinimumViewportInset:(UIEdgeInsets)minInset
+           maximumViewportInset:(UIEdgeInsets)maxInset;
+
 @optional
 
 // Whether or not the content view should use the content inset when setting

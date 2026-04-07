@@ -9,7 +9,7 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
-#import "ios/web/common/crw_obscured_insets_controller.h"
+#import "ios/web/common/crw_viewport_controller.h"
 #import "ios/web/common/crw_web_view_resizing_type.h"
 #import "ios/web/public/web_client.h"
 
@@ -36,7 +36,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 @synthesize fullscreenState = _fullscreenState;
 @synthesize webViewResizingType = _webViewResizingType;
 
-- (instancetype)initWithWebView:(UIView<CRWObscuredInsetsController>*)webView
+- (instancetype)initWithWebView:(UIView<CRWViewportController>*)webView
                      scrollView:(UIScrollView*)scrollView
                 fullscreenState:(CrFullscreenState)fullscreenState {
   self = [super initWithFrame:CGRectZero];
@@ -129,6 +129,11 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
     [_webView setObscuredContentInsets:obscuredInsets];
   }
   _obscuredInsets = obscuredInsets;
+}
+
+- (void)setMinimumViewportInset:(UIEdgeInsets)minInset
+           maximumViewportInset:(UIEdgeInsets)maxInset {
+  [_webView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
 }
 
 - (void)setShouldUseViewContentInset:(BOOL)shouldUseViewContentInset {
