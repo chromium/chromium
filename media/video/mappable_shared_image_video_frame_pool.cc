@@ -661,6 +661,16 @@ gfx::ColorSpace GetOutputColorSpace(
   }
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SupportZeroCopyImportType {
+  kEmptyBuffer = 0,
+  kSharedMemory = 1,
+  kNativePixmapSupported = 2,
+  kNativePixmapUnsupported = 3,
+  kMaxValue = kNativePixmapUnsupported
+};
+
 }  // unnamed namespace
 
 // Creates a VideoFrame backed by native textures starting from a software
@@ -1103,11 +1113,28 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
   // Gate this on SharedImage usage as ScopedAccess now CHECKs for it.
   // TOOD(crbug.com/425634684, crbug.com/413659843): Check for webgpu support
   // from SharedImageCapabilities, once this metadata is compatible.
-  is_webgpu_compatible =
+  bool native_pixmap_supports_zero_copy =
       handle.type == gfx::NATIVE_PIXMAP &&
-      handle.native_pixmap_handle().supports_zero_copy_webgpu_import &&
-      frame_resource->shared_image->usage().Has(
-          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
+      handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
+
+  SupportZeroCopyImportType type = SupportZeroCopyImportType::kEmptyBuffer;
+  if (handle.type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+    type = SupportZeroCopyImportType::kSharedMemory;
+  } else if (handle.type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
+    if (native_pixmap_supports_zero_copy) {
+      type = SupportZeroCopyImportType::kNativePixmapSupported;
+    } else {
+      type = SupportZeroCopyImportType::kNativePixmapUnsupported;
+    }
+  }
+  // TODO(crbug.com/413659843): Verify how popular this codepath is and if we
+  // even need a SharedImage capability for it.
+  base::UmaHistogramEnumeration(
+      "Media.GPU.MappableSIVideoFrameSupportZeroCopyImport", type);
+
+  is_webgpu_compatible = native_pixmap_supports_zero_copy &&
+                         frame_resource->shared_image->usage().Has(
+                             gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
 #endif
 
   // Bind the texture and create or rebind the image. This image may be read

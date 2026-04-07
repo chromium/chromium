@@ -2261,6 +2261,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Prediction stays at Smooth after update"/>
 </enum>
 
+<enum name="SupportZeroCopyImportType">
+  <summary>
+    Corresponds to whether Zero Copy import to WebGPU is supported for
+    VideoFrames backed by Mappable SI
+  </summary>
+  <int value="0" label="EmptyBuffer"/>
+  <int value="1" label="SharedMemory"/>
+  <int value="2" label="NativePixmapSupported"/>
+  <int value="3" label="NativePixmapUnsupported"/>
+</enum>
+
 <enum name="SymphoniaDecodeStatus">
   <int value="0" label="Ok"/>
   <int value="1" label="UnexpectedEndOfStream"/>

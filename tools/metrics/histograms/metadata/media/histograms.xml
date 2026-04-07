@@ -4901,6 +4901,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.GPU.MappableSIVideoFrameSupportZeroCopyImport"
+    enum="SupportZeroCopyImportType" expires_after="2026-10-02">
+  <owner>hitawala@chromium.org</owner>
+  <owner>shared-image-team@google.com</owner>
+  <summary>
+    Records whether Zero Copy import of SharedImage backed by GpuMemoryBuffer
+    handle into WebGPU is supported. Result is an enum for support which is
+    recorded once per VideoFrame creation.
+  </summary>
+</histogram>
+
 <histogram name="Media.GPU.OutputFormatHardwareGmb" enum="OutputFormat"
     expires_after="2026-09-22">
   <owner>hitawala@chromium.org</owner>
