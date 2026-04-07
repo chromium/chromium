@@ -649,7 +649,6 @@ public class NewTabPage
                         mConstructedTimeNs,
                         FeedSwipeRefreshLayout.create(activity, R.id.toolbar_container),
                         /* overScrollDisabled= */ false,
-                        /* viewportView= */ null,
                         createActionDelegate,
                         mTabStripHeightSupplier,
                         edgeToEdgeControllerSupplier,
