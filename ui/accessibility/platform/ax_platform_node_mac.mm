@@ -7,6 +7,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_platform_node_cocoa.h"
+#include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 
 namespace {
 
@@ -145,6 +146,19 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
         }
       }
     }
+  }
+
+  if (event_type == ax::mojom::Event::kExpandedChanged) {
+    if (![objc_storage_->native_node AXWindow]) {
+      return;
+    }
+    NSString* notification =
+        [AXPlatformNodeCocoa
+            nativeNotificationForExpandedChangedWithRole:GetRole()
+                                             isExpanded:GetData().HasState(
+                                                 ax::mojom::State::kExpanded)];
+    NSAccessibilityPostNotification(objc_storage_->native_node, notification);
+    return;
   }
 
   // Otherwise, use mappings between ax::mojom::Event and NSAccessibility

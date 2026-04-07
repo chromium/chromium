@@ -69,6 +69,16 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // Maps AX events to native notifications. Returns nil if not found.
 + (NSString*)nativeNotificationFromAXEvent:(ax::mojom::Event)event;
 
+// Returns the native notification for an expanded-state change, taking the
+// node's role into account. Row/TreeItem roles produce AXRowExpanded or
+// AXRowCollapsed; other roles produce AXExpandedChanged. This matches the
+// notifications fired by BrowserAccessibilityManagerMac for web content.
+// TODO(crbug.com/40672441): This is Views-only. Remove once ViewsAX is
+// enabled-by-default and stable, in favor of the identical logic in
+// BrowserAccessibilityManagerMac::FireGeneratedEvent.
++ (NSString*)nativeNotificationForExpandedChangedWithRole:(ax::mojom::Role)role
+                                               isExpanded:(BOOL)isExpanded;
+
 - (instancetype)initWithNode:(ui::AXPlatformNodeBase*)node;
 - (void)detachAndNotifyDestroyed:(BOOL)shouldNotify;
 

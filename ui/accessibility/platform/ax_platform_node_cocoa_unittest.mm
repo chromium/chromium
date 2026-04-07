@@ -1612,4 +1612,43 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityScrollbars) {
   EXPECT_NSEQ([scrollbar accessibilityLabel], @"Vertical scrollbar");
 }
 
+TEST_P(AXPlatformNodeCocoaTest, ExpandedChangedNotificationForTreeItem) {
+  EXPECT_NSEQ(
+      [AXPlatformNodeCocoa
+          nativeNotificationForExpandedChangedWithRole:ax::mojom::Role::kTreeItem
+                                           isExpanded:YES],
+      NSAccessibilityRowExpandedNotification);
+  EXPECT_NSEQ(
+      [AXPlatformNodeCocoa
+          nativeNotificationForExpandedChangedWithRole:ax::mojom::Role::kTreeItem
+                                           isExpanded:NO],
+      NSAccessibilityRowCollapsedNotification);
+}
+
+TEST_P(AXPlatformNodeCocoaTest, ExpandedChangedNotificationForRow) {
+  EXPECT_NSEQ(
+      [AXPlatformNodeCocoa
+          nativeNotificationForExpandedChangedWithRole:ax::mojom::Role::kRow
+                                           isExpanded:YES],
+      NSAccessibilityRowExpandedNotification);
+  EXPECT_NSEQ(
+      [AXPlatformNodeCocoa
+          nativeNotificationForExpandedChangedWithRole:ax::mojom::Role::kRow
+                                           isExpanded:NO],
+      NSAccessibilityRowCollapsedNotification);
+}
+
+TEST_P(AXPlatformNodeCocoaTest, ExpandedChangedNotificationForGroup) {
+  EXPECT_NSEQ(
+      [AXPlatformNodeCocoa
+          nativeNotificationForExpandedChangedWithRole:ax::mojom::Role::kGroup
+                                           isExpanded:YES],
+      @"AXExpandedChanged");
+  EXPECT_NSEQ(
+      [AXPlatformNodeCocoa
+          nativeNotificationForExpandedChangedWithRole:ax::mojom::Role::kGroup
+                                           isExpanded:NO],
+      @"AXExpandedChanged");
+}
+
 }  // namespace ui

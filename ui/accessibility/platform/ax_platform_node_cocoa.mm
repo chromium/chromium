@@ -24,6 +24,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
+#include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/ax_private_roles_mac.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/child_iterator.h"
@@ -1012,6 +1013,16 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   static const base::NoDestructor<EventMap> event_map(BuildEventMap());
   EventMap::const_iterator it = event_map->find(event);
   return it != event_map->end() ? it->second : nil;
+}
+
++ (NSString*)nativeNotificationForExpandedChangedWithRole:(ax::mojom::Role)role
+                                               isExpanded:(BOOL)isExpanded {
+  if (role == ax::mojom::Role::kRow ||
+      role == ax::mojom::Role::kTreeItem) {
+    return isExpanded ? NSAccessibilityRowExpandedNotification
+                      : NSAccessibilityRowCollapsedNotification;
+  }
+  return ui::NSAccessibilityExpandedChanged;
 }
 
 - (instancetype)initWithNode:(ui::AXPlatformNodeBase*)node {
