@@ -182,7 +182,13 @@ auto HasHeader(std::string_view name, ValueMatcher value_matcher) {
   return Contains(Pair(StrCaseEq(name), value_matcher));
 }
 
-TEST_P(PerformNetworkContextPrefetchRecorderTest, Script) {
+// TODO(crbug.com/500215556): Re-enable this test on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Script DISABLED_Script
+#else
+#define MAYBE_Script Script
+#endif
+TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_Script) {
   DoPrefetch(RequestDestination::kScript);
   const auto request = GetRequest();
   EXPECT_EQ(request.relative_url, "/nocontent");
