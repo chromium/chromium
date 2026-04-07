@@ -58,6 +58,8 @@ source_set("core") {
 source_set("test_support") {
   testonly = true
   sources = [ "multistep_filter_service_test_api.h" ]
+  public_deps =
+      [ "//components/multistep_filter/core/annotation_index:test_support" ]
   deps = [
     ":core",
     "//base",

@@ -34,6 +34,10 @@ source_set("test_support") {
   testonly = true
   sources = [
     "annotation_index_client_impl_test_api.h",
+    "annotation_index_test_utils.cc",
+    "annotation_index_test_utils.h",
+    "fake_annotation_index_server.cc",
+    "fake_annotation_index_server.h",
     "mock_annotation_index_client.cc",
     "mock_annotation_index_client.h",
   ]
@@ -46,6 +50,8 @@ source_set("test_support") {
 
   public_deps = [
     ":annotation_index",
+    "//components/multistep_filter/core/annotation_index/proto",
+    "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
