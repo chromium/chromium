@@ -22,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS), "For Enabled extensions only");
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace supervised_user {
 namespace {

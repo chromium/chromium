@@ -224,7 +224,7 @@ void SupervisedUserPrefStore::RecreatePreferences() {
       }
     }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     {
       bool permissions_disallowed =
           family_link_settings_->FindBool(supervised_user::kGeolocationDisabled)
@@ -232,7 +232,7 @@ void SupervisedUserPrefStore::RecreatePreferences() {
       prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
                          !permissions_disallowed);
     }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
     // Apparently two parental controls systems are enabled at the same time.
     // This is considered a conflict which in versions before

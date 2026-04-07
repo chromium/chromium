@@ -161,7 +161,7 @@ TEST_P(SupervisedUserPrefStoreTest, ConfigureSettings) {
               false);
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Permissions requests default to allowed, to match server-side behavior.
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kSupervisedUserExtensionsMayRequestPermissions),
@@ -186,7 +186,7 @@ TEST_P(SupervisedUserPrefStoreTest, ConfigureSettings) {
   ASSERT_TRUE(manual_hosts);
   EXPECT_TRUE(*manual_hosts == hosts);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // The custodian can allow sites and apps to request permissions.
   // Currently tested indirectly by enabling geolocation requests.
   fixture.changed_prefs()->clear();

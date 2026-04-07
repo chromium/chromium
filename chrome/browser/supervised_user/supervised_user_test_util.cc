@@ -93,14 +93,14 @@ void SetSupervisedUserGeolocationEnabledContentSetting(Profile* profile,
               ->delegate()
               .ToPermissionSetting(enabled ? CONTENT_SETTING_ALLOW
                                            : CONTENT_SETTING_BLOCK));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (profile->GetPrefs()->GetBoolean(
           prefs::kSupervisedUserExtensionsMayRequestPermissions) != enabled) {
     // Permissions preference is also set to the same value. See
     // SupervisedUsePrefStore.
     SetSupervisedUserExtensionsMayRequestPermissionsPref(profile, enabled);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 AccountInfo PopulateAccountInfoWithName(const AccountInfo& info,

@@ -144,6 +144,11 @@ std::optional<ToggleState> GetPermissionsToggleState(
   // Note: Do not check that the ProviderType is `kSupervisedProvider`. This
   // is true only when the parent has disabled the "Permissions" FL switch.
 
+  // TODO(crbug.com/494643383): Figure out what to do with this block on desktop
+  // Android. Enabling it via ENABLE_EXTENSIONS_CORE causes the DCHECK to fire
+  // because geolocation is false and the permission is also false. These are
+  // the same values as non-desktop Android, so we can clearly tolerate both
+  // being false, but it's strange that they don't match Win/Mac/Linux.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   bool block_geolocation = is_geolocation_blocked_by_default;
   bool permissions_allowed_pref = pref_service.GetBoolean(
@@ -158,17 +163,17 @@ std::optional<ToggleState> GetPermissionsToggleState(
 #endif  // BUILDFLAG(IS_IOS)
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 bool SupervisedUserCanSkipExtensionParentApprovals(
     const PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kSkipParentApprovalToInstallExtensions);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 std::optional<ToggleState> GetExtensionToggleState(
     std::optional<SupervisedUserLogRecord::Segment> supervision_status,
     const PrefService& pref_service) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (IsUnsupervisedStatus(supervision_status)) {
     return std::nullopt;
   }

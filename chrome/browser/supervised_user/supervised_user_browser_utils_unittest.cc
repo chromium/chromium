@@ -82,7 +82,7 @@ TEST_F(SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature,
   EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
 #else
   EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 TEST_F(SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature,
