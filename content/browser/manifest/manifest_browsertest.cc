@@ -20,8 +20,8 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/manifest/manifest_manager_host.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_manifest_manager.h"
@@ -37,20 +37,19 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "mojo/public/cpp/test_support/test_utils.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
-#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
-#include "mojo/public/cpp/test_support/test_utils.h"
 
 namespace content {
 namespace {
@@ -1214,6 +1213,91 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
   EXPECT_THAT(
       bad_message_observer.WaitForBadMessage(),
       ::testing::StartsWith("Manifest shortcut urls must be within scope."));
+}
+
+// Local waiter to wait for WebContentsObserver::DidUpdateWebManifestURL.
+class ManifestUrlUpdateWaiter : public content::WebContentsObserver {
+ public:
+  ManifestUrlUpdateWaiter(content::WebContents* web_contents,
+                          const GURL& manifest_url)
+      : content::WebContentsObserver(web_contents),
+        expected_manifest_url_(manifest_url) {}
+
+  void DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
+                               const GURL& manifest_url) override {
+    if (manifest_url == expected_manifest_url_) {
+      run_loop_.Quit();
+    }
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  GURL expected_manifest_url_;
+  // A nestable RunLoop is needed for async mojo communications for the
+  // ManifestManager to complete running.
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ManifestUrlChangedDuringFetch) {
+  std::unique_ptr<net::EmbeddedTestServer> custom_server =
+      std::make_unique<net::EmbeddedTestServer>();
+
+  custom_server->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+
+  // Perform a request handler that changes the manifest to point a new one, and
+  // prevents the older one from returning a response.
+  custom_server->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/manifest/manifest_old.json") {
+          GURL new_manifest_url =
+              custom_server->GetURL("/manifest/manifest_new.json");
+          content::GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  [](content::WebContents* web_contents,
+                     const GURL& new_manifest_url) {
+                    ManifestUrlUpdateWaiter waiter(web_contents,
+                                                   new_manifest_url);
+                    EXPECT_TRUE(
+                        ExecJs(web_contents,
+                               "setManifestTo('/manifest/manifest_new.json')"));
+                    waiter.Wait();
+                  },
+                  shell()->web_contents(), new_manifest_url));
+          // Return a delayed response set to the timeout duration of
+          // browser tests, so that we give ample time for the new manifest to
+          // be loaded.
+          auto delayed_manifest_response =
+              std::make_unique<net::test_server::DelayedHttpResponse>(
+                  base::Seconds(30));
+          delayed_manifest_response->set_code(net::HTTP_OK);
+          delayed_manifest_response->set_content(
+              "{'name': 'Manifest_Old', 'start_url': '/', 'scope': '/', 'id': "
+              "'/'}");
+          return delayed_manifest_response;
+        }
+        return nullptr;
+      }));
+
+  ASSERT_TRUE(custom_server->Start());
+  GURL test_url = custom_server->GetURL("/manifest/manifest_index.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr,
+                                        blink::mojom::RequestManifestErrorPtr>>
+      manifest_future;
+  PageManifestManager* manifest_manager = PageManifestManager::GetOrCreate(
+      shell()->web_contents()->GetPrimaryPage());
+  auto subscription = manifest_manager->GetSpecifiedManifest(
+      base::BindOnce(&CopyMojoExpectedConstRef)
+          .Then(manifest_future.GetCallback()));
+
+  ASSERT_TRUE(manifest_future.Wait());
+  ASSERT_TRUE(manifest_future.Get().has_value());
+  blink::mojom::Manifest& manifest = *manifest_future.Get().value();
+  EXPECT_EQ(u"Manifest_New", manifest.name);
 }
 
 }  // namespace

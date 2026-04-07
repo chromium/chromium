@@ -118,6 +118,7 @@ class MODULES_EXPORT ManifestManager
 
   void FetchManifest();
   void OnManifestFetchComplete(const KURL& document_url,
+                               const KURL& current_fetching_manifest_url,
                                const ResourceResponse& response,
                                const String& data);
   void ParseManifestFromPage(const KURL& document_url,
@@ -140,6 +141,12 @@ class MODULES_EXPORT ManifestManager
   std::optional<Result> cached_result_;
 
   Vector<InternalRequestManifestCallback> pending_callbacks_;
+
+  // The manifest url that is currently being fetched. This is used to filter
+  // out stale manifest fetches if the manifest url on the page has changed
+  // dynamically, and also allows starting new fetches when the manifest url
+  // has changed.
+  std::optional<KURL> current_fetching_manifest_url_;
 
   HeapMojoReceiverSet<mojom::blink::ManifestManager, ManifestManager>
       receivers_;

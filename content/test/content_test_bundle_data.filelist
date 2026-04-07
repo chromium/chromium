@@ -8155,6 +8155,9 @@ data/manifest/icon-manifest.html
 data/manifest/icon-manifest.json
 data/manifest/manifest-cors.json
 data/manifest/manifest-cors.json.mock-http-headers
+data/manifest/manifest_index.html
+data/manifest/manifest_new.json
+data/manifest/manifest_old.json
 data/manifest/no-manifest.html
 data/manifest/parse-error-manifest.html
 data/manifest/parse-error-manifest.json

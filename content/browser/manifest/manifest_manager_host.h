@@ -18,6 +18,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_observer.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -88,6 +89,7 @@ class CONTENT_EXPORT ManifestManagerHost
                                  const GURL& url,
                                  blink::mojom::ManifestPtr manifest);
   void OnRequestManifestAndErrors(
+      const GURL& manifest_url_for_fetch,
       base::expected<blink::mojom::ManifestPtr,
                      blink::mojom::RequestManifestErrorPtr>);
 
@@ -109,6 +111,10 @@ class CONTENT_EXPORT ManifestManagerHost
 
   std::optional<blink::mojom::ManifestPtr> last_manifest_success_result_ =
       std::nullopt;
+
+  // Keep track of the manifest url that is currently being fetched, to prevent
+  // duplicate manifest fetches being triggered if one is already in progress.
+  std::optional<GURL> current_fetching_manifest_url_;
 
   ManifestCallbackList developer_manifest_callback_list_;
   AllManifestsCallbackList all_manifests_callback_list_;

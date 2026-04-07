@@ -174,11 +174,6 @@ void ManifestManager::RequestManifestImpl(
   }
 
   pending_callbacks_.push_back(std::move(callback));
-
-  // Just wait for the running call to be done if there are other callbacks.
-  if (pending_callbacks_.size() > 1)
-    return;
-
   FetchManifest();
 }
 
@@ -206,16 +201,33 @@ void ManifestManager::FetchManifest() {
     return;
   }
 
+  // Do not trigger a new fetch if an existing fetch is happening for the same
+  // `manifest_url`.
+  if (current_fetching_manifest_url_ == manifest_url) {
+    return;
+  }
+
+  current_fetching_manifest_url_ = manifest_url;
   ResourceFetcher* document_fetcher = window.document()->Fetcher();
   fetcher_ = MakeGarbageCollected<ManifestFetcher>(manifest_url);
   fetcher_->Start(window, ManifestUseCredentials(), document_fetcher,
                   BindOnce(&ManifestManager::OnManifestFetchComplete,
-                           WrapWeakPersistent(this), window.Url()));
+                           WrapWeakPersistent(this), window.Url(),
+                           *current_fetching_manifest_url_));
 }
 
-void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
-                                              const ResourceResponse& response,
-                                              const String& data) {
+void ManifestManager::OnManifestFetchComplete(
+    const KURL& document_url,
+    const KURL& manifest_url_for_fetch,
+    const ResourceResponse& response,
+    const String& data) {
+  // Exit early if the manifest fetch is happening for a request belonging to a
+  // stale manifest url.
+  if (current_fetching_manifest_url_ != manifest_url_for_fetch) {
+    return;
+  }
+
+  current_fetching_manifest_url_.reset();
   fetcher_ = nullptr;
   if (response.IsNull() && data.empty()) {
     // The only time we don't produce the default manifest is when there is a

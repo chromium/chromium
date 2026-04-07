@@ -244,9 +244,20 @@ void ManifestManagerHost::OnRequestManifestResponse(
 }
 
 void ManifestManagerHost::OnRequestManifestAndErrors(
+    const GURL& manifest_url_for_fetch,
     base::expected<blink::mojom::ManifestPtr,
                    blink::mojom::RequestManifestErrorPtr> result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Reset the information for the current manifest url being fetched if it
+  // matches the request that was sent to the ManifestManager, and only process
+  // requests for the latest manifest url on the page.
+  // This helps filter out stale manifest fetches if the manifest url on the
+  // page has changed dynamically.
+  if (current_fetching_manifest_url_ != manifest_url_for_fetch) {
+    return;
+  }
+
+  current_fetching_manifest_url_.reset();
   if (result.has_value()) {
     result = ValidateAndMaybeOverrideManifest(
         blink::mojom::ManifestRequestResult::kSuccess, std::move(*result));
@@ -294,14 +305,18 @@ void ManifestManagerHost::ManifestUrlChanged(const GURL& manifest_url) {
 }
 
 void ManifestManagerHost::MaybeFetchManifestForSubscriptions() {
+  bool is_manifest_fetch_in_progress =
+      current_fetching_manifest_url_.has_value() &&
+      current_fetching_manifest_url_ == page().GetManifestUrl();
   if (!page().GetManifestUrl().has_value() ||
-      !page().GetManifestUrl()->is_valid()) {
+      !page().GetManifestUrl()->is_valid() || is_manifest_fetch_in_progress) {
     return;
   }
+  current_fetching_manifest_url_ = page().GetManifestUrl();
   auto& manifest_manager = GetManifestManager();
-  manifest_manager.RequestManifestAndErrors(
-      base::BindOnce(&ManifestManagerHost::OnRequestManifestAndErrors,
-                     weak_factory_.GetWeakPtr()));
+  manifest_manager.RequestManifestAndErrors(base::BindOnce(
+      &ManifestManagerHost::OnRequestManifestAndErrors,
+      weak_factory_.GetWeakPtr(), *current_fetching_manifest_url_));
 }
 
 void ManifestManagerHost::NotifyOnceSubscriptionsIfSuccessCached() {
