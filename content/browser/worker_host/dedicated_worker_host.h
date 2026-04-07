@@ -113,7 +113,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       RenderProcessHost* worker_process_host,
       DedicatedWorkerCreator creator,
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
-      const blink::StorageKey& creator_storage_key,
+      const url::Origin& creator_origin,
       const blink::StorageKey& worker_storage_key,
       const url::Origin& renderer_origin,
       const net::IsolationInfo& isolation_info,
@@ -367,17 +367,17 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // The origin of the frame or dedicated worker that starts this worker.
   const url::Origin creator_origin_;
 
+  // The storage key of this worker. This is used for storage partitioning and
+  // for retrieving the origin of this worker
+  // (https://html.spec.whatwg.org/C/#concept-settings-object-origin).
+  const blink::StorageKey worker_storage_key_;
+
   // The origin used by this dedicated worker on the renderer side. This will
   // almost always be the same as `worker_storage_key_`'s origin, except in the
   // case of data: URL workers when the feature is disabled.
   // TODO(crbug.com/40051700): Remove this when the feature is enabled by
   // default.
   const url::Origin renderer_origin_;
-
-  // The storage key of this worker. This is used for storage partitioning and
-  // for retrieving the origin of this worker
-  // (https://html.spec.whatwg.org/C/#concept-settings-object-origin).
-  const blink::StorageKey worker_storage_key_;
 
   // The IsolationInfo associated with this worker. Same as that of the
   // frame or the worker that created this worker.

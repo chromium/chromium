@@ -133,8 +133,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
 
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_,
-      ancestor_render_frame_host_id_, creator_storage_key_, worker_storage_key,
-      renderer_origin, isolation_info_,
+      ancestor_render_frame_host_id_, creator_storage_key_.origin(),
+      worker_storage_key, renderer_origin, isolation_info_,
       std::move(creator_client_security_state_), creator_policies_,
       std::move(creator_coep_reporter_), creator_network_restrictions_id_,
       pending_remote_host.InitWithNewPipeAndPassReceiver(),
