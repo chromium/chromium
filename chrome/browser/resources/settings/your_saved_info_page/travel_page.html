@@ -40,7 +40,9 @@
   <div class="card">
     <settings-autofill-ai-entries-list
         list-title="$i18n{travelCardTitle}"
+        page-name="Travel"
         allowed-entity-types="[[getAllowedEntityTypes_()]]"
+        metric-entity-types="[[getMetricEntityTypes_()]]"
         allow-editing-pref="[[
             prefs.autofill.autofill_ai.travel_entities_enabled]]"
         prefs="{{prefs}}">

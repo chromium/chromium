@@ -40,6 +40,8 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
@@ -120,6 +122,16 @@ export class SettingsAutofillAiEntriesListElement extends
 
       listTitle: {
         type: String,
+      },
+
+      pageName: {
+        type: String,
+        value: '',
+      },
+
+      metricEntityTypes: {
+        type: Object,
+        value: null,
       },
 
       /**
@@ -229,6 +241,8 @@ export class SettingsAutofillAiEntriesListElement extends
   declare ineligibleUser: boolean;
   declare allowedEntityTypes: Set<EntityTypeName>|null;
   declare listTitle: string;
+  declare pageName: string;
+  declare metricEntityTypes: Record<EntityTypeName, string>|null;
   declare allowEditingPref: chrome.settingsPrivate.PrefObject<boolean>|null;
   declare private allowEditing_: boolean;
   declare private completeEntityTypesList_: EntityType[];
@@ -245,6 +259,8 @@ export class SettingsAutofillAiEntriesListElement extends
       boolean;
 
   private activeEntityInstanceGuid_: string|null = null;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
   private entityDataManager_: EntityDataManagerProxy =
@@ -342,6 +358,13 @@ export class SettingsAutofillAiEntriesListElement extends
             {sensitivity: 'base'});
   }
 
+  private getMetricEntityTypeString_(type: EntityTypeName): string {
+    assert(this.metricEntityTypes);
+    const metricString = this.metricEntityTypes[type];
+    assert(metricString);
+    return metricString;
+  }
+
   /**
    * Handles tapping on the "Add" entity instance button.
    */
@@ -356,6 +379,12 @@ export class SettingsAutofillAiEntriesListElement extends
 
   private onAddEntityInstanceFromDropdownClick_(e: DomRepeatEvent<EntityType>) {
     e.preventDefault();
+    if (this.pageName) {
+      this.metricsBrowserProxy_.recordAction(
+          `Settings.YourSavedInfo.${this.pageName}.Add.${
+              this.getMetricEntityTypeString_(
+                  e.model.item.typeName as EntityTypeName)}`);
+    }
     // Create a new entity instance with no attribute instances and guid. A guid
     // will be assigned after saving, on the C++ side.
     this.activeEntityInstance_ = {
@@ -385,6 +414,16 @@ export class SettingsAutofillAiEntriesListElement extends
   private async onMenuEditEntityInstanceClick_(e: Event) {
     e.preventDefault();
 
+    const instanceWithLabels = this.entityInstances_.find(
+        instance => instance.guid === this.activeEntityInstanceGuid_);
+
+    if (this.pageName && instanceWithLabels) {
+      this.metricsBrowserProxy_.recordAction(
+          `Settings.YourSavedInfo.${this.pageName}.Edit.${
+              this.getMetricEntityTypeString_(
+                  instanceWithLabels.type.typeName as EntityTypeName)}`);
+    }
+
     this.activeEntityInstance_ =
         await this.entityDataManager_.getEntityInstanceByGuid(
             this.activeEntityInstanceGuid_!);
@@ -409,6 +448,13 @@ export class SettingsAutofillAiEntriesListElement extends
         instance => instance.guid === this.activeEntityInstanceGuid_);
     if (!instanceWithLabels) {
       return;
+    }
+
+    if (this.pageName) {
+      this.metricsBrowserProxy_.recordAction(
+          `Settings.YourSavedInfo.${this.pageName}.Delete.${
+              this.getMetricEntityTypeString_(
+                  instanceWithLabels.type.typeName as EntityTypeName)}`);
     }
 
     this.activeEntityInstanceDeleteTitle_ =

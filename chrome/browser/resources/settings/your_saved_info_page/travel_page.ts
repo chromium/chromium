@@ -259,6 +259,15 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
     ]);
   }
 
+  private getMetricEntityTypes_(): Record<EntityTypeName, string> {
+    return {
+      [EntityTypeName.kFlightReservation]: 'FlightReservation',
+      [EntityTypeName.kKnownTravelerNumber]: 'KnownTravelerNumber',
+      [EntityTypeName.kRedressNumber]: 'RedressNumber',
+      [EntityTypeName.kVehicle]: 'Vehicle',
+    } as Record<EntityTypeName, string>;
+  }
+
   private extensionControlledIndicatorIsVisible_(): boolean {
     if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
       return false;

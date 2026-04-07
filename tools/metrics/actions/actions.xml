@@ -940,6 +940,27 @@ should be able to be added at any place in this file.
   <variant name=".WebUIOmniboxAimPopup" summary="WebUI Omnibox Aim Popup"/>
 </variants>
 
+<variants name="YourSavedInfoActionName">
+  <variant name="Add" summary="Add"/>
+  <variant name="Delete" summary="Delete"/>
+  <variant name="Edit" summary="Edit"/>
+</variants>
+
+<variants name="YourSavedInfoEntityType">
+  <variant name="DriversLicense" summary="Driver's license"/>
+  <variant name="FlightReservation" summary="Flight reservation"/>
+  <variant name="KnownTravelerNumber" summary="Known traveler number"/>
+  <variant name="NationalIdCard" summary="National ID card"/>
+  <variant name="Passport" summary="Passport"/>
+  <variant name="RedressNumber" summary="Redress number"/>
+  <variant name="Vehicle" summary="Vehicle"/>
+</variants>
+
+<variants name="YourSavedInfoPageName">
+  <variant name="IdentityDocs" summary="Identity docs"/>
+  <variant name="Travel" summary="Travel"/>
+</variants>
+
 <action name="AboutChrome">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -43113,6 +43134,19 @@ should be able to be added at any place in this file.
     User clicks on the Google Wallet related service link in the Your saved info
     page.
   </description>
+</action>
+
+<action
+    name="Settings.YourSavedInfo.{YourSavedInfoPageName}.{YourSavedInfoActionName}.{YourSavedInfoEntityType}">
+  <owner>jsobiech@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <description>
+    User clicks on the {YourSavedInfoActionName} button in the Your saved info
+    &gt; {YourSavedInfoPageName} page for {YourSavedInfoEntityType}.
+  </description>
+  <token key="YourSavedInfoPageName" variants="YourSavedInfoPageName"/>
+  <token key="YourSavedInfoActionName" variants="YourSavedInfoActionName"/>
+  <token key="YourSavedInfoEntityType" variants="YourSavedInfoEntityType"/>
 </action>
 
 <action name="Settings_A11y_ShelfNavigationButtonsLearnMoreClicked">

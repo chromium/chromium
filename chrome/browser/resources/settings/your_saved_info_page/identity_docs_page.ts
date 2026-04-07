@@ -283,6 +283,14 @@ export class SettingsIdentityDocsPageElement extends
     ]);
   }
 
+  private getMetricEntityTypes_(): Record<EntityTypeName, string> {
+    return {
+      [EntityTypeName.kDriversLicense]: 'DriversLicense',
+      [EntityTypeName.kNationalIdCard]: 'NationalIdCard',
+      [EntityTypeName.kPassport]: 'Passport',
+    } as Record<EntityTypeName, string>;
+  }
+
   private extensionControlledIndicatorIsVisible_(): boolean {
     if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_ ||
         !this.prefsInitialized_) {

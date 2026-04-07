@@ -41,7 +41,9 @@
   <div class="card">
     <settings-autofill-ai-entries-list
         list-title="$i18n{identityDocsCardTitle}"
+        page-name="IdentityDocs"
         allowed-entity-types="[[getAllowedEntityTypes_()]]"
+        metric-entity-types="[[getMetricEntityTypes_()]]"
         allow-editing-pref="[[
             prefs.autofill.autofill_ai.identity_entities_enabled]]"
         prefs="{{prefs}}">
