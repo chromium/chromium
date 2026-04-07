@@ -361,6 +361,69 @@ static bool GetInputDeviceChannels(AudioDeviceID device, int* channels) {
   return true;
 }
 
+// Attempts to find a standard Chromium layout that matches the Apple
+// `AudioChannelLayout`. If no valid channels are found, we default to zero
+// channels and `CHANNEL_LAYOUT_DISCRETE`.
+void ParseCoreAudioChannelLayout(AudioChannelLayout* device_layout,
+                                 int* channels,
+                                 ChannelLayout* channel_layout) {
+  // There is no channel info for stereo, assume so for mono as well.
+  if (device_layout->mNumberChannelDescriptions == 1 ||
+      device_layout->mNumberChannelDescriptions == 2) {
+    *channels = device_layout->mNumberChannelDescriptions;
+    *channel_layout =
+        *channels == 2 ? CHANNEL_LAYOUT_STEREO : CHANNEL_LAYOUT_MONO;
+    return;
+  }
+
+  *channels = 0;
+  // use `CHANNEL_LAYOUT_DISCRETE` as the default layout if we can't
+  // find out a matched one.
+  *channel_layout = CHANNEL_LAYOUT_DISCRETE;
+
+  std::vector<Channels> channels_to_match;
+  for (UInt32 i = 0; i < device_layout->mNumberChannelDescriptions; i++) {
+    AudioChannelLabel label =
+        UNSAFE_TODO(device_layout->mChannelDescriptions[i]).mChannelLabel;
+    if (label == kAudioChannelLabel_Unknown) {
+      continue;
+    }
+
+    (*channels)++;
+
+    Channels channel;
+    if (AudioChannelLabelToChannel(label, &channel)) {
+      channels_to_match.push_back(channel);
+    }
+  }
+
+  if (*channels == 0 ||
+      *channels != static_cast<int>(channels_to_match.size())) {
+    return;
+  }
+
+  for (int i = 0; i <= ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
+    ChannelLayout layout = static_cast<ChannelLayout>(i);
+    if (ChannelLayoutToChannelCount(layout) != *channels) {
+      continue;
+    }
+
+    bool matched = true;
+    for (const auto& channel : channels_to_match) {
+      auto channel_order = ChannelOrder(layout, channel);
+      if (channel_order == -1) {
+        matched = false;
+        break;
+      }
+    }
+
+    if (matched) {
+      *channel_layout = layout;
+      return;
+    }
+  }
+}
+
 // Returns the `channels` and `channel_layout` for `device` as provided by the
 // AudioUnit attached to that output device. Returns true if the `channels` and
 // `channel_layout` could be pulled from the AudioUnit successfully, otherwise
@@ -371,6 +434,29 @@ static bool GetOutputDeviceChannelsAndLayout(AudioDeviceID device,
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   CHECK(channels);
   CHECK(channel_layout);
+
+  // First attempt to grab the "preferred layout" (i.e. the configuration of the
+  // hardware speakers in Audio MIDI Setup). For example, if the user has a 10ch
+  // setup and if they configured to be quadrophonic, we should downmix to 4
+  // channels, rather than utilizing all 10 channels. Note that it is not a
+  // guarantee that a device will have this property set, so we fall back to the
+  // total channel count if this fails.
+  AudioObjectPropertyAddress pa = {kAudioDevicePropertyPreferredChannelLayout,
+                                   kAudioDevicePropertyScopeOutput,
+                                   kAudioObjectPropertyElementMain};
+  UInt32 size = 0;
+  OSStatus result =
+      AudioObjectGetPropertyDataSize(device, &pa, 0, nullptr, &size);
+  if (result == noErr && size > 0) {
+    auto preferred_layout = std::make_unique<ScopedAudioChannelLayout>(size);
+    result = AudioObjectGetPropertyData(device, &pa, 0, nullptr, &size,
+                                        preferred_layout->layout());
+    if (result == noErr) {
+      ParseCoreAudioChannelLayout(preferred_layout->layout(), channels,
+                                  channel_layout);
+      return true;
+    }
+  }
 
   // If the device has more channels than possible for layouts to express, use
   // the total count of channels on the device; as of this writing, macOS will
@@ -410,64 +496,8 @@ static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
     DLOG(ERROR) << "Failed to retrieve output device channel layout.";
     return false;
   }
-  AudioChannelLayout* device_layout = scoped_device_layout->layout();
-
-  // There is no channel info for stereo, assume so for mono as well.
-  if (device_layout->mNumberChannelDescriptions == 1 ||
-      device_layout->mNumberChannelDescriptions == 2) {
-    *channels = device_layout->mNumberChannelDescriptions;
-    *channel_layout =
-        *channels == 2 ? CHANNEL_LAYOUT_STEREO : CHANNEL_LAYOUT_MONO;
-    return true;
-  }
-
-  *channels = 0;
-  // use `CHANNEL_LAYOUT_DISCRETE` as the default layout if we can't
-  // find out a matched one.
-  *channel_layout = CHANNEL_LAYOUT_DISCRETE;
-
-  std::vector<Channels> channels_to_match;
-  for (UInt32 i = 0; i < device_layout->mNumberChannelDescriptions; i++) {
-    AudioChannelLabel label =
-        UNSAFE_TODO(device_layout->mChannelDescriptions[i]).mChannelLabel;
-    if (label == kAudioChannelLabel_Unknown) {
-      continue;
-    }
-
-    (*channels)++;
-
-    Channels channel;
-    if (AudioChannelLabelToChannel(label, &channel)) {
-      channels_to_match.push_back(channel);
-    }
-  }
-
-  if (*channels == 0 ||
-      *channels != static_cast<int>(channels_to_match.size())) {
-    return true;
-  }
-
-  for (int i = 0; i <= ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
-    ChannelLayout layout = static_cast<ChannelLayout>(i);
-    if (ChannelLayoutToChannelCount(layout) != *channels) {
-      continue;
-    }
-
-    bool matched = true;
-    for (const auto& channel : channels_to_match) {
-      auto channel_order = ChannelOrder(layout, channel);
-      if (channel_order == -1) {
-        matched = false;
-        break;
-      }
-    }
-
-    if (matched) {
-      *channel_layout = layout;
-      return true;
-    }
-  }
-
+  ParseCoreAudioChannelLayout(scoped_device_layout->layout(), channels,
+                              channel_layout);
   return true;
 }
 
