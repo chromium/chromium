@@ -86,10 +86,8 @@ GlicFloatingUi::~GlicFloatingUi() {
     modal_dialog_host_observers_.Notify(
         &web_modal::ModalDialogHostObserver::OnHostDestroying);
   }
-  // Null during teardown.
-  if (auto* profile_manager = GlicProfileManager::GetInstance()) {
-    profile_manager->SetCurrentDetachedGlic(nullptr);
-  }
+
+  GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(nullptr);
 
   ClearWebContentsDelegate();
   PictureInPictureOcclusionTracker* tracker =
