@@ -183,10 +183,6 @@ component("gpu") {
       "mediandk",
     ]
     deps += [
-      # TODO(crbug.com/40552063): This can be removed once CdmManager is removed.
-      "//gpu/ipc/common",
-      "//media/mojo:buildflags",
-      "//services/service_manager/public/cpp",
       "//third_party/libgav1:libgav1_parser",
     ]
     if (enable_vulkan) {
