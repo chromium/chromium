@@ -1362,7 +1362,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   destination_gl->GenTextures(1, &texture);
   destination_gl->BindTexture(target, texture);
 
-  renderer_.CopyVideoFrameYUVDataToGLTexture(
+  PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
       media_context_.get(), destination_gl, cropped_frame(),
       renderer_.GetRGBSharedImageCache(), renderer_.GetYUVSharedImageCache(),
       target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0,
@@ -1395,7 +1395,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
   destination_gl->GenTextures(1, &texture);
   destination_gl->BindTexture(target, texture);
 
-  renderer_.CopyVideoFrameYUVDataToGLTexture(
+  PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
       media_context_.get(), destination_gl, cropped_frame(),
       renderer_.GetRGBSharedImageCache(), renderer_.GetYUVSharedImageCache(),
       target, texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0,

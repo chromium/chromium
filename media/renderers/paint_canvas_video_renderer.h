@@ -162,7 +162,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // |context_3d| has a GrContext that may be used during the copy.
   // CorrectLastImageDimensions() ensures that the source texture will be
   // cropped to |visible_rect|. Returns true on success.
-  bool CopyVideoFrameYUVDataToGLTexture(
+  static bool CopyVideoFrameYUVDataToGLTexture(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
       scoped_refptr<VideoFrame> video_frame,

@@ -6433,7 +6433,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     // (e.g. video camera frames): upload them to the GPU, do a GPU decode, and
     // then copy into the target texture.
     if (!media_video_frame->HasSharedImage() &&
-        video_renderer->CopyVideoFrameYUVDataToGLTexture(
+        media::PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,
             video_renderer->GetRGBSharedImageCache(),
             video_renderer->GetYUVSharedImageCache(), params.target,
