@@ -2664,6 +2664,7 @@ if (!is_android) {
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/metrics/structured:test_support",
+      "//chrome/browser/multistep_filter:browser_tests",
       "//chrome/browser/navigation_predictor:browser_tests",
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",

@@ -57,3 +57,35 @@ source_set("unit_tests") {
     ]
   }
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  deps = []
+
+  if (!is_android && !is_ios) {
+    sources += [ "multistep_filter_browsertest.cc" ]
+    deps += [
+      ":multistep_filter",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/multistep_filter/ui",
+      "//chrome/browser/multistep_filter/ui:test_support",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/toasts",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/multistep_filter/core:features",
+      "//components/multistep_filter/core:switches",
+      "//components/multistep_filter/core:test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/network:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}
