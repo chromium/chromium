@@ -404,6 +404,16 @@ public class OmniboxFeatures {
     }
 
     /**
+     * @return Whether the device is in a desktop-like configuration (tablet with a physical
+     *     keyboard and precision pointer).
+     */
+    public static boolean isDesktopMode() {
+        return DeviceFormFactor.isTablet()
+                && DeviceInput.supportsAlphabeticKeyboard()
+                && DeviceInput.supportsPrecisionPointer();
+    }
+
+    /**
      * @return Whether the contents of the omnibox should be retained on focus as opposed to being
      *     cleared. When {@code true} and the omnibox contents are retained, focus events will also
      *     result in the omnibox contents being fully selected so as to allow for easy replacement
@@ -414,9 +424,7 @@ public class OmniboxFeatures {
         if (sShouldRetainOmniboxOnFocusForTesting != null) {
             return sShouldRetainOmniboxOnFocusForTesting;
         }
-        return DeviceFormFactor.isTablet()
-                && DeviceInput.supportsAlphabeticKeyboard()
-                && DeviceInput.supportsPrecisionPointer();
+        return isDesktopMode();
     }
 
     /**

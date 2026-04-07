@@ -71,6 +71,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
@@ -609,6 +610,8 @@ public class LocationBarTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTabletWithRetainOmniboxOnFocusDisabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
+        DeviceInput.setSupportsPrecisionPointerForTesting(false);
         testFocusLogic_buttonVisibilityTablet(/* expectRetainOmniboxOnFocus= */ false);
     }
 
@@ -620,12 +623,17 @@ public class LocationBarTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTabletWithRetainOmniboxOnFocusEnabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
         testFocusLogic_buttonVisibilityTablet(/* expectRetainOmniboxOnFocus= */ true);
     }
 
     private void testFocusLogic_buttonVisibilityTablet(boolean expectRetainOmniboxOnFocus) {
         startActivityNormally();
+
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        doReturn(true).when(mLensController).isLensEnabled(any());
+
         String url =
                 mActivityTestRule
                         .getEmbeddedTestServerRule()
@@ -648,10 +656,14 @@ public class LocationBarTest {
         if (expectRetainOmniboxOnFocus) {
             onView(withId(R.id.mic_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+            onView(withId(R.id.lens_camera_button))
+                    .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
             onView(withId(R.id.delete_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         } else {
             onView(withId(R.id.mic_button))
+                    .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+            onView(withId(R.id.lens_camera_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
             onView(withId(R.id.delete_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
@@ -663,6 +675,8 @@ public class LocationBarTest {
                 });
 
         onView(withId(R.id.mic_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.lens_camera_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.delete_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));

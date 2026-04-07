@@ -6,9 +6,11 @@ package org.chromium.chrome.test.transit.omnibox;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 /**
  * Represents test entered into the Omnibox.
@@ -28,7 +30,9 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
         if (mText.isEmpty()) {
             declareEnterCondition(omniboxFacility.deleteButtonElement.absent());
 
-            if (omniboxFacility.getHostStation().isIncognito()) {
+            boolean isDesktopMode =
+                    ThreadUtils.runOnUiThreadBlocking(OmniboxFeatures::isDesktopMode);
+            if (omniboxFacility.getHostStation().isIncognito() || isDesktopMode) {
                 declareEnterCondition(omniboxFacility.micButtonElement.absent());
             } else {
                 declareEnterCondition(omniboxFacility.micButtonElement.present());
