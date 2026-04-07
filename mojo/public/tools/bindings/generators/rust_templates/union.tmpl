@@ -1,5 +1,6 @@
 {% macro declare_union(name, union) -%}
 
+{# Debug and PartialEq are included for convenience, testing, and debugging. -#}
 #[derive(Debug, PartialEq, MojomParse)]
 {%- if union|should_derive_clone %}
 #[derive(Clone)]
