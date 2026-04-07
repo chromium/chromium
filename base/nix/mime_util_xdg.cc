@@ -257,24 +257,24 @@ std::string GetFileMimeType(const FilePath& filepath) {
   // check every 5s and reload if any files have changed.
 #if !BUILDFLAG(IS_CHROMEOS)
   static Time last_check;
-  // Lock is required since this may be called on any thread.
+  // Lock is required since this may be called on any thread. The lock is held
+  // until the function returns to ensure that the map lookup and result copy
+  // are thread-safe if a reload occurs concurrently.
   static NoDestructor<Lock> lock;
-  {
-    AutoLock scoped_lock(*lock);
+  AutoLock scoped_lock(*lock);
 
-    Time now = Time::Now();
-    if (last_check + Seconds(5) < now) {
-      if (std::ranges::any_of(*xdg_mime_files, [](const FileInfo& file_info) {
-            File::Info info;
-            return !GetFileInfo(file_info.path, &info) ||
-                   info.last_modified != file_info.last_modified;
-          })) {
-        mime_type_map->clear();
-        xdg_mime_files->clear();
-        LoadAllMimeCacheFiles(*mime_type_map, *xdg_mime_files);
-      }
-      last_check = now;
+  Time now = Time::Now();
+  if (last_check + Seconds(5) < now) {
+    if (std::ranges::any_of(*xdg_mime_files, [](const FileInfo& file_info) {
+          File::Info info;
+          return !GetFileInfo(file_info.path, &info) ||
+                 info.last_modified != file_info.last_modified;
+        })) {
+      mime_type_map->clear();
+      xdg_mime_files->clear();
+      LoadAllMimeCacheFiles(*mime_type_map, *xdg_mime_files);
     }
+    last_check = now;
   }
 #endif
 

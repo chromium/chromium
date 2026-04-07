@@ -4,6 +4,7 @@
 
 #include "base/nix/mime_util_xdg.h"
 
+#include <atomic>
 #include <map>
 #include <string>
 #include <vector>
@@ -13,6 +14,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_environment_variable_override.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::nix {
@@ -77,6 +84,22 @@ class ParseMimeTypesTest : public ::testing::Test {
  private:
   ScopedTempDir temp_dir_;
   FilePath mime_types_path_;
+};
+
+class MimeWorkerThread : public base::SimpleThread {
+ public:
+  MimeWorkerThread(base::WaitableEvent* event, std::atomic<bool>* stop)
+      : SimpleThread("MimeWorkerThread"), event_(event), stop_(stop) {}
+  void Run() override {
+    event_->Wait();
+    while (!stop_->load()) {
+      GetFileMimeType(base::FilePath("foo.pdf"));
+    }
+  }
+
+ private:
+  const raw_ptr<base::WaitableEvent> event_;
+  const raw_ptr<std::atomic<bool>> stop_;
 };
 
 }  // namespace
@@ -173,6 +196,61 @@ TEST_F(ParseMimeTypesTest, Invalid) {
   InvalidIf(*buf, 0x18b, 0x10);
   // Mime type offset above alias list.
   InvalidIf(*buf, 0x18b, 0x74);
+}
+
+// Regression test for crbug.com/499227659. Ensure that concurrent calls to
+// GetFileMimeType and reloading the MIME cache doesn't crash or cause a data
+// race.
+TEST(MimeUtilXdgTest, GetFileMimeTypeRace) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath mime_dir = temp_dir.GetPath().Append("mime");
+  ASSERT_TRUE(CreateDirectory(mime_dir));
+  base::FilePath mime_cache = mime_dir.Append("mime.cache");
+
+  auto buf = Base64Decode(kTestMimeCacheB64);
+  ASSERT_TRUE(buf.has_value());
+  ASSERT_TRUE(WriteFile(mime_cache, *buf));
+
+  base::ScopedEnvironmentVariableOverride env_override(
+      "XDG_DATA_HOME", temp_dir.GetPath().value());
+
+  // Call once to initialize static variables.
+  GetFileMimeType(base::FilePath("foo.pdf"));
+
+  std::atomic<bool> stop{false};
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+  std::vector<std::unique_ptr<MimeWorkerThread>> threads;
+
+  for (int i = 0; i < 20; ++i) {
+    threads.emplace_back(std::make_unique<MimeWorkerThread>(&event, &stop))
+        ->Start();
+  }
+
+  event.Signal();
+
+  for (int i = 0; i < 1000; ++i) {
+    // Update file time.
+    base::File::Info info;
+    GetFileInfo(mime_cache, &info);
+    base::TouchFile(mime_cache, info.last_accessed,
+                    info.last_modified + base::Seconds(1));
+
+    // Advance time to bypass 5s check.
+    task_environment.FastForwardBy(base::Seconds(6));
+    if (i % 100 == 0) {
+      base::PlatformThread::Sleep(base::Milliseconds(1));
+    }
+  }
+
+  stop = true;
+  for (auto& t : threads) {
+    t->Join();
+  }
 }
 
 }  // namespace base::nix
