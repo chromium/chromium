@@ -54,7 +54,12 @@ public class UrlBarMediatorUnitTest {
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
         mMediator =
                 new UrlBarMediator(
-                        ContextUtils.getApplicationContext(), mModel, mFocusChangeCallback) {
+                        ContextUtils.getApplicationContext(),
+                        mModel,
+                        mFocusChangeCallback,
+                        /* textChangeListener= */ null,
+                        /* richTextChangeListener= */ null,
+                        /* keyDownListener= */ null) {
                     @Override
                     protected String sanitizeTextForPaste(String text) {
                         return text.trim();

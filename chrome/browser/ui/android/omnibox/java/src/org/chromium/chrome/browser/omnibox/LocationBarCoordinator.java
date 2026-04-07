@@ -342,7 +342,10 @@ public class LocationBarCoordinator
                         mLocationBarMediator,
                         windowAndroid.getKeyboardDelegate(),
                         isIncognito,
-                        onLongClickListener);
+                        onLongClickListener,
+                        mLocationBarMediator::onUrlTextChanged,
+                        mLocationBarMediator::onUrlTextRichChanged,
+                        mLocationBarMediator);
 
         // Set up text wrapping listener for FuseboxCoordinator
         mTextWrappingListener = this::onTextWrappingChanged;
@@ -407,10 +410,6 @@ public class LocationBarCoordinator
 
         mInstallButton = mLocationBarLayout.findViewById(R.id.install_button);
         mInstallButton.setOnClickListener(mLocationBarMediator::installButtonClicked);
-
-        mUrlCoordinator.setTextChangeListener(mLocationBarMediator::onUrlTextChanged);
-        mUrlCoordinator.setRichTextChangeListener(mLocationBarMediator::onUrlTextRichChanged);
-        mUrlCoordinator.setKeyDownListener(mLocationBarMediator);
 
         // The LocationBar's direction is tied to the UrlBar's text direction. Icons inside the
         // location bar, e.g. lock, refresh, X, should be reversed if UrlBar's text is RTL.

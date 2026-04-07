@@ -49,8 +49,8 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     // and we couldn't change it by the branded color scheme.
     private boolean mIsHintTextFixedForNtp;
     private boolean mShowOriginOnly;
-    private @Nullable Callback<String> mTextChangeListener;
-    private @Nullable Callback<UrlBarTextChangeInfo> mRichTextChangeListener;
+    private final @Nullable Callback<String> mTextChangeListener;
+    private final @Nullable Callback<UrlBarTextChangeInfo> mRichTextChangeListener;
 
     /**
      * Creates a URLBarMediator.
@@ -59,12 +59,22 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
      * @param model MVC property model to write changes to.
      * @param focusChangeCallback The callback that will be notified when focus changes on the
      *     UrlBar.
+     * @param textChangeListener The listener for text changes.
+     * @param richTextChangeListener The listener for rich text changes.
+     * @param keyDownListener The listener for key down events.
      */
     public UrlBarMediator(
-            Context context, PropertyModel model, Callback<Boolean> focusChangeCallback) {
+            Context context,
+            PropertyModel model,
+            Callback<Boolean> focusChangeCallback,
+            @Nullable Callback<String> textChangeListener,
+            @Nullable Callback<UrlBarTextChangeInfo> richTextChangeListener,
+            @Nullable OnKeyListener keyDownListener) {
         mContext = context;
         mModel = model;
         mOnFocusChangeCallback = focusChangeCallback;
+        mTextChangeListener = textChangeListener;
+        mRichTextChangeListener = richTextChangeListener;
 
         mModel.set(UrlBarProperties.FOCUS_CHANGE_CALLBACK, this::onUrlFocusChange);
         mModel.set(UrlBarProperties.SHOW_CURSOR, false);
@@ -72,6 +82,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, false);
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, this::onTextChanged);
         mModel.set(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER, this::onRichTextChanged);
+        mModel.set(UrlBarProperties.KEY_DOWN_LISTENER, keyDownListener);
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, true);
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         pushTextToModel(/* originChanged= */ false);
@@ -81,15 +92,6 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.FOCUS_CHANGE_CALLBACK, null);
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, null);
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, null);
-    }
-
-    /** Sets a listener for url text changes. */
-    public void setTextChangeListener(Callback<String> listener) {
-        mTextChangeListener = listener;
-    }
-
-    public void setRichTextChangeListener(Callback<UrlBarTextChangeInfo> listener) {
-        mRichTextChangeListener = listener;
     }
 
     private void onTextChanged(String text) {
@@ -109,14 +111,6 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     private void updateShowHintText(String text) {
         boolean showHintText = !mHasFocus || text.isEmpty();
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, showHintText);
-    }
-
-    /**
-     * Sets a listener for url key events. See the {@link
-     * UrlBarCoordinator#setKeyDownListener(OnKeyListener)}.
-     */
-    public void setKeyDownListener(OnKeyListener listener) {
-        mModel.set(UrlBarProperties.KEY_DOWN_LISTENER, listener);
     }
 
     /**
