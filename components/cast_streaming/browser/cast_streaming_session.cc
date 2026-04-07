@@ -144,7 +144,11 @@ void CastStreamingSession::ReceiverSessionClient::GetAudioBuffer(
     return;
   }
 
-  DCHECK(audio_consumer_);
+  if (!audio_consumer_) {
+    std::move(no_frames_available_cb).Run();
+    return;
+  }
+
   audio_consumer_->ReadFrame(std::move(no_frames_available_cb));
 }
 
@@ -160,7 +164,11 @@ void CastStreamingSession::ReceiverSessionClient::GetVideoBuffer(
     return;
   }
 
-  DCHECK(video_consumer_);
+  if (!video_consumer_) {
+    std::move(no_frames_available_cb).Run();
+    return;
+  }
+
   video_consumer_->ReadFrame(std::move(no_frames_available_cb));
 }
 
@@ -422,6 +430,9 @@ void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(
 
   preloaded_audio_buffer_ = std::nullopt;
   preloaded_video_buffer_ = std::nullopt;
+
+  audio_consumer_.reset();
+  video_consumer_.reset();
 
   switch (reason) {
     case ReceiversDestroyingReason::kEndOfSession:
