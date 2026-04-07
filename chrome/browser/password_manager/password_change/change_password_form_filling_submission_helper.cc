@@ -305,7 +305,7 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
            generated_password_);
   form_manager_->UpdateBackupPassword(stored_password_);
 
-  capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
+  capturer_ = AnnotatedPageContentCapturer::Create(
       web_contents_, GetAIPageContentOptions(),
       base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived,

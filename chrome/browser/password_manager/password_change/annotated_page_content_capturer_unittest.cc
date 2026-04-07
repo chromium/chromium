@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
-
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -11,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -36,12 +35,11 @@ class AnnotatedPageContentCapturerTest
   using MockGetAIPageContentFunction = base::MockCallback<
       AnnotatedPageContentCapturer::GetAIPageContentFunction>;
 
-  std::unique_ptr<AnnotatedPageContentCapturer> CreateCapturer(
+  std::unique_ptr<AnnotatedPageContentCapturerImpl> CreateCapturer(
       optimization_guide::OnAIPageContentDone callback) {
-    return std::make_unique<AnnotatedPageContentCapturer>(
-        base::PassKey<class AnnotatedPageContentCapturerTest>(), web_contents(),
-        blink::mojom::AIPageContentOptions::New(), std::move(callback),
-        mock_get_page_content_.Get());
+    return std::make_unique<AnnotatedPageContentCapturerImpl>(
+        web_contents(), blink::mojom::AIPageContentOptions::New(),
+        std::move(callback), mock_get_page_content_.Get());
   }
 
  protected:
@@ -56,7 +54,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
-  std::unique_ptr<AnnotatedPageContentCapturer> capturer =
+  std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
       CreateCapturer(completion_future.GetCallback());
   optimization_guide::AIPageContentResult result;
   const char kEmptyPageContentData[] = "\n\002B\000\020\002";
@@ -72,7 +70,7 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
 TEST_P(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
-  std::unique_ptr<AnnotatedPageContentCapturer> capturer =
+  std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
       CreateCapturer(completion_future.GetCallback());
   optimization_guide::AIPageContentResult page_content_result;
   page_content_result.proto.mutable_root_node()
@@ -88,7 +86,7 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
 TEST_P(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
   base::test::TestFuture<optimization_guide::AIPageContentResultOrError>
       completion_future;
-  std::unique_ptr<AnnotatedPageContentCapturer> capturer =
+  std::unique_ptr<AnnotatedPageContentCapturerImpl> capturer =
       CreateCapturer(completion_future.GetCallback());
 
   optimization_guide::OnAIPageContentDone first_request_callback;

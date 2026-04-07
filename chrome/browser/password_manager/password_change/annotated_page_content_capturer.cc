@@ -8,84 +8,30 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer_impl.h"
 #include "chrome/browser/password_manager/password_change/password_change_page_stability_waiter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
-AnnotatedPageContentCapturer::AnnotatedPageContentCapturer(
-    content::WebContents* web_contents,
-    blink::mojom::AIPageContentOptionsPtr options,
-    optimization_guide::OnAIPageContentDone callback)
-    : AnnotatedPageContentCapturer(
-          web_contents,
-          std::move(options),
-          std::move(callback),
-          base::BindRepeating(&optimization_guide::GetAIPageContent,
-                              base::Unretained(web_contents))) {}
-
-AnnotatedPageContentCapturer::AnnotatedPageContentCapturer(
-    base::PassKey<class AnnotatedPageContentCapturerTest>,
-    content::WebContents* web_contents,
-    blink::mojom::AIPageContentOptionsPtr options,
-    optimization_guide::OnAIPageContentDone callback,
-    GetAIPageContentFunction get_page_content)
-    : AnnotatedPageContentCapturer(web_contents,
-                                   std::move(options),
-                                   std::move(callback),
-                                   std::move(get_page_content)) {}
-
-AnnotatedPageContentCapturer::AnnotatedPageContentCapturer(
-    content::WebContents* web_contents,
-    blink::mojom::AIPageContentOptionsPtr options,
-    optimization_guide::OnAIPageContentDone callback,
-    GetAIPageContentFunction get_page_content)
-    : content::WebContentsObserver(web_contents),
-      options_(std::move(options)),
-      callback_(std::move(callback)),
-      get_page_content_(std::move(get_page_content)) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kAwaitPageStabilityForPasswordChange)) {
-    page_stability_waiter_ =
-        std::make_unique<PasswordChangePageStabilityWaiter>(
-            web_contents,
-            base::BindOnce(&AnnotatedPageContentCapturer::OnPageStable,
-                           weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    if (!web_contents->IsLoading()) {
-      DidStopLoading();
-    }
-  }
+// static
+AnnotatedPageContentCapturer::FactoryCallback&
+AnnotatedPageContentCapturer::GetFactory() {
+  static base::NoDestructor<FactoryCallback> factory;
+  return *factory;
 }
 
-AnnotatedPageContentCapturer::~AnnotatedPageContentCapturer() = default;
-
-void AnnotatedPageContentCapturer::DidStopLoading() {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kAwaitPageStabilityForPasswordChange)) {
-    return;
+std::unique_ptr<AnnotatedPageContentCapturer>
+AnnotatedPageContentCapturer::Create(
+    content::WebContents* web_contents,
+    blink::mojom::AIPageContentOptionsPtr options,
+    optimization_guide::OnAIPageContentDone callback) {
+  auto& factory = GetFactory();
+  if (factory) {
+    return factory.Run(web_contents, std::move(options), std::move(callback));
   }
-  if (web_contents()->IsLoading()) {
-    // This event may be called before the page is ready. To prevent
-    // capturing the annotated page content when the site is not fully loaded
-    // we exit early if `IsLoading` is true.
-    return;
-  }
-  OnPageStable();
-}
-
-void AnnotatedPageContentCapturer::OnPageStable() {
-  page_stability_waiter_.reset();
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  get_page_content_.Run(
-      options_->Clone(),
-      base::BindOnce(&AnnotatedPageContentCapturer::CapturePageContent,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void AnnotatedPageContentCapturer::CapturePageContent(
-    optimization_guide::AIPageContentResultOrError result) {
-  if (callback_ && result.has_value() && result.value().proto.has_root_node()) {
-    std::move(callback_).Run(std::move(result));
-  }
+  return std::make_unique<AnnotatedPageContentCapturerImpl>(
+      web_contents, std::move(options), std::move(callback),
+      base::BindRepeating(&optimization_guide::GetAIPageContent,
+                          base::Unretained(web_contents)));
 }

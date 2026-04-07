@@ -129,7 +129,7 @@ void LoginStateChecker::CheckLoginState(bool ignore_attempts_limit) {
   // Clear previously captured page content.
   cached_page_content_ = std::nullopt;
 
-  capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
+  capturer_ = AnnotatedPageContentCapturer::Create(
       web_contents(), GetAIPageContentOptions(),
       base::BindRepeating(&LoginStateChecker::OnPageContentReceived,
                           weak_ptr_factory_.GetWeakPtr()));

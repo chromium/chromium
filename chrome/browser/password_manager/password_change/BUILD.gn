@@ -6,6 +6,8 @@ source_set("password_change") {
   sources = [
     "annotated_page_content_capturer.cc",
     "annotated_page_content_capturer.h",
+    "annotated_page_content_capturer_impl.cc",
+    "annotated_page_content_capturer_impl.h",
     "button_click_helper.cc",
     "button_click_helper.h",
     "change_password_form_filling_submission_helper.cc",
@@ -63,6 +65,8 @@ source_set("unit_tests") {
     "change_password_form_finder_unittest.cc",
     "change_password_form_waiter_unittest.cc",
     "cross_origin_navigation_observer_unittest.cc",
+    "fake_annotated_page_content_capturer.cc",
+    "fake_annotated_page_content_capturer.h",
     "form_filling_helper_unittest.cc",
     "login_state_checker_unittest.cc",
     "model_quality_logs_uploader_unittest.cc",
