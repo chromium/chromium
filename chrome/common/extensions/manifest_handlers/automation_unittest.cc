@@ -5,6 +5,7 @@
 #include "extensions/common/manifest_handlers/automation.h"
 
 #include "base/command_line.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/version_info/version_info.h"
@@ -28,12 +29,14 @@ class AutomationManifestTest : public ChromeManifestTest {
 
  private:
   void SetUp() override {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
+    auto* command_line = scoped_command_line_.GetProcessCommandLine();
+    command_line->RemoveSwitch(extensions::switches::kAllowlistedExtensionID);
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID,
         "ddchlicdkolnonkihahngkmmmjnjlkkf");
   }
 
+  base::test::ScopedCommandLine scoped_command_line_;
   ScopedCurrentChannel channel_;
 };
 
