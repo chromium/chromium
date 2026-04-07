@@ -155,10 +155,10 @@ TabModel::TabLaunchType GetTabLaunchType(const NavigateParams* params) {
 // Helper to create/locate tabs.
 // If params->contents_to_insert is non-null, std::move() will be called on it.
 raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
-    BrowserWindowInterface* bwi,
     NavigateParams* params) {
   // On Android, TabListInterface is TabModel.
-  TabModel* tab_model = static_cast<TabModel*>(TabListInterface::From(bwi));
+  TabModel* tab_model =
+      static_cast<TabModel*>(TabListInterface::From(params->browser));
   if (!tab_model) {
     return nullptr;
   }
@@ -235,13 +235,10 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
 }
 
 base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
-    BrowserWindowInterface* bwi,
     NavigateParams* params) {
-  // TODO(crbug.com/499377980) Probably remove bwi from this call.
-  // At least CHECK(bwi == params->browser)
   bool is_contents_inserted = params->contents_to_insert != nullptr;
 
-  tabs::TabInterface* tab = GetOrCreateTabForDisposition(bwi, params);
+  tabs::TabInterface* tab = GetOrCreateTabForDisposition(params);
   if (!tab || !tab->GetContents()) {
     return nullptr;
   }
@@ -266,7 +263,8 @@ void GetTabAndPerformNavigationAsync(
     BrowserWindowInterface* bwi) {
   base::WeakPtr<content::NavigationHandle> handle = nullptr;
   if (bwi) {
-    handle = GetTabAndPerformNavigation(bwi, params);
+    params->browser = bwi;
+    handle = GetTabAndPerformNavigation(params);
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -286,7 +284,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
-  return GetTabAndPerformNavigation(params->browser, params);
+  return GetTabAndPerformNavigation(params);
 }
 
 void Navigate(NavigateParams* params,

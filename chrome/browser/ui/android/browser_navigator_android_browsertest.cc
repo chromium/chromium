@@ -139,6 +139,7 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, Disposition_CurrentTab) {
   navigation_observer.Wait();
 
   // Verify the navigation happened in the same tab and window.
+  EXPECT_EQ(params.browser, browser_window_);
   EXPECT_EQ(url2, web_contents_->GetLastCommittedURL());
   EXPECT_EQ(1, tab_list_->GetTabCount());
   ASSERT_EQ(1u, GetAllBrowserWindowInterfaces().size());
@@ -373,6 +374,7 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   navigation_observer.Wait();
 
   // Verify the navigation happened in the same tab and window.
+  EXPECT_EQ(params.browser, browser_window_);
   EXPECT_EQ(url2, web_contents_->GetLastCommittedURL());
   EXPECT_EQ(1, tab_list_->GetTabCount());
   ASSERT_EQ(1u, GetAllBrowserWindowInterfaces().size());
@@ -532,6 +534,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   EXPECT_EQ(1, new_tab_list->GetTabCount());
   tabs::TabInterface* new_tab = new_tab_list->GetTab(0);
   ASSERT_TRUE(new_tab);
+  EXPECT_NE(params.browser, browser_window_);
+  EXPECT_EQ(params.browser, new_window);
   EXPECT_EQ(url2, new_tab->GetContents()->GetLastCommittedURL());
 
   // Verify the original window is unchanged.
@@ -564,6 +568,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, Async_Disposition_NewPopup) {
   ASSERT_EQ(2u, windows.size());
   BrowserWindowInterface* new_window =
       windows[0] == browser_window_ ? windows[1] : windows[0];
+  EXPECT_NE(params.browser, browser_window_);
+  EXPECT_EQ(params.browser, new_window);
   EXPECT_EQ(new_window->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
   TabListInterface* new_tab_list = TabListInterface::From(new_window);
   EXPECT_EQ(1, new_tab_list->GetTabCount());
@@ -665,6 +671,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   BrowserWindowInterface* new_window =
       windows[0] == browser_window_ ? windows[1] : windows[0];
   EXPECT_TRUE(new_window->GetProfile()->IsOffTheRecord());
+  EXPECT_NE(params.browser, browser_window_);
+  EXPECT_EQ(params.browser, new_window);
   TabListInterface* new_tab_list = TabListInterface::From(new_window);
   EXPECT_EQ(1, new_tab_list->GetTabCount());
   tabs::TabInterface* new_tab = new_tab_list->GetTab(0);
