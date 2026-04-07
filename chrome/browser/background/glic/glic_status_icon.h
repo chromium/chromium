@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"

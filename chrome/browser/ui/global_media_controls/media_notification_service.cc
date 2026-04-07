@@ -12,9 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -666,22 +664,7 @@ bool MediaNotificationService::IsIdBlocked(
     return false;
   }
 
-  // Block if the request came from any glic instance.
-  for (glic::GlicInstance* instance :
-       glic_keyed_service->instance_coordinator().GetInstances()) {
-    if (!instance->host().webui_contents()) {
-      continue;
-    }
-
-    std::vector<content::WebContents*> inner_contents =
-        instance->host().webui_contents()->GetInnerWebContents();
-    if (inner_contents.size() == 1ul &&
-        content::MediaSession::GetRequestIdFromWebContents(inner_contents[0])
-                .ToString() == request_id) {
-      return true;
-    }
-  }
-  return false;
+  return glic_keyed_service->IsMediaRequestFromGlic(request_id);
 }
 
 global_media_controls::MediaItemManager* MediaNotificationService::
