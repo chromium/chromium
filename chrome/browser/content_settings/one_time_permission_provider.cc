@@ -199,7 +199,7 @@ std::optional<base::TimeDelta> OneTimePermissionProvider::RenewContentSetting(
 
 void OneTimePermissionProvider::ClearAllContentSettingsRules(
     ContentSettingsType content_type) {
-  if (permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
+  if (!permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
           content_type)) {
     return;
   }

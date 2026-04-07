@@ -148,6 +148,31 @@ TEST_F(OneTimePermissionProviderTest, SetAndGetGeolocationSetting) {
                 ContentSettingsType::GEOLOCATION, false));
 }
 
+TEST_F(OneTimePermissionProviderTest, ClearAll) {
+  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+            TestUtils::GetContentSetting(
+                one_time_permission_provider_.get(), primary_url, secondary_url,
+                ContentSettingsType::GEOLOCATION, false));
+
+  one_time_permission_provider_->SetWebsiteSetting(
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ALLOW),
+      one_time_constraints());
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            TestUtils::GetContentSetting(
+                one_time_permission_provider_.get(), primary_url, secondary_url,
+                ContentSettingsType::GEOLOCATION, false));
+
+  one_time_permission_provider_->ClearAllContentSettingsRules(
+      ContentSettingsType::GEOLOCATION);
+
+  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+            TestUtils::GetContentSetting(
+                one_time_permission_provider_.get(), primary_url, secondary_url,
+                ContentSettingsType::GEOLOCATION, false));
+}
+
 TEST_F(OneTimePermissionProviderTest,
        SetAndGetContentSettingWithoutOneTimeCapabilityDoesNotAllow) {
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
