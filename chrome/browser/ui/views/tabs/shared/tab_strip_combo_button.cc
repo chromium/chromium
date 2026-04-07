@@ -183,6 +183,13 @@ void TabStripComboButton::SetOrientation(views::LayoutOrientation orientation) {
   }
   orientation_ = orientation;
 
+  if (start_button_) {
+    start_button_->SetExpansionOrientation(orientation_);
+  }
+  if (end_button_) {
+    end_button_->SetExpansionOrientation(orientation_);
+  }
+
   views::BoxLayout* layout = static_cast<views::BoxLayout*>(GetLayoutManager());
   layout->SetOrientation(orientation_);
   layout->set_between_child_spacing(GetLayoutConstant(
@@ -222,6 +229,8 @@ TabStripComboButton::CreateFlatEdgeButtonFor(actions::ActionId action_id,
                                              ui::ElementIdentifier element_id) {
   auto button = std::make_unique<TabStripFlatEdgeButton>();
   button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+  button->SetShouldShowLabel(context_ == Context::kVerticalTabStrip);
+  button->SetExpansionOrientation(orientation_);
   button->set_context_menu_controller(this);
   if (!browser_ || !browser_->GetActions()) {
     return button;
